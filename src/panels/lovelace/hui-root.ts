@@ -11,10 +11,12 @@ import {
   mdiMagnify,
   mdiPencil,
   mdiPlus,
+  mdiRedo,
   mdiRefresh,
   mdiRobot,
   mdiShape,
   mdiSofa,
+  mdiUndo,
   mdiViewDashboard,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -24,6 +26,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { goBack, navigate } from "../../common/navigate";
@@ -50,7 +53,10 @@ import "../../components/ha-tab-group-tab";
 import "../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../data/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
-import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import type {
+  LovelaceConfig,
+  LovelaceRawConfig,
+} from "../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import {
@@ -75,6 +81,7 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
@@ -105,6 +112,12 @@ interface ActionItem {
   subItems?: SubActionItem[];
 }
 
+export interface ExtraActionItem {
+  icon: string;
+  labelKey: LocalizeKeys;
+  action: () => void;
+}
+
 interface SubActionItem {
   icon: string;
   key: LocalizeKeys;
@@ -113,9 +126,14 @@ interface SubActionItem {
   visible: boolean | undefined;
 }
 
+interface UndoStackItem {
+  location: string;
+  config: LovelaceRawConfig;
+}
+
 @customElement("hui-root")
 class HUIRoot extends LitElement {
-  @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
+  @property({ attribute: false }) public panel?: PanelInfo;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -128,13 +146,25 @@ class HUIRoot extends LitElement {
     prefix: string;
   };
 
+  @property({ attribute: false }) public extraActionItems?: ExtraActionItem[];
+
   @state() private _curView?: number | "hass-unused-entities";
+
+  private _configChangedByUndo = false;
 
   private _viewCache?: Record<string, HUIView>;
 
   private _viewScrollPositions: Record<string, number> = {};
 
   private _restoreScroll = false;
+
+  private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
+    apply: (config) => this._applyUndoRedo(config),
+    currentConfig: () => ({
+      location: this.route!.path.split("/")[1],
+      config: this.lovelace!.rawConfig,
+    }),
+  });
 
   private _debouncedConfigChanged: () => void;
 
@@ -157,7 +187,29 @@ class HUIRoot extends LitElement {
     const result: TemplateResult[] = [];
     if (this._editMode) {
       result.push(
-        html`<ha-button
+        html`<ha-icon-button
+            slot="toolbar-icon"
+            .path=${mdiUndo}
+            @click=${this._undo}
+            .disabled=${!this._undoRedoController.canUndo}
+            id="button-undo"
+          >
+          </ha-icon-button>
+          <ha-tooltip placement="bottom" for="button-undo">
+            ${this.hass.localize("ui.common.undo")}
+          </ha-tooltip>
+          <ha-icon-button
+            slot="toolbar-icon"
+            .path=${mdiRedo}
+            @click=${this._redo}
+            .disabled=${!this._undoRedoController.canRedo}
+            id="button-redo"
+          >
+          </ha-icon-button>
+          <ha-tooltip placement="bottom" for="button-redo">
+            ${this.hass.localize("ui.common.redo")}
+          </ha-tooltip>
+          <ha-button
             appearance="filled"
             size="small"
             class="exit-edit-mode"
@@ -251,7 +303,8 @@ class HUIRoot extends LitElement {
         overflowAction: this._handleShowQuickBar,
         visible: !this._editMode,
         overflow: this.narrow,
-        suffix: this.hass.enableShortcuts ? "(E)" : undefined,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(E)" : undefined,
       },
       {
         icon: mdiCommentProcessingOutline,
@@ -261,7 +314,8 @@ class HUIRoot extends LitElement {
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
-        suffix: this.hass.enableShortcuts ? "(A)" : undefined,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(A)" : undefined,
       },
       {
         icon: mdiRefresh,
@@ -300,6 +354,25 @@ class HUIRoot extends LitElement {
         overflow_can_promote: true,
       },
     ];
+
+    // Add extra action items from parent components
+    if (this.extraActionItems) {
+      this.extraActionItems.forEach((extraItem) => {
+        items.push({
+          icon: extraItem.icon,
+          key: extraItem.labelKey,
+          buttonAction: extraItem.action,
+          overflowAction: (ev: CustomEvent<RequestSelectedDetail>) => {
+            if (!shouldHandleRequestSelectedEvent(ev)) {
+              return;
+            }
+            extraItem.action();
+          },
+          visible: true,
+          overflow: this.narrow,
+        });
+      });
+    }
 
     const overflowItems = items.filter((i) => i.visible && i.overflow);
     const overflowCanPromote =
@@ -497,68 +570,72 @@ class HUIRoot extends LitElement {
         })}
       >
         <div class="header">
-          <div class="toolbar">
+          <slot name="toolbar">
+            <div class="toolbar">
+              ${this._editMode
+                ? html`
+                    <div class="main-title">
+                      ${dashboardTitle ||
+                      this.hass!.localize("ui.panel.lovelace.editor.header")}
+                      <ha-icon-button
+                        slot="actionItems"
+                        .label=${this.hass!.localize(
+                          "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                        )}
+                        .path=${mdiPencil}
+                        class="edit-icon"
+                        @click=${this._editDashboard}
+                      ></ha-icon-button>
+                    </div>
+                    <div class="action-items">${this._renderActionItems()}</div>
+                  `
+                : html`
+                    ${isSubview
+                      ? html`
+                          <ha-icon-button-arrow-prev
+                            .hass=${this.hass}
+                            slot="navigationIcon"
+                            @click=${this._goBack}
+                          ></ha-icon-button-arrow-prev>
+                        `
+                      : html`
+                          <ha-menu-button
+                            slot="navigationIcon"
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                          ></ha-menu-button>
+                        `}
+                    ${isSubview
+                      ? html`
+                          <div class="main-title">${curViewConfig.title}</div>
+                        `
+                      : hasTabViews
+                        ? tabs
+                        : html`
+                            <div class="main-title">
+                              ${views[0]?.title ?? dashboardTitle}
+                            </div>
+                          `}
+                    <div class="action-items">${this._renderActionItems()}</div>
+                  `}
+            </div>
             ${this._editMode
               ? html`
-                  <div class="main-title">
-                    ${dashboardTitle ||
-                    this.hass!.localize("ui.panel.lovelace.editor.header")}
+                  <div class="tab-bar">
+                    ${tabs}
                     <ha-icon-button
-                      slot="actionItems"
+                      slot="nav"
+                      id="add-view"
+                      @click=${this._addView}
                       .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                        "ui.panel.lovelace.editor.edit_view.add"
                       )}
-                      .path=${mdiPencil}
-                      class="edit-icon"
-                      @click=${this._editDashboard}
+                      .path=${mdiPlus}
                     ></ha-icon-button>
                   </div>
-                  <div class="action-items">${this._renderActionItems()}</div>
                 `
-              : html`
-                  ${isSubview
-                    ? html`
-                        <ha-icon-button-arrow-prev
-                          .hass=${this.hass}
-                          slot="navigationIcon"
-                          @click=${this._goBack}
-                        ></ha-icon-button-arrow-prev>
-                      `
-                    : html`
-                        <ha-menu-button
-                          slot="navigationIcon"
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                        ></ha-menu-button>
-                      `}
-                  ${isSubview
-                    ? html`<div class="main-title">${curViewConfig.title}</div>`
-                    : hasTabViews
-                      ? tabs
-                      : html`
-                          <div class="main-title">
-                            ${views[0]?.title ?? dashboardTitle}
-                          </div>
-                        `}
-                  <div class="action-items">${this._renderActionItems()}</div>
-                `}
-          </div>
-          ${this._editMode
-            ? html`
-                <div class="tab-bar">
-                  ${tabs}
-                  <ha-icon-button
-                    slot="nav"
-                    id="add-view"
-                    @click=${this._addView}
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.add"
-                    )}
-                    .path=${mdiPlus}
-                  ></ha-icon-button>
-                </div>
-              `
-            : nothing}
+              : nothing}
+          </slot>
         </div>
         <hui-view-container
           class=${this._editMode ? "has-tab-bar" : ""}
@@ -578,17 +655,22 @@ class HUIRoot extends LitElement {
     this.toggleAttribute("scrolled", window.scrollY !== 0);
   };
 
+  private _locationChanged = () => {
+    this._handleUrlChanged();
+  };
+
   private _handlePopState = () => {
     this._restoreScroll = true;
+    this._handleUrlChanged();
   };
 
   private _isVisible = (view: LovelaceViewConfig) =>
     Boolean(
       this._editMode ||
-        view.visible === undefined ||
-        view.visible === true ||
-        (Array.isArray(view.visible) &&
-          view.visible.some((show) => show.user === this.hass!.user?.id))
+      view.visible === undefined ||
+      view.visible === true ||
+      (Array.isArray(view.visible) &&
+        view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
   private _clearParam(param: string) {
@@ -601,6 +683,34 @@ class HUIRoot extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+    this._handleUrlChanged();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+    window.addEventListener("popstate", this._handlePopState);
+    window.addEventListener("location-changed", this._locationChanged);
+    // Disable history scroll restoration because it is managed manually here
+    window.history.scrollRestoration = "manual";
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("scroll", this._handleWindowScroll);
+    window.removeEventListener("popstate", this._handlePopState);
+    window.removeEventListener("location-changed", this._locationChanged);
+    this.toggleAttribute("scrolled", window.scrollY !== 0);
+    // Re-enable history scroll restoration when leaving the page
+    window.history.scrollRestoration = "auto";
+  }
+
+  private _handleUrlChanged() {
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
     if (searchParams.edit === "1") {
@@ -620,29 +730,28 @@ class HUIRoot extends LitElement {
         this._showMoreInfoDialog(entityId);
       });
     }
-
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
-    window.addEventListener("popstate", this._handlePopState);
-    // Disable history scroll restoration because it is managed manually here
-    window.history.scrollRestoration = "manual";
-  }
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (changedProperties.has("lovelace")) {
+      const oldLovelace = changedProperties.get("lovelace") as
+        | Lovelace
+        | undefined;
 
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("scroll", this._handleWindowScroll);
-    window.removeEventListener("popstate", this._handlePopState);
-    this.toggleAttribute("scrolled", window.scrollY !== 0);
-    // Re-enable history scroll restoration when leaving the page
-    window.history.scrollRestoration = "auto";
+      if (
+        oldLovelace &&
+        this.lovelace!.rawConfig !== oldLovelace!.rawConfig &&
+        !this._configChangedByUndo
+      ) {
+        const viewPath: string | undefined = this.route!.path.split("/")[1];
+        this._undoRedoController.commit({
+          location: viewPath,
+          config: oldLovelace.rawConfig,
+        });
+      } else {
+        this._configChangedByUndo = false;
+      }
+    }
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -1029,6 +1138,7 @@ class HUIRoot extends LitElement {
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
+    this._undoRedoController.reset();
   }
 
   private async _editDashboard() {
@@ -1205,6 +1315,36 @@ class HUIRoot extends LitElement {
   private _openShortcutDialog(ev: Event) {
     ev.preventDefault();
     showShortcutsDialog(this);
+  }
+
+  private async _applyUndoRedo(item: UndoStackItem) {
+    this._configChangedByUndo = true;
+    try {
+      await this.lovelace!.saveConfig(item.config);
+    } catch (err: any) {
+      this._configChangedByUndo = false;
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
+          {
+            error: err.message,
+          }
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
+
+    this._navigateToView(item.location);
+  }
+
+  private _undo() {
+    this._undoRedoController.undo();
+  }
+
+  private _redo() {
+    this._undoRedoController.redo();
   }
 
   static get styles(): CSSResultGroup {
@@ -1403,7 +1543,10 @@ class HUIRoot extends LitElement {
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
           padding-right: var(--safe-area-inset-right);
           padding-inline-end: var(--safe-area-inset-right);
-          padding-bottom: var(--safe-area-inset-bottom);
+          padding-bottom: calc(
+            var(--safe-area-inset-bottom) +
+              var(--view-container-padding-bottom, 0px)
+          );
         }
         .narrow hui-view-container {
           padding-left: var(--safe-area-inset-left);

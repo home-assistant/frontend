@@ -13,6 +13,7 @@ import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strateg
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
+import "../lovelace/views/hui-view-background";
 
 const SECURITY_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   strategy: {
@@ -36,8 +37,7 @@ class PanelSecurity extends LitElement {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
-      this.hass.loadFragmentTranslation("lovelace");
-      this._setLovelace();
+      this._setup();
       return;
     }
 
@@ -72,6 +72,11 @@ class PanelSecurity extends LitElement {
         this._setLovelace();
       }
     }
+  }
+
+  private async _setup() {
+    await this.hass.loadFragmentTranslation("lovelace");
+    this._setLovelace();
   }
 
   private _debounceRegistriesChanged = debounce(
@@ -115,6 +120,7 @@ class PanelSecurity extends LitElement {
         this._lovelace
           ? html`
               <hui-view-container .hass=${this.hass}>
+                <hui-view-background .hass=${this.hass}> </hui-view-background>
                 <hui-view
                   .hass=${this.hass}
                   .narrow=${this.narrow}

@@ -9,14 +9,14 @@ import type { ConfigEntry, SubEntry } from "../data/config_entries";
 import { getConfigEntry, getSubEntries } from "../data/config_entries";
 import type { Agent } from "../data/conversation";
 import { listAgents } from "../data/conversation";
+import { getExtendedEntityRegistryEntry } from "../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../data/integration";
 import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
+import { showSubConfigFlowDialog } from "../dialogs/config-flow/show-dialog-sub-config-flow";
 import type { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
-import { getExtendedEntityRegistryEntry } from "../data/entity_registry";
-import { showSubConfigFlowDialog } from "../dialogs/config-flow/show-dialog-sub-config-flow";
 
 const NONE = "__NONE_OPTION__";
 

@@ -43,6 +43,7 @@ import {
 } from "../../../data/blueprint";
 import { showScriptEditor } from "../../../data/script";
 import { findRelated } from "../../../data/search";
+import "../../../components/chips/ha-assist-chip";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -60,6 +61,7 @@ type BlueprintMetaDataPath = BlueprintMetaData & {
   error: boolean;
   type: "automation" | "script";
   fullpath: string;
+  usageCount?: number;
 };
 
 const createNewFunctions = {
@@ -128,14 +130,20 @@ class HaBlueprintOverview extends LitElement {
   })
   private _filter = "";
 
+  @state() private _usageCounts: Record<string, number> = {};
+
+  private _usageCountRequest = 0;
+
   private _processedBlueprints = memoizeOne(
     (
       blueprints: Record<string, Blueprints>,
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      usageCounts: Record<string, number>
     ): BlueprintMetaDataPath[] => {
       const result: any[] = [];
       Object.entries(blueprints).forEach(([type, typeBlueprints]) =>
         Object.entries(typeBlueprints).forEach(([path, blueprint]) => {
+          const fullpath = `${type}/${path}`;
           if ("error" in blueprint) {
             result.push({
               name: blueprint.error,
@@ -145,7 +153,8 @@ class HaBlueprintOverview extends LitElement {
               ),
               error: true,
               path,
-              fullpath: `${type}/${path}`,
+              fullpath,
+              usageCount: 0,
             });
           } else {
             result.push({
@@ -156,7 +165,8 @@ class HaBlueprintOverview extends LitElement {
               ),
               error: false,
               path,
-              fullpath: `${type}/${path}`,
+              fullpath,
+              usageCount: usageCounts[fullpath] || 0,
             });
           }
         })
@@ -188,6 +198,34 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         filterable: true,
         flex: 2,
+      },
+      usage_count: {
+        title: localize(
+          "ui.panel.config.blueprint.overview.headers.usage_count"
+        ),
+        sortable: true,
+        valueColumn: "usageCount",
+        type: "numeric",
+        minWidth: "100px",
+        maxWidth: "120px",
+        template: (blueprint) => {
+          const count = blueprint.usageCount ?? 0;
+          return html`
+            <ha-assist-chip
+              filled
+              .active=${count > 0}
+              label=${String(count)}
+              title=${blueprint.error
+                ? String(count)
+                : this.hass.localize(
+                    `ui.panel.config.blueprint.overview.view_${blueprint.type}`
+                  )}
+              ?disabled=${blueprint.error}
+              data-fullpath=${blueprint.fullpath}
+              @click=${this._handleUsageClick}
+            ></ha-assist-chip>
+          `;
+        },
       },
       fullpath: {
         title: "fullpath",
@@ -266,12 +304,20 @@ class HaBlueprintOverview extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this._loadUsageCounts();
     if (this.route.path === "/import") {
       const url = extractSearchParam("blueprint_url");
       navigate("/config/blueprint/dashboard", { replace: true });
       if (url) {
         this._addBlueprint(url);
       }
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("blueprints")) {
+      this._loadUsageCounts();
     }
   }
 
@@ -284,7 +330,11 @@ class HaBlueprintOverview extends LitElement {
         .route=${this.route}
         .tabs=${configSections.automations}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._processedBlueprints(this.blueprints, this.hass.localize)}
+        .data=${this._processedBlueprints(
+          this.blueprints,
+          this.hass.localize,
+          this._usageCounts
+        )}
         id="fullpath"
         .noDataText=${this.hass.localize(
           "ui.panel.config.blueprint.overview.no_blueprints"
@@ -380,10 +430,51 @@ class HaBlueprintOverview extends LitElement {
     fireEvent(this, "reload-blueprints");
   }
 
+  private async _loadUsageCounts() {
+    if (!this.blueprints) {
+      return;
+    }
+
+    const request = ++this._usageCountRequest;
+    const usageCounts: Record<string, number> = {};
+
+    const blueprintList = this._processedBlueprints(
+      this.blueprints,
+      this.hass.localize,
+      {}
+    );
+
+    await Promise.all(
+      blueprintList.map(async (blueprint) => {
+        if (blueprint.error) {
+          usageCounts[blueprint.fullpath] = 0;
+          return;
+        }
+        try {
+          const related = await findRelated(
+            this.hass,
+            `${blueprint.domain}_blueprint`,
+            blueprint.path
+          );
+          const count =
+            (related.automation?.length || 0) + (related.script?.length || 0);
+          usageCounts[blueprint.fullpath] = count;
+        } catch (_err) {
+          usageCounts[blueprint.fullpath] = 0;
+        }
+      })
+    );
+
+    if (request === this._usageCountRequest) {
+      this._usageCounts = usageCounts;
+    }
+  }
+
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const blueprint = this._processedBlueprints(
       this.blueprints,
-      this.hass.localize
+      this.hass.localize,
+      this._usageCounts
     ).find((b) => b.fullpath === ev.detail.id)!;
     if (blueprint.error) {
       showAlertDialog(this, {
@@ -396,6 +487,25 @@ class HaBlueprintOverview extends LitElement {
     }
     this._createNew(blueprint);
   }
+
+  private _handleUsageClick = (ev: Event) => {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const target = ev.currentTarget as HTMLElement | null;
+    const fullpath = target?.dataset.fullpath;
+    if (!fullpath) {
+      return;
+    }
+    const blueprint = this._processedBlueprints(
+      this.blueprints,
+      this.hass.localize,
+      this._usageCounts
+    ).find((item) => item.fullpath === fullpath);
+    if (!blueprint || blueprint.error) {
+      return;
+    }
+    this._showUsed(blueprint);
+  };
 
   private _showUsed = (blueprint: BlueprintMetaDataPath) => {
     navigate(

@@ -1,4 +1,4 @@
-import { endOfToday, isToday, startOfToday } from "date-fns";
+import { endOfToday, isSameDay, isToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,11 +6,14 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { LineSeriesOption } from "echarts/charts";
-import { graphic } from "echarts";
+import { LinearGradient } from "../../../../resources/echarts/echarts";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getPowerFromState,
+} from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -129,10 +132,12 @@ export class HuiPowerSourcesGraphCard
         config,
         "kW",
         compareStart,
-        compareEnd
+        compareEnd,
+        undefined,
+        true
       ),
       legend: {
-        show: true,
+        show: this._config?.show_legend !== false,
         type: "custom",
         data: legendData,
       },
@@ -197,6 +202,7 @@ export class HuiPowerSourcesGraphCard
       },
     };
 
+    const now = Date.now();
     Object.keys(statIds).forEach((key, keyIndex) => {
       if (statIds[key].stats.length) {
         const colorHex = computedStyles.getPropertyValue(statIds[key].color);
@@ -204,7 +210,22 @@ export class HuiPowerSourcesGraphCard
         // Echarts is supposed to handle that but it is bugged when you use it together with stacking.
         // The interpolation breaks the stacking, so this positive/negative is a workaround
         const { positive, negative } = this._processData(
-          statIds[key].stats.map((id: string) => energyData.stats[id] ?? [])
+          statIds[key].stats.map((id: string) => {
+            const stats = energyData.stats[id] ?? [];
+            if (isSameDay(now, this._start) && isSameDay(now, this._end)) {
+              // Append current state if we are showing today
+              const currentStateWatts = getPowerFromState(this.hass.states[id]);
+              if (currentStateWatts !== undefined) {
+                // getPowerFromState returns power in W; convert to kW for this graph
+                stats.push({
+                  start: now,
+                  end: now,
+                  mean: currentStateWatts / 1000,
+                });
+              }
+            }
+            return stats;
+          })
         );
         datasets.push({
           ...commonSeriesOptions,
@@ -213,7 +234,7 @@ export class HuiPowerSourcesGraphCard
           color: colorHex,
           stack: "positive",
           areaStyle: {
-            color: new graphic.LinearGradient(0, 0, 0, 1, [
+            color: new LinearGradient(0, 0, 0, 1, [
               {
                 offset: 0,
                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
@@ -235,7 +256,7 @@ export class HuiPowerSourcesGraphCard
             color: colorHex,
             stack: "negative",
             areaStyle: {
-              color: new graphic.LinearGradient(0, 1, 0, 0, [
+              color: new LinearGradient(0, 1, 0, 0, [
                 {
                   offset: 0,
                   color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
@@ -323,9 +344,9 @@ export class HuiPowerSourcesGraphCard
     const negative: [number, number][] = [];
     Object.entries(data).forEach(([x, y]) => {
       const ts = Number(x);
-      const meanY = y.reduce((a, b) => a + b, 0) / y.length;
-      positive.push([ts, Math.max(0, meanY)]);
-      negative.push([ts, Math.min(0, meanY)]);
+      const sumY = y.reduce((a, b) => a + b, 0);
+      positive.push([ts, Math.max(0, sumY)]);
+      negative.push([ts, Math.min(0, sumY)]);
     });
     return { positive, negative };
   }

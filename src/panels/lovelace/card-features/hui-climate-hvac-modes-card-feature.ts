@@ -16,7 +16,7 @@ import {
   climateHvacModeIcon,
   compareClimateHvacModes,
 } from "../../../data/climate";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -70,9 +70,7 @@ class HuiClimateHvacModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-climate-hvac-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-climate-hvac-modes-card-feature-editor");
     return document.createElement("hui-climate-hvac-modes-card-feature-editor");
   }
 

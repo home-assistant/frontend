@@ -25,11 +25,11 @@ export class HaMarkdown extends LitElement {
 
   @property({ type: Boolean }) public cache = false;
 
-  @query("ha-markdown-element") private _markdownElement!: ReactiveElement;
+  @query("ha-markdown-element") private _markdownElement?: ReactiveElement;
 
   protected async getUpdateComplete() {
     const result = await super.getUpdateComplete();
-    await this._markdownElement.updateComplete;
+    await this._markdownElement?.updateComplete;
     return result;
   }
 
@@ -71,14 +71,9 @@ export class HaMarkdown extends LitElement {
       color: var(--markdown-link-color, var(--primary-color));
     }
     img {
-      background-color: rgba(10, 10, 10, 0.15);
+      background-color: var(--markdown-image-background-color);
       border-radius: var(--markdown-image-border-radius);
       max-width: 100%;
-      min-height: 2lh;
-      height: auto;
-      width: auto;
-      text-indent: 4px;
-      transition: height 0.2s ease-in-out;
     }
     p:first-child > img:first-child {
       vertical-align: top;
@@ -86,10 +81,8 @@ export class HaMarkdown extends LitElement {
     p:first-child > img:last-child {
       vertical-align: top;
     }
-    ol,
-    ul {
-      list-style-position: inside;
-      padding-inline-start: 0;
+    ha-markdown-element > :is(ol, ul) {
+      padding-inline-start: var(--markdown-list-indent, revert);
     }
     li {
       &:has(input[type="checkbox"]) {
@@ -139,18 +132,34 @@ export class HaMarkdown extends LitElement {
       border-bottom: none;
       margin: var(--ha-space-4) 0;
     }
+    table[role="presentation"] {
+      --markdown-table-border-collapse: separate;
+      --markdown-table-border-width: attr(border, 0);
+      --markdown-table-padding-inline: 0;
+      --markdown-table-padding-block: 0;
+      th {
+        vertical-align: attr(align, center);
+      }
+      td {
+        vertical-align: attr(align, left);
+      }
+    }
     table {
-      border-collapse: collapse;
-      display: block;
-      overflow-x: auto;
+      border-collapse: var(--markdown-table-border-collapse, collapse);
+    }
+    div:has(> table) {
+      overflow: auto;
     }
     th {
-      text-align: start;
+      text-align: var(--markdown-table-text-align, start);
     }
     td,
     th {
-      border: 1px solid var(--markdown-table-border-color, transparent);
-      padding: 0.25em 0.5em;
+      border-width: var(--markdown-table-border-width, 1px);
+      border-style: var(--markdown-table-border-style, solid);
+      border-color: var(--markdown-table-border-color, var(--divider-color));
+      padding-inline: var(--markdown-table-padding-inline, 0.5em);
+      padding-block: var(--markdown-table-padding-block, 0.25em);
     }
     blockquote {
       border-left: 4px solid var(--divider-color);

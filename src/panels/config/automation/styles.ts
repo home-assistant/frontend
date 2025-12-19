@@ -14,6 +14,12 @@ export const rowStyles = css`
   h3 {
     font-size: inherit;
     font-weight: inherit;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ha-space-2);
+    padding: var(--ha-space-2) 0;
+    min-height: 32px;
   }
 
   ha-card {

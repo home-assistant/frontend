@@ -94,7 +94,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        back-path="/config/system"
         .header=${this.hass.localize("ui.panel.config.labs.caption")}
       >
         ${sortedFeatures.length
@@ -383,6 +383,10 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
     css`
       :host {
         display: block;
+      }
+
+      a[slot="toolbar-icon"] {
+        color: var(--sidebar-icon-color);
       }
 
       .content {

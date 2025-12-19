@@ -1,6 +1,6 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
@@ -15,6 +15,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import type { IssueCommandServiceData } from "./types";
 
+@customElement("zha-cluster-commands")
 export class ZHAClusterCommands extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -259,5 +260,3 @@ declare global {
     "zha-cluster-commands": ZHAClusterCommands;
   }
 }
-
-customElements.define("zha-cluster-commands", ZHAClusterCommands);

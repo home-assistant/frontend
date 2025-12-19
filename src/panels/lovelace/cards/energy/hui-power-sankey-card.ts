@@ -6,7 +6,11 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  formatPowerShort,
+  getEnergyDataCollection,
+  getPowerFromState,
+} from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
@@ -14,7 +18,6 @@ import type { PowerSankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
-import { formatNumber } from "../../../../common/number/format_number";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 
@@ -22,6 +25,9 @@ const DEFAULT_CONFIG: Partial<PowerSankeyCardConfig> = {
   group_by_floor: true,
   group_by_area: true,
 };
+
+// Minimum power threshold in watts (W) to display a device node
+const MIN_POWER_THRESHOLD = 10;
 
 interface PowerData {
   solar: number;
@@ -232,7 +238,7 @@ class HuiPowerSankeyCard
         color: computedStyle
           .getPropertyValue("--energy-grid-return-color")
           .trim(),
-        index: 2,
+        index: 1,
       });
       if (powerData.battery_to_grid > 0) {
         links.push({
@@ -251,15 +257,67 @@ class HuiPowerSankeyCard
     let untrackedConsumption = homeNode.value;
     const deviceNodes: Node[] = [];
     const parentLinks: Record<string, string> = {};
+
+    // Build a map of device relationships for hierarchy resolution
+    // Key: stat_consumption (energy), Value: { stat_rate, included_in_stat }
+    const deviceMap = new Map<
+      string,
+      { stat_rate?: string; included_in_stat?: string }
+    >();
+    prefs.device_consumption.forEach((device) => {
+      deviceMap.set(device.stat_consumption, {
+        stat_rate: device.stat_rate,
+        included_in_stat: device.included_in_stat,
+      });
+    });
+
+    // Set of stat_rate entities that will be rendered as nodes
+    const renderedStatRates = new Set<string>();
+    prefs.device_consumption.forEach((device) => {
+      if (device.stat_rate) {
+        const value = this._getCurrentPower(device.stat_rate);
+        if (value >= MIN_POWER_THRESHOLD) {
+          renderedStatRates.add(device.stat_rate);
+        }
+      }
+    });
+
+    // Find the effective parent for power hierarchy
+    // Walks up the chain to find an ancestor with stat_rate that will be rendered
+    const findEffectiveParent = (
+      includedInStat: string | undefined
+    ): string | undefined => {
+      let currentParent = includedInStat;
+      while (currentParent) {
+        const parentDevice = deviceMap.get(currentParent);
+        if (!parentDevice) {
+          return undefined;
+        }
+        // If this parent has a stat_rate and will be rendered, use it
+        if (
+          parentDevice.stat_rate &&
+          renderedStatRates.has(parentDevice.stat_rate)
+        ) {
+          return parentDevice.stat_rate;
+        }
+        // Otherwise, continue up the chain
+        currentParent = parentDevice.included_in_stat;
+      }
+      return undefined;
+    };
+
     prefs.device_consumption.forEach((device, idx) => {
       if (!device.stat_rate) {
         return;
       }
       const value = this._getCurrentPower(device.stat_rate);
 
-      if (value < 0.01) {
+      if (value < MIN_POWER_THRESHOLD) {
         return;
       }
+
+      // Find the effective parent (may be different from direct parent if parent has no stat_rate)
+      const effectiveParent = findEffectiveParent(device.included_in_stat);
 
       const node = {
         id: device.stat_rate,
@@ -267,7 +325,7 @@ class HuiPowerSankeyCard
         value,
         color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
-        parent: device.included_in_stat,
+        parent: effectiveParent,
       };
       if (node.parent) {
         parentLinks[node.id] = node.parent;
@@ -414,8 +472,8 @@ class HuiPowerSankeyCard
 
   private _valueFormatter = (value: number) =>
     `<div style="direction:ltr; display: inline;">
-      ${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)}
-      kW</div>`;
+      ${formatPowerShort(this.hass, value)}
+    </div>`;
 
   /**
    * Compute real-time power data from current entity states.
@@ -661,41 +719,16 @@ class HuiPowerSankeyCard
   }
 
   /**
-   * Get current power value from entity state, normalized to kW
+   * Get current power value from entity state, normalized to watts (W)
    * @param entityId - The entity ID to get power value from
-   * @returns Power value in kW, or 0 if entity not found or invalid
+   * @returns Power value in W, or 0 if entity not found or invalid
    */
   private _getCurrentPower(entityId: string): number {
     // Track this entity for state change detection
     this._entities.add(entityId);
 
-    const stateObj = this.hass.states[entityId];
-    if (!stateObj) {
-      return 0;
-    }
-    const value = parseFloat(stateObj.state);
-    if (isNaN(value)) {
-      return 0;
-    }
-
-    // Normalize to kW based on unit of measurement (case-sensitive)
-    // Supported units: GW, kW, MW, mW, TW, W
-    const unit = stateObj.attributes.unit_of_measurement;
-    switch (unit) {
-      case "W":
-        return value / 1000;
-      case "mW":
-        return value / 1000000;
-      case "MW":
-        return value * 1000;
-      case "GW":
-        return value * 1000000;
-      case "TW":
-        return value * 1000000000;
-      default:
-        // Assume kW if no unit or unit is kW
-        return value;
-    }
+    // getPowerFromState returns power in W
+    return getPowerFromState(this.hass.states[entityId]) ?? 0;
   }
 
   /**

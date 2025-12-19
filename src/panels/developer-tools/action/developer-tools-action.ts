@@ -1,7 +1,7 @@
 import { mdiHelpCircle } from "@mdi/js";
 import type { HassService } from "home-assistant-js-websocket";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
-import { load } from "js-yaml";
+import { dump, load } from "js-yaml";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -134,6 +134,11 @@ class HaPanelDevAction extends LitElement {
     const serviceName = this._serviceData?.action
       ? computeObjectId(this._serviceData?.action)
       : undefined;
+
+    const descriptionPlaceholders =
+      domain && serviceName
+        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
+        : undefined;
 
     return html`
       <div class="content">
@@ -307,13 +312,18 @@ class HaPanelDevAction extends LitElement {
                       <td><pre>${field.key}</pre></td>
                       <td>
                         ${this.hass.localize(
-                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`,
+                          descriptionPlaceholders
                         ) || field.description}
                       </td>
                       <td>
                         ${this.hass.localize(
-                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`
-                        ) || field.example}
+                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
+                          descriptionPlaceholders
+                        ) ||
+                        (typeof field.example === "object"
+                          ? html`<pre>${dump(field.example)}</pre>`
+                          : field.example)}
                       </td>
                     </tr>`
                 )}
@@ -643,7 +653,11 @@ class HaPanelDevAction extends LitElement {
         } catch (_err: any) {
           value =
             this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.${field.key}.example`
+              `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
+              domain && serviceName
+                ? this.hass.services[domain][serviceName]
+                    .description_placeholders
+                : undefined
             ) || field.example;
         }
         example[field.key] = value;
@@ -659,12 +673,12 @@ class HaPanelDevAction extends LitElement {
       haStyle,
       css`
         .content {
-          padding: 16px;
+          padding: var(--ha-space-4);
           max-width: 1200px;
           margin: auto;
         }
         .button-row {
-          padding: 8px 16px;
+          padding: var(--ha-space-2) var(--ha-space-4);
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
           background: var(--card-background-color);
@@ -684,8 +698,8 @@ class HaPanelDevAction extends LitElement {
           align-items: center;
         }
         .switch-mode-container .error {
-          margin-left: 8px;
-          margin-inline-start: 8px;
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
         }
         .attributes {
@@ -718,7 +732,7 @@ class HaPanelDevAction extends LitElement {
         }
 
         .attributes td {
-          padding: 4px;
+          padding: var(--ha-space-1);
           vertical-align: middle;
         }
 
@@ -734,7 +748,7 @@ class HaPanelDevAction extends LitElement {
         .response img {
           max-width: 100%;
           height: auto;
-          margin-top: 24px;
+          margin-top: var(--ha-space-6);
         }
       `,
     ];

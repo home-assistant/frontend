@@ -29,9 +29,9 @@ import "../../../components/search-input-outlined";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import type {
   IntegrationLogInfo,
   IntegrationManifest,
@@ -336,9 +336,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     super.firstUpdated(changed);
     this._fetchManifests();
     this._fetchEntitySources();
-    if (this.route.path === "/add") {
-      this._handleAdd();
-    }
+    this._handleRouteChanged();
     this._scanUSBDevices();
     this._scanImprovDevices();
 
@@ -355,6 +353,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   protected updated(changed: PropertyValues) {
     super.updated(changed);
+    if (changed.has("route")) {
+      this._handleRouteChanged();
+    }
     if (
       (this._searchParms.has("config_entry") ||
         this._searchParms.has("domain")) &&
@@ -813,10 +814,13 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
   }
 
-  private async _handleAdd() {
+  private async _handleRouteChanged() {
+    if (this.route?.path !== "/add") {
+      return;
+    }
     const brand = extractSearchParam("brand");
     const domain = extractSearchParam("domain");
-    navigate("/config/integrations", { replace: true });
+    navigate("/config/integrations/dashboard/", { replace: true });
 
     if (brand) {
       showAddIntegrationDialog(this, {

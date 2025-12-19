@@ -6,7 +6,7 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
 import "../components/ha-list-item";
 import "../components/ha-select";
-import { UNAVAILABLE } from "../data/entity";
+import { UNAVAILABLE } from "../data/entity/entity";
 import type { SelectEntity } from "../data/select";
 import { setSelectOption } from "../data/select";
 import type { HomeAssistant } from "../types";

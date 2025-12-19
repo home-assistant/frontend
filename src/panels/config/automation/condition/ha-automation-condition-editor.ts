@@ -8,11 +8,13 @@ import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
+import type { ConditionDescription } from "../../../../data/condition";
 import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
+import "./types/ha-automation-condition-platform";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
@@ -34,6 +36,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
+
+  @property({ attribute: false }) public description?: ConditionDescription;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
@@ -83,16 +87,23 @@ export default class HaAutomationConditionEditor extends LitElement {
             `
           : html`
               <div @value-changed=${this._onUiChanged}>
-                ${dynamicElement(
-                  `ha-automation-condition-${condition.condition}`,
-                  {
-                    hass: this.hass,
-                    condition: condition,
-                    disabled: this.disabled,
-                    optionsInSidebar: this.indent,
-                    narrow: this.narrow,
-                  }
-                )}
+                ${this.description
+                  ? html`<ha-automation-condition-platform
+                      .hass=${this.hass}
+                      .condition=${this.condition}
+                      .description=${this.description}
+                      .disabled=${this.disabled}
+                    ></ha-automation-condition-platform>`
+                  : dynamicElement(
+                      `ha-automation-condition-${condition.condition}`,
+                      {
+                        hass: this.hass,
+                        condition: condition,
+                        disabled: this.disabled,
+                        optionsInSidebar: this.indent,
+                        narrow: this.narrow,
+                      }
+                    )}
               </div>
             `}
       </div>

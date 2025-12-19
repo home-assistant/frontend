@@ -28,6 +28,9 @@ export const getMyRedirects = (): Redirects => ({
   developer_assist: {
     redirect: "/developer-tools/assist",
   },
+  developer_debug: {
+    redirect: "/developer-tools/debug",
+  },
   developer_states: {
     redirect: "/developer-tools/state",
   },

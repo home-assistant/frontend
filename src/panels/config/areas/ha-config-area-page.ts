@@ -30,13 +30,13 @@ import {
 } from "../../../data/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import { sortDeviceRegistryByName } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import { sortDeviceRegistryByName } from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   computeEntityRegistryName,
   sortEntityRegistryByName,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { SceneEntity } from "../../../data/scene";
 import type { ScriptEntity } from "../../../data/script";
 import type { RelatedResult } from "../../../data/search";

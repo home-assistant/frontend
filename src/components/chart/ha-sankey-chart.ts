@@ -167,6 +167,7 @@ export class HaSankeyChart extends LitElement {
         curveness: 0.5,
       },
       layoutIterations: 0,
+      animationDuration: 500,
       label: {
         formatter: (params) =>
           data.nodes.find((node) => node.id === (params.data as Node).id)
@@ -279,6 +280,7 @@ export class HaSankeyChart extends LitElement {
     :host {
       display: block;
       flex: 1;
+      max-width: 100%;
       background: var(--ha-card-background, var(--card-background-color));
     }
     ha-chart-base {

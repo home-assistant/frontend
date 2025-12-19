@@ -80,7 +80,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                     `
                   : html`
                       <ha-entity-picker
-                        allow-custom-entity
                         hide-clear-icon
                         .hass=${this.hass}
                         .value=${(entityConf as EntityConfig).entity}

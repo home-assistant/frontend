@@ -88,8 +88,8 @@ class HassioRegistriesDialog extends LitElement {
                 <ha-button
                   ?disabled=${Boolean(
                     !this._input.registry ||
-                      !this._input.username ||
-                      !this._input.password
+                    !this._input.username ||
+                    !this._input.password
                   )}
                   @click=${this._addNewRegistry}
                   appearance="filled"

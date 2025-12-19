@@ -1,7 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-label-badge";
@@ -33,6 +33,7 @@ const getColumnIndex = (columnSizes: number[], size: number) => {
   return minIndex;
 };
 
+@customElement("hui-masonry-view")
 export class MasonryView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -356,5 +357,3 @@ declare global {
     "hui-masonry-view": MasonryView;
   }
 }
-
-customElements.define("hui-masonry-view", MasonryView);

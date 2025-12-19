@@ -49,8 +49,8 @@ import {
   handleConfigFlowStep,
 } from "../../../data/config_flow";
 import type { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import { updateDeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
 import type {
   AlarmControlPanelEntityOptions,
   EntityRegistryEntry,
@@ -58,12 +58,12 @@ import type {
   ExtEntityRegistryEntry,
   LockEntityOptions,
   SensorEntityOptions,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import {
   getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import { entityIcon, entryIcon } from "../../../data/icons";
 import {
   domainToName,
@@ -403,7 +403,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               ${!this._icon && !stateObj?.attributes.icon && stateObj
                 ? html`
                     <ha-state-icon
-                      slot="fallback"
+                      slot="start"
                       .hass=${this.hass}
                       .stateObj=${stateObj}
                     ></ha-state-icon>
@@ -1012,7 +1012,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
               ? html`<ha-area-picker
                   .hass=${this.hass}
                   .value=${this._areaId}
-                  .placeholder=${this._device?.area_id}
                   .disabled=${this.disabled}
                   @value-changed=${this._areaPicked}
                 ></ha-area-picker>`
@@ -1526,17 +1525,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         ha-textfield.entityId ha-icon-button {
           position: relative;
-          right: -8px;
+          right: calc(var(--ha-space-2) * -1);
           --mdc-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
           inset-inline-start: initial;
-          inset-inline-end: -8px;
+          inset-inline-end: calc(var(--ha-space-2) * -1);
           direction: var(--direction);
         }
         ha-switch {
-          margin-right: 16px;
-          margin-inline-end: 16px;
+          margin-right: var(--ha-space-4);
+          margin-inline-end: var(--ha-space-4);
           margin-inline-start: initial;
         }
         ha-settings-row ha-switch {
@@ -1544,12 +1543,18 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-end: 0;
           margin-inline-start: initial;
         }
+        ha-settings-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: var(--ha-space-4);
+          align-items: start;
+        }
         ha-textfield,
         ha-icon-picker,
         ha-select,
         ha-area-picker {
           display: block;
-          margin: 8px 0;
+          margin: var(--ha-space-2) 0;
           width: 100%;
         }
         li[divider] {

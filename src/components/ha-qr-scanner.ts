@@ -9,13 +9,13 @@ import { customElement, property, query, state } from "lit/decorators";
 import { prepareZXingModule } from "barcode-detector";
 import type QrScanner from "qr-scanner";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { addExternalBarCodeListener } from "../external_app/external_app_entrypoint";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-button";
-import "./ha-button-menu";
-import "./ha-list-item";
+import "./ha-dropdown";
+import "./ha-dropdown-item";
+import type { HaDropdownItem } from "./ha-dropdown-item";
 import "./ha-spinner";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
@@ -51,6 +51,8 @@ class HaQrScanner extends LitElement {
   @state() private _error?: string;
 
   @state() private _warning?: string;
+
+  @state() private _selectedCamera?: string;
 
   private _qrScanner?: QrScanner;
 
@@ -121,7 +123,7 @@ class HaQrScanner extends LitElement {
             !this._error &&
             this._cameras &&
             this._cameras.length > 1
-              ? html`<ha-button-menu fixed @closed=${stopPropagation}>
+              ? html`<ha-dropdown @wa-select=${this._handleDropdownSelect}>
                   <ha-icon-button
                     slot="trigger"
                     .label=${this.hass.localize(
@@ -131,15 +133,17 @@ class HaQrScanner extends LitElement {
                   ></ha-icon-button>
                   ${this._cameras!.map(
                     (camera) => html`
-                      <ha-list-item
+                      <ha-dropdown-item
                         .value=${camera.id}
-                        @click=${this._cameraChanged}
+                        class=${this._selectedCamera === camera.id
+                          ? "selected"
+                          : ""}
                       >
                         ${camera.label}
-                      </ha-list-item>
+                      </ha-dropdown-item>
                     `
                   )}
-                </ha-button-menu>`
+                </ha-dropdown>`
               : nothing}
           </div>`
       : html`<ha-alert alert-type="warning">
@@ -205,6 +209,9 @@ class HaQrScanner extends LitElement {
 
   private async _listCameras(qrScanner: typeof QrScanner): Promise<void> {
     this._cameras = await qrScanner.listCameras(true);
+    if (this._cameras.length > 0) {
+      this._selectedCamera = this._cameras[0].id;
+    }
   }
 
   private _qrCodeError = (err: any) => {
@@ -252,8 +259,12 @@ class HaQrScanner extends LitElement {
     this._qrCodeScanned(this._manualInput!.value);
   }
 
-  private _cameraChanged(ev: CustomEvent): void {
-    this._qrScanner?.setCamera((ev.target as any).value);
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const cameraId = ev.detail?.item?.value;
+    if (cameraId) {
+      this._selectedCamera = cameraId;
+      this._qrScanner?.setCamera(cameraId);
+    }
   }
 
   private _openExternalScanner() {
@@ -359,7 +370,7 @@ class HaQrScanner extends LitElement {
     #canvas-container {
       position: relative;
     }
-    ha-button-menu {
+    ha-icon-button {
       position: absolute;
       bottom: 8px;
       right: 8px;
@@ -368,6 +379,9 @@ class HaQrScanner extends LitElement {
       background: #727272b2;
       color: white;
       border-radius: var(--ha-border-radius-circle);
+    }
+    ha-dropdown-item.selected {
+      font-weight: var(--ha-font-weight-bold);
     }
     .row {
       display: flex;

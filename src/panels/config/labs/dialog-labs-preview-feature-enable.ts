@@ -1,16 +1,18 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import type { HaMdDialog } from "../../../components/ha-md-dialog";
-import "../../../components/ha-md-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-switch";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
+import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
 import type { LabsPreviewFeatureEnableDialogParams } from "./show-dialog-labs-preview-feature-enable";
@@ -28,18 +30,22 @@ export class DialogLabsPreviewFeatureEnable
 
   @state() private _createBackup = false;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public async showDialog(
     params: LabsPreviewFeatureEnableDialogParams
   ): Promise<void> {
     this._params = params;
     this._createBackup = false;
-    await this._fetchBackupConfig();
+    this._open = true;
+    this._fetchBackupConfig();
+    if (isComponentLoaded(this.hass, "hassio")) {
+      this._fetchUpdateBackupConfig();
+    }
   }
 
   public closeDialog(): boolean {
-    this._dialog?.close();
+    this._open = false;
     return true;
   }
 
@@ -54,15 +60,21 @@ export class DialogLabsPreviewFeatureEnable
     try {
       const { config } = await fetchBackupConfig(this.hass);
       this._backupConfig = config;
+    } catch (err) {
+      // Ignore error, user will get manual backup option
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  }
 
-      // Default to enabled if automatic backups are configured, disabled otherwise
-      this._createBackup =
-        config.automatic_backups_configured &&
-        !!config.create_backup.password &&
-        config.create_backup.agent_ids.length > 0;
-    } catch {
-      // User will get manual backup option if fetch fails
-      this._createBackup = false;
+  private async _fetchUpdateBackupConfig() {
+    try {
+      const config = await getSupervisorUpdateConfig(this.hass);
+      this._createBackup = config.core_backup_before_update;
+    } catch (err) {
+      // Ignore error, user can still toggle the switch manually
+      // eslint-disable-next-line no-console
+      console.error(err);
     }
   }
 
@@ -132,70 +144,67 @@ export class DialogLabsPreviewFeatureEnable
     const createBackupTexts = this._computeCreateBackupTexts();
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <span slot="headline">
-          ${this.hass.localize("ui.panel.config.labs.enable_title")}
-        </span>
-        <div slot="content">
-          <p>
-            ${this.hass.localize(
-              `component.${this._params.preview_feature.domain}.preview_features.${this._params.preview_feature.preview_feature}.enable_confirmation`
-            ) || this.hass.localize("ui.panel.config.labs.enable_confirmation")}
-          </p>
-        </div>
-        <div slot="actions">
-          ${createBackupTexts
-            ? html`
-                <ha-md-list>
-                  <ha-md-list-item>
-                    <span slot="headline">${createBackupTexts.title}</span>
-                    ${createBackupTexts.description
-                      ? html`
-                          <span slot="supporting-text">
-                            ${createBackupTexts.description}
-                          </span>
-                        `
-                      : nothing}
-                    <ha-switch
-                      slot="end"
-                      .checked=${this._createBackup}
-                      @change=${this._createBackupChanged}
-                    ></ha-switch>
-                  </ha-md-list-item>
-                </ha-md-list>
-              `
-            : nothing}
-          <div>
-            <ha-button appearance="plain" @click=${this._handleCancel}>
-              ${this.hass.localize("ui.common.cancel")}
-            </ha-button>
-            <ha-button
-              appearance="filled"
-              variant="brand"
-              @click=${this._handleConfirm}
-            >
-              ${this.hass.localize("ui.panel.config.labs.enable")}
-            </ha-button>
-          </div>
-        </div>
-      </ha-md-dialog>
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize("ui.panel.config.labs.enable_title")}
+        @closed=${this._dialogClosed}
+      >
+        <p>
+          ${this.hass.localize(
+            `component.${this._params.preview_feature.domain}.preview_features.${this._params.preview_feature.preview_feature}.enable_confirmation`
+          ) || this.hass.localize("ui.panel.config.labs.enable_confirmation")}
+        </p>
+        ${createBackupTexts
+          ? html`
+              <ha-md-list>
+                <ha-md-list-item>
+                  <span slot="headline">${createBackupTexts.title}</span>
+                  ${createBackupTexts.description
+                    ? html`
+                        <span slot="supporting-text">
+                          ${createBackupTexts.description}
+                        </span>
+                      `
+                    : nothing}
+                  <ha-switch
+                    slot="end"
+                    .checked=${this._createBackup}
+                    @change=${this._createBackupChanged}
+                  ></ha-switch>
+                </ha-md-list-item>
+              </ha-md-list>
+            `
+          : nothing}
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._handleCancel}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            appearance="filled"
+            variant="brand"
+            @click=${this._handleConfirm}
+          >
+            ${this.hass.localize("ui.panel.config.labs.enable")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
   static readonly styles = css`
-    ha-md-dialog {
-      --dialog-content-padding: var(--ha-space-6);
+    ha-wa-dialog {
+      --dialog-content-padding: 0;
     }
 
     p {
-      margin: 0;
+      margin: 0 var(--ha-space-6) var(--ha-space-6);
       color: var(--secondary-text-color);
-    }
-
-    div[slot="actions"] {
-      display: flex;
-      flex-direction: column;
-      padding: 0;
     }
 
     ha-md-list {
@@ -205,13 +214,6 @@ export class DialogLabsPreviewFeatureEnable
       margin: 0;
       padding: 0;
       border-top: var(--ha-border-width-sm) solid var(--divider-color);
-    }
-
-    div[slot="actions"] > div {
-      display: flex;
-      justify-content: flex-end;
-      gap: var(--ha-space-2);
-      padding: var(--ha-space-4) var(--ha-space-6);
     }
   `;
 }

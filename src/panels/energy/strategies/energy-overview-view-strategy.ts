@@ -5,12 +5,10 @@ import { getEnergyDataCollection } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
 @customElement("energy-overview-view-strategy")
-export class EnergyViewStrategy extends ReactiveElement {
+export class EnergyOverviewViewStrategy extends ReactiveElement {
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
@@ -28,6 +26,9 @@ export class EnergyViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
 
     // No energy sources available
@@ -44,139 +45,90 @@ export class EnergyViewStrategy extends ReactiveElement {
         source.type === "grid" &&
         (source.flow_from?.length || source.flow_to?.length)
     ) as GridSourceTypeEnergyPreference;
-    const hasReturn = hasGrid && hasGrid.flow_to.length > 0;
-    const hasSolar = prefs.energy_sources.some(
-      (source) => source.type === "solar"
-    );
     const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
     );
-    const hasWater = prefs.energy_sources.some(
+    const hasSolar = prefs.energy_sources.some(
+      (source) => source.type === "solar"
+    );
+    const hasWaterSources = prefs.energy_sources.some(
       (source) => source.type === "water"
     );
+    const hasWaterDevices = prefs.device_consumption_water?.length;
     const hasPowerSources = prefs.energy_sources.find(
       (source) =>
         (source.type === "solar" && source.stat_rate) ||
         (source.type === "battery" && source.stat_rate) ||
         (source.type === "grid" && source.power?.length)
     );
-    const hasPowerDevices = prefs.device_consumption.find(
-      (device) => device.stat_rate
-    );
 
-    const overviewSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: 24,
-      cards: [],
-    };
-    if (hasPowerSources && hasPowerDevices) {
-      overviewSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
-        type: "power-sankey",
-        collection_key: collectionKey,
-        grid_options: {
-          columns: 24,
-        },
-      });
-    }
-    // Only include if we have a grid or battery.
-    if (hasGrid || hasBattery) {
-      overviewSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
-        type: "energy-distribution",
-        collection_key: collectionKey,
-      });
-    }
-    if (hasGrid || hasSolar || hasBattery || hasGas || hasWater) {
-      overviewSection.cards!.push({
-        type: "energy-sources-table",
-        collection_key: collectionKey,
-      });
-    }
-    view.sections!.push(overviewSection);
-
-    const electricitySection: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [
-        {
-          type: "heading",
-          heading: hass.localize("ui.panel.energy.overview.electricity"),
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/energy/electricity",
+    if (hasGrid || hasBattery || hasSolar) {
+      view.sections!.push({
+        type: "grid",
+        cards: [
+          {
+            title: hass.localize(
+              "ui.panel.energy.cards.energy_distribution_title"
+            ),
+            type: "energy-distribution",
+            collection_key: collectionKey,
           },
-        },
-      ],
-    };
+        ],
+      });
+    }
+
+    if (prefs.energy_sources.length) {
+      view.sections!.push({
+        type: "grid",
+        cards: [
+          {
+            title: hass.localize(
+              "ui.panel.energy.cards.energy_sources_table_title"
+            ),
+            type: "energy-sources-table",
+            collection_key: collectionKey,
+            show_only_totals: true,
+          },
+        ],
+      });
+    }
 
     if (hasPowerSources) {
-      electricitySection.cards!.push({
-        type: "power-sources-graph",
-        collection_key: collectionKey,
-      });
-    }
-    if (prefs!.device_consumption.length > 3) {
-      electricitySection.cards!.push({
-        title: hass.localize(
-          "ui.panel.energy.cards.energy_top_consumers_title"
-        ),
-        type: "energy-devices-graph",
-        collection_key: collectionKey,
-        max_devices: 3,
-        modes: ["bar"],
-      });
-    } else if (hasGrid) {
-      const gauges: LovelaceCardConfig[] = [];
-      // Only include if we have a grid source & return.
-      if (hasReturn) {
-        gauges.push({
-          type: "energy-grid-neutrality-gauge",
-          view_layout: { position: "sidebar" },
-          collection_key: collectionKey,
-        });
-      }
-
-      gauges.push({
-        type: "energy-carbon-consumed-gauge",
-        view_layout: { position: "sidebar" },
-        collection_key: collectionKey,
-      });
-
-      // Only include if we have a solar source.
-      if (hasSolar) {
-        if (hasReturn) {
-          gauges.push({
-            type: "energy-solar-consumed-gauge",
-            view_layout: { position: "sidebar" },
-            collection_key: collectionKey,
-          });
-        }
-        gauges.push({
-          type: "energy-self-sufficiency-gauge",
-          view_layout: { position: "sidebar" },
-          collection_key: collectionKey,
-        });
-      }
-
-      electricitySection.cards!.push({
+      view.sections!.push({
         type: "grid",
-        columns: 2,
-        square: false,
-        cards: gauges,
+        cards: [
+          {
+            title: hass.localize(
+              "ui.panel.energy.cards.power_sources_graph_title"
+            ),
+            type: "power-sources-graph",
+            collection_key: collectionKey,
+            show_legend: false,
+          },
+        ],
       });
     }
 
-    view.sections!.push(electricitySection);
+    if (hasGrid || hasBattery) {
+      view.sections!.push({
+        type: "grid",
+        cards: [
+          {
+            title: hass.localize(
+              "ui.panel.energy.cards.energy_usage_graph_title"
+            ),
+            type: "energy-usage-graph",
+            collection_key: "energy_dashboard",
+          },
+        ],
+      });
+    }
 
     if (hasGas) {
       view.sections!.push({
         type: "grid",
         cards: [
-          {
-            type: "heading",
-            heading: hass.localize("ui.panel.energy.overview.gas"),
-          },
           {
             title: hass.localize(
               "ui.panel.energy.cards.energy_gas_graph_title"
@@ -188,21 +140,25 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasWater) {
+    if (hasWaterSources || hasWaterDevices) {
       view.sections!.push({
         type: "grid",
         cards: [
-          {
-            type: "heading",
-            heading: hass.localize("ui.panel.energy.overview.water"),
-          },
-          {
-            title: hass.localize(
-              "ui.panel.energy.cards.energy_water_graph_title"
-            ),
-            type: "energy-water-graph",
-            collection_key: collectionKey,
-          },
+          hasWaterSources
+            ? {
+                title: hass.localize(
+                  "ui.panel.energy.cards.energy_water_graph_title"
+                ),
+                type: "energy-water-graph",
+                collection_key: collectionKey,
+              }
+            : {
+                title: hass.localize(
+                  "ui.panel.energy.cards.water_sankey_title"
+                ),
+                type: "water-sankey",
+                collection_key: collectionKey,
+              },
         ],
       });
     }
@@ -213,6 +169,6 @@ export class EnergyViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "energy-overview-view-strategy": EnergyViewStrategy;
+    "energy-overview-view-strategy": EnergyOverviewViewStrategy;
   }
 }

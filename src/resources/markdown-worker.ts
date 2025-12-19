@@ -19,6 +19,7 @@ const renderMarkdown = async (
   if (!whiteListNormal) {
     whiteListNormal = {
       ...getDefaultWhiteList(),
+      table: [...(getDefaultWhiteList().table ?? []), "role"],
       input: ["type", "disabled", "checked"],
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
@@ -54,6 +55,18 @@ const renderMarkdown = async (
   }
 
   marked.setOptions(markedOptions);
+
+  marked.use({
+    renderer: {
+      table(...args) {
+        const defaultRenderer = new marked.Renderer();
+        // Wrap the table with block element because the property 'overflow'
+        // cannot be applied to elements of display type 'table'.
+        // https://www.w3.org/TR/css-overflow-3/#overflow-control
+        return `<div>${defaultRenderer.table.apply(this, args)}</div>`;
+      },
+    },
+  });
 
   const tokens = marked.lexer(content);
   return tokens.map((token) =>

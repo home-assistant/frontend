@@ -6,7 +6,7 @@ import { debounce } from "../common/util/debounce";
 import "../components/entity/state-info";
 import "../components/ha-slider";
 import "../components/ha-textfield";
-import { isUnavailableState } from "../data/entity";
+import { isUnavailableState } from "../data/entity/entity";
 import { setValue } from "../data/input_text";
 import type { HomeAssistant } from "../types";
 

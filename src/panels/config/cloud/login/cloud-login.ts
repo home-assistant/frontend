@@ -155,7 +155,7 @@ export class CloudLogin extends LitElement {
         ),
       });
       if (totpCode !== null && totpCode !== "") {
-        this._login(email, password, checkConnection, totpCode);
+        this._login(email, password, checkConnection, totpCode.trim());
         return "continue";
       }
     }

@@ -40,14 +40,12 @@ export const getLanguageOptions = (
       return {
         id: lang,
         primary,
-        search_labels: [primary],
       };
     });
   } else if (locale) {
     options = languages.map((lang) => ({
       id: lang,
       primary: formatLanguageCode(lang, locale),
-      search_labels: [formatLanguageCode(lang, locale)],
     }));
   }
 
@@ -72,6 +70,8 @@ export class HaLanguagePicker extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
+
+  @property() public helper?: string;
 
   @property({ attribute: "native-name", type: Boolean })
   public nativeName = false;
@@ -116,6 +116,11 @@ export class HaLanguagePicker extends LitElement {
     > `;
 
   protected render() {
+    const label =
+      this.label ??
+      (this.hass?.localize("ui.components.language-picker.language") ||
+        "Language");
+
     const value =
       this.value ??
       (this.required && !this.disabled ? this._getItems()[0].id : this.value);
@@ -129,12 +134,11 @@ export class HaLanguagePicker extends LitElement {
         .emptyLabel=${this.hass?.localize(
           "ui.components.language-picker.no_languages"
         ) || "No languages available"}
-        .placeholder=${this.label ??
-        (this.hass?.localize("ui.components.language-picker.language") ||
-          "Language")}
+        .label=${label}
         .value=${value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
+        .helper=${this.helper}
         .getItems=${this._getItems}
         @value-changed=${this._changed}
         hide-clear-icon

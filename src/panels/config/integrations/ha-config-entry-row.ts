@@ -26,6 +26,7 @@ import memoizeOne from "memoize-one";
 import { isDevVersion } from "../../../common/config/version";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -46,10 +47,10 @@ import {
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
@@ -64,6 +65,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
+import { showToast } from "../../../util/toast";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -72,8 +74,6 @@ import {
 import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { showToast } from "../../../util/toast";
 
 @customElement("ha-config-entry-row")
 class HaConfigEntryRow extends LitElement {

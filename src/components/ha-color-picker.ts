@@ -1,24 +1,22 @@
 import { mdiInvertColorsOff, mdiPalette } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
-import "./ha-list-item";
-import "./ha-md-divider";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
+import "./ha-generic-picker";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+import type { PickerValueRenderer } from "./ha-picker-field";
 
 @customElement("ha-color-picker")
 export class HaColorPicker extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public label?: string;
 
   @property() public helper?: string;
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public value?: string;
 
@@ -33,137 +31,178 @@ export class HaColorPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("ha-select") private _select?: HaSelect;
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    // Refresh layout options when the field is connected to the DOM to ensure current value displayed
-    this._select?.layoutOptions();
-  }
-
-  private _valueSelected(ev) {
-    ev.stopPropagation();
-    if (!this.isConnected) return;
-    const value = ev.target.value;
-    this.value = value === this.defaultColor ? undefined : value;
-    fireEvent(this, "value-changed", {
-      value: this.value,
-    });
-  }
+  @property({ type: Boolean }) public required = false;
 
   render() {
-    const value = this.value || this.defaultColor || "";
-
-    const isCustom = !(
-      THEME_COLORS.has(value) ||
-      value === "none" ||
-      value === "state"
-    );
+    const effectiveValue = this.value ?? this.defaultColor ?? "";
 
     return html`
-      <ha-select
-        .icon=${Boolean(value)}
-        .label=${this.label}
-        .value=${value}
-        .helper=${this.helper}
+      <ha-generic-picker
+        .hass=${this.hass}
         .disabled=${this.disabled}
-        @closed=${stopPropagation}
-        @selected=${this._valueSelected}
-        fixedMenuPosition
-        naturalMenuWidth
-        .clearable=${!this.defaultColor}
+        .required=${this.required}
+        .hideClearIcon=${!this.value && !!this.defaultColor}
+        .label=${this.label}
+        .helper=${this.helper}
+        .value=${effectiveValue}
+        .getItems=${this._getItems}
+        .rowRenderer=${this._rowRenderer}
+        .valueRenderer=${this._valueRenderer}
+        @value-changed=${this._valueChanged}
       >
-        ${value
-          ? html`
-              <span slot="icon">
-                ${value === "none"
-                  ? html`
-                      <ha-svg-icon path=${mdiInvertColorsOff}></ha-svg-icon>
-                    `
-                  : value === "state"
-                    ? html`<ha-svg-icon path=${mdiPalette}></ha-svg-icon>`
-                    : this._renderColorCircle(value || "grey")}
-              </span>
-            `
-          : nothing}
-        ${this.includeNone
-          ? html`
-              <ha-list-item value="none" graphic="icon">
-                ${this.hass.localize("ui.components.color-picker.none")}
-                ${this.defaultColor === "none"
-                  ? ` (${this.hass.localize("ui.components.color-picker.default")})`
-                  : nothing}
-                <ha-svg-icon
-                  slot="graphic"
-                  path=${mdiInvertColorsOff}
-                ></ha-svg-icon>
-              </ha-list-item>
-            `
-          : nothing}
-        ${this.includeState
-          ? html`
-              <ha-list-item value="state" graphic="icon">
-                ${this.hass.localize("ui.components.color-picker.state")}
-                ${this.defaultColor === "state"
-                  ? ` (${this.hass.localize("ui.components.color-picker.default")})`
-                  : nothing}
-                <ha-svg-icon slot="graphic" path=${mdiPalette}></ha-svg-icon>
-              </ha-list-item>
-            `
-          : nothing}
-        ${this.includeState || this.includeNone
-          ? html`<ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
-          : nothing}
-        ${Array.from(THEME_COLORS).map(
-          (color) => html`
-            <ha-list-item .value=${color} graphic="icon">
-              ${this.hass.localize(
-                `ui.components.color-picker.colors.${color}` as LocalizeKeys
-              ) || color}
-              ${this.defaultColor === color
-                ? ` (${this.hass.localize("ui.components.color-picker.default")})`
-                : nothing}
-              <span slot="graphic">${this._renderColorCircle(color)}</span>
-            </ha-list-item>
-          `
-        )}
-        ${isCustom
-          ? html`
-              <ha-list-item .value=${value} graphic="icon">
-                ${value}
-                <span slot="graphic">${this._renderColorCircle(value)}</span>
-              </ha-list-item>
-            `
-          : nothing}
-      </ha-select>
+      </ha-generic-picker>
     `;
   }
+
+  private _getItems = () =>
+    this._getColors(
+      this.includeNone,
+      this.includeState,
+      this.defaultColor,
+      this.value
+    );
+
+  private _getColors = (
+    includeNone: boolean,
+    includeState: boolean,
+    defaultColor: string | undefined,
+    currentValue: string | undefined
+  ): PickerComboBoxItem[] => {
+    const items: PickerComboBoxItem[] = [];
+
+    const defaultSuffix = this.hass.localize(
+      "ui.components.color-picker.default"
+    );
+
+    const addDefaultSuffix = (label: string, isDefault: boolean) =>
+      isDefault && defaultSuffix ? `${label} (${defaultSuffix})` : label;
+
+    if (includeNone) {
+      const noneLabel =
+        this.hass.localize("ui.components.color-picker.none") || "None";
+      items.push({
+        id: "none",
+        primary: addDefaultSuffix(noneLabel, defaultColor === "none"),
+        icon_path: mdiInvertColorsOff,
+        sorting_label: noneLabel,
+      });
+    }
+
+    if (includeState) {
+      const stateLabel =
+        this.hass.localize("ui.components.color-picker.state") || "State";
+      items.push({
+        id: "state",
+        primary: addDefaultSuffix(stateLabel, defaultColor === "state"),
+        icon_path: mdiPalette,
+        sorting_label: stateLabel,
+      });
+    }
+
+    Array.from(THEME_COLORS).forEach((color) => {
+      const themeLabel =
+        this.hass.localize(
+          `ui.components.color-picker.colors.${color}` as LocalizeKeys
+        ) || color;
+      items.push({
+        id: color,
+        primary: addDefaultSuffix(themeLabel, defaultColor === color),
+        sorting_label: themeLabel,
+      });
+    });
+
+    const isSpecial =
+      currentValue === "none" ||
+      currentValue === "state" ||
+      THEME_COLORS.has(currentValue || "");
+
+    const hasValue = currentValue && currentValue.length > 0;
+
+    if (hasValue && !isSpecial) {
+      items.push({
+        id: currentValue!,
+        primary: currentValue!,
+        sorting_label: currentValue!,
+      });
+    }
+
+    return items;
+  };
+
+  private _rowRenderer: (
+    item: PickerComboBoxItem,
+    index?: number
+  ) => ReturnType<typeof html> = (item) => html`
+    <ha-combo-box-item type="button" compact>
+      ${item.id === "none"
+        ? html`<ha-svg-icon
+            slot="start"
+            .path=${mdiInvertColorsOff}
+          ></ha-svg-icon>`
+        : item.id === "state"
+          ? html`<ha-svg-icon slot="start" .path=${mdiPalette}></ha-svg-icon>`
+          : html`<span slot="start">
+              ${this._renderColorCircle(item.id)}
+            </span>`}
+      <span slot="headline">${item.primary}</span>
+    </ha-combo-box-item>
+  `;
+
+  private _valueRenderer: PickerValueRenderer = (value: string) => {
+    if (value === "none") {
+      return html`
+        <ha-svg-icon slot="start" .path=${mdiInvertColorsOff}></ha-svg-icon>
+        <span slot="headline">
+          ${this.hass.localize("ui.components.color-picker.none")}
+        </span>
+      `;
+    }
+    if (value === "state") {
+      return html`
+        <ha-svg-icon slot="start" .path=${mdiPalette}></ha-svg-icon>
+        <span slot="headline">
+          ${this.hass.localize("ui.components.color-picker.state")}
+        </span>
+      `;
+    }
+
+    return html`
+      <span slot="start">${this._renderColorCircle(value)}</span>
+      <span slot="headline">
+        ${this.hass.localize(
+          `ui.components.color-picker.colors.${value}` as LocalizeKeys
+        ) || value}
+      </span>
+    `;
+  };
 
   private _renderColorCircle(color: string) {
     return html`
       <span
-        class="circle-color"
         style=${styleMap({
           "--circle-color": computeCssColor(color),
+          display: "block",
+          "background-color": "var(--circle-color, var(--divider-color))",
+          border: "1px solid var(--outline-color)",
+          "border-radius": "var(--ha-border-radius-pill)",
+          width: "20px",
+          height: "20px",
+          "box-sizing": "border-box",
         })}
       ></span>
     `;
   }
 
-  static styles = css`
-    .circle-color {
-      display: block;
-      background-color: var(--circle-color, var(--divider-color));
-      border: 1px solid var(--outline-color);
-      border-radius: var(--ha-border-radius-pill);
-      width: 20px;
-      height: 20px;
-      box-sizing: border-box;
-    }
-    ha-select {
-      width: 100%;
-    }
-  `;
+  private _valueChanged(ev: CustomEvent<{ value?: string }>) {
+    ev.stopPropagation();
+    const selected = ev.detail.value;
+    const normalized =
+      selected && selected === this.defaultColor
+        ? undefined
+        : (selected ?? undefined);
+    this.value = normalized;
+    fireEvent(this, "value-changed", { value: this.value });
+  }
 }
 
 declare global {

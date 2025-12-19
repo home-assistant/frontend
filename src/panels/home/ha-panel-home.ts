@@ -12,7 +12,7 @@ import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
 import "../lovelace/hui-root";
-import { generateLovelaceDashboardStrategy } from "../lovelace/strategies/get-strategy";
+import { expandLovelaceConfigStrategies } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
 import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 
@@ -34,8 +34,7 @@ class PanelHome extends LitElement {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
-      this.hass.loadFragmentTranslation("lovelace");
-      this._loadConfig();
+      this._setup();
       return;
     }
 
@@ -72,6 +71,21 @@ class PanelHome extends LitElement {
     }
   }
 
+  private async _setup() {
+    try {
+      const [_, data] = await Promise.all([
+        this.hass.loadFragmentTranslation("lovelace"),
+        fetchFrontendSystemData(this.hass.connection, "home"),
+      ]);
+      this._config = data || {};
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load favorites:", err);
+      this._config = {};
+    }
+    this._setLovelace();
+  }
+
   private _debounceRegistriesChanged = debounce(
     () => this._registriesChanged(),
     200
@@ -97,18 +111,6 @@ class PanelHome extends LitElement {
     `;
   }
 
-  private async _loadConfig() {
-    try {
-      const data = await fetchFrontendSystemData(this.hass.connection, "home");
-      this._config = data || {};
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Failed to load favorites:", err);
-      this._config = {};
-    }
-    this._setLovelace();
-  }
-
   private async _setLovelace() {
     const strategyConfig: LovelaceDashboardStrategyConfig = {
       strategy: {
@@ -117,7 +119,7 @@ class PanelHome extends LitElement {
       },
     };
 
-    const config = await generateLovelaceDashboardStrategy(
+    const config = await expandLovelaceConfigStrategies(
       strategyConfig,
       this.hass
     );
