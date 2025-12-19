@@ -440,13 +440,13 @@ class MoreInfoWeather extends LitElement {
       css`
         ha-svg-icon {
           color: var(--state-icon-color);
-          margin-left: 8px;
-          margin-inline-start: 8px;
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
         }
 
         .section {
-          margin: 16px 0 8px 0;
+          margin: var(--ha-space-4) 0 var(--ha-space-2) 0;
           font-size: 1.2em;
         }
 
@@ -470,14 +470,14 @@ class MoreInfoWeather extends LitElement {
 
         .main {
           flex: 1;
-          margin-left: 24px;
-          margin-inline-start: 24px;
+          margin-left: var(--ha-space-6);
+          margin-inline-start: var(--ha-space-6);
           margin-inline-end: initial;
         }
 
         .attribution {
           text-align: center;
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
 
         .time-ago,
@@ -500,15 +500,15 @@ class MoreInfoWeather extends LitElement {
           flex-wrap: nowrap;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         .icon-image {
           display: flex;
           align-items: center;
           min-width: 64px;
-          margin-right: 16px;
-          margin-inline-end: 16px;
+          margin-right: var(--ha-space-4);
+          margin-inline-end: var(--ha-space-4);
           margin-inline-start: initial;
         }
 
@@ -534,7 +534,7 @@ class MoreInfoWeather extends LitElement {
 
         .temp-attribute .temp {
           position: relative;
-          margin-right: 24px;
+          margin-right: var(--ha-space-6);
           direction: ltr;
         }
 
@@ -557,8 +557,8 @@ class MoreInfoWeather extends LitElement {
 
         .name-state {
           overflow: hidden;
-          padding-right: 12px;
-          padding-inline-end: 12px;
+          padding-right: var(--ha-space-3);
+          padding-inline-end: var(--ha-space-3);
           padding-inline-start: initial;
           width: 100%;
         }
@@ -572,7 +572,7 @@ class MoreInfoWeather extends LitElement {
         .forecast {
           display: flex;
           justify-content: space-around;
-          padding: 16px;
+          padding: var(--ha-space-4);
           padding-bottom: 0px;
           overflow-x: auto;
           scrollbar-color: var(--scrollbar-thumb-color) transparent;
@@ -634,8 +634,8 @@ class MoreInfoWeather extends LitElement {
         }
 
         .forecast-image-icon {
-          padding-top: 4px;
-          padding-bottom: 4px;
+          padding-top: var(--ha-space-1);
+          padding-bottom: var(--ha-space-1);
           display: flex;
           justify-content: center;
         }

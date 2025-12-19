@@ -130,8 +130,8 @@ export class MoreInfoInfo extends LitElement {
       display: flex;
       flex-direction: column;
       flex: 1;
-      padding: 24px;
-      padding-bottom: max(var(--safe-area-inset-bottom), 24px);
+      padding: var(--ha-space-6);
+      padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
     }
 
     [data-domain="camera"] .content {
@@ -153,7 +153,7 @@ export class MoreInfoInfo extends LitElement {
     ha-more-info-history,
     ha-more-info-logbook:not(:last-child) {
       display: block;
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
 
     ha-alert {

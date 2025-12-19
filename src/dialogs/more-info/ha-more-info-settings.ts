@@ -83,7 +83,8 @@ export class HaMoreInfoSettings extends LitElement {
     return [
       css`
         .content {
-          padding: 8px 24px 24px 24px;
+          padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
+            var(--ha-space-6);
         }
       `,
     ];
