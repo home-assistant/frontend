@@ -82,6 +82,54 @@
       ],
       "@formatjs/intl-durationformat/polyfill-force": [
         "./node_modules/@formatjs/intl-durationformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-datetimeformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-datetimeformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-datetimeformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-datetimeformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-displaynames/should-polyfill": [
+        "./node_modules/@formatjs/intl-displaynames/should-polyfill.js"
+      ],
+      "@formatjs/intl-displaynames/polyfill-force": [
+        "./node_modules/@formatjs/intl-displaynames/polyfill-force.js"
+      ],
+      "@formatjs/intl-getcanonicallocales/should-polyfill": [
+        "./node_modules/@formatjs/intl-getcanonicallocales/should-polyfill.js"
+      ],
+      "@formatjs/intl-getcanonicallocales/polyfill-force": [
+        "./node_modules/@formatjs/intl-getcanonicallocales/polyfill-force.js"
+      ],
+      "@formatjs/intl-listformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-listformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-listformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-listformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-locale/should-polyfill": [
+        "./node_modules/@formatjs/intl-locale/should-polyfill.js"
+      ],
+      "@formatjs/intl-locale/polyfill-force": [
+        "./node_modules/@formatjs/intl-locale/polyfill-force.js"
+      ],
+      "@formatjs/intl-numberformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-numberformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-numberformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-numberformat/polyfill-force.js"
+      ],
+      "@formatjs/intl-pluralrules/should-polyfill": [
+        "./node_modules/@formatjs/intl-pluralrules/should-polyfill.js"
+      ],
+      "@formatjs/intl-pluralrules/polyfill-force": [
+        "./node_modules/@formatjs/intl-pluralrules/polyfill-force.js"
+      ],
+      "@formatjs/intl-relativetimeformat/should-polyfill": [
+        "./node_modules/@formatjs/intl-relativetimeformat/should-polyfill.js"
+      ],
+      "@formatjs/intl-relativetimeformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-relativetimeformat/polyfill-force.js"
       ]
     }
   }
