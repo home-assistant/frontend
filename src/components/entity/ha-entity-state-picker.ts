@@ -108,37 +108,6 @@ export class HaEntityStatePicker extends LitElement {
       this.extraOptions
     );
 
-  private _getAdditionalItems = (
-    searchString?: string
-  ): PickerComboBoxItem[] => {
-    if (!this.allowCustomValue || !searchString) {
-      return [];
-    }
-
-    // Check if the search string matches an existing item
-    const items = this._getFilteredItems();
-    const existingItem = items.find((item) => item.id === searchString);
-
-    // Only return custom value option if it doesn't match an existing item
-    if (!existingItem) {
-      return [
-        {
-          id: searchString,
-          primary: searchString,
-          secondary: `"${searchString}"`,
-          search_labels: {
-            primary: searchString,
-            secondary: `"${searchString}"`,
-            id: searchString,
-          },
-          sorting_label: searchString,
-        },
-      ];
-    }
-
-    return [];
-  };
-
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -156,7 +125,6 @@ export class HaEntityStatePicker extends LitElement {
         .helper=${this.helper}
         .value=${this.value}
         .getItems=${this._getFilteredItems}
-        .getAdditionalItems=${this._getAdditionalItems}
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         .customValueLabel=${this.hass.localize(
           "ui.components.entity.entity-state-picker.add_custom_state"
