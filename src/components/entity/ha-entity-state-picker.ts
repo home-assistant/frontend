@@ -66,10 +66,6 @@ export class HaEntityStatePicker extends LitElement {
               return {
                 id: s,
                 primary,
-                search_labels: {
-                  primary,
-                  id: s,
-                },
                 sorting_label: primary,
               };
             })
