@@ -3,10 +3,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { isTemplate } from "../../common/string/has-template";
 import type { ChooseSelector, Selector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import "../ha-button-toggle-group";
 import "./ha-selector";
-import { isTemplate } from "../../common/string/has-template";
 
 @customElement("ha-selector-choose")
 export class HaChooseSelector extends LitElement {
