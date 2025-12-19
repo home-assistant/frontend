@@ -168,12 +168,16 @@ const createRspackConfig = ({
           );
         },
       }),
-      new rspack.NormalModuleReplacementPlugin(
-        new RegExp(
-          bundle.emptyPackages({ isHassioBuild, isLandingPageBuild }).join("|")
-        ),
-        path.resolve(paths.root_dir, "src/util/empty.js")
-      ),
+      isHassioBuild || isLandingPageBuild
+        ? new rspack.NormalModuleReplacementPlugin(
+            new RegExp(
+              bundle
+                .emptyPackages({ isHassioBuild, isLandingPageBuild })
+                .join("|")
+            ),
+            path.resolve(paths.root_dir, "src/util/empty.js")
+          )
+        : false,
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
         new StatsWriterPlugin({

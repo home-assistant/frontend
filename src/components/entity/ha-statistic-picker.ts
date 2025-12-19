@@ -1,5 +1,5 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiChartLine, mdiHelpCircle, mdiShape } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -424,9 +424,9 @@ export class HaStatisticPicker extends LitElement {
     };
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<StatisticComboBoxItem> = (
+  private _rowRenderer: RenderItemFunction<StatisticComboBoxItem> = (
     item,
-    { index }
+    index
   ) => {
     const showEntityId = this.hass.userData?.showEntityIdPicker;
     return html`
