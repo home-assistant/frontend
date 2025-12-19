@@ -356,13 +356,13 @@ class DialogFloorDetail extends LitElement {
       css`
         ha-textfield {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         ha-floor-icon {
           color: var(--secondary-text-color);
         }
         ha-chip-set {
-          margin-bottom: 8px;
+          margin-bottom: var(--ha-space-2);
         }
       `,
     ];
