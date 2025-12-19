@@ -301,7 +301,7 @@ class HUIRoot extends LitElement {
         key: "ui.panel.lovelace.menu.search_entities",
         buttonAction: this._showQuickBar,
         overflowAction: this._handleShowQuickBar,
-        visible: !this._editMode,
+        visible: !this._editMode && this.hass.user?.is_admin,
         overflow: this.narrow,
         suffix:
           this.hass.enableShortcuts && !isMobileClient ? "(E)" : undefined,
