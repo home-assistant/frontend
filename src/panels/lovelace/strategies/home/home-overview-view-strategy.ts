@@ -141,28 +141,15 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
     const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    const commonControlsSectionBase = {
+    const commonControlsSection = {
       strategy: {
         type: "common-controls",
         limit: maxCommonControls,
         include_entities: favoriteEntities,
+        title: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
         hide_empty: true,
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
-    } as LovelaceStrategySectionConfig;
-
-    const commonControlsSectionMobile = {
-      ...commonControlsSectionBase,
-      strategy: {
-        ...commonControlsSectionBase.strategy,
-        title: hass.localize("ui.panel.lovelace.strategy.home.commonly_used"),
-      },
-      visibility: [smallScreenCondition],
-    } as LovelaceStrategySectionConfig;
-
-    const commonControlsSectionDesktop = {
-      ...commonControlsSectionBase,
-      visibility: [largeScreenCondition],
     } as LovelaceStrategySectionConfig;
 
     const allEntities = Object.keys(hass.states);
@@ -309,20 +296,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const sections = (
       [
-        {
-          type: "grid",
-          cards: [
-            // Heading to add some spacing on large screens
-            {
-              type: "heading",
-              heading_style: "subtitle",
-              visibility: [largeScreenCondition],
-            },
-          ],
-        },
         mobileSummarySection,
-        commonControlsSectionMobile,
-        commonControlsSectionDesktop,
+        commonControlsSection,
         ...floorsSections,
       ] satisfies (LovelaceSectionRawConfig | undefined)[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];

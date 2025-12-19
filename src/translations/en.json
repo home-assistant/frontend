@@ -7185,7 +7185,7 @@
             "automations": "Automations",
             "for_you": "For you",
             "home": "Home",
-            "commonly_used": "Commonly used"
+            "favorites": "Favorites"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
