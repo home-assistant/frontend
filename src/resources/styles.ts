@@ -145,7 +145,7 @@ export const haStyleDialog = css`
     --dialog-container-padding: var(--safe-area-inset-top, 0)
       var(--safe-area-inset-right, 0) var(--safe-area-inset-bottom, 0)
       var(--safe-area-inset-left, 0);
-    --dialog-surface-padding: 0;
+    --dialog-surface-padding: 0px;
   }
 
   ha-dialog .form {
@@ -165,7 +165,7 @@ export const haStyleDialog = css`
       --mdc-dialog-min-height: 100svh;
       --mdc-dialog-max-height: 100vh;
       --mdc-dialog-max-height: 100svh;
-      --dialog-container-padding: 0;
+      --dialog-container-padding: 0px;
       --dialog-surface-padding: var(--safe-area-inset-top, 0)
         var(--safe-area-inset-right, 0) var(--safe-area-inset-bottom, 0)
         var(--safe-area-inset-left, 0);
@@ -200,7 +200,7 @@ export const haStyleDialogFixedTop = css`
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {
       /* When in fullscreen, dialog should be attached to top */
-      --dialog-surface-margin-top: 0;
+      --dialog-surface-margin-top: 0px;
       --mdc-dialog-min-height: 100vh;
       --mdc-dialog-min-height: 100svh;
       --mdc-dialog-max-height: 100vh;
