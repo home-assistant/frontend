@@ -76,6 +76,9 @@
       ],
       "@lit-labs/observers/resize-controller": [
         "./node_modules/@lit-labs/observers/resize-controller.js"
+      ],
+      "@formatjs/intl-durationformat/polyfill-force": [
+        "./node_modules/@formatjs/intl-durationformat/polyfill-force.js"
       ]
     }
   }
