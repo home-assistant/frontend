@@ -176,6 +176,13 @@ interface EMOutgoingMessageAddEntityTo extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageFocusElement extends EMMessage {
+  type: "focus_element";
+  payload: {
+    element_id: string;
+  };
+}
+
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
   | EMMessageResultSuccess
@@ -197,7 +204,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageThreadStoreInPlatformKeychain
   | EMOutgoingMessageImprovScan
   | EMOutgoingMessageImprovConfigureDevice
-  | EMOutgoingMessageAddEntityTo;
+  | EMOutgoingMessageAddEntityTo
+  | EMOutgoingMessageFocusElement;
 
 export interface EMIncomingMessageRestart {
   id: number;

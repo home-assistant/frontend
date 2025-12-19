@@ -31,13 +31,13 @@ import "../../../components/ha-svg-icon";
 import type {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   deleteLabelRegistryEntry,
   fetchLabelRegistry,
   updateLabelRegistryEntry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,

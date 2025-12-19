@@ -16,7 +16,7 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { NON_NUMERIC_ATTRIBUTES } from "../../../../data/entity_attributes";
+import { NON_NUMERIC_ATTRIBUTES } from "../../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../../types";
 import { DEFAULT_MAX, DEFAULT_MIN } from "../../cards/hui-gauge-card";
 import type { GaugeCardConfig } from "../../cards/types";

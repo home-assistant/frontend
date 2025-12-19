@@ -14,7 +14,7 @@ import "../../components/ha-outlined-icon-button";
 import "../../components/ha-svg-icon";
 import type { ClimateEntity } from "../../data/climate";
 import { ClimateEntityFeature } from "../../data/climate";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import { computeCssVariable } from "../../resources/css-variables";
 import type { HomeAssistant } from "../../types";
 import {

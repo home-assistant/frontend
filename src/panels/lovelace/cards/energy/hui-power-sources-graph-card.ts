@@ -214,9 +214,14 @@ export class HuiPowerSourcesGraphCard
             const stats = energyData.stats[id] ?? [];
             if (isSameDay(now, this._start) && isSameDay(now, this._end)) {
               // Append current state if we are showing today
-              const currentState = getPowerFromState(this.hass.states[id]);
-              if (currentState !== undefined) {
-                stats.push({ start: now, end: now, mean: currentState });
+              const currentStateWatts = getPowerFromState(this.hass.states[id]);
+              if (currentStateWatts !== undefined) {
+                // getPowerFromState returns power in W; convert to kW for this graph
+                stats.push({
+                  start: now,
+                  end: now,
+                  mean: currentStateWatts / 1000,
+                });
               }
             }
             return stats;

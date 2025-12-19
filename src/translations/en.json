@@ -658,7 +658,8 @@
           "show_entities": "Show entities",
           "new_entity": "Create a new entity",
           "placeholder": "Select an entity",
-          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
+          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper.",
+          "unknown": "Unknown entity selected"
         },
         "entity-name-picker": {
           "types": {
@@ -671,17 +672,20 @@
             "device_missing": "No related device"
           },
           "add": "Add",
-          "custom_name": "Custom name"
+          "custom_name": "Custom name",
+          "no_match": "No entities found"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
           "show_attributes": "Show attributes"
         },
         "entity-state-picker": {
-          "state": "State"
+          "state": "State",
+          "add_custom_state": "Add custom state"
         },
         "entity-state-content-picker": {
-          "add": "Add"
+          "add": "Add",
+          "custom_state": "Custom state"
         }
       },
       "target-picker": {
@@ -768,6 +772,9 @@
         "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
       },
+      "icon-picker": {
+        "no_match": "No matching icons found"
+      },
       "tts-picker": {
         "tts": "Text-to-speech",
         "none": "None"
@@ -779,7 +786,8 @@
       "user-picker": {
         "no_match": "No users found for {term}",
         "user": "User",
-        "add_user": "Add user"
+        "add_user": "Add user",
+        "unknown": "Unknown user selected"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -793,7 +801,8 @@
         "device": "Device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
-        "placeholder": "Select a device"
+        "placeholder": "Select a device",
+        "unknown": "Unknown device selected"
       },
       "category-picker": {
         "clear": "Clear",
@@ -805,6 +814,7 @@
         "add_new": "Add new category…",
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
+        "unknown": "Unknown category selected",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -831,7 +841,8 @@
         "add_new": "Add new area…",
         "no_areas": "No areas available",
         "no_match": "No areas found for {term}",
-        "failed_create_area": "Failed to create area."
+        "failed_create_area": "Failed to create area.",
+        "unknown": "Unknown area selected"
       },
       "floor-picker": {
         "clear": "Clear",
@@ -841,7 +852,8 @@
         "add_new": "Add new floor…",
         "no_floors": "No floors available",
         "no_match": "No floors found for {term}",
-        "failed_create_floor": "Failed to create floor."
+        "failed_create_floor": "Failed to create floor.",
+        "unknown": "Unknown floor selected"
       },
       "area-filter": {
         "title": "Areas",
@@ -858,7 +870,8 @@
         "no_match": "No statistics found for {term}",
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
-        "learn_more": "Learn more about statistics"
+        "learn_more": "Learn more about statistics",
+        "unknown": "Unknown statistic selected"
       },
       "addon-picker": {
         "addon": "Add-on",
@@ -998,7 +1011,8 @@
       },
       "service-picker": {
         "action": "Action",
-        "no_match": "No matching actions found"
+        "no_match": "No matching actions found",
+        "unknown": "Unknown action selected"
       },
       "service-control": {
         "required": "This field is required",
@@ -1296,7 +1310,10 @@
       },
       "combo-box": {
         "no_match": "No matching items found",
-        "no_items": "No items available"
+        "no_items": "No items available",
+        "unknown_item": "Unknown item",
+        "search_or_custom": "Search | Add custom item",
+        "add_custom_item": "Add custom item"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -1305,6 +1322,9 @@
         "suggesting_3": "Enchanting…",
         "done": "Done!",
         "error": "Fail!"
+      },
+      "navigation-picker": {
+        "add_custom_path": "Add custom path"
       }
     },
     "dialogs": {
@@ -3159,7 +3179,7 @@
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
-              "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
+              "entity_para": "Pick a sensor which measures solar production in either of {unit}.",
               "solar_production_energy": "Solar production energy",
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
@@ -3206,6 +3226,9 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (e.g. `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
+              "cost_entity_helper_energy": "energy",
+              "cost_entity_helper_volume": "volume",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "gas_usage": "Gas usage"
@@ -3229,6 +3252,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (e.g. `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water usage"
@@ -3291,7 +3315,8 @@
               "entity_id": "Entity ID",
               "type": "Type",
               "editable": "Editable",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -3674,6 +3699,10 @@
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
                 "no_cloud_action": "Subscribe"
+              },
+              "duplicate": {
+                "error_pipeline_not_found": "Pipeline not found",
+                "name": "{name} (Copy)"
               }
             },
             "cloud": {
@@ -4059,6 +4088,13 @@
             "services": "Services",
             "helpers": "Helpers",
             "entity_hidden": "[%key:ui::panel::config::devices::entities::hidden%]",
+            "target_summary": {
+              "no_target": "No target set",
+              "targets": "{count} {count, plural,\n  one {target}\n  other {targets}\n}",
+              "invalid": "Invalid target",
+              "all_entities": "All entities",
+              "none_entities": "No entities"
+            },
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -4570,11 +4606,11 @@
                     "service": "Perform an action",
                     "target_template": "templated {name}",
                     "target_every_entity": "every entity",
-                    "target_unknown_entity": "unknown entity",
-                    "target_unknown_device": "unknown device",
-                    "target_unknown_area": "unknown area",
-                    "target_unknown_floor": "unknown floor",
-                    "target_unknown_label": "unknown label"
+                    "target_unknown_entity": "Unknown entity",
+                    "target_unknown_device": "Unknown device",
+                    "target_unknown_area": "Unknown area",
+                    "target_unknown_floor": "Unknown floor",
+                    "target_unknown_label": "Unknown label"
                   }
                 },
                 "play_media": {
@@ -7005,6 +7041,7 @@
           "lifetime_description": "{lifetime} used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
+          "change_chart_type": "Change chart type",
           "datadisk": {
             "title": "Move data disk",
             "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
@@ -7134,7 +7171,9 @@
           },
           "home": {
             "summary_list": {
-              "media_players": "Media players"
+              "media_players": "Media players",
+              "weather": "Weather",
+              "energy": "Today's energy"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",
@@ -7145,7 +7184,8 @@
             "scenes": "Scenes",
             "automations": "Automations",
             "for_you": "For you",
-            "home": "Home"
+            "home": "Home",
+            "favorites": "Favorites"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -7630,6 +7670,8 @@
             "strategy_type": "strategy"
           },
           "select_dashboard": {
+            "error_title": "Error fetching dashboards",
+            "error_text": "Failed to fetch dashboards, please try again.",
             "header": "Choose a dashboard",
             "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto-generated.",
             "get_config_failed": "Failed to load selected dashboard config.",
@@ -9099,6 +9141,11 @@
             "debug_connection": {
               "title": "Debug connection",
               "description": "Observe requests to the server and responses from the server in browser console."
+            },
+            "entity_diagnostic": {
+              "title": "Entity diagnostic",
+              "description": "Select an entity to copy diagnostic details.",
+              "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
             }
           },
           "events": {

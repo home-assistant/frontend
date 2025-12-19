@@ -1,9 +1,9 @@
 import type { HomeAssistant } from "../types";
-import type { DeviceRegistryEntry } from "./device_registry";
+import type { DeviceRegistryEntry } from "./device/device_registry";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "./entity_registry";
+} from "./entity/entity_registry";
 import type { RegistryEntry } from "./registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";

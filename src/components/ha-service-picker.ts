@@ -1,5 +1,5 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiRoomService } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -20,6 +20,13 @@ interface ServiceComboBoxItem extends PickerComboBoxItem {
   domain_name?: string;
   service_id?: string;
 }
+
+const SEARCH_KEYS = [
+  { name: "search_labels.name", weight: 10 },
+  { name: "search_labels.description", weight: 8 },
+  { name: "search_labels.domainName", weight: 6 },
+  { name: "search_labels.serviceId", weight: 3 },
+];
 
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {
@@ -49,9 +56,9 @@ class HaServicePicker extends LitElement {
     getServiceIcons(this.hass);
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<ServiceComboBoxItem> = (
+  private _rowRenderer: RenderItemFunction<ServiceComboBoxItem> = (
     item,
-    { index }
+    index
   ) => html`
     <ha-combo-box-item type="button" .borderTop=${index !== 0}>
       <ha-service-icon
@@ -128,7 +135,6 @@ class HaServicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
-        allow-custom-value
         .notFoundLabel=${this.hass.localize(
           "ui.components.service-picker.no_match"
         )}
@@ -140,6 +146,10 @@ class HaServicePicker extends LitElement {
         .valueRenderer=${this._valueRenderer(
           this.hass.localize,
           this.hass.services
+        )}
+        .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.service-picker.unknown"
         )}
         @value-changed=${this._valueChanged}
       >
@@ -194,9 +204,7 @@ class HaServicePicker extends LitElement {
               secondary: description,
               domain_name: domainName,
               service_id: serviceId,
-              search_labels: [serviceId, domainName, name, description].filter(
-                Boolean
-              ),
+              search_labels: { serviceId, domainName, name, description },
               sorting_label: serviceId,
             });
           }

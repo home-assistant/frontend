@@ -26,6 +26,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { goBack, navigate } from "../../common/navigate";
@@ -37,7 +38,6 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
-import { isMobileClient } from "../../util/is_mobile";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
@@ -81,6 +81,7 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
@@ -98,7 +99,6 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 
 interface ActionItem {
   icon: string;
@@ -655,8 +655,13 @@ class HUIRoot extends LitElement {
     this.toggleAttribute("scrolled", window.scrollY !== 0);
   };
 
+  private _locationChanged = () => {
+    this._handleUrlChanged();
+  };
+
   private _handlePopState = () => {
     this._restoreScroll = true;
+    this._handleUrlChanged();
   };
 
   private _isVisible = (view: LovelaceViewConfig) =>
@@ -678,6 +683,34 @@ class HUIRoot extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+    this._handleUrlChanged();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+    window.addEventListener("popstate", this._handlePopState);
+    window.addEventListener("location-changed", this._locationChanged);
+    // Disable history scroll restoration because it is managed manually here
+    window.history.scrollRestoration = "manual";
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("scroll", this._handleWindowScroll);
+    window.removeEventListener("popstate", this._handlePopState);
+    window.removeEventListener("location-changed", this._locationChanged);
+    this.toggleAttribute("scrolled", window.scrollY !== 0);
+    // Re-enable history scroll restoration when leaving the page
+    window.history.scrollRestoration = "auto";
+  }
+
+  private _handleUrlChanged() {
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
     if (searchParams.edit === "1") {
@@ -697,29 +730,6 @@ class HUIRoot extends LitElement {
         this._showMoreInfoDialog(entityId);
       });
     }
-
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
-    window.addEventListener("popstate", this._handlePopState);
-    // Disable history scroll restoration because it is managed manually here
-    window.history.scrollRestoration = "manual";
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("scroll", this._handleWindowScroll);
-    window.removeEventListener("popstate", this._handlePopState);
-    this.toggleAttribute("scrolled", window.scrollY !== 0);
-    // Re-enable history scroll restoration when leaving the page
-    window.history.scrollRestoration = "auto";
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
@@ -1533,7 +1543,10 @@ class HUIRoot extends LitElement {
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
           padding-right: var(--safe-area-inset-right);
           padding-inline-end: var(--safe-area-inset-right);
-          padding-bottom: var(--safe-area-inset-bottom);
+          padding-bottom: calc(
+            var(--safe-area-inset-bottom) +
+              var(--view-container-padding-bottom, 0px)
+          );
         }
         .narrow hui-view-container {
           padding-left: var(--safe-area-inset-left);

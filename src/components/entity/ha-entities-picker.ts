@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-sortable";
 import "./ha-entity-picker";
@@ -99,7 +99,6 @@ class HaEntitiesPicker extends LitElement {
             (entityId) => html`
               <div class="entity">
                 <ha-entity-picker
-                  allow-custom-entity
                   .curValue=${entityId}
                   .hass=${this.hass}
                   .includeDomains=${this.includeDomains}
@@ -129,7 +128,6 @@ class HaEntitiesPicker extends LitElement {
       </ha-sortable>
       <div>
         <ha-entity-picker
-          allow-custom-entity
           .hass=${this.hass}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}

@@ -1,16 +1,11 @@
-import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "../ha-combo-box";
-import type { HaComboBox } from "../ha-combo-box";
-
-interface AttributeOption {
-  value: string;
-  label: string;
-}
+import "../ha-generic-picker";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 
 @customElement("ha-entity-attribute-picker")
 class HaEntityAttributePicker extends LitElement {
@@ -42,51 +37,44 @@ class HaEntityAttributePicker extends LitElement {
 
   @property() public helper?: string;
 
-  @state() private _opened = false;
+  private _getItemsMemoized = memoizeOne(
+    (
+      entityId: string | string[] | undefined,
+      hideAttributes: string[] | undefined,
+      hass: HomeAssistant
+    ): PickerComboBoxItem[] => {
+      const entityIds = entityId ? ensureArray(entityId) : [];
+      const options: PickerComboBoxItem[] = [];
+      const optionsSet = new Set<string>();
 
-  @query("ha-combo-box", true) private _comboBox!: HaComboBox;
-
-  protected shouldUpdate(changedProps: PropertyValues) {
-    return !(!changedProps.has("_opened") && this._opened);
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    if (
-      (changedProps.has("_opened") && this._opened) ||
-      changedProps.has("entityId") ||
-      changedProps.has("attribute")
-    ) {
-      const entityIds = this.entityId ? ensureArray(this.entityId) : [];
-      const entitiesOptions = entityIds.map<AttributeOption[]>((entityId) => {
-        const stateObj = this.hass.states[entityId];
+      for (const id of entityIds) {
+        const stateObj = hass.states[id];
         if (!stateObj) {
-          return [];
+          continue;
         }
 
         const attributes = Object.keys(stateObj.attributes).filter(
-          (a) => !this.hideAttributes?.includes(a)
+          (a) => !hideAttributes?.includes(a)
         );
 
-        return attributes.map((a) => ({
-          value: a,
-          label: this.hass.formatEntityAttributeName(stateObj, a),
-        }));
-      });
-
-      const options: AttributeOption[] = [];
-      const optionsSet = new Set<string>();
-      for (const entityOptions of entitiesOptions) {
-        for (const option of entityOptions) {
-          if (!optionsSet.has(option.value)) {
-            optionsSet.add(option.value);
-            options.push(option);
+        for (const attribute of attributes) {
+          if (!optionsSet.has(attribute)) {
+            optionsSet.add(attribute);
+            options.push({
+              id: attribute,
+              primary: hass.formatEntityAttributeName(stateObj, attribute),
+              sorting_label: attribute,
+            });
           }
         }
       }
 
-      (this._comboBox as any).filteredItems = options;
+      return options;
     }
-  }
+  );
+
+  private _getItems = () =>
+    this._getItemsMemoized(this.entityId, this.hideAttributes, this.hass);
 
   protected render() {
     if (!this.hass) {
@@ -94,10 +82,9 @@ class HaEntityAttributePicker extends LitElement {
     }
 
     return html`
-      <ha-combo-box
+      <ha-generic-picker
         .hass=${this.hass}
         .value=${this.value}
-        .autofocus=${this.autofocus}
         .label=${this.label ??
         this.hass.localize(
           "ui.components.entity.entity-attribute-picker.attribute"
@@ -106,38 +93,21 @@ class HaEntityAttributePicker extends LitElement {
         .required=${this.required}
         .helper=${this.helper}
         .allowCustomValue=${this.allowCustomValue}
-        item-id-path="value"
-        item-value-path="value"
-        item-label-path="label"
-        @opened-changed=${this._openedChanged}
+        .getItems=${this._getItems}
         @value-changed=${this._valueChanged}
       >
-      </ha-combo-box>
+      </ha-generic-picker>
     `;
-  }
-
-  private get _value() {
-    return this.value || "";
-  }
-
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
   }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
-    if (newValue !== this._value) {
-      this._setValue(newValue);
-    }
-  }
-
-  private _setValue(value: string) {
-    this.value = value;
-    setTimeout(() => {
-      fireEvent(this, "value-changed", { value });
+    if (newValue !== this.value) {
+      this.value = newValue;
+      fireEvent(this, "value-changed", { value: newValue });
       fireEvent(this, "change");
-    }, 0);
+    }
   }
 }
 

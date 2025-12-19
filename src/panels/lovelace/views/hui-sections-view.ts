@@ -61,7 +61,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() _dragging = false;
 
-  @state() private _showSidebar = false;
+  @state() private _sidebarTabActive = false;
+
+  @state() private _sidebarVisible = true;
 
   private _contentScrollTop = 0;
 
@@ -123,7 +125,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
-    this._showSidebar = Boolean(window.history.state?.sidebar);
+    this._sidebarTabActive = Boolean(window.history.state?.sidebar);
   }
 
   disconnectedCallback(): void {
@@ -144,26 +146,25 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     if (!this.lovelace) return nothing;
 
     const sections = this.sections;
-    const totalSectionCount =
-      this._sectionColumnCount +
-      (this.lovelace?.editMode ? 1 : 0) +
-      (this._config?.sidebar ? 1 : 0);
     const editMode = this.lovelace.editMode;
+    const hasSidebar =
+      this._config?.sidebar && (this._sidebarVisible || editMode);
+
+    const totalSectionCount =
+      this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
 
     const maxColumnCount = this._columnsController.value ?? 1;
 
     const columnCount = Math.min(maxColumnCount, totalSectionCount);
     // On mobile with sidebar, use full width for whichever view is active
     const contentColumnCount =
-      this._config?.sidebar && !this.narrow
-        ? Math.max(1, columnCount - 1)
-        : columnCount;
+      hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
 
     return html`
       <div
         class="wrapper ${classMap({
           "top-margin": Boolean(this._config?.top_margin),
-          "has-sidebar": Boolean(this._config?.sidebar),
+          "has-sidebar": Boolean(hasSidebar),
           narrow: this.narrow,
         })}"
         style=${styleMap({
@@ -178,20 +179,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .viewIndex=${this.index}
           .config=${this._config?.header}
         ></hui-view-header>
-        ${this.narrow && this._config?.sidebar
+        ${this.narrow && hasSidebar
           ? html`
               <div class="mobile-tabs">
                 <ha-control-select
-                  .value=${this._showSidebar ? "sidebar" : "content"}
+                  .value=${this._sidebarTabActive ? "sidebar" : "content"}
                   @value-changed=${this._viewChanged}
                   .options=${[
                     {
                       value: "content",
-                      label: this._config.sidebar.content_label,
+                      label: this._config!.sidebar!.content_label,
                     },
                     {
                       value: "sidebar",
-                      label: this._config.sidebar.sidebar_label,
+                      label: this._config!.sidebar!.sidebar_label,
                     },
                   ]}
                 >
@@ -211,7 +212,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             <div
               class="content ${classMap({
                 dense: Boolean(this._config?.dense_section_placement),
-                "mobile-hidden": this.narrow && this._showSidebar,
+                "mobile-hidden": this.narrow && this._sidebarTabActive,
               })}"
             >
               ${repeat(
@@ -290,13 +291,16 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             ? html`
                 <hui-view-sidebar
                   class=${classMap({
-                    "mobile-hidden": this.narrow && !this._showSidebar,
+                    "mobile-hidden":
+                      !hasSidebar || (this.narrow && !this._sidebarTabActive),
                   })}
                   .hass=${this.hass}
                   .badges=${this.badges}
                   .lovelace=${this.lovelace}
                   .viewIndex=${this.index}
                   .config=${this._config.sidebar}
+                  @sidebar-visibility-changed=${this
+                    ._handleSidebarVisibilityChanged}
                 ></hui-view-sidebar>
               `
             : nothing}
@@ -414,35 +418,45 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const newValue = ev.detail.value;
     const shouldShowSidebar = newValue === "sidebar";
 
-    if (shouldShowSidebar !== this._showSidebar) {
+    if (shouldShowSidebar !== this._sidebarTabActive) {
       this._toggleView();
     }
   }
 
   private _toggleView() {
     // Save current scroll position
-    if (this._showSidebar) {
+    if (this._sidebarTabActive) {
       this._sidebarScrollTop = window.scrollY;
     } else {
       this._contentScrollTop = window.scrollY;
     }
 
-    this._showSidebar = !this._showSidebar;
+    this._sidebarTabActive = !this._sidebarTabActive;
 
     // Add sidebar state to history
     window.history.replaceState(
-      { ...window.history.state, sidebar: this._showSidebar },
+      { ...window.history.state, sidebar: this._sidebarTabActive },
       ""
     );
 
     // Restore scroll position after view updates
     this.updateComplete.then(() => {
-      const scrollY = this._showSidebar
+      const scrollY = this._sidebarTabActive
         ? this._sidebarScrollTop
         : this._contentScrollTop;
       window.scrollTo(0, scrollY);
     });
   }
+
+  private _handleSidebarVisibilityChanged = (
+    e: CustomEvent<{ visible: boolean }>
+  ) => {
+    this._sidebarVisible = e.detail.visible;
+    // Reset sidebar tab when sidebar becomes hidden
+    if (!e.detail.visible) {
+      this._sidebarTabActive = false;
+    }
+  };
 
   static styles = css`
     :host {

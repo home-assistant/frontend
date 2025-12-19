@@ -7,7 +7,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { extractApiErrorMessage } from "../../data/hassio/common";
 import {
   type MediaPlayerEntity,

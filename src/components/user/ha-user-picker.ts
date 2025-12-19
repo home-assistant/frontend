@@ -1,4 +1,4 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -16,6 +16,12 @@ import "./ha-user-badge";
 interface UserComboBoxItem extends PickerComboBoxItem {
   user?: User;
 }
+
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "search_labels.username", weight: 6 },
+  { name: "id", weight: 3 },
+];
 
 @customElement("ha-user-picker")
 class HaUserPicker extends LitElement {
@@ -67,7 +73,7 @@ class HaUserPicker extends LitElement {
     `;
   };
 
-  private _rowRenderer: ComboBoxLitRenderer<UserComboBoxItem> = (item) => {
+  private _rowRenderer: RenderItemFunction<UserComboBoxItem> = (item) => {
     const user = item.user;
     if (!user) {
       return html`<ha-combo-box-item type="button" compact>
@@ -109,9 +115,7 @@ class HaUserPicker extends LitElement {
         id: user.id,
         primary: user.name,
         domain_name: user.name,
-        search_labels: [user.name, user.id, user.username].filter(
-          Boolean
-        ) as string[],
+        search_labels: { username: user.username },
         sorting_label: user.name,
         user,
       }));
@@ -128,12 +132,16 @@ class HaUserPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this._notFoundLabel}
         .placeholder=${placeholder}
         .value=${this.value}
+        .notFoundLabel=${this._notFoundLabel}
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.user-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

@@ -1,5 +1,5 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus, mdiShape } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -7,11 +7,12 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { computeRTL } from "../../common/util/compute_rtl";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
+  entityComboBoxKeys,
   getEntities,
   type EntityComboBoxItem,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_picker";
 import { domainToName } from "../../data/integration";
 import {
   isHelperDomain,
@@ -171,9 +172,9 @@ export class HaEntityPicker extends LitElement {
     return this.showEntityId || this.hass.userData?.showEntityIdPicker;
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<EntityComboBoxItem> = (
+  private _rowRenderer: RenderItemFunction<EntityComboBoxItem> = (
     item,
-    { index }
+    index
   ) => {
     const showEntityId = this._showEntityId;
 
@@ -227,7 +228,7 @@ export class HaEntityPicker extends LitElement {
       if (!createDomains?.length) {
         return [];
       }
-
+      this.hass.loadFragmentTranslation("config");
       return createDomains.map((domain) => {
         const primary = localize(
           "ui.components.entity.entity-picker.create_helper",
@@ -235,7 +236,7 @@ export class HaEntityPicker extends LitElement {
             domain: isHelperDomain(domain)
               ? localize(
                   `ui.panel.config.helpers.types.${domain as HelperDomain}`
-                )
+                ) || domain
               : domainToName(localize, domain),
           }
         );
@@ -276,22 +277,28 @@ export class HaEntityPicker extends LitElement {
         .disabled=${this.disabled}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
+        .required=${this.required}
         .label=${this.label}
+        .placeholder=${placeholder}
         .helper=${this.helper}
+        .value=${this.addButton ? undefined : this.value}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}
-        .placeholder=${placeholder}
-        .value=${this.addButton ? undefined : this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .hideClearIcon=${this.hideClearIcon}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
-        @value-changed=${this._valueChanged}
+        .searchKeys=${entityComboBoxKeys}
+        use-top-label
         .addButtonLabel=${this.addButton
           ? this.hass.localize("ui.components.entity.entity-picker.add")
           : undefined}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.entity.entity-picker.unknown"
+        )}
+        @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
     `;
