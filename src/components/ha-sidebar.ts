@@ -720,7 +720,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
-          padding-bottom: calc(14px + var(--safe-area-inset-bottom, 0));
+          padding-bottom: calc(14px + var(--safe-area-inset-bottom, 0px));
         }
         .menu {
           height: calc(var(--header-height) + var(--safe-area-inset-top, 0));
