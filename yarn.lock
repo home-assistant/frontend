@@ -9162,7 +9162,7 @@ __metadata:
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.50.0"
     ua-parser-js: "npm:2.0.7"
-    vite-tsconfig-paths: "npm:6.0.1"
+    vite-tsconfig-paths: "npm:6.0.2"
     vitest: "npm:4.0.16"
     vue: "npm:2.7.16"
     vue2-daterange-picker: "npm:0.6.8"
@@ -14413,9 +14413,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-tsconfig-paths@npm:6.0.1":
-  version: 6.0.1
-  resolution: "vite-tsconfig-paths@npm:6.0.1"
+"vite-tsconfig-paths@npm:6.0.2":
+  version: 6.0.2
+  resolution: "vite-tsconfig-paths@npm:6.0.2"
   dependencies:
     debug: "npm:^4.1.1"
     globrex: "npm:^0.1.2"
@@ -14425,7 +14425,7 @@ __metadata:
   peerDependenciesMeta:
     vite:
       optional: true
-  checksum: 10/7ac6d17efee21be805ed62857269d4e41d939774a8cc698e77145b4312edf996a9536e7a3b37e25486ae77d36fc5ae011378058ff290be39da16e52a47e87da7
+  checksum: 10/d739fec8a661973325fa798429cd79a013b5f08bddd9b74511342d9af99038bc72768873fb259504b9d8fd6c6c8ee77535d1af97692af7f2aa76f65c167db2a1
   languageName: node
   linkType: hard
 
