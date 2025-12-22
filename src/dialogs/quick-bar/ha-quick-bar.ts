@@ -1,4 +1,9 @@
-import { mdiKeyboard, mdiReload, mdiServerNetwork } from "@mdi/js";
+import {
+  mdiKeyboard,
+  mdiNavigationVariant,
+  mdiReload,
+  mdiServerNetwork,
+} from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -647,6 +652,7 @@ export class QuickBar extends LitElement {
       );
       return {
         id: `navigation_${index}_${item.path}`,
+        icon_path: mdiNavigationVariant,
         secondary,
         sorting_label: `${item.primary}_${secondary}`,
         ...item,
