@@ -206,3 +206,29 @@ export const sortConfigEntries = (
   );
   return [primaryEntry, ...otherEntries];
 };
+
+export const handleConfigEntrySubscriptionMessages = (
+  currentEntries: ConfigEntry[],
+  messages: ConfigEntryUpdate[]
+): ConfigEntry[] => {
+  let entries = [...currentEntries];
+  messages.forEach((message) => {
+    if (message.type === null || message.type === "added") {
+      entries.push(message.entry);
+      return;
+    }
+    if (message.type === "removed") {
+      entries = entries.filter(
+        (entry) => entry.entry_id !== message.entry.entry_id
+      );
+      return;
+    }
+    if (message.type === "updated") {
+      const newEntry = message.entry;
+      entries = entries.map((entry) =>
+        entry.entry_id === newEntry.entry_id ? newEntry : entry
+      );
+    }
+  });
+  return entries;
+};

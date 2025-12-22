@@ -3,6 +3,7 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import type { EntityRegistryEntry } from "./entity/entity_registry";
 import type { LabelRegistryEntry } from "./label/label_registry";
+import type { ConfigEntry } from "./config_entries";
 
 export const connectionContext =
   createContext<HomeAssistant["connection"]>("connection");
@@ -30,3 +31,5 @@ export const fullEntitiesContext =
 export const floorsContext = createContext<HomeAssistant["floors"]>("floors");
 
 export const labelsContext = createContext<LabelRegistryEntry[]>("labels");
+
+export const configEntries = createContext<ConfigEntry[]>("configEntries");

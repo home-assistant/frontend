@@ -1,4 +1,6 @@
+import { ContextProvider } from "@lit/context";
 import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -35,6 +37,11 @@ import type {
   ActionSidebarConfig,
   SidebarConfig,
 } from "../../../data/automation";
+import {
+  handleConfigEntrySubscriptionMessages,
+  subscribeConfigEntries,
+} from "../../../data/config_entries";
+import { configEntries } from "../../../data/context";
 import type {
   Action,
   Fields,
@@ -46,6 +53,7 @@ import {
   MODES,
   normalizeScriptConfig,
 } from "../../../data/script";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
@@ -70,7 +78,7 @@ const scriptConfigStruct = object({
 });
 
 @customElement("manual-script-editor")
-export class HaManualScriptEditor extends LitElement {
+export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -108,6 +116,11 @@ export class HaManualScriptEditor extends LitElement {
     HaAutomationAction | HaScriptFields
   >;
 
+  private _configEntries = new ContextProvider(this, {
+    context: configEntries,
+    initialValue: [],
+  });
+
   private _openFields = false;
 
   private _prevSidebarWidthPx?: number;
@@ -127,6 +140,19 @@ export class HaManualScriptEditor extends LitElement {
         },
       },
     });
+  }
+
+  public hassSubscribe(): Promise<UnsubscribeFunc>[] {
+    return [
+      subscribeConfigEntries(this.hass, (messages) => {
+        this._configEntries.setValue(
+          handleConfigEntrySubscriptionMessages(
+            this._configEntries.value,
+            messages
+          )
+        );
+      }),
+    ];
   }
 
   protected updated(changedProps) {
