@@ -44,7 +44,7 @@ export const getLanguageOptions = (
           primary = lang;
         }
       }
-      const browserLangName = formatLanguageCode(
+      const currentLang = formatLanguageCode(
         lang,
         locale || ({ language: navigator.language } as FrontendLocaleData)
       );
@@ -52,9 +52,9 @@ export const getLanguageOptions = (
       return {
         id: lang,
         primary,
-        secondary: browserLangName !== primary ? browserLangName : undefined,
+        secondary: currentLang !== primary ? currentLang : undefined,
         search_labels: {
-          browser: browserLangName !== primary ? browserLangName : null,
+          browser: currentLang !== primary ? currentLang : null,
           english: englishName !== primary ? englishName : null,
         },
       };
