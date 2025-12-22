@@ -1,8 +1,8 @@
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { HomeAssistant } from "../types";
 import { listenMediaQuery } from "../common/dom/media_query";
+import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-dialog-header";
 import "./ha-icon-button";
@@ -118,27 +118,29 @@ export class HaAdaptiveDialog extends LitElement {
     if (this._mode === "bottom-sheet") {
       return html`
         <ha-bottom-sheet .open=${this.open} flexcontent>
-          <ha-dialog-header
-            slot="header"
-            .subtitlePosition=${this.headerSubtitlePosition}
-          >
-            <slot name="headerNavigationIcon" slot="navigationIcon">
-              <ha-icon-button
-                data-drawer="close"
-                .label=${this.hass?.localize("ui.common.close") ?? "Close"}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            </slot>
-            ${this.headerTitle !== undefined
-              ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
-                  ${this.headerTitle}
-                </span>`
-              : html`<slot name="headerTitle" slot="title"></slot>`}
-            ${this.headerSubtitle !== undefined
-              ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-              : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
-            <slot name="headerActionItems" slot="actionItems"></slot>
-          </ha-dialog-header>
+          <slot name="header" slot="header">
+            <ha-dialog-header
+              slot="header"
+              .subtitlePosition=${this.headerSubtitlePosition}
+            >
+              <slot name="headerNavigationIcon" slot="navigationIcon">
+                <ha-icon-button
+                  data-drawer="close"
+                  .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                  .path=${mdiClose}
+                ></ha-icon-button>
+              </slot>
+              ${this.headerTitle !== undefined
+                ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
+                    ${this.headerTitle}
+                  </span>`
+                : html`<slot name="headerTitle" slot="title"></slot>`}
+              ${this.headerSubtitle !== undefined
+                ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
+                : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
+              <slot name="headerActionItems" slot="actionItems"></slot>
+            </ha-dialog-header>
+          </slot>
           <slot></slot>
           <slot name="footer" slot="footer"></slot>
         </ha-bottom-sheet>
@@ -157,16 +159,18 @@ export class HaAdaptiveDialog extends LitElement {
         .headerSubtitlePosition=${this.headerSubtitlePosition}
         flexcontent
       >
-        <slot name="headerNavigationIcon" slot="headerNavigationIcon">
-          <ha-icon-button
-            data-dialog="close"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
+        <slot name="header" slot="header">
+          <slot name="headerNavigationIcon" slot="headerNavigationIcon">
+            <ha-icon-button
+              data-dialog="close"
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${mdiClose}
+            ></ha-icon-button>
+          </slot>
+          <slot name="headerTitle" slot="headerTitle"></slot>
+          <slot name="headerSubtitle" slot="headerSubtitle"></slot>
+          <slot name="headerActionItems" slot="headerActionItems"></slot>
         </slot>
-        <slot name="headerTitle" slot="headerTitle"></slot>
-        <slot name="headerSubtitle" slot="headerSubtitle"></slot>
-        <slot name="headerActionItems" slot="headerActionItems"></slot>
         <slot></slot>
         <slot name="footer" slot="footer"></slot>
       </ha-wa-dialog>
