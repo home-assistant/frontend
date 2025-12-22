@@ -8,7 +8,7 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -153,8 +153,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
-
-  @property({ attribute: false }) public showAdvanced = false;
 
   @state() private _tip?: string;
 
@@ -313,17 +311,18 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           ${this._pages(
             this.cloudStatus,
             isComponentLoaded(this.hass, "cloud")
-          ).map(
-            (categoryPages) => html`
-              <ha-card outlined>
-                <ha-config-navigation
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .showAdvanced=${this.showAdvanced}
-                  .pages=${categoryPages}
-                ></ha-config-navigation>
-              </ha-card>
-            `
+          ).map((categoryPages) =>
+            categoryPages.length === 0
+              ? nothing
+              : html`
+                  <ha-card outlined>
+                    <ha-config-navigation
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .pages=${categoryPages}
+                    ></ha-config-navigation>
+                  </ha-card>
+                `
           )}
           <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
         </ha-config-section>
