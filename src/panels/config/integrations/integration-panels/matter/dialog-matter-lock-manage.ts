@@ -2,6 +2,7 @@ import {
   mdiAccountMultiple,
   mdiCalendarRange,
   mdiCalendarWeek,
+  mdiDelete,
   mdiPartyPopper,
   mdiPlus,
 } from "@mdi/js";
@@ -221,7 +222,12 @@ class DialogMatterLockManage extends LitElement {
       });
     }
 
-    if (this._lockInfo?.supports_holiday_schedules) {
+    // Note: Some locks (e.g., Yale) report HDSCH support in feature map
+    // but reject SetHolidaySchedule command. Only show if actually supported.
+    if (
+      this._lockInfo?.supports_holiday_schedules &&
+      this._lockInfo?.max_holiday_schedules > 0
+    ) {
       buttons.push({
         label: this.hass.localize(
           "ui.panel.config.matter.lock.tabs.holiday_schedules"
@@ -326,7 +332,7 @@ class DialogMatterLockManage extends LitElement {
                       </span>
                       <ha-icon-button
                         slot="meta"
-                        .path=${mdiPlus}
+                        .path=${mdiDelete}
                         .user=${user}
                         @click=${this._handleDeleteUserClick}
                       ></ha-icon-button>
