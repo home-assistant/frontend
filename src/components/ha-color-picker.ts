@@ -1,5 +1,5 @@
 import { mdiInvertColorsOff, mdiPalette } from "@mdi/js";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -115,7 +115,6 @@ export class HaColorPicker extends LitElement {
           id: "none",
           primary: addDefaultSuffix(noneLabel, defaultColor === "none"),
           icon_path: mdiInvertColorsOff,
-          sorting_label: noneLabel,
         });
       }
 
@@ -126,7 +125,6 @@ export class HaColorPicker extends LitElement {
           id: "state",
           primary: addDefaultSuffix(stateLabel, defaultColor === "state"),
           icon_path: mdiPalette,
-          sorting_label: stateLabel,
         });
       }
 
@@ -178,7 +176,7 @@ export class HaColorPicker extends LitElement {
       <span slot="headline">${item.primary}</span>
       ${item.secondary
         ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : ""}
+        : nothing}
     </ha-combo-box-item>
   `;
 
