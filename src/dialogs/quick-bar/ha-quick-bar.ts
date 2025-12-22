@@ -1,7 +1,7 @@
 import { mdiKeyboard, mdiReload, mdiServerNetwork } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
@@ -16,7 +16,10 @@ import "../../components/ha-label";
 import "../../components/ha-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-picker-combo-box";
-import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
+import type {
+  HaPickerComboBox,
+  PickerComboBoxItem,
+} from "../../components/ha-picker-combo-box";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
 import "../../components/ha-tip";
@@ -44,6 +47,7 @@ import {
 } from "../../resources/fuseMultiTerm";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
+import { isIosApp } from "../../util/is_ios";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import type { QuickBarParams } from "./show-dialog-quick-bar";
@@ -104,6 +108,10 @@ export class QuickBar extends LitElement {
 
   @state() private _mode?: QuickBarSection;
 
+  @state() private _opened = false;
+
+  @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
+
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   private _hassioAddonsInfo?: HassioAddonsInfo;
@@ -126,7 +134,6 @@ export class QuickBar extends LitElement {
 
   public closeDialog() {
     this._open = false;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected willUpdate() {
@@ -206,8 +213,7 @@ export class QuickBar extends LitElement {
 
         if (!section && commandItems.length) {
           // show group title
-          // TODO add translations
-          items.push("commands title");
+          items.push(this.hass.localize("ui.dialogs.quick-bar.commands_title"));
         }
 
         items.push(...commandItems);
@@ -252,11 +258,12 @@ export class QuickBar extends LitElement {
         .hass=${this.hass}
         aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}
-        @closed=${this.closeDialog}
         hideActions
+        @wa-after-show=${this._dialogOpened}
+        @closed=${this._dialogClosed}
       >
         <div slot="header"></div>
-        ${!this._loading
+        ${!this._loading && this._opened
           ? html`<ha-picker-combo-box
               .hass=${this.hass}
               @value-changed=${this._handleItemSelected}
@@ -269,7 +276,7 @@ export class QuickBar extends LitElement {
               .selectedSection=${this._mode}
               .sectionTitleFunction=${this._sectionTitleFunction}
             ></ha-picker-combo-box>`
-          : "loading"}
+          : nothing}
         ${this._hint
           ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
           : nothing}
@@ -333,9 +340,16 @@ export class QuickBar extends LitElement {
     ) as PickerComboBoxItem | undefined;
 
     if (item && "stateObj" in item) {
+      this.closeDialog();
       fireEvent(this, "hass-more-info", {
         entityId: item.search_labels!.entityId,
       });
+      return;
+    }
+
+    if (item && "domain_name" in item) {
+      this.closeDialog();
+      navigate(`/config/devices/device/${item.id.split(SEPARATOR)[1]}`);
       return;
     }
 
@@ -365,6 +379,8 @@ export class QuickBar extends LitElement {
     }
 
     if (item && "path" in item) {
+      this.closeDialog();
+
       if (!item.path) {
         showShortcutsDialog(this);
         return;
@@ -709,6 +725,29 @@ export class QuickBar extends LitElement {
       fuseIndex
     );
   }
+
+  private _dialogClosed = () => {
+    this._mode = undefined;
+    this._opened = false;
+    this._open = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  };
+
+  private _dialogOpened = async () => {
+    this._opened = true;
+    requestAnimationFrame(() => {
+      if (this.hass && isIosApp(this.hass)) {
+        this.hass.auth.external!.fireMessage({
+          type: "focus_element",
+          payload: {
+            element_id: "combo-box",
+          },
+        });
+        return;
+      }
+      this._comboBox?.focus();
+    });
+  };
 
   static styles = css`
     :host {
