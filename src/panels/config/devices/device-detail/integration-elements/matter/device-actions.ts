@@ -1,5 +1,6 @@
 import {
   mdiAccessPoint,
+  mdiAccountLock,
   mdiChatProcessing,
   mdiChatQuestion,
   mdiExportVariant,
@@ -10,11 +11,13 @@ import {
   NetworkType,
   getMatterNodeDiagnostics,
 } from "../../../../../../data/matter";
+import { getMatterLockInfo } from "../../../../../../data/matter-lock";
 import type { HomeAssistant } from "../../../../../../types";
 import { showMatterManageFabricsDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-manage-fabrics";
 import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
 import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
 import { showMatterReinterviewNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-reinterview-node";
+import { showMatterLockManageDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-lock-manage";
 import type { DeviceAction } from "../../../ha-config-device-page";
 
 export const getMatterDeviceDefaultActions = (
@@ -97,6 +100,25 @@ export const getMatterDeviceActions = async (
       icon: mdiAccessPoint,
       action: () => navigate("/config/thread"),
     });
+  }
+
+  // Check if device is a lock and add lock management action
+  try {
+    const lockInfo = await getMatterLockInfo(hass, device.id);
+    if (lockInfo.supports_user_management) {
+      actions.push({
+        label: hass.localize(
+          "ui.panel.config.matter.device_actions.manage_lock"
+        ),
+        icon: mdiAccountLock,
+        action: () =>
+          showMatterLockManageDialog(el, {
+            device_id: device.id,
+          }),
+      });
+    }
+  } catch {
+    // Device is not a lock or doesn't support lock features
   }
 
   return actions;
