@@ -38,36 +38,30 @@ export const getLanguageOptions = (
           primary = lang;
         }
       }
-      let searchLabels = primary;
       const browserLangName = formatLanguageCode(
         lang,
         locale || ({ language: navigator.language } as FrontendLocaleData)
       );
-      if (browserLangName !== primary) {
-        searchLabels += `;${browserLangName}`;
-      }
       const englishName = formatLanguageCode(lang, enLocale);
-      if (englishName !== primary && englishName !== browserLangName) {
-        searchLabels += `;${englishName}`;
-      }
       return {
         id: lang,
         primary,
-        search_labels: searchLabels.split(";"),
+        search_labels: {
+          browser: browserLangName !== primary ? browserLangName : null,
+          english: englishName !== primary ? englishName : null,
+        },
       };
     });
   } else if (locale) {
     options = languages.map((lang) => {
       const primary = formatLanguageCode(lang, locale);
-      let searchLabels = primary;
       const englishName = formatLanguageCode(lang, enLocale);
-      if (englishName !== primary) {
-        searchLabels += `;${englishName}`;
-      }
       return {
         id: lang,
         primary,
-        search_labels: searchLabels.split(";"),
+        search_labels: {
+          english: englishName !== primary ? englishName : null,
+        },
       };
     });
   }
@@ -93,6 +87,8 @@ export class HaLanguagePicker extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
+
+  @property() public helper?: string;
 
   @property({ attribute: "native-name", type: Boolean })
   public nativeName = false;
@@ -137,6 +133,11 @@ export class HaLanguagePicker extends LitElement {
     > `;
 
   protected render() {
+    const label =
+      this.label ??
+      (this.hass?.localize("ui.components.language-picker.language") ||
+        "Language");
+
     const value =
       this.value ??
       (this.required && !this.disabled ? this._getItems()[0].id : this.value);
@@ -146,15 +147,15 @@ export class HaLanguagePicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         popover-placement="bottom-end"
-        .notFoundLabel=${this.hass?.localize(
-          "ui.components.language-picker.no_match"
-        )}
-        .placeholder=${this.label ??
-        (this.hass?.localize("ui.components.language-picker.language") ||
-          "Language")}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass?.localize(
+          "ui.components.language-picker.no_languages"
+        ) || "No languages available"}
+        .label=${label}
         .value=${value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
+        .helper=${this.helper}
         .getItems=${this._getItems}
         @value-changed=${this._changed}
         hide-clear-icon
@@ -193,6 +194,15 @@ export class HaLanguagePicker extends LitElement {
     this.value = ev.detail.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
+
+  private _notFoundLabel = (search: string) => {
+    const term = html`<b>‘${search}’</b>`;
+    return this.hass
+      ? this.hass.localize("ui.components.language-picker.no_match", {
+          term,
+        })
+      : html`No languages found for ${term}`;
+  };
 }
 
 declare global {

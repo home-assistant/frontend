@@ -1,7 +1,7 @@
 import { mdiClose, mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
@@ -26,6 +26,7 @@ import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
+@customElement("dialog-system-log-detail")
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -272,5 +273,3 @@ declare global {
     "dialog-system-log-detail": DialogSystemLogDetail;
   }
 }
-
-customElements.define("dialog-system-log-detail", DialogSystemLogDetail);

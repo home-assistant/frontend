@@ -15,10 +15,13 @@ import type {
 } from "./common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "./common/translations/localize";
 import type { AreaRegistryEntry } from "./data/area_registry";
-import type { DeviceRegistryEntry } from "./data/device_registry";
-import type { EntityRegistryDisplayEntry } from "./data/entity_registry";
+import type { DeviceRegistryEntry } from "./data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "./data/entity/entity_registry";
 import type { FloorRegistryEntry } from "./data/floor_registry";
-import type { CoreFrontendUserData } from "./data/frontend";
+import type {
+  CoreFrontendSystemData,
+  CoreFrontendUserData,
+} from "./data/frontend";
 import type {
   FrontendLocaleData,
   getHassTranslations,
@@ -138,6 +141,7 @@ export interface PanelInfo<T = Record<string, any> | null> {
   title: string | null;
   url_path: string;
   config_panel_domain?: string;
+  default_visible?: boolean;
 }
 
 export type Panels = Record<string, PanelInfo>;
@@ -247,10 +251,10 @@ export interface HomeAssistant {
   vibrate: boolean;
   debugConnection: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
-  defaultPanel: string;
   moreInfoEntityId: string | null;
   user?: CurrentUser;
-  userData?: CoreFrontendUserData | null;
+  userData?: CoreFrontendUserData;
+  systemData?: CoreFrontendSystemData;
   hassUrl(path?): string;
   callService<T = any>(
     domain: ServiceCallRequest["domain"],

@@ -1,6 +1,7 @@
 import {
   mdiAccount,
   mdiAmpersand,
+  mdiCalendarClock,
   mdiGateOr,
   mdiMapMarker,
   mdiNotEqualVariant,
@@ -15,6 +16,7 @@ export const ICON_CONDITION: Record<Condition["condition"], string> = {
   numeric_state: mdiNumeric,
   state: mdiStateMachine,
   screen: mdiResponsive,
+  time: mdiCalendarClock,
   user: mdiAccount,
   and: mdiAmpersand,
   not: mdiNotEqualVariant,

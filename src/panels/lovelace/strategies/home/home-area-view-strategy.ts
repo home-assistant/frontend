@@ -8,7 +8,6 @@ import {
 } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -26,23 +25,6 @@ export interface HomeAreaViewStrategyConfig {
   type: "home-area";
   area?: string;
 }
-
-const computeHeadingCard = (
-  heading: string,
-  icon: string,
-  navigation_path?: string
-): LovelaceCardConfig =>
-  ({
-    type: "heading",
-    heading: heading,
-    icon: icon,
-    tap_action: navigation_path
-      ? {
-          action: "navigate",
-          navigation_path,
-        }
-      : undefined,
-  }) satisfies HeadingCardConfig;
 
 @customElement("home-area-view-strategy")
 export class HomeAreaViewStrategy extends ReactiveElement {
@@ -112,11 +94,15 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard(
-            getSummaryLabel(hass.localize, "light"),
-            HOME_SUMMARIES_ICONS.light,
-            "/light?historyBack=1"
-          ),
+          {
+            type: "heading",
+            heading: getSummaryLabel(hass.localize, "light"),
+            icon: HOME_SUMMARIES_ICONS.light,
+            tap_action: {
+              action: "navigate",
+              navigation_path: "/light?historyBack=1",
+            },
+          } satisfies HeadingCardConfig,
           ...light.map(computeTileCard),
         ],
       });
@@ -126,11 +112,15 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard(
-            getSummaryLabel(hass.localize, "climate"),
-            HOME_SUMMARIES_ICONS.climate,
-            "/climate?historyBack=1"
-          ),
+          {
+            type: "heading",
+            heading: getSummaryLabel(hass.localize, "climate"),
+            icon: HOME_SUMMARIES_ICONS.climate,
+            tap_action: {
+              action: "navigate",
+              navigation_path: "/climate?historyBack=1",
+            },
+          } satisfies HeadingCardConfig,
           ...climate.map(computeTileCard),
         ],
       });
@@ -140,11 +130,15 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard(
-            getSummaryLabel(hass.localize, "security"),
-            HOME_SUMMARIES_ICONS.security,
-            "/security?historyBack=1"
-          ),
+          {
+            type: "heading",
+            heading: getSummaryLabel(hass.localize, "security"),
+            icon: HOME_SUMMARIES_ICONS.security,
+            tap_action: {
+              action: "navigate",
+              navigation_path: "/security?historyBack=1",
+            },
+          } satisfies HeadingCardConfig,
           ...security.map(computeTileCard),
         ],
       });
@@ -154,11 +148,15 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard(
-            getSummaryLabel(hass.localize, "media_players"),
-            HOME_SUMMARIES_ICONS.media_players,
-            "/media-players"
-          ),
+          {
+            type: "heading",
+            heading: getSummaryLabel(hass.localize, "media_players"),
+            icon: HOME_SUMMARIES_ICONS.media_players,
+            tap_action: {
+              action: "navigate",
+              navigation_path: "media-players?historyBack=1",
+            },
+          } satisfies HeadingCardConfig,
           ...mediaPlayers.map(computeTileCard),
         ],
       });
@@ -167,6 +165,33 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     const deviceSections: LovelaceSectionRawConfig[] = [];
 
     const summaryEntities = Object.values(entitiesBySummary).flat();
+
+    // Scenes section
+    const sceneFilter = generateEntityFilter(hass, {
+      domain: "scene",
+      entity_category: "none",
+    });
+    const scenes = areaEntities.filter(sceneFilter);
+
+    if (scenes.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize("ui.panel.lovelace.strategy.home.scenes"),
+            icon: "mdi:palette",
+            tap_action: hass.user?.is_admin
+              ? {
+                  action: "navigate",
+                  navigation_path: "/config/scene/dashboard",
+                }
+              : undefined,
+          } satisfies HeadingCardConfig,
+          ...scenes.map(computeTileCard),
+        ],
+      });
+    }
 
     // Automations section
     const automationFilter = generateEntityFilter(hass, {
@@ -178,7 +203,9 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     // Rest of entities grouped by device
     const otherEntities = areaEntities.filter(
       (entityId) =>
-        !summaryEntities.includes(entityId) && !automations.includes(entityId)
+        !summaryEntities.includes(entityId) &&
+        !scenes.includes(entityId) &&
+        !automations.includes(entityId)
     );
 
     const entitiesByDevice: Record<string, string[]> = {};
@@ -262,12 +289,13 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: heading,
-            tap_action: device
-              ? {
-                  action: "navigate",
-                  navigation_path: `/config/devices/device/${device.id}`,
-                }
-              : undefined,
+            tap_action:
+              hass.user?.is_admin && device
+                ? {
+                    action: "navigate",
+                    navigation_path: `/config/devices/device/${device.id}`,
+                  }
+                : undefined,
             badges: [
               ...batteryEntities.slice(0, 1).map((e) => ({
                 entity: e,
@@ -308,11 +336,19 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.home.automations"),
-            "mdi:robot",
-            "/config/automation/dashboard"
-          ),
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.home.automations"
+            ),
+            icon: "mdi:robot",
+            tap_action: hass.user?.is_admin
+              ? {
+                  action: "navigate",
+                  navigation_path: "/config/automation/dashboard",
+                }
+              : undefined,
+          } satisfies HeadingCardConfig,
           ...automations.map(computeTileCard),
         ],
       });

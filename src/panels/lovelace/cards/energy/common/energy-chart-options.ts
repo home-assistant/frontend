@@ -16,8 +16,10 @@ import {
 import type {
   BarSeriesOption,
   CallbackDataParams,
+  LineSeriesOption,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import type { LineDataItemOption } from "echarts/types/src/chart/line/LineSeries";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
 import {
@@ -29,7 +31,11 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
 
-export function getSuggestedMax(dayDifference: number, end: Date): number {
+export function getSuggestedMax(
+  dayDifference: number,
+  end: Date,
+  detailedDailyData = false
+): number {
   let suggestedMax = new Date(end);
 
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
@@ -38,7 +44,9 @@ export function getSuggestedMax(dayDifference: number, end: Date): number {
     suggestedMax = subHours(suggestedMax, 1);
   }
 
-  suggestedMax.setMinutes(0, 0, 0);
+  if (!detailedDailyData) {
+    suggestedMax.setMinutes(0, 0, 0);
+  }
   if (dayDifference > 35) {
     suggestedMax.setDate(1);
   }
@@ -54,6 +62,19 @@ export function getSuggestedPeriod(
   return dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 }
 
+function createYAxisLabelFormatter(locale: FrontendLocaleData) {
+  let previousValue: number | undefined;
+
+  return (value: number): string => {
+    const maximumFractionDigits = Math.max(
+      1,
+      -Math.floor(Math.log10(Math.abs(value - (previousValue ?? value) || 1)))
+    );
+    previousValue = value;
+    return formatNumber(value, locale, { maximumFractionDigits });
+  };
+}
+
 export function getCommonOptions(
   start: Date,
   end: Date,
@@ -62,7 +83,8 @@ export function getCommonOptions(
   unit?: string,
   compareStart?: Date,
   compareEnd?: Date,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  detailedDailyData = false
 ): ECOption {
   const dayDifference = differenceInDays(end, start);
 
@@ -74,7 +96,7 @@ export function getCommonOptions(
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(dayDifference, end),
+      max: getSuggestedMax(dayDifference, end, detailedDailyData),
     },
     yAxis: {
       type: "value",
@@ -84,7 +106,7 @@ export function getCommonOptions(
         align: "left",
       },
       axisLabel: {
-        formatter: (value: number) => formatNumber(Math.abs(value), locale),
+        formatter: createYAxisLabelFormatter(locale),
       },
       splitLine: {
         show: true,
@@ -170,11 +192,10 @@ function formatTooltip(
       compare
         ? `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}: `
         : ""
-    }${formatTime(date, locale, config)} – ${formatTime(
-      addHours(date, 1),
-      locale,
-      config
-    )}`;
+    }${formatTime(date, locale, config)}`;
+    if (params[0].componentSubType === "bar") {
+      period += ` – ${formatTime(addHours(date, 1), locale, config)}`;
+    }
   }
   const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
 
@@ -202,7 +223,7 @@ function formatTooltip(
           countNegative++;
         }
       }
-      return `${param.marker} ${filterXSS(param.seriesName!)}: ${value} ${unit}`;
+      return `${param.marker} ${filterXSS(param.seriesName!)}: <div style="direction:ltr; display: inline;">${value} ${unit}</div>`;
     })
     .filter(Boolean);
   let footer = "";
@@ -279,6 +300,44 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
       }
     }
   });
+}
+
+function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
+  const item =
+    datapoint && typeof datapoint === "object" && "value" in datapoint
+      ? datapoint
+      : { value: datapoint };
+  return Number(item.value?.[0]);
+}
+
+export function fillLineGaps(datasets: LineSeriesOption[]) {
+  const buckets = Array.from(
+    new Set(
+      datasets
+        .map((dataset) =>
+          dataset.data!.map((datapoint) => getDatapointX(datapoint))
+        )
+        .flat()
+    )
+  ).sort((a, b) => a - b);
+
+  datasets.forEach((dataset) => {
+    const dataMap = new Map<number, LineDataItemOption>();
+    dataset.data!.forEach((datapoint) => {
+      const item: LineDataItemOption =
+        datapoint && typeof datapoint === "object" && "value" in datapoint
+          ? datapoint
+          : ({ value: datapoint } as LineDataItemOption);
+      const x = getDatapointX(datapoint);
+      if (!Number.isNaN(x)) {
+        dataMap.set(x, item);
+      }
+    });
+
+    dataset.data = buckets.map((bucket) => dataMap.get(bucket) ?? [bucket, 0]);
+  });
+
+  return datasets;
 }
 
 export function getCompareTransform(start: Date, compareStart?: Date) {

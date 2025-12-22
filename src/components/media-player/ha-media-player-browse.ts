@@ -17,7 +17,7 @@ import { until } from "lit/directives/until";
 import { fireEvent } from "../../common/dom/fire_event";
 import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
-import { isUnavailableState } from "../../data/entity";
+import { isUnavailableState } from "../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,

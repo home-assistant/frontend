@@ -50,7 +50,7 @@ export const ACTION_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
       device_id: {},
-      serviceGroups: {},
+      dynamicGroups: {},
     },
   },
   {
@@ -116,14 +116,6 @@ export const VIRTUAL_ACTIONS: Partial<
     },
   },
 } as const;
-
-export const SERVICE_PREFIX = "__SERVICE__";
-
-export const isService = (key: string | undefined): boolean | undefined =>
-  key?.startsWith(SERVICE_PREFIX);
-
-export const getService = (key: string): string =>
-  key.substring(SERVICE_PREFIX.length);
 
 export const COLLAPSIBLE_ACTION_ELEMENTS = [
   "ha-automation-action-choose",

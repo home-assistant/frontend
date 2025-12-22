@@ -305,9 +305,8 @@ export class HcMain extends HassElement {
         await llColl.refresh();
         this._unsubLovelace = llColl.subscribe(async (rawConfig) => {
           if (isStrategyDashboard(rawConfig)) {
-            const { generateLovelaceDashboardStrategy } = await import(
-              "../../../../src/panels/lovelace/strategies/get-strategy"
-            );
+            const { generateLovelaceDashboardStrategy } =
+              await import("../../../../src/panels/lovelace/strategies/get-strategy");
             const config = await generateLovelaceDashboardStrategy(
               rawConfig,
               this.hass!
@@ -347,9 +346,8 @@ export class HcMain extends HassElement {
   }
 
   private async _generateDefaultLovelaceConfig() {
-    const { generateLovelaceDashboardStrategy } = await import(
-      "../../../../src/panels/lovelace/strategies/get-strategy"
-    );
+    const { generateLovelaceDashboardStrategy } =
+      await import("../../../../src/panels/lovelace/strategies/get-strategy");
     this._handleNewLovelaceConfig(
       await generateLovelaceDashboardStrategy(DEFAULT_CONFIG, this.hass!)
     );

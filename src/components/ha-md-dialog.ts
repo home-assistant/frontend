@@ -175,10 +175,10 @@ export class HaMdDialog extends Dialog {
         }
 
         .container {
-          padding-top: var(--safe-area-inset-top);
-          padding-bottom: var(--safe-area-inset-bottom);
-          padding-left: var(--safe-area-inset-left);
-          padding-right: var(--safe-area-inset-right);
+          margin-top: var(--safe-area-inset-top, 0);
+          margin-bottom: var(--safe-area-inset-bottom, 0);
+          margin-left: var(--safe-area-inset-left, 0);
+          margin-right: var(--safe-area-inset-right, 0);
         }
       }
 
@@ -187,7 +187,7 @@ export class HaMdDialog extends Dialog {
       }
 
       slot[name="actions"]::slotted(*) {
-        padding: 16px;
+        padding: var(--ha-space-4);
       }
 
       .scroller {
@@ -195,7 +195,7 @@ export class HaMdDialog extends Dialog {
       }
 
       slot[name="content"]::slotted(*) {
-        padding: var(--dialog-content-padding, 24px);
+        padding: var(--dialog-content-padding, var(--ha-space-6));
       }
       .scrim {
         z-index: 10; /* overlay navigation */

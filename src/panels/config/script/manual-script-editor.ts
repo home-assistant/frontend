@@ -270,6 +270,7 @@ export class HaManualScriptEditor extends LitElement {
             @value-changed=${this._sidebarConfigChanged}
             @sidebar-resized=${this._resizeSidebar}
             @sidebar-resizing-stopped=${this._stopResizeSidebar}
+            @sidebar-reset-size=${this._resetSidebarWidth}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -371,7 +372,11 @@ export class HaManualScriptEditor extends LitElement {
       }
     }
 
-    if (!["sequence", "unknown"].includes(getActionType(config))) {
+    const actionType = getActionType(config);
+    if (
+      !["sequence", "unknown"].includes(actionType) ||
+      (actionType === "sequence" && "metadata" in config)
+    ) {
       config = { sequence: [config] };
     }
 
@@ -612,6 +617,16 @@ export class HaManualScriptEditor extends LitElement {
   private _stopResizeSidebar(ev) {
     ev.stopPropagation();
     this._prevSidebarWidthPx = undefined;
+  }
+
+  private _resetSidebarWidth(ev: Event) {
+    ev.stopPropagation();
+    this._prevSidebarWidthPx = undefined;
+    this._sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
   }
 
   static get styles(): CSSResultGroup {

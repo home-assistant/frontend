@@ -1,13 +1,13 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
-  isDeletableEntity,
   deleteEntity,
+  isDeletableEntity,
 } from "../../../src/common/entity/delete_entity";
-import type { HomeAssistant } from "../../../src/types";
-import type { EntityRegistryEntry } from "../../../src/data/entity_registry";
-import type { IntegrationManifest } from "../../../src/data/integration";
 import type { ConfigEntry } from "../../../src/data/config_entries";
+import type { EntityRegistryEntry } from "../../../src/data/entity/entity_registry";
+import type { IntegrationManifest } from "../../../src/data/integration";
 import type { Helper } from "../../../src/panels/config/helpers/const";
+import type { HomeAssistant } from "../../../src/types";
 
 describe("isDeletableEntity", () => {
   it("should return true for restored entities", () => {

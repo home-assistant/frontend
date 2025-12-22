@@ -88,7 +88,6 @@ export const DOMAINS_HIDE_DEFAULT_MORE_INFO = [
   "select",
   "text",
   "update",
-  "event",
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */

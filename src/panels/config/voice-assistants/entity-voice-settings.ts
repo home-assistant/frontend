@@ -25,11 +25,11 @@ import {
   fetchCloudStatus,
   updateCloudGoogleEntityConfig,
 } from "../../../data/cloud";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { exposeEntities, voiceAssistants } from "../../../data/expose";
 import type { GoogleEntity } from "../../../data/google_assistant";

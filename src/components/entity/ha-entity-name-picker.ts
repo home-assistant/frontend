@@ -1,15 +1,11 @@
-import "@material/mwc-menu/mwc-menu-surface";
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { EntityNameType } from "../../common/translations/entity-state";
@@ -18,20 +14,18 @@ import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
-import "../ha-combo-box";
-import type { HaComboBox } from "../ha-combo-box";
+import "../ha-combo-box-item";
+import "../ha-generic-picker";
+import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-input-helper-text";
+import {
+  NO_ITEMS_AVAILABLE_ID,
+  type PickerComboBoxItem,
+} from "../ha-picker-combo-box";
 import "../ha-sortable";
 
-interface EntityNameOption {
-  primary: string;
-  secondary?: string;
-  field_label: string;
-  value: string;
-}
-
-const rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (item) => html`
-  <ha-combo-box-item type="button">
+const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
+  <ha-combo-box-item type="button" compact>
     <span slot="headline">${item.primary}</span>
     ${item.secondary
       ? html`<span slot="supporting-text">${item.secondary}</span>`
@@ -79,11 +73,7 @@ export class HaEntityNamePicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @query(".container", true) private _container?: HTMLDivElement;
-
-  @query("ha-combo-box", true) private _comboBox!: HaComboBox;
-
-  @state() private _opened = false;
+  @query("ha-generic-picker", true) private _picker?: HaGenericPicker;
 
   private _editIndex?: number;
 
@@ -115,7 +105,7 @@ export class HaEntityNamePicker extends LitElement {
     return options;
   });
 
-  private _getOptions = memoizeOne((entityId?: string) => {
+  private _getItems = memoizeOne((entityId?: string) => {
     if (!entityId) {
       return [];
     }
@@ -124,7 +114,7 @@ export class HaEntityNamePicker extends LitElement {
 
     const items = (
       ["entity", "device", "area", "floor"] as const
-    ).map<EntityNameOption>((name) => {
+    ).map<PickerComboBoxItem>((name) => {
       const stateObj = this.hass.states[entityId];
       const isValid = types.has(name);
       const primary = this.hass.localize(
@@ -137,25 +127,39 @@ export class HaEntityNamePicker extends LitElement {
               `ui.components.entity.entity-name-picker.types.${name}_missing` as LocalizeKeys
             )) || "-";
 
+      const id = formatOptionValue({ type: name });
+
       return {
+        id,
         primary,
         secondary,
-        field_label: primary,
-        value: formatOptionValue({ type: name }),
+        search_labels: {
+          primary,
+          secondary: secondary || null,
+          id,
+        },
+        sorting_label: primary,
       };
     });
 
     return items;
   });
 
-  private _customNameOption = memoizeOne((text: string) => ({
-    primary: this.hass.localize(
-      "ui.components.entity.entity-name-picker.custom_name"
-    ),
-    secondary: `"${text}"`,
-    field_label: text,
-    value: formatOptionValue({ type: "text", text }),
-  }));
+  private _customNameOption = memoizeOne(
+    (text: string): PickerComboBoxItem => ({
+      id: formatOptionValue({ type: "text", text }),
+      primary: this.hass.localize(
+        "ui.components.entity.entity-name-picker.custom_name"
+      ),
+      secondary: `"${text}"`,
+      search_labels: {
+        primary: text,
+        secondary: `"${text}"`,
+        id: formatOptionValue({ type: "text", text }),
+      },
+      sorting_label: text,
+    })
+  );
 
   private _formatItem = (item: EntityNameItem) => {
     if (item.type === "text") {
@@ -171,88 +175,80 @@ export class HaEntityNamePicker extends LitElement {
 
   protected render() {
     const value = this._items;
-    const options = this._getOptions(this.entityId);
     const validTypes = this._validTypes(this.entityId);
 
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
-      <div class="container">
-        <ha-sortable
-          no-style
-          @item-moved=${this._moveItem}
-          .disabled=${this.disabled}
-          handle-selector="button.primary.action"
-          filter=".add"
-        >
-          <ha-chip-set>
-            ${repeat(
-              this._items,
-              (item) => item,
-              (item: EntityNameItem, idx) => {
-                const label = this._formatItem(item);
-                const isValid = validTypes.has(item.type);
-                return html`
-                  <ha-input-chip
-                    data-idx=${idx}
-                    @remove=${this._removeItem}
-                    @click=${this._editItem}
-                    .label=${label}
-                    .selected=${!this.disabled}
-                    .disabled=${this.disabled}
-                    class=${!isValid ? "invalid" : ""}
-                  >
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${mdiDragHorizontalVariant}
-                    ></ha-svg-icon>
-                    <span>${label}</span>
-                  </ha-input-chip>
-                `;
-              }
-            )}
-            ${this.disabled
-              ? nothing
-              : html`
-                  <ha-assist-chip
-                    @click=${this._addItem}
-                    .disabled=${this.disabled}
-                    label=${this.hass.localize(
-                      "ui.components.entity.entity-name-picker.add"
-                    )}
-                    class="add"
-                  >
-                    <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                  </ha-assist-chip>
-                `}
-          </ha-chip-set>
-        </ha-sortable>
-
-        <mwc-menu-surface
-          .open=${this._opened}
-          @closed=${this._onClosed}
-          @opened=${this._onOpened}
-          @input=${stopPropagation}
-          .anchor=${this._container}
-        >
-          <ha-combo-box
-            .hass=${this.hass}
-            .value=${""}
-            .autofocus=${this.autofocus}
+      <ha-generic-picker
+        .hass=${this.hass}
+        .disabled=${this.disabled}
+        .required=${this.required && !value.length}
+        .getItems=${this._getFilteredItems}
+        .getAdditionalItems=${this._getAdditionalItems}
+        .rowRenderer=${rowRenderer}
+        .searchFn=${this._searchFn}
+        .notFoundLabel=${this.hass.localize(
+          "ui.components.entity.entity-name-picker.no_match"
+        )}
+        .value=${this._getPickerValue()}
+        allow-custom-value
+        .customValueLabel=${this.hass.localize(
+          "ui.components.entity.entity-name-picker.custom_name"
+        )}
+        @value-changed=${this._pickerValueChanged}
+      >
+        <div slot="field" class="container">
+          <ha-sortable
+            no-style
+            @item-moved=${this._moveItem}
             .disabled=${this.disabled}
-            .required=${this.required && !value.length}
-            .items=${options}
-            allow-custom-value
-            item-id-path="value"
-            item-value-path="value"
-            item-label-path="field_label"
-            .renderer=${rowRenderer}
-            @opened-changed=${this._openedChanged}
-            @value-changed=${this._comboBoxValueChanged}
-            @filter-changed=${this._filterChanged}
+            handle-selector="button.primary.action"
+            filter=".add"
           >
-          </ha-combo-box>
-        </mwc-menu-surface>
-      </div>
+            <ha-chip-set>
+              ${repeat(
+                this._items,
+                (item) => item,
+                (item: EntityNameItem, idx) => {
+                  const label = this._formatItem(item);
+                  const isValid = validTypes.has(item.type);
+                  return html`
+                    <ha-input-chip
+                      data-idx=${idx}
+                      @remove=${this._removeItem}
+                      @click=${this._editItem}
+                      .label=${label}
+                      .selected=${!this.disabled}
+                      .disabled=${this.disabled}
+                      class=${!isValid ? "invalid" : ""}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiDragHorizontalVariant}
+                      ></ha-svg-icon>
+                      <span>${label}</span>
+                    </ha-input-chip>
+                  `;
+                }
+              )}
+              ${this.disabled
+                ? nothing
+                : html`
+                    <ha-assist-chip
+                      @click=${this._addItem}
+                      .disabled=${this.disabled}
+                      label=${this.hass.localize(
+                        "ui.components.entity.entity-name-picker.add"
+                      )}
+                      class="add"
+                    >
+                      <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                    </ha-assist-chip>
+                  `}
+            </ha-chip-set>
+          </ha-sortable>
+        </div>
+      </ha-generic-picker>
       ${this._renderHelper()}
     `;
   }
@@ -267,32 +263,22 @@ export class HaEntityNamePicker extends LitElement {
       : nothing;
   }
 
-  private _onClosed(ev) {
+  private async _addItem(ev: Event) {
     ev.stopPropagation();
-    this._opened = false;
     this._editIndex = undefined;
+    await this.updateComplete;
+    await this._picker?.open();
   }
 
-  private async _onOpened(ev) {
-    if (!this._opened) {
-      return;
-    }
+  private async _editItem(ev: Event) {
     ev.stopPropagation();
-    this._opened = true;
-    await this._comboBox?.focus();
-    await this._comboBox?.open();
-  }
-
-  private async _addItem(ev) {
-    ev.stopPropagation();
-    this._opened = true;
-  }
-
-  private async _editItem(ev) {
-    ev.stopPropagation();
-    const idx = parseInt(ev.currentTarget.dataset.idx, 10);
+    const idx = parseInt(
+      (ev.currentTarget as HTMLElement).dataset.idx || "",
+      10
+    );
     this._editIndex = idx;
-    this._opened = true;
+    await this.updateComplete;
+    await this._picker?.open();
   }
 
   private get _items(): EntityNameItem[] {
@@ -322,78 +308,80 @@ export class HaEntityNamePicker extends LitElement {
     }
   );
 
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    const open = ev.detail.value;
-    if (open) {
-      const options = this._comboBox.items || [];
-
-      const initialItem =
-        this._editIndex != null ? this._items[this._editIndex] : undefined;
-
-      const initialValue = initialItem ? formatOptionValue(initialItem) : "";
-
-      const filteredItems = this._filterSelectedOptions(options, initialValue);
-
-      if (initialItem?.type === "text" && initialItem.text) {
-        filteredItems.push(this._customNameOption(initialItem.text));
-      }
-
-      this._comboBox.filteredItems = filteredItems;
-      this._comboBox.setInputValue(initialValue);
-    } else {
-      this._opened = false;
-      this._comboBox.setInputValue("");
+  private _getPickerValue(): string | undefined {
+    if (this._editIndex != null) {
+      const item = this._items[this._editIndex];
+      return item ? formatOptionValue(item) : undefined;
     }
+    return undefined;
   }
 
-  private _filterSelectedOptions = (
-    options: EntityNameOption[],
-    current?: string
-  ) => {
-    const items = this._items;
+  private _getFilteredItems = (
+    searchString?: string,
+    _section?: string
+  ): PickerComboBoxItem[] => {
+    const items = this._getItems(this.entityId);
+    const currentItem =
+      this._editIndex != null ? this._items[this._editIndex] : undefined;
+    const currentValue = currentItem ? formatOptionValue(currentItem) : "";
 
     const excludedValues = new Set(
-      items
+      this._items
         .filter((item) => UNIQUE_TYPES.has(item.type))
         .map((item) => formatOptionValue(item))
     );
 
-    const filteredOptions = options.filter(
-      (option) => !excludedValues.has(option.value) || option.value === current
+    const filteredItems = items.filter(
+      (item) => !excludedValues.has(item.id) || item.id === currentValue
     );
-    return filteredOptions;
+
+    // When editing an existing text item, include it in the base items
+    if (currentItem?.type === "text" && currentItem.text && !searchString) {
+      filteredItems.push(this._customNameOption(currentItem.text));
+    }
+
+    return filteredItems;
   };
 
-  private _filterChanged(ev: ValueChangedEvent<string>) {
-    const input = ev.detail.value;
-    const filter = input?.toLowerCase() || "";
-    const options = this._comboBox.items || [];
+  private _getAdditionalItems = (
+    searchString?: string
+  ): PickerComboBoxItem[] => {
+    if (!searchString) {
+      return [];
+    }
 
     const currentItem =
       this._editIndex != null ? this._items[this._editIndex] : undefined;
 
-    const currentValue = currentItem ? formatOptionValue(currentItem) : "";
-
-    let filteredItems = this._filterSelectedOptions(options, currentValue);
-
-    if (!filter) {
-      this._comboBox.filteredItems = filteredItems;
-      return;
+    // Don't add if it's the same as the current item being edited
+    if (
+      currentItem?.type === "text" &&
+      currentItem.text &&
+      currentItem.text === searchString
+    ) {
+      return [];
     }
 
-    const fuseOptions: IFuseOptions<EntityNameOption> = {
-      keys: ["primary", "secondary", "value"],
-      isCaseSensitive: false,
-      minMatchCharLength: Math.min(filter.length, 2),
-      threshold: 0.2,
-      ignoreDiacritics: true,
-    };
+    // Always return custom name option when there's a search string
+    // This prevents "No matching items found" from showing
+    return [this._customNameOption(searchString)];
+  };
 
-    const fuse = new Fuse(filteredItems, fuseOptions);
-    filteredItems = fuse.search(filter).map((result) => result.item);
-    filteredItems.push(this._customNameOption(input));
-    this._comboBox.filteredItems = filteredItems;
-  }
+  private _searchFn = (
+    search: string,
+    filteredItems: PickerComboBoxItem[],
+    _allItems: PickerComboBoxItem[]
+  ): PickerComboBoxItem[] => {
+    // Remove NO_ITEMS_AVAILABLE_ID if we have additional items (custom name option)
+    // This prevents "No matching items found" from showing when custom values are allowed
+    const hasAdditionalItems = this._getAdditionalItems(search).length > 0;
+    if (hasAdditionalItems) {
+      return filteredItems.filter(
+        (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
+      );
+    }
+    return filteredItems;
+  };
 
   private async _moveItem(ev: CustomEvent) {
     ev.stopPropagation();
@@ -403,25 +391,21 @@ export class HaEntityNamePicker extends LitElement {
     const element = newValue.splice(oldIndex, 1)[0];
     newValue.splice(newIndex, 0, element);
     this._setValue(newValue);
-    await this.updateComplete;
-    this._filterChanged({ detail: { value: "" } } as ValueChangedEvent<string>);
   }
 
-  private async _removeItem(ev) {
+  private async _removeItem(ev: Event) {
     ev.stopPropagation();
     const value = [...this._items];
-    const idx = parseInt(ev.target.dataset.idx, 10);
+    const idx = parseInt((ev.target as HTMLElement).dataset.idx || "", 10);
     value.splice(idx, 1);
     this._setValue(value);
-    await this.updateComplete;
-    this._filterChanged({ detail: { value: "" } } as ValueChangedEvent<string>);
   }
 
-  private _comboBoxValueChanged(ev: ValueChangedEvent<string>): void {
+  private _pickerValueChanged(ev: ValueChangedEvent<string>): void {
     ev.stopPropagation();
     const value = ev.detail.value;
 
-    if (this.disabled || value === "") {
+    if (this.disabled || !value) {
       return;
     }
 
@@ -431,11 +415,16 @@ export class HaEntityNamePicker extends LitElement {
 
     if (this._editIndex != null) {
       newValue[this._editIndex] = item;
+      this._editIndex = undefined;
     } else {
       newValue.push(item);
     }
 
     this._setValue(newValue);
+
+    if (this._picker) {
+      this._picker.value = undefined;
+    }
   }
 
   private _setValue(value: EntityNameItem[]) {
@@ -495,10 +484,6 @@ export class HaEntityNamePicker extends LitElement {
 
     .add {
       order: 1;
-    }
-
-    mwc-menu-surface {
-      --mdc-menu-min-width: 100%;
     }
 
     ha-chip-set {

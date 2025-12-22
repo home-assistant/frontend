@@ -35,7 +35,6 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
-const RESIZE_ANIMATION_DURATION = 250;
 
 export type CustomLegendOption = ECOption["legend"] & {
   type: "custom";
@@ -90,6 +89,8 @@ export class HaChartBase extends LitElement {
   private _lastTapTime?: number;
 
   private _shouldResizeChart = false;
+
+  private _resizeAnimationDuration?: number;
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
@@ -214,6 +215,7 @@ export class HaChartBase extends LitElement {
       ) {
         // custom legend changes may require a resize to layout properly
         this._shouldResizeChart = true;
+        this._resizeAnimationDuration = 250;
       }
     } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
       chartOptions.dataZoom = this._getDataZoomConfig();
@@ -425,6 +427,7 @@ export class HaChartBase extends LitElement {
                         ...axis.axisPointer?.handle,
                         show: true,
                       },
+                      label: { show: false },
                     },
                   }
                 : axis
@@ -590,14 +593,20 @@ export class HaChartBase extends LitElement {
     }
     const options = {
       animation: !this._reducedMotion,
+      animationDuration: 500,
       darkMode: this._themes.darkMode ?? false,
       aria: { show: true },
       dataZoom: this._getDataZoomConfig(),
       toolbox: {
-        top: Infinity,
-        left: Infinity,
+        top: Number.MAX_SAFE_INTEGER,
+        left: Number.MAX_SAFE_INTEGER,
         feature: {
-          dataZoom: { show: true, yAxisIndex: false, filterMode: "none" },
+          dataZoom: {
+            show: true,
+            yAxisIndex: false,
+            filterMode: "none",
+            showTitle: false,
+          },
         },
         iconStyle: { opacity: 0 },
       },
@@ -625,6 +634,10 @@ export class HaChartBase extends LitElement {
   }
 
   private _createTheme(style: CSSStyleDeclaration) {
+    const textBorderColor =
+      style.getPropertyValue("--ha-card-background") ||
+      style.getPropertyValue("--card-background-color");
+    const textBorderWidth = 2;
     return {
       color: getAllGraphColors(style),
       backgroundColor: "transparent",
@@ -648,22 +661,22 @@ export class HaChartBase extends LitElement {
       graph: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
-          textBorderColor: style.getPropertyValue("--primary-background-color"),
-          textBorderWidth: 2,
+          textBorderColor,
+          textBorderWidth,
         },
       },
       pie: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
-          textBorderColor: style.getPropertyValue("--primary-background-color"),
-          textBorderWidth: 2,
+          textBorderColor,
+          textBorderWidth,
         },
       },
       sankey: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
-          textBorderColor: style.getPropertyValue("--primary-background-color"),
-          textBorderWidth: 2,
+          textBorderColor,
+          textBorderWidth,
         },
       },
       categoryAxis: {
@@ -977,11 +990,14 @@ export class HaChartBase extends LitElement {
   private _handleChartRenderFinished = () => {
     if (this._shouldResizeChart) {
       this.chart?.resize({
-        animation: this._reducedMotion
-          ? undefined
-          : { duration: RESIZE_ANIMATION_DURATION },
+        animation:
+          this._reducedMotion ||
+          typeof this._resizeAnimationDuration !== "number"
+            ? undefined
+            : { duration: this._resizeAnimationDuration },
       });
       this._shouldResizeChart = false;
+      this._resizeAnimationDuration = undefined;
     }
   };
 

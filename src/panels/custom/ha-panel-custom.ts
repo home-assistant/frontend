@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
-import { property } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import type { NavigateOptions } from "../../common/navigate";
 import { navigate } from "../../common/navigate";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -22,6 +22,7 @@ declare global {
   }
 }
 
+@customElement("ha-panel-custom")
 export class HaPanelCustom extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -171,5 +172,3 @@ export class HaPanelCustom extends ReactiveElement {
     iframeDoc.close();
   }
 }
-
-customElements.define("ha-panel-custom", HaPanelCustom);

@@ -1,5 +1,5 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
@@ -7,6 +7,7 @@ import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
+import "../components/ha-snowflakes";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
@@ -46,10 +47,14 @@ export class HomeAssistantMain extends LitElement {
   protected render(): TemplateResult {
     const sidebarNarrow = this._sidebarNarrow || this._externalSidebar;
 
+    const isPanelReady =
+      this.hass.panels && this.hass.userData && this.hass.systemData;
+
     return html`
+      <ha-snowflakes .hass=${this.hass} .narrow=${this.narrow}></ha-snowflakes>
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
-        .open=${sidebarNarrow ? this._drawerOpen : undefined}
+        .open=${sidebarNarrow ? this._drawerOpen : false}
         .direction=${computeRTLDirection(this.hass)}
         @MDCDrawer:closed=${this._drawerClosed}
       >
@@ -59,12 +64,14 @@ export class HomeAssistantMain extends LitElement {
           .route=${this.route}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>
-        <partial-panel-resolver
-          .narrow=${this.narrow}
-          .hass=${this.hass}
-          .route=${this.route}
-          slot="appContent"
-        ></partial-panel-resolver>
+        ${isPanelReady
+          ? html`<partial-panel-resolver
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+              .route=${this.route}
+              slot="appContent"
+            ></partial-panel-resolver>`
+          : nothing}
       </ha-drawer>
     `;
   }

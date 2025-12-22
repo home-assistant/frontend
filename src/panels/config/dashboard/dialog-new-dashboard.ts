@@ -37,26 +37,6 @@ const STRATEGIES = [
       "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.description",
   },
   {
-    type: "areas",
-    images: {
-      light: "/static/images/dashboard-options/light/icon-dashboard-areas.svg",
-      dark: "/static/images/dashboard-options/dark/icon-dashboard-areas.svg",
-    },
-    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.areas.title",
-    description:
-      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.areas.description",
-  },
-  {
-    type: "home",
-    images: {
-      light: "/static/images/dashboard-options/light/icon-dashboard-home.svg",
-      dark: "/static/images/dashboard-options/dark/icon-dashboard-home.svg",
-    },
-    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.home.title",
-    description:
-      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.home.description",
-  },
-  {
     type: "map",
     images: {
       light: "/static/images/dashboard-options/light/icon-dashboard-map.svg",
@@ -281,8 +261,12 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         @media all and (min-width: 850px) {
           ha-dialog {
             --mdc-dialog-min-width: 845px;
-            --mdc-dialog-min-height: calc(100vh - 72px);
-            --mdc-dialog-max-height: calc(100vh - 72px);
+            --mdc-dialog-min-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
         }
 

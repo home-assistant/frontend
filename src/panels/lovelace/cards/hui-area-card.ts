@@ -35,7 +35,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
@@ -732,9 +732,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
     .container.horizontal hui-card-features {
-      width: calc(
-        50% - var(--column-gap, var(--ha-space-0)) / 2 - var(--ha-space-3)
-      );
+      width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
       flex: none;
       --feature-height: var(--ha-space-9);
       padding: 0 var(--ha-space-3);

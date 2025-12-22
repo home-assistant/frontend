@@ -1,19 +1,19 @@
 import { consume } from "@lit/context";
 import {
+  mdiCancel,
   mdiChevronRight,
+  mdiDelete,
   mdiDotsVertical,
   mdiMenuDown,
   mdiPlus,
   mdiTextureBox,
-  mdiCancel,
-  mdiDelete,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
@@ -66,28 +66,28 @@ import {
 import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
-} from "../../../data/device_registry";
+} from "../../../data/device/device_registry";
 import {
-  updateDeviceRegistryEntry,
   removeConfigEntryFromDevice,
-} from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+  updateDeviceRegistryEntry,
+} from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
@@ -318,7 +318,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         })
       );
 
-      const deviceEntityLookup: DeviceEntityLookup = {};
+      const deviceEntityLookup: DeviceEntityLookup<EntityRegistryEntry> = {};
       for (const entity of entities) {
         if (!entity.device_id) {
           continue;
@@ -771,7 +771,10 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             .indeterminate=${partial}
             reducedTouchTarget
           ></ha-checkbox>
-          <ha-label style=${color ? `--color: ${color}` : ""}>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}

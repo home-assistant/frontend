@@ -1,4 +1,4 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -9,10 +9,11 @@ import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import {
+  deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
-  type DeviceRegistryEntry,
-} from "../../data/device_registry";
+} from "../../data/device/device_picker";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
@@ -161,7 +162,7 @@ export class HaDevicePicker extends LitElement {
     }
   );
 
-  private _rowRenderer: ComboBoxLitRenderer<DevicePickerItem> = (item) => html`
+  private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => html`
     <ha-combo-box-item type="button">
       ${item.domain
         ? html`
@@ -197,9 +198,6 @@ export class HaDevicePicker extends LitElement {
     const placeholder =
       this.placeholder ??
       this.hass.localize("ui.components.device-picker.placeholder");
-    const notFoundLabel = this.hass.localize(
-      "ui.components.device-picker.no_match"
-    );
 
     const valueRenderer = this._valueRenderer(this._configEntryLookup);
 
@@ -207,15 +205,24 @@ export class HaDevicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
+        .disabled=${this.disabled}
+        .helper=${this.helper}
         .label=${this.label}
         .searchLabel=${this.searchLabel}
-        .notFoundLabel=${notFoundLabel}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.device-picker.no_devices"
+        )}
         .placeholder=${placeholder}
         .value=${this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
+        .searchKeys=${deviceComboBoxKeys}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.device-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -233,6 +240,11 @@ export class HaDevicePicker extends LitElement {
     this.value = value;
     fireEvent(this, "value-changed", { value });
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.device-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

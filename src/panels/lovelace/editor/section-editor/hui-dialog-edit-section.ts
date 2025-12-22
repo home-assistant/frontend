@@ -30,7 +30,10 @@ import {
 } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyleDialog } from "../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
 import { addSection, deleteSection, moveSection } from "../config-util";
@@ -418,19 +421,8 @@ export class HuiDialogEditSection
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
-        ha-dialog {
-          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
-          --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: 40px;
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
-            --dialog-surface-margin-top: 0px;
-          }
-        }
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }

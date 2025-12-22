@@ -8,13 +8,15 @@ import {
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
+  mdiPlusBoxMultipleOutline,
   mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -43,13 +45,18 @@ import "../../components/ha-related-items";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-} from "../../data/entity_registry";
-import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { lightSupportsFavoriteColors } from "../../data/light";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
-import { haStyleDialog } from "../../resources/styles";
+import { ScrollableFadeMixin } from "../../mixins/scrollable-fade-mixin";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+  haStyleScrollbar,
+} from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
 import {
@@ -60,6 +67,7 @@ import {
   computeShowLogBookComponent,
 } from "./const";
 import "./controls/more-info-default";
+import "./ha-more-info-add-to";
 import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
@@ -73,7 +81,7 @@ export interface MoreInfoDialogParams {
   data?: Record<string, any>;
 }
 
-type View = "info" | "history" | "settings" | "related";
+type View = "info" | "history" | "settings" | "related" | "add_to";
 
 interface ChildView {
   viewTag: string;
@@ -94,12 +102,14 @@ declare global {
 const DEFAULT_VIEW: View = "info";
 
 @customElement("ha-more-info-dialog")
-export class MoreInfoDialog extends LitElement {
+export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
   @state() private _parentEntityIds: string[] = [];
+
+  @query(".content") private _contentElement?: HTMLDivElement;
 
   @state() private _entityId?: string | null;
 
@@ -118,6 +128,12 @@ export class MoreInfoDialog extends LitElement {
   @state() private _isEscapeEnabled = true;
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
+
+  protected scrollFadeThreshold = 24;
+
+  protected get scrollableElement(): HTMLElement | null {
+    return this._contentElement || null;
+  }
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -192,6 +208,10 @@ export class MoreInfoDialog extends LitElement {
           this._sensorNumericDeviceClasses
         ))
     );
+  }
+
+  private _shouldShowAddEntityTo(): boolean {
+    return !!this.hass.auth.external?.config.hasEntityAddTo;
   }
 
   private _getDeviceId(): string | null {
@@ -293,6 +313,13 @@ export class MoreInfoDialog extends LitElement {
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
     this._setView("related");
+  }
+
+  private _goToAddEntityTo(ev) {
+    // Only check for request-selected events (from menu items), not regular clicks (from icon button)
+    if (ev.type === "request-selected" && !shouldHandleRequestSelectedEvent(ev))
+      return;
+    this._setView("add_to");
   }
 
   private _breadcrumbClick(ev: Event) {
@@ -521,9 +548,36 @@ export class MoreInfoDialog extends LitElement {
                             .path=${mdiInformationOutline}
                           ></ha-svg-icon>
                         </ha-list-item>
+                        ${this._shouldShowAddEntityTo()
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToAddEntityTo}
+                              >
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.add_entity_to"
+                                )}
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiPlusBoxMultipleOutline}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : nothing}
                       </ha-button-menu>
                     `
-                  : nothing}
+                  : !__DEMO__ && this._shouldShowAddEntityTo()
+                    ? html`
+                        <ha-icon-button
+                          slot="actionItems"
+                          .label=${this.hass.localize(
+                            "ui.dialogs.more_info_control.add_entity_to"
+                          )}
+                          .path=${mdiPlusBoxMultipleOutline}
+                          @click=${this._goToAddEntityTo}
+                        ></ha-icon-button>
+                      `
+                    : nothing}
               `
             : isSpecificInitialView
               ? html`
@@ -554,70 +608,86 @@ export class MoreInfoDialog extends LitElement {
                 `
               : nothing}
         </ha-dialog-header>
-        ${keyed(
-          this._entityId,
-          html`
-            <div
-              class="content"
-              tabindex="-1"
-              dialogInitialFocus
-              @show-child-view=${this._showChildView}
-              @entity-entry-updated=${this._entryUpdated}
-              @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
-              @hass-more-info=${this._handleMoreInfoEvent}
-            >
-              ${cache(
-                this._childView
-                  ? html`
-                      <div class="child-view">
-                        ${dynamicElement(this._childView.viewTag, {
-                          hass: this.hass,
-                          entry: this._entry,
-                          params: this._childView.viewParams,
-                        })}
-                      </div>
-                    `
-                  : this._currView === "info"
+        <div
+          class=${classMap({
+            "content-wrapper": true,
+            "settings-view": this._currView === "settings",
+          })}
+        >
+          ${keyed(
+            this._entityId,
+            html`
+              <div
+                class="content ha-scrollbar"
+                tabindex="-1"
+                dialogInitialFocus
+                @show-child-view=${this._showChildView}
+                @entity-entry-updated=${this._entryUpdated}
+                @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
+                @hass-more-info=${this._handleMoreInfoEvent}
+              >
+                ${cache(
+                  this._childView
                     ? html`
-                        <ha-more-info-info
-                          dialogInitialFocus
-                          .hass=${this.hass}
-                          .entityId=${this._entityId}
-                          .entry=${this._entry}
-                          .editMode=${this._infoEditMode}
-                          .data=${this._data}
-                        ></ha-more-info-info>
+                        <div class="child-view">
+                          ${dynamicElement(this._childView.viewTag, {
+                            hass: this.hass,
+                            entry: this._entry,
+                            params: this._childView.viewParams,
+                          })}
+                        </div>
                       `
-                    : this._currView === "history"
+                    : this._currView === "info"
                       ? html`
-                          <ha-more-info-history-and-logbook
+                          <ha-more-info-info
+                            dialogInitialFocus
                             .hass=${this.hass}
                             .entityId=${this._entityId}
-                          ></ha-more-info-history-and-logbook>
+                            .entry=${this._entry}
+                            .editMode=${this._infoEditMode}
+                            .data=${this._data}
+                          ></ha-more-info-info>
                         `
-                      : this._currView === "settings"
+                      : this._currView === "history"
                         ? html`
-                            <ha-more-info-settings
+                            <ha-more-info-history-and-logbook
                               .hass=${this.hass}
                               .entityId=${this._entityId}
-                              .entry=${this._entry}
-                            ></ha-more-info-settings>
+                            ></ha-more-info-history-and-logbook>
                           `
-                        : this._currView === "related"
+                        : this._currView === "settings"
                           ? html`
-                              <ha-related-items
+                              <ha-more-info-settings
                                 .hass=${this.hass}
-                                .itemId=${entityId}
-                                .itemType=${SearchableDomains.has(domain)
-                                  ? (domain as ItemType)
-                                  : "entity"}
-                              ></ha-related-items>
+                                .entityId=${this._entityId}
+                                .entry=${this._entry}
+                              ></ha-more-info-settings>
                             `
-                          : nothing
-              )}
-            </div>
-          `
-        )}
+                          : this._currView === "related"
+                            ? html`
+                                <ha-related-items
+                                  .hass=${this.hass}
+                                  .itemId=${entityId}
+                                  .itemType=${SearchableDomains.has(domain)
+                                    ? (domain as ItemType)
+                                    : "entity"}
+                                ></ha-related-items>
+                              `
+                            : this._currView === "add_to"
+                              ? html`
+                                  <ha-more-info-add-to
+                                    .hass=${this.hass}
+                                    .entityId=${entityId}
+                                    @add-to-action-selected=${this._goBack}
+                                  ></ha-more-info-add-to>
+                                `
+                              : nothing
+                )}
+              </div>
+            `
+          )}
+          ${this.renderScrollableFades()}
+        </div>
       </ha-dialog>
     `;
   }
@@ -672,23 +742,31 @@ export class MoreInfoDialog extends LitElement {
 
   static get styles() {
     return [
+      ...super.styles,
       haStyleDialog,
+      haStyleDialogFixedTop,
+      haStyleScrollbar,
       css`
         ha-dialog {
-          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
-          --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: max(
-            var(--ha-space-10),
-            var(--safe-area-inset-top, var(--ha-space-0))
-          );
           --dialog-content-padding: 0;
         }
 
-        .content {
+        .content-wrapper {
+          flex: 1 1 auto;
+          min-height: 0;
+          position: relative;
           display: flex;
           flex-direction: column;
+        }
+
+        .content {
           outline: none;
           flex: 1;
+          overflow: auto;
+        }
+
+        .content-wrapper.settings-view .fade-bottom {
+          bottom: var(--ha-space-18);
         }
 
         .child-view {
@@ -701,13 +779,6 @@ export class MoreInfoDialog extends LitElement {
           padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
             var(--ha-space-6);
           display: block;
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
-            --dialog-surface-margin-top: var(--ha-space-0);
-          }
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {
@@ -731,8 +802,7 @@ export class MoreInfoDialog extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin: var(--ha-space-0) var(--ha-space-0)
-            calc(var(--ha-space-2) * -1) var(--ha-space-0);
+          margin: 0 0 calc(var(--ha-space-2) * -1) 0;
         }
 
         .title p {

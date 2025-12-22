@@ -24,13 +24,14 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
+import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -71,18 +72,18 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import type { SceneEntity } from "../../../data/scene";
 import {
   activateScene,
@@ -106,7 +107,6 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { slugify } from "../../../common/string/slugify";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -271,7 +271,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.scene.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -302,10 +301,21 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             const date = new Date(scene.state);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
+            const formattedTime = formatShortDateTimeWithConditionalYear(
+              date,
+              this.hass.locale,
+              this.hass.config
+            );
+            const elementId = "last-activated-" + slugify(scene.entity_id);
             return html`
               ${dayDifference > 3
-                ? formatShortDateTime(date, this.hass.locale, this.hass.config)
-                : relativeTime(date, this.hass.locale)}
+                ? formattedTime
+                : html`
+                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
+                    <span id=${elementId}
+                      >${relativeTime(date, this.hass.locale)}</span
+                    >
+                  `}
             `;
           },
         },
@@ -473,7 +483,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             .indeterminate=${partial}
             reducedTouchTarget
           ></ha-checkbox>
-          <ha-label style=${color ? `--color: ${color}` : ""}>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -1109,6 +1122,9 @@ ${rejected
   private async _delete(scene: SceneEntity): Promise<void> {
     if (scene.attributes.id) {
       await deleteScene(this.hass, scene.attributes.id);
+      this._selected = this._selected.filter(
+        (entityId) => entityId !== scene.entity_id
+      );
     }
   }
 

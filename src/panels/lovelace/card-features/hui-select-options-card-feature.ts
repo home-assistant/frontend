@@ -7,7 +7,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { InputSelectEntity } from "../../../data/input_select";
 import type { SelectEntity } from "../../../data/select";
 import type { HomeAssistant } from "../../../types";
@@ -64,9 +64,7 @@ class HuiSelectOptionsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-select-options-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-select-options-card-feature-editor");
     return document.createElement("hui-select-options-card-feature-editor");
   }
 

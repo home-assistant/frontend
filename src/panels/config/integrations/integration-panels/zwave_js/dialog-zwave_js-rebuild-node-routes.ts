@@ -4,10 +4,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-button";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-spinner";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZWaveJSNetwork } from "../../../../../data/zwave_js";
 import {
   fetchZwaveNetworkStatus,

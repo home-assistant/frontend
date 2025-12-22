@@ -67,6 +67,8 @@ describe("Sankey Layout Functions", () => {
         id: "test",
         value: 10,
         depth: 1,
+        sourceId: "source",
+        targetId: "target",
       };
       expect(isPassThroughNode(passThroughNode)).toBe(true);
     });
@@ -142,7 +144,14 @@ describe("Sankey Layout Functions", () => {
       ];
 
       const passThroughNodes = [
-        { id: "pt1", depth: 1, passThrough: true, value: 5 },
+        {
+          id: "pt1",
+          depth: 1,
+          passThrough: true,
+          value: 5,
+          sourceId: "node1",
+          targetId: "node2",
+        },
       ];
 
       const result = groupNodesBySection(
@@ -195,6 +204,8 @@ describe("Sankey Layout Functions", () => {
         passThrough: true,
         value: 5,
         depth: 1,
+        sourceId: "source",
+        targetId: "target",
       };
 
       const result = createSectionNodes([passThroughNode]);
@@ -316,13 +327,15 @@ describe("Sankey Layout Functions", () => {
 
   describe("createPassThroughNode", () => {
     it("should create a pass-through node", () => {
-      const result = createPassThroughNode("source-target", "section1", 2, 15);
+      const result = createPassThroughNode("source", "target", 2, 15);
 
       expect(result).toEqual({
         passThrough: true,
-        id: "source-target-section1-2",
+        id: "source-target-2",
         value: 15,
         depth: 2,
+        sourceId: "source",
+        targetId: "target",
       });
     });
   });

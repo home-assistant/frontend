@@ -3,7 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
@@ -20,9 +20,7 @@ import type { LovelaceElement, StateLabelElementConfig } from "./types";
 @customElement("hui-state-label-element")
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
   public static async getConfigElement(): Promise<LovelacePictureElementEditor> {
-    await import(
-      "../editor/config-elements/elements/hui-state-label-element-editor"
-    );
+    await import("../editor/config-elements/elements/hui-state-label-element-editor");
     return document.createElement("hui-state-label-element-editor");
   }
 

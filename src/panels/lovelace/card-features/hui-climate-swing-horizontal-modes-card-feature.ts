@@ -13,7 +13,7 @@ import type { HaControlSelectMenu } from "../../../components/ha-control-select-
 import "../../../components/ha-list-item";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -71,9 +71,7 @@ class HuiClimateSwingHorizontalModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-climate-swing-horizontal-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-climate-swing-horizontal-modes-card-feature-editor");
     return document.createElement(
       "hui-climate-swing-horizontal-modes-card-feature-editor"
     );

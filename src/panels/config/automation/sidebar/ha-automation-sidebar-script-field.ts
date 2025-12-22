@@ -3,6 +3,8 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
@@ -56,28 +58,29 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
       .narrow=${this.narrow}
+      @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
-      <ha-md-menu-item
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this._toggleYamlMode}
+        value="toggle_yaml_mode"
         .disabled=${!!this._warnings}
       >
-        <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+        <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
-      </ha-md-menu-item>
-      <ha-md-menu-item
+      </ha-dropdown-item>
+      <ha-dropdown-item
         slot="menu-items"
-        .clickAction=${this.config.delete}
+        value="delete"
         .disabled=${this.disabled}
-        class="warning"
+        variant="danger"
       >
-        <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+        <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.delete"
@@ -87,7 +90,6 @@ export default class HaAutomationSidebarScriptField extends LitElement {
                 <span
                   >${isMac
                     ? html`<ha-svg-icon
-                        slot="start"
                         .path=${mdiAppleKeyboardCommand}
                       ></ha-svg-icon>`
                     : this.hass.localize(
@@ -103,7 +105,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
               </span>`
             : nothing}
         </div>
-      </ha-md-menu-item>
+      </ha-dropdown-item>
       ${keyed(
         this.sidebarKey,
         html`<ha-script-field-editor
@@ -153,6 +155,23 @@ export default class HaAutomationSidebarScriptField extends LitElement {
   private _toggleYamlMode = () => {
     fireEvent(this, "toggle-yaml-mode");
   };
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "toggle_yaml_mode":
+        this._toggleYamlMode();
+        break;
+      case "delete":
+        this.config.delete();
+        break;
+    }
+  }
 
   static styles = [sidebarEditorStyles, overflowStyles];
 }

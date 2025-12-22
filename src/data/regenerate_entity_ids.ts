@@ -1,4 +1,5 @@
 import { html, nothing } from "lit";
+import "../components/ha-expansion-panel";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -7,8 +8,7 @@ import type { HomeAssistant } from "../types";
 import {
   getAutomaticEntityIds,
   updateEntityRegistryEntry,
-} from "./entity_registry";
-import "../components/ha-expansion-panel";
+} from "./entity/entity_registry";
 
 export const regenerateEntityIds = async (
   element: HTMLElement,

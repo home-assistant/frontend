@@ -26,6 +26,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
 import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
+import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/format_date_time";
 
 @customElement("dialog-todo-item-editor")
 class DialogTodoItemEditor extends LitElement {
@@ -40,6 +41,8 @@ class DialogTodoItemEditor extends LitElement {
   @state() private _description? = "";
 
   @state() private _due?: Date;
+
+  @state() private _completedTime?: Date;
 
   @state() private _checked = false;
 
@@ -65,6 +68,9 @@ class DialogTodoItemEditor extends LitElement {
       this._checked = entry.status === TodoItemStatus.Completed;
       this._summary = entry.summary;
       this._description = entry.description || "";
+      this._completedTime = entry.completed
+        ? new Date(entry.completed)
+        : undefined;
       this._hasTime = entry.due?.includes("T") || false;
       this._due = entry.due
         ? new Date(this._hasTime ? entry.due : `${entry.due}T00:00:00`)
@@ -138,6 +144,17 @@ class DialogTodoItemEditor extends LitElement {
               .disabled=${!canUpdate}
             ></ha-textfield>
           </div>
+          ${this._completedTime
+            ? html`<div class="italic">
+                ${this.hass.localize("ui.components.todo.item.completed_time", {
+                  datetime: formatShortDateTimeWithConditionalYear(
+                    this._completedTime,
+                    this.hass.locale,
+                    this.hass.config
+                  ),
+                })}
+              </div>`
+            : nothing}
           ${this._todoListSupportsFeature(
             TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
           )
@@ -454,6 +471,9 @@ class DialogTodoItemEditor extends LitElement {
         .value {
           display: inline-block;
           vertical-align: top;
+        }
+        .italic {
+          font-style: italic;
         }
       `,
     ];

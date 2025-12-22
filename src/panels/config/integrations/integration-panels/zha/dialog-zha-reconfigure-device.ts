@@ -426,6 +426,10 @@ class DialogZHAReconfigureDevice extends LitElement {
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          --mdc-dialog-max-width: 800px;
+        }
+
         .wrapper {
           display: grid;
           grid-template-columns: 3fr 1fr 2fr;

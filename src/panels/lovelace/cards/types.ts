@@ -150,11 +150,6 @@ export interface EnergyCardBaseConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
-export interface EnergySummaryCardConfig extends EnergyCardBaseConfig {
-  type: "energy-summary";
-  title?: string;
-}
-
 export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
   type: "energy-distribution";
   title?: string;
@@ -185,10 +180,10 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
   max_devices?: number;
   hide_compound_stats?: boolean;
+  modes?: ("bar" | "pie")[];
 }
 
-export interface EnergyDevicesDetailGraphCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-detail-graph";
   title?: string;
   max_devices?: number;
@@ -198,6 +193,7 @@ export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
   title?: string;
   types?: (keyof EnergySourceByType)[];
+  show_only_totals?: boolean;
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
@@ -205,14 +201,12 @@ export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
-export interface EnergySelfSufficiencyGaugeCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-self-sufficiency-gauge";
   title?: string;
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig
-  extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-grid-neutrality-gauge";
   title?: string;
 }
@@ -224,6 +218,28 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
 
 export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   type: "energy-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "water-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
+  type: "power-sources-graph";
+  title?: string;
+  show_legend?: boolean;
+}
+
+export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "power-sankey";
   title?: string;
   layout?: "vertical" | "horizontal" | "auto";
   group_by_floor?: boolean;
@@ -581,6 +597,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   forecast_type?: ForecastType;
   forecast_slots?: number;
   secondary_info_attribute?: keyof TranslationDict["ui"]["card"]["weather"]["attributes"];
+  round_temperature?: boolean;
   theme?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

@@ -33,12 +33,12 @@ import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES, getConfigEntries } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { fetchDiagnosticHandler } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import type {
   IntegrationLogInfo,

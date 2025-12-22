@@ -17,8 +17,8 @@ import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LightEntity } from "../../../data/light";
 import {

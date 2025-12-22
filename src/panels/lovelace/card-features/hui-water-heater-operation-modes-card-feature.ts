@@ -11,22 +11,22 @@ import type { ControlSelectOption } from "../../../components/ha-control-select"
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   OperationMode,
   WaterHeaterEntity,
 } from "../../../data/water_heater";
 import {
-  computeOperationModeIcon,
   compareWaterHeaterOperationMode,
+  computeOperationModeIcon,
 } from "../../../data/water_heater";
-import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
 import type {
-  WaterHeaterOperationModesCardFeatureConfig,
   LovelaceCardFeatureContext,
+  WaterHeaterOperationModesCardFeatureConfig,
 } from "./types";
 
 export const supportsWaterHeaterOperationModesCardFeature = (
@@ -73,9 +73,7 @@ class HuiWaterHeaterOperationModeCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-water-heater-operation-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-water-heater-operation-modes-card-feature-editor");
     return document.createElement(
       "hui-water-heater-operation-modes-card-feature-editor"
     );

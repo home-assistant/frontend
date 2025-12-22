@@ -13,7 +13,8 @@
     "profile": "Profile",
     "light": "Lights",
     "security": "Security",
-    "climate": "Climate"
+    "climate": "Climate",
+    "home": "Home"
   },
   "state": {
     "default": {
@@ -303,6 +304,7 @@
       },
       "weather": {
         "attributes": {
+          "dew_point": "Dew point",
           "air_pressure": "Air pressure",
           "humidity": "Humidity",
           "temperature": "Temperature",
@@ -652,11 +654,12 @@
           "edit": "Edit",
           "clear": "Clear",
           "no_entities": "You don't have any entities",
-          "no_match": "No matching entities found",
+          "no_match": "No entities found for {term}",
           "show_entities": "Show entities",
           "new_entity": "Create a new entity",
           "placeholder": "Select an entity",
-          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
+          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper.",
+          "unknown": "Unknown entity selected"
         },
         "entity-name-picker": {
           "types": {
@@ -669,25 +672,28 @@
             "device_missing": "No related device"
           },
           "add": "Add",
-          "custom_name": "Custom name"
+          "custom_name": "Custom name",
+          "no_match": "No entities found"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
           "show_attributes": "Show attributes"
         },
         "entity-state-picker": {
-          "state": "State"
+          "state": "State",
+          "add_custom_state": "Add custom state"
         },
         "entity-state-content-picker": {
-          "add": "Add"
+          "add": "Add",
+          "custom_state": "Custom state"
         }
       },
       "target-picker": {
         "expand": "Expand",
-        "expand_floor_id": "Split this floor into separate areas.",
-        "expand_area_id": "Split this area into separate devices and entities.",
-        "expand_device_id": "Split this device into separate entities.",
-        "expand_label_id": "Split this label into separate areas, devices and entities.",
+        "expand_floor_id": "Split this floor into separate areas",
+        "expand_area_id": "Split this area into separate devices and entities",
+        "expand_device_id": "Split this device into separate entities",
+        "expand_label_id": "Split this label into separate areas, devices and entities",
         "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
@@ -763,8 +769,11 @@
       },
       "language-picker": {
         "language": "Language",
-        "no_match": "No matching languages found",
+        "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
+      },
+      "icon-picker": {
+        "no_match": "No matching icons found"
       },
       "tts-picker": {
         "tts": "Text-to-speech",
@@ -775,9 +784,10 @@
         "none": "None"
       },
       "user-picker": {
-        "no_match": "No matching users found",
+        "no_match": "No users found for {term}",
         "user": "User",
-        "add_user": "Add user"
+        "add_user": "Add user",
+        "unknown": "Unknown user selected"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -786,12 +796,13 @@
         "clear": "Clear",
         "toggle": "Toggle",
         "show_devices": "Show devices",
-        "no_devices": "You don't have any devices",
-        "no_match": "No matching devices found",
+        "no_devices": "No devices available",
+        "no_match": "No devices found for {term}",
         "device": "Device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
-        "placeholder": "Select a device"
+        "placeholder": "Select a device",
+        "unknown": "Unknown device selected"
       },
       "category-picker": {
         "clear": "Clear",
@@ -801,8 +812,9 @@
         "add_category": "Add category",
         "add_new_sugestion": "Add new category ''{name}''",
         "add_new": "Add new category…",
-        "no_categories": "You don't have any categories",
-        "no_match": "No matching categories found",
+        "no_categories": "No categories available",
+        "no_match": "No categories found for {term}",
+        "unknown": "Unknown category selected",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -817,8 +829,8 @@
         "add_new_sugestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
         "add": "Add label",
-        "no_labels": "You don't have any labels",
-        "no_match": "No matching labels found",
+        "no_labels": "No labels available",
+        "no_match": "No labels found for {term}",
         "failed_create_label": "Failed to create label."
       },
       "area-picker": {
@@ -827,10 +839,10 @@
         "area": "Area",
         "add_new_sugestion": "Add new area ''{name}''",
         "add_new": "Add new area…",
-        "no_areas": "You don't have any areas",
-        "no_match": "No matching areas found",
-        "unassigned_areas": "Unassigned areas",
-        "failed_create_area": "Failed to create area."
+        "no_areas": "No areas available",
+        "no_match": "No areas found for {term}",
+        "failed_create_area": "Failed to create area.",
+        "unknown": "Unknown area selected"
       },
       "floor-picker": {
         "clear": "Clear",
@@ -838,9 +850,10 @@
         "floor": "Floor",
         "add_new_sugestion": "Add new floor ''{name}''",
         "add_new": "Add new floor…",
-        "no_floors": "You don't have any floors",
-        "no_match": "No matching floors found",
-        "failed_create_floor": "Failed to create floor."
+        "no_floors": "No floors available",
+        "no_match": "No floors found for {term}",
+        "failed_create_floor": "Failed to create floor.",
+        "unknown": "Unknown floor selected"
       },
       "area-filter": {
         "title": "Areas",
@@ -853,11 +866,12 @@
       "statistic-picker": {
         "statistic": "Statistic",
         "placeholder": "Select a statistic",
-        "no_statistics": "You don't have any statistics",
-        "no_match": "No matching statistics found",
+        "no_statistics": "No statistics available",
+        "no_match": "No statistics found for {term}",
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
-        "learn_more": "Learn more about statistics"
+        "learn_more": "Learn more about statistics",
+        "unknown": "Unknown statistic selected"
       },
       "addon-picker": {
         "addon": "Add-on",
@@ -997,7 +1011,8 @@
       },
       "service-picker": {
         "action": "Action",
-        "no_match": "No matching actions found"
+        "no_match": "No matching actions found",
+        "unknown": "Unknown action selected"
       },
       "service-control": {
         "required": "This field is required",
@@ -1090,6 +1105,7 @@
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
           "deselect_all": "Deselect all",
+          "select_all": "[%key:ui::components::subpage-data-table::select_all%]",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
           "tip_storage_panel": "storage"
         },
@@ -1129,6 +1145,7 @@
           "edit": "Edit item",
           "save": "Save item",
           "due": "Due date",
+          "completed_time": "Completed { datetime }",
           "not_all_required_fields": "Not all required fields are filled in",
           "confirm_delete": {
             "delete": "Delete item",
@@ -1235,7 +1252,8 @@
             "times": "times"
           },
           "summary": "Summary",
-          "description": "Description"
+          "description": "Description",
+          "location": "Location"
         },
         "views": {
           "dayGridMonth": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridMonth%]",
@@ -1292,7 +1310,11 @@
         "add": "Add interaction"
       },
       "combo-box": {
-        "no_match": "No matching items found"
+        "no_match": "No matching items found",
+        "no_items": "No items available",
+        "unknown_item": "Unknown item",
+        "search_or_custom": "Search | Add custom item",
+        "add_custom_item": "Add custom item"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -1301,6 +1323,9 @@
         "suggesting_3": "Enchanting…",
         "done": "Done!",
         "error": "Fail!"
+      },
+      "navigation-picker": {
+        "add_custom_path": "Add custom path"
       }
     },
     "dialogs": {
@@ -1388,7 +1413,8 @@
             "addon_dashboard": "Add-on dashboard",
             "addon_store": "Add-on store",
             "addon_info": "{addon} info",
-            "shortcuts": "[%key:ui::panel::config::info::shortcuts%]"
+            "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
+            "labs": "[%key:ui::panel::config::labs::caption%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -1434,6 +1460,7 @@
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
+        "add_entity_to": "Add to",
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",
@@ -1449,6 +1476,10 @@
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
+        },
+        "add_to": {
+          "no_actions": "No actions available",
+          "action_failed": "Failed to perform the action {error}"
         },
         "sun": {
           "azimuth": "Azimuth",
@@ -2208,9 +2239,21 @@
       "sidebar_toggle": "Sidebar toggle",
       "edit_sidebar": "Edit sidebar",
       "edit_subtitle": "Synced on all devices",
-      "migrate_to_user_data": "This will change the sidebar on all the devices you are logged in to. To create a sidebar per device, you should use a different user for that device."
+      "migrate_to_user_data": "This will change the sidebar on all the devices you are logged in to. To create a sidebar per device, you should use a different user for that device.",
+      "reset_to_defaults": "Reset to defaults",
+      "reset_confirmation": "Are you sure you want to reset the sidebar to its default configuration? This will restore the original order and visibility of all panels."
     },
     "panel": {
+      "home": {
+        "editor": {
+          "title": "Edit home page",
+          "description": "Configure your home page display preferences.",
+          "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
+          "save_failed": "Failed to save home page configuration",
+          "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
+          "areas_page": "areas page"
+        }
+      },
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
@@ -2361,6 +2404,7 @@
             "name": "Name",
             "icon": "Icon",
             "level": "Level",
+            "level_helper": "Used to determine the default floor icon. Does not influence the floor order.",
             "name_required": "Name is required",
             "floor_id": "Floor ID",
             "unknown_error": "Unknown error",
@@ -2440,7 +2484,7 @@
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
-            "unassigned_areas": "Unassigned areas",
+            "other_areas": "Other areas",
             "create_area": "Create area",
             "create_floor": "Create floor",
             "floor": {
@@ -2448,7 +2492,19 @@
               "delete_floor": "Delete floor",
               "confirm_delete": "Delete floor?",
               "confirm_delete_text": "Deleting the floor will unassign all areas from it."
-            }
+            },
+            "area_reorder_failed": "Failed to reorder areas",
+            "area_move_failed": "Failed to move area",
+            "floor_reorder_failed": "Failed to reorder floors",
+            "reorder": "Reorder"
+          },
+          "dialog": {
+            "reorder_areas_title": "Reorder areas",
+            "reorder_floors_areas_title": "Reorder floors and areas",
+            "other_areas": "Other areas",
+            "reorder_failed": "Failed to save order",
+            "empty_floor": "No areas on this floor",
+            "empty_unassigned": "All your areas are assigned to floors"
           },
           "editor": {
             "create_area": "Create area",
@@ -3070,7 +3126,17 @@
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
             "add_co2_signal": "Add Electricity Maps integration",
+            "grid_power": "Grid power",
+            "add_power": "Add power sensor",
+            "edit_power": "Edit power sensor",
+            "delete_power": "Delete power sensor",
+            "power_dialog": {
+              "header": "Configure grid power",
+              "power_stat": "Power sensor",
+              "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate importing electricity from the grid, negative values indicate exporting electricity to the grid."
+            },
             "flow_dialog": {
+              "cost_entity_helper": "Any sensor with a unit of `{currency}/(valid energy unit)` (e.g. `{currency}/Wh` or `{currency}/kWh`) may be used and will be automatically converted.",
               "from": {
                 "header": "Configure grid consumption",
                 "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
@@ -3114,8 +3180,9 @@
             "stat_predicted_production": "Prediction of your solar energy production",
             "dialog": {
               "header": "Configure solar panels",
-              "entity_para": "Pick a sensor which measures solar energy production in either of {unit}.",
+              "entity_para": "Pick a sensor which measures solar production in either of {unit}.",
               "solar_production_energy": "Solar production energy",
+              "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
               "dont_forecast_production": "Don't forecast production",
@@ -3133,9 +3200,12 @@
             "add_battery_system": "Add battery system",
             "dialog": {
               "header": "Configure battery system",
-              "entity_para": "Pick sensors which measure energy going into and coming out of the battery in either of {unit}.",
-              "energy_into_battery": "Energy going into the battery",
-              "energy_out_of_battery": "Energy coming out of the battery"
+              "energy_helper_into": "Pick a sensor that measures the electricity flowing into the battery in either of {unit}.",
+              "energy_helper_out": "Pick a sensor that measures the electricity flowing out of the battery in either of {unit}.",
+              "energy_into_battery": "Energy charged into the battery",
+              "energy_out_of_battery": "Energy discharged from the battery",
+              "power": "Battery power",
+              "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery."
             }
           },
           "gas": {
@@ -3157,6 +3227,9 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (e.g. `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
+              "cost_entity_helper_energy": "energy",
+              "cost_entity_helper_volume": "volume",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "gas_usage": "Gas usage"
@@ -3180,6 +3253,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (e.g. `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water usage"
@@ -3197,9 +3271,26 @@
               "header": "Add a device",
               "display_name": "Display name",
               "device_consumption_energy": "Device energy consumption",
-              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}.",
+              "device_consumption_power": "Device power consumption",
+              "selected_stat_intro": "Select the sensor that measures the device's electricity usage in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
+              "no_upstream_devices": "No eligible upstream devices"
+            }
+          },
+          "device_consumption_water": {
+            "title": "Individual water devices",
+            "sub": "Tracking the water usage of individual devices allows Home Assistant to break down your water usage by device.",
+            "learn_more": "More information on how to get started.",
+            "devices": "Devices",
+            "add_device": "Add device",
+            "dialog": {
+              "header": "Add a water device",
+              "display_name": "Display name",
+              "device_consumption_water": "Device water consumption",
+              "selected_stat_intro": "Select the water sensor that measures the device's water usage in either of {unit}.",
+              "included_in_device": "Upstream device",
+              "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
               "no_upstream_devices": "No eligible upstream devices"
             }
           }
@@ -3225,12 +3316,16 @@
               "entity_id": "Entity ID",
               "type": "Type",
               "editable": "Editable",
-              "category": "Category"
+              "category": "Category",
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
             "search": "Search {number} {number, plural,\n  one {helper}\n  other {helpers}\n}",
-            "error_information": "Error information"
+            "error_information": "Error information",
+            "delete_confirm_title": "Delete helper?",
+            "delete_confirm_text": "Are you sure you want to delete {name}?",
+            "delete_failed": "Failed to delete helper"
           },
           "dialog": {
             "create": "Create",
@@ -3470,6 +3565,7 @@
               "edit": "Edit",
               "delete": "Delete",
               "add_dashboard": "Add dashboard",
+              "set_as_default": "Set as default",
               "type": {
                 "user_created": "User created",
                 "built_in": "Built-in"
@@ -3478,7 +3574,7 @@
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
             "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
-            "cant_edit_default": "The default dashboard, Overview, cannot be edited from the UI. You can hide it by setting another dashboard as default.",
+            "cant_edit_lovelace": "The Overview dashboard title and icon cannot be changed. You can create a new dashboard to get more customization options.",
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
@@ -3492,8 +3588,10 @@
               "delete": "Delete",
               "update": "Update",
               "create": "Create",
-              "set_default": "Set as default on this device",
-              "remove_default": "Remove as default on this device"
+              "set_default": "Set as default",
+              "remove_default": "Remove as default",
+              "set_default_confirm_title": "Set as default dashboard?",
+              "set_default_confirm_text": "This dashboard will be shown to all users when opening Home Assistant. Each user can change this in their profile."
             }
           },
           "resources": {
@@ -3602,6 +3700,10 @@
                 },
                 "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
                 "no_cloud_action": "Subscribe"
+              },
+              "duplicate": {
+                "error_pipeline_not_found": "Pipeline not found",
+                "name": "{name} (Copy)"
               }
             },
             "cloud": {
@@ -3961,13 +4063,39 @@
             "type_automation_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::automation%]",
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
             "new_automation_setup_failed_title": "New {type} setup timed out",
-            "new_automation_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "new_automation_setup_failed_text": "Your new {type} was saved, but waiting for it to set up has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
             "new_automation_setup_keep_waiting": "You may continue to wait for a response from the server, in case it is just taking an unusually long time to process this {type}.",
             "new_automation_setup_timedout_success": "The server has responded and this has now setup successfully. You may now close this dialog.",
             "item_pasted": "{item} pasted",
             "ctrl": "Ctrl",
             "del": "Del",
+            "targets": "Targets",
+            "select_target": "Select a target",
+            "home": "Home",
+            "unassigned": "Unassigned",
             "blocks": "Blocks",
+            "show_more": "Show more",
+            "unassigned_entities": "Unassigned entities",
+            "unassigned_devices": "Unassigned devices",
+            "empty_section_search": {
+              "block": "No blocks found for {term}",
+              "entity": "No entities found for {term}",
+              "device": "No devices found for {term}",
+              "area": "No areas or floors found for {term}",
+              "label": "No labels found for {term}"
+            },
+            "load_target_items_failed": "Failed to load target items for",
+            "other_areas": "Other areas",
+            "services": "Services",
+            "helpers": "Helpers",
+            "entity_hidden": "[%key:ui::panel::config::devices::entities::hidden%]",
+            "target_summary": {
+              "no_target": "No target set",
+              "targets": "{count} {count, plural,\n  one {target}\n  other {targets}\n}",
+              "invalid": "Invalid target",
+              "all_entities": "All entities",
+              "none_entities": "No entities"
+            },
             "triggers": {
               "name": "Triggers",
               "header": "When",
@@ -3975,7 +4103,10 @@
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
-              "empty_search": "No triggers found for {term}",
+              "empty_search": {
+                "global": "No triggers and targets found for {term}",
+                "item": "No triggers found for {term}"
+              },
               "id": "Trigger ID",
               "optional": "Optional",
               "edit_id": "Edit ID",
@@ -3996,12 +4127,16 @@
               "copied_to_clipboard": "Trigger copied to clipboard",
               "cut_to_clipboard": "Trigger cut to clipboard",
               "select": "Select a trigger",
+              "no_items_for_target": "No triggers available for",
               "groups": {
                 "device": {
                   "label": "Device"
                 },
                 "entity": {
                   "label": "Entity"
+                },
+                "helpers": {
+                  "label": "Helpers"
                 },
                 "time_location": {
                   "label": "Time and location"
@@ -4169,7 +4304,7 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
-                  "weekday": "Weekdays",
+                  "weekday": "Days of the Week",
                   "weekdays": {
                     "mon": "[%key:ui::weekdays::monday%]",
                     "tue": "[%key:ui::weekdays::tuesday%]",
@@ -4237,7 +4372,10 @@
               "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
-              "empty_search": "No conditions and blocks found for {term}",
+              "empty_search": {
+                "global": "No conditions, blocks and targets found for {term}",
+                "item": "No conditions found for {term}"
+              },
               "add_building_block": "Add building block",
               "test": "Test",
               "testing_error": "Condition did not pass",
@@ -4260,6 +4398,7 @@
               "copied_to_clipboard": "Condition copied to clipboard",
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
+              "no_items_for_target": "No conditions available for",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -4269,6 +4408,9 @@
                 },
                 "time_location": {
                   "label": "Time and location"
+                },
+                "helpers": {
+                  "label": "Helpers"
                 },
                 "other": {
                   "label": "Other conditions"
@@ -4405,7 +4547,10 @@
               "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
-              "empty_search": "No actions and blocks found for {term}",
+              "empty_search": {
+                "global": "No actions, blocks and targets found for {term}",
+                "item": "No actions found for {term}"
+              },
               "add_building_block": "Add building block",
               "invalid_action": "Invalid action",
               "run": "Run action",
@@ -4430,6 +4575,7 @@
               "copied_to_clipboard": "Action copied to clipboard",
               "cut_to_clipboard": "Action cut to clipboard",
               "select": "Select an action",
+              "no_items_for_target": "No actions available for",
               "groups": {
                 "device_id": {
                   "label": "Device"
@@ -4461,11 +4607,11 @@
                     "service": "Perform an action",
                     "target_template": "templated {name}",
                     "target_every_entity": "every entity",
-                    "target_unknown_entity": "unknown entity",
-                    "target_unknown_device": "unknown device",
-                    "target_unknown_area": "unknown area",
-                    "target_unknown_floor": "unknown floor",
-                    "target_unknown_label": "unknown label"
+                    "target_unknown_entity": "Unknown entity",
+                    "target_unknown_device": "Unknown device",
+                    "target_unknown_area": "Unknown area",
+                    "target_unknown_floor": "Unknown floor",
+                    "target_unknown_label": "Unknown label"
                   }
                 },
                 "play_media": {
@@ -4754,7 +4900,8 @@
             "headers": {
               "name": "Name",
               "type": "Type",
-              "file_name": "File name"
+              "file_name": "File name",
+              "usage_count": "In use"
             },
             "types": {
               "automation": "Automation",
@@ -5369,6 +5516,11 @@
                 "partial_failure": "Some devices failed to delete successfully. Check system logs for more information."
               }
             }
+          },
+          "esphome": {
+            "show_encryption_key": "Show encryption key",
+            "encryption_key_title": "ESPHome Encryption Key",
+            "encryption_key_description": "This is the encryption key for your ESPHome device. Keep it in a safe place, as you may need it when transferring devices between Home Assistant instances."
           }
         },
         "entities": {
@@ -6556,7 +6708,8 @@
             "model": "Model",
             "status": "Status",
             "version": "Version",
-            "data_rate": "Data rate"
+            "data_rate": "Data rate",
+            "area": "Area"
           },
           "node_status": {
             "0": "Unknown",
@@ -6736,6 +6889,7 @@
         },
         "analytics": {
           "caption": "Analytics",
+          "header": "Home Assistant analytics",
           "description": "Learn how to share data to improve Home Assistant",
           "preferences": {
             "base": {
@@ -6753,12 +6907,62 @@
             "diagnostics": {
               "title": "Diagnostics",
               "description": "Share crash reports when unexpected errors occur."
+            },
+            "snapshots": {
+              "title": "Devices",
+              "description": "Generic information about your devices.",
+              "header": "Device analytics",
+              "info": "Anonymously share data about your devices to help build the Open Home Foundation’s device database. This free, open source resource helps users find useful information about smart home devices. Only device-specific details (like model or manufacturer) are shared — never personally identifying information (like the names you assign).",
+              "learn_more": "Learn more about the device database and how we process your data",
+              "alert": {
+                "title": "Important",
+                "content": "Only enable this option if you understand that your device information will be shared."
+              }
             }
           },
           "need_base_enabled": "You need to enable basic analytics for this option to be available",
-          "learn_more": "How we process your data",
+          "learn_more": "Learn how we process your data",
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
+        },
+        "labs": {
+          "caption": "Labs",
+          "custom_integration": "Custom integration",
+          "description": "Preview new features",
+          "description_enabled": "Preview features are enabled",
+          "intro_title": "Home Assistant Labs",
+          "intro_subtitle": "Preview upcoming features",
+          "intro_description": "Home Assistant Labs lets you preview new features we're actively working on. These features are stable and fully functional, but may not yet include the complete feature set we envision. We're still refining the design and approach based on your feedback.",
+          "intro_warning": "Preview features may change or be replaced with different solutions in future releases.",
+          "empty": {
+            "title": "No preview features available",
+            "description": "There are currently no preview features available to try. Check back in future releases for new features!"
+          },
+          "learn_more": "Learn more",
+          "provide_feedback": "Provide feedback",
+          "report_issue": "Report issue",
+          "enable": "Enable",
+          "disable": "Disable",
+          "enable_title": "Enable preview feature?",
+          "enable_confirmation": "This preview feature is stable but may evolve based on feedback. Enabling it may affect your setup, and changes may persist after disabling.",
+          "disable_title": "Disable preview feature?",
+          "disable_confirmation": "This will disable the preview feature, but changes made while it was active may still affect your setup.",
+          "enabled_success": "Preview feature enabled",
+          "disabled_success": "Preview feature disabled",
+          "enable_failed": "Enabling preview feature failed: {error}",
+          "disable_failed": "Disabling preview feature failed: {error}",
+          "progress": {
+            "creating_backup": "Creating backup",
+            "backing_up_before_enabling": "Home Assistant is being backed up before enabling the Home Assistant Labs preview feature",
+            "backing_up_before_disabling": "Home Assistant is being backed up before disabling the Home Assistant Labs preview feature"
+          },
+          "create_backup": {
+            "automatic": "Automatic backup before enabling",
+            "automatic_description_last": "Last automatic backup {relative_time}.",
+            "automatic_description_none": "No automatic backup yet.",
+            "manual": "Create manual backup before enabling",
+            "manual_description": "Includes Home Assistant settings and history."
+          }
         },
         "network": {
           "caption": "Network",
@@ -6838,6 +7042,7 @@
           "lifetime_description": "{lifetime} used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
+          "change_chart_type": "Change chart type",
           "datadisk": {
             "title": "Move data disk",
             "description": "You are currently using ''{current_path}'' as data disk. Moving the data disk will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
@@ -6967,7 +7172,9 @@
           },
           "home": {
             "summary_list": {
-              "media_players": "Media players"
+              "media_players": "Media players",
+              "weather": "Weather",
+              "energy": "Today's energy"
             },
             "welcome_user": "Welcome {user}",
             "summaries": "Summaries",
@@ -6975,7 +7182,11 @@
             "other_areas": "Other areas",
             "unamed_device": "Unnamed device",
             "others": "Others",
-            "automations": "Automations"
+            "scenes": "Scenes",
+            "automations": "Automations",
+            "for_you": "For you",
+            "home": "Home",
+            "favorites": "Favorites"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -7062,6 +7273,7 @@
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
               "total_returned": "Total returned {num} kWh",
+              "total_usage": "{num} kWh used",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
               "consumed_battery": "Consumed battery"
@@ -7072,9 +7284,9 @@
               "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
-              "energy": "Energy",
+              "energy": "Usage",
               "cost": "Cost",
-              "previous_energy": "Previous energy",
+              "previous_energy": "Previous usage",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
               "total_costs": "Total costs"
@@ -7136,6 +7348,12 @@
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
               "low_carbon_energy_consumed": "Low-carbon electricity consumed",
               "low_carbon_energy_not_calculated": "Consumed low-carbon electricity couldn't be calculated"
+            },
+            "power_graph": {
+              "grid": "Grid",
+              "solar": "Solar",
+              "battery": "Battery",
+              "usage": "Consumption"
             },
             "energy_compare": {
               "info": "You are comparing the period {start} with the period {end}",
@@ -7200,6 +7418,7 @@
         "editor": {
           "header": "Edit UI",
           "yaml_unsupported": "The edit UI is not available when in YAML mode.",
+          "undo_redo_failed_to_apply_changes": "Unable to apply changes: {error}",
           "menu": {
             "open": "Open dashboard menu",
             "raw_editor": "Raw configuration editor",
@@ -7452,6 +7671,8 @@
             "strategy_type": "strategy"
           },
           "select_dashboard": {
+            "error_title": "Error fetching dashboards",
+            "error_text": "Failed to fetch dashboards, please try again.",
             "header": "Choose a dashboard",
             "cannot_move_to_strategy": "The view cannot be moved because the selected dashboard is auto-generated.",
             "get_config_failed": "Failed to load selected dashboard config.",
@@ -7553,6 +7774,12 @@
                 "label": "Entity state",
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
+              },
+              "time": {
+                "label": "Time",
+                "after": "After",
+                "before": "Before",
+                "weekdays": "Weekdays"
               },
               "location": {
                 "label": "Location",
@@ -7843,6 +8070,7 @@
               "suggested_cards": "Suggested cards",
               "other_cards": "Other cards",
               "custom_cards": "Custom cards",
+              "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",
               "content": "Content"
@@ -8387,10 +8615,13 @@
                 "no_compatible_controls": "No compatible controls available for this area"
               },
               "bar-gauge": {
-                "label": "Bar gauge"
+                "label": "Bar gauge",
+                "min": "Minimum value",
+                "max": "Maximum value"
               },
               "trend-graph": {
-                "label": "Trend graph"
+                "label": "Trend graph",
+                "detail": "Show more detail"
               }
             }
           },
@@ -8626,9 +8857,11 @@
         },
         "dashboard": {
           "header": "Dashboard",
-          "description": "Pick a default dashboard for this device.",
+          "description": "Pick a default dashboard to show.",
           "dropdown_label": "Dashboard",
-          "default_dashboard_label": "Overview (default)"
+          "lovelace": "Overview",
+          "home": "Home",
+          "system": "Auto (use system settings)"
         },
         "change_password": {
           "header": "Change password",
@@ -8909,6 +9142,11 @@
             "debug_connection": {
               "title": "Debug connection",
               "description": "Observe requests to the server and responses from the server in browser console."
+            },
+            "entity_diagnostic": {
+              "title": "Entity diagnostic",
+              "description": "Select an entity to copy diagnostic details.",
+              "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
             }
           },
           "events": {
@@ -9389,6 +9627,13 @@
         }
       },
       "energy": {
+        "title": {
+          "overview": "Summary",
+          "electricity": "Energy",
+          "gas": "Gas",
+          "water": "Water",
+          "now": "Now"
+        },
         "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "setup": {
@@ -9413,7 +9658,11 @@
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Individual devices total usage",
           "energy_devices_detail_graph_title": "Individual devices detail usage",
-          "energy_sankey_title": "Energy flow"
+          "energy_sankey_title": "Energy flow",
+          "water_sankey_title": "Water flow",
+          "energy_top_consumers_title": "Top consumers",
+          "power_sankey_title": "Current power flow",
+          "power_sources_graph_title": "Power sources"
         }
       },
       "history": {
