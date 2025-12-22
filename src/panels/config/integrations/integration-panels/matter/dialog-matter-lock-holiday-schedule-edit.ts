@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
@@ -93,7 +94,7 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this.closeDialog}
+        @closed=${this._dialogClosed}
         .heading=${createCloseHeading(this.hass, title)}
       >
         <div class="form">
@@ -121,6 +122,7 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
             )}
             .value=${this._operatingMode}
             @selected=${this._handleModeChange}
+            @closed=${stopPropagation}
           >
             ${OPERATING_MODES.map(
               (mode) => html`
@@ -167,7 +169,8 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
   }
 
   private _handleModeChange(ev: CustomEvent): void {
-    this._operatingMode = ev.detail.value as MatterHolidayOperatingMode;
+    this._operatingMode = (ev.target as HTMLSelectElement)
+      .value as MatterHolidayOperatingMode;
   }
 
   private async _save(): Promise<void> {
@@ -198,6 +201,12 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
       });
     } finally {
       this._saving = false;
+    }
+  }
+
+  private _dialogClosed(ev: Event): void {
+    if ((ev.target as HTMLElement).tagName === "HA-DIALOG") {
+      this.closeDialog();
     }
   }
 

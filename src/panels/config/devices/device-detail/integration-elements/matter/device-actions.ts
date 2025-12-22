@@ -49,12 +49,26 @@ export const getMatterDeviceActions = async (
   hass: HomeAssistant,
   device: DeviceRegistryEntry
 ): Promise<DeviceAction[]> => {
+  // eslint-disable-next-line no-console
+  console.log(
+    "[Matter Debug] getMatterDeviceActions called for device:",
+    device.id,
+    device.name
+  );
+
   if (device.via_device_id !== null) {
     // only show device actions for top level nodes (so not bridged)
+    // eslint-disable-next-line no-console
+    console.log(
+      "[Matter Debug] Skipping - device has via_device_id:",
+      device.via_device_id
+    );
     return [];
   }
 
   const nodeDiagnostics = await getMatterNodeDiagnostics(hass, device.id);
+  // eslint-disable-next-line no-console
+  console.log("[Matter Debug] Node diagnostics:", nodeDiagnostics);
 
   const actions: DeviceAction[] = [];
 
@@ -104,7 +118,14 @@ export const getMatterDeviceActions = async (
 
   // Check if device is a lock and add lock management action
   try {
+    // eslint-disable-next-line no-console
+    console.log(
+      "[Matter Lock Debug] Checking lock info for device:",
+      device.id
+    );
     const lockInfo = await getMatterLockInfo(hass, device.id);
+    // eslint-disable-next-line no-console
+    console.log("[Matter Lock Debug] Lock info result:", lockInfo);
     if (lockInfo.supports_user_management) {
       actions.push({
         label: hass.localize(
@@ -117,8 +138,9 @@ export const getMatterDeviceActions = async (
           }),
       });
     }
-  } catch {
-    // Device is not a lock or doesn't support lock features
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("[Matter Lock Debug] Error getting lock info:", err);
   }
 
   return actions;

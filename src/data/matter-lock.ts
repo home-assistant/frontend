@@ -6,6 +6,10 @@ export interface MatterLockInfo {
   supported_credential_types: string[];
   max_users: number;
   max_credentials_per_user: number;
+  min_pin_length: number;
+  max_pin_length: number;
+  min_rfid_length?: number;
+  max_rfid_length?: number;
   supports_week_day_schedules: boolean;
   supports_year_day_schedules: boolean;
   supports_holiday_schedules: boolean;
@@ -114,14 +118,19 @@ export interface SetMatterLockUserParams {
 
 // Set credential params
 export interface SetMatterLockCredentialParams {
-  user_index: number;
+  user_index: number | null;
   credential_type: MatterLockCredentialType;
   credential_index: number | null;
   credential_data: string;
+  // Optional: for creating a new user along with the credential
+  user_name?: string;
+  user_type?: string;
 }
 
 // Set credential result
 export interface SetMatterLockCredentialResult {
+  status: string;
+  user_index: number;
   credential_index: number;
   next_credential_index: number | null;
 }
