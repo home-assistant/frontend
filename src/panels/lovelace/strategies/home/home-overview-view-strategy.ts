@@ -141,12 +141,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
     const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    const commonControlsSection = {
+    const favoritesSection = {
       strategy: {
         type: "common-controls",
         limit: maxCommonControls,
         include_entities: favoriteEntities,
         title: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+        title_visibilty: [largeScreenCondition],
         hide_empty: true,
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
@@ -260,10 +261,18 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     }));
 
     // Build summary cards for mobile section (half width: columns 6)
-    const mobileSummaryCards = summaryCards.map((card) => ({
-      ...card,
-      grid_options: { columns: 6 },
-    }));
+    const mobileSummaryCards = [
+      ...summaryCards.map((card) => ({
+        ...card,
+        grid_options: { columns: 6 },
+      })),
+    ];
+
+    const summaryHeadingCard: LovelaceCardConfig = {
+      type: "heading",
+      heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
+      heading_style: "title",
+    };
 
     // Mobile summary section (visible on small screens only)
     const mobileSummarySection: LovelaceSectionConfig | undefined =
@@ -272,7 +281,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             type: "grid",
             column_span: maxColumns,
             visibility: [smallScreenCondition],
-            cards: mobileSummaryCards,
+            cards: [summaryHeadingCard, ...mobileSummaryCards],
           }
         : undefined;
 
@@ -281,25 +290,15 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       sidebarSummaryCards.length > 0
         ? {
             type: "grid",
-            cards: [
-              {
-                type: "heading",
-                heading: hass.localize(
-                  "ui.panel.lovelace.strategy.home.for_you"
-                ),
-                heading_style: "title",
-              },
-              ...sidebarSummaryCards,
-            ],
+            cards: [summaryHeadingCard, ...sidebarSummaryCards],
           }
         : undefined;
 
     const sections = (
-      [
-        mobileSummarySection,
-        commonControlsSection,
-        ...floorsSections,
-      ] satisfies (LovelaceSectionRawConfig | undefined)[]
+      [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
+        | LovelaceSectionRawConfig
+        | undefined
+      )[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
     return {
@@ -319,7 +318,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           sections: [sidebarSection],
           content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
           sidebar_label: hass.localize(
-            "ui.panel.lovelace.strategy.home.for_you"
+            "ui.panel.lovelace.strategy.home.summaries"
           ),
           visibility: [largeScreenCondition],
         },
