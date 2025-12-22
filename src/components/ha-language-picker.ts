@@ -14,6 +14,12 @@ import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "search_labels.browser", weight: 8 },
+  { name: "search_labels.english", weight: 5 },
+];
+
 export const getLanguageOptions = (
   languages: string[],
   nativeName: boolean,
@@ -46,6 +52,7 @@ export const getLanguageOptions = (
       return {
         id: lang,
         primary,
+        secondary: browserLangName !== primary ? browserLangName : undefined,
         search_labels: {
           browser: browserLangName !== primary ? browserLangName : null,
           english: englishName !== primary ? englishName : null,
@@ -157,6 +164,7 @@ export class HaLanguagePicker extends LitElement {
         .disabled=${this.disabled}
         .helper=${this.helper}
         .getItems=${this._getItems}
+        .searchKeys=${SEARCH_KEYS}
         @value-changed=${this._changed}
         hide-clear-icon
       >
