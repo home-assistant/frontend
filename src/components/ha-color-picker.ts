@@ -150,7 +150,6 @@ export class HaColorPicker extends LitElement {
         items.push({
           id: currentValue!,
           primary: currentValue!,
-          sorting_label: currentValue!,
         });
       }
 
