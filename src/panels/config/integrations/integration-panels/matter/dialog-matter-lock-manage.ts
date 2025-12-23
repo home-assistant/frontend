@@ -82,7 +82,11 @@ class DialogMatterLockManage extends LitElement {
       this._lockInfo = await getMatterLockInfo(this.hass, this._deviceId);
 
       if (this._lockInfo.supports_user_management) {
-        this._users = await getMatterLockUsers(this.hass, this._deviceId);
+        const usersResponse = await getMatterLockUsers(
+          this.hass,
+          this._deviceId
+        );
+        this._users = usersResponse.users;
       }
 
       // Load schedules for all users if supported

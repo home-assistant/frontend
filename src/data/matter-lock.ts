@@ -76,6 +76,13 @@ export interface MatterLockUser {
   credentials: MatterLockCredentialRef[];
 }
 
+// Get users response
+export interface MatterLockUsersResponse {
+  total_users: number;
+  max_users: number;
+  users: MatterLockUser[];
+}
+
 // Week day schedule
 export interface MatterWeekDaySchedule {
   week_day_index: number;
@@ -227,7 +234,7 @@ export const getMatterLockInfo = (
 export const getMatterLockUsers = (
   hass: HomeAssistant,
   device_id: string
-): Promise<MatterLockUser[]> =>
+): Promise<MatterLockUsersResponse> =>
   hass.callWS({
     type: "matter/lock/get_users",
     device_id,
