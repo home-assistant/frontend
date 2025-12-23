@@ -436,7 +436,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         filteredItems.push(NO_ITEMS_AVAILABLE_ID);
       }
 
-      const additionalItems = this._getAdditionalItems();
+      const additionalItems = this._getAdditionalItems(searchString);
       filteredItems.push(...additionalItems);
 
       if (this.searchFn) {
