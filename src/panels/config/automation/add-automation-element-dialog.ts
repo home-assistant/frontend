@@ -18,7 +18,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
@@ -123,6 +122,7 @@ import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
+import { getTargetText } from "./target/get_target_text";
 
 const TYPES = {
   trigger: { collections: TRIGGER_COLLECTIONS, icons: TRIGGER_ICONS },
@@ -1393,8 +1393,8 @@ class DialogAddAutomationElement
     }
   );
 
-  private _getLabel = memoizeOne((labelId) =>
-    this._labelRegistry?.find(({ label_id }) => label_id === labelId)
+  private _getLabel = memoizeOne((id: string) =>
+    this._labelRegistry?.find(({ label_id }) => label_id === id)
   );
 
   private _getDomainType(domain: string) {
@@ -1926,32 +1926,12 @@ class DialogAddAutomationElement
       }
 
       if (targetId) {
-        if (targetType === "floor") {
-          return computeFloorName(this.hass.floors[targetId]) || targetId;
-        }
-        if (targetType === "area") {
-          return computeAreaName(this.hass.areas[targetId]) || targetId;
-        }
-        if (targetType === "device") {
-          return computeDeviceName(this.hass.devices[targetId]) || targetId;
-        }
-        if (targetType === "entity" && this.hass.states[targetId]) {
-          const stateObj = this.hass.states[targetId];
-          const [entityName, deviceName] = computeEntityNameList(
-            stateObj,
-            [{ type: "entity" }, { type: "device" }, { type: "area" }],
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          );
-
-          return entityName || deviceName || targetId;
-        }
-        if (targetType === "label") {
-          const label = this._getLabel(targetId);
-          return label?.name || targetId;
-        }
+        return getTargetText(
+          this.hass,
+          targetType as "floor" | "area" | "device" | "entity" | "label",
+          targetId,
+          this._getLabel
+        );
       }
 
       return undefined;
@@ -2036,12 +2016,12 @@ class DialogAddAutomationElement
           --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
           --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
           --ha-bottom-sheet-max-width: 888px;
-          --ha-bottom-sheet-padding: var(--ha-space-0);
+          --ha-bottom-sheet-padding: 0;
           --ha-bottom-sheet-surface-background: var(--card-background-color);
         }
 
         ha-wa-dialog {
-          --dialog-content-padding: var(--ha-space-0);
+          --dialog-content-padding: 0;
           --ha-dialog-min-height: min(
             800px,
             calc(
@@ -2065,7 +2045,7 @@ class DialogAddAutomationElement
 
         search-input {
           display: block;
-          margin: var(--ha-space-0) var(--ha-space-4);
+          margin: 0 var(--ha-space-4);
         }
 
         ha-button-toggle-group {
@@ -2099,7 +2079,7 @@ class DialogAddAutomationElement
         .groups {
           overflow: auto;
           flex: 4;
-          margin-inline-end: var(--ha-space-0);
+          margin-inline-end: 0;
         }
 
         ha-automation-add-from-target.hidden {

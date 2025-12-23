@@ -100,7 +100,7 @@ class MoreInfoGroup extends LitElement {
       css`
         state-card-content {
           display: block;
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
         }
       `,
     ];

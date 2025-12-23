@@ -160,16 +160,16 @@ class EventSubscribeCard extends LitElement {
   static styles = css`
     ha-textfield {
       display: block;
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
     .error-message {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
     .event {
       border-top: 1px solid var(--divider-color);
-      padding-top: 8px;
-      padding-bottom: 8px;
-      margin: 16px 0;
+      padding-top: var(--ha-space-2);
+      padding-bottom: var(--ha-space-2);
+      margin: var(--ha-space-4) 0;
     }
     .event:last-child {
       border-bottom: 0;
@@ -179,7 +179,7 @@ class EventSubscribeCard extends LitElement {
       font-family: var(--ha-font-family-code);
     }
     ha-card {
-      margin-bottom: 5px;
+      margin-bottom: var(--ha-space-1);
     }
   `;
 }

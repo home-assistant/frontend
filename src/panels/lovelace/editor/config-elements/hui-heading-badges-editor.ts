@@ -78,7 +78,6 @@ export class HuiHeadingBadgesEditor extends LitElement {
                         ${isEntityBadge && entityBadge
                           ? html`
                               <ha-entity-picker
-                                allow-custom-entity
                                 hide-clear-icon
                                 .hass=${this.hass}
                                 .value=${entityBadge.entity ?? ""}
@@ -131,7 +130,6 @@ export class HuiHeadingBadgesEditor extends LitElement {
           @value-changed=${this._entityPicked}
           .value=${undefined}
           @click=${preventDefault}
-          allow-custom-entity
           add-button
         ></ha-entity-picker>
       </div>

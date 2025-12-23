@@ -227,6 +227,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
+        .helper=${this.helper}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.label-picker.no_labels"

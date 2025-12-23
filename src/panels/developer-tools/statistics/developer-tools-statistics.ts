@@ -732,7 +732,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           height: 56px;
           width: 100%;
           justify-content: space-between;
-          padding: 0 16px;
+          padding: 0 var(--ha-space-4);
           gap: var(--ha-space-4);
           box-sizing: border-box;
           background: var(--primary-background-color);
@@ -751,7 +751,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           display: flex;
           align-items: center;
           gap: var(--ha-space-4);
-          padding: 0 16px;
+          padding: 0 var(--ha-space-4);
           overflow-x: scroll;
           -ms-overflow-style: none;
           scrollbar-width: none;
@@ -763,7 +763,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 8px 12px;
+          padding: var(--ha-space-2) var(--ha-space-3);
           box-sizing: border-box;
           font-size: var(--ha-font-size-m);
           --ha-assist-chip-container-color: var(--card-background-color);
@@ -776,8 +776,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         }
 
         .selection-controls p {
-          margin-left: 8px;
-          margin-inline-start: 8px;
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
         }
 

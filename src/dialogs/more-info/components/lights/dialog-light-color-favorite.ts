@@ -268,14 +268,14 @@ class DialogLightColorFavorite extends LitElement {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: var(--ha-space-6);
           flex: 1;
         }
         .modes {
           display: flex;
           flex-direction: row;
           justify-content: flex-end;
-          padding: 0 24px;
+          padding: 0 var(--ha-space-6);
         }
         .wheel {
           width: 30px;

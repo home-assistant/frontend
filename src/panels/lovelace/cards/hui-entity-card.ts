@@ -165,15 +165,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <span class="value"
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
-                ? html`
-                    <ha-attribute-value
-                      hide-unit
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      .attribute=${this._config.attribute!}
-                    >
-                    </ha-attribute-value>
-                  `
+                ? html`<ha-attribute-value
+                    hide-unit
+                    .hass=${this.hass}
+                    .stateObj=${stateObj}
+                    .attribute=${this._config.attribute!}
+                  >
+                  </ha-attribute-value>`
                 : this.hass.localize("state.default.unknown")
               : (isNumericState(stateObj) || this._config.unit) &&
                   stateObj.attributes.device_class !== "duration"
