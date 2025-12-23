@@ -72,12 +72,12 @@ class MoreInfoPerson extends LitElement {
       justify-content: space-between;
     }
     .actions {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
       text-align: right;
     }
     ha-map {
-      margin-top: 16px;
-      margin-bottom: 16px;
+      margin-top: var(--ha-space-4);
+      margin-bottom: var(--ha-space-4);
     }
   `;
 }

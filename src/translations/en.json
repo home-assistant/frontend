@@ -672,17 +672,20 @@
             "device_missing": "No related device"
           },
           "add": "Add",
-          "custom_name": "Custom name"
+          "custom_name": "Custom name",
+          "no_match": "No entities found"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
           "show_attributes": "Show attributes"
         },
         "entity-state-picker": {
-          "state": "State"
+          "state": "State",
+          "add_custom_state": "Add custom state"
         },
         "entity-state-content-picker": {
-          "add": "Add"
+          "add": "Add",
+          "custom_state": "Custom state"
         }
       },
       "target-picker": {
@@ -918,9 +921,13 @@
         "default": "default",
         "state": "State color",
         "none": "No color",
+        "custom_color": "Custom color",
+        "no_colors_found": "No matching colors found",
         "colors": {
           "primary": "Primary",
           "accent": "Accent",
+          "primary-text": "Main text",
+          "secondary-text": "Secondary text",
           "disabled": "Disabled",
           "inactive": "Inactive",
           "red": "Red",
@@ -1102,6 +1109,7 @@
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
           "deselect_all": "Deselect all",
+          "select_all": "[%key:ui::components::subpage-data-table::select_all%]",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
           "tip_storage_panel": "storage"
         },
@@ -1308,7 +1316,9 @@
       "combo-box": {
         "no_match": "No matching items found",
         "no_items": "No items available",
-        "unknown_item": "Unknown item"
+        "unknown_item": "Unknown item",
+        "search_or_custom": "Search | Add custom item",
+        "add_custom_item": "Add custom item"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -1317,6 +1327,9 @@
         "suggesting_3": "Enchanting…",
         "done": "Done!",
         "error": "Fail!"
+      },
+      "navigation-picker": {
+        "add_custom_path": "Add custom path"
       }
     },
     "dialogs": {
@@ -4295,7 +4308,7 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
-                  "weekday": "Weekdays",
+                  "weekday": "Days of the Week",
                   "weekdays": {
                     "mon": "[%key:ui::weekdays::monday%]",
                     "tue": "[%key:ui::weekdays::tuesday%]",
@@ -7177,7 +7190,7 @@
             "automations": "Automations",
             "for_you": "For you",
             "home": "Home",
-            "commonly_used": "Commonly used"
+            "favorites": "Favorites"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -9133,6 +9146,11 @@
             "debug_connection": {
               "title": "Debug connection",
               "description": "Observe requests to the server and responses from the server in browser console."
+            },
+            "entity_diagnostic": {
+              "title": "Entity diagnostic",
+              "description": "Select an entity to copy diagnostic details.",
+              "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
             }
           },
           "events": {

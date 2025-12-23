@@ -39,9 +39,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean, attribute: "no-add" })
   public noAdd = false;
 
-  @property({ type: Boolean, attribute: "show-label" })
-  public showLabel = false;
-
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -183,10 +180,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   };
 
   protected render(): TemplateResult {
-    const placeholder =
-      this.placeholder ??
-      this.hass.localize("ui.components.category-picker.category");
-
     const valueRenderer = this._computeValueRenderer(this._categories);
 
     return html`
@@ -194,13 +187,12 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
+        .placeholder=${this.placeholder}
+        .value=${this.value}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.category-picker.no_categories"
         )}
-        .placeholder=${placeholder}
-        .showLabel=${this.showLabel}
-        .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}

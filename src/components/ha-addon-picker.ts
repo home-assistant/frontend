@@ -61,6 +61,11 @@ class HaAddonPicker extends LitElement {
   }
 
   protected render() {
+    const label =
+      this.label === undefined && this.hass
+        ? this.hass.localize("ui.components.addon-picker.addon")
+        : this.label;
+
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
@@ -72,14 +77,11 @@ class HaAddonPicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
-        .placeholder=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.addon-picker.addon")
-          : this.label}
+        .label=${label}
         .valueRenderer=${this._valueRenderer}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
-        show-label
         .value=${this.value}
         .getItems=${this._getItems}
         .searchKeys=${SEARCH_KEYS}

@@ -113,7 +113,6 @@ export class HaIconPicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         allow-custom-value
-        show-label
         .getItems=${this._getIconPickerItems}
         .helper=${this.helper}
         .disabled=${this.disabled}
@@ -122,7 +121,7 @@ export class HaIconPicker extends LitElement {
         .invalid=${this.invalid}
         .rowRenderer=${rowRenderer}
         .icon=${this._icon}
-        .placeholder=${this.label}
+        .label=${this.label}
         .value=${this._value}
         .searchFn=${this._filterIcons}
         .notFoundLabel=${this.hass?.localize(
@@ -131,6 +130,7 @@ export class HaIconPicker extends LitElement {
         popover-placement="bottom-start"
         @value-changed=${this._valueChanged}
       >
+        <slot name="start"></slot>
       </ha-generic-picker>
     `;
   }

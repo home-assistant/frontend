@@ -57,10 +57,9 @@ class HaConfigEntryPicker extends LitElement {
     return html`
       <ha-generic-picker
         .hass=${this.hass}
-        .placeholder=${this.label === undefined && this.hass
+        .label=${this.label === undefined && this.hass
           ? this.hass.localize("ui.components.config-entry-picker.config_entry")
           : this.label}
-        show-label
         .value=${this.value}
         .required=${this.required}
         .disabled=${this.disabled}

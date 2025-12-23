@@ -176,12 +176,12 @@ class PanelDeveloperTools extends LitElement {
           display: flex;
           align-items: center;
           font-size: var(--ha-font-size-xl);
-          padding: 8px 12px;
+          padding: var(--ha-space-2) var(--ha-space-3);
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
         :host([narrow]) .toolbar {
-          padding: 4px;
+          padding: var(--ha-space-1);
         }
         .main-title {
           margin: var(--margin-title);

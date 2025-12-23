@@ -268,6 +268,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     now.setHours(now.getHours() - this._hoursToShow);
     const configUrl = `/history?${createSearchParam({
       entity_id: this._entityIds.join(","),
+      back: "1",
       start_date: now.toISOString(),
     })}`;
 
