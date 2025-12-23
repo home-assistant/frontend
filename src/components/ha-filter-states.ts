@@ -62,6 +62,8 @@ export class HaFilterStates extends LitElement {
                 @selected=${this._statesSelected}
                 multi
                 class="ha-scrollbar"
+                innerRole="menu"
+                itemRoles="menuitemcheckbox"
               >
                 ${this.states.map(
                   (item) =>

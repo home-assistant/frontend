@@ -96,6 +96,8 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                 @selected=${this._labelSelected}
                 class="ha-scrollbar"
                 multi
+                innerRole="menu"
+                itemRoles="menuitemcheckbox"
               >
                 ${repeat(
                   this._filteredLabels(this._labels, this._filter, this.value),

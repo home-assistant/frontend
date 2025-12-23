@@ -85,6 +85,8 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                 @selected=${this._categorySelected}
                 class="ha-scrollbar"
                 activatable
+                innerRole="menu"
+                itemRoles="menuitemcheckbox"
               >
                 ${this._categories.length > 0
                   ? html`<ha-list-item

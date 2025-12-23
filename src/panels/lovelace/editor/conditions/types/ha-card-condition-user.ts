@@ -57,7 +57,7 @@ export class HaCardConditionUser extends LitElement {
     const selectedUsers = this.condition.users ?? [];
 
     return html`
-      <ha-list>
+      <ha-list innerRole="menu" itemRoles="menuitemcheckbox">
         ${this._sortedUsers(this._users).map(
           (user) => html`
             <ha-check-list-item

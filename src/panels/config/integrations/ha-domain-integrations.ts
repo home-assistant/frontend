@@ -40,7 +40,7 @@ class HaDomainIntegrations extends LitElement {
   public flowsInProgress?: DataEntryFlowProgress[];
 
   protected render() {
-    return html`<ha-list>
+    return html`<ha-list innerRole="menu" itemRoles="menuitem">
       ${this.flowsInProgress?.length
         ? html`<h3>
               ${this.hass.localize("ui.panel.config.integrations.discovered")}

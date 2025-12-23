@@ -311,7 +311,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           .disabled=${!this._reordering}
           @item-moved=${this._itemMoved}
         >
-          <ha-list wrapFocus multi>
+          <ha-list
+            wrapFocus
+            multi
+            innerRole="menu"
+            itemRoles="menuitemcheckbox"
+          >
             ${!uncheckedItems.length && !itemsWithoutStatus.length
               ? html`<p class="empty">
                   ${this.hass.localize(

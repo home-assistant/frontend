@@ -158,7 +158,7 @@ class HaConfigSectionStorage extends LitElement {
                       )}
                 </ha-alert>`
               : validMounts?.length
-                ? html`<ha-list>
+                ? html`<ha-list innerRole="menu" itemRoles="menuitem">
                     ${validMounts.map(
                       (mount) => html`
                         <ha-list-item

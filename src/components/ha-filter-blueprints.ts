@@ -65,6 +65,8 @@ export class HaFilterBlueprints extends LitElement {
           ? html`
               <ha-list
                 @selected=${this._blueprintsSelected}
+                innerRole="menu"
+                itemRoles="menuitemcheckbox"
                 multi
                 class="ha-scrollbar"
               >

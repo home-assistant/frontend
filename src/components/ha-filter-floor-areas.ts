@@ -75,7 +75,11 @@ export class HaFilterFloorAreas extends LitElement {
         </div>
         ${this._shouldRender
           ? html`
-              <ha-list class="ha-scrollbar">
+              <ha-list
+                class="ha-scrollbar"
+                innerRole="menu"
+                itemRoles="menuitemcheckbox"
+              >
                 ${repeat(
                   areas?.floors || [],
                   (floor) => floor.floor_id,

@@ -144,7 +144,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             </div>
           `
         : html`
-            <ha-list>
+            <ha-list innerRole="menu" itemRoles="menuitem">
               ${this._storageItems.map(
                 (entry) => html`
                   <ha-list-item

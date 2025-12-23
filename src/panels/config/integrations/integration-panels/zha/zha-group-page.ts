@@ -125,7 +125,7 @@ export class ZHAGroupPage extends LitElement {
             ${this.hass.localize("ui.panel.config.zha.groups.members")}
           </div>
           <ha-card>
-            <ha-list>
+            <ha-list innerRole="menu" itemRoles="menuitem">
               ${this.group.members.length
                 ? this.group.members.map(
                     (member) =>

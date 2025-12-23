@@ -168,7 +168,7 @@ export class DialogHassioNetwork
                 this._accessPoints.accesspoints &&
                 this._accessPoints.accesspoints.length !== 0
                   ? html`
-                      <ha-list>
+                      <ha-list innerRole="menu" itemRoles="menuitem">
                         ${this._accessPoints.accesspoints
                           .filter((ap) => ap.ssid)
                           .map(

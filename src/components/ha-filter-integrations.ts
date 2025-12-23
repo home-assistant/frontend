@@ -62,6 +62,8 @@ export class HaFilterIntegrations extends LitElement {
                 class="ha-scrollbar"
                 @click=${this._handleItemClick}
                 multi
+                innerRole="menu"
+                itemRoles="menuitemcheckbox"
               >
                 ${repeat(
                   this._integrations(

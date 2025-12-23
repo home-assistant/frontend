@@ -170,7 +170,12 @@ class DialogMediaManage extends LitElement {
                   : ""}
               </div>`
             : html`
-                <ha-list multi @selected=${this._handleSelected}>
+                <ha-list
+                  multi
+                  @selected=${this._handleSelected}
+                  innerRole="menu"
+                  itemRoles="menuitemcheckbox"
+                >
                   ${repeat(
                     children,
                     (item) => item.media_content_id,

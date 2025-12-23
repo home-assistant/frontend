@@ -606,7 +606,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                               : ""}
                           `
                         : html`
-                            <ha-list>
+                            <ha-list innerRole="menu" itemRoles="menuitem">
                               <lit-virtualizer
                                 scroller
                                 .items=${children}

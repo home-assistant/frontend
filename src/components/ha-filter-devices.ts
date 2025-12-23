@@ -73,7 +73,12 @@ export class HaFilterDevices extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <ha-list class="ha-scrollbar" multi>
+              <ha-list
+                class="ha-scrollbar"
+                multi
+                innerRole="menu"
+                itemRoles="menuitemcheckbox"
+              >
                 <lit-virtualizer
                   .items=${this._devices(
                     this.hass.devices,

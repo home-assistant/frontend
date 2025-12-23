@@ -29,7 +29,7 @@ export class HaPickAuthProvider extends LitElement {
           >${this.localize("ui.panel.page-authorize.pick_auth_provider")}</span
         >
       </h3>
-      <ha-list>
+      <ha-list innerRole="menu" itemRoles="menuitem">
         ${this.authProviders.map(
           (provider) => html`
             <ha-list-item

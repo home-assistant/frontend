@@ -454,6 +454,8 @@ class AddIntegrationDialog extends LitElement {
       ${integrations
         ? html`<ha-list
             dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
+            innerRole="menu"
+            itemRoles="menuitem"
           >
             <lit-virtualizer
               scroller

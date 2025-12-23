@@ -104,7 +104,7 @@ export class DialogDataTableSettings extends LitElement {
           draggable-selector=".draggable"
           handle-selector=".handle"
         >
-          <ha-list>
+          <ha-list innerRole="menu" itemRoles="menuitemcheckbox">
             ${repeat(
               columns,
               (col) => col.key,

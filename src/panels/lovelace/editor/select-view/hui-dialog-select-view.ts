@@ -115,7 +115,11 @@ export class HuiDialogSelectView extends LitElement {
             >`
           : this._config.views.length > 1
             ? html`
-                <ha-list dialogInitialFocus>
+                <ha-list
+                  dialogInitialFocus
+                  innerRole="menu"
+                  itemRoles="menuitemradio"
+                >
                   ${this._config.views.map((view, idx) => {
                     const isStrategy = isStrategyView(view);
 

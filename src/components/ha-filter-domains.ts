@@ -61,6 +61,8 @@ export class HaFilterDomains extends LitElement {
                 class="ha-scrollbar"
                 @click=${this._handleItemClick}
                 multi
+                innerRole="menu"
+                itemRoles="menuitemcheckbox"
               >
                 ${repeat(
                   this._domains(this.hass.states, this._filter),

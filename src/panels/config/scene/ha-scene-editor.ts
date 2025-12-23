@@ -435,7 +435,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                         @click=${this._deleteDevice}
                       ></ha-icon-button>
                     </h1>
-                    <ha-list>
+                    <ha-list innerRole="menu" itemRoles="menuitem">
                       ${device.entities.map((entityId) => {
                         const entityStateObj = this.hass.states[entityId];
                         if (!entityStateObj) {
@@ -508,7 +508,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
               ${entities.length
                 ? html`
                     <ha-card outlined class="entities">
-                      <ha-list>
+                      <ha-list innerRole="menu" itemRoles="menuitem">
                         ${entities.map((entityId) => {
                           const entityStateObj = this.hass.states[entityId];
                           if (!entityStateObj) {

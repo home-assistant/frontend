@@ -84,7 +84,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
           this.hass.localize("ui.panel.config.zwave_js.node_statistics.title")
         )}
       >
-        <ha-list noninteractive>
+        <ha-list noninteractive innerRole="menu" itemRoles="menuitem">
           <ha-list-item twoline hasmeta>
             <span>
               ${this.hass.localize(

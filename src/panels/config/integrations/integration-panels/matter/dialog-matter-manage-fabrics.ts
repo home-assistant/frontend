@@ -58,7 +58,7 @@ class DialogMatterManageFabrics extends LitElement {
           ${this.hass.localize("ui.panel.config.matter.manage_fabrics.fabrics")}
         </p>
         ${this._nodeDiagnostics
-          ? html`<ha-list>
+          ? html`<ha-list innerRole="menu" itemRoles="menuitem">
               ${this._nodeDiagnostics.active_fabrics.map(
                 (fabric) =>
                   html`<ha-list-item

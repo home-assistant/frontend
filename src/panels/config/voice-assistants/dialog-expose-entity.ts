@@ -85,7 +85,7 @@ class DialogExposeEntity extends LitElement {
             @value-changed=${this._filterChanged}
           ></search-input>
         </ha-dialog-header>
-        <ha-list multi>
+        <ha-list multi innerRole="menu" itemRoles="menuitemcheckbox">
           <lit-virtualizer
             scroller
             class="ha-scrollbar"

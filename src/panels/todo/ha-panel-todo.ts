@@ -216,7 +216,14 @@ class PanelTodo extends LitElement {
               </ha-button-menu>`
             : this.hass.localize("panel.todo")}
         </div>
-        <ha-list slot="pane" activatable>${listItems}</ha-list>
+        <ha-list
+          slot="pane"
+          activatable
+          innerRole="menu"
+          itemRoles="menuitemradio"
+        >
+          ${listItems}
+        </ha-list>
         ${showPane && this.hass.user?.is_admin
           ? html`<ha-list-item
               graphic="icon"

@@ -192,7 +192,12 @@ export class HaDateRangePicker extends LitElement {
         </div>
         ${this.ranges !== false && (this.ranges || this._ranges)
           ? html`<div slot="ranges" class="date-range-ranges">
-              <ha-list @action=${this._setDateRange} activatable>
+              <ha-list
+                @action=${this._setDateRange}
+                activatable
+                innerRole="menu"
+                itemRoles="menuitem"
+              >
                 ${Object.keys(this.ranges || this._ranges!).map(
                   (name) => html`<ha-list-item>${name}</ha-list-item>`
                 )}

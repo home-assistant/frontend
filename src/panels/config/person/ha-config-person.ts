@@ -93,7 +93,7 @@ export class HaConfigPerson extends LitElement {
           </span>
 
           <ha-card outlined class="storage">
-            <ha-list>
+            <ha-list innerRole="menu" itemRoles="menuitem">
               ${this._storageItems.map(
                 (entry) => html`
                   <ha-list-item
