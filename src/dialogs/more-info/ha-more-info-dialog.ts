@@ -802,8 +802,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin: var(--ha-space-0) var(--ha-space-0)
-            calc(var(--ha-space-2) * -1) var(--ha-space-0);
+          margin: 0 0 calc(var(--ha-space-2) * -1) 0;
         }
 
         .title p {

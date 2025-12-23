@@ -199,7 +199,7 @@ export class DialogLabsPreviewFeatureEnable
 
   static readonly styles = css`
     ha-wa-dialog {
-      --dialog-content-padding: var(--ha-space-0);
+      --dialog-content-padding: 0;
     }
 
     p {

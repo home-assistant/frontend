@@ -11,12 +11,13 @@ import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-picker";
-import "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
+import "../../../components/ha-wa-dialog";
 import { updateAreaRegistryEntry } from "../../../data/area_registry";
 import type {
   FloorRegistryEntry,
@@ -49,6 +50,8 @@ class DialogFloorDetail extends LitElement {
 
   @state() private _removedAreas = new Set<string>();
 
+  @state() private _open = false;
+
   public showDialog(params: FloorRegistryDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
@@ -60,9 +63,14 @@ class DialogFloorDetail extends LitElement {
     this._level = this._params.entry?.level ?? null;
     this._addedAreas.clear();
     this._removedAreas.clear();
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
     this._addedAreas.clear();
@@ -96,18 +104,15 @@ class DialogFloorDetail extends LitElement {
       return nothing;
     }
     const entry = this._params.entry;
-    const nameInvalid = !this._isNameValid();
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          entry
-            ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
-            : this.hass.localize("ui.panel.config.floors.editor.create_floor")
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${entry
+          ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
+          : this.hass.localize("ui.panel.config.floors.editor.create_floor")}
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error
@@ -128,6 +133,7 @@ class DialogFloorDetail extends LitElement {
               : nothing}
 
             <ha-textfield
+              autofocus
               .value=${this._name}
               @input=${this._nameChanged}
               .label=${this.hass.localize("ui.panel.config.floors.editor.name")}
@@ -135,7 +141,6 @@ class DialogFloorDetail extends LitElement {
                 "ui.panel.config.floors.editor.name_required"
               )}
               required
-              dialogInitialFocus
             ></ha-textfield>
 
             <ha-textfield
@@ -230,23 +235,25 @@ class DialogFloorDetail extends LitElement {
             ></ha-aliases-editor>
           </div>
         </div>
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${nameInvalid || !!this._submitting}
-        >
-          ${entry
-            ? this.hass.localize("ui.common.save")
-            : this.hass.localize("ui.common.create")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${!!this._submitting}
+          >
+            ${entry
+              ? this.hass.localize("ui.common.save")
+              : this.hass.localize("ui.common.create")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -285,10 +292,6 @@ class DialogFloorDetail extends LitElement {
     this._addedAreas = new Set(this._addedAreas);
   }
 
-  private _isNameValid() {
-    return this._name.trim() !== "";
-  }
-
   private _nameChanged(ev) {
     this._error = undefined;
     this._name = ev.target.value;
@@ -305,7 +308,16 @@ class DialogFloorDetail extends LitElement {
   }
 
   private async _updateEntry() {
+    if (this._name.trim() === "") {
+      this._error = this.hass.localize(
+        "ui.panel.config.floors.editor.name_required"
+      );
+      return;
+    }
+    this._error = undefined;
+
     this._submitting = true;
+
     const create = !this._params!.entry;
     try {
       const values: FloorRegistryEntryMutableParams = {
@@ -344,13 +356,13 @@ class DialogFloorDetail extends LitElement {
       css`
         ha-textfield {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         ha-floor-icon {
           color: var(--secondary-text-color);
         }
         ha-chip-set {
-          margin-bottom: 8px;
+          margin-bottom: var(--ha-space-2);
         }
       `,
     ];

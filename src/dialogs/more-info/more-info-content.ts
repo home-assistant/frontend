@@ -119,7 +119,7 @@ class MoreInfoContent extends LitElement {
     hui-section {
       width: 100%;
       display: block;
-      margin-top: 16px;
+      margin-top: var(--ha-space-4);
     }
   `;
 }

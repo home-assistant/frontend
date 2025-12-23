@@ -1,13 +1,17 @@
 import { animate } from "@lit-labs/motion";
 
-import { mdiClose, mdiDelete } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDelete,
+  mdiCheckboxBlankOutline,
+  mdiCheckboxMarkedOutline,
+} from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { deleteImage, getIdFromUrl } from "../../data/image_upload";
 import type { MediaPlayerItem } from "../../data/media-player";
 import { MediaClassBrowserSettings } from "../../data/media-player";
@@ -18,12 +22,13 @@ import {
   removeLocalMedia,
 } from "../../data/media_source";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
-import "../ha-dialog";
+import "../ha-wa-dialog";
 import "../ha-dialog-header";
+import "../ha-dialog-footer";
+import "../ha-icon-button";
 import "../ha-list";
 import "../ha-spinner";
 import "../ha-svg-icon";
@@ -46,14 +51,24 @@ class DialogMediaManage extends LitElement {
 
   @state() private _selected = new Set<number>();
 
+  @state() private _open = false;
+
+  @state() private _filteredChildren: MediaPlayerItem[] = [];
+
   private _filesChanged = false;
 
   public showDialog(params: MediaManageDialogParams): void {
     this._params = params;
     this._refreshMedia();
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed(): void {
     if (this._filesChanged && this._params!.onClose) {
       this._params!.onClose();
     }
@@ -65,88 +80,68 @@ class DialogMediaManage extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  protected willUpdate() {
+    this._filteredChildren =
+      this._currentItem?.children?.filter((child) => !child.can_expand) || [];
+    if (this._filteredChildren.length === 0 && this._selected.size !== 0) {
+      // When running delete all, sometimes the list can throw off a spurious
+      // select event that makes it think that 1 item is still selected. Clear selected
+      // if nothing can be selected.
+      this._selected = new Set();
+    }
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
     }
 
-    const children =
-      this._currentItem?.children?.filter((child) => !child.can_expand) || [];
-
     let fileIndex = 0;
 
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        hideActions
-        flexContent
-        .heading=${this._params.currentItem.title}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        ?prevent-scrim-close=${this._uploading || this._deleting}
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header slot="heading">
+        <ha-dialog-header slot="header">
+          ${!(this._uploading || this._deleting)
+            ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
+                <ha-icon-button
+                  data-dialog="close"
+                  .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                  .path=${mdiClose}
+                ></ha-icon-button
+              ></slot>`
+            : nothing}
+          <span class="title" slot="title" id="dialog-box-title">
+            ${this.hass.localize(
+              "ui.components.media-browser.file_management.title"
+            )}
+          </span>
           ${this._selected.size === 0
-            ? html`
-                <span slot="title">
-                  ${this.hass.localize(
-                    "ui.components.media-browser.file_management.title"
-                  )}
-                </span>
-
-                <ha-media-upload-button
-                  .disabled=${this._deleting}
-                  .hass=${this.hass}
-                  .currentItem=${this._params.currentItem}
-                  @uploading=${this._startUploading}
-                  @media-refresh=${this._doneUploading}
-                  slot="actionItems"
-                ></ha-media-upload-button>
-                ${this._uploading
-                  ? ""
-                  : html`
-                      <ha-icon-button
-                        .label=${this.hass.localize("ui.common.close")}
-                        .path=${mdiClose}
-                        dialogAction="close"
-                        slot="navigationIcon"
-                        dir=${computeRTLDirection(this.hass)}
-                      ></ha-icon-button>
-                    `}
-              `
-            : html`
-                <ha-button
-                  variant="danger"
-                  slot="navigationIcon"
-                  .disabled=${this._deleting}
-                  @click=${this._handleDelete}
-                >
-                  <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
-                  ${this.hass.localize(
-                    `ui.components.media-browser.file_management.${
-                      this._deleting ? "deleting" : "delete"
-                    }`,
-                    { count: this._selected.size }
-                  )}
-                </ha-button>
-
-                ${this._deleting
-                  ? ""
-                  : html`
-                      <ha-button
-                        slot="actionItems"
-                        @click=${this._handleDeselectAll}
-                      >
-                        <ha-svg-icon
-                          .path=${mdiClose}
-                          slot="start"
-                        ></ha-svg-icon>
-                        ${this.hass.localize(
-                          `ui.components.media-browser.file_management.deselect_all`
-                        )}
-                      </ha-button>
-                    `}
-              `}
+            ? html`<ha-media-upload-button
+                .hass=${this.hass}
+                .currentItem=${this._params.currentItem}
+                @uploading=${this._startUploading}
+                @media-refresh=${this._doneUploading}
+                slot="actionItems"
+              ></ha-media-upload-button>`
+            : html`<ha-button
+                variant="danger"
+                slot="actionItems"
+                .disabled=${this._deleting}
+                @click=${this._handleDelete}
+              >
+                <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
+                ${this.hass.localize(
+                  `ui.components.media-browser.file_management.${
+                    this._deleting ? "deleting" : "delete"
+                  }`,
+                  { count: this._selected.size }
+                )}
+              </ha-button>`}
         </ha-dialog-header>
         ${!this._currentItem
           ? html`
@@ -154,7 +149,7 @@ class DialogMediaManage extends LitElement {
                 <ha-spinner></ha-spinner>
               </div>
             `
-          : !children.length
+          : !this._filteredChildren.length
             ? html`<div class="no-items">
                 <p>
                   ${this.hass.localize(
@@ -170,9 +165,38 @@ class DialogMediaManage extends LitElement {
                   : ""}
               </div>`
             : html`
+                <div class="buttons" slot="footer">
+                  <ha-button
+                    appearance="filled"
+                    @click=${this._handleDeselectAll}
+                    .disabled=${this._selected.size === 0}
+                  >
+                    <ha-svg-icon
+                      .path=${mdiCheckboxBlankOutline}
+                      slot="start"
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      `ui.components.media-browser.file_management.deselect_all`
+                    )}
+                  </ha-button>
+                  <ha-button
+                    appearance="filled"
+                    @click=${this._handleSelectAll}
+                    .disabled=${this._selected.size ===
+                    this._filteredChildren.length}
+                  >
+                    <ha-svg-icon
+                      .path=${mdiCheckboxMarkedOutline}
+                      slot="start"
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      `ui.components.media-browser.file_management.select_all`
+                    )}
+                  </ha-button>
+                </div>
                 <ha-list multi @selected=${this._handleSelected}>
                   ${repeat(
-                    children,
+                    this._filteredChildren,
                     (item) => item.media_content_id,
                     (item) => {
                       const icon = html`
@@ -220,7 +244,7 @@ class DialogMediaManage extends LitElement {
               )}
             </ha-tip>`
           : nothing}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -242,6 +266,10 @@ class DialogMediaManage extends LitElement {
     if (this._selected.size) {
       this._selected = new Set();
     }
+  }
+
+  private _handleSelectAll() {
+    this._selected = new Set([...Array(this._filteredChildren.length).keys()]);
   }
 
   private async _handleDelete() {
@@ -304,23 +332,10 @@ class DialogMediaManage extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleDialog,
-      haStyleDialogFixedTop,
       css`
-        ha-dialog {
-          --dialog-z-index: 9;
+        ha-wa-dialog {
           --dialog-content-padding: 0;
         }
-
-        @media (min-width: 800px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 800px;
-            --mdc-dialog-max-height: calc(
-              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
-            );
-          }
-        }
-
         ha-dialog-header ha-media-upload-button,
         ha-dialog-header ha-button {
           --mdc-theme-primary: var(--primary-text-color);
@@ -338,7 +353,11 @@ class DialogMediaManage extends LitElement {
           justify-content: center;
           align-items: center;
         }
-
+        .buttons {
+          display: flex;
+          justify-content: center;
+          width: 100%;
+        }
         .no-items {
           text-align: center;
           padding: 16px;

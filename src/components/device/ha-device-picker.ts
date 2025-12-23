@@ -1,4 +1,4 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -162,7 +162,7 @@ export class HaDevicePicker extends LitElement {
     }
   );
 
-  private _rowRenderer: ComboBoxLitRenderer<DevicePickerItem> = (item) => html`
+  private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => html`
     <ha-combo-box-item type="button">
       ${item.domain
         ? html`
