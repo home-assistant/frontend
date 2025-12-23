@@ -157,7 +157,13 @@ export class HaAdaptiveDialog extends LitElement {
         .headerSubtitlePosition=${this.headerSubtitlePosition}
         flexcontent
       >
-        <slot name="headerNavigationIcon" slot="headerNavigationIcon"></slot>
+        <slot name="headerNavigationIcon" slot="headerNavigationIcon">
+          <ha-icon-button
+            data-dialog="close"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+        </slot>
         <slot name="headerTitle" slot="headerTitle"></slot>
         <slot name="headerSubtitle" slot="headerSubtitle"></slot>
         <slot name="headerActionItems" slot="headerActionItems"></slot>

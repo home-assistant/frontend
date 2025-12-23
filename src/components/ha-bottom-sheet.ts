@@ -241,7 +241,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         }
         slot[name="footer"] {
           display: block;
-          padding: var(--ha-space-0);
+          padding: 0;
         }
         ::slotted([slot="footer"]) {
           display: flex;

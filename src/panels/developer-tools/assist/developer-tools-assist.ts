@@ -240,13 +240,13 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
       haStyle,
       css`
         .content {
-          padding: 28px 20px 16px;
+          padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-4);
           max-width: 1040px;
           margin: 0 auto;
         }
         .description {
           margin: 0;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         ha-textarea {
           width: 100%;
@@ -255,18 +255,18 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           text-align: right;
         }
         .form {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .result-toolbar {
           text-align: center;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .result {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .sentence {
           font-weight: var(--ha-font-weight-medium);
-          margin-bottom: 8px;
+          margin-bottom: var(--ha-space-2);
           display: flex;
           flex-direction: row;
           justify-content: space-between;
@@ -280,7 +280,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         ha-code-editor,
         ha-alert {
           display: block;
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
       `,
     ];

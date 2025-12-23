@@ -275,7 +275,7 @@ ${type === "object"
 
         .content {
           gap: var(--ha-space-4);
-          padding: 16px;
+          padding: var(--ha-space-4);
         }
 
         .content.horizontal {
@@ -289,7 +289,7 @@ ${type === "object"
         }
 
         ha-card {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         .edit-pane {
@@ -307,14 +307,14 @@ ${type === "object"
 
         .render-spinner {
           position: absolute;
-          top: 8px;
-          right: 8px;
-          inset-inline-end: 8px;
+          top: var(--ha-space-2);
+          right: var(--ha-space-2);
+          inset-inline-end: var(--ha-space-2);
           inset-inline-start: initial;
         }
 
         ha-alert {
-          margin-bottom: 8px;
+          margin-bottom: var(--ha-space-2);
           display: block;
         }
 
@@ -325,7 +325,7 @@ ${type === "object"
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
-          padding: 8px;
+          padding: var(--ha-space-2);
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;

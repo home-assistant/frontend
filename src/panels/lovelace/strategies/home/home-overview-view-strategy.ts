@@ -21,7 +21,7 @@ import type {
   AreaCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
-  WeatherForecastCardConfig,
+  TileCardConfig,
 } from "../../cards/types";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
@@ -76,6 +76,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const largeScreenCondition: Condition = {
       condition: "screen",
       media_query: "(min-width: 871px)",
+    };
+
+    const smallScreenCondition: Condition = {
+      condition: "screen",
+      media_query: "(max-width: 870px)",
     };
 
     const floorsSections: LovelaceSectionConfig[] = [];
@@ -136,11 +141,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
     const maxCommonControls = Math.max(8, favoriteEntities.length);
 
-    const commonControlsSection = {
+    const favoritesSection = {
       strategy: {
         type: "common-controls",
         limit: maxCommonControls,
         include_entities: favoriteEntities,
+        title: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+        title_visibilty: [largeScreenCondition],
         hide_empty: true,
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
@@ -170,6 +177,26 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasClimate = findEntities(allEntities, climateFilters).length > 0;
     const hasSecurity = findEntities(allEntities, securityFilters).length > 0;
 
+    const weatherFilter = generateEntityFilter(hass, {
+      domain: "weather",
+      entity_category: "none",
+    });
+
+    const weatherEntity = Object.keys(hass.states)
+      .filter(weatherFilter)
+      .sort()[0];
+
+    const energyPrefs = isComponentLoaded(hass, "energy")
+      ? // It raises if not configured, just swallow that.
+        await getEnergyPreferences(hass).catch(() => undefined)
+      : undefined;
+
+    const hasEnergy =
+      energyPrefs?.energy_sources.some(
+        (source) => source.type === "grid" && source.flow_from.length > 0
+      ) ?? false;
+
+    // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
       hasLights &&
         ({
@@ -178,9 +205,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           tap_action: {
             action: "navigate",
             navigation_path: "/light?historyBack=1",
-          },
-          grid_options: {
-            columns: 12,
           },
         } satisfies HomeSummaryCard),
       hasClimate &&
@@ -191,9 +215,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             action: "navigate",
             navigation_path: "/climate?historyBack=1",
           },
-          grid_options: {
-            columns: 12,
-          },
         } satisfies HomeSummaryCard),
       hasSecurity &&
         ({
@@ -202,9 +223,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           tap_action: {
             action: "navigate",
             navigation_path: "/security?historyBack=1",
-          },
-          grid_options: {
-            columns: 12,
           },
         } satisfies HomeSummaryCard),
       hasMediaPlayers &&
@@ -215,92 +233,72 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             action: "navigate",
             navigation_path: "media-players",
           },
-          grid_options: {
-            columns: 12,
+        } satisfies HomeSummaryCard),
+      weatherEntity &&
+        ({
+          type: "tile",
+          entity: weatherEntity,
+          name: hass.localize(
+            "ui.panel.lovelace.strategy.home.summary_list.weather"
+          ),
+          state_content: ["temperature", "state"],
+        } satisfies TileCardConfig),
+      hasEnergy &&
+        ({
+          type: "home-summary",
+          summary: "energy",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/energy?historyBack=1",
           },
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
 
-    const forYouSection: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [
-        {
-          type: "heading",
-          heading: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
-          heading_style: "title",
-          visibility: [largeScreenCondition],
-        },
-      ],
+    // Build summary cards for sidebar (full width: columns 12)
+    const sidebarSummaryCards = summaryCards.map((card) => ({
+      ...card,
+      grid_options: { columns: 12 },
+    }));
+
+    // Build summary cards for mobile section (half width: columns 6)
+    const mobileSummaryCards = [
+      ...summaryCards.map((card) => ({
+        ...card,
+        grid_options: { columns: 6 },
+      })),
+    ];
+
+    const summaryHeadingCard: LovelaceCardConfig = {
+      type: "heading",
+      heading: hass.localize("ui.panel.lovelace.strategy.home.summaries"),
+      heading_style: "title",
     };
 
-    const widgetSection: LovelaceSectionConfig = {
-      cards: [],
-    };
+    // Mobile summary section (visible on small screens only)
+    const mobileSummarySection: LovelaceSectionConfig | undefined =
+      mobileSummaryCards.length > 0
+        ? {
+            type: "grid",
+            column_span: maxColumns,
+            visibility: [smallScreenCondition],
+            cards: [summaryHeadingCard, ...mobileSummaryCards],
+          }
+        : undefined;
 
-    if (summaryCards.length) {
-      widgetSection.cards!.push(...summaryCards);
-    }
-
-    const weatherFilter = generateEntityFilter(hass, {
-      domain: "weather",
-      entity_category: "none",
-    });
-
-    const weatherEntity = Object.keys(hass.states)
-      .filter(weatherFilter)
-      .sort()[0];
-
-    if (weatherEntity) {
-      widgetSection.cards!.push({
-        type: "weather-forecast",
-        entity: weatherEntity,
-        show_forecast: false,
-        show_current: true,
-        grid_options: {
-          columns: 12,
-          rows: "auto",
-        },
-      } as WeatherForecastCardConfig);
-    }
-
-    const energyPrefs = isComponentLoaded(hass, "energy")
-      ? // It raises if not configured, just swallow that.
-        await getEnergyPreferences(hass).catch(() => undefined)
-      : undefined;
-
-    if (energyPrefs) {
-      const grid = energyPrefs.energy_sources.find(
-        (source) => source.type === "grid"
-      );
-
-      if (grid && grid.flow_from.length > 0) {
-        widgetSection.cards!.push({
-          title: hass.localize(
-            "ui.panel.lovelace.cards.energy.energy_distribution.title_today"
-          ),
-          type: "energy-distribution",
-          collection_key: "energy_home_dashboard",
-          link_dashboard: true,
-        });
-      }
-    }
+    // Sidebar section
+    const sidebarSection: LovelaceSectionConfig | undefined =
+      sidebarSummaryCards.length > 0
+        ? {
+            type: "grid",
+            cards: [summaryHeadingCard, ...sidebarSummaryCards],
+          }
+        : undefined;
 
     const sections = (
-      [
-        {
-          type: "grid",
-          cards: [
-            // Heading to add some spacing on large screens
-            {
-              type: "heading",
-              heading_style: "subtitle",
-              visibility: [largeScreenCondition],
-            },
-          ],
-        },
-        commonControlsSection,
-        ...floorsSections,
-      ] satisfies (LovelaceSectionRawConfig | undefined)[]
+      [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
+        | LovelaceSectionRawConfig
+        | undefined
+      )[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
     return {
@@ -315,11 +313,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           content: `## ${hass.localize("ui.panel.lovelace.strategy.home.welcome_user", { user: "{{ user }}" })}`,
         } satisfies MarkdownCardConfig,
       },
-      sidebar: {
-        sections: [forYouSection, widgetSection],
-        content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
-        sidebar_label: hass.localize("ui.panel.lovelace.strategy.home.for_you"),
-      },
+      ...(sidebarSection && {
+        sidebar: {
+          sections: [sidebarSection],
+          content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
+          sidebar_label: hass.localize(
+            "ui.panel.lovelace.strategy.home.summaries"
+          ),
+          visibility: [largeScreenCondition],
+        },
+      }),
     };
   }
 }

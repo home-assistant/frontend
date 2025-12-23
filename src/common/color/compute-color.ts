@@ -1,7 +1,6 @@
 export const THEME_COLORS = new Set([
   "primary",
   "accent",
-  "disabled",
   "red",
   "pink",
   "purple",
@@ -25,6 +24,9 @@ export const THEME_COLORS = new Set([
   "blue-grey",
   "black",
   "white",
+  "primary-text",
+  "secondary-text",
+  "disabled",
 ]);
 
 export function computeCssColor(color: string): string {

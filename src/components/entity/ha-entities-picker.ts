@@ -99,7 +99,6 @@ class HaEntitiesPicker extends LitElement {
             (entityId) => html`
               <div class="entity">
                 <ha-entity-picker
-                  allow-custom-entity
                   .curValue=${entityId}
                   .hass=${this.hass}
                   .includeDomains=${this.includeDomains}
@@ -129,7 +128,6 @@ class HaEntitiesPicker extends LitElement {
       </ha-sortable>
       <div>
         <ha-entity-picker
-          allow-custom-entity
           .hass=${this.hass}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}

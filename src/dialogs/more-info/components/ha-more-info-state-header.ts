@@ -84,8 +84,8 @@ export class HaMoreInfoStateHeader extends LitElement {
       font-weight: var(--ha-font-weight-medium);
       line-height: var(--ha-line-height-normal);
       letter-spacing: 0.1px;
-      padding: 4px 0;
-      margin-bottom: 20px;
+      padding: var(--ha-space-1) 0;
+      margin-bottom: var(--ha-space-5);
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;

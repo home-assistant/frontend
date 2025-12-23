@@ -339,11 +339,11 @@ export class DialogEnergyGasSettings
         ev.detail.value,
         metadata[0]
       );
+      if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
+        this._costs = "no-costs";
+      }
     } else {
       this._pickedDisplayUnit = undefined;
-    }
-    if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
-      this._costs = "no-costs";
     }
     this._source = {
       ...this._source!,

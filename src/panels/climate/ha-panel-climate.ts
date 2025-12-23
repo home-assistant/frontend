@@ -37,8 +37,7 @@ class PanelClimate extends LitElement {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
-      this.hass.loadFragmentTranslation("lovelace");
-      this._setLovelace();
+      this._setup();
       return;
     }
 
@@ -73,6 +72,11 @@ class PanelClimate extends LitElement {
         this._setLovelace();
       }
     }
+  }
+
+  private async _setup() {
+    await this.hass.loadFragmentTranslation("lovelace");
+    this._setLovelace();
   }
 
   private _debounceRegistriesChanged = debounce(

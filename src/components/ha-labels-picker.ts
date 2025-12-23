@@ -231,7 +231,6 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
 
   static styles = css`
     ha-chip-set {
-      margin-bottom: 8px;
       background-color: var(--mdc-text-field-fill-color);
       border-bottom: 1px solid var(--ha-color-border-neutral-normal);
       border-top-right-radius: var(--ha-border-radius-sm);

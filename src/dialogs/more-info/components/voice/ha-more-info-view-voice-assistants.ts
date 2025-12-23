@@ -48,7 +48,7 @@ class MoreInfoViewVoiceAssistants extends LitElement {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: var(--ha-space-6);
           flex: 1;
         }
       `,

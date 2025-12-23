@@ -175,10 +175,10 @@ export class HaMdDialog extends Dialog {
         }
 
         .container {
-          margin-top: var(--safe-area-inset-top, var(--ha-space-0));
-          margin-bottom: var(--safe-area-inset-bottom, var(--ha-space-0));
-          margin-left: var(--safe-area-inset-left, var(--ha-space-0));
-          margin-right: var(--safe-area-inset-right, var(--ha-space-0));
+          margin-top: var(--safe-area-inset-top, 0);
+          margin-bottom: var(--safe-area-inset-bottom, 0);
+          margin-left: var(--safe-area-inset-left, 0);
+          margin-right: var(--safe-area-inset-right, 0);
         }
       }
 

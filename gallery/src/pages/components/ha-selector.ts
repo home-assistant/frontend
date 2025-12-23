@@ -40,6 +40,9 @@ const ENTITIES = [
   getEntity("switch", "coffee", "off", {
     friendly_name: "Coffee",
   }),
+  getEntity("number", "number", 5, {
+    friendly_name: "Number",
+  }),
 ];
 
 const DEVICES: DeviceRegistryEntry[] = [
@@ -376,6 +379,33 @@ const SCHEMAS: {
       constant: {
         name: "Constant",
         selector: { constant: { value: true, label: "Yes!" } },
+      },
+      choose: {
+        name: "Choose",
+        selector: {
+          choose: {
+            choices: {
+              number: {
+                selector: {
+                  number: {
+                    min: 0,
+                    max: 100,
+                    step: 0.1,
+                  },
+                },
+              },
+              entity: {
+                selector: {
+                  entity: {
+                    filter: {
+                      domain: "number",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
   },

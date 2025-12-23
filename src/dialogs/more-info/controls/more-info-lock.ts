@@ -192,7 +192,7 @@ class MoreInfoLock extends LitElement {
           margin: 0 auto;
         }
         ha-control-button-group + ha-attributes:not([empty]) {
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
         @keyframes pulse {
           0% {

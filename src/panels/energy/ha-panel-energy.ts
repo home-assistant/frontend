@@ -182,7 +182,7 @@ class PanelEnergy extends LitElement {
     const validPaths = views.map((view) => view.path);
     const viewPath: string | undefined = this.route!.path.split("/")[1];
     if (!viewPath || !validPaths.includes(viewPath)) {
-      navigate(`${this.route!.prefix}/${validPaths[0]}`);
+      navigate(`${this.route!.prefix}/${validPaths[0]}`, { replace: true });
     } else {
       // Force hui-root to re-process the route by creating a new route object
       this.route = { ...this.route! };
@@ -255,7 +255,7 @@ class PanelEnergy extends LitElement {
       </hui-root>
       ${showEnergySelector
         ? html`
-            <ha-card raised class="period-selector">
+            <ha-card class="period-selector">
               <hui-energy-period-selector
                 .hass=${this.hass}
                 .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
@@ -670,26 +670,43 @@ class PanelEnergy extends LitElement {
           justify-content: center;
         }
         hui-root.has-period-selector {
-          --view-container-padding-bottom: var(--ha-space-16);
+          --view-container-padding-bottom: var(--ha-space-18);
         }
         .period-selector {
           position: fixed;
-          bottom: calc(var(--ha-space-2) + var(--safe-area-inset-bottom, 0px));
-          left: var(--mdc-drawer-width, 0);
-          right: var(--safe-area-inset-right, 0px);
-          inset-inline-start: var(--mdc-drawer-width, 0);
-          inset-inline-end: var(--safe-area-inset-right, 0px);
-          margin: var(--ha-space-2) auto;
+          z-index: 4;
+          bottom: max(var(--ha-space-4), var(--safe-area-inset-bottom, 0px));
+          left: max(
+            var(--mdc-drawer-width, 0px),
+            var(--safe-area-inset-left, 0px)
+          );
+          right: var(--safe-area-inset-right, 0);
+          inset-inline-start: max(
+            var(--mdc-drawer-width, 0px),
+            var(--safe-area-inset-left, 0px)
+          );
+          inset-inline-end: var(--safe-area-inset-right, 0);
+          margin: 0 auto;
           max-width: calc(min(450px, 100% - var(--ha-space-4)));
           box-sizing: border-box;
-          padding-left: calc(
-            var(--ha-space-4) + var(--safe-area-inset-left, 0px)
-          );
+          padding-left: var(--ha-space-2);
           padding-right: 0;
-          padding-inline-start: calc(
-            var(--ha-space-4) + var(--safe-area-inset-left, 0px)
-          );
+          padding-inline-start: var(--ha-space-4);
           padding-inline-end: 0;
+          --ha-card-box-shadow:
+            0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+            0px 6px 10px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+          --ha-card-border-color: var(--divider-color);
+          --ha-card-border-width: var(--ha-card-border-width, 1px);
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          hui-root.has-period-selector {
+            --view-container-padding-bottom: var(--ha-space-14);
+          }
+          .period-selector {
+            bottom: max(var(--ha-space-2), var(--safe-area-inset-bottom, 0px));
+          }
         }
       `,
     ];
