@@ -133,6 +133,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "zwave_js",
     },
     {
+      path: "/knx",
+      name: "KNX",
+      iconPath: mdiLan,
+      iconColor: "#4EAA66",
+      component: "knx",
+      translationKey: "knx",
+    },
+    {
       path: "/config/thread",
       name: "Thread",
       iconPath:
@@ -149,14 +157,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#0082FC",
       component: "bluetooth",
       translationKey: "bluetooth",
-    },
-    {
-      path: "/knx",
-      name: "KNX",
-      iconPath: mdiLan,
-      iconColor: "#4EAA66",
-      component: "knx",
-      translationKey: "knx",
     },
     {
       path: "/insteon",
