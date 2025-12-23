@@ -9,7 +9,7 @@ import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   areasContext,
-  configEntries,
+  configEntriesContext,
   devicesContext,
   floorsContext,
   labelsContext,
@@ -54,7 +54,7 @@ export class HaAutomationRowTargets extends LitElement {
   private _labelRegistry!: LabelRegistryEntry[];
 
   @state()
-  @consume({ context: configEntries, subscribe: true })
+  @consume({ context: configEntriesContext, subscribe: true })
   @transform<ConfigEntry[], Record<string, ConfigEntry>>({
     transformer: function (value) {
       return Object.fromEntries(value.map((entry) => [entry.entry_id, entry]));

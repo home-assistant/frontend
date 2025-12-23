@@ -37,11 +37,8 @@ import type {
   ActionSidebarConfig,
   SidebarConfig,
 } from "../../../data/automation";
-import {
-  handleConfigEntrySubscriptionMessages,
-  subscribeConfigEntries,
-} from "../../../data/config_entries";
-import { configEntries } from "../../../data/context";
+import { subscribeAndProcessConfigEntries } from "../../../data/config_entries";
+import { configEntriesContext } from "../../../data/context";
 import type {
   Action,
   Fields,
@@ -117,7 +114,7 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
   >;
 
   private _configEntries = new ContextProvider(this, {
-    context: configEntries,
+    context: configEntriesContext,
     initialValue: [],
   });
 
@@ -144,13 +141,8 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
 
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     return [
-      subscribeConfigEntries(this.hass, (messages) => {
-        this._configEntries.setValue(
-          handleConfigEntrySubscriptionMessages(
-            this._configEntries.value,
-            messages
-          )
-        );
+      subscribeAndProcessConfigEntries(this.hass, (configEntries) => {
+        this._configEntries.setValue(configEntries);
       }),
     ];
   }

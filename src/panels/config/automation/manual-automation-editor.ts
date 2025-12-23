@@ -48,10 +48,10 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import {
-  handleConfigEntrySubscriptionMessages,
-  subscribeConfigEntries,
+  subscribeAndProcessConfigEntries,
+  type ConfigEntry,
 } from "../../../data/config_entries";
-import { configEntries } from "../../../data/context";
+import { configEntriesContext } from "../../../data/context";
 import { getActionType, type Action } from "../../../data/script";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
@@ -125,7 +125,7 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
   >;
 
   private _configEntries = new ContextProvider(this, {
-    context: configEntries,
+    context: configEntriesContext,
     initialValue: [],
   });
 
@@ -138,14 +138,13 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
 
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     return [
-      subscribeConfigEntries(this.hass, (messages) => {
-        this._configEntries.setValue(
-          handleConfigEntrySubscriptionMessages(
-            this._configEntries.value,
-            messages
-          )
-        );
-      }),
+      subscribeAndProcessConfigEntries(
+        this.hass,
+        (message: ConfigEntry[]) => {
+          this._configEntries.setValue(message);
+        },
+        undefined
+      ),
     ];
   }
 
