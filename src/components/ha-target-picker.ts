@@ -988,7 +988,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 style=${styleMap({
                   width: "var(--ha-space-12)",
                   position: "absolute",
-                  top: "var(--ha-space-0)",
+                  top: "0",
                   left: rtl ? undefined : "var(--ha-space-1)",
                   right: rtl ? "var(--ha-space-1)" : undefined,
                   transform: rtl ? "scaleX(-1)" : "",
@@ -1092,7 +1092,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         z-index: 2;
       }
       .mdc-chip-set {
-        padding: var(--ha-space-1) var(--ha-space-0);
+        padding: var(--ha-space-1) 0;
         gap: var(--ha-space-2);
       }
 

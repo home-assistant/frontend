@@ -31,7 +31,11 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
 
-export function getSuggestedMax(dayDifference: number, end: Date): number {
+export function getSuggestedMax(
+  dayDifference: number,
+  end: Date,
+  detailedDailyData = false
+): number {
   let suggestedMax = new Date(end);
 
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
@@ -40,7 +44,9 @@ export function getSuggestedMax(dayDifference: number, end: Date): number {
     suggestedMax = subHours(suggestedMax, 1);
   }
 
-  suggestedMax.setMinutes(0, 0, 0);
+  if (!detailedDailyData) {
+    suggestedMax.setMinutes(0, 0, 0);
+  }
   if (dayDifference > 35) {
     suggestedMax.setDate(1);
   }
@@ -77,7 +83,8 @@ export function getCommonOptions(
   unit?: string,
   compareStart?: Date,
   compareEnd?: Date,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  detailedDailyData = false
 ): ECOption {
   const dayDifference = differenceInDays(end, start);
 
@@ -89,7 +96,7 @@ export function getCommonOptions(
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(dayDifference, end),
+      max: getSuggestedMax(dayDifference, end, detailedDailyData),
     },
     yAxis: {
       type: "value",

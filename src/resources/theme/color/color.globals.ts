@@ -339,12 +339,6 @@ export const colorStyles = css`
     --ha-assist-chip-filled-container-color: rgba(var(--rgb-primary-text-color), 0.15);
     --ha-assist-chip-active-container-color: rgba(var(--rgb-primary-color), 0.15);
     --chip-background-color: rgba(var(--rgb-primary-text-color), 0.15);
-
-    /* Vaadin */
-    --material-body-text-color: var(--primary-text-color);
-    --material-background-color: var(--card-background-color);
-    --material-secondary-background-color: var(--secondary-background-color);
-    --material-secondary-text-color: var(--secondary-text-color);
   }
 `;
 

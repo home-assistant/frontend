@@ -680,7 +680,8 @@
           "show_attributes": "Show attributes"
         },
         "entity-state-picker": {
-          "state": "State"
+          "state": "State",
+          "add_custom_state": "Add custom state"
         },
         "entity-state-content-picker": {
           "add": "Add",
@@ -1104,6 +1105,7 @@
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
           "deselect_all": "Deselect all",
+          "select_all": "[%key:ui::components::subpage-data-table::select_all%]",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
           "tip_storage_panel": "storage"
         },
@@ -4302,7 +4304,7 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
-                  "weekday": "Weekdays",
+                  "weekday": "Days of the Week",
                   "weekdays": {
                     "mon": "[%key:ui::weekdays::monday%]",
                     "tue": "[%key:ui::weekdays::tuesday%]",
@@ -7321,7 +7323,7 @@
             "automations": "Automations",
             "for_you": "For you",
             "home": "Home",
-            "commonly_used": "Commonly used"
+            "favorites": "Favorites"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -9277,6 +9279,11 @@
             "debug_connection": {
               "title": "Debug connection",
               "description": "Observe requests to the server and responses from the server in browser console."
+            },
+            "entity_diagnostic": {
+              "title": "Entity diagnostic",
+              "description": "Select an entity to copy diagnostic details.",
+              "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
             }
           },
           "events": {

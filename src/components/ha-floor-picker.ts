@@ -1,5 +1,5 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
@@ -303,7 +303,7 @@ export class HaFloorPicker extends LitElement {
     }
   );
 
-  private _rowRenderer: ComboBoxLitRenderer<FloorComboBoxItem> = (item) => html`
+  private _rowRenderer: RenderItemFunction<FloorComboBoxItem> = (item) => html`
     <ha-combo-box-item type="button" compact>
       ${item.icon_path
         ? html`

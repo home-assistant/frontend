@@ -266,15 +266,15 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
           /* Used to offset the dialog from the safe areas when space is limited */
           transform: translate(
             calc(
-              var(--safe-area-offset-left, var(--ha-space-0)) - var(
+              var(--safe-area-offset-left, 0px) - var(
                   --safe-area-offset-right,
-                  var(--ha-space-0)
+                  0px
                 )
             ),
             calc(
-              var(--safe-area-offset-top, var(--ha-space-0)) - var(
+              var(--safe-area-offset-top, 0px) - var(
                   --safe-area-offset-bottom,
-                  var(--ha-space-0)
+                  0px
                 )
             )
           );
@@ -285,7 +285,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           :host([type="standard"]) {
-            --ha-dialog-border-radius: var(--ha-space-0);
+            --ha-dialog-border-radius: 0;
 
             wa-dialog {
               /* Make the container fill the whole screen width and not the safe width */
@@ -372,7 +372,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(footer) {
-          padding: var(--ha-space-0);
+          padding: 0;
         }
 
         ::slotted([slot="footer"]) {

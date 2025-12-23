@@ -1,5 +1,5 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiRoomService } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -56,9 +56,9 @@ class HaServicePicker extends LitElement {
     getServiceIcons(this.hass);
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<ServiceComboBoxItem> = (
+  private _rowRenderer: RenderItemFunction<ServiceComboBoxItem> = (
     item,
-    { index }
+    index
   ) => html`
     <ha-combo-box-item type="button" .borderTop=${index !== 0}>
       <ha-service-icon

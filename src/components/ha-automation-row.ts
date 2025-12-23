@@ -175,7 +175,7 @@ export class HaAutomationRow extends LitElement {
     ::slotted([slot="header"]) {
       flex: 1;
       overflow-wrap: anywhere;
-      margin: var(--ha-space-0) var(--ha-space-3);
+      margin: 0 var(--ha-space-3);
     }
     .icons {
       display: flex;
