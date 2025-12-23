@@ -113,6 +113,9 @@ export class DialogEnergySolarSettings
             "ui.panel.config.energy.solar.dialog.solar_production_energy"
           )}
           .excludeStatistics=${this._excludeList}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._statisticChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.entity_para",
@@ -129,6 +132,9 @@ export class DialogEnergySolarSettings
             "ui.panel.config.energy.solar.dialog.solar_production_power"
           )}
           .excludeStatistics=${this._excludeListPower}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._powerStatisticChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.entity_para",

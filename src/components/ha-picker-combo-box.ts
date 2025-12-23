@@ -52,6 +52,7 @@ export interface PickerComboBoxItem {
   sorting_label?: string;
   icon_path?: string;
   icon?: string;
+  disabled?: boolean;
 }
 
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
@@ -376,6 +377,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       id=${`list-item-${index}`}
       class="combo-box-row ${this._value === item.id ? "current-value" : ""}"
       .value=${item.id}
+      .disabled=${item.disabled}
       .index=${index}
       @click=${this._valueSelected}
     >
@@ -395,10 +397,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _valueSelected = (ev: Event) => {
     ev.stopPropagation();
-    const value = (ev.currentTarget as any).value as string;
-    const newValue = value?.trim();
-
-    fireEvent(this, "value-changed", { value: newValue });
+    const target = ev.currentTarget as any;
+    if (!target.disabled) {
+      const value = target.value as string;
+      const newValue = value?.trim();
+      fireEvent(this, "value-changed", { value: newValue });
+    }
   };
 
   private _fuseIndex = memoizeOne(

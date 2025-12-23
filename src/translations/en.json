@@ -871,7 +871,13 @@
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics",
-        "unknown": "Unknown statistic selected"
+        "unknown": "Unknown statistic selected",
+        "already_selected": "Already selected",
+        "show_incompatible": "Click to explore incompatible statistics",
+        "incompatible_unit": "Incompatible unit of measurement: {unit}",
+        "incompatible_unit_class": "Incompatible unit class: {unit_class}",
+        "incompatible_device_class": "Incompatible device class: {device_class}",
+        "manually_excluded": "Manually excluded"
       },
       "addon-picker": {
         "addon": "Add-on",

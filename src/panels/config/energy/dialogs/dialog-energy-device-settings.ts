@@ -127,6 +127,9 @@ export class DialogEnergyDeviceSettings
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"
           )}
           .excludeStatistics=${this._excludeList}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._statisticChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.selected_stat_intro",
@@ -143,6 +146,9 @@ export class DialogEnergyDeviceSettings
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_power"
           )}
           .excludeStatistics=${this._excludeListPower}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._powerStatisticChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.selected_stat_intro",

@@ -107,6 +107,9 @@ export class DialogEnergyBatterySettings
             ...(this._excludeList || []),
             this._source.stat_energy_from,
           ]}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._statisticToChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_into",
@@ -127,6 +130,9 @@ export class DialogEnergyBatterySettings
             ...(this._excludeList || []),
             this._source.stat_energy_to,
           ]}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._statisticFromChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_out",
@@ -142,6 +148,9 @@ export class DialogEnergyBatterySettings
             "ui.panel.config.energy.battery.dialog.power"
           )}
           .excludeStatistics=${this._excludeListPower}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._powerChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.power_helper",

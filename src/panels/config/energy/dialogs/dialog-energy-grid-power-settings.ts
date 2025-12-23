@@ -88,6 +88,9 @@ export class DialogEnergyGridPowerSettings
             "ui.panel.config.energy.grid.power_dialog.power_stat"
           )}
           .excludeStatistics=${this._excludeListPower}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._powerStatisticChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.grid.power_dialog.power_helper",

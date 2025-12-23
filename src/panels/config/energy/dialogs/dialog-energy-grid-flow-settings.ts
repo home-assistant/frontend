@@ -152,6 +152,9 @@ export class DialogEnergyGridFlowSettings
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
           )}
           .excludeStatistics=${this._excludeList}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._statisticChanged}
           .helper=${this.hass.localize(
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.entity_para`,

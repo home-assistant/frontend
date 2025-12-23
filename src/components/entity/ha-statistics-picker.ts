@@ -98,6 +98,9 @@ class HaStatisticsPicker extends LitElement {
               .statisticTypes=${includeStatisticTypesCurrent}
               .statisticIds=${this.statisticIds}
               .excludeStatistics=${this.value}
+              .excludeReason=${this.hass?.localize(
+                "ui.components.statistic-picker.already_selected"
+              )}
               .allowCustomEntity=${this.allowCustomEntity}
               @value-changed=${this._statisticChanged}
             ></ha-statistic-picker>
@@ -115,6 +118,9 @@ class HaStatisticsPicker extends LitElement {
           .statisticIds=${this.statisticIds}
           .placeholder=${this.placeholder}
           .excludeStatistics=${this.value}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           .allowCustomEntity=${this.allowCustomEntity}
           @value-changed=${this._addStatistic}
         ></ha-statistic-picker>

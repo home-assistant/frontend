@@ -124,6 +124,9 @@ export class DialogEnergyWaterSettings
             "ui.panel.config.energy.water.dialog.water_usage"
           )}
           .excludeStatistics=${this._excludeList}
+          .excludeReason=${this.hass?.localize(
+            "ui.components.statistic-picker.already_selected"
+          )}
           @value-changed=${this._statisticChanged}
           dialogInitialFocus
         ></ha-statistic-picker>
