@@ -164,7 +164,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
     await this._fetchStatistics(sensorNumericDeviceClasses);
 
-    this._setRedrawTimer();
+    if (this.isConnected) {
+      this._setRedrawTimer();
+    }
   }
 
   private _mergeHistory() {
