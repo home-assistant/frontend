@@ -463,9 +463,7 @@ export class QuickBar extends LitElement {
       }
 
       if (this.hass.user?.is_admin && (!section || section === "area")) {
-        let areaItems = this._getAreasMemoized(this.hass).sort(
-          this._sortBySortingLabel
-        );
+        let areaItems = this._getAreasMemoized(this.hass);
 
         if (filter) {
           areaItems = this._filterGroup(
