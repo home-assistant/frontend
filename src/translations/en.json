@@ -2331,28 +2331,25 @@
             "secondary": "Loading..."
           },
           "zwave_js": {
-            "secondary": "Manage your Z-Wave network"
+            "secondary": "Sub-GHz mesh protocol"
           },
           "zha": {
-            "secondary": "Manage your Zigbee network"
+            "secondary": "Low-power mesh network"
           },
           "matter": {
-            "secondary": "Manage your Matter network"
+            "secondary": "Cross-vendor smart home standard"
           },
           "thread": {
-            "secondary": "Manage your Thread network"
+            "secondary": "Mesh network often used for Matter devices"
           },
           "bluetooth": {
-            "secondary": "Manage your Bluetooth devices"
+            "secondary": "Local device connectivity"
           },
           "knx": {
-            "secondary": "Manage your KNX network"
+            "secondary": "Building automation standard"
           },
           "insteon": {
-            "secondary": "Manage your Insteon network"
-          },
-          "hacs": {
-            "secondary": "Manage community integrations and frontend modules"
+            "secondary": "Dual-mesh home automation"
           }
         },
         "common": {

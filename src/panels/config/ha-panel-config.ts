@@ -33,7 +33,6 @@ import {
   mdiViewDashboard,
   mdiZigbee,
   mdiZWave,
-  mdiRouterWireless,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -136,7 +135,9 @@ export const configSections: Record<string, PageNavigation[]> = {
     {
       path: "/config/thread",
       name: "Thread",
-      iconPath: mdiRouterWireless,
+      iconPath:
+        "M82.498,0C37.008,0,0,37.008,0,82.496c0,45.181,36.51,81.977,81.573,82.476V82.569l-27.002-0.002  c-8.023,0-14.554,6.53-14.554,14.561c0,8.023,6.531,14.551,14.554,14.551v17.98c-17.939,0-32.534-14.595-32.534-32.531  c0-17.944,14.595-32.543,32.534-32.543l27.002,0.004v-9.096c0-14.932,12.146-27.08,27.075-27.08  c14.932,0,27.082,12.148,27.082,27.08c0,14.931-12.15,27.08-27.082,27.08l-9.097-0.001v80.641  C136.889,155.333,165,122.14,165,82.496C165,37.008,127.99,0,82.498,0z",
+      iconViewBox: "0 0 165 165",
       iconColor: "#ED7744",
       component: "thread",
       translationKey: "thread",
