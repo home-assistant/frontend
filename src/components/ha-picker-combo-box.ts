@@ -200,6 +200,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     return html`<ha-textfield
         .label=${searchLabel}
+        @blur=${this._resetSelectedItem}
         @input=${this._filterChanged}
       ></ha-textfield>
       ${this._renderSectionButtons()}
@@ -237,6 +238,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           @unpinned=${this._handleUnpinned}
           @scroll=${this._onScrollList}
           @focus=${this._focusList}
+          @blur=${this._resetSelectedItem}
           @visibilityChanged=${this._visibilityChanged}
         >
         </lit-virtualizer>
