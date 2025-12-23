@@ -37,8 +37,10 @@ import {
   type HassioAddonInfo,
 } from "../../data/hassio/addon";
 import {
+  commandComboBoxKeys,
   generateActionCommands,
   generateNavigationCommands,
+  navigateComboBoxKeys,
   type ActionCommandComboBoxItem,
   type NavigationComboBoxItem,
 } from "../../data/quick_bar";
@@ -51,36 +53,6 @@ import { isIosApp } from "../../util/is_ios";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
-
-export const commandComboBoxKeys: FuseWeightedKey[] = [
-  {
-    name: "primary",
-    weight: 10,
-  },
-  {
-    name: "domain",
-    weight: 8,
-  },
-  {
-    name: "secondary",
-    weight: 6,
-  },
-];
-
-export const navigateComboBoxKeys: FuseWeightedKey[] = [
-  {
-    name: "primary",
-    weight: 10,
-  },
-  {
-    name: "path",
-    weight: 8,
-  },
-  {
-    name: "secondary",
-    weight: 6,
-  },
-];
 
 const SEPARATOR = "________";
 

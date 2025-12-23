@@ -16,6 +16,7 @@ import type { HomeAssistant } from "../types";
 import type { HassioAddonInfo } from "./hassio/addon";
 import { domainToName } from "./integration";
 import { getPanelIcon, getPanelNameTranslationKey } from "./panel";
+import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 
 export interface NavigationComboBoxItem extends PickerComboBoxItem {
   path: string;
@@ -293,4 +294,34 @@ export const generateActionCommands = (
 ): ActionCommandComboBoxItem[] => [
   ...generateReloadCommands(hass),
   ...generateServerControlCommands(hass),
+];
+
+export const commandComboBoxKeys: FuseWeightedKey[] = [
+  {
+    name: "primary",
+    weight: 10,
+  },
+  {
+    name: "domain",
+    weight: 8,
+  },
+  {
+    name: "secondary",
+    weight: 6,
+  },
+];
+
+export const navigateComboBoxKeys: FuseWeightedKey[] = [
+  {
+    name: "primary",
+    weight: 10,
+  },
+  {
+    name: "path",
+    weight: 8,
+  },
+  {
+    name: "secondary",
+    weight: 6,
+  },
 ];
