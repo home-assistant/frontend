@@ -28,6 +28,7 @@ import type {
 } from "../../components/ha-picker-combo-box";
 import "../../components/ha-spinner";
 import "../../components/ha-tip";
+import { areaComboBoxKeys, getAreas } from "../../data/area/area_picker";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import {
   deviceComboBoxKeys,
@@ -137,9 +138,14 @@ export class QuickBar extends LitElement {
     return this.hass.userData?.showEntityIdPicker;
   }
 
+  private _translationsLoaded = false;
+
   connectedCallback(): void {
     super.connectedCallback();
-    this._fetchTranslations();
+    if (!this._translationsLoaded) {
+      this._fetchTranslations();
+      this._translationsLoaded = true;
+    }
     this._initialize();
   }
 
@@ -191,7 +197,7 @@ export class QuickBar extends LitElement {
         items.push(...entityItems);
       }
 
-      if (!section || section === "device") {
+      if (this.hass.user?.is_admin && (!section || section === "device")) {
         let deviceItems = this._getDevicesMemoized(
           this.hass,
           configEntryLookup
@@ -214,6 +220,30 @@ export class QuickBar extends LitElement {
         }
 
         items.push(...deviceItems);
+      }
+
+      if (this.hass.user?.is_admin && (!section || section === "area")) {
+        let areaItems = this._getAreasMemoized(this.hass).sort(
+          this._sortBySortingLabel
+        );
+
+        if (filter) {
+          areaItems = this._filterGroup(
+            "area",
+            areaItems,
+            filter,
+            areaComboBoxKeys
+          );
+        }
+
+        if (!section && areaItems.length) {
+          // show group title
+          items.push(
+            this.hass.localize("ui.components.target-picker.type.areas")
+          );
+        }
+
+        items.push(...areaItems);
       }
 
       if (!section || section === "navigate") {
@@ -284,24 +314,37 @@ export class QuickBar extends LitElement {
         id: "entity",
         label: this.hass.localize("ui.components.target-picker.type.entities"),
       },
-      {
-        id: "device",
-        label: this.hass.localize("ui.components.target-picker.type.devices"),
-      },
+      ...(this.hass.user?.is_admin
+        ? [
+            {
+              id: "device",
+              label: this.hass.localize(
+                "ui.components.target-picker.type.devices"
+              ),
+            },
+            {
+              id: "area",
+              label: this.hass.localize(
+                "ui.components.target-picker.type.areas"
+              ),
+            },
+          ]
+        : []),
       "separator" as const,
       {
         id: "navigate",
         label: this.hass.localize("ui.dialogs.quick-bar.navigate_title"),
       },
+      ...(this.hass.user?.is_admin
+        ? [
+            "separator" as const,
+            {
+              id: "command",
+              label: this.hass.localize("ui.dialogs.quick-bar.commands_title"),
+            },
+          ]
+        : []),
     ];
-
-    if (this.hass.user?.is_admin) {
-      sections.push("separator");
-      sections.push({
-        id: "command",
-        label: this.hass.localize("ui.dialogs.quick-bar.commands_title"),
-      });
-    }
 
     return html`
       <ha-adaptive-dialog
@@ -317,7 +360,7 @@ export class QuickBar extends LitElement {
         ${!this._loading && this._opened
           ? html`<ha-picker-combo-box
               .hass=${this.hass}
-              @value-changed=${this._handleItemSelected}
+              @index-selected=${this._handleItemSelected}
               .notFoundLabel=${this.hass.localize(
                 "ui.dialogs.quick-bar.nothing_found"
               )}
@@ -427,15 +470,24 @@ export class QuickBar extends LitElement {
   }
 
   private async _initialize() {
-    // TODO error handling, config entry subscription, what about addon changes?
-    const configEntries = await getConfigEntries(this.hass);
-    this._configEntryLookup = Object.fromEntries(
-      configEntries.map((entry) => [entry.entry_id, entry])
-    );
+    try {
+      const configEntries = await getConfigEntries(this.hass);
+      this._configEntryLookup = Object.fromEntries(
+        configEntries.map((entry) => [entry.entry_id, entry])
+      );
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching config entries for quick bar", err);
+    }
 
     if (this.hass.user?.is_admin && isComponentLoaded(this.hass, "hassio")) {
-      const hassioAddonsInfo = await fetchHassioAddonsInfo(this.hass);
-      this._addons = hassioAddonsInfo.addons;
+      try {
+        const hassioAddonsInfo = await fetchHassioAddonsInfo(this.hass);
+        this._addons = hassioAddonsInfo.addons;
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("Error fetching hassio addons for quick bar", err);
+      }
     }
 
     this._loading = false;
@@ -461,69 +513,94 @@ export class QuickBar extends LitElement {
   //   this._getItemAtIndex(index)?.appendChild(div);
   // }
 
-  private async _handleItemSelected(ev: CustomEvent<{ value: string }>) {
-    const id = ev.detail.value;
+  private async _handleItemSelected(ev: CustomEvent<{ index: number }>) {
+    if (this._comboBox && this._comboBox.virtualizerElement) {
+      const index = ev.detail.index;
+      const item = this._comboBox.virtualizerElement.items[
+        index
+      ] as PickerComboBoxItem;
 
-    const items = this._getItemsMemoized(
-      this._configEntryLookup,
-      "",
-      this._selectedSection
-    );
-
-    const item = items.find(
-      (listItem) => typeof listItem !== "string" && listItem.id === id
-    ) as PickerComboBoxItem | undefined;
-
-    if (item && "stateObj" in item) {
-      this.closeDialog();
-      fireEvent(this, "hass-more-info", {
-        entityId: item.search_labels!.entityId,
-      });
-      return;
-    }
-
-    if (item && item.id.startsWith(`device${SEPARATOR}`)) {
-      this.closeDialog();
-      navigate(`/config/devices/device/${item.id.split(SEPARATOR)[1]}`);
-      return;
-    }
-
-    if (item && item.search_labels && "action" in item.search_labels) {
-      if (item.search_labels.action?.startsWith("reload")) {
-        // TODO show some kind of progress!
-        this.hass.callService(item.search_labels.domain!, "reload");
+      if (item && "stateObj" in item) {
+        this.closeDialog();
+        fireEvent(this, "hass-more-info", {
+          entityId: item.search_labels!.entityId,
+        });
         return;
       }
 
-      const action = item.search_labels.action as "restart" | "stop";
-
-      const confirmed = await showConfirmationDialog(this, {
-        title: this.hass.localize(`ui.dialogs.restart.${action}.confirm_title`),
-        text: this.hass.localize(
-          `ui.dialogs.restart.${action}.confirm_description`
-        ),
-        confirmText: this.hass.localize(
-          `ui.dialogs.restart.${action}.confirm_action`
-        ),
-        destructive: true,
-      });
-      if (!confirmed) {
-        return;
-      }
-      this.hass.callService("homeassistant", action);
-    }
-
-    if (item && "path" in item) {
-      this.closeDialog();
-
-      if (!item.path) {
-        showShortcutsDialog(this);
+      if (item && item.id.startsWith(`device${SEPARATOR}`)) {
+        this.closeDialog();
+        navigate(`/config/devices/device/${item.id.split(SEPARATOR)[1]}`);
         return;
       }
 
-      navigate((item as NavigationComboBoxItem).path);
+      if (item && item.id.startsWith(`area${SEPARATOR}`)) {
+        this.closeDialog();
+        navigate(`/config/areas/area/${item.id.split(SEPARATOR)[1]}`);
+        return;
+      }
+
+      if (item && "action" in item) {
+        const actionItem = item as ActionCommandComboBoxItem;
+        if (actionItem.action === "restart" || actionItem.action === "stop") {
+          const confirmed = await showConfirmationDialog(this, {
+            title: this.hass.localize(
+              `ui.dialogs.restart.${actionItem.action}.confirm_title`
+            ),
+            text: this.hass.localize(
+              `ui.dialogs.restart.${actionItem.action}.confirm_description`
+            ),
+            confirmText: this.hass.localize(
+              `ui.dialogs.restart.${actionItem.action}.confirm_action`
+            ),
+            destructive: true,
+          });
+          if (!confirmed) {
+            return;
+          }
+
+          this.hass.callService(actionItem.domain!, actionItem.action);
+          this.closeDialog();
+          return;
+        }
+
+        const element = this._comboBox.virtualizerElement.querySelector(
+          `#list-item-${index}`
+        ) as HTMLDivElement | null;
+
+        if (element) {
+          element.style.backgroundColor =
+            "var(--ha-color-fill-primary-normal-resting)";
+          element.prepend(this._getRowSpinner());
+        }
+
+        await this.hass.callService(actionItem.domain!, actionItem.action);
+
+        this.closeDialog();
+        return;
+      }
+
+      if (item && "path" in item) {
+        this.closeDialog();
+
+        if (!item.path) {
+          showShortcutsDialog(this);
+          return;
+        }
+
+        navigate((item as NavigationComboBoxItem).path);
+      }
     }
   }
+
+  private _getRowSpinner = memoizeOne(() => {
+    const spinner = document.createElement("ha-spinner");
+    spinner.size = "small";
+    spinner.style.marginRight = "16px";
+    spinner.style.position = "absolute";
+    spinner.style.right = "0";
+    return spinner;
+  });
 
   private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
     getEntities(
@@ -554,6 +631,23 @@ export class QuickBar extends LitElement {
         undefined,
         `device${SEPARATOR}`
       )
+  );
+
+  private _getAreasMemoized = memoizeOne((hass: HomeAssistant) =>
+    getAreas(
+      hass.areas,
+      hass.floors,
+      hass.devices,
+      hass.entities,
+      hass.states,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      `area${SEPARATOR}`
+    )
   );
 
   private _generateReloadCommands(): ActionCommandComboBoxItem[] {
@@ -636,6 +730,7 @@ export class QuickBar extends LitElement {
       return {
         id: `server_control_${index}_${action}`,
         primary,
+        domain: "homeassistant",
         icon_path: mdiServerNetwork,
         secondary,
         sorting_label: `${primary}_${secondary}_${action}`,
@@ -852,6 +947,9 @@ export class QuickBar extends LitElement {
     ),
     device: memoizeOne((states: PickerComboBoxItem[]) =>
       this._createFuseIndex(states, deviceComboBoxKeys)
+    ),
+    area: memoizeOne((states: PickerComboBoxItem[]) =>
+      this._createFuseIndex(states, areaComboBoxKeys)
     ),
     command: memoizeOne((states: PickerComboBoxItem[]) =>
       this._createFuseIndex(states, commandComboBoxKeys)

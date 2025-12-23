@@ -57,11 +57,11 @@ import {
   ACTION_COLLECTIONS,
   ACTION_ICONS,
 } from "../../../data/action";
-import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
+import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,

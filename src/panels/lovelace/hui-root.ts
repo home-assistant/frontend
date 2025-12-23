@@ -51,7 +51,7 @@ import "../../components/ha-svg-icon";
 import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
 import "../../components/ha-tooltip";
-import { createAreaRegistryEntry } from "../../data/area_registry";
+import { createAreaRegistryEntry } from "../../data/area/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import type {
   LovelaceConfig,

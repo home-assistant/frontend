@@ -14,16 +14,16 @@ import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon";
-import "../../../components/ha-wa-dialog";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
+import "../../../components/ha-wa-dialog";
+import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   reorderAreaRegistryEntries,
   updateAreaRegistryEntry,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
 import { reorderFloorRegistryEntries } from "../../../data/floor_registry";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";

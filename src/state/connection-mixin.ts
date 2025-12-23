@@ -10,7 +10,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { promiseTimeout } from "../common/util/promise-timeout";
-import { subscribeAreaRegistry } from "../data/area_registry";
+import { subscribeAreaRegistry } from "../data/area/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device/device_registry";
 import {

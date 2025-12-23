@@ -29,16 +29,16 @@ import "../../../../components/ha-section-title";
 import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import {
+  getAreaDeviceLookup,
+  getAreaEntityLookup,
+} from "../../../../data/area/area_registry";
+import {
   getAreasNestedInFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
   type FloorNestedComboBoxItem,
   type UnassignedAreasFloorComboBoxItem,
 } from "../../../../data/area_floor_picker";
-import {
-  getAreaDeviceLookup,
-  getAreaEntityLookup,
-} from "../../../../data/area_registry";
 import {
   getConfigEntries,
   type ConfigEntry,

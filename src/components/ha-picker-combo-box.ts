@@ -146,14 +146,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
-  @query("lit-virtualizer") private _virtualizerElement?: LitVirtualizer;
+  @query("lit-virtualizer") public virtualizerElement?: LitVirtualizer;
 
   @query("ha-textfield") private _searchFieldElement?: HaTextField;
 
   @state() private _items: (PickerComboBoxItem | string)[] = [];
 
   protected get scrollableElement(): HTMLElement | null {
-    return this._virtualizerElement as HTMLElement | null;
+    return this.virtualizerElement as HTMLElement | null;
   }
 
   @state() private _sectionTitle?: string;
@@ -269,18 +269,18 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @eventOptions({ passive: true })
   private _visibilityChanged(ev) {
     if (
-      this._virtualizerElement &&
+      this.virtualizerElement &&
       this.sectionTitleFunction &&
       this.sections?.length
     ) {
-      const firstItem = this._virtualizerElement.items[ev.first];
-      const secondItem = this._virtualizerElement.items[ev.first + 1];
+      const firstItem = this.virtualizerElement.items[ev.first];
+      const secondItem = this.virtualizerElement.items[ev.first + 1];
       this._sectionTitle = this.sectionTitleFunction({
         firstIndex: ev.first,
         lastIndex: ev.last,
         firstItem: firstItem as PickerComboBoxItem | string,
         secondItem: secondItem as PickerComboBoxItem | string,
-        itemsCount: this._virtualizerElement.items.length,
+        itemsCount: this.virtualizerElement.items.length,
       });
     }
   }
@@ -396,10 +396,16 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _valueSelected = (ev: Event) => {
     ev.stopPropagation();
     const value = (ev.currentTarget as any).value as string;
+    const index = Number((ev.currentTarget as any).index);
     const newValue = value?.trim();
 
-    fireEvent(this, "value-changed", { value: newValue });
+    this._fireSelectedEvents(newValue, index);
   };
+
+  private _fireSelectedEvents(value: string, index: number) {
+    fireEvent(this, "value-changed", { value });
+    fireEvent(this, "index-selected", { index });
+  }
 
   private _fuseIndex = memoizeOne(
     (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
@@ -483,8 +489,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._items = this._getItems();
 
     // Reset scroll position when filter changes
-    if (this._virtualizerElement) {
-      this._virtualizerElement.scrollToIndex(0);
+    if (this.virtualizerElement) {
+      this.virtualizerElement.scrollToIndex(0);
     }
   }
 
@@ -507,13 +513,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _selectNextItem = (ev?: KeyboardEvent) => {
     ev?.stopPropagation();
     ev?.preventDefault();
-    if (!this._virtualizerElement) {
+    if (!this.virtualizerElement) {
       return;
     }
 
     this._searchFieldElement?.focus();
 
-    const items = this._virtualizerElement.items as PickerComboBoxItem[];
+    const items = this.virtualizerElement.items as PickerComboBoxItem[];
 
     const maxItems = items.length - 1;
 
@@ -547,14 +553,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _selectPreviousItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
     ev.preventDefault();
-    if (!this._virtualizerElement) {
+    if (!this.virtualizerElement) {
       return;
     }
 
     if (this._selectedItemIndex > 0) {
       const nextIndex = this._selectedItemIndex - 1;
 
-      const items = this._virtualizerElement.items as PickerComboBoxItem[];
+      const items = this.virtualizerElement.items as PickerComboBoxItem[];
 
       if (!items[nextIndex]) {
         return;
@@ -576,13 +582,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _selectFirstItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
-    if (!this._virtualizerElement || !this._virtualizerElement.items.length) {
+    if (!this.virtualizerElement || !this.virtualizerElement.items.length) {
       return;
     }
 
     const nextIndex = 0;
 
-    if (typeof this._virtualizerElement.items[nextIndex] === "string") {
+    if (typeof this.virtualizerElement.items[nextIndex] === "string") {
       this._selectedItemIndex = nextIndex + 1;
     } else {
       this._selectedItemIndex = nextIndex;
@@ -593,13 +599,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _selectLastItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
-    if (!this._virtualizerElement || !this._virtualizerElement.items.length) {
+    if (!this.virtualizerElement || !this.virtualizerElement.items.length) {
       return;
     }
 
-    const nextIndex = this._virtualizerElement.items.length - 1;
+    const nextIndex = this.virtualizerElement.items.length - 1;
 
-    if (typeof this._virtualizerElement.items[nextIndex] === "string") {
+    if (typeof this.virtualizerElement.items[nextIndex] === "string") {
       this._selectedItemIndex = nextIndex - 1;
     } else {
       this._selectedItemIndex = nextIndex;
@@ -609,14 +615,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   };
 
   private _scrollToSelectedItem = () => {
-    this._virtualizerElement
+    this.virtualizerElement
       ?.querySelector(".selected")
       ?.classList.remove("selected");
 
-    this._virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
+    this.virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
 
     requestAnimationFrame(() => {
-      this._virtualizerElement
+      this.virtualizerElement
         ?.querySelector(`#list-item-${this._selectedItemIndex}`)
         ?.classList.add("selected");
     });
@@ -624,12 +630,20 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _pickSelectedItem = (ev: KeyboardEvent) => {
     ev.stopPropagation();
-    const firstItem = this._virtualizerElement?.items[0] as PickerComboBoxItem;
-
-    if (this._virtualizerElement?.items.length === 1) {
-      fireEvent(this, "value-changed", {
-        value: firstItem.id,
+    if (
+      this.virtualizerElement?.items?.length !== undefined &&
+      this.virtualizerElement.items.length < 4 && // it still can have a section title and a padding item
+      this.virtualizerElement.items.filter((item) => typeof item !== "string")
+        .length === 1
+    ) {
+      (
+        this.virtualizerElement?.items as (PickerComboBoxItem | string)[]
+      ).forEach((item, index) => {
+        if (typeof item !== "string") {
+          this._fireSelectedEvents(item.id, index);
+        }
       });
+      return;
     }
 
     if (this._selectedItemIndex === -1) {
@@ -639,16 +653,16 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     // if filter button is focused
     ev.preventDefault();
 
-    const item = this._virtualizerElement?.items[
+    const item = this.virtualizerElement?.items[
       this._selectedItemIndex
     ] as PickerComboBoxItem;
     if (item) {
-      fireEvent(this, "value-changed", { value: item.id });
+      this._fireSelectedEvents(item.id, this._selectedItemIndex);
     }
   };
 
   private _resetSelectedItem() {
-    this._virtualizerElement
+    this.virtualizerElement
       ?.querySelector(".selected")
       ?.classList.remove("selected");
     this._selectedItemIndex = -1;
@@ -658,11 +672,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     typeof item === "string" ? item : item?.id;
 
   private _getInitialSelectedIndex() {
-    if (!this._virtualizerElement || this._search || !this.value) {
+    if (!this.virtualizerElement || this._search || !this.value) {
       return 0;
     }
 
-    const index = this._virtualizerElement.items.findIndex(
+    const index = this.virtualizerElement.items.findIndex(
       (item) =>
         typeof item !== "string" &&
         (item as PickerComboBoxItem).id === this.value
@@ -841,5 +855,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-picker-combo-box": HaPickerComboBox;
+  }
+
+  interface HASSDomEvents {
+    "index-selected": { index: number };
   }
 }

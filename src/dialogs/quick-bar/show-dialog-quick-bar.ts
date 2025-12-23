@@ -1,6 +1,11 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
-export type QuickBarSection = "entity" | "device" | "navigate" | "command";
+export type QuickBarSection =
+  | "entity"
+  | "device"
+  | "area"
+  | "navigate"
+  | "command";
 
 export interface QuickBarParams {
   entityFilter?: string;

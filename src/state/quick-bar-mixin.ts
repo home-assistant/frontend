@@ -70,6 +70,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         m: { handler: (ev) => this._createMyLink(ev) },
         a: { handler: (ev) => this._showVoiceCommandDialog(ev) },
         d: { handler: (ev) => this._showQuickBar(ev, "device") },
+        "$mod+k": { handler: (ev) => this._showQuickBar(ev) },
         // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
         "Shift+?": { handler: (ev) => this._showShortcutDialog(ev) },
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
@@ -78,6 +79,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         KeyM: { handler: (ev) => this._createMyLink(ev) },
         KeyA: { handler: (ev) => this._showVoiceCommandDialog(ev) },
         KeyD: { handler: (ev) => this._showQuickBar(ev, "device") },
+        "$mod+KeyK": { handler: (ev) => this._showQuickBar(ev) },
       });
     }
 
