@@ -18,15 +18,17 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import "../../components/ha-adaptive-dialog";
-import "../../components/ha-button";
-import "../../components/ha-icon-button";
-import "../../components/ha-label";
 import "../../components/ha-picker-combo-box";
 import type {
   HaPickerComboBox,
   PickerComboBoxItem,
 } from "../../components/ha-picker-combo-box";
 import "../../components/ha-spinner";
+import "../../components/ha-combo-box-item";
+import "../../components/entity/state-badge";
+import "../../components/ha-domain-icon";
+import "../../components/ha-icon";
+import "../../components/ha-svg-icon";
 import "../../components/ha-tip";
 import { areaComboBoxKeys, getAreas } from "../../data/area/area_picker";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
@@ -157,6 +159,7 @@ export class QuickBar extends LitElement {
 
   public closeDialog() {
     this._open = false;
+    return true;
   }
 
   protected willUpdate() {
@@ -492,26 +495,6 @@ export class QuickBar extends LitElement {
 
     this._loading = false;
   }
-
-  // private async _processItemAndCloseDialog(item: QuickBarItem, index: number) {
-  //   this._addSpinnerToCommandItem(index);
-
-  //   await item.action();
-  //   this.closeDialog();
-  // }
-
-  // private _getItemAtIndex(index: number): ListItem | null {
-  //   return this.renderRoot.querySelector(`ha-md-list-item[index="${index}"]`);
-  // }
-
-  // private _addSpinnerToCommandItem(index: number): void {
-  //   const div = document.createElement("div");
-  //   div.slot = "meta";
-  //   const spinner = document.createElement("ha-spinner");
-  //   spinner.size = "small";
-  //   div.appendChild(spinner);
-  //   this._getItemAtIndex(index)?.appendChild(div);
-  // }
 
   private async _handleItemSelected(ev: CustomEvent<{ index: number }>) {
     if (this._comboBox && this._comboBox.virtualizerElement) {
