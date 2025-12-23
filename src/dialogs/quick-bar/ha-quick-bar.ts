@@ -238,7 +238,7 @@ export class QuickBar extends LitElement {
         items.push(...navigateItems);
       }
 
-      if (!section || section === "command") {
+      if (this.hass.user?.is_admin && (!section || section === "command")) {
         let commandItems = [
           ...this._generateReloadCommands(),
           ...this._generateServerControlCommands(),
@@ -293,12 +293,15 @@ export class QuickBar extends LitElement {
         id: "navigate",
         label: this.hass.localize("ui.dialogs.quick-bar.navigate_title"),
       },
-      "separator" as const,
-      {
+    ];
+
+    if (this.hass.user?.is_admin) {
+      sections.push("separator");
+      sections.push({
         id: "command",
         label: this.hass.localize("ui.dialogs.quick-bar.commands_title"),
-      },
-    ];
+      });
+    }
 
     return html`
       <ha-adaptive-dialog
@@ -430,7 +433,7 @@ export class QuickBar extends LitElement {
       configEntries.map((entry) => [entry.entry_id, entry])
     );
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (this.hass.user?.is_admin && isComponentLoaded(this.hass, "hassio")) {
       const hassioAddonsInfo = await fetchHassioAddonsInfo(this.hass);
       this._addons = hassioAddonsInfo.addons;
     }
@@ -645,7 +648,7 @@ export class QuickBar extends LitElement {
     const panelItems = this._generateNavigationPanelCommands();
     const sectionItems = this._generateNavigationConfigSectionCommands();
     const supervisorItems: BaseNavigationCommand[] = [];
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (this.hass.user?.is_admin && isComponentLoaded(this.hass, "hassio")) {
       supervisorItems.push({
         path: "/hassio/store",
         icon_path: mdiStorePlus,
@@ -729,6 +732,10 @@ export class QuickBar extends LitElement {
   }
 
   private _generateNavigationConfigSectionCommands(): BaseNavigationCommand[] {
+    if (!this.hass.user?.is_admin) {
+      return [];
+    }
+
     const items: NavigationInfo[] = [];
 
     Object.values(configSections).forEach((sectionPages) => {
