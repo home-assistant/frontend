@@ -33,10 +33,7 @@ import {
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
 } from "../../../data/update";
-import {
-  QuickBarMode,
-  showQuickBar,
-} from "../../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
@@ -364,7 +361,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     };
 
     showQuickBar(this, {
-      mode: QuickBarMode.Command,
       hint: this.hass.enableShortcuts
         ? this.hass.localize("ui.dialogs.quick-bar.key_c_tip", params)
         : undefined,

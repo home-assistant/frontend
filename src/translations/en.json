@@ -1335,6 +1335,7 @@
       },
       "quick-bar": {
         "commands_title": "Commands",
+        "navigate_title": "Navigate",
         "commands": {
           "reload": {
             "all": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::all%]",
