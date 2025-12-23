@@ -16,7 +16,7 @@ import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 const SEARCH_KEYS = [
   { name: "primary", weight: 10 },
-  { name: "search_labels.browser", weight: 8 },
+  { name: "secondary", weight: 8 },
   { name: "search_labels.english", weight: 5 },
 ];
 
@@ -49,12 +49,14 @@ export const getLanguageOptions = (
         locale || ({ language: navigator.language } as FrontendLocaleData)
       );
       const englishName = formatLanguageCode(lang, enLocale);
+
+      const secondary = currentLang !== primary ? currentLang : undefined;
+
       return {
         id: lang,
         primary,
-        secondary: currentLang !== primary ? currentLang : undefined,
+        secondary,
         search_labels: {
-          browser: currentLang !== primary ? currentLang : null,
           english: englishName !== primary ? englishName : null,
         },
       };
