@@ -50,14 +50,27 @@ class StepFlowForm extends LitElement {
     this.removeEventListener("keydown", this._handleKeyDown);
   }
 
-  private handleReadOnlyFields = memoizeOne((schema) =>
-    schema?.map((field) => ({
-      ...field,
-      ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]?.read_only
-        ? { disabled: true }
-        : {}),
-    }))
-  );
+  private handleReadOnlyFields = memoizeOne((schema) => {
+    function handleReadOnlyField(field: HaFormSchema) {
+      return {
+        ...field,
+        ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]
+          ?.read_only
+          ? { disabled: true }
+          : {}),
+      };
+    }
+    return schema?.map((field: HaFormSchema) =>
+      field.type === "expandable" && field.schema
+        ? {
+            ...field,
+            schema: field.schema.map((sectionField) =>
+              handleReadOnlyField(sectionField)
+            ),
+          }
+        : handleReadOnlyField(field)
+    );
+  });
 
   protected render(): TemplateResult {
     const step = this.step;

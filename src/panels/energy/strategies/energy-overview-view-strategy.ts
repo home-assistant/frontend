@@ -5,7 +5,6 @@ import { getEnergyDataCollection } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
 @customElement("energy-overview-view-strategy")
@@ -64,24 +63,20 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
         (source.type === "grid" && source.power?.length)
     );
 
-    const overviewSection: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [
-        {
-          type: "energy-date-selection",
-          collection_key: collectionKey,
-          allow_compare: false,
-        },
-      ],
-    };
     if (hasGrid || hasBattery || hasSolar) {
-      overviewSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
-        type: "energy-distribution",
-        collection_key: collectionKey,
+      view.sections!.push({
+        type: "grid",
+        cards: [
+          {
+            title: hass.localize(
+              "ui.panel.energy.cards.energy_distribution_title"
+            ),
+            type: "energy-distribution",
+            collection_key: collectionKey,
+          },
+        ],
       });
     }
-    view.sections!.push(overviewSection);
 
     if (prefs.energy_sources.length) {
       view.sections!.push({

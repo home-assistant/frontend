@@ -167,7 +167,6 @@ export class HuiEntityEditor extends LitElement {
                       .index=${index}
                       .entityFilter=${this.entityFilter}
                       @value-changed=${this._valueChanged}
-                      allow-custom-entity
                     ></ha-entity-picker>
                   </div>
                 `

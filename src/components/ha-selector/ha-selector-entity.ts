@@ -66,15 +66,14 @@ export class HaEntitySelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .placeholder=${this.placeholder}
         .helper=${this.helper}
         .includeEntities=${this.selector.entity?.include_entities}
         .excludeEntities=${this.selector.entity?.exclude_entities}
         .entityFilter=${this._filterEntities}
         .createDomains=${this._createDomains}
-        .placeholder=${this.placeholder}
         .disabled=${this.disabled}
         .required=${this.required}
-        allow-custom-entity
       ></ha-entity-picker>`;
     }
 
@@ -83,13 +82,13 @@ export class HaEntitySelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .placeholder=${this.placeholder}
         .helper=${this.helper}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
         .reorder=${this.selector.entity.reorder ?? false}
         .entityFilter=${this._filterEntities}
         .createDomains=${this._createDomains}
-        .placeholder=${this.placeholder}
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-entities-picker>

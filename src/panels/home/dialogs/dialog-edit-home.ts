@@ -75,7 +75,6 @@ export class DialogEditHome
             "ui.panel.home.editor.favorite_entities_helper"
           )}
           reorder
-          allow-custom-entity
           @value-changed=${this._favoriteEntitiesChanged}
         ></ha-entities-picker>
 

@@ -1120,7 +1120,7 @@ export class QuickBar extends LitElement {
         }
 
         .nothing-found {
-          padding: var(--ha-space-4) var(--ha-space-0);
+          padding: var(--ha-space-4) 0;
           text-align: center;
         }
 

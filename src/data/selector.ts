@@ -27,6 +27,7 @@ export type Selector =
   | AttributeSelector
   | BooleanSelector
   | ButtonToggleSelector
+  | ChooseSelector
   | ColorRGBSelector
   | ColorTempSelector
   | ConditionSelector
@@ -114,6 +115,13 @@ export interface ButtonToggleSelector {
     translation_key?: string;
     sort?: boolean;
   } | null;
+}
+
+export interface ChooseSelector {
+  choose: {
+    choices: Record<string, { selector: Selector }>;
+    translation_key?: string;
+  };
 }
 
 export interface ColorRGBSelector {
