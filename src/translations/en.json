@@ -921,9 +921,13 @@
         "default": "default",
         "state": "State color",
         "none": "No color",
+        "custom_color": "Custom color",
+        "no_colors_found": "No matching colors found",
         "colors": {
           "primary": "Primary",
           "accent": "Accent",
+          "primary-text": "Main text",
+          "secondary-text": "Secondary text",
           "disabled": "Disabled",
           "inactive": "Inactive",
           "red": "Red",
