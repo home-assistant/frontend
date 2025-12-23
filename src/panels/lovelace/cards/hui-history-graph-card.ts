@@ -135,6 +135,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     const { numeric_device_classes: sensorNumericDeviceClasses } =
       await getSensorNumericDeviceClasses(this.hass!);
 
+    if (!this.isConnected) {
+      return; // Skip subscribe if we already disconnected while awaiting
+    }
+
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
