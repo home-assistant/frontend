@@ -7177,6 +7177,7 @@
           "home": {
             "summary_list": {
               "media_players": "Media players",
+              "other_devices": "Other devices",
               "weather": "Weather",
               "energy": "Today's energy"
             },
@@ -7184,6 +7185,7 @@
             "summaries": "Summaries",
             "areas": "Areas",
             "other_areas": "Other areas",
+            "devices": "Devices",
             "unamed_device": "Unnamed device",
             "others": "Others",
             "scenes": "Scenes",
@@ -7211,6 +7213,10 @@
           "home_media_players": {
             "media_players": "Media players",
             "other_media_players": "Other media players"
+          },
+          "other_devices": {
+            "helpers": "Helpers",
+            "entities": "Entities"
           }
         },
         "cards": {
