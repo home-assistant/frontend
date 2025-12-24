@@ -25,6 +25,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import removeMd from "remove-markdown";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -306,9 +307,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 ></ha-data-table-labels>`
               : nothing;
             const description = html`<div class="secondary">
-              ${getEntityDescription(
-                automation.entity_id,
-                this._fetchedDescriptions
+              ${removeMd(
+                getEntityDescription(
+                  automation.entity_id,
+                  this._fetchedDescriptions
+                ) ?? ""
               )}
             </div>`;
             return html`<div class="labels-with-text">
