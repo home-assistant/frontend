@@ -117,12 +117,13 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: heading,
-            tap_action: device && hass.user?.is_admin
-              ? {
-                  action: "navigate",
-                  navigation_path: `/config/devices/device/${device.id}`,
-                }
-              : { action: "none" },
+            tap_action:
+              device && hass.user?.is_admin
+                ? {
+                    action: "navigate",
+                    navigation_path: `/config/devices/device/${device.id}`,
+                  }
+                : { action: "none" },
             badges: [
               ...batteryEntities.slice(0, 1).map((e) => ({
                 entity: e,
