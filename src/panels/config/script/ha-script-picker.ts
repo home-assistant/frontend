@@ -23,6 +23,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import removeMd from "remove-markdown";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -288,9 +289,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 ></ha-data-table-labels>`
               : nothing;
             const description = html`<div class="secondary">
-              ${getEntityDescription(
-                script.entity_id,
-                this._fetchedDescriptions
+              ${removeMd(
+                getEntityDescription(
+                  script.entity_id,
+                  this._fetchedDescriptions
+                ) ?? ""
               )}
             </div>`;
             return html`<div class="labels-with-text">
