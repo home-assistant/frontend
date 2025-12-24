@@ -79,6 +79,11 @@ import type {
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { EntityDescription } from "../../../data/entity/entity_description";
+import {
+  getEntityDescription,
+  setEntityDescription,
+} from "../../../data/entity/entity_description";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
@@ -204,6 +209,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private _fetchedDescriptions: EntityDescription[] = [];
+
   private _scripts = memoizeOne(
     (
       scripts: ScriptEntity[],
@@ -273,13 +280,23 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           filterable: true,
           direction: "asc",
           flex: 2,
-          extraTemplate: (script) =>
-            script.labels.length
+          extraTemplate: (script) => {
+            const labels = script.labels.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
                   .labels=${script.labels}
                 ></ha-data-table-labels>`
-              : nothing,
+              : nothing;
+            const description = html`<div class="secondary">
+              ${getEntityDescription(
+                script.entity_id,
+                this._fetchedDescriptions
+              )}
+            </div>`;
+            return html`<div class="labels-with-text">
+              ${labels}${description}
+            </div>`;
+          },
         },
         area: {
           title: localize("ui.panel.config.script.picker.headers.area"),
@@ -419,6 +436,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._fetchDescriptions();
+  }
+
   protected render(): TemplateResult {
     const categoryItems = html`${this._categories?.map(
         (category) =>
@@ -532,6 +554,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       this._labels,
       this._filteredScripts
     );
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -1209,6 +1232,17 @@ ${rejected
               ),
       });
     }
+  }
+
+  private _fetchDescriptions() {
+    this.scripts.forEach((script) =>
+      setEntityDescription(
+        this.hass,
+        script.entity_id,
+        this._fetchedDescriptions,
+        getScriptStateConfig
+      )
+    );
   }
 
   private _bulkCreateCategory = () => {
