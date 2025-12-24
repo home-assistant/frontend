@@ -1247,15 +1247,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     );
   }
 
-  // private _handleAutomationChanged() {
-  //   setEntityDescription(
-  //     this.hass,
-  //     automation.entity_id,
-  //     this._fetchedDescriptions,
-  //     getAutomationStateConfig
-  //   );
-  // }
-
   private _showHelp() {
     showAlertDialog(this, {
       title: this.hass.localize("ui.panel.config.automation.caption"),
