@@ -280,7 +280,7 @@ export class QuickBar extends LitElement {
                 </div>
               `
             : html`
-                <ha-list innerRole="menu" itemRoles="menuitem">
+                <ha-list>
                   ${this._opened
                     ? html`<lit-virtualizer
                         tabindex="-1"

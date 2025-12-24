@@ -123,7 +123,7 @@ export class CloudLoginPanel extends LitElement {
             ></cloud-login>
 
             <ha-card outlined>
-              <ha-list innerRole="menu" itemRoles="menuitem">
+              <ha-list>
                 <ha-list-item @click=${this._handleRegister} twoline hasMeta>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.login.start_trial"

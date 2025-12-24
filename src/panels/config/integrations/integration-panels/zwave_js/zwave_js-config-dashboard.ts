@@ -287,11 +287,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         "ui.panel.config.zwave_js.dashboard.statistics.title"
                       )}
                     >
-                      <ha-list
-                        noninteractive
-                        innerRole="menu"
-                        itemRoles="menuitem"
-                      >
+                      <ha-list noninteractive>
                         <ha-list-item twoline hasmeta>
                           <span>
                             ${this.hass.localize(

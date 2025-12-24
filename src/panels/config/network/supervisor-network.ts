@@ -155,7 +155,7 @@ export class HassioNetwork extends LitElement {
                 </ha-button>
                 ${this._accessPoints.length
                   ? html`
-                      <ha-list innerRole="menu" itemRoles="menuitem">
+                      <ha-list>
                         ${this._accessPoints.map(
                           (ap) => html`
                             <ha-list-item

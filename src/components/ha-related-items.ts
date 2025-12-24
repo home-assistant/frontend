@@ -156,7 +156,7 @@ export class HaRelatedItems extends LitElement {
       ${this._related.entity
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.entity")}</h3>
-            <ha-list innerRole="menu" itemRoles="menuitem">
+            <ha-list>
               ${this._relatedEntities(this._related.entity).map(
                 (entity) => html`
                   <ha-list-item
@@ -182,7 +182,7 @@ export class HaRelatedItems extends LitElement {
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.device")}
             </h3>
-            <ha-list innerRole="menu" itemRoles="menuitem">
+            <ha-list>
               ${this._related.device.map((relatedDeviceId) => {
                 const device = this.hass.devices[relatedDeviceId];
                 if (!device) {
@@ -209,7 +209,7 @@ export class HaRelatedItems extends LitElement {
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.integration")}
             </h3>
-            <ha-list innerRole="menu" itemRoles="menuitem"
+            <ha-list
               >${configEntries?.map((entry) => {
                 if (!entry) {
                   return nothing;
@@ -268,7 +268,7 @@ export class HaRelatedItems extends LitElement {
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.area")}
             </h3>
-            <ha-list innerRole="menu" itemRoles="menuitem"
+            <ha-list
               >${this._related.area.map((relatedAreaId) => {
                 const area = this.hass.areas[relatedAreaId];
                 if (!area) {
@@ -308,7 +308,7 @@ export class HaRelatedItems extends LitElement {
       ${this._related.group
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.group")}</h3>
-            <ha-list innerRole="menu" itemRoles="menuitem">
+            <ha-list>
               ${this._relatedGroups(this._related.group).map(
                 (group) => html`
                   <ha-list-item
@@ -333,7 +333,7 @@ export class HaRelatedItems extends LitElement {
       ${this._related.scene
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.scene")}</h3>
-            <ha-list innerRole="menu" itemRoles="menuitem">
+            <ha-list>
               ${this._relatedScenes(this._related.scene).map(
                 (scene) => html`
                   <ha-list-item
@@ -360,7 +360,7 @@ export class HaRelatedItems extends LitElement {
             <h3>
               ${this.hass.localize("ui.components.related-items.blueprint")}
             </h3>
-            <ha-list innerRole="menu" itemRoles="menuitem">
+            <ha-list>
               ${this._related.automation_blueprint.map((path) => {
                 const blueprintMeta = this._blueprints
                   ? this._blueprints.automation[path]
@@ -386,7 +386,7 @@ export class HaRelatedItems extends LitElement {
             <h3>
               ${this.hass.localize("ui.components.related-items.automation")}
             </h3>
-            <ha-list innerRole="menu" itemRoles="menuitem">
+            <ha-list>
               ${this._relatedAutomations(this._related.automation).map(
                 (automation) => html`
                   <ha-list-item
@@ -414,7 +414,7 @@ export class HaRelatedItems extends LitElement {
             <h3>
               ${this.hass.localize("ui.components.related-items.blueprint")}
             </h3>
-            <ha-list innerRole="menu" itemRoles="menuitem">
+            <ha-list>
               ${this._related.script_blueprint.map((path) => {
                 const blueprintMeta = this._blueprints
                   ? this._blueprints.script[path]
@@ -438,7 +438,7 @@ export class HaRelatedItems extends LitElement {
       ${this._related.script
         ? html`
             <h3>${this.hass.localize("ui.components.related-items.script")}</h3>
-            <ha-list innerRole="menu" itemRoles="menuitem">
+            <ha-list>
               ${this._relatedScripts(this._related.script).map(
                 (script) => html`
                   <ha-list-item

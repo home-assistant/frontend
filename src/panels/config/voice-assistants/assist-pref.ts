@@ -129,7 +129,7 @@ export class AssistPref extends LitElement {
             ></ha-icon-button>
           </a>
         </div>
-        <ha-list innerRole="menu" itemRoles="menuitem">
+        <ha-list>
           ${this._pipelines.map(
             (pipeline) => html`
               <ha-list-item

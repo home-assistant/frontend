@@ -82,7 +82,7 @@ class DialogMatterPingNode extends LitElement {
                     "ui.panel.config.matter.ping_node.ping_complete"
                   )}
                 </h2>
-                <ha-list innerRole="menu" itemRoles="menuitem">
+                <ha-list>
                   ${this._pingResultEntries.map(
                     ([ip, success]) =>
                       html`<ha-list-item

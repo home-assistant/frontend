@@ -131,7 +131,7 @@ class OnboardingLocation extends LitElement {
         </ha-textfield>
         ${this._places !== undefined
           ? html`
-              <ha-list activatable innerRole="menu" itemRoles="menuitem">
+              <ha-list activatable>
                 ${this._places?.length
                   ? this._places.map((place) => {
                       const primary = [

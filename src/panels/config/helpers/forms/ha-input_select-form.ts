@@ -110,7 +110,7 @@ class HaInputSelectForm extends LitElement {
           handle-selector=".handle"
           .disabled=${this.disabled}
         >
-          <ha-list class="options" innerRole="menu" itemRoles="menuitem">
+          <ha-list class="options">
             ${this._options.length
               ? repeat(
                   this._options,

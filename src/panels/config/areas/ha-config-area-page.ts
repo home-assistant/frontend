@@ -281,7 +281,7 @@ class HaConfigAreaPage extends LitElement {
               outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
               >${devices.length
-                ? html`<ha-list innerRole="menu" itemRoles="menuitem">
+                ? html`<ha-list>
                     ${devices.map(
                       (device) => html`
                         <a href="/config/devices/device/${device.id}">
