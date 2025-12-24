@@ -7177,7 +7177,7 @@
           "home": {
             "summary_list": {
               "media_players": "Media players",
-              "other_devices": "Other devices"
+              "other_devices": "Other devices",
               "weather": "Weather",
               "energy": "Today's energy"
             },
