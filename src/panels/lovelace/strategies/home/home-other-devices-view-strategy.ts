@@ -117,7 +117,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: heading,
-            tap_action: device
+            tap_action: device && hass.user?.is_admin
               ? {
                   action: "navigate",
                   navigation_path: `/config/devices/device/${device.id}`,
