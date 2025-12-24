@@ -22,7 +22,6 @@ import type {
   HomeSummaryCard,
   MarkdownCardConfig,
   TileCardConfig,
-  WeatherForecastCardConfig,
 } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
@@ -81,7 +80,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       condition: "screen",
       media_query: "(min-width: 871px)",
     };
-    
+
     const smallScreenCondition: Condition = {
       condition: "screen",
       media_query: "(max-width: 870px)",
@@ -92,7 +91,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
 
     const entitiesWithoutAreas = findEntities(allEntities, otherDevicesFilters);
-
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
