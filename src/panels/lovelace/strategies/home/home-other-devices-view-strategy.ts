@@ -122,7 +122,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
                   action: "navigate",
                   navigation_path: `/config/devices/device/${device.id}`,
                 }
-              : undefined,
+              : { action: "none" },
             badges: [
               ...batteryEntities.slice(0, 1).map((e) => ({
                 entity: e,
