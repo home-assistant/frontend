@@ -9147,6 +9147,7 @@ __metadata:
     punycode: "npm:2.3.1"
     qr-scanner: "npm:1.4.2"
     qrcode: "npm:1.5.4"
+    remove-markdown: "npm:0.6.2"
     roboto-fontface: "npm:0.10.0"
     rrule: "npm:2.8.1"
     rspack-manifest-plugin: "npm:5.2.0"
@@ -12230,6 +12231,13 @@ __metadata:
   version: 0.2.7
   resolution: "relateurl@npm:0.2.7"
   checksum: 10/f5d6ba58f2a5d5076389090600c243a0ba7072bcf347490a09e4241e2427ccdb260b4e22cea7be4f1fcd3c2bf05908b1e0d0bc9605e3199d4ecf37af1d5681fa
+  languageName: node
+  linkType: hard
+
+"remove-markdown@npm:0.6.2":
+  version: 0.6.2
+  resolution: "remove-markdown@npm:0.6.2"
+  checksum: 10/4ee134dacb69ee768198e81130f7bfce0c8415eb7a97206b6ce67aa16c86c57b704356a8fa57cf45e384d1dbe7bee4d9d7bce3be4318904dd230b80553691c9b
   languageName: node
   linkType: hard
 
