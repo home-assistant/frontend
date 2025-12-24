@@ -127,6 +127,7 @@
     "punycode": "2.3.1",
     "qr-scanner": "1.4.2",
     "qrcode": "1.5.4",
+    "remove-markdown": "0.6.2",
     "roboto-fontface": "0.10.0",
     "rrule": "2.8.1",
     "sortablejs": "patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch",
