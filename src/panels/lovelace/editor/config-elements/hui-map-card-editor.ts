@@ -162,7 +162,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
     this._config = config;
     this._configEntities = config.entities
-      ? processEditorEntities(config.entities)
+      ? processEditorEntities(config.entities) as MapEntityConfig[]
       : [];
   }
 
