@@ -93,6 +93,11 @@ import type {
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { EntityDescription } from "../../../data/entity/entity_description";
+import {
+  getEntityDescription,
+  setEntityDescription,
+} from "../../../data/entity/entity_description";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
@@ -210,6 +215,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private _fetchedDescriptions: EntityDescription[] = [];
+
   private _automations = memoizeOne(
     (
       automations: AutomationEntity[],
@@ -291,13 +298,23 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           filterable: true,
           direction: "asc",
           flex: 2,
-          extraTemplate: (automation) =>
-            automation.labels.length
+          extraTemplate: (automation) => {
+            const labels = automation.labels.length
               ? html`<ha-data-table-labels
                   @label-clicked=${narrow ? undefined : this._labelClicked}
                   .labels=${automation.labels}
                 ></ha-data-table-labels>`
-              : nothing,
+              : nothing;
+            const description = html`<div class="secondary">
+              ${getEntityDescription(
+                automation.entity_id,
+                this._fetchedDescriptions
+              )}
+            </div>`;
+            return html`<div class="labels-with-text">
+              ${labels}${description}
+            </div>`;
+          },
         },
         area: {
           title: localize("ui.panel.config.automation.picker.headers.area"),
@@ -407,6 +424,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         this._labels = labels;
       }),
     ];
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._fetchDescriptions();
   }
 
   protected render(): TemplateResult {
@@ -523,6 +545,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       this._labels,
       this._filteredAutomations
     );
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -1213,6 +1236,26 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   };
 
+  private _fetchDescriptions() {
+    this.automations.forEach((automation) =>
+      setEntityDescription(
+        this.hass,
+        automation.entity_id,
+        this._fetchedDescriptions,
+        getAutomationStateConfig
+      )
+    );
+  }
+
+  // private _handleAutomationChanged() {
+  //   setEntityDescription(
+  //     this.hass,
+  //     automation.entity_id,
+  //     this._fetchedDescriptions,
+  //     getAutomationStateConfig
+  //   );
+  // }
+
   private _showHelp() {
     showAlertDialog(this, {
       title: this.hass.localize("ui.panel.config.automation.caption"),
@@ -1242,6 +1285,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       navigate(
         `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
       );
+      // eslint-disable-next-line no-console
+      console.log("after navigate()");
     } else {
       navigate(`/config/automation/show/${encodeURIComponent(ev.detail.id)}`);
     }
