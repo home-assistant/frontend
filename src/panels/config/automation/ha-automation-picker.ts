@@ -1276,8 +1276,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       navigate(
         `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
       );
-      // eslint-disable-next-line no-console
-      console.log("after navigate()");
     } else {
       navigate(`/config/automation/show/${encodeURIComponent(ev.detail.id)}`);
     }
