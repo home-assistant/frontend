@@ -23,9 +23,10 @@ import type {
   MarkdownCardConfig,
   TileCardConfig,
 } from "../../cards/types";
+import type { Condition } from "../../common/validate-condition";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
-import type { Condition } from "../../common/validate-condition";
+import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
@@ -73,6 +74,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const maxColumns = 3;
 
+    const allEntities = Object.keys(hass.states);
+
     const largeScreenCondition: Condition = {
       condition: "screen",
       media_query: "(min-width: 871px)",
@@ -82,6 +85,12 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       condition: "screen",
       media_query: "(max-width: 870px)",
     };
+
+    const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+
+    const entitiesWithoutAreas = findEntities(allEntities, otherDevicesFilters);
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -114,23 +123,57 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       }
     }
 
-    if (home.areas.length) {
+    if (home.areas.length > 0 || entitiesWithoutAreas.length > 0) {
       const cards: LovelaceCardConfig[] = [];
       for (const areaId of home.areas) {
         cards.push(computeAreaCard(areaId, hass));
       }
+
+      if (entitiesWithoutAreas.length > 0) {
+        cards.push({
+          type: "tile",
+          entity: "zone.home", // zone entity to represent unassigned area as it always exists
+          vertical: true,
+          name: hass.localize("ui.panel.lovelace.strategy.home.devices"),
+          icon: "mdi:devices",
+          hide_state: true,
+          tap_action: {
+            action: "navigate",
+            navigation_path: "other-devices",
+          },
+          grid_options: {
+            rows: 2,
+            columns: 4,
+          },
+        } as TileCardConfig);
+      }
+
+      const noOtherAreas = home.areas.length === 0;
+      const noFloor = home.floors.length === 0;
+
+      // Other areas / Areas / Others / nothing
+      const heading =
+        noFloor && noOtherAreas
+          ? undefined
+          : noFloor
+            ? hass.localize("ui.panel.lovelace.strategy.home.areas")
+            : noOtherAreas
+              ? hass.localize("ui.panel.lovelace.strategy.home.devices")
+              : hass.localize("ui.panel.lovelace.strategy.home.other_areas");
+
       floorsSections.push({
         type: "grid",
         column_span: maxColumns,
         cards: [
-          {
-            type: "heading",
-            heading:
-              floorCount > 1
-                ? hass.localize("ui.panel.lovelace.strategy.home.other_areas")
-                : hass.localize("ui.panel.lovelace.strategy.home.areas"),
-            heading_style: "title",
-          },
+          ...(heading
+            ? [
+                {
+                  type: "heading",
+                  heading: heading,
+                  heading_style: "title",
+                },
+              ]
+            : []),
           ...cards,
         ],
       });
@@ -152,8 +195,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
     } as LovelaceStrategySectionConfig;
-
-    const allEntities = Object.keys(hass.states);
 
     const mediaPlayerFilter = HOME_SUMMARIES_FILTERS.media_players.map(
       (filter) => generateEntityFilter(hass, filter)

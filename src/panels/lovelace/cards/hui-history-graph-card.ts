@@ -135,6 +135,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     const { numeric_device_classes: sensorNumericDeviceClasses } =
       await getSensorNumericDeviceClasses(this.hass!);
 
+    if (!this.isConnected) {
+      return; // Skip subscribe if we already disconnected while awaiting
+    }
+
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -212,7 +216,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _setRedrawTimer() {
     // redraw the graph every minute to update the time axis
     clearInterval(this._interval);
-    this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
+    if (this.isConnected) {
+      this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
+    }
   }
 
   private _unsubscribeHistory() {
