@@ -522,17 +522,20 @@ class HUIRoot extends LitElement {
                 `
               : nothing}
             ${view.icon
-              ? html`
-                  <ha-icon
-                    class=${classMap({
-                      "child-view-icon": Boolean(view.subview),
-                    })}
-                    title=${ifDefined(view.title)}
-                    .icon=${view.icon}
-                  ></ha-icon>
-                `
-              : view.title ||
-                this.hass.localize("ui.panel.lovelace.views.unnamed_view")}
+              ? html`<ha-icon
+                  class=${classMap({
+                    "child-view-icon": Boolean(view.subview),
+                  })}
+                  title=${ifDefined(view.title)}
+                  .icon=${view.icon}
+                ></ha-icon>`
+              : nothing}
+            ${!view.icon
+              ? view.title ||
+                this.hass.localize("ui.panel.lovelace.views.unnamed_view")
+              : view.show_icon_and_title
+                ? view.title
+                : nothing}
             ${this._editMode
               ? html`
                   <ha-icon-button
@@ -1498,6 +1501,7 @@ class HUIRoot extends LitElement {
           padding-top: calc((var(--ha-tab-group-tab-height) - 20px) / 2);
         }
         ha-tab-group-tab.icon::part(base) {
+          gap: var(--ha-space-2);
           padding-top: calc((var(--ha-tab-group-tab-height) - 20px) / 2 - 2px);
           padding-bottom: calc(
             (var(--ha-tab-group-tab-height) - 20px) / 2 - 4px
