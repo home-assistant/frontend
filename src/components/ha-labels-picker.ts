@@ -140,16 +140,17 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                 labels,
                 (label) => label?.label_id,
                 (label) => {
-                  const color = label?.color
+                  if (!label) return nothing;
+                  const color = label.color
                     ? computeCssColor(label.color)
                     : undefined;
                   const elementId = "label-" + label.label_id;
                   return html`
                     <ha-tooltip
                       .for=${elementId}
-                      .disabled=${!label?.description?.trim()}
+                      .disabled=${!label.description?.trim()}
                     >
-                      ${label?.description}
+                      ${label.description}
                     </ha-tooltip>
                     <ha-input-chip
                       .item=${label}
@@ -157,11 +158,11 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                       @remove=${this._removeItem}
                       @click=${this._openDetail}
                       .disabled=${this.disabled}
-                      .label=${label?.name}
+                      .label=${label.name}
                       selected
                       style=${color ? `--color: ${color}` : ""}
                     >
-                      ${label?.icon
+                      ${label.icon
                         ? html`<ha-icon
                             slot="icon"
                             .icon=${label.icon}
