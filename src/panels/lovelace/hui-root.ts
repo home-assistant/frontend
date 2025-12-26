@@ -537,7 +537,7 @@ class HUIRoot extends LitElement {
                     "ui.panel.lovelace.views.unnamed_view"
                   )}</span
                 >`
-              : view.show_icon_and_title
+              : view.show_icon_and_title && view.title
                 ? html`<span>${view.title}</span>`
                 : nothing}
             ${this._editMode
