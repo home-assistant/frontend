@@ -76,8 +76,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   private _entityIds: string[] = [];
 
-  private _hoursToShow = DEFAULT_DAYS_TO_SHOW;
-
   private _historyLinkId = `history-${Math.random().toString(36).substring(2, 9)}`;
 
   private _names: Record<string, string> = {};
