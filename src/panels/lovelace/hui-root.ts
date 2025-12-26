@@ -531,10 +531,14 @@ class HUIRoot extends LitElement {
                 ></ha-icon>`
               : nothing}
             ${!view.icon
-              ? view.title ||
-                this.hass.localize("ui.panel.lovelace.views.unnamed_view")
+              ? html`<span
+                  >${view.title ||
+                  this.hass.localize(
+                    "ui.panel.lovelace.views.unnamed_view"
+                  )}</span
+                >`
               : view.show_icon_and_title
-                ? view.title
+                ? html`<span>${view.title}</span>`
                 : nothing}
             ${this._editMode
               ? html`
@@ -1506,6 +1510,9 @@ class HUIRoot extends LitElement {
           padding-bottom: calc(
             (var(--ha-tab-group-tab-height) - 20px) / 2 - 4px
           );
+        }
+        ha-tab-group-tab ha-icon:has(+ span) {
+          margin-inline-end: var(--ha-space-2);
         }
         .tab-bar ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--tab-bar-height, 56px);
