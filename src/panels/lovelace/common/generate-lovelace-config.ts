@@ -498,7 +498,7 @@ export const generateViewConfig = (
   if (icon) {
     view.icon = icon;
   }
-  if (show_icon_and_title !== undefined) {
+  if (show_icon_and_title) {
     view.show_icon_and_title = show_icon_and_title;
   }
 
