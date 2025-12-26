@@ -521,7 +521,7 @@ export const generateDefaultViewConfig = (
   const path = "default_view";
   const title = "Home";
   const icon = undefined;
-  const show_icon_and_title = false;
+  const show_icon_and_title = undefined;
 
   // In the case of a default view, we want to use the group order attribute
   const groupOrders = {};
