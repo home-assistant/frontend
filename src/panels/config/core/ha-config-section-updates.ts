@@ -1,6 +1,4 @@
 import {
-  mdiCheckboxBlankOutline,
-  mdiCheckboxMarked,
   mdiDotsVertical,
   mdiLocationEnter,
   mdiLocationExit,
@@ -88,13 +86,11 @@ class HaConfigSectionUpdates extends LitElement {
               .path=${mdiDotsVertical}
             ></ha-icon-button>
 
-            <ha-dropdown-item value="show_skipped">
-              <ha-svg-icon
-                .path=${this._showSkipped
-                  ? mdiCheckboxMarked
-                  : mdiCheckboxBlankOutline}
-                slot="icon"
-              ></ha-svg-icon>
+            <ha-dropdown-item
+              type="checkbox"
+              .checked=${this._showSkipped}
+              value="show_skipped"
+            >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
             </ha-dropdown-item>
             ${this._supervisorInfo
