@@ -71,6 +71,16 @@ export class HomeDashboardStrategy extends ReactiveElement {
       icon: HOME_SUMMARIES_ICONS.media_players,
     } satisfies LovelaceViewRawConfig;
 
+    const otherDevicesView = {
+      title: hass.localize("ui.panel.lovelace.strategy.home.devices"),
+      path: "other-devices",
+      subview: true,
+      strategy: {
+        type: "home-other-devices",
+      },
+      icon: "mdi:devices",
+    } satisfies LovelaceViewRawConfig;
+
     return {
       views: [
         {
@@ -83,6 +93,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
         },
         ...areaViews,
         mediaPlayersView,
+        otherDevicesView,
       ],
     };
   }

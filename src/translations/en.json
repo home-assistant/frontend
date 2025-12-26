@@ -921,9 +921,13 @@
         "default": "default",
         "state": "State color",
         "none": "No color",
+        "custom_color": "Custom color",
+        "no_colors_found": "No matching colors found",
         "colors": {
           "primary": "Primary",
           "accent": "Accent",
+          "primary-text": "Main text",
+          "secondary-text": "Secondary text",
           "disabled": "Disabled",
           "inactive": "Inactive",
           "red": "Red",
@@ -1105,6 +1109,7 @@
           "delete": "Delete {count}",
           "deleting": "Deleting {count}",
           "deselect_all": "Deselect all",
+          "select_all": "[%key:ui::components::subpage-data-table::select_all%]",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
           "tip_storage_panel": "storage"
         },
@@ -4303,7 +4308,7 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
-                  "weekday": "Weekdays",
+                  "weekday": "Days of the Week",
                   "weekdays": {
                     "mon": "[%key:ui::weekdays::monday%]",
                     "tue": "[%key:ui::weekdays::tuesday%]",
@@ -7172,6 +7177,7 @@
           "home": {
             "summary_list": {
               "media_players": "Media players",
+              "other_devices": "Other devices",
               "weather": "Weather",
               "energy": "Today's energy"
             },
@@ -7179,6 +7185,7 @@
             "summaries": "Summaries",
             "areas": "Areas",
             "other_areas": "Other areas",
+            "devices": "Devices",
             "unamed_device": "Unnamed device",
             "others": "Others",
             "scenes": "Scenes",
@@ -7206,6 +7213,10 @@
           "home_media_players": {
             "media_players": "Media players",
             "other_media_players": "Other media players"
+          },
+          "other_devices": {
+            "helpers": "Helpers",
+            "entities": "Entities"
           }
         },
         "cards": {

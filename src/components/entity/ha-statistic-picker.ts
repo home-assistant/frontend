@@ -473,6 +473,7 @@ export class HaStatisticPicker extends LitElement {
         .allowCustomValue=${this.allowCustomEntity}
         .disabled=${this.disabled}
         .label=${this.label}
+        use-top-label
         .placeholder=${placeholder}
         .value=${this.value}
         .notFoundLabel=${this._notFoundLabel}

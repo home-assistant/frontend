@@ -1,17 +1,15 @@
 import { consume } from "@lit/context";
 import { mdiAlert, mdiFormatListBulleted, mdiShape } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import { LitElement, css, html, nothing, type TemplateResult } from "lit";
+import { css, html, LitElement, type nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { until } from "lit/directives/until";
 import { ensureArray } from "../../../../common/array/ensure-array";
+import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/ha-svg-icon";
-import {
-  getConfigEntries,
-  type ConfigEntry,
-} from "../../../../data/config_entries";
+import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   areasContext,
+  configEntriesContext,
   devicesContext,
   floorsContext,
   labelsContext,
@@ -55,6 +53,13 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, ConfigEntry>>({
+    transformer: function (value) {
+      return Object.fromEntries(value.map((entry) => [entry.entry_id, entry]));
+    },
+  })
   private _configEntryLookup?: Record<string, ConfigEntry>;
 
   protected render() {
@@ -149,13 +154,6 @@ export class HaAutomationRowTargets extends LitElement {
     </div>`;
   }
 
-  private async _loadConfigEntries() {
-    const configEntries = await getConfigEntries(this.hass);
-    this._configEntryLookup = Object.fromEntries(
-      configEntries.map((entry) => [entry.entry_id, entry])
-    );
-  }
-
   private _renderTarget(
     targetType: "floor" | "area" | "device" | "entity" | "label",
     targetId: string
@@ -176,22 +174,6 @@ export class HaAutomationRowTargets extends LitElement {
         getTargetText(this.hass, targetType, targetId, this._getLabel),
         true
       );
-    }
-
-    if (targetType === "device" && !this._configEntryLookup) {
-      const loadConfigEntries = this._loadConfigEntries().then(() =>
-        this._renderTargetBadge(
-          getTargetIcon(
-            this.hass,
-            targetType,
-            targetId,
-            this._configEntryLookup!
-          ),
-          getTargetText(this.hass, targetType, targetId)
-        )
-      );
-
-      return html`${until(loadConfigEntries, nothing)}`;
     }
 
     return this._renderTargetBadge(
