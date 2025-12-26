@@ -101,14 +101,13 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__container {
         align-items: var(--vertical-align-dialog, center);
-        padding: var(--dialog-container-padding, var(--ha-space-0));
+        padding: var(--dialog-container-padding, 0);
       }
       .mdc-dialog__title {
-        padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-0)
-          var(--ha-space-4);
+        padding: var(--ha-space-4) var(--ha-space-4) 0 var(--ha-space-4);
       }
       .mdc-dialog__title:has(span) {
-        padding: var(--ha-space-3) var(--ha-space-3) var(--ha-space-0);
+        padding: var(--ha-space-3) var(--ha-space-3) 0;
       }
       .mdc-dialog__title::before {
         content: unset;
@@ -136,7 +135,7 @@ export class HaDialog extends DialogBase {
           --ha-dialog-surface-background,
           var(--mdc-theme-surface, #fff)
         );
-        padding: var(--dialog-surface-padding, var(--ha-space-0));
+        padding: var(--dialog-surface-padding, 0);
       }
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
@@ -168,7 +167,7 @@ export class HaDialog extends DialogBase {
       }
       .dialog-actions {
         inset-inline-start: initial !important;
-        inset-inline-end: var(--ha-space-0) !important;
+        inset-inline-end: 0 !important;
         direction: var(--direction);
       }
     `,

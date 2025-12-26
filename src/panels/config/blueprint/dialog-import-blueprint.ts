@@ -114,6 +114,7 @@ class DialogImportBlueprint extends LitElement {
                   <ha-code-editor
                     mode="yaml"
                     .value=${this._result.raw_data}
+                    .hass=${this.hass}
                     read-only
                     dir="ltr"
                   ></ha-code-editor>

@@ -1,8 +1,4 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type {
-  ComboBoxDataProviderCallback,
-  ComboBoxDataProviderParams,
-} from "@vaadin/combo-box/vaadin-combo-box-light";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -10,35 +6,54 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
-import "./ha-combo-box";
-import "./ha-icon";
 import "./ha-combo-box-item";
-
-interface IconItem {
-  icon: string;
-  parts: Set<string>;
-  keywords: string[];
-}
+import "./ha-generic-picker";
+import "./ha-icon";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 interface RankedIcon {
-  icon: string;
+  item: PickerComboBoxItem;
   rank: number;
 }
 
-let ICONS: IconItem[] = [];
+let ICONS: PickerComboBoxItem[] = [];
 let ICONS_LOADED = false;
+
+interface IconData {
+  name: string;
+  keywords?: string[];
+}
+
+const createIconItem = (icon: IconData, prefix: string): PickerComboBoxItem => {
+  const iconId = `${prefix}:${icon.name}`;
+  const iconName = icon.name;
+  const parts = iconName.split("-");
+  const keywords = icon.keywords ?? [];
+  const searchLabels: Record<string, string> = {
+    iconName,
+  };
+  parts.forEach((part, index) => {
+    searchLabels[`part${index}`] = part;
+  });
+  keywords.forEach((keyword, index) => {
+    searchLabels[`keyword${index}`] = keyword;
+  });
+  return {
+    id: iconId,
+    primary: iconId,
+    icon: iconId,
+    search_labels: searchLabels,
+    sorting_label: iconId,
+  };
+};
 
 const loadIcons = async () => {
   ICONS_LOADED = true;
 
   const iconList = await import("../../build/mdi/iconList.json");
-  ICONS = iconList.default.map((icon) => ({
-    icon: `mdi:${icon.name}`,
-    parts: new Set(icon.name.split("-")),
-    keywords: icon.keywords,
-  }));
+  ICONS = iconList.default.map((icon) => createIconItem(icon, "mdi"));
 
-  const customIconLoads: Promise<IconItem[]>[] = [];
+  const customIconLoads: Promise<PickerComboBoxItem[]>[] = [];
   Object.keys(customIcons).forEach((iconSet) => {
     customIconLoads.push(loadCustomIconItems(iconSet));
   });
@@ -47,19 +62,16 @@ const loadIcons = async () => {
   });
 };
 
-const loadCustomIconItems = async (iconsetPrefix: string) => {
+const loadCustomIconItems = async (
+  iconsetPrefix: string
+): Promise<PickerComboBoxItem[]> => {
   try {
     const getIconList = customIcons[iconsetPrefix].getIconList;
     if (typeof getIconList !== "function") {
       return [];
     }
     const iconList = await getIconList();
-    const customIconItems = iconList.map((icon) => ({
-      icon: `${iconsetPrefix}:${icon.name}`,
-      parts: new Set(icon.name.split("-")),
-      keywords: icon.keywords ?? [],
-    }));
-    return customIconItems;
+    return iconList.map((icon) => createIconItem(icon, iconsetPrefix));
   } catch (_err) {
     // eslint-disable-next-line no-console
     console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
@@ -67,10 +79,10 @@ const loadCustomIconItems = async (iconsetPrefix: string) => {
   }
 };
 
-const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) => html`
+const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button">
-    <ha-icon .icon=${item.icon} slot="start"></ha-icon>
-    ${item.icon}
+    <ha-icon .icon=${item.id} slot="start"></ha-icon>
+    ${item.id}
   </ha-combo-box-item>
 `;
 
@@ -94,85 +106,99 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public invalid = false;
 
+  private _getIconPickerItems = (): PickerComboBoxItem[] => ICONS;
+
   protected render(): TemplateResult {
     return html`
-      <ha-combo-box
+      <ha-generic-picker
         .hass=${this.hass}
-        item-value-path="icon"
-        item-label-path="icon"
-        .value=${this._value}
         allow-custom-value
-        .dataProvider=${ICONS_LOADED ? this._iconProvider : undefined}
-        .label=${this.label}
+        .getItems=${this._getIconPickerItems}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
-        .placeholder=${this.placeholder}
         .errorMessage=${this.errorMessage}
         .invalid=${this.invalid}
-        .renderer=${rowRenderer}
-        icon
-        @opened-changed=${this._openedChanged}
+        .rowRenderer=${rowRenderer}
+        .icon=${this._icon}
+        .label=${this.label}
+        .value=${this._value}
+        .searchFn=${this._filterIcons}
+        .notFoundLabel=${this.hass?.localize(
+          "ui.components.icon-picker.no_match"
+        )}
+        popover-placement="bottom-start"
         @value-changed=${this._valueChanged}
       >
-        ${this._value || this.placeholder
-          ? html`
-              <ha-icon .icon=${this._value || this.placeholder} slot="icon">
-              </ha-icon>
-            `
-          : html`<slot slot="icon" name="fallback"></slot>`}
-      </ha-combo-box>
+        <slot name="start"></slot>
+      </ha-generic-picker>
     `;
   }
 
   // Filter can take a significant chunk of frame (up to 3-5 ms)
   private _filterIcons = memoizeOne(
-    (filter: string, iconItems: IconItem[] = ICONS) => {
-      if (!filter) {
+    (
+      filter: string,
+      filteredItems: PickerComboBoxItem[],
+      allItems: PickerComboBoxItem[]
+    ): PickerComboBoxItem[] => {
+      const normalizedFilter = filter.toLowerCase().replace(/\s+/g, "-");
+      const iconItems = allItems?.length ? allItems : filteredItems;
+
+      if (!normalizedFilter.length) {
         return iconItems;
       }
 
-      const filteredItems: RankedIcon[] = [];
-      const addIcon = (icon: string, rank: number) =>
-        filteredItems.push({ icon, rank });
+      const rankedItems: RankedIcon[] = [];
 
       // Filter and rank such that exact matches rank higher, and prefer icon name matches over keywords
       for (const item of iconItems) {
-        if (item.parts.has(filter)) {
-          addIcon(item.icon, 1);
-        } else if (item.keywords.includes(filter)) {
-          addIcon(item.icon, 2);
-        } else if (item.icon.includes(filter)) {
-          addIcon(item.icon, 3);
-        } else if (item.keywords.some((word) => word.includes(filter))) {
-          addIcon(item.icon, 4);
+        const iconName = (item.id.split(":")[1] || item.id).toLowerCase();
+        const parts = iconName.split("-");
+        const keywords = item.search_labels
+          ? Object.values(item.search_labels)
+              .filter((v): v is string => v !== null)
+              .map((v) => v.toLowerCase())
+          : [];
+        const id = item.id.toLowerCase();
+
+        if (parts.includes(normalizedFilter)) {
+          rankedItems.push({ item, rank: 1 });
+        } else if (keywords.includes(normalizedFilter)) {
+          rankedItems.push({ item, rank: 2 });
+        } else if (id.includes(normalizedFilter)) {
+          rankedItems.push({ item, rank: 3 });
+        } else if (keywords.some((word) => word.includes(normalizedFilter))) {
+          rankedItems.push({ item, rank: 4 });
         }
       }
 
       // Allow preview for custom icon not in list
-      if (filteredItems.length === 0) {
-        addIcon(filter, 0);
+      if (rankedItems.length === 0) {
+        rankedItems.push({
+          item: {
+            id: filter,
+            primary: filter,
+            icon: filter,
+            search_labels: { keyword: filter },
+            sorting_label: filter,
+          },
+          rank: 0,
+        });
       }
 
-      return filteredItems.sort((itemA, itemB) => itemA.rank - itemB.rank);
+      return rankedItems
+        .sort((itemA, itemB) => itemA.rank - itemB.rank)
+        .map((item) => item.item);
     }
   );
 
-  private _iconProvider = (
-    params: ComboBoxDataProviderParams,
-    callback: ComboBoxDataProviderCallback<IconItem | RankedIcon>
-  ) => {
-    const filteredItems = this._filterIcons(params.filter.toLowerCase(), ICONS);
-    const iStart = params.page * params.pageSize;
-    const iEnd = iStart + params.pageSize;
-    callback(filteredItems.slice(iStart, iEnd), filteredItems.length);
-  };
-
-  private async _openedChanged(ev: ValueChangedEvent<boolean>) {
-    const opened = ev.detail.value;
-    if (opened && !ICONS_LOADED) {
-      await loadIcons();
-      this.requestUpdate();
+  protected firstUpdated() {
+    if (!ICONS_LOADED) {
+      loadIcons().then(() => {
+        this._getIconPickerItems = (): PickerComboBoxItem[] => ICONS;
+        this.requestUpdate();
+      });
     }
   }
 
@@ -194,20 +220,18 @@ export class HaIconPicker extends LitElement {
     );
   }
 
+  private get _icon() {
+    return this.value?.length ? this.value : this.placeholder;
+  }
+
   private get _value() {
     return this.value || "";
   }
 
   static styles = css`
-    *[slot="icon"] {
-      color: var(--primary-text-color);
-      position: relative;
-      bottom: 2px;
-    }
-    *[slot="prefix"] {
-      margin-right: 8px;
-      margin-inline-end: 8px;
-      margin-inline-start: initial;
+    ha-generic-picker {
+      width: 100%;
+      display: block;
     }
   `;
 }

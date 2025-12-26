@@ -13,19 +13,27 @@ import type { Constructor } from "../types";
 const stylesArray = (styles?: CSSResultGroup | CSSResultGroup[]) =>
   styles === undefined ? [] : Array.isArray(styles) ? styles : [styles];
 
+/**
+ * Mixin that adds top and bottom fade overlays for scrollable content.
+ * @param superClass - The LitElement class to extend.
+ * @returns Extended class with scrollable fade functionality.
+ */
 export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) => {
   class ScrollableFadeClass extends superClass {
+    /** Whether content has scrolled past the threshold. Controls top fade visibility. */
     @state() protected _contentScrolled = false;
 
+    /** Whether content extends beyond the viewport. Controls bottom fade visibility. */
     @state() protected _contentScrollable = false;
 
     private _scrollTarget?: HTMLElement | null;
 
     private _onScroll = (ev: Event) => {
       const target = ev.currentTarget as HTMLElement;
-      this._contentScrolled = (target.scrollTop ?? 0) > 0;
+      this._contentScrolled =
+        (target.scrollTop ?? 0) > this.scrollFadeThreshold;
       this._updateScrollableState(target);
     };
 
@@ -39,15 +47,26 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
       },
     });
 
-    private static readonly DEFAULT_SAFE_AREA_PADDING = 16;
+    /**
+     * Safe area padding in pixels for the scrollable element.
+     */
+    protected scrollFadeSafeAreaPadding = 16;
 
+    /**
+     * Scroll threshold in pixels for showing the fades.
+     */
+    protected scrollFadeThreshold = 4;
+
+    /**
+     * Default scrollable element value.
+     */
     private static readonly DEFAULT_SCROLLABLE_ELEMENT: HTMLElement | null =
       null;
 
-    protected get scrollFadeSafeAreaPadding() {
-      return ScrollableFadeClass.DEFAULT_SAFE_AREA_PADDING;
-    }
-
+    /**
+     * Element to observe for scroll and resize events. Override with a getter to specify target.
+     * Kept as a getter to allow subclasses to return query results.
+     */
     protected get scrollableElement(): HTMLElement | null {
       return ScrollableFadeClass.DEFAULT_SCROLLABLE_ELEMENT;
     }
@@ -67,6 +86,11 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
       super.disconnectedCallback();
     }
 
+    /**
+     * Renders top and bottom fade overlays. Call in render method.
+     * @param rounded - Whether to apply rounded corners.
+     * @returns Template containing fade elements.
+     */
     protected renderScrollableFades(rounded = false): TemplateResult {
       return html`
         <div
@@ -99,8 +123,8 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
           .fade-top,
           .fade-bottom {
             position: absolute;
-            left: var(--ha-space-0);
-            right: var(--ha-space-0);
+            left: 0;
+            right: 0;
             height: var(--ha-space-4);
             pointer-events: none;
             transition: opacity 180ms ease-in-out;
@@ -110,14 +134,13 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
               transparent
             );
             border-radius: var(--ha-border-radius-square);
-            z-index: 100;
             opacity: 0;
           }
           .fade-top {
-            top: var(--ha-space-0);
+            top: 0;
           }
           .fade-bottom {
-            bottom: var(--ha-space-0);
+            bottom: 0;
             transform: rotate(180deg);
           }
 

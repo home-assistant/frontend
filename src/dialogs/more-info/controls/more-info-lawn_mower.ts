@@ -7,12 +7,12 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-button";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { LawnMowerEntity } from "../../../data/lawn_mower";
 import { LawnMowerEntityFeature } from "../../../data/lawn_mower";
 import type { HomeAssistant } from "../../../types";

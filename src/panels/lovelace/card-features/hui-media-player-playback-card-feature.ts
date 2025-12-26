@@ -1,6 +1,3 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import {
   mdiPause,
   mdiPlay,
@@ -10,27 +7,30 @@ import {
   mdiSkipPrevious,
   mdiStop,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateActive } from "../../../common/entity/state_active";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
+import { isUnavailableState } from "../../../data/entity/entity";
+import type {
+  ControlButton,
+  MediaPlayerEntity,
+} from "../../../data/media-player";
+import { MediaPlayerEntityFeature } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
+import { hasConfigChanged } from "../common/has-changed";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   MediaPlayerPlaybackCardFeatureConfig,
 } from "./types";
-import type {
-  ControlButton,
-  MediaPlayerEntity,
-} from "../../../data/media-player";
-import { MediaPlayerEntityFeature } from "../../../data/media-player";
-import { supportsFeature } from "../../../common/entity/supports-feature";
-import { stateActive } from "../../../common/entity/state_active";
-import { isUnavailableState } from "../../../data/entity";
-import { hasConfigChanged } from "../common/has-changed";
-import "../../../components/ha-control-button-group";
-import "../../../components/ha-control-button";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-icon";
 
 export const supportsMediaPlayerPlaybackCardFeature = (
   hass: HomeAssistant,

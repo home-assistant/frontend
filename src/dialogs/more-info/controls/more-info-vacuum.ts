@@ -20,12 +20,12 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { VacuumEntity } from "../../../data/vacuum";
 import { VacuumEntityFeature } from "../../../data/vacuum";
 import type { HomeAssistant } from "../../../types";

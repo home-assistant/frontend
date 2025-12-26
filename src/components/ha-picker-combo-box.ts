@@ -1,6 +1,6 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiMagnify, mdiMinusBoxOutline } from "@mdi/js";
+import { mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -14,7 +14,11 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { HaFuse } from "../resources/fuse";
+import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
+import {
+  multiTermSortedSearch,
+  type FuseWeightedKey,
+} from "../resources/fuseMultiTerm";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
@@ -25,16 +29,32 @@ import "./ha-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
+export const DEFAULT_SEARCH_KEYS: FuseWeightedKey[] = [
+  {
+    name: "primary",
+    weight: 10,
+  },
+  {
+    name: "secondary",
+    weight: 7,
+  },
+  {
+    name: "id",
+    weight: 3,
+  },
+];
+
 export interface PickerComboBoxItem {
   id: string;
   primary: string;
   secondary?: string;
-  search_labels?: string[];
+  search_labels?: Record<string, string | null>;
   sorting_label?: string;
   icon_path?: string;
   icon?: string;
 }
-const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
+
+export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 
 const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (
   item
@@ -59,7 +79,7 @@ export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
 ) => T[];
 
 @customElement("ha-picker-combo-box")
-export class HaPickerComboBox extends LitElement {
+export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   // eslint-disable-next-line lit/no-native-attributes
@@ -72,14 +92,20 @@ export class HaPickerComboBox extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
+  @property({ attribute: "custom-value-label" })
+  public customValueLabel?: string;
+
   @property() public label?: string;
 
   @property() public value?: string;
 
+  @property({ attribute: false })
+  public searchKeys?: FuseWeightedKey[];
+
   @state() private _listScrolled = false;
 
   @property({ attribute: false })
-  public getItems?: (
+  public getItems!: (
     searchString?: string,
     section?: string
   ) => (PickerComboBoxItem | string)[];
@@ -126,7 +152,13 @@ export class HaPickerComboBox extends LitElement {
 
   @state() private _items: (PickerComboBoxItem | string)[] = [];
 
+  protected get scrollableElement(): HTMLElement | null {
+    return this._virtualizerElement as HTMLElement | null;
+  }
+
   @state() private _sectionTitle?: string;
+
+  @state() private _valuePinned = true;
 
   private _allItems: (PickerComboBoxItem | string)[] = [];
 
@@ -159,10 +191,15 @@ export class HaPickerComboBox extends LitElement {
   }
 
   protected render() {
+    const searchLabel =
+      this.label ??
+      (this.allowCustomValue
+        ? (this.hass?.localize("ui.components.combo-box.search_or_custom") ??
+          "Search | Add custom value")
+        : (this.hass?.localize("ui.common.search") ?? "Search"));
+
     return html`<ha-textfield
-        .label=${this.label ??
-        this.hass?.localize("ui.common.search") ??
-        "Search"}
+        .label=${searchLabel}
         @input=${this._filterChanged}
       ></ha-textfield>
       ${this._renderSectionButtons()}
@@ -180,19 +217,31 @@ export class HaPickerComboBox extends LitElement {
             </div>
           `
         : nothing}
-      <lit-virtualizer
-        .keyFunction=${this._keyFunction}
-        tabindex="0"
-        scroller
-        .items=${this._items}
-        .renderItem=${this._renderItem}
-        style="min-height: 36px;"
-        class=${this._listScrolled ? "scrolled" : ""}
-        @scroll=${this._onScrollList}
-        @focus=${this._focusList}
-        @visibilityChanged=${this._visibilityChanged}
-      >
-      </lit-virtualizer>`;
+      <div class="virtualizer-wrapper">
+        <lit-virtualizer
+          .keyFunction=${this._keyFunction}
+          tabindex="0"
+          scroller
+          .items=${this._items}
+          .renderItem=${this._renderItem}
+          style="min-height: 36px;"
+          class=${this._listScrolled ? "scrolled" : ""}
+          .layout=${this.value && this._valuePinned
+            ? {
+                pin: {
+                  index: this._getInitialSelectedIndex(),
+                  block: "center",
+                },
+              }
+            : undefined}
+          @unpinned=${this._handleUnpinned}
+          @scroll=${this._onScrollList}
+          @focus=${this._focusList}
+          @visibilityChanged=${this._visibilityChanged}
+        >
+        </lit-virtualizer>
+        ${this.renderScrollableFades()}
+      </div>`;
   }
 
   private _renderSectionButtons() {
@@ -236,24 +285,42 @@ export class HaPickerComboBox extends LitElement {
     }
   }
 
+  @eventOptions({ passive: true })
+  private _handleUnpinned() {
+    this._valuePinned = false;
+  }
+
   private _getAdditionalItems = (searchString?: string) =>
     this.getAdditionalItems?.(searchString) || [];
 
   private _getItems = () => {
-    let items = [
-      ...(this.getItems
-        ? this.getItems(this._search, this.selectedSection)
-        : []),
-    ];
+    let items = [...this.getItems(this._search, this.selectedSection)];
 
     if (!this.sections?.length) {
-      items = items.sort((entityA, entityB) =>
-        caseInsensitiveStringCompare(
-          (entityA as PickerComboBoxItem).sorting_label!,
-          (entityB as PickerComboBoxItem).sorting_label!,
+      items = items.sort((entityA, entityB) => {
+        const sortLabelA =
+          typeof entityA === "string" ? entityA : entityA.sorting_label;
+        const sortLabelB =
+          typeof entityB === "string" ? entityB : entityB.sorting_label;
+
+        if (!sortLabelA || !sortLabelB) {
+          return 0;
+        }
+
+        if (!sortLabelB) {
+          return -1;
+        }
+
+        if (!sortLabelA) {
+          return 1;
+        }
+
+        return caseInsensitiveStringCompare(
+          sortLabelA,
+          sortLabelB,
           this.hass?.locale.language ?? navigator.language
-        )
-      );
+        );
+      });
     }
 
     if (!items.length) {
@@ -271,6 +338,9 @@ export class HaPickerComboBox extends LitElement {
   };
 
   private _renderItem = (item: PickerComboBoxItem | string, index: number) => {
+    if (!item) {
+      return nothing;
+    }
     if (item === "padding") {
       return html`<div class="bottom-padding"></div>`;
     }
@@ -331,8 +401,9 @@ export class HaPickerComboBox extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   };
 
-  private _fuseIndex = memoizeOne((states: PickerComboBoxItem[]) =>
-    Fuse.createIndex(["search_labels"], states)
+  private _fuseIndex = memoizeOne(
+    (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
+      Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
   );
 
   private _filterChanged = (ev: Event) => {
@@ -348,33 +419,25 @@ export class HaPickerComboBox extends LitElement {
         return;
       }
 
-      const index = this._fuseIndex(this._allItems as PickerComboBoxItem[]);
-      const fuse = new HaFuse(
+      const index = this._fuseIndex(
         this._allItems as PickerComboBoxItem[],
-        {
-          shouldSort: false,
-          minMatchCharLength: Math.min(searchString.length, 2),
-        },
-        index
+        this.searchKeys
       );
 
-      const results = fuse.multiTermsSearch(searchString);
-      let filteredItems = [...this._allItems];
+      let filteredItems = multiTermSortedSearch<PickerComboBoxItem>(
+        this._allItems as PickerComboBoxItem[],
+        searchString,
+        this.searchKeys || DEFAULT_SEARCH_KEYS,
+        (item) => item.id,
+        index
+      ) as (PickerComboBoxItem | string)[];
 
-      if (results) {
-        const items: (PickerComboBoxItem | string)[] = results.map(
-          (result) => result.item
-        );
-
-        if (!items.length) {
-          filteredItems.push(NO_ITEMS_AVAILABLE_ID);
-        }
-
-        const additionalItems = this._getAdditionalItems();
-        items.push(...additionalItems);
-
-        filteredItems = items;
+      if (!filteredItems.length) {
+        filteredItems.push(NO_ITEMS_AVAILABLE_ID);
       }
+
+      const additionalItems = this._getAdditionalItems(searchString);
+      filteredItems.push(...additionalItems);
 
       if (this.searchFn) {
         filteredItems = this.searchFn(
@@ -384,13 +447,23 @@ export class HaPickerComboBox extends LitElement {
         );
       }
 
+      if (this.allowCustomValue && searchString) {
+        filteredItems.push({
+          id: searchString,
+          primary:
+            this.customValueLabel ??
+            this.hass?.localize("ui.components.combo-box.add_custom_item") ??
+            "Add custom item",
+          secondary: `"${searchString}"`,
+          icon_path: mdiPlus,
+        });
+      }
+
       this._items = filteredItems as PickerComboBoxItem[];
     }
 
     this._selectedItemIndex = -1;
-    if (this._virtualizerElement) {
-      this._virtualizerElement.scrollTo(0, 0);
-    }
+    this._valuePinned = true;
   };
 
   private _toggleSection(ev: Event) {
@@ -582,158 +655,187 @@ export class HaPickerComboBox extends LitElement {
   }
 
   private _keyFunction = (item: PickerComboBoxItem | string) =>
-    typeof item === "string" ? item : item.id;
+    typeof item === "string" ? item : item?.id;
 
-  static styles = [
-    haStyleScrollbar,
-    css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        padding-top: var(--ha-space-3);
-        flex: 1;
-      }
+  private _getInitialSelectedIndex() {
+    if (!this._virtualizerElement || this._search || !this.value) {
+      return 0;
+    }
 
-      ha-textfield {
-        padding: 0 var(--ha-space-3);
-        margin-bottom: var(--ha-space-3);
-      }
+    const index = this._virtualizerElement.items.findIndex(
+      (item) =>
+        typeof item !== "string" &&
+        (item as PickerComboBoxItem).id === this.value
+    );
 
-      :host([mode="dialog"]) ha-textfield {
-        padding: 0 var(--ha-space-4);
-      }
+    if (index === -1) {
+      return 0;
+    }
 
-      ha-combo-box-item {
-        width: 100%;
-      }
+    return index;
+  }
 
-      ha-combo-box-item.selected {
-        background-color: var(--ha-color-fill-neutral-quiet-hover);
-      }
+  static get styles() {
+    return [
+      ...super.styles,
+      haStyleScrollbar,
+      css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          padding-top: var(--ha-space-3);
+          flex: 1;
+        }
 
-      @media (prefers-color-scheme: dark) {
+        ha-textfield {
+          padding: 0 var(--ha-space-3);
+          margin-bottom: var(--ha-space-3);
+        }
+
+        :host([mode="dialog"]) ha-textfield {
+          padding: 0 var(--ha-space-4);
+        }
+
+        ha-combo-box-item {
+          width: 100%;
+        }
+
         ha-combo-box-item.selected {
-          background-color: var(--ha-color-fill-neutral-normal-hover);
+          background-color: var(--ha-color-fill-neutral-quiet-hover);
         }
-      }
 
-      lit-virtualizer {
-        flex: 1;
-      }
+        @media (prefers-color-scheme: dark) {
+          ha-combo-box-item.selected {
+            background-color: var(--ha-color-fill-neutral-normal-hover);
+          }
+        }
 
-      lit-virtualizer:focus-visible {
-        outline: none;
-      }
+        .virtualizer-wrapper {
+          position: relative;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
 
-      lit-virtualizer.scrolled {
-        border-top: 1px solid var(--ha-color-border-neutral-quiet);
-      }
+        lit-virtualizer {
+          flex: 1;
+        }
 
-      .bottom-padding {
-        height: max(var(--safe-area-inset-bottom, 0px), var(--ha-space-8));
-        width: 100%;
-      }
+        lit-virtualizer:focus-visible {
+          outline: none;
+        }
 
-      .empty {
-        text-align: center;
-      }
+        lit-virtualizer.scrolled {
+          border-top: 1px solid var(--ha-color-border-neutral-quiet);
+        }
 
-      .combo-box-row {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        box-sizing: border-box;
-        min-height: 36px;
-      }
-      .combo-box-row.current-value {
-        background-color: var(--ha-color-fill-primary-quiet-resting);
-      }
+        .bottom-padding {
+          height: max(var(--safe-area-inset-bottom, 0px), var(--ha-space-8));
+          width: 100%;
+        }
 
-      .combo-box-row.selected {
-        background-color: var(--ha-color-fill-neutral-quiet-hover);
-      }
+        .empty {
+          text-align: center;
+        }
 
-      @media (prefers-color-scheme: dark) {
+        .combo-box-row {
+          display: flex;
+          width: 100%;
+          align-items: center;
+          box-sizing: border-box;
+          min-height: 36px;
+        }
+        .combo-box-row.current-value {
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+        }
+
         .combo-box-row.selected {
-          background-color: var(--ha-color-fill-neutral-normal-hover);
+          background-color: var(--ha-color-fill-neutral-quiet-hover);
         }
-      }
 
-      .sections {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: var(--ha-space-2);
-        padding: var(--ha-space-3) var(--ha-space-3);
-        overflow: auto;
-      }
+        @media (prefers-color-scheme: dark) {
+          .combo-box-row.selected {
+            background-color: var(--ha-color-fill-neutral-normal-hover);
+          }
+        }
 
-      :host([mode="dialog"]) .sections {
-        padding: var(--ha-space-3) var(--ha-space-4);
-      }
+        .sections {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: var(--ha-space-2);
+          padding: var(--ha-space-3) var(--ha-space-3);
+          overflow: auto;
+        }
 
-      .sections ha-filter-chip {
-        flex-shrink: 0;
-        --md-filter-chip-selected-container-color: var(
-          --ha-color-fill-primary-normal-hover
-        );
-        color: var(--primary-color);
-      }
+        :host([mode="dialog"]) .sections {
+          padding: var(--ha-space-3) var(--ha-space-4);
+        }
 
-      .sections .separator {
-        height: var(--ha-space-8);
-        width: 0;
-        border: 1px solid var(--ha-color-border-neutral-quiet);
-      }
+        .sections ha-filter-chip {
+          flex-shrink: 0;
+          --md-filter-chip-selected-container-color: var(
+            --ha-color-fill-primary-normal-hover
+          );
+          color: var(--primary-color);
+        }
 
-      .section-title,
-      .title {
-        background-color: var(--ha-color-fill-neutral-quiet-resting);
-        padding: var(--ha-space-1) var(--ha-space-2);
-        font-weight: var(--ha-font-weight-bold);
-        color: var(--secondary-text-color);
-        min-height: var(--ha-space-6);
-        display: flex;
-        align-items: center;
-      }
+        .sections .separator {
+          height: var(--ha-space-8);
+          width: 0;
+          border: 1px solid var(--ha-color-border-neutral-quiet);
+        }
 
-      .title {
-        width: 100%;
-      }
+        .section-title,
+        .title {
+          background-color: var(--ha-color-fill-neutral-quiet-resting);
+          padding: var(--ha-space-1) var(--ha-space-2);
+          font-weight: var(--ha-font-weight-bold);
+          color: var(--secondary-text-color);
+          min-height: var(--ha-space-6);
+          display: flex;
+          align-items: center;
+        }
 
-      :host([mode="dialog"]) .title {
-        padding: var(--ha-space-1) var(--ha-space-4);
-      }
+        .title {
+          width: 100%;
+        }
 
-      :host([mode="dialog"]) ha-textfield {
-        padding: 0 var(--ha-space-4);
-      }
+        :host([mode="dialog"]) .title {
+          padding: var(--ha-space-1) var(--ha-space-4);
+        }
 
-      .section-title-wrapper {
-        height: 0;
-        position: relative;
-      }
+        :host([mode="dialog"]) ha-textfield {
+          padding: 0 var(--ha-space-4);
+        }
 
-      .section-title {
-        opacity: 0;
-        position: absolute;
-        top: 1px;
-        width: calc(100% - var(--ha-space-8));
-      }
+        .section-title-wrapper {
+          height: 0;
+          position: relative;
+        }
 
-      .section-title.show {
-        opacity: 1;
-        z-index: 1;
-      }
+        .section-title {
+          opacity: 0;
+          position: absolute;
+          top: 1px;
+          width: calc(100% - var(--ha-space-8));
+        }
 
-      .empty-search {
-        display: flex;
-        width: 100%;
-        flex-direction: column;
-        align-items: center;
-        padding: var(--ha-space-3);
-      }
-    `,
-  ];
+        .section-title.show {
+          opacity: 1;
+          z-index: 1;
+        }
+
+        .empty-search {
+          display: flex;
+          width: 100%;
+          flex-direction: column;
+          align-items: center;
+          padding: var(--ha-space-3);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

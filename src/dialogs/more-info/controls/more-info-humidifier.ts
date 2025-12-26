@@ -4,10 +4,10 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
-import "../../../components/ha-attribute-icon";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HumidifierEntity } from "../../../data/humidifier";
 import { HumidifierEntityFeature } from "../../../data/humidifier";
 import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
@@ -217,7 +217,7 @@ class MoreInfoHumidifier extends LitElement {
           align-items: center;
           justify-content: center;
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: var(--ha-space-10);
         }
         .current div {
           display: flex;
@@ -237,7 +237,7 @@ class MoreInfoHumidifier extends LitElement {
           font-size: var(--ha-font-size-m);
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.4px;
-          margin-bottom: 4px;
+          margin-bottom: var(--ha-space-1);
         }
         .current .value {
           font-size: var(--ha-font-size-xl);

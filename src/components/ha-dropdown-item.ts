@@ -1,6 +1,9 @@
 import DropdownItem from "@home-assistant/webawesome/dist/components/dropdown-item/dropdown-item";
-import { css, type CSSResultGroup } from "lit";
+import "@home-assistant/webawesome/dist/components/icon/icon";
+import { css, type CSSResultGroup, html } from "lit";
 import { customElement } from "lit/decorators";
+import "./ha-svg-icon";
+import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from "@mdi/js";
 
 /**
  * Home Assistant dropdown item component
@@ -14,12 +17,26 @@ import { customElement } from "lit/decorators";
  */
 @customElement("ha-dropdown-item")
 export class HaDropdownItem extends DropdownItem {
+  protected renderCheckboxIcon() {
+    return html`
+      <ha-svg-icon
+        id="check"
+        part="checkmark"
+        .path=${this.checked ? mdiCheckboxMarked : mdiCheckboxBlankOutline}
+      ></ha-svg-icon>
+    `;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       DropdownItem.styles,
       css`
         :host {
           min-height: var(--ha-space-10);
+        }
+
+        #check {
+          visibility: visible;
         }
 
         #icon ::slotted(*) {

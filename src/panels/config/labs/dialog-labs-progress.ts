@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-md-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-spinner";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
@@ -39,36 +39,36 @@ export class DialogLabsProgress
     }
 
     return html`
-      <ha-md-dialog
+      <ha-wa-dialog
+        .hass=${this.hass}
         .open=${this._open}
-        disable-cancel-action
+        prevent-scrim-close
         @closed=${this._handleClosed}
       >
-        <div slot="content">
-          <div class="summary">
-            <ha-spinner></ha-spinner>
-            <div class="content">
-              <p class="heading">
-                ${this.hass.localize(
-                  "ui.panel.config.labs.progress.creating_backup"
-                )}
-              </p>
-              <p class="description">
-                ${this.hass.localize(
-                  this._params.enabled
-                    ? "ui.panel.config.labs.progress.backing_up_before_enabling"
-                    : "ui.panel.config.labs.progress.backing_up_before_disabling"
-                )}
-              </p>
-            </div>
+        <div slot="header"></div>
+        <div class="summary">
+          <ha-spinner></ha-spinner>
+          <div class="content">
+            <p class="heading">
+              ${this.hass.localize(
+                "ui.panel.config.labs.progress.creating_backup"
+              )}
+            </p>
+            <p class="description">
+              ${this.hass.localize(
+                this._params.enabled
+                  ? "ui.panel.config.labs.progress.backing_up_before_enabling"
+                  : "ui.panel.config.labs.progress.backing_up_before_disabling"
+              )}
+            </p>
           </div>
         </div>
-      </ha-md-dialog>
+      </ha-wa-dialog>
     `;
   }
 
   static readonly styles = css`
-    ha-md-dialog {
+    ha-wa-dialog {
       --dialog-content-padding: var(--ha-space-6);
     }
 

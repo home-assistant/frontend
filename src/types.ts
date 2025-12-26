@@ -15,8 +15,8 @@ import type {
 } from "./common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "./common/translations/localize";
 import type { AreaRegistryEntry } from "./data/area_registry";
-import type { DeviceRegistryEntry } from "./data/device_registry";
-import type { EntityRegistryDisplayEntry } from "./data/entity_registry";
+import type { DeviceRegistryEntry } from "./data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "./data/entity/entity_registry";
 import type { FloorRegistryEntry } from "./data/floor_registry";
 import type {
   CoreFrontendSystemData,

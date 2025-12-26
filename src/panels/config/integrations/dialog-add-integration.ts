@@ -462,7 +462,7 @@ class AddIntegrationDialog extends LitElement {
               style=${styleMap({
                 width: `${this._width}px`,
                 height: this._narrow
-                  ? "calc(100vh - 184px - var(--safe-area-inset-top, var(--ha-space-0)) - var(--safe-area-inset-bottom, var(--ha-space-0)))"
+                  ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
                   : "500px",
               })}
               @click=${this._integrationPicked}

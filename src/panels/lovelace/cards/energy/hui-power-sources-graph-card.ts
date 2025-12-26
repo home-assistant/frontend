@@ -1,4 +1,4 @@
-import { endOfToday, isToday, startOfToday } from "date-fns";
+import { endOfToday, isSameDay, isToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,7 +10,10 @@ import { LinearGradient } from "../../../../resources/echarts/echarts";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getPowerFromState,
+} from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -129,7 +132,9 @@ export class HuiPowerSourcesGraphCard
         config,
         "kW",
         compareStart,
-        compareEnd
+        compareEnd,
+        undefined,
+        true
       ),
       legend: {
         show: this._config?.show_legend !== false,
@@ -197,6 +202,7 @@ export class HuiPowerSourcesGraphCard
       },
     };
 
+    const now = Date.now();
     Object.keys(statIds).forEach((key, keyIndex) => {
       if (statIds[key].stats.length) {
         const colorHex = computedStyles.getPropertyValue(statIds[key].color);
@@ -204,7 +210,22 @@ export class HuiPowerSourcesGraphCard
         // Echarts is supposed to handle that but it is bugged when you use it together with stacking.
         // The interpolation breaks the stacking, so this positive/negative is a workaround
         const { positive, negative } = this._processData(
-          statIds[key].stats.map((id: string) => energyData.stats[id] ?? [])
+          statIds[key].stats.map((id: string) => {
+            const stats = energyData.stats[id] ?? [];
+            if (isSameDay(now, this._start) && isSameDay(now, this._end)) {
+              // Append current state if we are showing today
+              const currentStateWatts = getPowerFromState(this.hass.states[id]);
+              if (currentStateWatts !== undefined) {
+                // getPowerFromState returns power in W; convert to kW for this graph
+                stats.push({
+                  start: now,
+                  end: now,
+                  mean: currentStateWatts / 1000,
+                });
+              }
+            }
+            return stats;
+          })
         );
         datasets.push({
           ...commonSeriesOptions,

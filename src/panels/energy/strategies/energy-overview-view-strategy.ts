@@ -5,16 +5,7 @@ import { getEnergyDataCollection } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
-
-const sourceHasCost = (source: Record<string, any>): boolean =>
-  Boolean(
-    source.stat_cost ||
-    source.stat_compensation ||
-    source.entity_energy_price ||
-    source.number_energy_price
-  );
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
@@ -35,6 +26,9 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
 
     // No energy sources available
@@ -68,34 +62,23 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
         (source.type === "battery" && source.stat_rate) ||
         (source.type === "grid" && source.power?.length)
     );
-    const hasCost = prefs.energy_sources.some(
-      (source) =>
-        sourceHasCost(source) ||
-        (source.type === "grid" &&
-          (source.flow_from?.some(sourceHasCost) ||
-            source.flow_to?.some(sourceHasCost)))
-    );
 
-    const overviewSection: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [
-        {
-          type: "energy-date-selection",
-          collection_key: collectionKey,
-          allow_compare: false,
-        },
-      ],
-    };
     if (hasGrid || hasBattery || hasSolar) {
-      overviewSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
-        type: "energy-distribution",
-        collection_key: collectionKey,
+      view.sections!.push({
+        type: "grid",
+        cards: [
+          {
+            title: hass.localize(
+              "ui.panel.energy.cards.energy_distribution_title"
+            ),
+            type: "energy-distribution",
+            collection_key: collectionKey,
+          },
+        ],
       });
     }
-    view.sections!.push(overviewSection);
 
-    if (hasCost) {
+    if (prefs.energy_sources.length) {
       view.sections!.push({
         type: "grid",
         cards: [

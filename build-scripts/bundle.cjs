@@ -20,8 +20,6 @@ module.exports.ignorePackages = () => [];
 // Files from NPM packages that we should replace with empty file
 module.exports.emptyPackages = ({ isHassioBuild, isLandingPageBuild }) =>
   [
-    require.resolve("@vaadin/vaadin-material-styles/typography.js"),
-    require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
     // Icons in supervisor conflict with icons in HA so we don't load.
     (isHassioBuild || isLandingPageBuild) &&
       require.resolve(

@@ -597,6 +597,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   forecast_type?: ForecastType;
   forecast_slots?: number;
   secondary_info_attribute?: keyof TranslationDict["ui"]["card"]["weather"]["attributes"];
+  round_temperature?: boolean;
   theme?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

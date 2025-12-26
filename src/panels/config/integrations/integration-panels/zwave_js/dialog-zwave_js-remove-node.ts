@@ -14,18 +14,18 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
-import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import {
   fetchZwaveNodeStatus,
   NodeStatus,
   removeFailedZwaveNode,
 } from "../../../../../data/zwave_js";
-import "../../../../../components/ha-list-item";
-import "../../../../../components/ha-icon-next";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import { haStyleDialog } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
 
 const EXCLUSION_TIMEOUT_SECONDS = 120;
 

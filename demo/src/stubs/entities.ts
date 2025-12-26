@@ -154,6 +154,38 @@ export const energyEntities = () =>
         unit_of_measurement: "EUR",
       },
     },
+    "sensor.power_grid": {
+      entity_id: "sensor.power_grid",
+      state: "500",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "W",
+      },
+    },
+    "sensor.power_grid_return": {
+      entity_id: "sensor.power_grid_return",
+      state: "-100",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "W",
+      },
+    },
+    "sensor.power_solar": {
+      entity_id: "sensor.power_solar",
+      state: "200",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "W",
+      },
+    },
+    "sensor.power_battery": {
+      entity_id: "sensor.power_battery",
+      state: "100",
+      attributes: {
+        state_class: "measurement",
+        unit_of_measurement: "W",
+      },
+    },
     "sensor.energy_gas_cost": {
       entity_id: "sensor.energy_gas_cost",
       state: "2",
@@ -169,6 +201,15 @@ export const energyEntities = () =>
         last_reset: "1970-01-01T00:00:00:00+00",
         friendly_name: "Gas",
         unit_of_measurement: "m³",
+      },
+    },
+    "sensor.energy_water": {
+      entity_id: "sensor.energy_water",
+      state: "4000",
+      attributes: {
+        last_reset: "1970-01-01T00:00:00:00+00",
+        friendly_name: "Water",
+        unit_of_measurement: "L",
       },
     },
     "sensor.energy_car": {
@@ -223,6 +264,60 @@ export const energyEntities = () =>
         last_reset: "1970-01-01T00:00:00:00+00",
         friendly_name: "Boiler",
         unit_of_measurement: "kWh",
+      },
+    },
+    "sensor.power_car": {
+      entity_id: "sensor.power_car",
+      state: "40",
+      attributes: {
+        state_class: "measurement",
+        friendly_name: "Electric car",
+        unit_of_measurement: "W",
+      },
+    },
+    "sensor.power_ac": {
+      entity_id: "sensor.power_ac",
+      state: "30",
+      attributes: {
+        state_class: "measurement",
+        friendly_name: "Air conditioning",
+        unit_of_measurement: "W",
+      },
+    },
+    "sensor.power_washing_machine": {
+      entity_id: "sensor.power_washing_machine",
+      state: "60",
+      attributes: {
+        state_class: "measurement",
+        friendly_name: "Washing machine",
+        unit_of_measurement: "W",
+      },
+    },
+    "sensor.power_dryer": {
+      entity_id: "sensor.power_dryer",
+      state: "55",
+      attributes: {
+        state_class: "measurement",
+        friendly_name: "Dryer",
+        unit_of_measurement: "W",
+      },
+    },
+    "sensor.power_heat_pump": {
+      entity_id: "sensor.power_heat_pump",
+      state: "60",
+      attributes: {
+        state_class: "measurement",
+        friendly_name: "Heat pump",
+        unit_of_measurement: "W",
+      },
+    },
+    "sensor.power_boiler": {
+      entity_id: "sensor.power_boiler",
+      state: "70",
+      attributes: {
+        state_class: "measurement",
+        friendly_name: "Boiler",
+        unit_of_measurement: "W",
       },
     },
   });

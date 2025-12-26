@@ -1,9 +1,12 @@
+import { endOfDay, startOfDay } from "date-fns";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { calcDate } from "../../../common/datetime/calc_date";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import {
   findEntities,
@@ -15,8 +18,15 @@ import "../../../components/ha-icon";
 import "../../../components/ha-ripple";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
+import type { EnergyData } from "../../../data/energy";
+import {
+  computeConsumptionData,
+  formatConsumptionShort,
+  getEnergyDataCollection,
+  getSummedData,
+} from "../../../data/energy";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import "../../../state-display/state-display";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -35,13 +45,40 @@ const COLORS: Record<HomeSummary, string> = {
   climate: "deep-orange",
   security: "blue-grey",
   media_players: "blue",
+  energy: "amber",
 };
 
 @customElement("hui-home-summary-card")
-export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
+export class HuiHomeSummaryCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HomeSummaryCard;
+
+  @state() private _energyData?: EnergyData;
+
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    if (this._config?.summary !== "energy") {
+      return [];
+    }
+    const collection = getEnergyDataCollection(this.hass!, {
+      key: "energy_home_dashboard",
+    });
+    // Ensure we always show today's energy data
+    collection.setPeriod(
+      calcDate(new Date(), startOfDay, this.hass!.locale, this.hass!.config),
+      calcDate(new Date(), endOfDay, this.hass!.locale, this.hass!.config)
+    );
+    return [
+      collection.subscribe((data) => {
+        this._energyData = data;
+      }),
+    ];
+  }
 
   public setConfig(config: HomeSummaryCard): void {
     this._config = config;
@@ -213,6 +250,15 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
               count: playingMedia.length,
             })
           : this.hass.localize("ui.card.home-summary.no_media_playing");
+      }
+      case "energy": {
+        if (!this._energyData) {
+          return "";
+        }
+        const { summedData } = getSummedData(this._energyData);
+        const { consumption } = computeConsumptionData(summedData, undefined);
+        const totalConsumption = consumption.total.used_total;
+        return formatConsumptionShort(this.hass, totalConsumption, "kWh");
       }
     }
     return "";

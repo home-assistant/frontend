@@ -66,22 +66,22 @@ import {
 import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
-} from "../../../data/device_registry";
+} from "../../../data/device/device_registry";
 import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+} from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -478,7 +478,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           area:
             device.area_id && areas[device.area_id]
               ? areas[device.area_id].name
-              : "—",
+              : undefined,
           floor: floorName,
           integration: deviceEntries.length
             ? deviceEntries
@@ -562,6 +562,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         filterable: true,
         groupable: true,
         minWidth: "120px",
+        template: (device) => device.area || "—",
       },
       floor: {
         title: localize("ui.panel.config.devices.data_table.floor"),

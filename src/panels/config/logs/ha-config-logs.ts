@@ -1,24 +1,36 @@
-import { mdiChevronDown } from "@mdi/js";
+import {
+  mdiChevronDown,
+  mdiChip,
+  mdiDns,
+  mdiPackageVariant,
+  mdiPuzzle,
+  mdiRadar,
+  mdiVolumeHigh,
+} from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { atLeastVersion } from "../../../common/config/version";
 import { navigate } from "../../../common/navigate";
+import { stringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-list-item";
+import "../../../components/ha-generic-picker";
+import type { HaGenericPicker } from "../../../components/ha-generic-picker";
+import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/search-input";
 import type { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
+import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
-import { stringCompare } from "../../../common/string/compare";
 
 const logProviders: LogProvider[] = [
   {
@@ -62,6 +74,8 @@ export class HaConfigLogs extends LitElement {
   @state() private _detail = false;
 
   @query("system-log-card") private systemLog?: SystemLogCard;
+
+  @query("ha-generic-picker") private providerPicker?: HaGenericPicker;
 
   @state() private _selectedLogProvider = "core";
 
@@ -108,6 +122,8 @@ export class HaConfigLogs extends LitElement {
           </div>
         `;
 
+    const selectedProvider = this._getActiveProvider(this._selectedLogProvider);
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -115,29 +131,39 @@ export class HaConfigLogs extends LitElement {
         .header=${this.hass.localize("ui.panel.config.logs.caption")}
         back-path="/config/system"
       >
-        ${isComponentLoaded(this.hass, "hassio")
+        ${isComponentLoaded(this.hass, "hassio") && this._logProviders
           ? html`
-              <ha-button-menu slot="toolbar-icon">
-                <ha-button slot="trigger" appearance="filled">
+              <ha-generic-picker
+                slot="toolbar-icon"
+                .hass=${this.hass}
+                .getItems=${this._getLogProviderItems}
+                value=""
+                .rowRenderer=${this._providerRenderer}
+                @value-changed=${this._handleDropdownSelect}
+              >
+                <ha-button
+                  slot="field"
+                  appearance="filled"
+                  @click=${this._openPicker}
+                >
+                  ${selectedProvider?.icon
+                    ? html`<img
+                        src=${selectedProvider.icon}
+                        alt=${selectedProvider.primary}
+                        slot="start"
+                      />`
+                    : selectedProvider?.icon_path
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${selectedProvider.icon_path}
+                        ></ha-svg-icon>`
+                      : nothing}
+                  ${selectedProvider?.primary}
                   <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
-                  ${this._logProviders.find(
-                    (p) => p.key === this._selectedLogProvider
-                  )!.name}
                 </ha-button>
-                ${this._logProviders.map(
-                  (provider) => html`
-                    <ha-list-item
-                      ?selected=${provider.key === this._selectedLogProvider}
-                      .provider=${provider.key}
-                      @click=${this._selectProvider}
-                    >
-                      ${provider.name}
-                    </ha-list-item>
-                  `
-                )}
-              </ha-button-menu>
+              </ha-generic-picker>
             `
-          : ""}
+          : nothing}
         ${search}
         <div class="content">
           ${this._selectedLogProvider === "core" && !this._detail
@@ -170,8 +196,17 @@ export class HaConfigLogs extends LitElement {
     this._detail = !this._detail;
   }
 
-  private _selectProvider(ev) {
-    this._selectedLogProvider = (ev.currentTarget as any).provider;
+  private _openPicker(ev: Event) {
+    ev.stopPropagation();
+    this.providerPicker?.open();
+  }
+
+  private _handleDropdownSelect(ev: CustomEvent<{ value: string }>) {
+    const provider = ev.detail?.value;
+    if (!provider) {
+      return;
+    }
+    this._selectedLogProvider = provider;
     this._filter = "";
     navigate(`/config/logs?provider=${this._selectedLogProvider}`);
   }
@@ -214,6 +249,7 @@ export class HaConfigLogs extends LitElement {
         .map((addon) => ({
           key: addon.slug,
           name: addon.name,
+          addon,
         }))
         .sort((a, b) =>
           stringCompare(a.name, b.name, this.hass.locale.language)
@@ -223,6 +259,78 @@ export class HaConfigLogs extends LitElement {
     } catch (_err) {
       // Ignore, nothing the user can do anyway
     }
+  }
+
+  private _getLogProviderItems = (): PickerComboBoxItem[] =>
+    this._logProviders.map((provider) => ({
+      id: provider.key,
+      primary: provider.name,
+      icon: provider.addon
+        ? atLeastVersion(this.hass.config.version, 0, 105) &&
+          provider.addon.icon
+          ? `/api/hassio/addons/${provider.addon.slug}/icon`
+          : undefined
+        : undefined,
+      icon_path: provider.addon
+        ? mdiPuzzle
+        : this._getProviderIconPath(provider.key),
+    }));
+
+  private _providerRenderer = (item: PickerComboBoxItem) => html`
+    <ha-combo-box-item type="button" compact>
+      ${item.icon
+        ? html`<img src=${item.icon} alt=${item.primary} slot="start" />`
+        : item.icon_path
+          ? html`<ha-svg-icon
+              slot="start"
+              .path=${item.icon_path}
+            ></ha-svg-icon>`
+          : nothing}
+      <span slot="headline">${item.primary}</span>
+      ${item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing}
+    </ha-combo-box-item>
+  `;
+
+  private _getActiveProvider = memoizeOne((selectedLogProvider: string) => {
+    const provider = this._logProviders.find(
+      (p) => p.key === selectedLogProvider
+    );
+    if (provider) {
+      return {
+        id: provider.key,
+        primary: provider.name,
+        icon: provider.addon
+          ? atLeastVersion(this.hass.config.version, 0, 105) &&
+            provider.addon.icon
+            ? `/api/hassio/addons/${provider.addon.slug}/icon`
+            : undefined
+          : undefined,
+        icon_path: provider.addon
+          ? mdiPuzzle
+          : this._getProviderIconPath(provider.key),
+      };
+    }
+    return undefined;
+  });
+
+  private _getProviderIconPath(providerKey: string): string | undefined {
+    switch (providerKey) {
+      case "core":
+        return mdiHomeAssistant;
+      case "supervisor":
+        return mdiPackageVariant;
+      case "host":
+        return mdiChip;
+      case "dns":
+        return mdiDns;
+      case "audio":
+        return mdiVolumeHigh;
+      case "multicast":
+        return mdiRadar;
+    }
+    return undefined;
   }
 
   static get styles(): CSSResultGroup {
@@ -253,8 +361,17 @@ export class HaConfigLogs extends LitElement {
         .content {
           direction: ltr;
         }
+        ha-generic-picker {
+          --md-list-item-leading-icon-color: var(--ha-color-primary-50);
+          --mdc-icon-size: 32px;
+        }
+
+        img {
+          height: 32px;
+        }
+
         @media all and (max-width: 870px) {
-          ha-button-menu {
+          ha-generic-picker {
             max-width: 50%;
           }
           ha-button {
@@ -264,9 +381,6 @@ export class HaConfigLogs extends LitElement {
             overflow: hidden;
             white-space: nowrap;
           }
-        }
-        ha-list-item[selected] {
-          color: var(--primary-color);
         }
       `,
     ];

@@ -35,7 +35,7 @@ import {
   statesContext,
   themesContext,
 } from "../../../data/context";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type { Themes } from "../../../data/ws-themes";

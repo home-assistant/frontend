@@ -2,7 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import type { MatterNodeDiagnostics } from "../../../../../../data/matter";
 import { getMatterNodeDiagnostics } from "../../../../../../data/matter";
 import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
