@@ -26,7 +26,7 @@ import {
 } from "../../../data/hassio/supervisor";
 import {
   checkForEntityUpdates,
-  filterUpdateEntitiesWithInstall,
+  filterUpdateEntitiesParameterized,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
@@ -42,6 +42,8 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _showSkipped = false;
 
+  @state() private _showNotInstallable = false;
+
   @state() private _supervisorInfo?: HassioSupervisorInfo;
 
   protected firstUpdated(changedProps) {
@@ -53,9 +55,10 @@ class HaConfigSectionUpdates extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const canInstallUpdates = this._filterUpdateEntitiesWithInstall(
+    const canInstallUpdates = this._filterUpdateEntitiesParameterized(
       this.hass.states,
-      this._showSkipped
+      this._showSkipped,
+      this._showNotInstallable
     );
 
     return html`
@@ -85,6 +88,15 @@ class HaConfigSectionUpdates extends LitElement {
               .selected=${this._showSkipped}
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
+            </ha-check-list-item>
+            <ha-check-list-item
+              left
+              @request-selected=${this._toggleNotInstallable}
+              .selected=${this._showNotInstallable}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.updates.show_not_installable"
+              )}
             </ha-check-list-item>
             ${this._supervisorInfo
               ? html`
@@ -141,6 +153,14 @@ class HaConfigSectionUpdates extends LitElement {
     this._showSkipped = !this._showSkipped;
   }
 
+  private _toggleNotInstallable(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+
+    this._showNotInstallable = !this._showNotInstallable;
+  }
+
   private async _toggleBeta(
     ev: CustomEvent<RequestSelectedDetail>
   ): Promise<void> {
@@ -177,9 +197,17 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
-  private _filterUpdateEntitiesWithInstall = memoizeOne(
-    (entities: HassEntities, showSkipped: boolean) =>
-      filterUpdateEntitiesWithInstall(entities, showSkipped)
+  private _filterUpdateEntitiesParameterized = memoizeOne(
+    (
+      entities: HassEntities,
+      showSkipped: boolean,
+      showInstallableOnly: boolean
+    ) =>
+      filterUpdateEntitiesParameterized(
+        entities,
+        showSkipped,
+        showInstallableOnly
+      )
   );
 
   static styles = css`

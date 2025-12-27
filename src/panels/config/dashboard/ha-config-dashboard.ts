@@ -31,7 +31,7 @@ import {
 import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
-  filterUpdateEntitiesWithInstall,
+  filterUpdateEntitiesParameterized,
 } from "../../../data/update";
 import {
   QuickBarMode,
@@ -203,7 +203,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     const { updates: canInstallUpdates, total: totalUpdates } =
-      this._filterUpdateEntitiesWithInstall(
+      this._filterUpdateEntitiesParameterized(
         this.hass.states,
         this.hass.entities
       );
@@ -340,14 +340,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     showShortcutsDialog(this);
   }
 
-  private _filterUpdateEntitiesWithInstall = memoizeOne(
+  private _filterUpdateEntitiesParameterized = memoizeOne(
     (
       entities: HomeAssistant["states"],
       entityRegistry: HomeAssistant["entities"]
     ): { updates: UpdateEntity[]; total: number } => {
-      const updates = filterUpdateEntitiesWithInstall(entities).filter(
-        (entity) => !entityRegistry[entity.entity_id]?.hidden
-      );
+      const updates = filterUpdateEntitiesParameterized(
+        entities,
+        false,
+        false
+      ).filter((entity) => !entityRegistry[entity.entity_id]?.hidden);
 
       return {
         updates: updates.slice(0, updates.length === 3 ? updates.length : 2),

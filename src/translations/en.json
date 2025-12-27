@@ -2221,6 +2221,7 @@
           "more_updates": "Show all updates",
           "show": "show",
           "show_skipped": "Show skipped updates",
+          "show_not_installable": "Show not installable updates",
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped",
