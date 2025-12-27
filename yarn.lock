@@ -2300,13 +2300,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/observers@npm:2.0.6":
-  version: 2.0.6
-  resolution: "@lit-labs/observers@npm:2.0.6"
+"@lit-labs/observers@npm:2.1.0":
+  version: 2.1.0
+  resolution: "@lit-labs/observers@npm:2.1.0"
   dependencies:
     "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
-    lit-html: "npm:^3.2.0"
-  checksum: 10/30e55dbbe3483de643bdde453a6271e49be0f42ac7039dc580ce6ae18687599fd8fed9ba720f075ed4adb2095160a11920283ad51415dc4d2152761d8742833c
+  checksum: 10/f8bbaae6e19f62c1e0368ddd9fb3f041f48ff014f2aedbd1777df01bac024b90171e75d5882f958b88c90067280109c80c4dfdf333d3639e47a411a97758b1be
   languageName: node
   linkType: hard
 
@@ -9020,7 +9019,7 @@ __metadata:
     "@home-assistant/webawesome": "npm:3.0.0-ha.2"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
-    "@lit-labs/observers": "npm:2.0.6"
+    "@lit-labs/observers": "npm:2.1.0"
     "@lit-labs/virtualizer": "npm:2.1.1"
     "@lit/context": "npm:1.1.6"
     "@lit/reactive-element": "npm:2.1.2"
