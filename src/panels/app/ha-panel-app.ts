@@ -48,7 +48,7 @@ class HaPanelApp extends LitElement {
 
   @state() private _loadingMessage?: string;
 
-  @state() private _hideToolbar = false;
+  @state() private _kioskMode = false;
 
   private _sessionKeepAlive?: number;
 
@@ -103,7 +103,7 @@ class HaPanelApp extends LitElement {
 
     // Make sure this all is 1 template so hiding toolbar doesn't reload iframe
     return html`
-      ${!this._hideToolbar &&
+      ${!this._kioskMode &&
       (this.narrow || this.hass.dockedSidebar === "always_hidden")
         ? html`
             <div class="header">
@@ -146,7 +146,7 @@ class HaPanelApp extends LitElement {
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
       // Reset state when switching addons
-      this._hideToolbar = false;
+      this._kioskMode = false;
       this._iframeSubscribeUpdates = false;
       this._autoRetryUntil = undefined;
       this._fetchData(addon);
@@ -378,13 +378,13 @@ class HaPanelApp extends LitElement {
 
       case "home-assistant/subscribe-properties":
         this._iframeSubscribeUpdates = true;
-        this._hideToolbar = data.hideToolbar ?? false;
+        this._kioskMode = data.kioskMode ?? false;
         this._sendPropertiesToIframe();
         break;
 
       case "home-assistant/unsubscribe-properties":
         this._iframeSubscribeUpdates = false;
-        this._hideToolbar = false;
+        this._kioskMode = false;
         break;
     }
   };
