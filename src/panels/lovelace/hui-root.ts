@@ -495,9 +495,7 @@ class HUIRoot extends LitElement {
     const tabs = html`<ha-tab-group @wa-tab-show=${this._handleViewSelected}>
       ${views.map((view, index) => {
         const icon_and_title =
-          view.show_icon_and_title &&
-          view.icon &&
-          view.title;
+          view.show_icon_and_title && view.icon && view.title;
         const icon_only = view.icon && !icon_and_title;
         const title_only = !icon_only && !icon_and_title;
         const hidden =
