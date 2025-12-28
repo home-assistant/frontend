@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import "app-datepicker";
 import { format } from "date-fns";
 import { css, html, LitElement, nothing } from "lit";
@@ -9,6 +8,7 @@ import { haStyleDialog } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import type { DatePickerDialogParams } from "./ha-date-input";
 import "./ha-dialog";
+import "./ha-button";
 
 @customElement("ha-dialog-date-picker")
 export class HaDialogDatePicker extends LitElement {
@@ -51,23 +51,33 @@ export class HaDialogDatePicker extends LitElement {
         .firstDayOfWeek=${this._params.firstWeekday}
       ></app-datepicker>
       ${this._params.canClear
-        ? html`<mwc-button
+        ? html`<ha-button
             slot="secondaryAction"
             @click=${this._clear}
-            class="warning"
+            variant="danger"
+            appearance="plain"
           >
             ${this.hass.localize("ui.dialogs.date-picker.clear")}
-          </mwc-button>`
+          </ha-button>`
         : nothing}
-      <mwc-button slot="secondaryAction" @click=${this._setToday}>
+      <ha-button
+        appearance="plain"
+        slot="secondaryAction"
+        @click=${this._setToday}
+      >
         ${this.hass.localize("ui.dialogs.date-picker.today")}
-      </mwc-button>
-      <mwc-button slot="primaryAction" dialogaction="cancel" class="cancel-btn">
+      </ha-button>
+      <ha-button
+        appearance="plain"
+        slot="primaryAction"
+        dialogaction="cancel"
+        class="cancel-btn"
+      >
         ${this.hass.localize("ui.common.cancel")}
-      </mwc-button>
-      <mwc-button slot="primaryAction" @click=${this._setValue}>
+      </ha-button>
+      <ha-button slot="primaryAction" @click=${this._setValue}>
         ${this.hass.localize("ui.common.ok")}
-      </mwc-button>
+      </ha-button>
     </ha-dialog>`;
   }
 

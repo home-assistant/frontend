@@ -19,6 +19,8 @@ class HaInputTextForm extends LitElement {
 
   @property({ type: Boolean }) public new = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _item?: InputText;
 
   @state() private _name!: string;
@@ -79,6 +81,7 @@ class HaInputTextForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-icon-picker
           .hass=${this.hass}
@@ -88,6 +91,7 @@ class HaInputTextForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
+          .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-expansion-panel
           header=${this.hass.localize(
@@ -105,6 +109,7 @@ class HaInputTextForm extends LitElement {
             .label=${this.hass!.localize(
               "ui.dialogs.helper_settings.input_text.min"
             )}
+            .disabled=${this.disabled}
           ></ha-textfield>
           <ha-textfield
             .value=${this._max}
@@ -129,6 +134,7 @@ class HaInputTextForm extends LitElement {
                 value="text"
                 .checked=${this._mode === "text"}
                 @change=${this._modeChanged}
+                .disabled=${this.disabled}
               ></ha-radio>
             </ha-formfield>
             <ha-formfield
@@ -141,6 +147,7 @@ class HaInputTextForm extends LitElement {
                 value="password"
                 .checked=${this._mode === "password"}
                 @change=${this._modeChanged}
+                .disabled=${this.disabled}
               ></ha-radio>
             </ha-formfield>
           </div>
@@ -154,6 +161,7 @@ class HaInputTextForm extends LitElement {
             .helper=${this.hass!.localize(
               "ui.dialogs.helper_settings.input_text.pattern_helper"
             )}
+            .disabled=${this.disabled}
           ></ha-textfield>
         </ha-expansion-panel>
       </div>

@@ -90,7 +90,7 @@ export class HaTimeline extends LitElement {
             --timeline-ball-color,
             var(--timeline-color, var(--secondary-text-color))
           );
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
         }
         :host([raised]) ha-svg-icon {
           transform: scale(1.3);

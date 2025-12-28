@@ -15,6 +15,10 @@ import { UNAVAILABLE } from "../../../data/entity";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import type { HomeAssistant } from "../../../types";
+import {
+  isMediaSourceContentId,
+  resolveMediaSource,
+} from "../../../data/media_source";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -66,6 +70,12 @@ export class HuiImage extends LitElement {
   @state() private _cameraImageSrc?: string;
 
   @state() private _loadedImageSrc?: string;
+
+  @state() private _resolvedImageSrc?: string;
+
+  @state() private _resolvedDarkModeImageSrc?: string;
+
+  @state() private _resolvedStateImages: Record<string, string> = {};
 
   @state() private _lastImageHeight?: number;
 
@@ -130,6 +140,46 @@ export class HuiImage extends LitElement {
     if (this._loadState === LoadState.Loading && !this.cameraImage) {
       this._loadState = LoadState.Loaded;
     }
+
+    const firstHass = changedProps.has("hass") && !changedProps.get("hass");
+    if (this.hass && (changedProps.has("image") || firstHass)) {
+      if (this.image && isMediaSourceContentId(this.image)) {
+        resolveMediaSource(this.hass, this.image).then((result) => {
+          this._resolvedImageSrc = result.url;
+        });
+      } else {
+        this._resolvedImageSrc = this.image;
+      }
+    }
+    if (this.hass && (changedProps.has("darkModeImage") || firstHass)) {
+      if (this.darkModeImage && isMediaSourceContentId(this.darkModeImage)) {
+        resolveMediaSource(this.hass, this.darkModeImage).then((result) => {
+          this._resolvedDarkModeImageSrc = result.url;
+        });
+      } else {
+        this._resolvedDarkModeImageSrc = this.darkModeImage;
+      }
+    }
+    if (changedProps.has("stateImage") || firstHass) {
+      this._resolvedStateImages = {};
+      Object.entries(this.stateImage || {}).forEach((entry) => {
+        const key = entry[0] as string;
+        const value = entry[1] as any;
+        const image =
+          (typeof value === "object" && value.media_content_id) ||
+          (value as string | undefined);
+        if (isMediaSourceContentId(image)) {
+          resolveMediaSource(this.hass!, image).then((result) => {
+            this._resolvedStateImages = {
+              ...this._resolvedStateImages,
+              [key]: result.url,
+            };
+          });
+        } else {
+          this._resolvedStateImages![key] = image;
+        }
+      });
+    }
   }
 
   protected render() {
@@ -155,20 +205,20 @@ export class HuiImage extends LitElement {
         imageSrc = this._cameraImageSrc;
       }
     } else if (this.stateImage) {
-      const stateImage = this.stateImage[entityState];
+      const stateImage = this._resolvedStateImages[entityState];
 
       if (stateImage) {
         imageSrc = stateImage;
       } else {
-        imageSrc = this.image;
+        imageSrc = this._resolvedImageSrc;
         imageFallback = true;
       }
     } else if (this.darkModeImage && this.hass.themes.darkMode) {
-      imageSrc = this.darkModeImage;
+      imageSrc = this._resolvedDarkModeImageSrc;
     } else if (stateObj && computeDomain(stateObj.entity_id) === "image") {
       imageSrc = computeImageUrl(stateObj as ImageEntity);
     } else {
-      imageSrc = this.image;
+      imageSrc = this._resolvedImageSrc;
     }
 
     if (imageSrc) {

@@ -7,7 +7,6 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-heading-badge";
@@ -16,6 +15,7 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { DEFAULT_CONFIG } from "../editor/heading-badge-editor/hui-entity-heading-badge-editor";
@@ -137,7 +137,11 @@ export class HuiEntityHeadingBadge
       "--icon-color": color,
     };
 
-    const name = config.name || computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <ha-heading-badge
@@ -166,7 +170,7 @@ export class HuiEntityHeadingBadge
                 .hass=${this.hass}
                 .stateObj=${stateObj}
                 .content=${config.state_content}
-                .name=${config.name}
+                .name=${name}
                 dash-unavailable
               ></state-display>
             `

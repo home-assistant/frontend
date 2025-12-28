@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -8,8 +7,6 @@ import { getStates } from "../../common/entity/get_states";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
-
-export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
 interface StateOption {
   value: string;
@@ -63,10 +60,10 @@ class HaEntityStatePicker extends LitElement {
       const entityIds = this.entityId ? ensureArray(this.entityId) : [];
 
       const entitiesOptions = entityIds.map<StateOption[]>((entityId) => {
-        const stateObj = this.hass.states[entityId];
-        if (!stateObj) {
-          return [];
-        }
+        const stateObj = this.hass.states[entityId] || {
+          entity_id: entityId,
+          attributes: {},
+        };
 
         const states = getStates(this.hass, stateObj, this.attribute).filter(
           (s) => !this.hideStates?.includes(s)

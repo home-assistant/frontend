@@ -1,9 +1,9 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-color-picker";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
@@ -82,7 +82,7 @@ class DialogLabelDetail
           this.hass,
           this._params.entry
             ? this._params.entry.name || this._params.entry.label_id
-            : this.hass!.localize("ui.panel.config.labels.detail.new_label")
+            : this.hass!.localize("ui.dialogs.label-detail.new_label")
         )}
       >
         <div>
@@ -95,11 +95,9 @@ class DialogLabelDetail
               .value=${this._name}
               .configValue=${"name"}
               @input=${this._input}
-              .label=${this.hass!.localize(
-                "ui.panel.config.labels.detail.name"
-              )}
+              .label=${this.hass!.localize("ui.dialogs.label-detail.name")}
               .validationMessage=${this.hass!.localize(
-                "ui.panel.config.labels.detail.required_error_msg"
+                "ui.dialogs.label-detail.required_error_msg"
               )}
               required
             ></ha-textfield>
@@ -108,50 +106,47 @@ class DialogLabelDetail
               .hass=${this.hass}
               .configValue=${"icon"}
               @value-changed=${this._valueChanged}
-              .label=${this.hass!.localize(
-                "ui.panel.config.labels.detail.icon"
-              )}
+              .label=${this.hass!.localize("ui.dialogs.label-detail.icon")}
             ></ha-icon-picker>
             <ha-color-picker
               .value=${this._color}
               .configValue=${"color"}
               .hass=${this.hass}
               @value-changed=${this._valueChanged}
-              .label=${this.hass!.localize(
-                "ui.panel.config.labels.detail.color"
-              )}
+              .label=${this.hass!.localize("ui.dialogs.label-detail.color")}
             ></ha-color-picker>
             <ha-textarea
               .value=${this._description}
               .configValue=${"description"}
               @input=${this._input}
               .label=${this.hass!.localize(
-                "ui.panel.config.labels.detail.description"
+                "ui.dialogs.label-detail.description"
               )}
             ></ha-textarea>
           </div>
         </div>
         ${this._params.entry && this._params.removeEntry
           ? html`
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
-                ${this.hass!.localize("ui.panel.config.labels.detail.delete")}
-              </mwc-button>
+                ${this.hass!.localize("ui.common.delete")}
+              </ha-button>
             `
           : nothing}
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${this._submitting || !this._name}
         >
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.labels.detail.update")
-            : this.hass!.localize("ui.panel.config.labels.detail.create")}
-        </mwc-button>
+            ? this.hass!.localize("ui.common.update")
+            : this.hass!.localize("ui.common.create")}
+        </ha-button>
       </ha-dialog>
     `;
   }

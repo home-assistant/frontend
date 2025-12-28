@@ -7,6 +7,7 @@ import "../../components/ha-settings-row";
 import "../../components/ha-switch";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { saveFrontendUserData } from "../../data/frontend";
+import { documentationUrl } from "../../util/documentation-url";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-advanced-mode-row")
@@ -31,14 +32,17 @@ class AdvancedModeRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.advanced_mode.description")}
           <a
-            href="https://www.home-assistant.io/blog/2019/07/17/release-96/#advanced-mode"
+            href=${documentationUrl(
+              this.hass,
+              "/blog/2019/07/17/release-96/#advanced-mode"
+            )}
             target="_blank"
             rel="noreferrer"
             >${this.hass.localize("ui.panel.profile.advanced_mode.link_promo")}
           </a>
         </span>
         <ha-switch
-          .checked=${this.coreUserData && this.coreUserData.showAdvanced}
+          .checked=${!!this.coreUserData && !!this.coreUserData.showAdvanced}
           .disabled=${this.coreUserData === undefined}
           @change=${this._advancedToggled}
         ></ha-switch>

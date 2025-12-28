@@ -1,25 +1,31 @@
-import "@material/mwc-button";
+import { mdiClose, mdiPlus } from "@mdi/js";
+import { dump } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiClose, mdiPlus } from "@mdi/js";
-import { dump } from "js-yaml";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/chips/ha-assist-chip";
+import "../../../../components/chips/ha-chip-set";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-area-picker";
 import "../../../../components/ha-domain-icon";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-textarea";
-import "../../../../components/ha-textfield";
 import "../../../../components/ha-labels-picker";
 import "../../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-textarea";
+import "../../../../components/ha-textfield";
 import "../../category/ha-category-picker";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/chips/ha-chip-set";
-import "../../../../components/chips/ha-assist-chip";
-import "../../../../components/ha-area-picker";
 
+import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
+import { subscribeOne } from "../../../../common/util/subscribe-one";
+import type { GenDataTaskResult } from "../../../../data/ai_task";
+import { fetchCategoryRegistry } from "../../../../data/category_registry";
+import { subscribeEntityRegistry } from "../../../../data/entity_registry";
+import { subscribeLabelRegistry } from "../../../../data/label_registry";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -27,13 +33,6 @@ import type {
   EntityRegistryUpdate,
   SaveDialogParams,
 } from "./show-dialog-automation-save";
-import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
-import type { GenDataTaskResult } from "../../../../data/ai_task";
-import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
-import { subscribeOne } from "../../../../common/util/subscribe-one";
-import { subscribeLabelRegistry } from "../../../../data/label_registry";
-import { subscribeEntityRegistry } from "../../../../data/entity_registry";
-import { fetchCategoryRegistry } from "../../../../data/category_registry";
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -111,7 +110,8 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       <ha-button
         @click=${this._handleDiscard}
         slot="secondaryAction"
-        class="destructive"
+        variant="danger"
+        appearance="plain"
       >
         ${this.hass.localize("ui.common.dont_save")}
       </ha-button>
@@ -242,7 +242,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     const title = this.hass.localize(
       this._params.config.alias
         ? "ui.panel.config.automation.editor.rename"
-        : "ui.panel.config.automation.editor.save"
+        : "ui.common.save"
     );
 
     return html`
@@ -260,12 +260,14 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${this._params.title || title}</span>
-          <ha-suggest-with-ai-button
-            slot="actionItems"
-            .hass=${this.hass}
-            .generateTask=${this._generateTask}
-            @suggestion=${this._handleSuggestion}
-          ></ha-suggest-with-ai-button>
+          ${this._params.hideInputs
+            ? nothing
+            : html` <ha-suggest-with-ai-button
+                slot="actionItems"
+                .hass=${this.hass}
+                .generateTask=${this._generateTask}
+                @suggestion=${this._handleSuggestion}
+              ></ha-suggest-with-ai-button>`}
         </ha-dialog-header>
         ${this._error
           ? html`<ha-alert alert-type="error"
@@ -280,16 +282,16 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         ${this._renderInputs()} ${this._renderDiscard()}
 
         <div slot="primaryAction">
-          <mwc-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
-          </mwc-button>
-          <mwc-button @click=${this._save}>
+          </ha-button>
+          <ha-button @click=${this._save}>
             ${this.hass.localize(
               this._params.config.alias && !this._params.onDiscard
                 ? "ui.panel.config.automation.editor.rename"
-                : "ui.panel.config.automation.editor.save"
+                : "ui.common.save"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-dialog>
     `;
@@ -381,7 +383,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     return {
       type: "data",
       task: {
-        task_name: `frontend:${term}:save`,
+        task_name: `frontend__${term}__save`,
         instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant ${term}.
 
 The name should be relevant to the ${term}'s purpose.
@@ -571,9 +573,6 @@ ${dump(this._params.config)}
         ha-alert {
           display: block;
           margin-bottom: 16px;
-        }
-        .destructive {
-          --mdc-theme-primary: var(--error-color);
         }
 
         ha-suggest-with-ai-button {

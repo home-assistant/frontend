@@ -68,7 +68,7 @@ class HaConfigBlueprint extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "edit"
     ) {
-      const blueprintId = this.routeTail.path.substr(1);
+      const blueprintId = this.routeTail.path.slice(1);
       pageEl.blueprintId = blueprintId === "new" ? null : blueprintId;
     }
   }

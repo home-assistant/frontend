@@ -123,7 +123,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
           font-size: var(--ha-font-size-2xl);
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: var(--ha-space-4);
         }
         h2 img {
           width: 48px;

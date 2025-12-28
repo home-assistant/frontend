@@ -1,5 +1,4 @@
-import "@material/mwc-button/mwc-button";
-import { mdiSolarPower } from "@mdi/js";
+import { mdiPlus, mdiSolarPower } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,7 +8,9 @@ import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-button";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-svg-icon";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { getConfigEntries } from "../../../../data/config_entries";
@@ -27,6 +28,7 @@ import { brandsUrl } from "../../../../util/brands-url";
 import type { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
+const powerUnitClasses = ["power"];
 
 @customElement("dialog-energy-solar-settings")
 export class DialogEnergySolarSettings
@@ -45,9 +47,13 @@ export class DialogEnergySolarSettings
 
   @state() private _energy_units?: string[];
 
+  @state() private _power_units?: string[];
+
   @state() private _error?: string;
 
   private _excludeList?: string[];
+
+  private _excludeListPower?: string[];
 
   public async showDialog(
     params: EnergySettingsSolarDialogParams
@@ -61,9 +67,15 @@ export class DialogEnergySolarSettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
+    this._power_units = (
+      await getSensorDeviceClassConvertibleUnits(this.hass, "power")
+    ).units;
     this._excludeList = this._params.solar_sources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
+    this._excludeListPower = this._params.solar_sources
+      .map((entry) => entry.stat_rate)
+      .filter((id) => id && id !== this._source?.stat_rate) as string[];
   }
 
   public closeDialog() {
@@ -80,8 +92,6 @@ export class DialogEnergySolarSettings
       return nothing;
     }
 
-    const pickableUnit = this._energy_units?.join(", ") || "";
-
     return html`
       <ha-dialog
         open
@@ -93,12 +103,6 @@ export class DialogEnergySolarSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
-        <div>
-          ${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.entity_para",
-            { unit: pickableUnit }
-          )}
-        </div>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -110,7 +114,26 @@ export class DialogEnergySolarSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.entity_para",
+            { unit: this._energy_units?.join(", ") || "" }
+          )}
           dialogInitialFocus
+        ></ha-statistic-picker>
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .includeUnitClass=${powerUnitClasses}
+          .value=${this._source.stat_rate}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.solar_production_power"
+          )}
+          .excludeStatistics=${this._excludeListPower}
+          @value-changed=${this._powerStatisticChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.entity_para",
+            { unit: this._power_units?.join(", ") || "" }
+          )}
         ></ha-statistic-picker>
 
         <h3>
@@ -172,31 +195,40 @@ export class DialogEnergySolarSettings
                     <ha-checkbox
                       .entry=${entry}
                       @change=${this._forecastCheckChanged}
-                      .checked=${this._source?.config_entry_solar_forecast?.includes(
+                      .checked=${!!this._source?.config_entry_solar_forecast?.includes(
                         entry.entry_id
                       )}
                     >
                     </ha-checkbox>
                   </ha-formfield>`
               )}
-              <mwc-button @click=${this._addForecast}>
+              <ha-button
+                appearance="filled"
+                size="small"
+                @click=${this._addForecast}
+              >
+                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.energy.solar.dialog.add_forecast"
                 )}
-              </mwc-button>
+              </ha-button>
             </div>`
           : ""}
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="secondaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           @click=${this._save}
           .disabled=${!this._source.stat_energy_from}
           slot="primaryAction"
         >
           ${this.hass.localize("ui.common.save")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -257,6 +289,10 @@ export class DialogEnergySolarSettings
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
   }
 
+  private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
+    this._source = { ...this._source!, stat_rate: ev.detail.value };
+  }
+
   private async _save() {
     try {
       if (!this._forecast) {
@@ -277,6 +313,10 @@ export class DialogEnergySolarSettings
         ha-dialog {
           --mdc-dialog-max-width: 430px;
         }
+        ha-statistic-picker {
+          display: block;
+          margin-bottom: var(--ha-space-4);
+        }
         img {
           height: 24px;
           margin-right: 16px;
@@ -294,7 +334,7 @@ export class DialogEnergySolarSettings
           padding-inline-start: 32px;
           padding-inline-end: initial;
         }
-        .forecast-options mwc-button {
+        .forecast-options ha-button {
           padding-left: 8px;
           padding-inline-start: 8px;
           padding-inline-end: initial;

@@ -3,7 +3,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import { navigate } from "../../../src/common/navigate";
+import { goBack, navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import { nextRender } from "../../../src/common/util/render-status";
 import "../../../src/components/ha-icon-button";
@@ -193,7 +193,7 @@ class HassioIngressView extends LitElement {
         title: addon.name,
       });
       await nextRender();
-      history.back();
+      goBack();
       return;
     }
 
@@ -275,7 +275,7 @@ class HassioIngressView extends LitElement {
         title: addon.name,
       });
       await nextRender();
-      history.back();
+      goBack();
       return;
     }
 

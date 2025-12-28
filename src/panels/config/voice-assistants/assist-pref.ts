@@ -206,11 +206,16 @@ export class AssistPref extends LitElement {
             `
           )}
         </ha-list>
-        <ha-button @click=${this._addPipeline} class="add" outlined>
+        <ha-button
+          appearance="filled"
+          @click=${this._addPipeline}
+          class="add"
+          size="small"
+        >
           ${this.hass.localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"
           )}
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
         <ha-settings-row>
           <span slot="heading">
@@ -230,30 +235,30 @@ export class AssistPref extends LitElement {
           ></ha-switch>
         </ha-settings-row>
         <div class="card-actions">
-          <a
+          <ha-button
+            appearance="plain"
             href="/config/voice-assistants/expose?assistants=conversation&historyBack"
           >
-            <ha-button>
-              ${this.hass.localize(
-                "ui.panel.config.voice_assistants.assistants.pipeline.exposed_entities",
-                {
-                  number: this.exposedEntities
-                    ? this._exposedEntitiesCount(this.exposedEntities)
-                    : 0,
-                }
-              )}
-            </ha-button>
-          </a>
+            ${this.hass.localize(
+              "ui.panel.config.voice_assistants.assistants.pipeline.exposed_entities",
+              {
+                number: this.exposedEntities
+                  ? this._exposedEntitiesCount(this.exposedEntities)
+                  : 0,
+              }
+            )}
+          </ha-button>
           ${this._pipelineEntitiesCount > 0
             ? html`
-                <a href="/config/voice-assistants/assist/devices">
-                  <ha-button>
-                    ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.pipeline.assist_devices",
-                      { number: this._pipelineEntitiesCount }
-                    )}
-                  </ha-button>
-                </a>
+                <ha-button
+                  appearance="plain"
+                  href="/config/voice-assistants/assist/devices"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.assist_devices",
+                    { number: this._pipelineEntitiesCount }
+                  )}
+                </ha-button>
               `
             : ""}
         </div>

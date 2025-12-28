@@ -598,7 +598,7 @@ class HaLogbookRenderer extends LitElement {
           background-color: var(--disabled-color);
           height: 8px;
           width: 8px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           flex-shrink: 0;
           margin-right: 12px;
           margin-inline-start: initial;

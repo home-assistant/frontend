@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-alert";
+import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-formfield";
@@ -15,7 +15,8 @@ import "../../../../src/components/ha-list";
 import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-password-field";
 import "../../../../src/components/ha-radio";
-import "../../../../src/components/ha-spinner";
+import "../../../../src/components/ha-tab-group";
+import "../../../../src/components/ha-tab-group-tab";
 import "../../../../src/components/ha-textfield";
 import type { HaTextField } from "../../../../src/components/ha-textfield";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -37,7 +38,6 @@ import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HassioNetworkDialogParams } from "./show-dialog-network";
-import "../../../../src/components/sl-tab-group";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -115,19 +115,19 @@ export class DialogHassioNetwork
             ></ha-icon-button>
           </ha-header-bar>
           ${this._interfaces.length > 1
-            ? html`<sl-tab-group @sl-tab-show=${this._handleTabActivated}
+            ? html`<ha-tab-group @wa-tab-show=${this._handleTabActivated}
                 >${this._interfaces.map(
                   (device, index) =>
-                    html`<sl-tab
+                    html`<ha-tab-group-tab
                       slot="nav"
                       .id=${device.interface}
                       .panel=${index.toString()}
                       .active=${this._curTabIndex === index}
                     >
                       ${device.interface}
-                    </sl-tab>`
+                    </ha-tab-group-tab>`
                 )}
-              </sl-tab-group>`
+              </ha-tab-group>`
             : ""}
         </div>
         ${cache(this._renderTab())}
@@ -154,16 +154,16 @@ export class DialogHassioNetwork
                       )}
                     </p>`
                   : ""}
-                <mwc-button
+                <ha-button
+                  appearance="plain"
+                  size="small"
                   class="scan"
                   @click=${this._scanForAP}
                   .disabled=${this._scanning}
+                  .loading=${this._scanning}
                 >
-                  ${this._scanning
-                    ? html`<ha-spinner aria-label="Scanning" size="small">
-                      </ha-spinner>`
-                    : this.supervisor.localize("dialog.network.scan_ap")}
-                </mwc-button>
+                  ${this.supervisor.localize("dialog.network.scan_ap")}
+                </ha-button>
                 ${this._accessPoints &&
                 this._accessPoints.accesspoints &&
                 this._accessPoints.accesspoints.length !== 0
@@ -270,16 +270,16 @@ export class DialogHassioNetwork
           : ""}
       </div>
       <div class="buttons">
-        <mwc-button
-          .label=${this.supervisor.localize("common.cancel")}
-          @click=${this.closeDialog}
+        <ha-button @click=${this.closeDialog} appearance="plain">
+          ${this.supervisor.localize("common.cancel")}
+        </ha-button>
+        <ha-button
+          @click=${this._updateNetwork}
+          .disabled=${!this._dirty}
+          .loading=${this._processing}
         >
-        </mwc-button>
-        <mwc-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
-          ${this._processing
-            ? html`<ha-spinner size="small"> </ha-spinner>`
-            : this.supervisor.localize("common.save")}
-        </mwc-button>
+          ${this.supervisor.localize("common.save")}
+        </ha-button>
       </div>`;
   }
 
@@ -584,11 +584,7 @@ export class DialogHassioNetwork
           }
         }
 
-        mwc-button.warning {
-          --mdc-theme-primary: var(--error-color);
-        }
-
-        mwc-button.scan {
+        ha-button.scan {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
@@ -609,8 +605,8 @@ export class DialogHassioNetwork
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
           display: flex;
           justify-content: space-between;
-          padding: 8px;
-          padding-bottom: max(var(--safe-area-inset-bottom), 8px);
+          padding: 16px;
+          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
           background-color: var(--mdc-theme-surface, #fff);
         }
         .warning {
@@ -632,10 +628,10 @@ export class DialogHassioNetwork
           --mdc-list-side-padding: 10px;
         }
 
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }

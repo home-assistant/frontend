@@ -4,11 +4,12 @@ import {
   actionConfigStruct,
   actionConfigStructConfirmation,
 } from "./action-struct";
+import { entityNameStruct } from "./entity-name-struct";
 
 export const entitiesConfigStruct = union([
   object({
     entity: string(),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     icon: optional(string()),
     image: optional(string()),
     secondary_info: optional(string()),
@@ -18,6 +19,8 @@ export const entitiesConfigStruct = union([
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
     confirmation: optional(actionConfigStructConfirmation),
+    show_last_changed: optional(boolean()),
+    show_state: optional(boolean()),
   }),
   string(),
 ]);

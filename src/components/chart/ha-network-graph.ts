@@ -2,11 +2,14 @@ import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
+import type {
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
 import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import type { ECOption } from "../../resources/echarts";
+import type { ECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
 import type { HomeAssistant } from "../../types";
@@ -16,6 +19,7 @@ import { deepEqual } from "../../common/util/deep-equal";
 export interface NetworkNode {
   id: string;
   name?: string;
+  context?: string;
   category?: number;
   value?: number;
   symbolSize?: number;
@@ -30,6 +34,8 @@ export interface NetworkNode {
    * Distance from the center, where 0 is the center and 1 is the edge
    */
   polarDistance?: number;
+  x?: number;
+  y?: number;
 }
 
 export interface NetworkLink {
@@ -103,12 +109,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!GraphChart) {
+    if (!GraphChart || !this.data.nodes?.length) {
       return nothing;
     }
+
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
+
     return html`<ha-chart-base
       .hass=${this.hass}
       .data=${this._getSeries(
@@ -174,72 +182,185 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       reducedMotion: boolean,
       showLabels: boolean,
       isMobile: boolean
-    ) => {
-      const containerWidth = this.clientWidth;
-      const containerHeight = this.clientHeight;
-      return {
-        id: "network",
-        type: "graph",
-        layout: physicsEnabled ? "force" : "none",
-        draggable: true,
-        roam: true,
-        selectedMode: "single",
-        label: {
-          show: showLabels,
-          position: "right",
+    ) => ({
+      id: "network",
+      type: "graph",
+      layout: physicsEnabled ? "force" : "none",
+      draggable: true,
+      roam: true,
+      roamTrigger: "global",
+      selectedMode: "single",
+      label: {
+        show: showLabels,
+        position: "right",
+        formatter: (params: CallbackDataParams) => {
+          const node = params.data as NetworkNode;
+          if (node.context) {
+            return `{primary|${node.name ?? ""}}\n{secondary|${node.context}}`;
+          }
+          return node.name ?? "";
         },
-        emphasis: {
-          focus: isMobile ? "none" : "adjacency",
+        rich: {
+          primary: {
+            fontSize: 12,
+          },
+          secondary: {
+            fontSize: 12,
+            color: getComputedStyle(document.body).getPropertyValue(
+              "--secondary-text-color"
+            ),
+            lineHeight: 16,
+          },
         },
-        force: {
-          repulsion: [400, 600],
-          edgeLength: [200, 300],
-          gravity: 0.1,
-          layoutAnimation: !reducedMotion && data.nodes.length < 100,
-        },
-        edgeSymbol: ["none", "arrow"],
-        edgeSymbolSize: 10,
-        data: data.nodes.map((node) => {
-          const echartsNode: NonNullable<GraphSeriesOption["data"]>[number] = {
+      },
+      emphasis: {
+        focus: isMobile ? "none" : "adjacency",
+      },
+      force: {
+        repulsion: [400, 600],
+        edgeLength: [200, 350],
+        gravity: 0.05,
+        layoutAnimation: !reducedMotion && data.nodes.length < 100,
+      },
+      edgeSymbol: ["none", "arrow"],
+      edgeSymbolSize: 10,
+      data: this._getSeriesData(data.nodes, data.links, this._nodePositions),
+      links: data.links.map((link) => ({
+        ...link,
+        value: link.reverseValue
+          ? Math.max(link.value ?? 0, link.reverseValue)
+          : link.value,
+        // remove arrow for bidirectional links
+        symbolSize: link.reverseValue ? 1 : link.symbolSize, // 0 doesn't work
+      })),
+      categories: data.categories || [],
+    }),
+    deepEqual
+  );
+
+  private _getSeriesData = memoizeOne(
+    (
+      nodes: NetworkNode[],
+      links: NetworkLink[],
+      nodePositions: Record<string, { x: number; y: number }>
+    ) =>
+      this._getPositionedNodes(nodes, links, nodePositions).map(
+        (node) =>
+          ({
             id: node.id,
             name: node.name,
+            context: node.context,
             category: node.category,
             value: node.value,
             symbolSize: node.symbolSize || 30,
             symbol: node.symbol || "circle",
             itemStyle: node.itemStyle || {},
             fixed: node.fixed,
-          };
-          if (this._nodePositions[node.id]) {
-            echartsNode.x = this._nodePositions[node.id].x;
-            echartsNode.y = this._nodePositions[node.id].y;
-          } else if (typeof node.polarDistance === "number") {
-            // set the position of the node at polarDistance from the center in a random direction
-            const angle = Math.random() * 2 * Math.PI;
-            echartsNode.x =
-              ((Math.cos(angle) * containerWidth) / 2) * node.polarDistance;
-            echartsNode.y =
-              ((Math.sin(angle) * containerHeight) / 2) * node.polarDistance;
-            this._nodePositions[node.id] = {
-              x: echartsNode.x,
-              y: echartsNode.y,
-            };
-          }
-          return echartsNode;
-        }),
-        links: data.links.map((link) => ({
-          ...link,
-          value: link.reverseValue
-            ? Math.max(link.value ?? 0, link.reverseValue)
-            : link.value,
-          // remove arrow for bidirectional links
-          symbolSize: link.reverseValue ? 1 : link.symbolSize, // 0 doesn't work
-        })),
-        categories: data.categories || [],
-      };
-    },
+            x: node.x,
+            y: node.y,
+          }) as NonNullable<GraphSeriesOption["data"]>[number]
+      ),
     deepEqual
   );
+
+  private _getPositionedNodes(
+    nodes: NetworkNode[],
+    links: NetworkLink[],
+    nodePositions: Record<string, { x: number; y: number }>
+  ) {
+    const containerWidth = this.clientWidth;
+    const containerHeight = this.clientHeight;
+
+    const positionedNodes: NetworkNode[] = nodes.map((node) => ({ ...node }));
+    positionedNodes.forEach((node) => {
+      if (nodePositions[node.id]) {
+        node.x = nodePositions[node.id].x;
+        node.y = nodePositions[node.id].y;
+      }
+      if (node.polarDistance === 0) {
+        if (node.x == null && node.y == null) {
+          node.x = containerWidth / 2;
+          node.y = containerHeight / 2;
+        }
+        this._positionNodeNeighbors(
+          node,
+          positionedNodes,
+          links,
+          nodePositions
+        );
+      }
+    });
+    positionedNodes.forEach((node) => {
+      // set positions for unconnected nodes
+      if (node.polarDistance && node.x == null && node.y == null) {
+        // set the position of the node at polarDistance from the center in a random direction
+        const angle = Math.random() * 2 * Math.PI;
+        node.x =
+          ((Math.cos(angle) * containerWidth) / 2) * node.polarDistance +
+          containerWidth / 2;
+        node.y =
+          ((Math.sin(angle) * containerHeight) / 2) * node.polarDistance +
+          containerHeight / 2;
+        // save the random position
+        this._nodePositions[node.id] = {
+          x: node.x,
+          y: node.y,
+        };
+      }
+    });
+    return positionedNodes;
+  }
+
+  private _positionNodeNeighbors(
+    node: NetworkNode,
+    nodes: NetworkNode[],
+    links: NetworkLink[],
+    nodePositions: Record<string, { x: number; y: number }>,
+    parentId?: string,
+    minAngle = 0,
+    maxAngle = Math.PI * 2
+  ) {
+    const neighbors = links
+      .map((l) =>
+        l.source === node.id && l.target !== parentId && !l.ignoreForceLayout
+          ? nodes.find((n) => n.id === l.target)
+          : l.target === node.id &&
+              l.source !== parentId &&
+              !l.ignoreForceLayout
+            ? nodes.find((n) => n.id === l.source)
+            : null
+      )
+      .filter(Boolean) as NetworkNode[];
+    if (!neighbors.length) {
+      return;
+    }
+    const angle = Math.abs(maxAngle - minAngle) / neighbors.length;
+    const toContinue: { neighbor: NetworkNode; angle: number }[] = [];
+    neighbors.forEach((neighbor, i) => {
+      if (neighbor.x == null && neighbor.y == null) {
+        const nodeAngle = minAngle + angle * i + angle / 2;
+        toContinue.push({ neighbor, angle: nodeAngle });
+        if (nodePositions[neighbor.id]) {
+          neighbor.x = nodePositions[neighbor.id].x;
+          neighbor.y = nodePositions[neighbor.id].y;
+        } else {
+          neighbor.x = node.x! + (Math.cos(nodeAngle) * this.clientWidth) / 4;
+          neighbor.y = node.y! + (Math.sin(nodeAngle) * this.clientHeight) / 4;
+        }
+      }
+    });
+    toContinue.forEach(({ neighbor, angle: neighborAngle }) => {
+      this._positionNodeNeighbors(
+        neighbor,
+        nodes,
+        links,
+        nodePositions,
+        node.id,
+        neighborAngle - Math.PI / 2,
+        neighborAngle + Math.PI / 2
+      );
+    });
+  }
 
   private _togglePhysics() {
     this._saveNodePositions();
@@ -251,6 +372,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
   }
 
   private _saveNodePositions() {
+    const positions = {};
     if (this._baseChart?.chart) {
       this._baseChart.chart
         // @ts-ignore private method but no other way to get the graph positions
@@ -260,13 +382,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         .eachNode((node: any) => {
           const layout = node.getLayout();
           if (layout) {
-            this._nodePositions[node.id] = {
+            positions[node.id] = {
               x: layout[0],
               y: layout[1],
             };
           }
         });
     }
+    this._nodePositions = positions;
   }
 
   static styles = css`

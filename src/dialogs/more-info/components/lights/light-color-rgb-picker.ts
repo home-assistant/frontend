@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiEyedropper } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -111,7 +110,7 @@ class LightRgbColorPicker extends LitElement {
         ? html`<ha-labeled-slider
             labeled
             .caption=${this.hass.localize("ui.card.light.color_brightness")}
-            icon="hass:brightness-7"
+            icon="mdi:brightness-7"
             min="0"
             max="100"
             .value=${this._colorBrightnessSliderValue}
@@ -123,7 +122,7 @@ class LightRgbColorPicker extends LitElement {
             <ha-labeled-slider
               labeled
               .caption=${this.hass.localize("ui.card.light.white_value")}
-              icon="hass:file-word-box"
+              icon="mdi:file-word-box"
               min="0"
               max="100"
               .name=${"wv"}
@@ -137,7 +136,7 @@ class LightRgbColorPicker extends LitElement {
             <ha-labeled-slider
               labeled
               .caption=${this.hass.localize("ui.card.light.cold_white_value")}
-              icon="hass:file-word-box-outline"
+              icon="mdi:file-word-box-outline"
               min="0"
               max="100"
               .name=${"cw"}
@@ -147,7 +146,7 @@ class LightRgbColorPicker extends LitElement {
             <ha-labeled-slider
               labeled
               .caption=${this.hass.localize("ui.card.light.warm_white_value")}
-              icon="hass:file-word-box"
+              icon="mdi:file-word-box"
               min="0"
               max="100"
               .name=${"ww"}

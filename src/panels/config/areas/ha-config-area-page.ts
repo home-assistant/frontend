@@ -1,5 +1,4 @@
 import { consume } from "@lit/context";
-import "@material/mwc-button";
 import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup } from "lit";
@@ -11,15 +10,18 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { goBack } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-tooltip";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import {
@@ -266,15 +268,15 @@ class HaConfigAreaPage extends LitElement {
                     class="img-edit-btn"
                   ></ha-icon-button>
                 </div>`
-              : html`<mwc-button
+              : html`<ha-button
+                  appearance="filled"
+                  size="small"
                   .entry=${area}
                   @click=${this._showSettings}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.areas.add_picture"
-                  )}
                 >
-                  <ha-svg-icon .path=${mdiImagePlus} slot="icon"></ha-svg-icon>
-                </mwc-button>`}
+                  <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
+                  ${this.hass.localize("ui.panel.config.areas.add_picture")}
+                </ha-button>`}
             <ha-card
               outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
@@ -548,11 +550,14 @@ class HaConfigAreaPage extends LitElement {
 
   private _renderScene(name: string, entityState: SceneEntity) {
     return html`<ha-tooltip
-      .distance=${-4}
-      .disabled=${!!entityState.attributes.id}
-      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
-    >
+        .for="scene-${slugify(entityState.entity_id)}"
+        .distance=${-4}
+        .disabled=${!!entityState.attributes.id}
+      >
+        ${this.hass.localize("ui.panel.config.devices.cant_edit")}
+      </ha-tooltip>
       <a
+        .id="scene-${slugify(entityState.entity_id)}"
         href=${ifDefined(
           entityState.attributes.id
             ? `/config/scene/edit/${entityState.attributes.id}`
@@ -563,17 +568,12 @@ class HaConfigAreaPage extends LitElement {
           <span>${name}</span>
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
-      </a>
-    </ha-tooltip>`;
+      </a> `;
   }
 
   private _renderAutomation(name: string, entityState: AutomationEntity) {
-    return html`<ha-tooltip
-      .disabled=${!!entityState.attributes.id}
-      .distance=${-4}
-      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
-    >
-      <a
+    return html`<a
+        id="automation-${slugify(entityState.entity_id)}"
         href=${ifDefined(
           entityState.attributes.id
             ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
@@ -585,7 +585,12 @@ class HaConfigAreaPage extends LitElement {
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
       </a>
-    </ha-tooltip>`;
+      <ha-tooltip
+        for="automation-${slugify(entityState.entity_id)}"
+        .disabled=${!!entityState.attributes.id}
+        .distance=${-4}
+        >${this.hass.localize("ui.panel.config.devices.cant_edit")}
+      </ha-tooltip>`;
   }
 
   private _renderScript(name: string, entityState: ScriptEntity) {
@@ -643,7 +648,7 @@ class HaConfigAreaPage extends LitElement {
       destructive: true,
       confirm: async () => {
         await deleteAreaRegistryEntry(this.hass!, area!.area_id);
-        afterNextRender(() => history.back());
+        afterNextRender(() => goBack("/config"));
       },
     });
   }
@@ -659,7 +664,10 @@ class HaConfigAreaPage extends LitElement {
           color: var(--secondary-text-color);
         }
         img {
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           width: 100%;
         }
 
@@ -725,7 +733,7 @@ class HaConfigAreaPage extends LitElement {
           height: 100%;
           background-color: var(--card-background-color);
           opacity: 0.5;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
         }
         ha-logbook {
           height: 400px;
@@ -738,11 +746,6 @@ class HaConfigAreaPage extends LitElement {
           text-align: center;
           padding: 16px;
           color: var(--secondary-text-color);
-        }
-
-        mwc-button > ha-svg-icon {
-          margin-inline-start: 0;
-          margin-inline-end: 8px;
         }
       `,
     ];

@@ -1,18 +1,21 @@
-import { html, LitElement, css } from "lit";
-import type { CSSResultGroup } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HomeAssistant, Route } from "../../../../../types";
+import { relativeTime } from "../../../../../common/datetime/relative_time";
+import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import { navigate } from "../../../../../common/navigate";
+import { throttle } from "../../../../../common/util/throttle";
 import "../../../../../components/chart/ha-network-graph";
 import type {
   NetworkData,
-  NetworkNode,
   NetworkLink,
+  NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
 import type {
   BluetoothDeviceData,
@@ -24,16 +27,23 @@ import {
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../layouts/hass-subpage";
-import { colorVariables } from "../../../../../resources/theme/color.globals";
-import { navigate } from "../../../../../common/navigate";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";
-import { relativeTime } from "../../../../../common/datetime/relative_time";
-import { throttle } from "../../../../../common/util/throttle";
 
 const UPDATE_THROTTLE_TIME = 10000;
 
 const CORE_SOURCE_ID = "ha";
 const CORE_SOURCE_LABEL = "Home Assistant";
+
+const RSSI_COLOR_THRESHOLDS: [number, string][] = [
+  [-70, "--green-color"], // Excellent: > -70 dBm
+  [-75, "--lime-color"], // Good: -70 to -75 dBm
+  [-80, "--yellow-color"], // Okay: -75 to -80 dBm
+  [-85, "--amber-color"], // Marginal: -80 to -85 dBm
+  [-90, "--orange-color"], // Weak: -85 to -90 dBm
+  [-95, "--deep-orange-color"], // Poor: -90 to -95 dBm
+  [-Infinity, "--red-color"], // Very poor: < -95 dBm
+];
 
 @customElement("bluetooth-network-visualization")
 export class BluetoothNetworkVisualization extends LitElement {
@@ -126,38 +136,49 @@ export class BluetoothNetworkVisualization extends LitElement {
     `;
   }
 
+  private _getRssiColorVar = memoizeOne((rssi: number): string => {
+    for (const [threshold, colorVar] of RSSI_COLOR_THRESHOLDS) {
+      if (rssi > threshold) {
+        return colorVar;
+      }
+    }
+    // Fallback (should never reach here)
+    return "--red-color";
+  });
+
   private _formatNetworkData = memoizeOne(
     (
       data: BluetoothDeviceData[],
       scanners: BluetoothScannersDetails
     ): NetworkData => {
+      const style = getComputedStyle(this);
       const categories = [
         {
           name: CORE_SOURCE_LABEL,
           symbol: "roundRect",
           itemStyle: {
-            color: colorVariables["primary-color"],
+            color: style.getPropertyValue("--primary-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.scanners"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["cyan-color"],
+            color: style.getPropertyValue("--cyan-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.known_devices"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["teal-color"],
+            color: style.getPropertyValue("--teal-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.unknown_devices"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["disabled-color"],
+            color: style.getPropertyValue("--disabled-color"),
           },
         },
       ];
@@ -174,11 +195,17 @@ export class BluetoothNetworkVisualization extends LitElement {
       ];
       const links: NetworkLink[] = [];
       Object.values(scanners).forEach((scanner) => {
-        const scannerDevice = this._sourceDevices[scanner.source];
+        const scannerDevice = this._sourceDevices[scanner.source] as
+          | DeviceRegistryEntry
+          | undefined;
+        const area = scannerDevice
+          ? getDeviceContext(scannerDevice, this.hass).area
+          : undefined;
         nodes.push({
           id: scanner.source,
           name:
             scannerDevice?.name_by_user || scannerDevice?.name || scanner.name,
+          context: area?.name,
           category: 1,
           value: 5,
           symbol: "circle",
@@ -192,7 +219,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           symbol: "none",
           lineStyle: {
             width: 3,
-            color: colorVariables["primary-color"],
+            color: style.getPropertyValue("--primary-color"),
           },
         });
       });
@@ -206,15 +233,21 @@ export class BluetoothNetworkVisualization extends LitElement {
             symbol: "none",
             lineStyle: {
               width: this._getLineWidth(node.rssi),
-              color: colorVariables["primary-color"],
+              color: style.getPropertyValue(this._getRssiColorVar(node.rssi)),
             },
           });
           return;
         }
-        const device = this._sourceDevices[node.address];
+        const device = this._sourceDevices[node.address] as
+          | DeviceRegistryEntry
+          | undefined;
+        const area = device
+          ? getDeviceContext(device, this.hass).area
+          : undefined;
         nodes.push({
           id: node.address,
           name: this._getBluetoothDeviceName(node.address),
+          context: area?.name,
           value: device ? 1 : 0,
           category: device ? 2 : 3,
           symbolSize: 20,
@@ -227,8 +260,8 @@ export class BluetoothNetworkVisualization extends LitElement {
           lineStyle: {
             width: this._getLineWidth(node.rssi),
             color: device
-              ? colorVariables["primary-color"]
-              : colorVariables["disabled-color"],
+              ? style.getPropertyValue(this._getRssiColorVar(node.rssi))
+              : style.getPropertyValue("--disabled-color"),
           },
         });
       });
@@ -274,15 +307,20 @@ export class BluetoothNetworkVisualization extends LitElement {
       const btDevice = this._data.find((d) => d.address === address);
       if (btDevice) {
         tooltipText = `<b>${name}</b><br><b>${this.hass.localize("ui.panel.config.bluetooth.address")}:</b> ${address}<br><b>${this.hass.localize("ui.panel.config.bluetooth.rssi")}:</b> ${btDevice.rssi}<br><b>${this.hass.localize("ui.panel.config.bluetooth.source")}:</b> ${btDevice.source}<br><b>${this.hass.localize("ui.panel.config.bluetooth.updated")}:</b> ${relativeTime(new Date(btDevice.time * 1000), this.hass.locale)}`;
+        const device = this._sourceDevices[address];
+        if (device) {
+          const area = getDeviceContext(device, this.hass).area;
+          if (area) {
+            tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
+          }
+        }
       } else {
         const device = this._sourceDevices[address];
         if (device) {
           tooltipText = `<b>${name}</b><br><b>${this.hass.localize("ui.panel.config.bluetooth.address")}:</b> ${address}`;
-          if (device.area_id) {
-            const area = this.hass.areas[device.area_id];
-            if (area) {
-              tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
-            }
+          const area = getDeviceContext(device, this.hass).area;
+          if (area) {
+            tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
           }
         }
       }

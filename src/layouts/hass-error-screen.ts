@@ -1,8 +1,9 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { goBack } from "../common/navigate";
 import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-button";
 import "../components/ha-menu-button";
 import type { HomeAssistant } from "../types";
 import "../components/ha-alert";
@@ -41,16 +42,16 @@ class HassErrorScreen extends LitElement {
       <div class="content">
         <ha-alert alert-type="error">${this.error}</ha-alert>
         <slot>
-          <mwc-button @click=${this._handleBack}>
+          <ha-button appearance="plain" size="small" @click=${this._handleBack}>
             ${this.hass?.localize("ui.common.back")}
-          </mwc-button>
+          </ha-button>
         </slot>
       </div>
     `;
   }
 
   private _handleBack(): void {
-    history.back();
+    goBack();
   }
 
   static get styles(): CSSResultGroup {

@@ -33,17 +33,31 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     map: () => import("./map/map-dashboard-strategy"),
     iframe: () => import("./iframe/iframe-dashboard-strategy"),
     areas: () => import("./areas/areas-dashboard-strategy"),
+    home: () => import("./home/home-dashboard-strategy"),
   },
   view: {
     "original-states": () =>
       import("./original-states/original-states-view-strategy"),
-    energy: () => import("../../energy/strategies/energy-view-strategy"),
+    "energy-overview": () =>
+      import("../../energy/strategies/energy-overview-view-strategy"),
+    "energy-electricity": () =>
+      import("../../energy/strategies/energy-electricity-view-strategy"),
     map: () => import("./map/map-view-strategy"),
     iframe: () => import("./iframe/iframe-view-strategy"),
     area: () => import("./areas/area-view-strategy"),
     "areas-overview": () => import("./areas/areas-overview-view-strategy"),
+    "home-main": () => import("./home/home-main-view-strategy"),
+    "home-media-players": () =>
+      import("./home/home-media-players-view-strategy"),
+    "home-area": () => import("./home/home-area-view-strategy"),
+    light: () => import("../../light/strategies/light-view-strategy"),
+    security: () => import("../../security/strategies/security-view-strategy"),
+    climate: () => import("../../climate/strategies/climate-view-strategy"),
   },
-  section: {},
+  section: {
+    "common-controls": () =>
+      import("./usage_prediction/common-controls-section-strategy"),
+  },
 };
 
 export type LovelaceStrategyConfigType = "dashboard" | "view" | "section";

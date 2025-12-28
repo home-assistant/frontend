@@ -1,8 +1,5 @@
 import { css } from "lit";
-import {
-  extractDerivedVars,
-  extractVar,
-} from "../../common/style/derived-css-vars";
+import { extractDerivedVars, extractVar } from "../../common/style/derived-css-vars";
 
 export const typographyStyles = css`
   html {
@@ -17,16 +14,10 @@ export const typographyStyles = css`
     --ha-font-size-m: calc(14px * var(--ha-font-size-scale)); /* 1rem */
     --ha-font-size-l: calc(16px * var(--ha-font-size-scale)); /* 1.142857rem */
     --ha-font-size-xl: calc(20px * var(--ha-font-size-scale)); /* 1.428571rem */
-    --ha-font-size-2xl: calc(
-      24px * var(--ha-font-size-scale)
-    ); /* 1.714286rem */
+    --ha-font-size-2xl: calc(24px * var(--ha-font-size-scale)); /* 1.714286rem */
     --ha-font-size-3xl: calc(28px * var(--ha-font-size-scale)); /* 2rem */
-    --ha-font-size-4xl: calc(
-      32px * var(--ha-font-size-scale)
-    ); /* 2.285714rem */
-    --ha-font-size-5xl: calc(
-      40px * var(--ha-font-size-scale)
-    ); /* 2.857143rem */
+    --ha-font-size-4xl: calc(32px * var(--ha-font-size-scale)); /* 2.285714rem */
+    --ha-font-size-5xl: calc(40px * var(--ha-font-size-scale)); /* 2.857143rem */
 
     --ha-font-weight-light: 300;
     --ha-font-weight-normal: 400;
@@ -60,17 +51,8 @@ export const typographyStyles = css`
 
 export const typographyDerivedVariables = extractDerivedVars(typographyStyles);
 
-export const haFontFamilyBody = extractVar(
-  typographyStyles,
-  "ha-font-family-body"
-);
+export const haFontFamilyBody = extractVar(typographyStyles, "ha-font-family-body");
 
-export const haFontSmoothing = extractVar(
-  typographyStyles,
-  "ha-font-smoothing"
-);
+export const haFontSmoothing = extractVar(typographyStyles, "ha-font-smoothing");
 
-export const haMozOsxFontSmoothing = extractVar(
-  typographyStyles,
-  "ha-moz-osx-font-smoothing"
-);
+export const haMozOsxFontSmoothing = extractVar(typographyStyles, "ha-moz-osx-font-smoothing");

@@ -10,7 +10,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/sl-tab-group";
+import "../../../../components/ha-tab-group";
+import "../../../../components/ha-tab-group-tab";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
@@ -79,18 +80,22 @@ export class HuiConditionalCardEditor
     const isGuiMode = !this._cardEditorEl || this._GUImode;
 
     return html`
-      <sl-tab-group @sl-tab-show=${this._selectTab}>
-        <sl-tab slot="nav" panel="conditions" .active=${!this._cardTab}>
+      <ha-tab-group @wa-tab-show=${this._selectTab}>
+        <ha-tab-group-tab
+          slot="nav"
+          panel="conditions"
+          .active=${!this._cardTab}
+        >
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.conditions"
           )}
-        </sl-tab>
-        <sl-tab slot="nav" panel="card" .active=${this._cardTab}>
+        </ha-tab-group-tab>
+        <ha-tab-group-tab slot="nav" panel="card" .active=${this._cardTab}>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.card"
           )}
-        </sl-tab>
-      </sl-tab-group>
+        </ha-tab-group-tab>
+      </ha-tab-group>
       ${this._cardTab
         ? html`
             <div class="card">
@@ -115,10 +120,13 @@ export class HuiConditionalCardEditor
                         .path=${mdiContentCopy}
                         @click=${this._handleCopyCard}
                       ></ha-icon-button>
-                      <mwc-button @click=${this._handleReplaceCard}
+                      <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._handleReplaceCard}
                         >${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.change_type"
-                        )}</mwc-button
+                        )}</ha-button
                       >
                     </div>
                     <hui-card-element-editor
@@ -230,11 +238,11 @@ export class HuiConditionalCardEditor
     return [
       configElementStyle,
       css`
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
 
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }
@@ -257,6 +265,9 @@ export class HuiConditionalCardEditor
           display: flex;
           justify-content: flex-end;
           width: 100%;
+        }
+        .card-options {
+          align-items: center;
         }
         .gui-mode-button {
           margin-right: auto;

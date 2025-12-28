@@ -100,7 +100,7 @@ const CURRENCIES = [
   "MMK",
   "MNT",
   "MOP",
-  "MRO",
+  "MRU",
   "MUR",
   "MVR",
   "MWK",

@@ -80,11 +80,6 @@ export const haStyle = css`
     color: var(--error-color);
   }
 
-  ha-button.warning,
-  mwc-button.warning {
-    --mdc-theme-primary: var(--error-color);
-  }
-
   ${buttonLinkStyle}
 
   .card-actions a {
@@ -147,6 +142,11 @@ export const haStyleDialog = css`
     --mdc-dialog-max-width: 600px;
     --mdc-dialog-max-width: min(600px, 95vw);
     --justify-action-buttons: space-between;
+    --dialog-container-padding: var(--safe-area-inset-top, var(--ha-space-0))
+      var(--safe-area-inset-right, var(--ha-space-0))
+      var(--safe-area-inset-bottom, var(--ha-space-0))
+      var(--safe-area-inset-left, var(--ha-space-0));
+    --dialog-surface-padding: var(--ha-space-0);
   }
 
   ha-dialog .form {
@@ -160,24 +160,54 @@ export const haStyleDialog = css`
   /* make dialog fullscreen on small screens */
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {
-      --mdc-dialog-min-width: calc(
-        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-      );
-      --mdc-dialog-max-width: calc(
-        100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-      );
-      --mdc-dialog-min-height: 100%;
-      --mdc-dialog-max-height: 100%;
+      --mdc-dialog-min-width: 100vw;
+      --mdc-dialog-max-width: 100vw;
+      --mdc-dialog-min-height: 100vh;
+      --mdc-dialog-min-height: 100svh;
+      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-max-height: 100svh;
+      --dialog-container-padding: var(--ha-space-0);
+      --dialog-surface-padding: var(--safe-area-inset-top, var(--ha-space-0))
+        var(--safe-area-inset-right, var(--ha-space-0))
+        var(--safe-area-inset-bottom, var(--ha-space-0))
+        var(--safe-area-inset-left, var(--ha-space-0));
       --vertical-align-dialog: flex-end;
-      --ha-dialog-border-radius: 0;
+      --ha-dialog-border-radius: var(--ha-border-radius-square);
     }
-  }
-  mwc-button.warning,
-  ha-button.warning {
-    --mdc-theme-primary: var(--error-color);
   }
   .error {
     color: var(--error-color);
+  }
+`;
+
+export const haStyleDialogFixedTop = css`
+  ha-dialog {
+    /* Pin dialog to top so it doesn't jump when content changes size */
+    --vertical-align-dialog: flex-start;
+    --dialog-surface-margin-top: var(--ha-space-10);
+    --mdc-dialog-max-height: calc(
+      100vh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
+          --safe-area-inset-y,
+          var(--ha-space-0)
+        )
+    );
+    --mdc-dialog-max-height: calc(
+      100svh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
+          --safe-area-inset-y,
+          var(--ha-space-0)
+        )
+    );
+  }
+
+  @media all and (max-width: 450px), all and (max-height: 500px) {
+    ha-dialog {
+      /* When in fullscreen, dialog should be attached to top */
+      --dialog-surface-margin-top: var(--ha-space-0);
+      --mdc-dialog-min-height: 100vh;
+      --mdc-dialog-min-height: 100svh;
+      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-max-height: 100svh;
+    }
   }
 `;
 
@@ -188,8 +218,7 @@ export const haStyleScrollbar = css`
   }
 
   .ha-scrollbar::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: var(--ha-border-radius-sm);
     background: var(--scrollbar-thumb-color);
   }
 

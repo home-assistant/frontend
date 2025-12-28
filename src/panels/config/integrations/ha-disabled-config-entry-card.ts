@@ -45,10 +45,9 @@ export class HaDisabledConfigEntryCard extends LitElement {
         >
           <ha-icon-button .path=${mdiCog}></ha-icon-button>
         </a>
-        <ha-button
-          @click=${this._handleEnable}
-          .label=${this.hass.localize("ui.common.enable")}
-        ></ha-button>
+        <ha-button @click=${this._handleEnable} appearance="filled">
+          ${this.hass.localize("ui.common.enable")}
+        </ha-button>
       </ha-integration-action-card>
     `;
   }

@@ -3,28 +3,35 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../ha-icon";
 import "../ha-svg-icon";
-import { classMap } from "lit/directives/class-map";
 
-export type TileIconImageStyle = "square" | "rounded-square" | "circle";
-
-export const DEFAULT_TILE_ICON_BORDER_STYLE = "circle";
-
+/**
+ * Home Assistant tile icon component
+ *
+ * @element ha-tile-icon
+ *
+ * @summary
+ * A tile icon component, used in tile card in Home Assistant to display an icon or image.
+ *
+ * @slot - Additional content (for example, a badge).
+ * @slot icon - The icon container (usually for icons).
+ *
+ * @cssprop --ha-tile-icon-border-radius - The border radius of the tile icon. defaults to `var(--ha-border-radius-pill)`.
+ *
+ * @attr {boolean} interactive - Whether the icon is interactive (hover and focus styles).
+ * @attr {string} image-url - The URL of the image to display instead of an icon.
+ */
 @customElement("ha-tile-icon")
 export class HaTileIcon extends LitElement {
   @property({ type: Boolean, reflect: true })
   public interactive = false;
 
-  @property({ attribute: "border-style", type: String })
-  public imageStyle?: TileIconImageStyle;
-
-  @property({ attribute: false })
+  @property({ attribute: "image-url", type: String })
   public imageUrl?: string;
 
   protected render(): TemplateResult {
     if (this.imageUrl) {
-      const imageStyle = this.imageStyle || DEFAULT_TILE_ICON_BORDER_STYLE;
       return html`
-        <div class="container ${classMap({ [imageStyle]: this.imageUrl })}">
+        <div class="container">
           <img alt="" src=${this.imageUrl} />
         </div>
         <slot></slot>
@@ -44,6 +51,11 @@ export class HaTileIcon extends LitElement {
       --tile-icon-color: var(--disabled-color);
       --tile-icon-opacity: 0.2;
       --tile-icon-hover-opacity: 0.35;
+      --tile-icon-border-radius: var(
+        --ha-tile-icon-border-radius,
+        var(--ha-border-radius-pill)
+      );
+      --tile-icon-size: 36px;
       --mdc-icon-size: 24px;
       position: relative;
       user-select: none;
@@ -60,20 +72,14 @@ export class HaTileIcon extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 18px;
+      width: var(--tile-icon-size);
+      height: var(--tile-icon-size);
+      border-radius: var(--tile-icon-border-radius);
       overflow: hidden;
       transition: box-shadow 180ms ease-in-out;
     }
     :host([interactive]:focus-visible) .container {
       box-shadow: 0 0 0 2px var(--tile-icon-color);
-    }
-    .container.rounded-square {
-      border-radius: 8px;
-    }
-    .container.square {
-      border-radius: 0;
     }
     .container.background::before {
       content: "";

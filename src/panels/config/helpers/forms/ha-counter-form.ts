@@ -17,6 +17,8 @@ class HaCounterForm extends LitElement {
 
   @property({ type: Boolean }) public new = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _item?: Partial<Counter>;
 
   @state() private _name!: string;
@@ -82,6 +84,7 @@ class HaCounterForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-icon-picker
           .hass=${this.hass}
@@ -91,6 +94,7 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
+          .disabled=${this.disabled}
         ></ha-icon-picker>
         <ha-textfield
           .value=${this._minimum}
@@ -100,6 +104,7 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.minimum"
           )}
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-textfield
           .value=${this._maximum}
@@ -109,6 +114,7 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.maximum"
           )}
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-textfield
           .value=${this._initial}
@@ -118,6 +124,7 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.counter.initial"
           )}
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-expansion-panel
           header=${this.hass.localize(
@@ -133,12 +140,14 @@ class HaCounterForm extends LitElement {
             .label=${this.hass!.localize(
               "ui.dialogs.helper_settings.counter.step"
             )}
+            .disabled=${this.disabled}
           ></ha-textfield>
           <div class="row">
             <ha-switch
               .checked=${this._restore}
               .configValue=${"restore"}
               @change=${this._valueChanged}
+              .disabled=${this.disabled}
             >
             </ha-switch>
             <div>

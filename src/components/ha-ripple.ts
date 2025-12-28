@@ -16,6 +16,14 @@ export class HaRipple extends Ripple {
     this.attachableTouchController.attach(control);
   }
 
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // @ts-ignore
+    this.hovered = false;
+    // @ts-ignore
+    this.pressed = false;
+  }
+
   detach() {
     super.detach();
     this.attachableTouchController.detach();

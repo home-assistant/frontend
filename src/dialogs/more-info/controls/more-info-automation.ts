@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -6,6 +5,7 @@ import "../../../components/ha-relative-time";
 import { triggerAutomationActions } from "../../../data/automation";
 import { isUnavailableState } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-button";
 
 @customElement("more-info-automation")
 class MoreInfoAutomation extends LitElement {
@@ -30,12 +30,14 @@ class MoreInfoAutomation extends LitElement {
       </div>
 
       <div class="actions">
-        <mwc-button
+        <ha-button
+          appearance="plain"
+          size="small"
           @click=${this._runActions}
           .disabled=${isUnavailableState(this.stateObj!.state)}
         >
           ${this.hass.localize("ui.card.automation.trigger")}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }

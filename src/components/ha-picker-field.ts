@@ -96,7 +96,7 @@ export class HaPickerField extends LitElement {
         }
         ha-combo-box-item {
           background-color: var(--mdc-text-field-fill-color, whitesmoke);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           border-end-end-radius: 0;
           border-end-start-radius: 0;
           --md-list-item-one-line-container-height: 56px;
@@ -105,7 +105,7 @@ export class HaPickerField extends LitElement {
           --md-list-item-bottom-space: 0px;
           --md-list-item-leading-space: 8px;
           --md-list-item-trailing-space: 8px;
-          --ha-md-list-item-gap: 8px;
+          --ha-md-list-item-gap: var(--ha-space-2);
           /* Remove the default focus ring */
           --md-focus-ring-width: 0px;
           --md-focus-ring-duration: 0s;

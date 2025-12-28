@@ -1,11 +1,11 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-area-picker";
 import { updateDeviceRegistryEntry } from "../../data/device_registry";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { AssistantSetupStyles } from "./styles";
-import "../../components/ha-area-picker";
 
 @customElement("ha-voice-assistant-setup-step-area")
 export class HaVoiceAssistantSetupStepArea extends LitElement {
@@ -37,7 +37,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
         ></ha-area-picker>
       </div>
       <div class="footer">
-        <ha-button @click=${this._setArea} unelevated
+        <ha-button @click=${this._setArea}
           >${this.hass.localize("ui.common.next")}</ha-button
         >
       </div>`;
@@ -70,6 +70,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
         display: block;
         width: 100%;
         margin-bottom: 24px;
+        text-align: initial;
       }
     `,
   ];

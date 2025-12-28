@@ -112,7 +112,7 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
             : nothing}
         </div>
         <div slot="actions">
-          <ha-button @click=${this._cancel}>
+          <ha-button appearance="plain" @click=${this._cancel}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
 

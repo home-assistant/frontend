@@ -4,14 +4,14 @@ import { HaTextField } from "./ha-textfield";
 
 @customElement("ha-combo-box-textfield")
 export class HaComboBoxTextField extends HaTextField {
-  @property({ type: Boolean, attribute: "disable-set-value" })
-  public disableSetValue = false;
+  @property({ type: Boolean, attribute: "force-blank-value" })
+  public forceBlankValue = false;
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-    if (changedProps.has("value")) {
-      if (this.disableSetValue) {
-        this.value = changedProps.get("value") as string;
+    if (changedProps.has("value") || changedProps.has("forceBlankValue")) {
+      if (this.forceBlankValue && this.value) {
+        this.value = "";
       }
     }
   }

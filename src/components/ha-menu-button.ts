@@ -137,7 +137,7 @@ class HaMenuButton extends LitElement {
       right: 7px;
       inset-inline-end: 7px;
       inset-inline-start: initial;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       border: 2px solid var(--app-header-background-color);
     }
   `;

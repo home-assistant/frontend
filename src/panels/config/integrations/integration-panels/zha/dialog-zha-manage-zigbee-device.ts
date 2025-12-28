@@ -8,9 +8,14 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-tab-group";
+import "../../../../../components/ha-tab-group-tab";
 import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
-import { haStyleDialog } from "../../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { sortZHADevices, sortZHAGroups } from "./functions";
 import type {
@@ -103,10 +108,10 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           >
             ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
           </span>
-          <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
+          <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
             ${tabs.map(
               (tab) => html`
-                <sl-tab
+                <ha-tab-group-tab
                   slot="nav"
                   .panel=${tab}
                   .active=${this._currTab === tab}
@@ -114,10 +119,10 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                   ${this.hass.localize(
                     `ui.dialogs.zha_manage_device.tabs.${tab}`
                   )}
-                </sl-tab>
+                </ha-tab-group-tab>
               `
             )}
-          </sl-tab-group>
+          </ha-tab-group>
         </ha-dialog-header>
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
@@ -209,30 +214,34 @@ class DialogZHAManageZigbeeDevice extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
           --dialog-surface-position: static;
           --dialog-content-position: static;
-          --vertical-align-dialog: flex-start;
         }
 
         .content {
           outline: none;
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-2);
         }
 
         @media all and (min-width: 600px) and (min-height: 501px) {
           ha-dialog {
             --mdc-dialog-min-width: 560px;
             --mdc-dialog-max-width: 560px;
-            --dialog-surface-margin-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
           }
         }
 
-        sl-tab {
+        ha-tab-group-tab {
           flex: 1;
         }
-        sl-tab::part(base) {
+        ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
         }

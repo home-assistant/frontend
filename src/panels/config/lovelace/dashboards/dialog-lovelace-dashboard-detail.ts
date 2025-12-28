@@ -1,21 +1,23 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
+import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import { saveFrontendSystemData } from "../../../../data/frontend";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
+import { DEFAULT_PANEL } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 
 @customElement("dialog-lovelace-dashboard-detail")
@@ -59,7 +61,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params || !this._data) {
       return nothing;
     }
-    const defaultPanelUrlPath = this.hass.defaultPanel;
+    const defaultPanelUrlPath =
+      this.hass.systemData?.default_panel || DEFAULT_PANEL;
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
@@ -104,20 +107,22 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           ? html`
               ${this._params.dashboard?.id
                 ? html`
-                    <mwc-button
+                    <ha-button
                       slot="secondaryAction"
-                      class="warning"
+                      variant="danger"
+                      appearance="plain"
                       @click=${this._deleteDashboard}
                       .disabled=${this._submitting}
                     >
                       ${this.hass.localize(
                         "ui.panel.config.lovelace.dashboards.detail.delete"
                       )}
-                    </mwc-button>
+                    </ha-button>
                   `
                 : ""}
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
+                appearance="plain"
                 @click=${this._toggleDefault}
                 .disabled=${this._params.urlPath === "lovelace" &&
                 defaultPanelUrlPath === "lovelace"}
@@ -129,10 +134,10 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                   : this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.set_default"
                     )}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._updateDashboard}
           .disabled=${(this._error && "url_path" in this._error) ||
@@ -149,7 +154,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             : this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.detail.create"
               )}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -249,15 +254,38 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     };
   }
 
-  private _toggleDefault() {
+  private async _toggleDefault() {
     const urlPath = this._params?.urlPath;
     if (!urlPath) {
       return;
     }
-    setDefaultPanel(
-      this,
-      urlPath === this.hass.defaultPanel ? DEFAULT_PANEL : urlPath
-    );
+
+    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
+    // Add warning dialog to saying that this will change the default dashboard for all users
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        urlPath === defaultPanel
+          ? "ui.panel.config.lovelace.dashboards.detail.remove_default_confirm_title"
+          : "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_title"
+      ),
+      text: this.hass.localize(
+        urlPath === defaultPanel
+          ? "ui.panel.config.lovelace.dashboards.detail.remove_default_confirm_text"
+          : "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
+      ),
+      confirmText: this.hass.localize("ui.common.ok"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: false,
+    });
+
+    if (!confirm) {
+      return;
+    }
+
+    saveFrontendSystemData(this.hass.connection, "core", {
+      ...this.hass.systemData,
+      default_panel: urlPath === defaultPanel ? undefined : urlPath,
+    });
   }
 
   private async _updateDashboard() {
@@ -281,7 +309,20 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       }
       this.closeDialog();
     } catch (err: any) {
-      this._error = { base: err?.message || "Unknown error" };
+      let localizedErrorMessage: string | undefined;
+      if (err?.translation_domain && err?.translation_key) {
+        const localize = await this.hass.loadBackendTranslation(
+          "exceptions",
+          err.translation_domain
+        );
+        localizedErrorMessage = localize(
+          `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+          err.translation_placeholders
+        );
+      }
+      this._error = {
+        base: localizedErrorMessage || err?.message || "Unknown error",
+      };
     } finally {
       this._submitting = false;
     }

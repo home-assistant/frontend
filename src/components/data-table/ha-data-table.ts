@@ -298,6 +298,18 @@ export class HaDataTable extends LitElement {
     }
 
     if (properties.has("data")) {
+      // Clean up checked rows that no longer exist in the data
+      if (this._checkedRows.length) {
+        const validIds = new Set(this.data.map((row) => String(row[this.id])));
+        const validCheckedRows = this._checkedRows.filter((id) =>
+          validIds.has(id)
+        );
+        if (validCheckedRows.length !== this._checkedRows.length) {
+          this._checkedRows = validCheckedRows;
+          this._checkedRowsChanged();
+        }
+      }
+
       this._checkableRowsCount = this.data.filter(
         (row) => row.selectable !== false
       ).length;
@@ -932,7 +944,7 @@ export class HaDataTable extends LitElement {
         .find((el) =>
           [
             "ha-checkbox",
-            "mwc-button",
+            "ha-button",
             "ha-button",
             "ha-icon-button",
             "ha-assist-chip",
@@ -1053,7 +1065,7 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table {
           background-color: var(--data-table-background-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           border-width: 1px;
           border-style: solid;
           border-color: var(--divider-color);

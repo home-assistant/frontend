@@ -6,6 +6,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
+import "../../../../../components/ha-button";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
@@ -36,7 +37,6 @@ import {
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-button";
 import type { ZWaveJSUpdateFirmwareNodeDialogParams } from "./show-dialog-zwave_js-update-firmware-node";
 
 const firmwareTargetSchema: HaFormSchema[] = [
@@ -161,9 +161,9 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       ? nothing
       : html`
           <ha-button
-            destructive
-            slot="secondaryAction"
+            slot="primaryAction"
             @click=${this._abortFirmwareUpdate}
+            variant="danger"
           >
             ${this.hass.localize(
               "ui.panel.config.zwave_js.update_firmware.abort"

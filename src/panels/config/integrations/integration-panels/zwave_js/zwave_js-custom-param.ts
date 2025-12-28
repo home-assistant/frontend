@@ -92,12 +92,12 @@ class ZWaveJSCustomParam extends LitElement {
       </div>
       <div class="custom-config-buttons">
         ${this._isLoading ? html`<ha-spinner></ha-spinner>` : nothing}
-        <ha-button @click=${this._getCustomConfigValue}>
+        <ha-button appearance="plain" @click=${this._getCustomConfigValue}>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.get_value"
           )}
         </ha-button>
-        <ha-button @click=${this._setCustomConfigValue}>
+        <ha-button appearance="plain" @click=${this._setCustomConfigValue}>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.node_config.set_value"
           )}
@@ -224,7 +224,7 @@ class ZWaveJSCustomParam extends LitElement {
     .custom-config-form {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: var(--ha-space-4);
       margin-bottom: 8px;
     }
 

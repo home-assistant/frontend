@@ -9,6 +9,7 @@ import {
   mdiHelpCircle,
   mdiInformationOutline,
   mdiMenuDown,
+  mdiOpenInNew,
   mdiPlay,
   mdiPlus,
   mdiRobotHappy,
@@ -291,7 +292,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           extraTemplate: (automation) =>
             automation.labels.length
               ? html`<ha-data-table-labels
-                  @label-clicked=${this._labelClicked}
+                  @label-clicked=${narrow ? undefined : this._labelClicked}
                   .labels=${automation.labels}
                 ></ha-data-table-labels>`
               : nothing,
@@ -451,7 +452,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             .indeterminate=${partial}
             reducedTouchTarget
           ></ha-checkbox>
-          <ha-label style=${color ? `--color: ${color}` : ""}>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -804,18 +808,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                     { user: this.hass.user?.name || "Alice" }
                   )}
                 </p>
-                <a
+                <ha-button
                   href=${documentationUrl(
                     this.hass,
                     "/docs/automation/editor/"
                   )}
                   target="_blank"
+                  appearance="plain"
                   rel="noreferrer"
+                  size="small"
                 >
-                  <ha-button>
-                    ${this.hass.localize("ui.panel.config.common.learn_more")}
-                  </ha-button>
-                </a>
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}> </ha-svg-icon>
+                </ha-button>
               </div>`
             : nothing
         }
@@ -1156,6 +1161,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private async _delete(automation) {
     try {
       await deleteAutomation(this.hass, automation.attributes.id);
+      this._selected = this._selected.filter(
+        (entityId) => entityId !== automation.entity_id
+      );
     } catch (err: any) {
       await showAlertDialog(this, {
         text:
@@ -1453,6 +1461,9 @@ ${rejected
         .empty {
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty ha-button {
+          --mdc-icon-size: 24px;
         }
         .empty h1 {
           font-size: var(--ha-font-size-3xl);

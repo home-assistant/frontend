@@ -14,4 +14,5 @@ export interface LovelaceCardConfig {
   type: string;
   [key: string]: any;
   visibility?: Condition[];
+  disabled?: boolean;
 }

@@ -12,6 +12,7 @@ import {
   mdiChatSleep,
   mdiClipboardList,
   mdiClock,
+  mdiCodeBraces,
   mdiCog,
   mdiCommentAlert,
   mdiCounter,
@@ -58,6 +59,7 @@ import type {
 } from "./entity_registry";
 
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
+import { getTriggerDomain, getTriggerObjectId } from "./trigger";
 
 /** Icon to use when no icon specified for service. */
 export const DEFAULT_SERVICE_ICON = mdiRoomService;
@@ -113,6 +115,7 @@ export const FALLBACK_DOMAIN_ICONS = {
   text: mdiFormTextbox,
   time: mdiClock,
   timer: mdiTimerOutline,
+  template: mdiCodeBraces,
   todo: mdiClipboardList,
   tts: mdiSpeakerMessage,
   vacuum: mdiRobotVacuum,
@@ -131,14 +134,19 @@ const resources: {
     all?: Promise<Record<string, ServiceIcons>>;
     domains: Record<string, ServiceIcons | Promise<ServiceIcons>>;
   };
+  triggers: {
+    all?: Promise<Record<string, TriggerIcons>>;
+    domains: Record<string, TriggerIcons | Promise<TriggerIcons>>;
+  };
 } = {
   entity: {},
   entity_component: {},
   services: { domains: {} },
+  triggers: { domains: {} },
 };
 
 interface IconResources<
-  T extends ComponentIcons | PlatformIcons | ServiceIcons,
+  T extends ComponentIcons | PlatformIcons | ServiceIcons | TriggerIcons,
 > {
   resources: Record<string, T>;
 }
@@ -182,12 +190,22 @@ type ServiceIcons = Record<
   { service: string; sections?: Record<string, string> }
 >;
 
-export type IconCategory = "entity" | "entity_component" | "services";
+type TriggerIcons = Record<
+  string,
+  { trigger: string; sections?: Record<string, string> }
+>;
+
+export type IconCategory =
+  | "entity"
+  | "entity_component"
+  | "services"
+  | "triggers";
 
 interface CategoryType {
   entity: PlatformIcons;
   entity_component: ComponentIcons;
   services: ServiceIcons;
+  triggers: TriggerIcons;
 }
 
 export const getHassIcons = async <T extends IconCategory>(
@@ -256,41 +274,58 @@ export const getComponentIcons = async (
   return resources.entity_component.resources.then((res) => res[domain]);
 };
 
-export const getServiceIcons = async (
+export const getCategoryIcons = async <
+  T extends Exclude<IconCategory, "entity" | "entity_component">,
+>(
   hass: HomeAssistant,
+  category: T,
   domain?: string,
   force = false
-): Promise<ServiceIcons | Record<string, ServiceIcons> | undefined> => {
+): Promise<CategoryType[T] | Record<string, CategoryType[T]> | undefined> => {
   if (!domain) {
-    if (!force && resources.services.all) {
-      return resources.services.all;
+    if (!force && resources[category].all) {
+      return resources[category].all as Promise<
+        Record<string, CategoryType[T]>
+      >;
     }
-    resources.services.all = getHassIcons(hass, "services", domain).then(
-      (res) => {
-        resources.services.domains = res.resources;
-        return res?.resources;
-      }
-    );
-    return resources.services.all;
+    resources[category].all = getHassIcons(hass, category).then((res) => {
+      resources[category].domains = res.resources as any;
+      return res?.resources as Record<string, CategoryType[T]>;
+    }) as any;
+    return resources[category].all as Promise<Record<string, CategoryType[T]>>;
   }
-  if (!force && domain in resources.services.domains) {
-    return resources.services.domains[domain];
+  if (!force && domain in resources[category].domains) {
+    return resources[category].domains[domain] as Promise<CategoryType[T]>;
   }
-  if (resources.services.all && !force) {
-    await resources.services.all;
-    if (domain in resources.services.domains) {
-      return resources.services.domains[domain];
+  if (resources[category].all && !force) {
+    await resources[category].all;
+    if (domain in resources[category].domains) {
+      return resources[category].domains[domain] as Promise<CategoryType[T]>;
     }
   }
   if (!isComponentLoaded(hass, domain)) {
     return undefined;
   }
-  const result = getHassIcons(hass, "services", domain);
-  resources.services.domains[domain] = result.then(
+  const result = getHassIcons(hass, category, domain);
+  resources[category].domains[domain] = result.then(
     (res) => res?.resources[domain]
-  );
-  return resources.services.domains[domain];
+  ) as any;
+  return resources[category].domains[domain] as Promise<CategoryType[T]>;
 };
+
+export const getServiceIcons = async (
+  hass: HomeAssistant,
+  domain?: string,
+  force = false
+): Promise<ServiceIcons | Record<string, ServiceIcons> | undefined> =>
+  getCategoryIcons(hass, "services", domain, force);
+
+export const getTriggerIcons = async (
+  hass: HomeAssistant,
+  domain?: string,
+  force = false
+): Promise<TriggerIcons | Record<string, TriggerIcons> | undefined> =>
+  getCategoryIcons(hass, "triggers", domain, force);
 
 // Cache for sorted range keys
 const sortedRangeCache = new WeakMap<Record<string, string>, number[]>();
@@ -467,6 +502,26 @@ export const attributeIcon = async (
 
       icon = getIconFromTranslations(value, translations);
     }
+  }
+  return icon;
+};
+
+export const triggerIcon = async (
+  hass: HomeAssistant,
+  trigger: string
+): Promise<string | undefined> => {
+  let icon: string | undefined;
+
+  const domain = getTriggerDomain(trigger);
+  const triggerName = getTriggerObjectId(trigger);
+
+  const triggerIcons = await getTriggerIcons(hass, domain);
+  if (triggerIcons) {
+    const trgrIcon = triggerIcons[triggerName] as TriggerIcons[string];
+    icon = trgrIcon?.trigger;
+  }
+  if (!icon) {
+    icon = await domainIcon(hass, domain);
   }
   return icon;
 };

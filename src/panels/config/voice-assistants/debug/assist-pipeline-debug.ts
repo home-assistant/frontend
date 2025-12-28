@@ -148,7 +148,9 @@ export class AssistPipelineDebug extends LitElement {
       ).pipeline_runs.reverse();
     } catch (e: any) {
       showAlertDialog(this, {
-        title: "Failed to fetch pipeline runs",
+        title: this.hass.localize(
+          "ui.panel.config.voice_assistants.debug.error.fetch_runs"
+        ),
         text: e.message,
       });
       return;
@@ -176,7 +178,9 @@ export class AssistPipelineDebug extends LitElement {
       ).events;
     } catch (e: any) {
       showAlertDialog(this, {
-        title: "Failed to fetch events",
+        title: this.hass.localize(
+          "ui.panel.config.voice_assistants.debug.error.fetch_events"
+        ),
         text: e.message,
       });
       return;

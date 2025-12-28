@@ -20,6 +20,7 @@ import {
 } from "../../data/frontend";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { getDefaultPanelUrlPath } from "../../data/panel";
 
 @customElement("dialog-edit-sidebar")
 class DialogEditSidebar extends LitElement {
@@ -94,13 +95,26 @@ class DialogEditSidebar extends LitElement {
 
     const panels = this._panels(this.hass.panels);
 
+    const defaultPanel = getDefaultPanelUrlPath(this.hass);
+
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
-      this.hass.defaultPanel,
+      defaultPanel,
       this._order,
       this._hidden,
       this.hass.locale
     );
+
+    // Add default hidden panels that are missing in hidden
+    for (const panel of panels) {
+      if (
+        panel.default_visible === false &&
+        !this._order.includes(panel.url_path) &&
+        !this._hidden.includes(panel.url_path)
+      ) {
+        this._hidden.push(panel.url_path);
+      }
+    }
 
     const items = [
       ...beforeSpacer,
@@ -109,12 +123,12 @@ class DialogEditSidebar extends LitElement {
     ].map((panel) => ({
       value: panel.url_path,
       label:
-        panel.url_path === this.hass.defaultPanel
+        panel.url_path === defaultPanel
           ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title || "?",
       icon: panel.icon || undefined,
       iconPath:
-        panel.url_path === this.hass.defaultPanel && !panel.icon
+        panel.url_path === defaultPanel && !panel.icon
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]
@@ -160,7 +174,7 @@ class DialogEditSidebar extends LitElement {
         </ha-dialog-header>
         <div slot="content" class="content">${this._renderContent()}</div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button

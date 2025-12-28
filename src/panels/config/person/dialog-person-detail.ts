@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -26,14 +27,13 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
 import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
-import { fireEvent } from "../../../common/dom/fire_event";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 
 const includeDomains = ["device_tracker"];
 
@@ -85,7 +85,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._deviceTrackers = this._params.entry.device_trackers || [];
       this._picture = this._params.entry.picture || null;
       this._user = this._userId
-        ? this._params.users.find((user) => user.id === this._userId)
+        ? this._params.users?.find((user) => user.id === this._userId)
         : undefined;
       this._isAdmin = this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
       this._localOnly = this._user?.local_only;
@@ -236,7 +236,8 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           ? html`
               <ha-button
                 slot="secondaryAction"
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 @click=${this._deleteEntry}
                 .disabled=${(this._user && this._user.is_owner) ||
                 this._submitting}
@@ -247,12 +248,19 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           : nothing}
         <ha-button
           slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
         >
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.person.detail.update")
-            : this.hass!.localize("ui.panel.config.person.detail.create")}
+            ? this.hass!.localize("ui.common.save")
+            : this.hass!.localize("ui.common.add")}
         </ha-button>
       </ha-dialog>
     `;
@@ -364,10 +372,10 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         userAddedCallback: async (user?: User) => {
           if (user) {
             target.checked = true;
-            if (this._params!.entry) {
+            if (this._params!.entry && this._params!.updateEntry) {
               await this._params!.updateEntry({ user_id: user.id });
             }
-            this._params?.refreshUsers();
+            this._params?.refreshUsers?.();
             this._user = user;
             this._userId = user.id;
             this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
@@ -395,7 +403,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         return;
       }
       await deleteUser(this.hass, this._userId);
-      this._params?.refreshUsers();
+      this._params?.refreshUsers?.();
       this._userId = undefined;
       this._user = undefined;
       this._isAdmin = undefined;
@@ -458,7 +466,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     if (newUsername) {
       try {
         await adminChangeUsername(this.hass, this._user.id, newUsername);
-        this._params?.refreshUsers();
+        this._params?.refreshUsers?.();
         this._user = { ...this._user, username: newUsername };
         showAlertDialog(this, {
           text: this.hass.localize(
@@ -492,7 +500,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           ],
           local_only: this._localOnly,
         });
-        this._params?.refreshUsers();
+        this._params?.refreshUsers?.();
       }
       const values: PersonMutableParams = {
         name: this._name.trim(),
@@ -501,9 +509,9 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         picture: this._picture,
       };
       if (this._params!.entry) {
-        await this._params!.updateEntry(values);
+        await this._params!.updateEntry?.(values);
       } else {
-        await this._params!.createEntry(values);
+        await this._params!.createEntry?.(values);
         this._personExists = true;
       }
       this.closeDialog();
@@ -517,7 +525,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
   private async _deleteEntry() {
     this._submitting = true;
     try {
-      if (await this._params!.removeEntry()) {
+      if (await this._params!.removeEntry?.()) {
         if (this._params!.entry!.user_id) {
           deleteUser(this.hass, this._params!.entry!.user_id);
         }
@@ -538,7 +546,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         }
         ha-picture-upload {
           margin-bottom: 16px;
-          --file-upload-image-border-radius: 50%;
+          --file-upload-image-border-radius: var(--ha-border-radius-circle);
         }
         ha-settings-row {
           padding: 0;

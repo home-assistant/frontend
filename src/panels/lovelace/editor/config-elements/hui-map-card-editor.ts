@@ -2,6 +2,7 @@ import { mdiPalette } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -13,19 +14,19 @@ import {
   string,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { hasLocation } from "../../../../common/entity/has_location";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import { hasLocation } from "../../../../common/entity/has_location";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { SelectSelector } from "../../../../data/selector";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-switch";
 import "../../../../components/ha-selector/ha-selector-select";
+import "../../../../components/ha-switch";
+import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
-import type { MapCardConfig } from "../../cards/types";
+import type { MapCardConfig, MapEntityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -33,7 +34,6 @@ import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 export const mapEntitiesConfigStruct = union([
   object({
@@ -223,7 +223,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     })
   );
 
-  private _entitiesValueChanged(ev: EntitiesEditorEvent): void {
+  private _entitiesValueChanged(
+    ev: EntitiesEditorEvent<MapEntityConfig>
+  ): void {
     if (ev.detail && ev.detail.entities) {
       this._config = { ...this._config!, entities: ev.detail.entities };
 

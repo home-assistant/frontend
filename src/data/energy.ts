@@ -9,6 +9,7 @@ import {
   startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
+  addYears,
 } from "date-fns";
 import type { Collection } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
@@ -101,6 +102,7 @@ export type EnergySolarForecasts = Record<string, EnergySolarForecast>;
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  stat_rate?: string;
   name?: string;
   included_in_stat?: string;
 }
@@ -129,11 +131,17 @@ export interface FlowToGridSourceEnergyPreference {
   number_energy_price: number | null;
 }
 
+export interface GridPowerSourceEnergyPreference {
+  // W meter
+  stat_rate: string;
+}
+
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 
   flow_from: FlowFromGridSourceEnergyPreference[];
   flow_to: FlowToGridSourceEnergyPreference[];
+  power?: GridPowerSourceEnergyPreference[];
 
   cost_adjustment_day: number;
 }
@@ -142,6 +150,7 @@ export interface SolarSourceTypeEnergyPreference {
   type: "solar";
 
   stat_energy_from: string;
+  stat_rate?: string;
   config_entry_solar_forecast: string[] | null;
 }
 
@@ -149,6 +158,7 @@ export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
   stat_energy_to: string;
+  stat_rate?: string;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
@@ -256,7 +266,7 @@ export const getFossilEnergyConsumption = async (
     period,
   });
 
-interface EnergySourceByType {
+export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
@@ -272,6 +282,7 @@ export interface EnergyData {
   end?: Date;
   startCompare?: Date;
   endCompare?: Date;
+  compareMode?: CompareMode;
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
@@ -349,12 +360,47 @@ export const getReferencedStatisticIds = (
   return statIDs;
 };
 
+export const getReferencedStatisticIdsPower = (
+  prefs: EnergyPreferences
+): string[] => {
+  const statIDs: (string | undefined)[] = [];
+
+  for (const source of prefs.energy_sources) {
+    if (source.type === "gas" || source.type === "water") {
+      continue;
+    }
+
+    if (source.type === "solar") {
+      statIDs.push(source.stat_rate);
+      continue;
+    }
+
+    if (source.type === "battery") {
+      statIDs.push(source.stat_rate);
+      continue;
+    }
+
+    if (source.power) {
+      statIDs.push(...source.power.map((p) => p.stat_rate));
+    }
+  }
+  statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
+
+  return statIDs.filter(Boolean) as string[];
+};
+
+export const enum CompareMode {
+  NONE = "",
+  PREVIOUS = "previous",
+  YOY = "yoy",
+}
+
 const getEnergyData = async (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   start: Date,
   end?: Date,
-  compare?: boolean
+  compare?: CompareMode
 ): Promise<EnergyData> => {
   const info = await getEnergyInfo(hass);
 
@@ -390,9 +436,10 @@ const getEnergyData = async (
     "gas",
     "device",
   ]);
+  const powerStatIds = getReferencedStatisticIdsPower(prefs);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 
-  const allStatIDs = [...energyStatIds, ...waterStatIds];
+  const allStatIDs = [...energyStatIds, ...waterStatIds, ...powerStatIds];
 
   const dayDifference = differenceInDays(end || new Date(), start);
   const period =
@@ -403,6 +450,8 @@ const getEnergyData = async (
       : dayDifference > 2
         ? "day"
         : "hour";
+  const finePeriod =
+    dayDifference > 64 ? "day" : dayDifference > 8 ? "hour" : "5minute";
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
@@ -424,6 +473,9 @@ const getEnergyData = async (
       ? (gasUnit as (typeof VOLUME_UNITS)[number])
       : undefined,
   };
+  const powerUnits: StatisticsUnitConfiguration = {
+    power: "kW",
+  };
   const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
     volume: waterUnit,
@@ -434,6 +486,12 @@ const getEnergyData = async (
         "change",
       ])
     : {};
+  const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
+    ? fetchStatistics(hass!, start, end, powerStatIds, finePeriod, powerUnits, [
+        "mean",
+      ])
+    : {};
+
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
     ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
         "change",
@@ -445,46 +503,50 @@ const getEnergyData = async (
   let endCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
-
   if (compare) {
-    if (
-      (calcDateProperty(
-        start,
-        isFirstDayOfMonth,
-        hass.locale,
-        hass.config
-      ) as boolean) &&
-      (calcDateProperty(
-        end || new Date(),
-        isLastDayOfMonth,
-        hass.locale,
-        hass.config
-      ) as boolean)
-    ) {
-      // When comparing a month (or multiple), we want to start at the beginning of the month
-      startCompare = calcDate(
-        start,
-        addMonths,
-        hass.locale,
-        hass.config,
-        -(calcDateDifferenceProperty(
-          end || new Date(),
+    if (compare === CompareMode.PREVIOUS) {
+      if (
+        (calcDateProperty(
           start,
-          differenceInMonths,
+          isFirstDayOfMonth,
           hass.locale,
           hass.config
-        ) as number) - 1
-      );
-    } else {
-      startCompare = calcDate(
-        start,
-        addDays,
-        hass.locale,
-        hass.config,
-        (dayDifference + 1) * -1
-      );
+        ) as boolean) &&
+        (calcDateProperty(
+          end || new Date(),
+          isLastDayOfMonth,
+          hass.locale,
+          hass.config
+        ) as boolean)
+      ) {
+        // When comparing a month (or multiple), we want to start at the beginning of the month
+        startCompare = calcDate(
+          start,
+          addMonths,
+          hass.locale,
+          hass.config,
+          -(calcDateDifferenceProperty(
+            end || new Date(),
+            start,
+            differenceInMonths,
+            hass.locale,
+            hass.config
+          ) as number) - 1
+        );
+      } else {
+        startCompare = calcDate(
+          start,
+          addDays,
+          hass.locale,
+          hass.config,
+          (dayDifference + 1) * -1
+        );
+      }
+      endCompare = addMilliseconds(start, -1);
+    } else if (compare === CompareMode.YOY) {
+      startCompare = calcDate(start, addYears, hass.locale, hass.config, -1);
+      endCompare = calcDate(end!, addYears, hass.locale, hass.config, -1);
     }
-    endCompare = addMilliseconds(start, -1);
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
@@ -536,6 +598,7 @@ const getEnergyData = async (
 
   const [
     energyStats,
+    powerStats,
     waterStats,
     energyStatsCompare,
     waterStatsCompare,
@@ -543,13 +606,14 @@ const getEnergyData = async (
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
     _energyStats,
+    _powerStats,
     _waterStats,
     _energyStatsCompare,
     _waterStatsCompare,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
-  const stats = { ...energyStats, ...waterStats };
+  const stats = { ...energyStats, ...waterStats, ...powerStats };
   if (compare) {
     statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
   }
@@ -559,6 +623,7 @@ const getEnergyData = async (
     end,
     startCompare,
     endCompare,
+    compareMode: compare,
     info,
     prefs,
     stats,
@@ -577,11 +642,11 @@ const getEnergyData = async (
 export interface EnergyCollection extends Collection<EnergyData> {
   start: Date;
   end?: Date;
-  compare?: boolean;
+  compare?: CompareMode;
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
-  setCompare(compare: boolean): void;
+  setCompare(compare: CompareMode): void;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
   _active: number;
@@ -739,7 +804,7 @@ export const getEnergyDataCollection = (
       scheduleUpdatePeriod();
     }
   };
-  collection.setCompare = (compare: boolean) => {
+  collection.setCompare = (compare: CompareMode) => {
     collection.compare = compare;
   };
   return collection;

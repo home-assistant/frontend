@@ -80,7 +80,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
               ${this._detailState || "Installation can take several minutes"}
             </p>`
         : this._state === "ERROR"
-          ? html` <img
+          ? html`<img
                 src="/static/images/voice-assistant/error.png"
                 alt="Casita Home Assistant error logo"
               />
@@ -95,24 +95,27 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   "ui.panel.config.voice_assistants.satellite_wizard.local.failed_secondary"
                 )}
               </p>
-              <ha-button @click=${this._prevStep}
+              <ha-button
+                appearance="plain"
+                size="small"
+                @click=${this._prevStep}
                 >${this.hass.localize("ui.common.back")}</ha-button
               >
-              <a
+              <ha-button
                 href=${documentationUrl(
                   this.hass,
                   "/voice_control/voice_remote_local_assistant/"
                 )}
                 target="_blank"
                 rel="noreferrer noopener"
+                size="small"
+                appearance="plain"
               >
-                <ha-button>
-                  <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.common.learn_more"
-                  )}</ha-button
-                >
-              </a>`
+                <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.common.learn_more"
+                )}</ha-button
+              >`
           : this._state === "NOT_SUPPORTED"
             ? html`<img
                   src="/static/images/voice-assistant/error.png"
@@ -128,27 +131,27 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                     "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_secondary"
                   )}
                 </p>
-                <ha-button @click=${this._prevStep}
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  @click=${this._prevStep}
                   >${this.hass.localize("ui.common.back")}</ha-button
                 >
-                <a
+                <ha-button
                   href=${documentationUrl(
                     this.hass,
                     "/voice_control/voice_remote_local_assistant/"
                   )}
                   target="_blank"
                   rel="noreferrer noopener"
+                  appearance="plain"
+                  size="small"
                 >
-                  <ha-button>
-                    <ha-svg-icon
-                      .path=${mdiOpenInNew}
-                      slot="icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.config.common.learn_more"
-                    )}</ha-button
-                  >
-                </a>`
+                  <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.common.learn_more"
+                  )}</ha-button
+                >`
             : nothing}
     </div>`;
   }

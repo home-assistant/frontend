@@ -9,6 +9,7 @@ import {
   mdiHelpCircle,
   mdiInformationOutline,
   mdiMenuDown,
+  mdiOpenInNew,
   mdiPlay,
   mdiPlus,
   mdiScriptText,
@@ -457,7 +458,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             .checked=${selected}
             .indeterminate=${partial}
           ></ha-checkbox>
-          <ha-label style=${color ? `--color: ${color}` : ""}>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -779,15 +783,16 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                   "ui.panel.config.script.picker.empty_text"
                 )}
               </p>
-              <a
+              <ha-button
+                appearance="plain"
                 href=${documentationUrl(this.hass, "/docs/script/editor/")}
                 target="_blank"
                 rel="noreferrer"
+                size="small"
               >
-                <ha-button>
-                  ${this.hass.localize("ui.panel.config.common.learn_more")}
-                </ha-button>
-              </a>
+                ${this.hass.localize("ui.panel.config.common.learn_more")}
+                <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+              </ha-button>
             </div>`
           : nothing}
         <ha-fab
@@ -1178,6 +1183,9 @@ ${rejected
       );
       if (entry) {
         await deleteScript(this.hass, entry.unique_id);
+        this._selected = this._selected.filter(
+          (entityId) => entityId !== script.entity_id
+        );
       }
     } catch (err: any) {
       await showAlertDialog(this, {
@@ -1295,6 +1303,9 @@ ${rejected
         .empty {
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty ha-button {
+          --mdc-icon-size: 24px;
         }
         .empty h1 {
           font-size: var(--ha-font-size-3xl);

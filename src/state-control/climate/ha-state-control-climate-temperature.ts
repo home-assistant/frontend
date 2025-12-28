@@ -537,7 +537,7 @@ export class HaStateControlClimateTemperature extends LitElement {
         .dual {
           display: flex;
           flex-direction: row;
-          gap: 24px;
+          gap: var(--ha-space-6);
         }
         .target-button {
           outline: none;
@@ -562,11 +562,11 @@ export class HaStateControlClimateTemperature extends LitElement {
           opacity: 1;
         }
         .container.md .dual {
-          gap: 16px;
+          gap: var(--ha-space-4);
         }
         .container.sm .dual,
         .container.xs .dual {
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .container.sm .target-icon {
           display: none;

@@ -1,4 +1,4 @@
-import { mdiDrag } from "@mdi/js";
+import { mdiDragHorizontalVariant } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -197,7 +197,7 @@ export class HaSelectSelector extends LitElement {
                             ? html`
                                 <ha-svg-icon
                                   slot="icon"
-                                  .path=${mdiDrag}
+                                  .path=${mdiDragHorizontalVariant}
                                 ></ha-svg-icon>
                               `
                             : nothing}

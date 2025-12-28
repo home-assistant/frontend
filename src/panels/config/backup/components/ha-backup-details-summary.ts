@@ -138,7 +138,7 @@ class HaBackupDetailsSummary extends LitElement {
       max-width: 690px;
       width: 100%;
       margin: 0 auto;
-      gap: 24px;
+      gap: var(--ha-space-6);
       display: grid;
     }
     .card-content {
@@ -168,7 +168,7 @@ class HaBackupDetailsSummary extends LitElement {
       display: flex;
       align-items: center;
       flex-direction: row;
-      gap: 8px;
+      gap: var(--ha-space-2);
       line-height: var(--ha-line-height-condensed);
     }
   `;

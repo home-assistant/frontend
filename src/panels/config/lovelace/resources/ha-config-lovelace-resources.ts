@@ -35,7 +35,7 @@ import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail
 import { storage } from "../../../../common/decorators/storage";
 
 @customElement("ha-config-lovelace-resources")
-export class HaConfigLovelaceRescources extends LitElement {
+export class HaConfigLovelaceResources extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -326,6 +326,6 @@ export class HaConfigLovelaceRescources extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-lovelace-resources": HaConfigLovelaceRescources;
+    "ha-config-lovelace-resources": HaConfigLovelaceResources;
   }
 }

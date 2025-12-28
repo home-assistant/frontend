@@ -15,7 +15,7 @@ export class HaIconButtonGroup extends LitElement {
       flex-direction: row;
       align-items: center;
       height: 48px;
-      border-radius: 28px;
+      border-radius: var(--ha-border-radius-4xl);
       background-color: rgba(139, 145, 151, 0.1);
       box-sizing: border-box;
       width: auto;

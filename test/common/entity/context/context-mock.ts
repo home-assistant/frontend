@@ -1,7 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { EntityRegistryDisplayEntry } from "../../../../src/data/entity_registry";
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "../../../../src/data/entity_registry";
 import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
 
 export const mockStateObj = (partial: Partial<HassEntity>): HassEntity => ({
@@ -23,6 +26,31 @@ export const mockEntity = (
 ): EntityRegistryDisplayEntry => ({
   entity_id: "",
   labels: [],
+  ...partial,
+});
+
+export const mockEntityEntry = (
+  partial: Partial<EntityRegistryEntry>
+): EntityRegistryEntry => ({
+  entity_id: "",
+  name: null,
+  icon: null,
+  platform: "",
+  config_entry_id: null,
+  config_subentry_id: null,
+  device_id: null,
+  area_id: null,
+  labels: [],
+  disabled_by: null,
+  hidden_by: null,
+  entity_category: null,
+  has_entity_name: false,
+  unique_id: "",
+  id: "",
+  options: null,
+  categories: {},
+  created_at: 0,
+  modified_at: 0,
   ...partial,
 });
 

@@ -7,6 +7,8 @@ import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import "./hui-card";
 import type { HuiCard } from "./hui-card";
 import type { StackCardConfig } from "./types";
+import { createErrorCardElement } from "../create-element/create-element-base";
+import type { HuiErrorCard } from "./hui-error-card";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
@@ -27,6 +29,8 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @state() protected _cards?: HuiCard[];
 
+  @state() protected _errorCard?: HuiErrorCard;
+
   @state() protected _config?: T;
 
   @property({ attribute: false }) public layout?: string;
@@ -44,6 +48,15 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       const element = this._createCardElement(card);
       return element;
     });
+    if (this._cards.length === 0) {
+      this._errorCard = createErrorCardElement({
+        type: "error",
+        severity: "warning",
+        message: "Empty card",
+      });
+    } else {
+      this._errorCard = undefined;
+    }
   }
 
   protected update(changedProperties) {
@@ -54,11 +67,17 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         this._cards.forEach((card) => {
           card.hass = this.hass;
         });
+        if (this._errorCard) {
+          this._errorCard.hass = this.hass;
+        }
       }
       if (changedProperties.has("preview")) {
         this._cards.forEach((card) => {
           card.preview = this.preview;
         });
+        if (this._errorCard) {
+          this._errorCard.preview = this.preview;
+        }
       }
     }
 
@@ -87,6 +106,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         : ""}
       <div id="root" dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}>
         ${this._cards}
+        ${this.preview && this._errorCard ? this._errorCard : nothing}
       </div>
     `;
   }

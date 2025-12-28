@@ -114,17 +114,15 @@ class HuiEnergyGridGaugeCard
                 label="kWh"
                 needle
               ></ha-gauge>
-              <ha-tooltip placement="left" hoist>
-                <span slot="content">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
-                  )}
-                  <br /><br />
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
-                  )}
-                </span>
-                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <ha-tooltip for="info" placement="left">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                )}
+                <br /><br />
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
+                )}
               </ha-tooltip>
               <div class="name">
                 ${returnedToGrid! >= consumedFromGrid!

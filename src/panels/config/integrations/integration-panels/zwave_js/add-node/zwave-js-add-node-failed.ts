@@ -33,13 +33,11 @@ export class ZWaveJsAddNodeFailed extends LitElement {
           </div>`
         : nothing}
       ${this.device?.id
-        ? html`<a href=${`/config/devices/device/${this.device.id}`}>
-            <ha-button>
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.add_node.view_device"
-              )}
-            </ha-button>
-          </a>`
+        ? html`<ha-button href=${`/config/devices/device/${this.device.id}`}>
+            ${this.hass.localize(
+              "ui.panel.config.zwave_js.add_node.view_device"
+            )}
+          </ha-button>`
         : nothing}
     `;
   }

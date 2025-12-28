@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-
 import { mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -11,22 +9,23 @@ import "../../../components/chips/ha-chip-set";
 import "../../../components/chips/ha-input-chip";
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
+import "../../../components/ha-area-picker";
+import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import "../../../components/ha-area-picker";
+import { updateAreaRegistryEntry } from "../../../data/area_registry";
 import type {
   FloorRegistryEntry,
   FloorRegistryEntryMutableParams,
 } from "../../../data/floor_registry";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import type { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
 import { showAreaRegistryDetailDialog } from "./show-dialog-area-registry-detail";
-import { updateAreaRegistryEntry } from "../../../data/area_registry";
+import type { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
 
 class DialogFloorDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -169,11 +168,6 @@ class DialogFloorDetail extends LitElement {
               )}
             </h3>
 
-            <p class="description">
-              ${this.hass.localize(
-                "ui.panel.config.floors.editor.areas_description"
-              )}
-            </p>
             ${areas.length
               ? html`<ha-chip-set>
                   ${repeat(
@@ -198,13 +192,17 @@ class DialogFloorDetail extends LitElement {
                       </ha-input-chip>`
                   )}
                 </ha-chip-set>`
-              : nothing}
+              : html`<p class="description">
+                  ${this.hass.localize(
+                    "ui.panel.config.floors.editor.areas_description"
+                  )}
+                </p>`}
             <ha-area-picker
               no-add
               .hass=${this.hass}
               @value-changed=${this._addArea}
               .excludeAreas=${areas.map((a) => a.area_id)}
-              .label=${this.hass.localize(
+              .addButtonLabel=${this.hass.localize(
                 "ui.panel.config.floors.editor.add_area"
               )}
             ></ha-area-picker>
@@ -227,18 +225,22 @@ class DialogFloorDetail extends LitElement {
             ></ha-aliases-editor>
           </div>
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
-          .disabled=${nameInvalid || this._submitting}
+          .disabled=${nameInvalid || !!this._submitting}
         >
           ${entry
             ? this.hass.localize("ui.common.save")
             : this.hass.localize("ui.common.create")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

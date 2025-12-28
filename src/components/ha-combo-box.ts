@@ -117,7 +117,7 @@ export class HaComboBox extends LitElement {
 
   @query("ha-combo-box-textfield", true) private _inputElement!: HaTextField;
 
-  @state({ type: Boolean }) private _disableSetValue = false;
+  @state({ type: Boolean }) private _forceBlankValue = false;
 
   private _overlayMutationObserver?: MutationObserver;
 
@@ -188,7 +188,7 @@ export class HaComboBox extends LitElement {
           class="input"
           autocapitalize="none"
           autocomplete="off"
-          autocorrect="off"
+          .autocorrect=${false}
           input-spellcheck="false"
           .suffix=${html`<div
             style="width: 28px;"
@@ -196,7 +196,7 @@ export class HaComboBox extends LitElement {
           ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          .disableSetValue=${this._disableSetValue}
+          .forceBlankValue=${this._forceBlankValue}
         >
           <slot name="icon" slot="leadingIcon"></slot>
         </ha-combo-box-textfield>
@@ -207,6 +207,7 @@ export class HaComboBox extends LitElement {
               aria-label=${ifDefined(this.hass?.localize("ui.common.clear"))}
               class=${`clear-button ${this.label ? "" : "no-label"}`}
               .path=${mdiClose}
+              ?disabled=${this.disabled}
               @click=${this._clearValue}
             ></ha-svg-icon>`
           : ""}
@@ -269,10 +270,10 @@ export class HaComboBox extends LitElement {
       if (opened) {
         // Wait 100ms to be sure vaddin-combo-box-light already tried to set the value
         setTimeout(() => {
-          this._disableSetValue = false;
+          this._forceBlankValue = false;
         }, 100);
       } else {
-        this._disableSetValue = true;
+        this._forceBlankValue = true;
       }
     }
 
@@ -393,7 +394,8 @@ export class HaComboBox extends LitElement {
     :host([opened]) .toggle-button {
       color: var(--primary-color);
     }
-    .toggle-button[disabled] {
+    .toggle-button[disabled],
+    .clear-button[disabled] {
       color: var(--disabled-text-color);
       pointer-events: none;
     }

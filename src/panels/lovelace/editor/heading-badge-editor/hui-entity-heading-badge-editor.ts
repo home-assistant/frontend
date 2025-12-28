@@ -27,6 +27,7 @@ import type { LovelaceGenericElementEditor } from "../../types";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
   type: "entity",
@@ -37,7 +38,7 @@ export const DEFAULT_CONFIG: Partial<EntityHeadingBadgeConfig> = {
 const entityConfigStruct = object({
   type: optional(string()),
   entity: optional(string()),
-  name: optional(string()),
+  name: optional(entityNameStruct),
   icon: optional(string()),
   state_content: optional(union([string(), array(string())])),
   show_state: optional(boolean()),
@@ -92,8 +93,9 @@ export class HuiHeadingEntityEditor
                 {
                   name: "name",
                   selector: {
-                    text: {},
+                    entity_name: {},
                   },
+                  context: { entity: "entity" },
                 },
                 {
                   name: "icon",
