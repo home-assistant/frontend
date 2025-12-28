@@ -7,7 +7,6 @@ import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
-import "../components/ha-snowflakes";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
@@ -78,6 +77,7 @@ export class HomeAssistantMain extends LitElement {
 
   protected firstUpdated() {
     import(/* webpackPreload: true */ "../components/ha-sidebar");
+    import("../components/ha-snowflakes");
 
     if (this.hass.auth.external) {
       this._externalSidebar =
