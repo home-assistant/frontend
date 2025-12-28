@@ -534,9 +534,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     @click=${this._addIntegration}
                   >
                     ${this.hass.localize(
-                  `component.${this.domain}.config.initiate_flow.user`
-                ) ||
-                (this._manifest?.integration_type
+                      `component.${this.domain}.config.initiate_flow.user`
+                    ) ||
+                    (this._manifest?.integration_type
                       ? this.hass.localize(
                           `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
                         )
