@@ -1,7 +1,8 @@
 import { mdiInvertColorsOff, mdiPalette } from "@mdi/js";
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
@@ -49,10 +50,39 @@ export class HaColorPicker extends LitElement {
         .rowRenderer=${this._rowRenderer}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
+        .notFoundLabel=${this.hass.localize(
+          "ui.components.color-picker.no_colors_found"
+        )}
+        .getAdditionalItems=${this._getAdditionalItems}
       >
       </ha-generic-picker>
     `;
   }
+
+  private _getAdditionalItems = (
+    searchString?: string
+  ): PickerComboBoxItem[] => {
+    if (!searchString || searchString.trim() === "") {
+      return [];
+    }
+    const colors = this._getColors(
+      this.includeNone,
+      this.includeState,
+      this.defaultColor,
+      this.value
+    );
+    const exactMatch = colors.find((color) => color.id === searchString);
+    if (exactMatch) {
+      return [];
+    }
+    return [
+      {
+        id: searchString,
+        primary: this.hass.localize("ui.components.color-picker.custom_color"),
+        secondary: searchString,
+      },
+    ];
+  };
 
   private _getItems = () =>
     this._getColors(
@@ -62,72 +92,70 @@ export class HaColorPicker extends LitElement {
       this.value
     );
 
-  private _getColors = (
-    includeNone: boolean,
-    includeState: boolean,
-    defaultColor: string | undefined,
-    currentValue: string | undefined
-  ): PickerComboBoxItem[] => {
-    const items: PickerComboBoxItem[] = [];
+  private _getColors = memoizeOne(
+    (
+      includeNone: boolean,
+      includeState: boolean,
+      defaultColor: string | undefined,
+      currentValue: string | undefined
+    ): PickerComboBoxItem[] => {
+      const items: PickerComboBoxItem[] = [];
 
-    const defaultSuffix = this.hass.localize(
-      "ui.components.color-picker.default"
-    );
+      const defaultSuffix = this.hass.localize(
+        "ui.components.color-picker.default"
+      );
 
-    const addDefaultSuffix = (label: string, isDefault: boolean) =>
-      isDefault && defaultSuffix ? `${label} (${defaultSuffix})` : label;
+      const addDefaultSuffix = (label: string, isDefault: boolean) =>
+        isDefault && defaultSuffix ? `${label} (${defaultSuffix})` : label;
 
-    if (includeNone) {
-      const noneLabel =
-        this.hass.localize("ui.components.color-picker.none") || "None";
-      items.push({
-        id: "none",
-        primary: addDefaultSuffix(noneLabel, defaultColor === "none"),
-        icon_path: mdiInvertColorsOff,
-        sorting_label: noneLabel,
+      if (includeNone) {
+        const noneLabel =
+          this.hass.localize("ui.components.color-picker.none") || "None";
+        items.push({
+          id: "none",
+          primary: addDefaultSuffix(noneLabel, defaultColor === "none"),
+          icon_path: mdiInvertColorsOff,
+        });
+      }
+
+      if (includeState) {
+        const stateLabel =
+          this.hass.localize("ui.components.color-picker.state") || "State";
+        items.push({
+          id: "state",
+          primary: addDefaultSuffix(stateLabel, defaultColor === "state"),
+          icon_path: mdiPalette,
+        });
+      }
+
+      Array.from(THEME_COLORS).forEach((color) => {
+        const themeLabel =
+          this.hass.localize(
+            `ui.components.color-picker.colors.${color}` as LocalizeKeys
+          ) || color;
+        items.push({
+          id: color,
+          primary: addDefaultSuffix(themeLabel, defaultColor === color),
+        });
       });
+
+      const isSpecial =
+        currentValue === "none" ||
+        currentValue === "state" ||
+        THEME_COLORS.has(currentValue || "");
+
+      const hasValue = currentValue && currentValue.length > 0;
+
+      if (hasValue && !isSpecial) {
+        items.push({
+          id: currentValue!,
+          primary: currentValue!,
+        });
+      }
+
+      return items;
     }
-
-    if (includeState) {
-      const stateLabel =
-        this.hass.localize("ui.components.color-picker.state") || "State";
-      items.push({
-        id: "state",
-        primary: addDefaultSuffix(stateLabel, defaultColor === "state"),
-        icon_path: mdiPalette,
-        sorting_label: stateLabel,
-      });
-    }
-
-    Array.from(THEME_COLORS).forEach((color) => {
-      const themeLabel =
-        this.hass.localize(
-          `ui.components.color-picker.colors.${color}` as LocalizeKeys
-        ) || color;
-      items.push({
-        id: color,
-        primary: addDefaultSuffix(themeLabel, defaultColor === color),
-        sorting_label: themeLabel,
-      });
-    });
-
-    const isSpecial =
-      currentValue === "none" ||
-      currentValue === "state" ||
-      THEME_COLORS.has(currentValue || "");
-
-    const hasValue = currentValue && currentValue.length > 0;
-
-    if (hasValue && !isSpecial) {
-      items.push({
-        id: currentValue!,
-        primary: currentValue!,
-        sorting_label: currentValue!,
-      });
-    }
-
-    return items;
-  };
+  );
 
   private _rowRenderer: (
     item: PickerComboBoxItem,
@@ -145,6 +173,9 @@ export class HaColorPicker extends LitElement {
               ${this._renderColorCircle(item.id)}
             </span>`}
       <span slot="headline">${item.primary}</span>
+      ${item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing}
     </ha-combo-box-item>
   `;
 

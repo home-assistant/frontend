@@ -478,7 +478,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           area:
             device.area_id && areas[device.area_id]
               ? areas[device.area_id].name
-              : "—",
+              : undefined,
           floor: floorName,
           integration: deviceEntries.length
             ? deviceEntries
@@ -562,6 +562,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         filterable: true,
         groupable: true,
         minWidth: "120px",
+        template: (device) => device.area || "—",
       },
       floor: {
         title: localize("ui.panel.config.devices.data_table.floor"),
