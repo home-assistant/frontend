@@ -251,19 +251,19 @@ export class DeveloperYamlConfig extends LitElement {
         }
 
         .content {
-          padding: 28px 20px 16px;
+          padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-4);
           max-width: 1040px;
           margin: 0 auto;
         }
 
         ha-card {
-          margin-top: 24px;
+          margin-top: var(--ha-space-6);
         }
 
         .card-actions {
           display: flex;
           justify-content: space-between;
-          padding: 4px;
+          padding: var(--ha-space-1);
         }
       `,
     ];

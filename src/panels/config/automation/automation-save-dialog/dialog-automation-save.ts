@@ -148,7 +148,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
               @value-changed=${this._iconChanged}
             >
               <ha-domain-icon
-                slot="fallback"
+                slot="start"
                 domain=${this._params.domain}
                 .hass=${this.hass}
               >
@@ -176,6 +176,9 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             id="category"
             .hass=${this.hass}
             .scope=${this._params.domain}
+            .label=${this.hass.localize(
+              "ui.components.category-picker.category"
+            )}
             .value=${this._entryUpdates.category}
             @value-changed=${this._registryEntryChanged}
           ></ha-category-picker>`

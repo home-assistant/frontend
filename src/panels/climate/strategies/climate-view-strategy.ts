@@ -103,6 +103,10 @@ const processAreasForClimate = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
+        tap_action: {
+          action: "navigate",
+          navigation_path: `/home/areas-${area.area_id}`,
+        },
       });
       cards.push(...areaCards);
     }

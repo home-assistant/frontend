@@ -1,55 +1,17 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { titleCase } from "../common/string/title-case";
 import { fetchConfig } from "../data/lovelace/config/types";
-import type { LovelaceViewRawConfig } from "../data/lovelace/config/view";
 import { getPanelIcon, getPanelTitle } from "../data/panel";
-import type { HomeAssistant, PanelInfo, ValueChangedEvent } from "../types";
-import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
-import "./ha-combo-box-item";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import "./ha-generic-picker";
 import "./ha-icon";
-
-interface NavigationItem {
-  path: string;
-  icon: string;
-  title: string;
-}
-
-const DEFAULT_ITEMS: NavigationItem[] = [];
-
-const rowRenderer: ComboBoxLitRenderer<NavigationItem> = (item) => html`
-  <ha-combo-box-item type="button">
-    <ha-icon .icon=${item.icon} slot="start"></ha-icon>
-    <span slot="headline">${item.title || item.path}</span>
-    ${item.title
-      ? html`<span slot="supporting-text">${item.path}</span>`
-      : nothing}
-  </ha-combo-box-item>
-`;
-
-const createViewNavigationItem = (
-  prefix: string,
-  view: LovelaceViewRawConfig,
-  index: number
-) => ({
-  path: `/${prefix}/${view.path ?? index}`,
-  icon: view.icon ?? "mdi:view-compact",
-  title: view.title ?? (view.path ? titleCase(view.path) : `${index}`),
-});
-
-const createPanelNavigationItem = (hass: HomeAssistant, panel: PanelInfo) => ({
-  path: `/${panel.url_path}`,
-  icon: getPanelIcon(panel) || "mdi:view-dashboard",
-  title: getPanelTitle(hass, panel) || "",
-});
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 @customElement("ha-navigation-picker")
 export class HaNavigationPicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
 
@@ -61,46 +23,51 @@ export class HaNavigationPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _opened = false;
+  @state() private _loading = true;
 
-  private navigationItemsLoaded = false;
+  protected firstUpdated() {
+    this._loadNavigationItems();
+  }
 
-  private navigationItems: NavigationItem[] = DEFAULT_ITEMS;
+  private _navigationItems: PickerComboBoxItem[] = [];
 
-  @query("ha-combo-box", true) private comboBox!: HaComboBox;
-
-  protected render(): TemplateResult {
+  protected render() {
     return html`
-      <ha-combo-box
+      <ha-generic-picker
         .hass=${this.hass}
-        item-value-path="path"
-        item-label-path="path"
-        .value=${this._value}
+        .value=${this._loading ? undefined : this.value}
         allow-custom-value
-        .filteredItems=${this.navigationItems}
-        .label=${this.label}
+        .placeholder=${this.label}
         .helper=${this.helper}
-        .disabled=${this.disabled}
+        .disabled=${this._loading || this.disabled}
         .required=${this.required}
-        .renderer=${rowRenderer}
-        @opened-changed=${this._openedChanged}
+        .getItems=${this._getItems}
+        .valueRenderer=${this._valueRenderer}
+        .customValueLabel=${this.hass.localize(
+          "ui.components.navigation-picker.add_custom_path"
+        )}
         @value-changed=${this._valueChanged}
-        @filter-changed=${this._filterChanged}
       >
-      </ha-combo-box>
+      </ha-generic-picker>
     `;
   }
 
-  private async _openedChanged(ev: ValueChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-    if (this._opened && !this.navigationItemsLoaded) {
-      this._loadNavigationItems();
-    }
-  }
+  private _valueRenderer = (itemId: string) => {
+    const item = this._navigationItems.find((navItem) => navItem.id === itemId);
+    return html`
+      ${item?.icon
+        ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+        : nothing}
+      <span slot="headline">${item?.primary || itemId}</span>
+      ${item?.primary
+        ? html`<span slot="supporting-text">${itemId}</span>`
+        : nothing}
+    `;
+  };
+
+  private _getItems = () => this._navigationItems;
 
   private async _loadNavigationItems() {
-    this.navigationItemsLoaded = true;
-
     const panels = Object.entries(this.hass!.panels).map(([id, panel]) => ({
       id,
       ...panel,
@@ -124,27 +91,47 @@ export class HaNavigationPicker extends LitElement {
 
     const panelViewConfig = new Map(viewConfigs);
 
-    this.navigationItems = [];
+    this._navigationItems = [];
 
     for (const panel of panels) {
-      this.navigationItems.push(createPanelNavigationItem(this.hass!, panel));
+      const path = `/${panel.url_path}`;
+      const panelTitle = getPanelTitle(this.hass, panel);
+      const primary = panelTitle || path;
+      this._navigationItems.push({
+        id: path,
+        primary,
+        secondary: panelTitle ? path : undefined,
+        icon: getPanelIcon(panel) || "mdi:view-dashboard",
+        sorting_label: [
+          primary.startsWith("/") ? `zzz${primary}` : primary,
+          path,
+        ]
+          .filter(Boolean)
+          .join("_"),
+      });
 
       const config = panelViewConfig.get(panel.id);
 
       if (!config || !("views" in config)) continue;
 
-      config.views.forEach((view, index) =>
-        this.navigationItems.push(
-          createViewNavigationItem(panel.url_path, view, index)
-        )
-      );
+      config.views.forEach((view, index) => {
+        const viewPath = `/${panel.url_path}/${view.path ?? index}`;
+        const viewPrimary =
+          view.title ?? (view.path ? titleCase(view.path) : `${index}`);
+        this._navigationItems.push({
+          id: viewPath,
+          secondary: viewPath,
+          icon: view.icon ?? "mdi:view-compact",
+          primary: viewPrimary,
+          sorting_label: [
+            viewPrimary.startsWith("/") ? `zzz${viewPrimary}` : viewPrimary,
+            viewPath,
+          ].join("_"),
+        });
+      });
     }
 
-    this.comboBox.filteredItems = this.navigationItems;
-  }
-
-  protected shouldUpdate(changedProps: PropertyValues) {
-    return !this._opened || changedProps.has("_opened");
+    this._loading = false;
   }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
@@ -152,61 +139,18 @@ export class HaNavigationPicker extends LitElement {
     this._setValue(ev.detail.value);
   }
 
-  private _setValue(value: string) {
+  private _setValue(value = "") {
     this.value = value;
     fireEvent(
       this,
       "value-changed",
-      { value: this._value },
+      { value: this.value },
       {
         bubbles: false,
         composed: false,
       }
     );
   }
-
-  private _filterChanged(ev: CustomEvent): void {
-    const filterString = ev.detail.value.toLowerCase();
-    const characterCount = filterString.length;
-    if (characterCount >= 2) {
-      const filteredItems: NavigationItem[] = [];
-
-      this.navigationItems.forEach((item) => {
-        if (
-          item.path.toLowerCase().includes(filterString) ||
-          item.title.toLowerCase().includes(filterString)
-        ) {
-          filteredItems.push(item);
-        }
-      });
-
-      if (filteredItems.length > 0) {
-        this.comboBox.filteredItems = filteredItems;
-      } else {
-        this.comboBox.filteredItems = [];
-      }
-    } else {
-      this.comboBox.filteredItems = this.navigationItems;
-    }
-  }
-
-  private get _value() {
-    return this.value || "";
-  }
-
-  static styles = css`
-    ha-icon,
-    ha-svg-icon {
-      color: var(--primary-text-color);
-      position: relative;
-      bottom: 0px;
-    }
-    *[slot="prefix"] {
-      margin-right: 8px;
-      margin-inline-end: 8px;
-      margin-inline-start: initial;
-    }
-  `;
 }
 
 declare global {

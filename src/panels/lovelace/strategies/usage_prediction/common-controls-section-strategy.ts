@@ -5,6 +5,7 @@ import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/sec
 import { getCommonControlUsagePrediction } from "../../../../data/usage_prediction";
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig, TileCardConfig } from "../../cards/types";
+import type { Condition } from "../../common/validate-condition";
 
 const DEFAULT_LIMIT = 8;
 
@@ -16,6 +17,7 @@ export interface CommonControlSectionStrategyConfig {
   exclude_entities?: string[];
   include_entities?: string[];
   hide_empty?: boolean;
+  title_visibilty?: Condition[];
 }
 
 @customElement("common-controls-section-strategy")
@@ -34,6 +36,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
         type: "heading",
         heading: config.title,
         icon: config.icon,
+        visibility: config.title_visibilty,
       } satisfies HeadingCardConfig);
     }
 

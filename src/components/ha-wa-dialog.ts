@@ -13,6 +13,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import { isIosApp } from "../util/is_ios";
 import "./ha-dialog-header";
 import "./ha-icon-button";
 
@@ -184,6 +185,21 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
+      if (isIosApp(this.hass)) {
+        const element = this.querySelector("[autofocus]");
+        if (element !== null) {
+          if (!element.id) {
+            element.id = "ha-wa-dialog-autofocus";
+          }
+          this.hass.auth.external!.fireMessage({
+            type: "focus_element",
+            payload: {
+              element_id: element.id,
+            },
+          });
+        }
+        return;
+      }
       (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
     });
   };
@@ -235,6 +251,12 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
           );
           max-width: var(--ha-dialog-max-width, var(--safe-width));
         }
+        @media (prefers-reduced-motion: reduce) {
+          wa-dialog {
+            --show-duration: 0ms;
+            --hide-duration: 0ms;
+          }
+        }
 
         :host([width="small"]) wa-dialog {
           --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
@@ -260,15 +282,15 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
           /* Used to offset the dialog from the safe areas when space is limited */
           transform: translate(
             calc(
-              var(--safe-area-offset-left, var(--ha-space-0)) - var(
+              var(--safe-area-offset-left, 0px) - var(
                   --safe-area-offset-right,
-                  var(--ha-space-0)
+                  0px
                 )
             ),
             calc(
-              var(--safe-area-offset-top, var(--ha-space-0)) - var(
+              var(--safe-area-offset-top, 0px) - var(
                   --safe-area-offset-bottom,
-                  var(--ha-space-0)
+                  0px
                 )
             )
           );
@@ -279,7 +301,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           :host([type="standard"]) {
-            --ha-dialog-border-radius: var(--ha-space-0);
+            --ha-dialog-border-radius: 0;
 
             wa-dialog {
               /* Make the container fill the whole screen width and not the safe width */
@@ -366,7 +388,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(footer) {
-          padding: var(--ha-space-0);
+          padding: 0;
         }
 
         ::slotted([slot="footer"]) {

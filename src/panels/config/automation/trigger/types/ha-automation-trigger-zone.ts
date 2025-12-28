@@ -43,7 +43,6 @@ export class HaZoneTrigger extends LitElement {
         .disabled=${this.disabled}
         @value-changed=${this._entityPicked}
         .hass=${this.hass}
-        allow-custom-entity
         .entityFilter=${zoneAndLocationFilter}
       ></ha-entity-picker>
       <ha-entity-picker
@@ -54,7 +53,6 @@ export class HaZoneTrigger extends LitElement {
         .disabled=${this.disabled}
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
-        allow-custom-entity
         .includeDomains=${includeDomains}
       ></ha-entity-picker>
 

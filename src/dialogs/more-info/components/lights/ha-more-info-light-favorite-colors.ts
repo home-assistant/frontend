@@ -254,14 +254,14 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: -8px;
+      margin: calc(var(--ha-space-2) * -1);
       flex-wrap: wrap;
       max-width: 250px;
       user-select: none;
     }
 
     .container > * {
-      margin: 8px;
+      margin: var(--ha-space-2);
     }
 
     .color {

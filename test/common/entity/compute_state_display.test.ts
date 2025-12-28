@@ -643,7 +643,7 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       },
       "12"
     );
-    expect(result).toBe("12.00 min");
+    expect(result).toBe("12m");
   });
   it("Should format duration sensor with seconds", () => {
     const result = computeStateDisplayFromEntityAttributes(

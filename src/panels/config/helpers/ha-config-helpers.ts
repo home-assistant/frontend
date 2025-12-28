@@ -354,6 +354,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        template: (helper) => helper.area || "—",
       },
       labels: {
         title: "",
