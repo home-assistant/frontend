@@ -363,22 +363,32 @@ export class HaAreaPicker extends LitElement {
   };
 
   protected render(): TemplateResult {
-    const placeholder =
-      this.placeholder ?? this.hass.localize("ui.components.area-picker.area");
-
+    const baseLabel =
+      this.label ?? this.hass.localize("ui.components.area-picker.area");
     const valueRenderer = this._computeValueRenderer(this.hass.areas);
+
+    // Only show label if there's no floor
+    let label: string | undefined = baseLabel;
+    if (this.value && baseLabel) {
+      const area = this.hass.areas[this.value];
+      if (area) {
+        const { floor } = getAreaContext(area, this.hass.floors);
+        if (floor) {
+          label = undefined;
+        }
+      }
+    }
 
     return html`
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
-        .label=${this.label}
+        .label=${label}
         .helper=${this.helper}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize("ui.components.area-picker.no_areas")}
         .disabled=${this.disabled}
         .required=${this.required}
-        .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}

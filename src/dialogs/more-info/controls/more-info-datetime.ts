@@ -72,8 +72,8 @@ class MoreInfoDatetime extends LitElement {
       justify-content: flex-end;
     }
     ha-date-input + ha-time-input {
-      margin-left: 4px;
-      margin-inline-start: 4px;
+      margin-left: var(--ha-space-1);
+      margin-inline-start: var(--ha-space-1);
       margin-inline-end: initial;
     }
   `;

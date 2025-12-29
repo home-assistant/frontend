@@ -6,13 +6,8 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { describeCondition, describeTrigger } from "../../data/automation_i18n";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
-import type { FloorRegistryEntry } from "../../data/floor_registry";
 import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { LogbookEntry } from "../../data/logbook";
 import { describeAction } from "../../data/script_i18n";
@@ -62,10 +57,6 @@ export class HaTracePathDetails extends LitElement {
   @state()
   @consume({ context: labelsContext, subscribe: true })
   _labelReg!: LabelRegistryEntry[];
-
-  @state()
-  @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: Record<string, FloorRegistryEntry>;
 
   protected render(): TemplateResult {
     return html`
@@ -193,8 +184,6 @@ export class HaTracePathDetails extends LitElement {
                           ${describeAction(
                             this.hass,
                             this._entityReg,
-                            this._labelReg,
-                            this._floorReg,
                             currentDetail
                           )}
                         </h2>`

@@ -1,30 +1,45 @@
 /**
- * Executes a callback within a View Transition if supported, otherwise runs it directly.
+ * Executes a synchronous callback within a View Transition if supported, otherwise runs it directly.
  *
- * @param callback - Function to execute. Can be synchronous or return a Promise. The callback will be passed a boolean indicating whether the view transition is available.
+ * @param callback - Synchronous function to execute. The callback will be passed a boolean indicating whether the view transition is available.
  * @returns Promise that resolves when the transition completes (or immediately if not supported)
  *
  * @example
  * ```typescript
- * // Synchronous callback
  * withViewTransition(() => {
  *   this.large = !this.large;
- * });
- *
- * // Async callback
- * await withViewTransition(async () => {
- *   await this.updateData();
  * });
  * ```
  */
 export const withViewTransition = (
-  callback: (viewTransitionAvailable: boolean) => void | Promise<void>
+  callback: (viewTransitionAvailable: boolean) => void
 ): Promise<void> => {
-  if (document.startViewTransition) {
-    return document.startViewTransition(() => callback(true)).finished;
+  if (!document.startViewTransition) {
+    callback(false);
+    return Promise.resolve();
   }
 
-  // Fallback: Execute callback directly without transition
-  const result = callback(false);
-  return result instanceof Promise ? result : Promise.resolve();
+  let callbackInvoked = false;
+
+  try {
+    // View Transitions require DOM updates to happen synchronously within
+    // the callback. Execute the callback immediately (synchronously).
+    const transition = document.startViewTransition(() => {
+      callbackInvoked = true;
+      callback(true);
+    });
+    return transition.finished;
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "View transition failed, falling back to direct execution.",
+      err
+    );
+    // Make sure the callback is invoked exactly once.
+    if (!callbackInvoked) {
+      callback(false);
+      return Promise.resolve();
+    }
+    return Promise.reject(err);
+  }
 };

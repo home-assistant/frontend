@@ -16,6 +16,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -43,6 +44,7 @@ import type {
   AutomationClipboard,
   Condition,
   ConditionSidebarConfig,
+  PlatformCondition,
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
@@ -60,6 +62,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import "../target/ha-automation-row-targets";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./types/ha-automation-condition-and";
@@ -191,6 +194,10 @@ export default class HaAutomationConditionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
+        ${"target" in
+        (this.conditionDescriptions[this.condition.condition] || {})
+          ? this._renderTargets((this.condition as PlatformCondition).target)
+          : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -474,6 +481,14 @@ export default class HaAutomationConditionRow extends LitElement {
         : nothing}
     `;
   }
+
+  private _renderTargets = memoizeOne(
+    (target?: HassServiceTarget) =>
+      html`<ha-automation-row-targets
+        .hass=${this.hass}
+        .target=${target}
+      ></ha-automation-row-targets>`
+  );
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);

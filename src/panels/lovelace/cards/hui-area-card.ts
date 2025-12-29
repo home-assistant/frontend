@@ -732,9 +732,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
     .container.horizontal hui-card-features {
-      width: calc(
-        50% - var(--column-gap, var(--ha-space-0)) / 2 - var(--ha-space-3)
-      );
+      width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
       flex: none;
       --feature-height: var(--ha-space-9);
       padding: 0 var(--ha-space-3);

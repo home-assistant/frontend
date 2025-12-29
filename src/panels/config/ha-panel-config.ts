@@ -3,6 +3,7 @@ import {
   mdiAccount,
   mdiBackupRestore,
   mdiBadgeAccountHorizontal,
+  mdiBluetooth,
   mdiCellphoneCog,
   mdiCog,
   mdiDatabase,
@@ -25,10 +26,13 @@ import {
   mdiScrewdriver,
   mdiScriptText,
   mdiShape,
+  mdiLan,
   mdiSofa,
   mdiTools,
   mdiUpdate,
   mdiViewDashboard,
+  mdiZigbee,
+  mdiZWave,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -101,6 +105,67 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiMicrophone,
       iconColor: "#3263C3",
     },
+  ],
+  dashboard_2: [
+    {
+      path: "/config/matter",
+      name: "Matter",
+      iconPath:
+        "M7.228375 6.41685c0.98855 0.80195 2.16365 1.3412 3.416275 1.56765V1.30093l1.3612 -0.7854275 1.360125 0.7854275V7.9845c1.252875 -0.226675 2.4283 -0.765875 3.41735 -1.56765l2.471225 1.4293c-4.019075 3.976275 -10.490025 3.976275 -14.5091 0l2.482925 -1.4293Zm3.00335 17.067575c1.43325 -5.47035 -1.8052 -11.074775 -7.2604 -12.564675v2.859675c1.189125 0.455 2.244125 1.202875 3.0672 2.174275L0.25 19.2955v1.5719l1.3611925 0.781175L7.39865 18.3068c0.430175 1.19825 0.550625 2.48575 0.35015 3.743l2.482925 1.434625ZM21.034 10.91975c-5.452225 1.4932 -8.6871 7.09635 -7.254025 12.564675l2.47655 -1.43035c-0.200025 -1.257275 -0.079575 -2.544675 0.35015 -3.743025l5.7832 3.337525L23.75 20.86315V19.2955L17.961475 15.9537c0.8233 -0.97115 1.878225 -1.718975 3.0672 -2.174275l0.005325 -2.859675Z",
+      iconColor: "#2458B3",
+      component: "matter",
+      translationKey: "matter",
+    },
+    {
+      path: "/config/zha",
+      name: "Zigbee",
+      iconPath: mdiZigbee,
+      iconColor: "#E74011",
+      component: "zha",
+      translationKey: "zha",
+    },
+    {
+      path: "/config/zwave_js",
+      name: "Z-Wave",
+      iconPath: mdiZWave,
+      iconColor: "#153163",
+      component: "zwave_js",
+      translationKey: "zwave_js",
+    },
+    {
+      path: "/knx",
+      name: "KNX",
+      iconPath: mdiLan,
+      iconColor: "#4EAA66",
+      component: "knx",
+      translationKey: "knx",
+    },
+    {
+      path: "/config/thread",
+      name: "Thread",
+      iconPath:
+        "M82.498,0C37.008,0,0,37.008,0,82.496c0,45.181,36.51,81.977,81.573,82.476V82.569l-27.002-0.002  c-8.023,0-14.554,6.53-14.554,14.561c0,8.023,6.531,14.551,14.554,14.551v17.98c-17.939,0-32.534-14.595-32.534-32.531  c0-17.944,14.595-32.543,32.534-32.543l27.002,0.004v-9.096c0-14.932,12.146-27.08,27.075-27.08  c14.932,0,27.082,12.148,27.082,27.08c0,14.931-12.15,27.08-27.082,27.08l-9.097-0.001v80.641  C136.889,155.333,165,122.14,165,82.496C165,37.008,127.99,0,82.498,0z",
+      iconViewBox: "0 0 165 165",
+      iconColor: "#ED7744",
+      component: "thread",
+      translationKey: "thread",
+    },
+    {
+      path: "/config/bluetooth",
+      name: "Bluetooth",
+      iconPath: mdiBluetooth,
+      iconColor: "#0082FC",
+      component: "bluetooth",
+      translationKey: "bluetooth",
+    },
+    {
+      path: "/insteon",
+      name: "Insteon",
+      iconPath: mdiLan,
+      iconColor: "#E4002C",
+      component: "insteon",
+      translationKey: "insteon",
+    },
     {
       path: "/config/tags",
       translationKey: "tags",
@@ -108,6 +173,8 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#616161",
       component: "tag",
     },
+  ],
+  dashboard_3: [
     {
       path: "/config/person",
       translationKey: "people",

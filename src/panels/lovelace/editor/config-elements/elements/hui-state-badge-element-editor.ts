@@ -14,6 +14,7 @@ const stateBadgeElementConfigStruct = object({
   type: literal("state-badge"),
   entity: optional(string()),
   style: optional(any()),
+  name: optional(string()),
   title: optional(string()),
   tap_action: optional(actionConfigStruct),
   hold_action: optional(actionConfigStruct),
@@ -22,6 +23,7 @@ const stateBadgeElementConfigStruct = object({
 
 const SCHEMA = [
   { name: "entity", required: true, selector: { entity: {} } },
+  { name: "name", selector: { text: {} } },
   { name: "title", selector: { text: {} } },
   {
     name: "interactions",

@@ -1,6 +1,7 @@
 import {
   mdiBug,
   mdiCommentProcessingOutline,
+  mdiContentDuplicate,
   mdiDotsVertical,
   mdiHelpCircle,
   mdiPlus,
@@ -190,6 +191,17 @@ export class AssistPref extends LitElement {
                     <ha-svg-icon slot="graphic" .path=${mdiBug}></ha-svg-icon>
                   </ha-list-item>
                   <ha-list-item
+                    graphic="icon"
+                    .id=${pipeline.id}
+                    @request-selected=${this._duplicatePipeline}
+                  >
+                    ${this.hass.localize("ui.common.duplicate")}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentDuplicate}
+                    ></ha-svg-icon>
+                  </ha-list-item>
+                  <ha-list-item
                     class="danger"
                     graphic="icon"
                     .id=${pipeline.id}
@@ -294,6 +306,30 @@ export class AssistPref extends LitElement {
     navigate(`/config/voice-assistants/debug/${id}`);
   }
 
+  private async _duplicatePipeline(ev: Event) {
+    const id = (ev.currentTarget as HTMLElement).id as string;
+    const pipeline = this._pipelines.find((res) => res.id === id);
+    if (!pipeline) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.voice_assistants.assistants.pipeline.duplicate.error_pipeline_not_found"
+        ),
+      });
+      return;
+    }
+
+    const { id: _id, ...pipelineWithoutId } = pipeline;
+    const newPipeline = {
+      ...pipelineWithoutId,
+      name: this.hass.localize(
+        "ui.panel.config.voice_assistants.assistants.pipeline.duplicate.name",
+        { name: pipeline.name }
+      ),
+    };
+
+    this._openDialog(newPipeline);
+  }
+
   private async _deletePipeline(ev) {
     const id = ev.currentTarget.id as string;
     if (this._preferred === id) {
@@ -337,7 +373,9 @@ export class AssistPref extends LitElement {
     this._openDialog();
   }
 
-  private async _openDialog(pipeline?: AssistPipeline): Promise<void> {
+  private async _openDialog(
+    pipeline?: AssistPipeline | Omit<AssistPipeline, "id">
+  ): Promise<void> {
     showVoiceAssistantPipelineDetailDialog(this, {
       cloudActiveSubscription:
         this.cloudStatus?.logged_in && this.cloudStatus.active_subscription,
@@ -346,16 +384,21 @@ export class AssistPref extends LitElement {
         const created = await createAssistPipeline(this.hass!, values);
         this._pipelines = this._pipelines!.concat(created);
       },
-      updatePipeline: async (values) => {
-        const updated = await updateAssistPipeline(
-          this.hass!,
-          pipeline!.id,
-          values
-        );
-        this._pipelines = this._pipelines!.map((res) =>
-          res === pipeline ? updated : res
-        );
-      },
+      ...(pipeline && "id" in pipeline
+        ? {
+            updatePipeline: async (values) => {
+              const updated = await updateAssistPipeline(
+                this.hass,
+                pipeline.id,
+                values
+              );
+              const pipelineToUpdate = pipeline as AssistPipeline;
+              this._pipelines = this._pipelines!.map((res) =>
+                res.id === pipelineToUpdate.id ? updated : res
+              );
+            },
+          }
+        : {}),
     });
   }
 

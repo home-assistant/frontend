@@ -72,6 +72,7 @@ export interface ServiceButtonElementConfig extends LovelaceElementConfigBase {
 
 export interface StateBadgeElementConfig extends LovelaceElementConfigBase {
   entity?: string;
+  name?: string;
   title?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

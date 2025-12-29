@@ -511,7 +511,7 @@ class MoreInfoClimate extends LitElement {
           align-items: center;
           justify-content: center;
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: var(--ha-space-10);
         }
 
         .current div {
@@ -534,7 +534,7 @@ class MoreInfoClimate extends LitElement {
           font-size: var(--ha-font-size-m);
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.4px;
-          margin-bottom: 4px;
+          margin-bottom: var(--ha-space-1);
         }
 
         .current .value {
@@ -545,7 +545,7 @@ class MoreInfoClimate extends LitElement {
         }
         ha-select {
           width: 100%;
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
         }
 
         .container-humidity .single-row {
@@ -561,7 +561,7 @@ class MoreInfoClimate extends LitElement {
         }
 
         .single-row {
-          padding: 8px 0;
+          padding: var(--ha-space-2) 0;
         }
       `,
     ];

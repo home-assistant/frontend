@@ -1402,6 +1402,9 @@ export class HaDataTable extends LitElement {
         }
         .secondary {
           color: var(--secondary-text-color);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .scroller {
           height: calc(100% - 57px);
