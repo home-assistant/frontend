@@ -16,7 +16,7 @@ import {
   TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, ValuePart } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
@@ -58,9 +58,16 @@ export interface MockHomeAssistant extends HomeAssistant {
     attribute: string,
     value?: any
   ): string;
-  formatEntityAttributeUnit(
+  formatEntityAttributeValueToParts(
     stateObj: HassEntity,
-    attribute: string
+    attribute: string,
+    value?: any
+  ): ValuePart[] | undefined;
+  formatEntityAttributeValuePart(
+    type: string,
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
   ): string | undefined;
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }
@@ -119,7 +126,8 @@ export const provideHass = (
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
-      formatEntityAttributeUnit,
+      formatEntityAttributeValueToParts,
+      formatEntityAttributeValuePart,
       formatEntityName,
     } = await computeFormatFunctions(
       hass().localize,
@@ -135,7 +143,8 @@ export const provideHass = (
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
-      formatEntityAttributeUnit,
+      formatEntityAttributeValueToParts,
+      formatEntityAttributeValuePart,
       formatEntityName,
     });
   }
@@ -370,6 +379,18 @@ export const provideHass = (
     formatEntityAttributeName: (_stateObj, attribute) => attribute,
     formatEntityAttributeValue: (stateObj, attribute, value) =>
       value !== null ? value : (stateObj.attributes[attribute] ?? ""),
+    formatEntityAttributeValueToParts: (stateObj, attribute, value) => [
+      {
+        type: "value",
+        value: value !== null ? value : (stateObj.attributes[attribute] ?? ""),
+      },
+    ],
+    formatEntityAttributeValuePart: (type, stateObj, attribute, value) =>
+      type === "value"
+        ? value !== null
+          ? value
+          : (stateObj.attributes[attribute] ?? "")
+        : "",
     ...overrideData,
   };
 
