@@ -60,7 +60,7 @@ export const computeAttributeValueDisplay = (
     attribute,
     value
   );
-  return `${formattedValue}${literal}${unit}`;
+  return `${formattedValue ?? ""}${literal ?? ""}${unit ?? ""}`;
 };
 
 export const computeAttributeValueToPartsDisplay = (
