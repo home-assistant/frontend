@@ -74,7 +74,6 @@ export const computeAttributeValueToPartsDisplay = (
   value?: any
 ): ValuePart[] | undefined => {
   const parts: ValuePart[] = [];
-  const domain = computeStateDomain(stateObj);
 
   let formattedValue;
   const attributeValue =
@@ -88,6 +87,7 @@ export const computeAttributeValueToPartsDisplay = (
     formattedValue = localize("state.default.unknown");
   else {
     if (typeof attributeValue === "number") {
+      const domain = computeStateDomain(stateObj);
       const formatter = DOMAIN_ATTRIBUTES_FORMATERS[domain]?.[attribute];
       formattedValue = formatter
         ? formatter(attributeValue, locale)
@@ -135,6 +135,7 @@ export const computeAttributeValueToPartsDisplay = (
       // We've explored all known value handling, so now we'll try to find a
       // translation for the value.
       const entityId = stateObj.entity_id;
+      const domain = computeDomain(entityId);
       const deviceClass = stateObj.attributes.device_class;
       const registryEntry = entities[entityId] as
         | EntityRegistryDisplayEntry
