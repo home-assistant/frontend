@@ -121,9 +121,26 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
-    const showUnit = this._config.attribute
-      ? this._config.attribute in stateObj.attributes
-      : !isUnavailableState(stateObj.state);
+
+    let unit;
+    if (
+      !isUnavailableState(stateObj.state) &&
+      (this._config.attribute ||
+        stateObj.attributes.device_class !== "duration")
+    ) {
+      unit = this._config.unit;
+      if (!unit) {
+        if (!this._config.attribute)
+          unit = stateObj.attributes.unit_of_measurement;
+        else {
+          unit = this.hass.formatEntityAttributeValuePart(
+            "unit",
+            stateObj,
+            this._config.attribute
+          );
+        }
+      }
+    }
 
     const name = computeLovelaceEntityName(
       this.hass,
@@ -165,15 +182,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <span class="value"
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
-                ? html`
-                    <ha-attribute-value
-                      hide-unit
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      .attribute=${this._config.attribute!}
-                    >
-                    </ha-attribute-value>
-                  `
+                ? html`<ha-attribute-value
+                    hide-unit
+                    .hass=${this.hass}
+                    .stateObj=${stateObj}
+                    .attribute=${this._config.attribute!}
+                  >
+                  </ha-attribute-value>`
                 : this.hass.localize("state.default.unknown")
               : (isNumericState(stateObj) || this._config.unit) &&
                   stateObj.attributes.device_class !== "duration"
@@ -186,21 +201,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                     )
                   )
                 : this.hass.formatEntityState(stateObj)}</span
-          >${showUnit
-            ? html`
-                <span class="measurement"
-                  >${this._config.unit ||
-                  (stateObj.attributes.device_class === "duration"
-                    ? ""
-                    : this._config.attribute
-                      ? this.hass.formatEntityAttributeUnit(
-                          stateObj,
-                          this._config.attribute
-                        )
-                      : stateObj.attributes.unit_of_measurement)}</span
-                >
-              `
-            : ""}
+          >
+          ${unit ? html`<span class="measurement">${unit}</span>` : nothing}
         </div>
         <div class="footer">${this._footerElement}</div>
       </ha-card>
