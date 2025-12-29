@@ -30,6 +30,7 @@ export const computeAttributeValueDisplay = (
   attribute: string,
   value?: any
 ): string => {
+  // Number value, return formatted number
   const formattedValue = computeAttributeValuePartDisplay(
     "value",
     localize,
@@ -82,77 +83,82 @@ export const computeAttributeValueToPartsDisplay = (
       : attribute in stateObj.attributes
         ? stateObj.attributes[attribute]
         : undefined;
+
   if (attributeValue === null || attributeValue === undefined)
     formattedValue = localize("state.default.unknown");
-  else if (typeof attributeValue === "number") {
-    const formatter = DOMAIN_ATTRIBUTES_FORMATERS[domain]?.[attribute];
-    formattedValue = formatter
-      ? formatter(attributeValue, locale)
-      : formatNumber(attributeValue, locale);
-  } else if (typeof attributeValue === "string") {
-    // Date handling
-    if (isDate(attributeValue, true)) {
-      // Timestamp handling
-      if (isTimestamp(attributeValue)) {
-        const date = new Date(attributeValue);
-        if (checkValidDate(date))
-          formattedValue = formatDateTimeWithSeconds(date, locale, config);
-      } else {
-        // Value was not a timestamp, so only do date formatting
-        const date = new Date(attributeValue);
-        if (checkValidDate(date))
-          formattedValue = formatDate(date, locale, config);
+  else {
+    if (typeof attributeValue === "number") {
+      const formatter = DOMAIN_ATTRIBUTES_FORMATERS[domain]?.[attribute];
+      formattedValue = formatter
+        ? formatter(attributeValue, locale)
+        : formatNumber(attributeValue, locale);
+    } else if (typeof attributeValue === "string") {
+      // Date handling
+      if (isDate(attributeValue, true)) {
+        // Timestamp handling
+        if (isTimestamp(attributeValue)) {
+          const date = new Date(attributeValue);
+          if (checkValidDate(date))
+            formattedValue = formatDateTimeWithSeconds(date, locale, config);
+        } else {
+          // Value was not a timestamp, so only do date formatting
+          const date = new Date(attributeValue);
+          if (checkValidDate(date))
+            formattedValue = formatDate(date, locale, config);
+        }
       }
-    }
-  } else if (
-    // Values are objects, render object
-    (Array.isArray(attributeValue) &&
-      attributeValue.some((val) => val instanceof Object)) ||
-    (!Array.isArray(attributeValue) && attributeValue instanceof Object)
-  ) {
-    formattedValue = JSON.stringify(attributeValue);
-  } else if (Array.isArray(attributeValue)) {
-    // If this is an array, try to determine the display value for each item
-    formattedValue = attributeValue
-      .map((item) =>
-        computeAttributeValueDisplay(
-          localize,
-          stateObj,
-          locale,
-          config,
-          entities,
-          attribute,
-          item
+    } else if (
+      // Values are objects, render object
+      (Array.isArray(attributeValue) &&
+        attributeValue.some((val) => val instanceof Object)) ||
+      (!Array.isArray(attributeValue) && attributeValue instanceof Object)
+    ) {
+      formattedValue = JSON.stringify(attributeValue);
+    } else if (Array.isArray(attributeValue)) {
+      // If this is an array, try to determine the display value for each item
+      formattedValue = attributeValue
+        .map((item) =>
+          computeAttributeValueDisplay(
+            localize,
+            stateObj,
+            locale,
+            config,
+            entities,
+            attribute,
+            item
+          )
         )
-      )
-      .join(", ");
-  } else {
-    // We've explored all known value handling, so now we'll try to find a
-    // translation for the value.
-    const entityId = stateObj.entity_id;
-    const deviceClass = stateObj.attributes.device_class;
-    const registryEntry = entities[entityId] as
-      | EntityRegistryDisplayEntry
-      | undefined;
-    const translationKey = registryEntry?.translation_key;
+        .join(", ");
+    }
 
-    formattedValue =
-      (translationKey &&
-        localize(
-          `component.${registryEntry.platform}.entity.${domain}
+    if (formattedValue === undefined) {
+      // We've explored all known value handling, so now we'll try to find a
+      // translation for the value.
+      const entityId = stateObj.entity_id;
+      const deviceClass = stateObj.attributes.device_class;
+      const registryEntry = entities[entityId] as
+        | EntityRegistryDisplayEntry
+        | undefined;
+      const translationKey = registryEntry?.translation_key;
+
+      formattedValue =
+        (translationKey &&
+          localize(
+            `component.${registryEntry.platform}.entity.${domain}
           .${translationKey}
           .state_attributes.${attribute}.state.${attributeValue}`
-        )) ||
-      (deviceClass &&
-        localize(
-          `component.${domain}.entity_component.${deviceClass}
+          )) ||
+        (deviceClass &&
+          localize(
+            `component.${domain}.entity_component.${deviceClass}
           .state_attributes.${attribute}.state.${attributeValue}`
-        )) ||
-      localize(
-        `component.${domain}.entity_component._
+          )) ||
+        localize(
+          `component.${domain}.entity_component._
         .state_attributes.${attribute}.state.${attributeValue}`
-      ) ||
-      attributeValue;
+        ) ||
+        attributeValue;
+    }
   }
 
   let unit;
