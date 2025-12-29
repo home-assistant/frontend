@@ -30,7 +30,6 @@ export const computeAttributeValueDisplay = (
   attribute: string,
   value?: any
 ): string => {
-  // Number value, return formatted number
   const formattedValue = computeAttributeValuePartDisplay(
     "value",
     localize,
@@ -41,30 +40,27 @@ export const computeAttributeValueDisplay = (
     attribute,
     value
   );
-  if (typeof formattedValue === "number") {
-    const unit = computeAttributeValuePartDisplay(
-      "unit",
-      localize,
-      stateObj,
-      locale,
-      config,
-      entities,
-      attribute,
-      value
-    );
-    const literal = computeAttributeValuePartDisplay(
-      "literal",
-      localize,
-      stateObj,
-      locale,
-      config,
-      entities,
-      attribute,
-      value
-    );
-    return `${formattedValue}${literal}${unit}`;
-  }
-  return `${formattedValue}`;
+  const unit = computeAttributeValuePartDisplay(
+    "unit",
+    localize,
+    stateObj,
+    locale,
+    config,
+    entities,
+    attribute,
+    value
+  );
+  const literal = computeAttributeValuePartDisplay(
+    "literal",
+    localize,
+    stateObj,
+    locale,
+    config,
+    entities,
+    attribute,
+    value
+  );
+  return `${formattedValue}${literal}${unit}`;
 };
 
 export const computeAttributeValueToPartsDisplay = (
