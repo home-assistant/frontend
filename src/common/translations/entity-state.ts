@@ -15,8 +15,7 @@ export type FormatEntityStateFunc = (
 export type FormatEntityAttributeValueFunc = (
   stateObj: HassEntity,
   attribute: string,
-  value?: any,
-  hideUnit?: boolean
+  value?: any
 ) => string;
 export type FormatEntityAttributeNameFunc = (
   stateObj: HassEntity,
@@ -70,8 +69,7 @@ export const computeFormatFunctions = async (
         config,
         entities,
         attribute,
-        value,
-        hideUnit
+        value
       ),
     formatEntityAttributeName: (stateObj, attribute) =>
       computeAttributeNameDisplay(localize, stateObj, entities, attribute),
