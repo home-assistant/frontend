@@ -211,7 +211,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
         formatEntityAttributeValue: (stateObj, attribute, value) =>
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
-        // formatEntityAttributeUnit: () => undefined, // to be excluded
         formatEntityAttributeValueToParts: (stateObj, attribute, value) => [
           {
             type: "value",
