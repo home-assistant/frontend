@@ -164,6 +164,7 @@ export const computeAttributeValueToPartsDisplay = (
 
   let unit;
   if (typeof attributeValue === "number") {
+    const domain = computeStateDomain(stateObj);
     unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as string | undefined;
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
