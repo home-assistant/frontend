@@ -57,7 +57,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
         formatEntityAttributeValue,
         formatEntityAttributeValueToParts,
         formatEntityAttributeValuePart,
-        // formatEntityAttributeUnit, // to be excluded
         formatEntityName,
       } = await computeFormatFunctions(
         this.hass.localize,
@@ -75,7 +74,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
         formatEntityAttributeValue,
         formatEntityAttributeValueToParts,
         formatEntityAttributeValuePart,
-        // formatEntityAttributeUnit, // to be excluded
         formatEntityName,
       });
     };
