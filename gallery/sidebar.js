@@ -1,18 +1,18 @@
 export default [
+  // Core concepts (shown without a section header)
   {
-    // This section has no header and so all page links are shown directly in the sidebar
     category: "concepts",
     pages: ["home"],
   },
 
+  // Dashboard / Lovelace documentation
   {
     category: "lovelace",
-    // Label for in the sidebar
     header: "Dashboards",
-    // Specify order of pages. Any pages in the category folder but not listed here will
-    // automatically be added after the pages listed here.
     pages: ["introduction"],
   },
+
+  // Automation editor & debugging
   {
     category: "automation",
     header: "Automation",
@@ -24,31 +24,45 @@ export default [
       "trace-timeline",
     ],
   },
+
+  // UI building blocks
   {
     category: "components",
     header: "Components",
   },
+
+  // Entity more-info dialogs
   {
     category: "more-info",
-    header: "More Info dialogs",
+    header: "More Info Dialogs",
   },
+
+  // Miscellaneous UI patterns & helpers
   {
     category: "misc",
     header: "Miscellaneous",
   },
+
+  // Branding & visual identity
   {
     category: "brand",
     header: "Brand",
   },
+
+  // User-related screens & flows
   {
     category: "user-test",
     header: "Users",
     pages: ["user-types", "configuration-menu"],
   },
+
+  // Date & time handling
   {
     category: "date-time",
-    header: "Date and Time",
+    header: "Date & Time",
   },
+
+  // Meta / project information
   {
     category: "design.home-assistant.io",
     header: "About",
