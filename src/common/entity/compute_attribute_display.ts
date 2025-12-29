@@ -8,7 +8,7 @@ import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_regist
 import type { FrontendLocaleData } from "../../data/translation";
 import type { WeatherEntity } from "../../data/weather";
 import { getWeatherUnit } from "../../data/weather";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValuePart } from "../../types";
 import checkValidDate from "../datetime/check_valid_date";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTimeWithSeconds } from "../datetime/format_date_time";
@@ -30,63 +30,94 @@ export const computeAttributeValueDisplay = (
   attribute: string,
   value?: any
 ): string => {
-  const attributeValue =
-    value !== undefined ? value : stateObj.attributes[attribute];
-
-  // Null value, the state is unknown
-  if (attributeValue === null || attributeValue === undefined) {
-    return localize("state.default.unknown");
-  }
-
   // Number value, return formatted number
-  if (typeof attributeValue === "number") {
-    const domain = computeStateDomain(stateObj);
+  const formattedValue = computeAttributeValuePartDisplay(
+    "value",
+    localize,
+    stateObj,
+    locale,
+    config,
+    entities,
+    attribute,
+    value
+  );
+  if (typeof formattedValue === "number") {
+    const unit = computeAttributeValuePartDisplay(
+      "unit",
+      localize,
+      stateObj,
+      locale,
+      config,
+      entities,
+      attribute,
+      value
+    );
+    const literal = computeAttributeValuePartDisplay(
+      "literal",
+      localize,
+      stateObj,
+      locale,
+      config,
+      entities,
+      attribute,
+      value
+    );
+    return `${formattedValue}${literal}${unit}`;
+  }
+  return `${formattedValue}`;
+};
 
+export const computeAttributeValueToPartsDisplay = (
+  localize: LocalizeFunc,
+  stateObj: HassEntity,
+  locale: FrontendLocaleData,
+  config: HassConfig,
+  entities: HomeAssistant["entities"],
+  attribute: string,
+  value?: any
+): ValuePart[] | undefined => {
+  const parts: ValuePart[] = [];
+  const domain = computeStateDomain(stateObj);
+
+  let formattedValue;
+  const attributeValue =
+    value !== undefined
+      ? value
+      : attribute in stateObj.attributes
+        ? stateObj.attributes[attribute]
+        : undefined;
+  if (attributeValue === null || attributeValue === undefined)
+    formattedValue = localize("state.default.unknown");
+  else if (typeof attributeValue === "number") {
     const formatter = DOMAIN_ATTRIBUTES_FORMATERS[domain]?.[attribute];
-
-    const formattedValue = formatter
+    formattedValue = formatter
       ? formatter(attributeValue, locale)
       : formatNumber(attributeValue, locale);
-
-    const unit = computeAttributeUnitDisplay(stateObj, config, attribute);
-    if (unit) {
-      return `${formattedValue}${blankBeforeUnit(unit, locale)}${unit}`;
-    }
-
-    return formattedValue;
-  }
-
-  // Special handling in case this is a string with a known format
-  if (typeof attributeValue === "string") {
+  } else if (typeof attributeValue === "string") {
     // Date handling
     if (isDate(attributeValue, true)) {
       // Timestamp handling
       if (isTimestamp(attributeValue)) {
         const date = new Date(attributeValue);
-        if (checkValidDate(date)) {
-          return formatDateTimeWithSeconds(date, locale, config);
-        }
-      }
-
-      // Value was not a timestamp, so only do date formatting
-      const date = new Date(attributeValue);
-      if (checkValidDate(date)) {
-        return formatDate(date, locale, config);
+        if (checkValidDate(date))
+          formattedValue = formatDateTimeWithSeconds(date, locale, config);
+      } else {
+        // Value was not a timestamp, so only do date formatting
+        const date = new Date(attributeValue);
+        if (checkValidDate(date))
+          formattedValue = formatDate(date, locale, config);
       }
     }
-  }
-
-  // Values are objects, render object
-  if (
+  } else if (
+    // Values are objects, render object
     (Array.isArray(attributeValue) &&
       attributeValue.some((val) => val instanceof Object)) ||
     (!Array.isArray(attributeValue) && attributeValue instanceof Object)
   ) {
-    return JSON.stringify(attributeValue);
-  }
-  // If this is an array, try to determine the display value for each item
-  if (Array.isArray(attributeValue)) {
-    return attributeValue
+    formattedValue = JSON.stringify(attributeValue);
+  } else if (Array.isArray(attributeValue)) {
+    // If this is an array, try to determine the display value for each item
+    formattedValue = attributeValue
       .map((item) =>
         computeAttributeValueDisplay(
           localize,
@@ -99,47 +130,77 @@ export const computeAttributeValueDisplay = (
         )
       )
       .join(", ");
+  } else {
+    // We've explored all known value handling, so now we'll try to find a
+    // translation for the value.
+    const entityId = stateObj.entity_id;
+    const deviceClass = stateObj.attributes.device_class;
+    const registryEntry = entities[entityId] as
+      | EntityRegistryDisplayEntry
+      | undefined;
+    const translationKey = registryEntry?.translation_key;
+
+    formattedValue =
+      (translationKey &&
+        localize(
+          `component.${registryEntry.platform}.entity.${domain}
+          .${translationKey}
+          .state_attributes.${attribute}.state.${attributeValue}`
+        )) ||
+      (deviceClass &&
+        localize(
+          `component.${domain}.entity_component.${deviceClass}
+          .state_attributes.${attribute}.state.${attributeValue}`
+        )) ||
+      localize(
+        `component.${domain}.entity_component._
+        .state_attributes.${attribute}.state.${attributeValue}`
+      ) ||
+      attributeValue;
   }
 
-  // We've explored all known value handling, so now we'll try to find a
-  // translation for the value.
-  const entityId = stateObj.entity_id;
-  const domain = computeDomain(entityId);
-  const deviceClass = stateObj.attributes.device_class;
-  const registryEntry = entities[entityId] as
-    | EntityRegistryDisplayEntry
-    | undefined;
-  const translationKey = registryEntry?.translation_key;
+  let unit;
+  if (typeof attributeValue === "number") {
+    unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as string | undefined;
+    if (domain === "weather") {
+      unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
+    } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
+      unit = config.unit_system.temperature;
+    }
+  }
 
-  return (
-    (translationKey &&
-      localize(
-        `component.${registryEntry.platform}.entity.${domain}.${translationKey}.state_attributes.${attribute}.state.${attributeValue}`
-      )) ||
-    (deviceClass &&
-      localize(
-        `component.${domain}.entity_component.${deviceClass}.state_attributes.${attribute}.state.${attributeValue}`
-      )) ||
-    localize(
-      `component.${domain}.entity_component._.state_attributes.${attribute}.state.${attributeValue}`
-    ) ||
-    attributeValue
-  );
+  let literal;
+  if (unit) literal = blankBeforeUnit(unit, locale);
+
+  parts.push({ type: "value", value: formattedValue });
+  if (literal) parts.push({ type: "literal", value: literal });
+  if (unit) parts.push({ type: "unit", value: unit });
+  return parts;
 };
 
-export const computeAttributeUnitDisplay = (
+export const computeAttributeValuePartDisplay = (
+  type: string,
+  localize: LocalizeFunc,
   stateObj: HassEntity,
+  locale: FrontendLocaleData,
   config: HassConfig,
-  attribute: string
+  entities: HomeAssistant["entities"],
+  attribute: string,
+  value?: any
 ): string | undefined => {
-  const domain = computeStateDomain(stateObj);
-  let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as string | undefined;
-  if (domain === "weather") {
-    unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
-  } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
-    unit = config.unit_system.temperature;
-  }
-  return unit;
+  let partValue;
+  const parts = computeAttributeValueToPartsDisplay(
+    localize,
+    stateObj,
+    locale,
+    config,
+    entities,
+    attribute,
+    value
+  );
+  const foundPart = parts?.find((_part) => _part.type === type);
+  if (foundPart) partValue = foundPart.value;
+  return partValue;
 };
 
 export const computeAttributeNameDisplay = (
