@@ -61,7 +61,7 @@ export const computeFormatFunctions = async (
         entities,
         state
       ),
-    formatEntityAttributeValue: (stateObj, attribute, value, hideUnit) =>
+    formatEntityAttributeValue: (stateObj, attribute, value) =>
       computeAttributeValueDisplay(
         localize,
         stateObj,
