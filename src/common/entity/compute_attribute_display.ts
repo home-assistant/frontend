@@ -145,19 +145,15 @@ export const computeAttributeValueToPartsDisplay = (
       formattedValue =
         (translationKey &&
           localize(
-            `component.${registryEntry.platform}.entity.${domain}
-          .${translationKey}
-          .state_attributes.${attribute}.state.${attributeValue}`
-          )) ??
+            `component.${registryEntry.platform}.entity.${domain}.${translationKey}.state_attributes.${attribute}.state.${attributeValue}`
+          )) ||
         (deviceClass &&
           localize(
-            `component.${domain}.entity_component.${deviceClass}
-            .state_attributes.${attribute}.state.${attributeValue}`
-          )) ??
+            `component.${domain}.entity_component.${deviceClass}.state_attributes.${attribute}.state.${attributeValue}`
+          )) ||
         localize(
-          `component.${domain}.entity_component._
-          .state_attributes.${attribute}.state.${attributeValue}`
-        ) ??
+          `component.${domain}.entity_component._.state_attributes.${attribute}.state.${attributeValue}`
+        ) ||
         attributeValue;
     }
   }
