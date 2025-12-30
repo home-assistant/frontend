@@ -15,6 +15,8 @@ import type { HomeAssistant } from "../../../types";
 class EventSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public selectedEventType = "";
+
   @state() private _eventType = "";
 
   @state() private _subscribed?: () => void;
@@ -33,6 +35,18 @@ class EventSubscribeCard extends LitElement {
     if (this._subscribed) {
       this._subscribed();
       this._subscribed = undefined;
+    }
+  }
+
+  protected willUpdate(changedProperties: Map<string, any>) {
+    super.willUpdate(changedProperties);
+
+    if (
+      changedProperties.has("selectedEventType") &&
+      this.selectedEventType &&
+      !this._subscribed
+    ) {
+      this._eventType = this.selectedEventType;
     }
   }
 

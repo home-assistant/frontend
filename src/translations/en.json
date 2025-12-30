@@ -2333,6 +2333,27 @@
           },
           "cloud": {
             "secondary": "Loading..."
+          },
+          "zwave_js": {
+            "secondary": "Sub-GHz mesh protocol"
+          },
+          "zha": {
+            "secondary": "Low-power mesh network"
+          },
+          "matter": {
+            "secondary": "Cross-vendor smart home standard"
+          },
+          "thread": {
+            "secondary": "Mesh network often used for Matter devices"
+          },
+          "bluetooth": {
+            "secondary": "Local device connectivity"
+          },
+          "knx": {
+            "secondary": "Building automation standard"
+          },
+          "insteon": {
+            "secondary": "Dual-mesh home automation"
           }
         },
         "common": {
