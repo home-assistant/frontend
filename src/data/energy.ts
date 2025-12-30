@@ -268,6 +268,23 @@ export const getFossilEnergyConsumption = async (
     period,
   });
 
+export const getPowerStatistics = async (
+  hass: HomeAssistant,
+  startTime: Date,
+  endTime?: Date,
+  statistic_ids?: string[],
+  period: "5minute" | "hour" | "day" | "month" = "hour",
+  units?: StatisticsUnitConfiguration
+) =>
+  hass.callWS<Statistics>({
+    type: "energy/get_power_statistics",
+    start_time: startTime.toISOString(),
+    end_time: endTime?.toISOString(),
+    statistic_ids,
+    period,
+    units,
+  });
+
 export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
@@ -494,9 +511,14 @@ const getEnergyData = async (
       ])
     : {};
   const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
-    ? fetchStatistics(hass!, start, end, powerStatIds, finePeriod, powerUnits, [
-        "mean",
-      ])
+    ? getPowerStatistics(
+        hass!,
+        start,
+        end,
+        powerStatIds,
+        finePeriod,
+        powerUnits
+      )
     : {};
 
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
