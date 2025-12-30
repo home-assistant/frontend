@@ -59,8 +59,6 @@ const SORT_VALUE_URL_PATHS = {
   map: 2,
   logbook: 3,
   history: 4,
-  "developer-tools": 9,
-  config: 11,
 };
 
 const panelSorter = (
@@ -415,7 +413,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this.hass.locale
     );
 
-    return html`
+    return html`<div class="panels-list">
       <ha-md-list
         class="ha-scrollbar"
         @focusin=${this._listboxFocusIn}
@@ -425,13 +423,22 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @keydown=${this._listboxKeydown}
       >
         ${this._renderPanels(beforeSpacer, selectedPanel)}
-        ${this._renderSpacer()}
+      </ha-md-list>
+      ${this._renderSpacer()}
+      <ha-md-list
+        class="ha-scrollbar"
+        @focusin=${this._listboxFocusIn}
+        @focusout=${this._listboxFocusOut}
+        @touchend=${this._listboxTouchend}
+        @scroll=${this._listboxScroll}
+        @keydown=${this._listboxKeydown}
+      >
         ${this._renderPanels(afterSpacer, selectedPanel)}
         ${this.hass.user?.is_admin
           ? this._renderConfiguration(selectedPanel)
           : this._renderExternalConfiguration()}
       </ha-md-list>
-    `;
+    </div>`;
   }
 
   private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
@@ -487,21 +494,17 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
         ${!this.alwaysExpand &&
         (this._updatesCount > 0 || this._issuesCount > 0)
-          ? html`
-              <span class="badge" slot="start">
-                ${this._updatesCount + this._issuesCount}
-              </span>
-            `
+          ? html`<span class="badge" slot="start"
+              >${this._updatesCount + this._issuesCount}</span
+            >`
           : nothing}
         <span class="item-text" slot="headline"
           >${this.hass.localize("panel.config")}</span
         >
         ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
-          ? html`
-              <span class="badge" slot="end"
-                >${this._updatesCount + this._issuesCount}</span
-              >
-            `
+          ? html`<span class="badge" slot="end"
+              >${this._updatesCount + this._issuesCount}</span
+            >`
           : nothing}
       </ha-md-list-item>
     `;
@@ -522,9 +525,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       >
         <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
         ${!this.alwaysExpand && notificationCount > 0
-          ? html`
-              <span class="badge" slot="start"> ${notificationCount} </span>
-            `
+          ? html`<span class="badge" slot="start">${notificationCount}</span>`
           : nothing}
         <span class="item-text" slot="headline"
           >${this.hass.localize("ui.notification_drawer.title")}</span
@@ -557,9 +558,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           .user=${this.hass.user}
           .hass=${this.hass}
         ></ha-user-badge>
-        <span class="item-text" slot="headline">
-          ${this.hass.user ? this.hass.user.name : ""}
-        </span>
+        <span class="item-text" slot="headline"
+          >${this.hass.user ? this.hass.user.name : ""}</span
+        >
       </ha-md-list-item>
     `;
   }
@@ -576,9 +577,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @mouseleave=${this._itemMouseLeave}
       >
         <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
-        <span class="item-text" slot="headline">
-          ${this.hass.localize("ui.sidebar.external_app_configuration")}
-        </span>
+        <span class="item-text" slot="headline"
+          >${this.hass.localize("ui.sidebar.external_app_configuration")}</span
+        >
       </ha-md-list-item>
     `;
   }
@@ -778,11 +779,16 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-fade-in,
-        ha-md-list {
+        .panels-list {
           height: calc(
-            100% - var(--header-height) - var(--safe-area-inset-top, 0px) -
-              132px
-          );
+            100vh - var(--header-height) - var(--safe-area-inset-top, 0px) -
+              116px
+          ); /* 116px = two list items (112px) + divider (4px) */
+        }
+
+        .panels-list {
+          display: flex;
+          flex-direction: column;
         }
 
         ha-fade-in {
@@ -862,8 +868,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         .divider {
-          bottom: 112px;
-          padding: 10px 0;
+          bottom: 112px; /* two list items (96px) + padding (16x) */
+          padding-bottom: 3px; /* makes a height = 4px */
         }
         .divider::before {
           content: " ";
@@ -909,7 +915,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         .spacer {
-          flex: 1;
+          margin-top: auto;
           pointer-events: none;
         }
 
