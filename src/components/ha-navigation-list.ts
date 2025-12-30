@@ -44,6 +44,7 @@ class HaNavigationList extends LitElement {
               >
                 <ha-svg-icon
                   .path=${page.iconPath}
+                  .secondaryPath=${page.iconSecondaryPath}
                   .viewBox=${page.iconViewBox}
                 ></ha-svg-icon>
               </div>

@@ -23,6 +23,7 @@ export interface PageNavigation {
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
+  iconSecondaryPath?: string;
   iconViewBox?: string;
   description?: string;
   iconColor?: string;
