@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
+import { navigate } from "../../../../../common/navigate";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
 export const configTabs: PageNavigation[] = [
@@ -41,13 +42,20 @@ class ZWaveJSConfigRouter extends HassRouterPage {
       const searchParams = new URLSearchParams(window.location.search);
       if (searchParams.has("config_entry")) {
         this._configEntry = searchParams.get("config_entry");
+        searchParams.delete("config_entry");
+        let url = `${this.routeTail.prefix}${this.routeTail.path}`;
+        const search = searchParams.toString();
+        if (search) {
+          url += `?${search}`;
+        }
+        navigate(url, { replace: true });
       }
 
-      if (page === "picker" && this._configEntry) {
+      if ((!page || page === "picker") && this._configEntry) {
         return "dashboard";
       }
 
-      if (page !== "picker" && !this._configEntry) {
+      if ((!page || page !== "picker") && !this._configEntry) {
         return "picker";
       }
 
