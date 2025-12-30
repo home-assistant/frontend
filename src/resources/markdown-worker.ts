@@ -19,6 +19,7 @@ const renderMarkdown = async (
   if (!whiteListNormal) {
     whiteListNormal = {
       ...getDefaultWhiteList(),
+      table: [...(getDefaultWhiteList().table ?? []), "role"],
       input: ["type", "disabled", "checked"],
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],

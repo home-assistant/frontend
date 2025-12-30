@@ -139,7 +139,7 @@ export class DemoHaWaDialog extends LitElement {
             </tr>
             <tr>
               <td><code>large</code></td>
-              <td><code>min(720px, var(--full-width))</code></td>
+              <td><code>min(1024px, var(--full-width))</code></td>
             </tr>
             <tr>
               <td><code>full</code></td>

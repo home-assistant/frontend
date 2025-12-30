@@ -726,6 +726,7 @@ export class HaServiceControl extends LitElement {
               : undefined}
             .placeholder=${dataField.default}
             .localizeValue=${this._localizeValueCallback}
+            .required=${dataField.required}
           ></ha-selector>
         </ha-settings-row>`
       : "";

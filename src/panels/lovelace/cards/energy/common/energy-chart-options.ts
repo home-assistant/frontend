@@ -31,7 +31,11 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
 
-export function getSuggestedMax(dayDifference: number, end: Date): number {
+export function getSuggestedMax(
+  dayDifference: number,
+  end: Date,
+  detailedDailyData = false
+): number {
   let suggestedMax = new Date(end);
 
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
@@ -40,7 +44,9 @@ export function getSuggestedMax(dayDifference: number, end: Date): number {
     suggestedMax = subHours(suggestedMax, 1);
   }
 
-  suggestedMax.setMinutes(0, 0, 0);
+  if (!detailedDailyData) {
+    suggestedMax.setMinutes(0, 0, 0);
+  }
   if (dayDifference > 35) {
     suggestedMax.setDate(1);
   }
@@ -77,7 +83,8 @@ export function getCommonOptions(
   unit?: string,
   compareStart?: Date,
   compareEnd?: Date,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  detailedDailyData = false
 ): ECOption {
   const dayDifference = differenceInDays(end, start);
 
@@ -89,7 +96,7 @@ export function getCommonOptions(
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(dayDifference, end),
+      max: getSuggestedMax(dayDifference, end, detailedDailyData),
     },
     yAxis: {
       type: "value",
@@ -295,32 +302,41 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   });
 }
 
+function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
+  const item =
+    datapoint && typeof datapoint === "object" && "value" in datapoint
+      ? datapoint
+      : { value: datapoint };
+  return Number(item.value?.[0]);
+}
+
 export function fillLineGaps(datasets: LineSeriesOption[]) {
   const buckets = Array.from(
     new Set(
       datasets
         .map((dataset) =>
-          dataset.data!.map((datapoint) => Number(datapoint![0]))
+          dataset.data!.map((datapoint) => getDatapointX(datapoint))
         )
         .flat()
     )
   ).sort((a, b) => a - b);
-  buckets.forEach((bucket, index) => {
-    for (let i = datasets.length - 1; i >= 0; i--) {
-      const dataPoint = datasets[i].data![index];
+
+  datasets.forEach((dataset) => {
+    const dataMap = new Map<number, LineDataItemOption>();
+    dataset.data!.forEach((datapoint) => {
       const item: LineDataItemOption =
-        dataPoint && typeof dataPoint === "object" && "value" in dataPoint
-          ? dataPoint
-          : ({ value: dataPoint } as LineDataItemOption);
-      const x = item.value?.[0];
-      if (x === undefined) {
-        continue;
+        datapoint && typeof datapoint === "object" && "value" in datapoint
+          ? datapoint
+          : ({ value: datapoint } as LineDataItemOption);
+      const x = getDatapointX(datapoint);
+      if (!Number.isNaN(x)) {
+        dataMap.set(x, item);
       }
-      if (Number(x) !== bucket) {
-        datasets[i].data?.splice(index, 0, [bucket, 0]);
-      }
-    }
+    });
+
+    dataset.data = buckets.map((bucket) => dataMap.get(bucket) ?? [bucket, 0]);
   });
+
   return datasets;
 }
 

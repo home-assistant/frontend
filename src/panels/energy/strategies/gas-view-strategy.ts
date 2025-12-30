@@ -24,6 +24,9 @@ export class GasViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
 
     const hasGasSources = prefs?.energy_sources.some(
@@ -37,10 +40,6 @@ export class GasViewStrategy extends ReactiveElement {
 
     const section = view.sections![0] as LovelaceSectionConfig;
 
-    section.cards!.push({
-      type: "energy-date-selection",
-      collection_key: collectionKey,
-    });
     section.cards!.push({
       type: "energy-compare",
       collection_key: collectionKey,

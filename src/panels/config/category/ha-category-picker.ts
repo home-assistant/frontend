@@ -120,9 +120,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         icon: category.icon || undefined,
         icon_path: category.icon ? undefined : mdiTag,
         sorting_label: category.name,
-        search_labels: [category.name, category.category_id].filter(
-          (v): v is string => Boolean(v)
-        ),
       }));
 
       return items;
@@ -183,10 +180,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   };
 
   protected render(): TemplateResult {
-    const placeholder =
-      this.placeholder ??
-      this.hass.localize("ui.components.category-picker.category");
-
     const valueRenderer = this._computeValueRenderer(this._categories);
 
     return html`
@@ -194,15 +187,18 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
+        .placeholder=${this.placeholder}
+        .value=${this.value}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.category-picker.no_categories"
         )}
-        .placeholder=${placeholder}
-        .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.category-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>

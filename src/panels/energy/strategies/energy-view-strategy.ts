@@ -21,6 +21,9 @@ export class EnergyViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
 
     // No energy sources available
@@ -50,10 +53,6 @@ export class EnergyViewStrategy extends ReactiveElement {
       (d) => d.included_in_stat
     );
 
-    view.cards!.push({
-      type: "energy-date-selection",
-      collection_key: collectionKey,
-    });
     view.cards!.push({
       type: "energy-compare",
       collection_key: "energy_dashboard",

@@ -12,7 +12,7 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
-import { subscribeDeviceRegistry } from "../data/device_registry";
+import { subscribeDeviceRegistry } from "../data/device/device_registry";
 import {
   subscribeFrontendSystemData,
   subscribeFrontendUserData,
@@ -77,6 +77,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         resources: null as any,
         localize: () => "",
         translationMetadata,
+        kioskMode: false,
         dockedSidebar: "docked",
         vibrate: true,
         debugConnection: __DEV__,

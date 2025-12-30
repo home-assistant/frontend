@@ -48,6 +48,9 @@ export const mainStyles = css`
      */
     --safe-width: calc(100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right));
     --safe-height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+
+    /* dialog backdrop filter */
+    --ha-dialog-scrim-backdrop-filter: brightness(68%);
   }
 `;
 

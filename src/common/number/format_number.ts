@@ -2,7 +2,7 @@ import type {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { NumberFormat } from "../../data/translation";
 import { round } from "./round";

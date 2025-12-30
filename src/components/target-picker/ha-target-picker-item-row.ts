@@ -23,11 +23,11 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { FloorRegistryEntry } from "../../data/floor_registry";
 import { domainToName } from "../../data/integration";
-import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import {
   areaMeetsFilter,
   deviceMeetsFilter,
@@ -605,8 +605,8 @@ export class HaTargetPickerItemRow extends LitElement {
     buttonLinkStyle,
     css`
       :host {
-        --md-list-item-top-space: var(--ha-space-0);
-        --md-list-item-bottom-space: var(--ha-space-0);
+        --md-list-item-top-space: 0;
+        --md-list-item-bottom-space: 0;
         --md-list-item-leading-space: var(--ha-space-2);
         --md-list-item-trailing-space: var(--ha-space-2);
         --md-list-item-two-line-container-height: 56px;

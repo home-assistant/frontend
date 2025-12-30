@@ -42,7 +42,10 @@ class HaNavigationList extends LitElement {
                 class=${page.iconColor ? "icon-background" : ""}
                 .style="background-color: ${page.iconColor || "undefined"}"
               >
-                <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
+                <ha-svg-icon
+                  .path=${page.iconPath}
+                  .viewBox=${page.iconViewBox}
+                ></ha-svg-icon>
               </div>
               <span slot="headline">${page.name}</span>
               ${this.hasSecondary

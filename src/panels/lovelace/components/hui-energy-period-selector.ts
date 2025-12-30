@@ -17,6 +17,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { classMap } from "lit/directives/class-map";
 import {
   calcDate,
   calcDateProperty,
@@ -68,6 +69,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
     true;
+
+  @property({ attribute: "vertical-opening-direction" })
+  public verticalOpeningDirection?: "up" | "down";
+
+  @state() _datepickerOpen = false;
 
   @state() _startDate?: Date;
 
@@ -150,7 +156,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     );
 
     return html`
-      <div class="row">
+      <div
+        class=${classMap({
+          row: true,
+          "datepicker-open": this._datepickerOpen,
+        })}
+      >
+        <div class="backdrop"></div>
         <div class="label">
           ${simpleRange === "day"
             ? this.narrow
@@ -202,8 +214,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .ranges=${this._ranges}
             @value-changed=${this._dateRangeChanged}
             @preset-selected=${this._presetSelected}
+            @toggle=${this._handleDatepickerToggle}
             minimal
             header-position
+            .verticalOpeningDirection=${this.verticalOpeningDirection}
           ></ha-date-range-picker>
         </div>
 
@@ -446,6 +460,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._endDate = energyData.end || endOfToday();
   }
 
+  private _handleDatepickerToggle(ev: CustomEvent<{ open: boolean }>) {
+    this._datepickerOpen = ev.detail.open;
+  }
+
   private _toggleCompare(ev: CustomEvent<RequestSelectedDetail>) {
     if (ev.detail.source !== "interaction") {
       return;
@@ -495,6 +513,29 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-end: initial;
       flex-shrink: 0;
       --ha-button-theme-color: currentColor;
+    }
+    .backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: var(--dialog-z-index, 8);
+      -webkit-backdrop-filter: var(
+        --ha-dialog-scrim-backdrop-filter,
+        var(--dialog-backdrop-filter)
+      );
+      backdrop-filter: var(
+        --ha-dialog-scrim-backdrop-filter,
+        var(--dialog-backdrop-filter)
+      );
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--ha-animation-base-duration) ease-in-out;
+    }
+    .datepicker-open .backdrop {
+      opacity: 1;
+      pointer-events: auto;
     }
   `;
 }

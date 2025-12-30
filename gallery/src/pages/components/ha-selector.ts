@@ -13,9 +13,9 @@ import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
 import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
-import type { LabelRegistryEntry } from "../../../../src/data/label_registry";
+import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
 import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
@@ -39,6 +39,9 @@ const ENTITIES = [
   }),
   getEntity("switch", "coffee", "off", {
     friendly_name: "Coffee",
+  }),
+  getEntity("number", "number", 5, {
+    friendly_name: "Number",
   }),
 ];
 
@@ -376,6 +379,33 @@ const SCHEMAS: {
       constant: {
         name: "Constant",
         selector: { constant: { value: true, label: "Yes!" } },
+      },
+      choose: {
+        name: "Choose",
+        selector: {
+          choose: {
+            choices: {
+              number: {
+                selector: {
+                  number: {
+                    min: 0,
+                    max: 100,
+                    step: 0.1,
+                  },
+                },
+              },
+              entity: {
+                selector: {
+                  entity: {
+                    filter: {
+                      domain: "number",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
   },

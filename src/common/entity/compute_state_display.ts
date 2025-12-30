@@ -1,12 +1,12 @@
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
-import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
+import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
 import { formatTime } from "../datetime/format_time";
 import {
   formatNumber,

@@ -8,6 +8,7 @@ import "../../../components/chart/state-history-charts";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-tooltip";
 import {
   computeHistory,
   convertStatisticsToHistory,
@@ -54,6 +55,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _entityIds: string[] = [];
 
   private _entities: EntityConfig[] = [];
+
+  private _historyLinkId = `history-${Math.random().toString(36).substring(2, 9)}`;
 
   private _hoursToShow = DEFAULT_HOURS_TO_SHOW;
 
@@ -135,6 +138,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     const { numeric_device_classes: sensorNumericDeviceClasses } =
       await getSensorNumericDeviceClasses(this.hass!);
 
+    if (!this.isConnected) {
+      return; // Skip subscribe if we already disconnected while awaiting
+    }
+
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -212,7 +219,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _setRedrawTimer() {
     // redraw the graph every minute to update the time axis
     clearInterval(this._interval);
-    this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
+    if (this.isConnected) {
+      this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
+    }
   }
 
   private _unsubscribeHistory() {
@@ -268,6 +277,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     now.setHours(now.getHours() - this._hoursToShow);
     const configUrl = `/history?${createSearchParam({
       entity_id: this._entityIds.join(","),
+      back: "1",
       start_date: now.toISOString(),
     })}`;
 
@@ -281,7 +291,16 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           ? html`
               <h1 class="card-header">
                 ${this._config.title}
-                <a href=${configUrl}><ha-icon-next></ha-icon-next></a>
+                <a
+                  id=${this._historyLinkId}
+                  href=${configUrl}
+                  aria-label=${this.hass.localize("panel.history")}
+                >
+                  <ha-icon-next></ha-icon-next>
+                </a>
+                <ha-tooltip for=${this._historyLinkId} placement="left">
+                  ${this.hass.localize("panel.history")}
+                </ha-tooltip>
               </h1>
             `
           : nothing}

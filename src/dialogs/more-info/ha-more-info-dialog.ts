@@ -16,6 +16,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -44,8 +45,8 @@ import "../../components/ha-related-items";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-} from "../../data/entity_registry";
-import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { lightSupportsFavoriteColors } from "../../data/light";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
@@ -607,7 +608,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                 `
               : nothing}
         </ha-dialog-header>
-        <div class="content-wrapper">
+        <div
+          class=${classMap({
+            "content-wrapper": true,
+            "settings-view": this._currView === "settings",
+          })}
+        >
           ${keyed(
             this._entityId,
             html`
@@ -759,6 +765,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
           overflow: auto;
         }
 
+        .content-wrapper.settings-view .fade-bottom {
+          bottom: var(--ha-space-18);
+        }
+
         .child-view {
           display: flex;
           flex-direction: column;
@@ -792,8 +802,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin: var(--ha-space-0) var(--ha-space-0)
-            calc(var(--ha-space-2) * -1) var(--ha-space-0);
+          margin: 0 0 calc(var(--ha-space-2) * -1) 0;
         }
 
         .title p {

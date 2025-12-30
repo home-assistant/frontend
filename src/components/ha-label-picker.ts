@@ -11,12 +11,12 @@ import {
 } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import type { LabelRegistryEntry } from "../data/label_registry";
+import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
 import {
   createLabelRegistryEntry,
-  getLabels,
   subscribeLabelRegistry,
-} from "../data/label_registry";
+  type LabelRegistryEntry,
+} from "../data/label/label_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
@@ -227,6 +227,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
+        .helper=${this.helper}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass.localize(
           "ui.components.label-picker.no_labels"
@@ -237,6 +238,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
+        .searchKeys=${labelComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
         <slot .slot=${this._slotNodes?.length ? "field" : undefined}></slot>

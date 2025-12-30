@@ -3,8 +3,8 @@ import {
   DOMAIN_ATTRIBUTES_FORMATERS,
   DOMAIN_ATTRIBUTES_UNITS,
   TEMPERATURE_ATTRIBUTES,
-} from "../../data/entity_attributes";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+} from "../../data/entity/entity_attributes";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import type { WeatherEntity } from "../../data/weather";
 import { getWeatherUnit } from "../../data/weather";

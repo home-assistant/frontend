@@ -123,8 +123,8 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
           .fade-top,
           .fade-bottom {
             position: absolute;
-            left: var(--ha-space-0);
-            right: var(--ha-space-0);
+            left: 0;
+            right: 0;
             height: var(--ha-space-4);
             pointer-events: none;
             transition: opacity 180ms ease-in-out;
@@ -134,14 +134,13 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
               transparent
             );
             border-radius: var(--ha-border-radius-square);
-            z-index: 100;
             opacity: 0;
           }
           .fade-top {
-            top: var(--ha-space-0);
+            top: 0;
           }
           .fade-bottom {
-            bottom: var(--ha-space-0);
+            bottom: 0;
             transform: rotate(180deg);
           }
 

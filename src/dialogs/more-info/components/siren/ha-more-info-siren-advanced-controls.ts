@@ -209,7 +209,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
           flex-direction: row;
           justify-content: center;
           gap: var(--ha-space-4);
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
         ha-control-button {
           --control-button-border-radius: var(--ha-border-radius-xl);

@@ -4,7 +4,7 @@ import { slugify } from "../../../common/string/slugify";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-camera-stream";
 import type { CameraEntity } from "../../../data/camera";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
@@ -106,7 +106,7 @@ class MoreInfoCamera extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 16px;
+      padding: var(--ha-space-4);
       z-index: 1;
       gap: var(--ha-space-2);
     }
