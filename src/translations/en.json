@@ -6258,6 +6258,10 @@
             "channel_has_been_changed": "Network channel has been changed",
             "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes.",
             "channel_auto": "Smart"
+          },
+          "picker": {
+            "title": "Select Zigbee network",
+            "no_entries": "No Zigbee networks configured. Please set up ZHA integration first."
           }
         },
         "zwave_js": {
