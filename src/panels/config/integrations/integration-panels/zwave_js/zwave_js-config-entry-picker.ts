@@ -1,4 +1,4 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
@@ -6,10 +6,13 @@ import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-list-item";
 import "../../../../../layouts/hass-loading-screen";
+import "../../../../../layouts/hass-subpage";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { navigate } from "../../../../../common/navigate";
+import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 
 @customElement("zwave_js-config-entry-picker")
 class ZWaveJSConfigEntryPicker extends LitElement {
@@ -19,7 +22,8 @@ class ZWaveJSConfigEntryPicker extends LitElement {
 
   @state() private _configEntries?: ConfigEntry[];
 
-  protected async firstUpdated() {
+  protected async firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
     await this._fetchConfigEntries();
   }
 
@@ -30,42 +34,55 @@ class ZWaveJSConfigEntryPicker extends LitElement {
 
     if (this._configEntries.length === 0) {
       return html`
-        <div class="content">
-          <ha-card>
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.picker.no_entries"
-                )}
-              </p>
-            </div>
-          </ha-card>
-        </div>
+        <hass-subpage
+          header="Z-Wave JS"
+          .narrow=${this.narrow}
+          .hass=${this.hass}
+        >
+          <div class="content">
+            <ha-card>
+              <div class="card-content">
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.picker.no_entries"
+                  )}
+                </p>
+              </div>
+            </ha-card>
+          </div>
+        </hass-subpage>
       `;
     }
 
     return html`
-      <div class="content">
-        <ha-card>
-          <h1 class="card-header">
-            ${this.hass.localize("ui.panel.config.zwave_js.picker.title")}
-          </h1>
-          <ha-list>
-            ${this._configEntries.map(
-              (entry) => html`
-                <a
-                  href="/config/zwave_js/dashboard?config_entry=${entry.entry_id}"
-                >
-                  <ha-list-item hasMeta>
-                    <span>${entry.title}</span>
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                </a>
-              `
+      <hass-subpage
+        header="Z-Wave JS"
+        .narrow=${this.narrow}
+        .hass=${this.hass}
+      >
+        <div class="content">
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.config.zwave_js.picker.title"
             )}
-          </ha-list>
-        </ha-card>
-      </div>
+          >
+            <ha-list>
+              ${this._configEntries.map(
+                (entry) => html`
+                  <a
+                    href="/config/zwave_js/dashboard?config_entry=${entry.entry_id}"
+                  >
+                    <ha-list-item hasMeta>
+                      <span>${entry.title}</span>
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  </a>
+                `
+              )}
+            </ha-list>
+          </ha-card>
+        </div>
+      </hass-subpage>
     `;
   }
 
@@ -73,7 +90,15 @@ class ZWaveJSConfigEntryPicker extends LitElement {
     const entries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
     });
-    this._configEntries = entries;
+    this._configEntries = entries.sort((a, b) =>
+      caseInsensitiveStringCompare(a.title, b.title)
+    );
+    if (this._configEntries.length === 1) {
+      navigate(
+        `/config/zwave_js/dashboard?config_entry=${this._configEntries[0].entry_id}`,
+        { replace: true }
+      );
+    }
   }
 
   static get styles(): CSSResultGroup {

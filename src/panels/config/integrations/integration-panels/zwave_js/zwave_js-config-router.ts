@@ -3,9 +3,7 @@ import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
-import { navigate } from "../../../../../common/navigate";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import { getConfigEntries } from "../../../../../data/config_entries";
 
 export const configTabs: PageNavigation[] = [
   {
@@ -33,13 +31,26 @@ class ZWaveJSConfigRouter extends HassRouterPage {
 
   @property({ type: Boolean }) public narrow = false;
 
-  private _configEntry = new URLSearchParams(window.location.search).get(
-    "config_entry"
-  );
+  private _configEntry: string | null = null;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "picker",
     showLoading: true,
+    // Make sure that we have a config entry in the URL before rendering other pages
+    beforeRender: (page) => {
+      const searchParams = new URLSearchParams(window.location.search);
+      this._configEntry = searchParams.get("config_entry");
+
+      if (page === "picker" && this._configEntry) {
+        return "dashboard";
+      }
+
+      if (page !== "picker" && !this._configEntry) {
+        return "picker";
+      }
+
+      return undefined;
+    },
     routes: {
       picker: {
         tag: "zwave_js-config-entry-picker",
@@ -74,7 +85,6 @@ class ZWaveJSConfigRouter extends HassRouterPage {
         load: () => import("./zwave_js-network-visualization"),
       },
     },
-    initialLoad: () => this._fetchConfigEntries(),
   };
 
   protected updatePageEl(el): void {
@@ -82,40 +92,7 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     el.hass = this.hass;
     el.isWide = this.isWide;
     el.narrow = this.narrow;
-
-    // Only pass configEntryId to pages that need it (not the picker)
-    if (this.routeTail.path !== "picker") {
-      el.configEntryId = this._configEntry;
-    }
-
-    const searchParams = new URLSearchParams(window.location.search);
-    if (this._configEntry && !searchParams.has("config_entry")) {
-      searchParams.append("config_entry", this._configEntry);
-      navigate(
-        `${this.routeTail.prefix}${
-          this.routeTail.path
-        }?${searchParams.toString()}`,
-        { replace: true }
-      );
-    }
-  }
-
-  private async _fetchConfigEntries() {
-    if (this._configEntry) {
-      return;
-    }
-    const entries = await getConfigEntries(this.hass, {
-      domain: "zwave_js",
-    });
-    // Only auto-select if there's exactly one entry
-    if (entries.length === 1) {
-      this._configEntry = entries[0].entry_id;
-      // Redirect to dashboard with the config entry
-      navigate(`/config/zwave_js/dashboard?config_entry=${this._configEntry}`, {
-        replace: true,
-      });
-    }
-    // Otherwise, let the picker page handle showing the list
+    el.configEntryId = this._configEntry;
   }
 }
 
