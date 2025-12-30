@@ -39,7 +39,9 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     // Make sure that we have a config entry in the URL before rendering other pages
     beforeRender: (page) => {
       const searchParams = new URLSearchParams(window.location.search);
-      this._configEntry = searchParams.get("config_entry");
+      if (searchParams.has("config_entry")) {
+        this._configEntry = searchParams.get("config_entry");
+      }
 
       if (page === "picker" && this._configEntry) {
         return "dashboard";
