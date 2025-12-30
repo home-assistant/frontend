@@ -216,7 +216,7 @@ function formatTooltip(
           countNegative++;
         }
       }
-      return `${param.marker} ${filterXSS(param.seriesName!)}: <div style="direction:ltr; display: inline;">${value} ${unit} (${(parseFloat(value) / sumPositive) * 100}%)</div>`;
+      return `${param.marker} ${filterXSS(param.seriesName!)}: <div style="direction:ltr; display: inline;">${value} ${unit}</div>`;
     })
     .filter(Boolean);
   let footer = "";
