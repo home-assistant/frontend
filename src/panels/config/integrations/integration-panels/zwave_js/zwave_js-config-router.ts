@@ -38,9 +38,13 @@ class ZWaveJSConfigRouter extends HassRouterPage {
   );
 
   protected routerOptions: RouterOptions = {
-    defaultPage: "dashboard",
+    defaultPage: "picker",
     showLoading: true,
     routes: {
+      picker: {
+        tag: "zwave_js-config-entry-picker",
+        load: () => import("./zwave_js-config-entry-picker"),
+      },
       dashboard: {
         tag: "zwave_js-config-dashboard",
         load: () => import("./zwave_js-config-dashboard"),
@@ -78,7 +82,11 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     el.hass = this.hass;
     el.isWide = this.isWide;
     el.narrow = this.narrow;
-    el.configEntryId = this._configEntry;
+
+    // Only pass configEntryId to pages that need it (not the picker)
+    if (this.routeTail.path !== "picker") {
+      el.configEntryId = this._configEntry;
+    }
 
     const searchParams = new URLSearchParams(window.location.search);
     if (this._configEntry && !searchParams.has("config_entry")) {
@@ -99,9 +107,15 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     const entries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
     });
-    if (entries.length) {
+    // Only auto-select if there's exactly one entry
+    if (entries.length === 1) {
       this._configEntry = entries[0].entry_id;
+      // Redirect to dashboard with the config entry
+      navigate(`/config/zwave_js/dashboard?config_entry=${this._configEntry}`, {
+        replace: true,
+      });
     }
+    // Otherwise, let the picker page handle showing the list
   }
 }
 
