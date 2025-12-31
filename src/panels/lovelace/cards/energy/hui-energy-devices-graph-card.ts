@@ -186,7 +186,7 @@ export class HuiEnergyDevicesGraphCard
       params.value[0] as number,
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    )} kWh`;
+    )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
     return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
 
