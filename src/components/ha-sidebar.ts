@@ -265,9 +265,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ${this._renderNotifications()}
         ${this._renderUserItem(selectedPanel)}
       </ha-md-list>
-      <div disabled class="bottom-spacer"></div>
-      <div class="tooltip"></div>
-    `;
+      <div class="tooltip"></div>`;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -413,31 +411,36 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this.hass.locale
     );
 
+    const commonListPart = (_content, _class, scrollable?: boolean) =>
+      html`<ha-md-list
+        class=${classMap({
+          "ha-scrollbar": scrollable ?? true,
+          [_class]: true,
+        })}
+        @focusin=${this._listboxFocusIn}
+        @focusout=${this._listboxFocusOut}
+        @touchend=${this._listboxTouchend}
+        @scroll=${this._listboxScroll}
+        @keydown=${this._listboxKeydown}
+        >${_content}</ha-md-list
+      >`;
+
     return html`<div class="panels-list">
-      <ha-md-list
-        class="ha-scrollbar"
-        @focusin=${this._listboxFocusIn}
-        @focusout=${this._listboxFocusOut}
-        @touchend=${this._listboxTouchend}
-        @scroll=${this._listboxScroll}
-        @keydown=${this._listboxKeydown}
-      >
-        ${this._renderPanels(beforeSpacer, selectedPanel)}
-      </ha-md-list>
+      ${commonListPart(
+        this._renderPanels(beforeSpacer, selectedPanel),
+        "before-spacer"
+      )}
       ${this._renderSpacer()}
-      <ha-md-list
-        class="ha-scrollbar"
-        @focusin=${this._listboxFocusIn}
-        @focusout=${this._listboxFocusOut}
-        @touchend=${this._listboxTouchend}
-        @scroll=${this._listboxScroll}
-        @keydown=${this._listboxKeydown}
-      >
-        ${this._renderPanels(afterSpacer, selectedPanel)}
-        ${this.hass.user?.is_admin
-          ? this._renderConfiguration(selectedPanel)
-          : this._renderExternalConfiguration()}
-      </ha-md-list>
+      ${commonListPart(
+        html`
+          ${this._renderPanels(afterSpacer, selectedPanel)}
+          ${this.hass.user?.is_admin
+            ? this._renderConfiguration(selectedPanel)
+            : this._renderExternalConfiguration()}
+        `,
+        "after-spacer",
+        false
+      )}
     </div>`;
   }
 
@@ -805,6 +808,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           margin-left: var(--safe-area-inset-left, 0px);
         }
 
+        ha-md-list.before-spacer {
+          padding-bottom: 0;
+        }
+        ha-md-list.after-spacer {
+          padding-top: 0;
+          min-height: fit-content;
+        }
+
         ha-md-list-item {
           flex-shrink: 0;
           box-sizing: border-box;
@@ -877,6 +888,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           height: 1px;
           background-color: var(--divider-color);
         }
+
         .badge {
           display: flex;
           justify-content: center;
