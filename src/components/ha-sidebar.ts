@@ -6,7 +6,7 @@ import {
   mdiMenuOpen,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
@@ -39,6 +39,7 @@ import type { UpdateEntity } from "../data/update";
 import { updateCanInstall } from "../data/update";
 import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
@@ -173,7 +174,7 @@ export const computePanels = memoizeOne(
 );
 
 @customElement("ha-sidebar")
-class HaSidebar extends SubscribeMixin(LitElement) {
+class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -204,6 +205,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
   @query(".tooltip") private _tooltip!: HTMLDivElement;
+
+  @query(".before-spacer") private _scrollableList?: HTMLDivElement;
+
+  protected get scrollableElement(): HTMLElement | null {
+    return this._scrollableList as HTMLElement | null;
+  }
 
   public hassSubscribe() {
     return [
@@ -411,10 +418,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this.hass.locale
     );
 
-    const commonListPart = (_content, _class, scrollable?: boolean) =>
+    const commonListPart = (_content, _class, scrollable: boolean) =>
       html`<ha-md-list
         class=${classMap({
-          "ha-scrollbar": scrollable ?? true,
+          "ha-scrollbar": scrollable,
           [_class]: true,
         })}
         @focusin=${this._listboxFocusIn}
@@ -426,10 +433,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       >`;
 
     return html`<div class="panels-list">
-      ${commonListPart(
-        this._renderPanels(beforeSpacer, selectedPanel),
-        "before-spacer"
-      )}
+      <div class="wrapper">
+        ${commonListPart(
+          this._renderPanels(beforeSpacer, selectedPanel),
+          "before-spacer",
+          true
+        )}
+        ${this.renderScrollableFades()}
+      </div>
       ${this._renderSpacer()}
       ${commonListPart(
         html`
@@ -709,8 +720,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  static get styles(): CSSResultGroup {
+  static get styles() {
     return [
+      ...super.styles,
       haStyleScrollbar,
       css`
         :host {
@@ -808,6 +820,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           margin-left: var(--safe-area-inset-left, 0px);
         }
 
+        .wrapper {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
         ha-md-list.before-spacer {
           padding-bottom: 0;
         }
