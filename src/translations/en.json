@@ -6830,7 +6830,7 @@
           },
           "picker": {
             "title": "Select Z-Wave network",
-            "no_entries": "No Z-Wave networks configured. Please set up Z-Wave JS integration first."
+            "no_entries": "No Z-Wave networks configured. Set up the Z-Wave JS integration first."
           }
         },
         "matter": {
