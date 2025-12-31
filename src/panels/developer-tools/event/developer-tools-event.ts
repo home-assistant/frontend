@@ -25,6 +25,8 @@ class HaPanelDevEvent extends LitElement {
 
   @state() private _isValid = true;
 
+  @state() private _selectedEventType = "";
+
   protected render(): TemplateResult {
     return html`
       <div
@@ -89,7 +91,10 @@ class HaPanelDevEvent extends LitElement {
             </div>
           </ha-card>
 
-          <event-subscribe-card .hass=${this.hass}></event-subscribe-card>
+          <event-subscribe-card
+            .hass=${this.hass}
+            .selectedEventType=${this._selectedEventType}
+          ></event-subscribe-card>
         </div>
 
         <div>
@@ -109,6 +114,7 @@ class HaPanelDevEvent extends LitElement {
 
   private _eventSelected(ev) {
     this._eventType = ev.detail.eventType;
+    this._selectedEventType = ev.detail.eventType;
   }
 
   private _eventTypeChanged(ev) {
