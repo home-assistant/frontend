@@ -28,11 +28,16 @@ import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW, DEFAULT_ZOOM } from "../../cards/hui-map-card";
 import type { MapCardConfig, MapEntityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
-import type { EntityConfig } from "../../entity-rows/types";
+import "../hui-sub-element-editor";
+import type {
+  EditDetailElementEvent,
+  SubElementEditorConfig,
+  EntitiesEditorEvent,
+} from "../types";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 export const mapEntitiesConfigStruct = union([
@@ -76,13 +81,20 @@ const cardConfigStruct = assign(
 
 const themeModes = ["auto", "light", "dark"] as const;
 
+const SUB_SCHEMA = [
+  { name: "entity", selector: { entity: {} }, required: true },
+  { name: "name", selector: { text: {} } },
+] as const;
+
 @customElement("hui-map-card-editor")
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: MapCardConfig;
 
-  @state() private _configEntities?: EntityConfig[];
+  @state() private _subElementEditorConfig?: SubElementEditorConfig;
+
+  @state() private _configEntities?: MapEntityConfig[];
 
   @state() private _possibleGeoSources?: { value: string; label?: string }[];
 
@@ -150,7 +162,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
     this._config = config;
     this._configEntities = config.entities
-      ? processEditorEntities(config.entities)
+      ? (processEditorEntities(config.entities) as MapEntityConfig[])
       : [];
   }
 
@@ -167,6 +179,19 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       return nothing;
     }
 
+    if (this._subElementEditorConfig) {
+      return html`
+        <hui-sub-element-editor
+          .hass=${this.hass}
+          .config=${this._subElementEditorConfig}
+          .schema=${SUB_SCHEMA}
+          @go-back=${this._goBack}
+          @config-changed=${this._handleSubEntityChanged}
+        >
+        </hui-sub-element-editor>
+      `;
+    }
+
     return html`
       <ha-form
         .hass=${this.hass}
@@ -180,7 +205,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         .hass=${this.hass}
         .entities=${this._configEntities}
         .entityFilter=${hasLocation}
+        can-edit
         @entities-changed=${this._entitiesValueChanged}
+        @edit-detail-element=${this._editDetailElement}
       ></hui-entity-editor>
 
       <h3>
@@ -201,6 +228,36 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         )}
       ></ha-selector-select>
     `;
+  }
+
+  private _goBack(): void {
+    this._subElementEditorConfig = undefined;
+  }
+
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    this._subElementEditorConfig = ev.detail.subElementConfig;
+  }
+
+  private _handleSubEntityChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+
+    const index = this._subElementEditorConfig!.index!;
+
+    const newEntities = this._configEntities!.concat();
+    const newConfig = ev.detail.config as MapEntityConfig;
+    this._subElementEditorConfig = {
+      ...this._subElementEditorConfig!,
+      elementConfig: newConfig,
+    };
+    newEntities[index] = newConfig;
+    let config = this._config!;
+    config = { ...config, entities: newEntities };
+    this._config = config;
+    this._configEntities = processEditorEntities(
+      config.entities as any[]
+    ) as MapEntityConfig[];
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _selectSchema = memoizeOne(
@@ -229,7 +286,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (ev.detail && ev.detail.entities) {
       this._config = { ...this._config!, entities: ev.detail.entities };
 
-      this._configEntities = processEditorEntities(this._config.entities || []);
+      this._configEntities = processEditorEntities(
+        this._config.entities || []
+      ) as MapEntityConfig[];
       fireEvent(this, "config-changed", { config: this._config! });
     }
   }
