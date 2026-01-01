@@ -61,9 +61,9 @@ export class MatterConfigDashboard extends LitElement {
               ${this._error
                 ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                 : ""}
-              You can add Matter devices by commissing them if they are not
-              setup yet, or share them from another controller and enter the
-              share code.
+              You can add Matter devices by commissioning them if they are not
+              set up yet, or share them from another controller and enter the
+              sharing code.
             </div>
             <div class="card-actions">
               ${canCommissionMatterExternal(this.hass)
@@ -80,10 +80,10 @@ export class MatterConfigDashboard extends LitElement {
                 >Add shared device</ha-button
               >
               <ha-button appearance="plain" @click=${this._setWifi}
-                >Set WiFi Credentials</ha-button
+                >Set Wi-Fi Credentials</ha-button
               >
               <ha-button appearance="plain" @click=${this._setThread}
-                >Set Thread Credentials</ha-button
+                >Set Thread credentials</ha-button
               >
             </div>
           </ha-card>
