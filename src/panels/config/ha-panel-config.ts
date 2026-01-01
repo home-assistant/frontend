@@ -33,6 +33,7 @@ import {
   mdiViewDashboard,
   mdiZigbee,
   mdiZWave,
+  mdiStore,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -84,6 +85,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiSofa,
       iconColor: "#E48629",
       component: "zone",
+    },
+    {
+      path: "/hacs",
+      iconPath: mdiStore,
+      iconColor: "#41BDF5",
+      component: "hacs",
+      translationKey: "hacs",
     },
     {
       path: "/hassio",

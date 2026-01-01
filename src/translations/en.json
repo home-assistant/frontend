@@ -2291,6 +2291,10 @@
             "main": "Backup",
             "secondary": "Generate backups of your Home Assistant configuration"
           },
+          "hacs": {
+            "main": "Community Store",
+            "secondary": "Find new integrations and cards by the community"
+          },
           "supervisor": {
             "main": "Add-ons",
             "secondary": "Run extra applications next to Home Assistant"
