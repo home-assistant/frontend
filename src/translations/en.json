@@ -6830,6 +6830,43 @@
           }
         },
         "matter": {
+          "panel": {
+            "thread_panel": "Visit Thread Panel",
+            "experimental_note": "Matter is still in the early phase of development, it is not meant to be used in production. This panel is for development only.",
+            "add_devices": "You can add Matter devices by commissioning them if they are not set up yet, or share them from another controller and enter the sharing code.",
+            "mobile_app_commisioning": "Commission device with mobile app",
+            "commission_device": "Commission device",
+            "add_shared_device": "Add shared device",
+            "set_wifi_credentials": "Set Wi-Fi Credentials",
+            "set_thread_credentials": "Set Thread credentials",
+            "prompts": {
+              "network_name": {
+                "title": "Network name",
+                "input_label": "Network name",
+                "confirm": "Continue"
+              },
+              "passcode": {
+                "title": "Passcode",
+                "input_label": "Code",
+                "confirm": "Set Wifi"
+              },
+              "commission_device": {
+                "title": "Commission device",
+                "input_label": "Code",
+                "confirm": "Commission"
+              },
+              "add_shared_device": {
+                "title": "Add shared device",
+                "input_label": "Pin",
+                "confirm": "Accept device"
+              },
+              "set_thread": {
+                "title": "Set Thread operation",
+                "input_label": "Dataset",
+                "confirm": "Set Thread"
+              }
+            }
+          },
           "network_type": {
             "thread": "Thread",
             "wifi": "Wi-Fi",
