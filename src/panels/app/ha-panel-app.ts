@@ -50,6 +50,8 @@ class HaPanelApp extends LitElement {
 
   @state() private _kioskMode = false;
 
+  private _enabledKioskMode = false;
+
   private _sessionKeepAlive?: number;
 
   private _fetchDataTimeout?: number;
@@ -73,6 +75,11 @@ class HaPanelApp extends LitElement {
     ) {
       this._sendPropertiesToIframe();
     }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (oldHass && oldHass.kioskMode !== this.hass.kioskMode) {
+      this._kioskMode = this.hass.kioskMode;
+    }
   }
 
   public connectedCallback() {
@@ -91,6 +98,9 @@ class HaPanelApp extends LitElement {
     if (this._fetchDataTimeout) {
       clearTimeout(this._fetchDataTimeout);
       this._fetchDataTimeout = undefined;
+    }
+    if (this._enabledKioskMode) {
+      fireEvent(window, "hass-kiosk-mode", { enable: false });
     }
   }
 
@@ -146,7 +156,10 @@ class HaPanelApp extends LitElement {
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
       // Reset state when switching addons
-      this._kioskMode = false;
+      if (this._enabledKioskMode) {
+        fireEvent(window, "hass-kiosk-mode", { enable: false });
+        this._enabledKioskMode = false;
+      }
       this._iframeSubscribeUpdates = false;
       this._autoRetryUntil = undefined;
       this._fetchData(addon);
@@ -378,13 +391,19 @@ class HaPanelApp extends LitElement {
 
       case "home-assistant/subscribe-properties":
         this._iframeSubscribeUpdates = true;
-        this._kioskMode = data.kioskMode ?? false;
         this._sendPropertiesToIframe();
+        if (data.kioskMode && !this.hass.kioskMode) {
+          this._enabledKioskMode = true;
+          fireEvent(window, "hass-kiosk-mode", { enable: true });
+        }
         break;
 
       case "home-assistant/unsubscribe-properties":
         this._iframeSubscribeUpdates = false;
-        this._kioskMode = false;
+        if (this._enabledKioskMode) {
+          fireEvent(window, "hass-kiosk-mode", { enable: false });
+          this._enabledKioskMode = false;
+        }
         break;
     }
   };
