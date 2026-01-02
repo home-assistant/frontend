@@ -288,6 +288,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                         .narrow=${this.narrow}
                         .total=${totalUpdates}
                         .updateEntities=${canInstallUpdates}
+                        .isInstallable=${true}
                       ></ha-config-updates>
                       ${totalUpdates > canInstallUpdates.length
                         ? html`

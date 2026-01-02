@@ -31,6 +31,8 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
   @property({ type: Number }) public total?: number;
 
+  @property({ attribute: false }) public isInstallable = true;
+
   @state() private _devices?: DeviceRegistryEntry[];
 
   @state() private _entities?: EntityRegistryEntry[];
@@ -67,6 +69,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
       <div class="title" role="heading" aria-level="2">
         ${this.hass.localize("ui.panel.config.updates.title", {
           count: this.total || this.updateEntities.length,
+          installable: this.isInstallable ? "true" : "false",
         })}
       </div>
       <ha-md-list>

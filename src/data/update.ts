@@ -58,6 +58,13 @@ export const updateCanInstall = (
   updateAvailable(entity, showSkipped) &&
   supportsFeature(entity, UpdateEntityFeature.INSTALL);
 
+export const updateCanNotInstall = (
+  entity: UpdateEntity,
+  showSkipped = false
+): boolean =>
+  updateAvailable(entity, showSkipped) &&
+  !supportsFeature(entity, UpdateEntityFeature.INSTALL);
+
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
 
@@ -112,7 +119,7 @@ export const filterUpdateEntitiesParameterized = (
 ) =>
   filterUpdateEntities(entities).filter((entity) => {
     if (showNotInstallable) {
-      return updateAvailable(entity, showSkipped);
+      return updateCanNotInstall(entity, showSkipped);
     }
     return updateCanInstall(entity, showSkipped);
   });

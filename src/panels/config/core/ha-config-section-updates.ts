@@ -42,8 +42,6 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _showSkipped = false;
 
-  @state() private _showNotInstallable = false;
-
   @state() private _supervisorInfo?: HassioSupervisorInfo;
 
   protected firstUpdated(changedProps) {
@@ -58,7 +56,12 @@ class HaConfigSectionUpdates extends LitElement {
     const canInstallUpdates = this._filterUpdateEntitiesParameterized(
       this.hass.states,
       this._showSkipped,
-      this._showNotInstallable
+      false
+    );
+    const notInstallableUpdates = this._filterUpdateEntitiesParameterized(
+      this.hass.states,
+      this._showSkipped,
+      true
     );
 
     return html`
@@ -89,15 +92,6 @@ class HaConfigSectionUpdates extends LitElement {
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
             </ha-check-list-item>
-            <ha-check-list-item
-              left
-              @request-selected=${this._toggleNotInstallable}
-              .selected=${this._showNotInstallable}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.updates.show_not_installable"
-              )}
-            </ha-check-list-item>
             ${this._supervisorInfo
               ? html`
                   <li divider role="separator"></li>
@@ -116,7 +110,11 @@ class HaConfigSectionUpdates extends LitElement {
           </ha-button-menu>
         </div>
         <div class="content">
-          <ha-card outlined>
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.config.updates.installable_updates"
+            )}
+          >
             <div class="card-content">
               ${canInstallUpdates.length
                 ? html`
@@ -124,6 +122,32 @@ class HaConfigSectionUpdates extends LitElement {
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${canInstallUpdates}
+                      .isInstallable=${true}
+                      showAll
+                    ></ha-config-updates>
+                  `
+                : html`
+                    <div class="no-updates">
+                      ${this.hass.localize(
+                        "ui.panel.config.updates.no_updates"
+                      )}
+                    </div>
+                  `}
+            </div>
+          </ha-card>
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.config.updates.not_installable_updates"
+            )}
+          >
+            <div class="card-content">
+              ${notInstallableUpdates.length
+                ? html`
+                    <ha-config-updates
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .updateEntities=${notInstallableUpdates}
+                      .isInstallable=${false}
                       showAll
                     ></ha-config-updates>
                   `
@@ -201,12 +225,12 @@ class HaConfigSectionUpdates extends LitElement {
     (
       entities: HassEntities,
       showSkipped: boolean,
-      showInstallableOnly: boolean
+      showNotInstallable: boolean
     ) =>
       filterUpdateEntitiesParameterized(
         entities,
         showSkipped,
-        showInstallableOnly
+        showNotInstallable
       )
   );
 
