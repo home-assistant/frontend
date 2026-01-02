@@ -11,7 +11,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
-import { isUnavailableState } from "../../../../data/entity";
+import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomCardEntry } from "../../../../data/lovelace_custom_cards";
@@ -501,7 +501,7 @@ export class HuiCardPicker extends LitElement {
           max-width: 500px;
           display: flex;
           flex-direction: column;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
           position: relative;
@@ -550,7 +550,7 @@ export class HuiCardPicker extends LitElement {
           height: 100%;
           z-index: 1;
           box-sizing: border-box;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         }
 
         .manual {
@@ -564,7 +564,7 @@ export class HuiCardPicker extends LitElement {
           right: 8px
           inset-inline-start: 8px;
           inset-inline-end: 8px;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           --mdc-icon-size: 16px;
           line-height: 16px;
           box-sizing: border-box;

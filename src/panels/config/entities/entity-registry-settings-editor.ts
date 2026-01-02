@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiContentCopy, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -14,6 +13,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
+import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -24,13 +24,13 @@ import "../../../components/ha-area-picker";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-labels-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
-import "../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import {
@@ -49,8 +49,8 @@ import {
   handleConfigFlowStep,
 } from "../../../data/config_flow";
 import type { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import { updateDeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
 import type {
   AlarmControlPanelEntityOptions,
   EntityRegistryEntry,
@@ -58,12 +58,12 @@ import type {
   ExtEntityRegistryEntry,
   LockEntityOptions,
   SensorEntityOptions,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import {
   getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import { entityIcon, entryIcon } from "../../../data/icons";
 import {
   domainToName,
@@ -91,7 +91,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [
@@ -332,6 +331,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
     if (changedProps.has("_entityId")) {
       const domain = computeDomain(this.entry.entity_id);
+      if (domain === "switch") {
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
+      }
 
       if (domain === "weather") {
         const { units } = await getWeatherConvertibleUnits(this.hass);
@@ -343,6 +345,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (changedProps.has("helperConfigEntry")) {
       if (this.helperConfigEntry?.domain === "switch_as_x") {
         this._switchAsDomain = computeDomain(this.entry.entity_id);
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
       } else {
         this._switchAsDomain = "switch";
         this._switchAsInvert = false;
@@ -400,7 +403,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               ${!this._icon && !stateObj?.attributes.icon && stateObj
                 ? html`
                     <ha-state-icon
-                      slot="fallback"
+                      slot="start"
                       .hass=${this.hass}
                       .stateObj=${stateObj}
                     ></ha-state-icon>
@@ -489,7 +492,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                         )}</span
                       >
                       <ha-switch
-                        .checked=${this.entry.options?.switch_as_x?.invert}
+                        .checked=${!!this.entry.options?.switch_as_x?.invert}
                         @change=${this._switchAsInvertChanged}
                       ></ha-switch>
                     </ha-settings-row>
@@ -756,7 +759,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         iconTrailing
         autocapitalize="none"
         autocomplete="off"
-        autocorrect="off"
+        .autocorrect=${false}
         input-spellcheck="false"
       >
         <div class="layout horizontal" slot="trailingIcon">
@@ -781,7 +784,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       <ha-labels-picker
         .hass=${this.hass}
         .value=${this._labels}
-        .disabled=${this.disabled}
+        .disabled=${!!this.disabled}
         @value-changed=${this._labelsChanged}
       ></ha-labels-picker>
       ${this._cameraPrefs
@@ -1009,7 +1012,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
               ? html`<ha-area-picker
                   .hass=${this.hass}
                   .value=${this._areaId}
-                  .placeholder=${this._device?.area_id}
                   .disabled=${this.disabled}
                   @value-changed=${this._areaPicked}
                 ></ha-area-picker>`
@@ -1523,17 +1525,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         ha-textfield.entityId ha-icon-button {
           position: relative;
-          right: -8px;
+          right: calc(var(--ha-space-2) * -1);
           --mdc-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
           inset-inline-start: initial;
-          inset-inline-end: -8px;
+          inset-inline-end: calc(var(--ha-space-2) * -1);
           direction: var(--direction);
         }
         ha-switch {
-          margin-right: 16px;
-          margin-inline-end: 16px;
+          margin-right: var(--ha-space-4);
+          margin-inline-end: var(--ha-space-4);
           margin-inline-start: initial;
         }
         ha-settings-row ha-switch {
@@ -1541,22 +1543,25 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-end: 0;
           margin-inline-start: initial;
         }
+        ha-settings-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: var(--ha-space-4);
+          align-items: start;
+        }
         ha-textfield,
         ha-icon-picker,
         ha-select,
         ha-area-picker {
           display: block;
-          margin: 8px 0;
+          margin: var(--ha-space-2) 0;
           width: 100%;
         }
         li[divider] {
           border-bottom-color: var(--divider-color);
         }
-        ha-alert mwc-button {
-          width: max-content;
-        }
         .menu-item {
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           margin-top: 3px;
           margin-bottom: 3px;
           overflow: hidden;

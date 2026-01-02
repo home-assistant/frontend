@@ -16,7 +16,7 @@ import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { UNAVAILABLE } from "../../../../data/entity";
+import { UNAVAILABLE } from "../../../../data/entity/entity";
 import type { ForecastType, WeatherEntity } from "../../../../data/weather";
 import { WeatherEntityFeature } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
@@ -24,18 +24,20 @@ import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
-    name: optional(string()),
+    name: optional(entityNameStruct),
     theme: optional(string()),
     show_current: optional(boolean()),
     show_forecast: optional(boolean()),
     forecast_type: optional(string()),
     forecast_slots: optional(number()),
     secondary_info_attribute: optional(string()),
+    round_temperature: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
@@ -148,7 +150,17 @@ export class HuiWeatherForecastCardEditor
           required: true,
           selector: { entity: { domain: "weather" } },
         },
-        { name: "name", selector: { text: {} } },
+        {
+          name: "name",
+          selector: {
+            entity_name: {},
+          },
+          context: { entity: "entity" },
+        },
+        {
+          name: "round_temperature",
+          selector: { boolean: {} },
+        },
         {
           name: "",
           type: "grid",
@@ -211,6 +223,7 @@ export class HuiWeatherForecastCardEditor
           ? ([
               {
                 name: "forecast",
+                default: "show_both",
                 selector: {
                   select: {
                     options: [

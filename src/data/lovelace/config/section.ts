@@ -4,6 +4,7 @@ import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface LovelaceBaseSectionConfig {
   visibility?: Condition[];
+  disabled?: boolean;
   column_span?: number;
   row_span?: number;
   /**
@@ -17,8 +18,7 @@ export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {
   cards?: LovelaceCardConfig[];
 }
 
-export interface LovelaceStrategySectionConfig
-  extends LovelaceBaseSectionConfig {
+export interface LovelaceStrategySectionConfig extends LovelaceBaseSectionConfig {
   strategy: LovelaceStrategyConfig;
 }
 

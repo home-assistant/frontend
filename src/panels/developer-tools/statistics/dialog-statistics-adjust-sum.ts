@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { formatISO9075 } from "date-fns";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,6 +7,7 @@ import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-spinner";
 import "../../../components/ha-dialog";
+import "../../../components/ha-button";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
@@ -193,18 +193,18 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         @value-changed=${this._dateTimeSelectorChanged}
       ></ha-selector-datetime>
       <div class="stat-list">${stats}</div>
-      <mwc-button
+      <ha-button
+        appearance="plain"
         slot="secondaryAction"
-        .label=${this.hass.localize(
+        @click=${this._fetchOutliers}
+      >
+        ${this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
         )}
-        @click=${this._fetchOutliers}
-      ></mwc-button>
-      <mwc-button
-        slot="primaryAction"
-        dialogAction="cancel"
-        .label=${this.hass.localize("ui.common.close")}
-      ></mwc-button>
+      </ha-button>
+      <ha-button slot="primaryAction" dialogAction="cancel">
+        ${this.hass.localize("ui.common.close")}
+      </ha-button>
     `;
   }
 
@@ -283,20 +283,23 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         @value-changed=${this._amountChanged}
       ></ha-selector-number>
 
-      <mwc-button
-        slot="primaryAction"
-        .label=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
-        )}
-        .disabled=${this._busy}
-        @click=${this._fixIssue}
-      ></mwc-button>
-      <mwc-button
+      <ha-button
         slot="secondaryAction"
-        .label=${this.hass.localize("ui.common.back")}
         .disabled=${this._busy}
         @click=${this._clearChosenStatistic}
-      ></mwc-button>
+        appearance="plain"
+      >
+        ${this.hass.localize("ui.common.back")}</ha-button
+      >
+      <ha-button
+        slot="primaryAction"
+        .disabled=${this._busy}
+        @click=${this._fixIssue}
+      >
+        ${this.hass.localize(
+          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
+        )}</ha-button
+      >
     `;
   }
 
@@ -510,7 +513,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         .text-content,
         ha-selector-datetime,
         ha-selector-number {
-          margin-bottom: 20px;
+          margin-bottom: var(--ha-space-5);
         }
         ha-list-item {
           margin: 0 -24px;
@@ -519,7 +522,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         .table-row {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 20px;
+          margin-bottom: var(--ha-space-5);
         }
         .stat-list {
           min-height: 360px;

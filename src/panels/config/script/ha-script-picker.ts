@@ -9,6 +9,7 @@ import {
   mdiHelpCircle,
   mdiInformationOutline,
   mdiMenuDown,
+  mdiOpenInNew,
   mdiPlay,
   mdiPlus,
   mdiScriptText,
@@ -32,6 +33,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
+import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -58,6 +60,7 @@ import "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -70,17 +73,17 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+} from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import type { ScriptEntity } from "../../../data/script";
 import {
   deleteScript,
@@ -280,7 +283,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.script.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -302,19 +304,27 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           sortable: true,
           title: localize("ui.card.automation.last_triggered"),
           template: (script) => {
+            if (!script.last_triggered) {
+              return this.hass.localize("ui.components.relative_time.never");
+            }
             const date = new Date(script.last_triggered);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
+            const formattedTime = formatShortDateTimeWithConditionalYear(
+              date,
+              this.hass.locale,
+              this.hass.config
+            );
+            const elementId = "last-triggered-" + slugify(script.entity_id);
             return html`
-              ${script.last_triggered
-                ? dayDifference > 3
-                  ? formatShortDateTimeWithConditionalYear(
-                      date,
-                      this.hass.locale,
-                      this.hass.config
-                    )
-                  : relativeTime(date, this.hass.locale)
-                : this.hass.localize("ui.components.relative_time.never")}
+              ${dayDifference > 3
+                ? formattedTime
+                : html`
+                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
+                    <span id=${elementId}
+                      >${relativeTime(date, this.hass.locale)}</span
+                    >
+                  `}
             `;
           },
         },
@@ -457,7 +467,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             .checked=${selected}
             .indeterminate=${partial}
           ></ha-checkbox>
-          <ha-label style=${color ? `--color: ${color}` : ""}>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -779,15 +792,16 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                   "ui.panel.config.script.picker.empty_text"
                 )}
               </p>
-              <a
+              <ha-button
+                appearance="plain"
                 href=${documentationUrl(this.hass, "/docs/script/editor/")}
                 target="_blank"
                 rel="noreferrer"
+                size="small"
               >
-                <ha-button>
-                  ${this.hass.localize("ui.panel.config.common.learn_more")}
-                </ha-button>
-              </a>
+                ${this.hass.localize("ui.panel.config.common.learn_more")}
+                <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+              </ha-button>
             </div>`
           : nothing}
         <ha-fab
@@ -1178,6 +1192,9 @@ ${rejected
       );
       if (entry) {
         await deleteScript(this.hass, entry.unique_id);
+        this._selected = this._selected.filter(
+          (entityId) => entityId !== script.entity_id
+        );
       }
     } catch (err: any) {
       await showAlertDialog(this, {
@@ -1295,6 +1312,9 @@ ${rejected
         .empty {
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty ha-button {
+          --mdc-icon-size: 24px;
         }
         .empty h1 {
           font-size: var(--ha-font-size-3xl);

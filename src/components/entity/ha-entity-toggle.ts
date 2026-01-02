@@ -6,7 +6,11 @@ import { customElement, property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { UNAVAILABLE, UNKNOWN, isUnavailableState } from "../../data/entity";
+import {
+  UNAVAILABLE,
+  UNKNOWN,
+  isUnavailableState,
+} from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import type { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -112,7 +116,7 @@ export class HaEntityToggle extends LitElement {
     if (!this.hass || !this.stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     const stateDomain = computeStateDomain(this.stateObj);
     let serviceDomain;
     let service;

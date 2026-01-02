@@ -40,7 +40,6 @@ export class HaZoneCondition extends LitElement {
         @value-changed=${this._entityPicked}
         .hass=${this.hass}
         .disabled=${this.disabled}
-        allow-custom-entity
         .entityFilter=${zoneAndLocationFilter}
       ></ha-entity-picker>
       <ha-entity-picker
@@ -51,7 +50,6 @@ export class HaZoneCondition extends LitElement {
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
         .disabled=${this.disabled}
-        allow-custom-entity
         .includeDomains=${includeDomains}
       ></ha-entity-picker>
     `;

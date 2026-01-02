@@ -24,7 +24,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
@@ -42,9 +42,9 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type {
   SceneConfig,
   SceneEntities,
@@ -320,6 +320,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       .hass=${this.hass}
       .defaultValue=${this._config}
       @value-changed=${this._yamlChanged}
+      @editor-save=${this._saveScene}
       .showErrors=${false}
       disable-fullscreen
     ></ha-yaml-editor>`;
@@ -363,7 +364,11 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                       : mdiEye}
                   ></ha-svg-icon>
                 </span>
-                <ha-button slot="action" @click=${this._toggleLiveMode}>
+                <ha-button
+                  size="small"
+                  slot="action"
+                  @click=${this._toggleLiveMode}
+                >
                   ${this.hass.localize(
                     `ui.panel.config.scene.editor.${this._mode === "live" ? "switch_to_review_mode" : "live_edit"}`
                   )}
@@ -801,7 +806,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                 { err_no: err.status_code }
               ),
       });
-      history.back();
+      goBack("/config");
       return;
     }
 
@@ -983,7 +988,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     if (this._mode === "live") {
       applyScene(this.hass, this._storedStates);
     }
-    afterNextRender(() => history.back());
+    afterNextRender(() => goBack("/config"));
   }
 
   private _deleteTapped(): void {
@@ -1007,7 +1012,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     if (this._mode === "live") {
       applyScene(this.hass, this._storedStates);
     }
-    history.back();
+    goBack("/config");
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
@@ -1260,9 +1265,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           display: block;
           margin-bottom: 24px;
         }
-        ha-button {
+        ha-alert ha-button[slot="action"] {
+          width: max-content;
           white-space: nowrap;
-          --mdc-theme-primary: var(--primary-color);
         }
         ha-fab.dirty {
           bottom: 0;

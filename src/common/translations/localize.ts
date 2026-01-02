@@ -14,6 +14,7 @@ export type LocalizeKeys =
   | `ui.card.weather.attributes.${string}`
   | `ui.card.weather.cardinal_direction.${string}`
   | `ui.card.lawn_mower.actions.${string}`
+  | `ui.common.${string}`
   | `ui.components.calendar.event.rrule.${string}`
   | `ui.components.selectors.file.${string}`
   | `ui.components.logbook.messages.detected_device_classes.${string}`
@@ -22,10 +23,11 @@ export type LocalizeKeys =
   | `ui.dialogs.more_info_control.lawn_mower.${string}`
   | `ui.dialogs.more_info_control.vacuum.${string}`
   | `ui.dialogs.quick-bar.commands.${string}`
-  | `ui.dialogs.unhealthy.reason.${string}`
-  | `ui.dialogs.unsupported.reason.${string}`
+  | `ui.dialogs.unhealthy.reasons.${string}`
+  | `ui.dialogs.unsupported.reasons.${string}`
   | `ui.panel.config.${string}.${"caption" | "description"}`
   | `ui.panel.config.dashboard.${string}`
+  | `ui.panel.config.storage.segments.${string}`
   | `ui.panel.config.zha.${string}`
   | `ui.panel.config.zwave_js.${string}`
   | `ui.panel.lovelace.card.${string}`

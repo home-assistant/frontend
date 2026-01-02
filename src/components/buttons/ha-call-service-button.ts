@@ -6,6 +6,7 @@ import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "./ha-progress-button";
 import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { Appearance } from "../ha-button";
 
 @customElement("ha-call-service-button")
 class HaCallServiceButton extends LitElement {
@@ -25,11 +26,14 @@ class HaCallServiceButton extends LitElement {
 
   @property() public confirmation?;
 
+  @property() public appearance: Appearance = "plain";
+
   public render(): TemplateResult {
     return html`
       <ha-progress-button
         .progress=${this.progress}
         .disabled=${this.disabled}
+        .appearance=${this.appearance}
         @click=${this._buttonTapped}
         tabindex="0"
       >

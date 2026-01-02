@@ -62,6 +62,10 @@ class HaWebRtcPlayer extends LitElement {
   private _candidatesList: RTCIceCandidate[] = [];
 
   private _handleVisibilityChange = () => {
+    if (document.pictureInPictureElement) {
+      // video is playing in picture-in-picture mode, don't do anything
+      return;
+    }
     if (document.hidden) {
       this._cleanUp();
     } else {
@@ -319,6 +323,10 @@ class HaWebRtcPlayer extends LitElement {
 
   private _addTrack = async (event: RTCTrackEvent) => {
     if (!this._remoteStream) {
+      return;
+    }
+    // If the track is audio and the player is muted, we do not add it to the stream.
+    if (event.track.kind === "audio" && this.muted) {
       return;
     }
     this._remoteStream.addTrack(event.track);

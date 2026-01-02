@@ -51,7 +51,7 @@ export class HaTagImage extends LitElement {
       height: 100%;
       width: 100%;
       background-size: cover;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -59,7 +59,7 @@ export class HaTagImage extends LitElement {
     .container {
       height: 40px;
       width: 40px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
     }
     :host(.just-scanned) .container {
       animation: glow 10s;

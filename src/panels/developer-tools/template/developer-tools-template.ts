@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,9 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
-import "../../../components/ha-code-editor";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-code-editor";
+import "../../../components/ha-spinner";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -149,14 +149,14 @@ class HaPanelDevTemplate extends LitElement {
             ></ha-code-editor>
           </div>
           <div class="card-actions">
-            <mwc-button @click=${this._restoreDemo}>
+            <ha-button appearance="plain" @click=${this._restoreDemo}>
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.templates.reset"
               )}
-            </mwc-button>
-            <mwc-button @click=${this._clear}>
+            </ha-button>
+            <ha-button appearance="plain" @click=${this._clear}>
               ${this.hass.localize("ui.common.clear")}
-            </mwc-button>
+            </ha-button>
           </div>
         </ha-card>
 
@@ -274,25 +274,22 @@ ${type === "object"
         }
 
         .content {
-          gap: 16px;
-          padding: 16px;
-          padding: max(16px, var(--safe-area-inset-top))
-            max(16px, var(--safe-area-inset-right))
-            max(16px, var(--safe-area-inset-bottom))
-            max(16px, var(--safe-area-inset-left));
+          gap: var(--ha-space-4);
+          padding: var(--ha-space-4);
         }
 
         .content.horizontal {
           --code-mirror-max-height: calc(
-            100vh - var(--header-height) - (var(--ha-line-height-normal) * 3) -
-              (1em * 2) - (max(16px, var(--safe-area-inset-top)) * 2) -
+            100vh - var(--header-height) -
+              (var(--ha-line-height-normal) * var(--ha-font-size-m) * 3) -
+              (max(16px, var(--safe-area-inset-top)) * 2) -
               (max(16px, var(--safe-area-inset-bottom)) * 2) -
-              (var(--ha-card-border-width, 1px) * 2) - 179px
+              (var(--ha-card-border-width, 1px) * 3) - (1em * 2) - 192px
           );
         }
 
         ha-card {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         .edit-pane {
@@ -310,14 +307,14 @@ ${type === "object"
 
         .render-spinner {
           position: absolute;
-          top: 8px;
-          right: 8px;
-          inset-inline-end: 8px;
+          top: var(--ha-space-2);
+          right: var(--ha-space-2);
+          inset-inline-end: var(--ha-space-2);
           inset-inline-start: initial;
         }
 
         ha-alert {
-          margin-bottom: 8px;
+          margin-bottom: var(--ha-space-2);
           display: block;
         }
 
@@ -328,7 +325,7 @@ ${type === "object"
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
-          padding: 8px;
+          padding: var(--ha-space-2);
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
@@ -347,13 +344,16 @@ ${type === "object"
           overflow: auto;
           max-height: calc(
             var(--code-mirror-max-height) +
-              47px - var(--ha-card-border-radius, 12px)
+              47px - var(--ha-card-border-radius, var(--ha-border-radius-lg))
           );
         }
 
         .content.horizontal .render-pane {
           overflow: hidden;
-          padding-bottom: var(--ha-card-border-radius, 12px);
+          padding-bottom: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
 
         .all_listeners {

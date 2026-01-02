@@ -1,16 +1,16 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { componentsWithService } from "../../../common/config/components_with_service";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-spinner";
 import type { CheckConfigResult } from "../../../data/core";
 import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
-import { stringCompare } from "../../../common/string/compare";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route, TranslationDict } from "../../../types";
@@ -144,20 +144,21 @@ export class DeveloperYamlConfig extends LitElement {
                 `}
           </div>
           <div class="card-actions">
-            <mwc-button @click=${this._validateConfig}>
+            <ha-button appearance="plain" @click=${this._validateConfig}>
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.yaml.section.validation.check_config"
               )}
-            </mwc-button>
-            <mwc-button
-              class="warning"
+            </ha-button>
+            <ha-button
+              variant="danger"
+              appearance="plain"
               @click=${this._restart}
               .disabled=${this._validateResult?.result === "invalid"}
             >
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
               )}
-            </mwc-button>
+            </ha-button>
           </div>
         </ha-card>
         <ha-card
@@ -250,22 +251,19 @@ export class DeveloperYamlConfig extends LitElement {
         }
 
         .content {
-          padding: 28px 20px 16px;
-          padding: max(28px, calc(12px + var(--safe-area-inset-top)))
-            max(20px, calc(4px + var(--safe-area-inset-right)))
-            max(16px, var(--safe-area-inset-bottom))
-            max(20px, calc(4px + var(--safe-area-inset-left)));
+          padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-4);
           max-width: 1040px;
           margin: 0 auto;
         }
 
         ha-card {
-          margin-top: 24px;
+          margin-top: var(--ha-space-6);
         }
 
         .card-actions {
           display: flex;
           justify-content: space-between;
+          padding: var(--ha-space-1);
         }
       `,
     ];

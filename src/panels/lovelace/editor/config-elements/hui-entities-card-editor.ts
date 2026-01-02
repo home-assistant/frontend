@@ -17,6 +17,7 @@ import {
   type,
   union,
 } from "superstruct";
+import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { customType } from "../../../../common/structs/is-custom-type";
@@ -47,6 +48,8 @@ import type {
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { computeShowHeaderToggle } from "../../cards/hui-entities-card";
+import { processConfigEntities } from "../../common/process-config-entities";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),
@@ -209,6 +212,16 @@ export class HuiEntitiesCardEditor
     this._configEntities = processEditorEntities(config.entities);
   }
 
+  private _showHeaderToggle = memoizeOne((config: EntitiesCardConfig) => {
+    if (config.show_header_toggle !== undefined) {
+      return config.show_header_toggle;
+    }
+    return computeShowHeaderToggle(
+      config,
+      processConfigEntities(config.entities)
+    );
+  });
+
   get _title(): string {
     return this._config!.title || "";
   }
@@ -264,7 +277,7 @@ export class HuiEntitiesCardEditor
             )}
           >
             <ha-switch
-              .checked=${this._config!.show_header_toggle !== false}
+              .checked=${this._showHeaderToggle(this._config)}
               .configValue=${"show_header_toggle"}
               @change=${this._valueChanged}
             ></ha-switch>

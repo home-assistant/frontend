@@ -8,7 +8,7 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -38,7 +38,7 @@ import {
   showQuickBar,
 } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
-import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -49,7 +49,6 @@ import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
-import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
@@ -155,8 +154,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @state() private _tip?: string;
 
   @state() private _repairsIssues: { issues: RepairsIssue[]; total: number } = {
@@ -164,21 +161,24 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     total: 0,
   };
 
-  private _pages = memoizeOne((cloudStatus, isCloudLoaded) => {
-    const pages: PageNavigation[] = [];
-    if (isCloudLoaded) {
-      pages.push({
-        component: "cloud",
-        path: "/config/cloud",
-        name: "Home Assistant Cloud",
-        info: cloudStatus,
-        iconPath: mdiCloudLock,
-        iconColor: "#3B808E",
-        translationKey: "cloud",
-      });
-    }
-    return [...pages, ...configSections.dashboard];
-  });
+  private _pages = memoizeOne((cloudStatus, isCloudLoaded) => [
+    isCloudLoaded
+      ? [
+          {
+            component: "cloud",
+            path: "/config/cloud",
+            name: "Home Assistant Cloud",
+            info: cloudStatus,
+            iconPath: mdiCloudLock,
+            iconColor: "#3B808E",
+            translationKey: "cloud",
+          },
+          ...configSections.dashboard,
+        ]
+      : configSections.dashboard,
+    configSections.dashboard_2,
+    configSections.dashboard_3,
+  ]);
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -212,7 +212,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
       this._repairsIssues;
 
     return html`
-      <ha-top-app-bar-fixed>
+      <ha-top-app-bar-fixed .narrow=${this.narrow}>
         <ha-menu-button
           slot="navigationIcon"
           .hass=${this.hass}
@@ -309,18 +309,22 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                   : ""}
               </ha-card>`
             : ""}
-
-          <ha-card outlined>
-            <ha-config-navigation
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .showAdvanced=${this.showAdvanced}
-              .pages=${this._pages(
-                this.cloudStatus,
-                isComponentLoaded(this.hass, "cloud")
-              )}
-            ></ha-config-navigation>
-          </ha-card>
+          ${this._pages(
+            this.cloudStatus,
+            isComponentLoaded(this.hass, "cloud")
+          ).map((categoryPages) =>
+            categoryPages.length === 0
+              ? nothing
+              : html`
+                  <ha-card outlined>
+                    <ha-config-navigation
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .pages=${categoryPages}
+                    ></ha-config-navigation>
+                  </ha-card>
+                `
+          )}
           <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
         </ha-config-section>
       </ha-top-app-bar-fixed>
@@ -389,17 +393,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        ha-card:last-child {
-          margin-bottom: var(--safe-area-inset-bottom);
-        }
         :host(:not([narrow])) ha-card:last-child {
-          margin-bottom: max(24px, var(--safe-area-inset-bottom));
+          margin-bottom: 24px;
         }
+
         ha-config-section {
           margin: auto;
           margin-top: -32px;
           max-width: 600px;
         }
+
         ha-card {
           overflow: hidden;
         }
@@ -407,9 +410,11 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           text-decoration: none;
           color: var(--primary-text-color);
         }
+
         ha-assist-chip {
           margin: 8px 16px 16px 16px;
         }
+
         .title {
           font-size: var(--ha-font-size-l);
           padding: 16px;
@@ -419,7 +424,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         @media all and (max-width: 600px) {
           ha-card {
             border-width: 1px 0;
-            border-radius: 0;
+            border-radius: var(--ha-border-radius-square);
             box-shadow: unset;
           }
           ha-config-section {
@@ -428,7 +433,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         ha-tip {
-          margin-bottom: max(var(--safe-area-inset-bottom), 8px);
+          margin-bottom: 8px;
         }
 
         .new {

@@ -2,8 +2,12 @@
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 
+interface BaseEntityConfig {
+  type: string;
+  entity: string;
+}
 export const processConfigEntities = <
-  T extends EntityConfig | LovelaceRowConfig,
+  T extends BaseEntityConfig | LovelaceRowConfig,
 >(
   entities: (T | string)[],
   checkEntityId = true

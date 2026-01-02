@@ -22,9 +22,7 @@ export class OriginalStatesDashboardStrategy extends ReactiveElement {
   }
 
   public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
-    await import(
-      "../../editor/dashboard-strategy-editor/hui-original-states-dashboard-strategy-editor"
-    );
+    await import("../../editor/dashboard-strategy-editor/hui-original-states-dashboard-strategy-editor");
     return document.createElement(
       "hui-original-states-dashboard-strategy-editor"
     );

@@ -1,8 +1,7 @@
-import { mdiDrag } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
@@ -13,11 +12,15 @@ import {
   STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS,
 } from "../../state-display/state-display";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "../ha-combo-box";
-import "../ha-sortable";
-import "../chips/ha-input-chip";
+import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
-import type { HaComboBox } from "../ha-combo-box";
+import "../chips/ha-input-chip";
+import "../ha-combo-box-item";
+import "../ha-generic-picker";
+import type { HaGenericPicker } from "../ha-generic-picker";
+import "../ha-input-helper-text";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import "../ha-sortable";
 
 const HIDDEN_ATTRIBUTES = [
   "access_token",
@@ -74,7 +77,7 @@ const HIDDEN_ATTRIBUTES = [
 ];
 
 @customElement("ha-entity-state-content-picker")
-class HaEntityStatePicker extends LitElement {
+export class HaStateContentPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entityId?: string;
@@ -95,158 +98,306 @@ class HaEntityStatePicker extends LitElement {
 
   @property() public helper?: string;
 
-  @state() private _opened = false;
+  @query("ha-generic-picker", true) private _picker?: HaGenericPicker;
 
-  @query("ha-combo-box", true) private _comboBox!: HaComboBox;
+  private _editIndex?: number;
 
-  protected shouldUpdate(changedProps: PropertyValues) {
-    return !(!changedProps.has("_opened") && this._opened);
-  }
-
-  private options = memoizeOne(
+  private _getItems = memoizeOne(
     (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
-      return [
+      const items: PickerComboBoxItem[] = [
         {
-          label: this.hass.localize("ui.components.state-content-picker.state"),
-          value: "state",
+          id: "state",
+          primary: this.hass.localize(
+            "ui.components.state-content-picker.state"
+          ),
+          sorting_label: this.hass.localize(
+            "ui.components.state-content-picker.state"
+          ),
         },
         ...(allowName
           ? [
               {
-                label: this.hass.localize(
+                id: "name",
+                primary: this.hass.localize(
                   "ui.components.state-content-picker.name"
                 ),
-                value: "name",
-              },
+                sorting_label: this.hass.localize(
+                  "ui.components.state-content-picker.name"
+                ),
+              } satisfies PickerComboBoxItem,
             ]
           : []),
         {
-          label: this.hass.localize(
+          id: "last_changed",
+          primary: this.hass.localize(
             "ui.components.state-content-picker.last_changed"
           ),
-          value: "last_changed",
+          sorting_label: this.hass.localize(
+            "ui.components.state-content-picker.last_changed"
+          ),
         },
         {
-          label: this.hass.localize(
+          id: "last_updated",
+          primary: this.hass.localize(
             "ui.components.state-content-picker.last_updated"
           ),
-          value: "last_updated",
+          sorting_label: this.hass.localize(
+            "ui.components.state-content-picker.last_updated"
+          ),
         },
         ...(domain
           ? STATE_DISPLAY_SPECIAL_CONTENT.filter((content) =>
               STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[domain]?.includes(content)
-            ).map((content) => ({
-              label: this.hass.localize(
-                `ui.components.state-content-picker.${content}`
-              ),
-              value: content,
-            }))
+            ).map(
+              (content) =>
+                ({
+                  id: content,
+                  primary: this.hass.localize(
+                    `ui.components.state-content-picker.${content}`
+                  ),
+                  sorting_label: this.hass.localize(
+                    `ui.components.state-content-picker.${content}`
+                  ),
+                }) satisfies PickerComboBoxItem
+            )
           : []),
         ...Object.keys(stateObj?.attributes ?? {})
           .filter((a) => !HIDDEN_ATTRIBUTES.includes(a))
-          .map((attribute) => ({
-            value: attribute,
-            label: this.hass.formatEntityAttributeName(stateObj!, attribute),
-          })),
+          .map(
+            (attribute) =>
+              ({
+                id: attribute,
+                primary: this.hass.formatEntityAttributeName(
+                  stateObj!,
+                  attribute
+                ),
+                sorting_label: this.hass.formatEntityAttributeName(
+                  stateObj!,
+                  attribute
+                ),
+              }) satisfies PickerComboBoxItem
+          ),
       ];
+      return items;
     }
   );
 
-  private _filter = "";
-
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     const value = this._value;
 
     const stateObj = this.entityId
       ? this.hass.states[this.entityId]
       : undefined;
 
-    const options = this.options(this.entityId, stateObj, this.allowName);
-    const optionItems = options.filter(
-      (option) => !this._value.includes(option.value)
-    );
-
     return html`
-      ${value?.length
-        ? html`
-            <ha-sortable
-              no-style
-              @item-moved=${this._moveItem}
-              .disabled=${this.disabled}
-              handle-selector="button.primary.action"
-            >
-              <ha-chip-set>
-                ${repeat(
-                  this._value,
-                  (item) => item,
-                  (item, idx) => {
-                    const label =
-                      options.find((option) => option.value === item)?.label ||
-                      item;
-                    return html`
-                      <ha-input-chip
-                        .idx=${idx}
-                        @remove=${this._removeItem}
-                        .label=${label}
-                        selected
-                      >
-                        <ha-svg-icon slot="icon" .path=${mdiDrag}></ha-svg-icon>
-                        ${label}
-                      </ha-input-chip>
-                    `;
-                  }
-                )}
-              </ha-chip-set>
-            </ha-sortable>
-          `
-        : nothing}
-
-      <ha-combo-box
-        item-value-path="value"
-        item-label-path="label"
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
+      <ha-generic-picker
         .hass=${this.hass}
-        .label=${this.label}
-        .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
-        .value=${""}
-        .items=${optionItems}
+        .value=${this._getPickerValue()}
+        .getItems=${this._getFilteredItems}
+        .getAdditionalItems=${this._getAdditionalItems}
+        .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         allow-custom-value
-        @filter-changed=${this._filterChanged}
-        @value-changed=${this._comboBoxValueChanged}
-        @opened-changed=${this._openedChanged}
-      ></ha-combo-box>
+        .customValueLabel=${this.hass.localize(
+          "ui.components.entity.entity-state-content-picker.custom_state"
+        )}
+        @value-changed=${this._pickerValueChanged}
+      >
+        <div slot="field" class="container">
+          <ha-sortable
+            no-style
+            @item-moved=${this._moveItem}
+            .disabled=${this.disabled}
+            handle-selector="button.primary.action"
+            filter=".add"
+          >
+            <ha-chip-set>
+              ${repeat(
+                this._value,
+                (item) => item,
+                (item: string, idx) => {
+                  const label = this._getItemLabel(item, stateObj);
+                  const isValid = !!label;
+                  return html`
+                    <ha-input-chip
+                      data-idx=${idx}
+                      @remove=${this._removeItem}
+                      @click=${this._editItem}
+                      .label=${label || item}
+                      .selected=${!this.disabled}
+                      .disabled=${this.disabled}
+                      class=${!isValid ? "invalid" : ""}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiDragHorizontalVariant}
+                      ></ha-svg-icon>
+                    </ha-input-chip>
+                  `;
+                }
+              )}
+              ${this.disabled
+                ? nothing
+                : html`
+                    <ha-assist-chip
+                      @click=${this._addItem}
+                      .disabled=${this.disabled}
+                      label=${this.hass.localize(
+                        "ui.components.entity.entity-state-content-picker.add"
+                      )}
+                      class="add"
+                    >
+                      <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                    </ha-assist-chip>
+                  `}
+            </ha-chip-set>
+          </ha-sortable>
+        </div>
+      </ha-generic-picker>
+      ${this._renderHelper()}
     `;
+  }
+
+  private _renderHelper() {
+    return this.helper
+      ? html`
+          <ha-input-helper-text .disabled=${this.disabled}>
+            ${this.helper}
+          </ha-input-helper-text>
+        `
+      : nothing;
+  }
+
+  private async _addItem(ev: Event) {
+    ev.stopPropagation();
+    this._editIndex = undefined;
+    await this.updateComplete;
+    await this._picker?.open();
+  }
+
+  private async _editItem(ev: Event) {
+    ev.stopPropagation();
+    const idx = parseInt(
+      (ev.currentTarget as HTMLElement).dataset.idx || "",
+      10
+    );
+    this._editIndex = idx;
+    await this.updateComplete;
+    await this._picker?.open();
   }
 
   private get _value() {
     return !this.value ? [] : ensureArray(this.value);
   }
 
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-    this._comboBox.filteredItems = this._comboBox.items;
+  private _getItemLabel = memoizeOne(
+    (value: string, stateObj?: HassEntity): string | undefined => {
+      const stateObjForItems = this.entityId
+        ? this.hass.states[this.entityId]
+        : stateObj;
+      const items = this._getItems(
+        this.entityId,
+        stateObjForItems,
+        this.allowName
+      );
+      return items.find((item) => item.id === value)?.primary;
+    }
+  );
+
+  private _toValue = memoizeOne((value: string[]): typeof this.value => {
+    if (value.length === 0) {
+      return undefined;
+    }
+    if (value.length === 1) {
+      return value[0];
+    }
+    return value;
+  });
+
+  private _getPickerValue(): string | undefined {
+    if (this._editIndex != null) {
+      return this._value[this._editIndex];
+    }
+    return undefined;
   }
 
-  private _filterChanged(ev?: CustomEvent): void {
-    this._filter = ev?.detail.value || "";
+  private _customValueOption = memoizeOne(
+    (text: string): PickerComboBoxItem => ({
+      id: text,
+      primary: this.hass.localize(
+        "ui.components.entity.entity-state-content-picker.custom_state"
+      ),
+      secondary: `"${text}"`,
+      search_labels: {
+        primary: text,
+        secondary: `"${text}"`,
+        id: text,
+      },
+      sorting_label: text,
+    })
+  );
 
-    const filteredItems = this._comboBox.items?.filter((item) => {
-      const label = item.label || item.value;
-      return label.toLowerCase().includes(this._filter?.toLowerCase());
-    });
+  private _getFilteredItems = (
+    searchString?: string,
+    _section?: string
+  ): PickerComboBoxItem[] => {
+    const stateObj = this.entityId
+      ? this.hass.states[this.entityId]
+      : undefined;
+    const items = this._getItems(this.entityId, stateObj, this.allowName);
+    const currentValue =
+      this._editIndex != null ? this._value[this._editIndex] : undefined;
 
-    if (this._filter) {
-      filteredItems?.unshift({ label: this._filter, value: this._filter });
+    const value = this._value;
+
+    const filteredItems = items.filter(
+      (item) => !value.includes(item.id) || item.id === currentValue
+    );
+
+    // When editing an existing custom value, include it in the base items
+    if (
+      currentValue &&
+      !items.find((item) => item.id === currentValue) &&
+      !searchString
+    ) {
+      filteredItems.push(this._customValueOption(currentValue));
     }
 
-    this._comboBox.filteredItems = filteredItems;
-  }
+    return filteredItems;
+  };
+
+  private _getAdditionalItems = (
+    searchString?: string
+  ): PickerComboBoxItem[] => {
+    if (!searchString) {
+      return [];
+    }
+
+    const currentValue =
+      this._editIndex != null ? this._value[this._editIndex] : undefined;
+
+    // Don't add if it's the same as the current item being edited
+    if (currentValue && currentValue === searchString) {
+      return [];
+    }
+
+    // Check if the search string matches an existing item
+    const stateObj = this.entityId
+      ? this.hass.states[this.entityId]
+      : undefined;
+    const items = this._getItems(this.entityId, stateObj, this.allowName);
+    const existingItem = items.find((item) => item.id === searchString);
+
+    // Only return custom value option if it doesn't match an existing item
+    if (!existingItem) {
+      return [this._customValueOption(searchString)];
+    }
+
+    return [];
+  };
 
   private async _moveItem(ev: CustomEvent) {
     ev.stopPropagation();
@@ -256,44 +407,42 @@ class HaEntityStatePicker extends LitElement {
     const element = newValue.splice(oldIndex, 1)[0];
     newValue.splice(newIndex, 0, element);
     this._setValue(newValue);
-    await this.updateComplete;
-    this._filterChanged();
   }
 
-  private async _removeItem(ev) {
+  private async _removeItem(ev: Event) {
     ev.stopPropagation();
-    const value: string[] = [...this._value];
-    value.splice(ev.target.idx, 1);
+    const value = [...this._value];
+    const idx = parseInt((ev.target as HTMLElement).dataset.idx || "", 10);
+    value.splice(idx, 1);
     this._setValue(value);
-    await this.updateComplete;
-    this._filterChanged();
   }
 
-  private _comboBoxValueChanged(ev: CustomEvent): void {
+  private _pickerValueChanged(ev: ValueChangedEvent<string>): void {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
+    const value = ev.detail.value;
 
-    if (this.disabled || newValue === "") {
+    if (this.disabled || !value) {
       return;
     }
 
-    const currentValue = this._value;
+    const newValue = [...this._value];
 
-    if (currentValue.includes(newValue)) {
-      return;
+    if (this._editIndex != null) {
+      newValue[this._editIndex] = value;
+      this._editIndex = undefined;
+    } else {
+      newValue.push(value);
     }
 
-    setTimeout(() => {
-      this._filterChanged();
-      this._comboBox.setInputValue("");
-    }, 0);
+    this._setValue(newValue);
 
-    this._setValue([...currentValue, newValue]);
+    if (this._picker) {
+      this._picker.value = undefined;
+    }
   }
 
   private _setValue(value: string[]) {
-    const newValue =
-      value.length === 0 ? undefined : value.length === 1 ? value[0] : value;
+    const newValue = this._toValue(value);
     this.value = newValue;
     fireEvent(this, "value-changed", {
       value: newValue,
@@ -303,10 +452,60 @@ class HaEntityStatePicker extends LitElement {
   static styles = css`
     :host {
       position: relative;
+      width: 100%;
+    }
+
+    .container {
+      position: relative;
+      background-color: var(--mdc-text-field-fill-color, whitesmoke);
+      border-radius: var(--ha-border-radius-sm);
+      border-end-end-radius: var(--ha-border-radius-square);
+      border-end-start-radius: var(--ha-border-radius-square);
+    }
+    .container:after {
+      display: block;
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      width: 100%;
+      background-color: var(
+        --mdc-text-field-idle-line-color,
+        rgba(0, 0, 0, 0.42)
+      );
+      transform:
+        height 180ms ease-in-out,
+        background-color 180ms ease-in-out;
+    }
+    :host([disabled]) .container:after {
+      background-color: var(
+        --mdc-text-field-disabled-line-color,
+        rgba(0, 0, 0, 0.42)
+      );
+    }
+    .container:focus-within:after {
+      height: 2px;
+      background-color: var(--mdc-theme-primary);
+    }
+
+    label {
+      display: block;
+      margin: 0 0 var(--ha-space-2);
+    }
+
+    .add {
+      order: 1;
     }
 
     ha-chip-set {
-      padding: 8px 0;
+      padding: var(--ha-space-2) var(--ha-space-2);
+    }
+
+    .invalid {
+      text-decoration: line-through;
     }
 
     .sortable-fallback {
@@ -321,11 +520,16 @@ class HaEntityStatePicker extends LitElement {
     .sortable-drag {
       cursor: grabbing;
     }
+
+    ha-input-helper-text {
+      display: block;
+      margin: var(--ha-space-2) 0 0;
+    }
   `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-entity-state-content-picker": HaEntityStatePicker;
+    "ha-entity-state-content-picker": HaStateContentPicker;
   }
 }

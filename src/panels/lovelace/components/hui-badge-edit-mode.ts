@@ -271,7 +271,10 @@ export class HuiBadgeEditMode extends LitElement {
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           z-index: 0;
         }
         .edit-overlay {
@@ -279,14 +282,17 @@ export class HuiBadgeEditMode extends LitElement {
           inset: 0;
           opacity: 0.8;
           background-color: var(--primary-background-color);
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           z-index: 0;
         }
         .edit ha-svg-icon {
           display: flex;
           position: relative;
           color: var(--primary-text-color);
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           padding: 4px;
           background: var(--secondary-background-color);
           --mdc-icon-size: 16px;
@@ -300,7 +306,7 @@ export class HuiBadgeEditMode extends LitElement {
         }
         .more ha-icon-button {
           cursor: pointer;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           background: var(--secondary-background-color);
           --mdc-icon-button-size: 24px;
           --mdc-icon-size: 16px;

@@ -12,16 +12,16 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { extractColors } from "../../../common/image/extract_color";
-import { stateActive } from "../../../common/entity/state_active";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
+import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -36,13 +36,13 @@ import {
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MediaControlCardConfig } from "./types";
-import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -242,8 +242,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 .hass=${this.hass}
               ></ha-state-icon>
               <div>
-                ${this._config!.name ||
-                computeStateName(this.hass!.states[this._config!.entity])}
+                ${computeLovelaceEntityName(
+                  this.hass,
+                  this.hass!.states[this._config!.entity],
+                  this._config.name
+                )}
               </div>
             </div>
             <div>

@@ -11,7 +11,7 @@ import type { ControlSelectOption } from "../../../components/ha-control-select"
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { FanEntity } from "../../../data/fan";
 import { FanEntityFeature } from "../../../data/fan";
 import type { HomeAssistant } from "../../../types";
@@ -68,9 +68,7 @@ class HuiFanPresetModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-fan-preset-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-fan-preset-modes-card-feature-editor");
     return document.createElement("hui-fan-preset-modes-card-feature-editor");
   }
 

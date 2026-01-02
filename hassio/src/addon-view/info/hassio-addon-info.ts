@@ -25,6 +25,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -187,12 +188,13 @@ class HassioAddonInfo extends LitElement {
                 "addon.dashboard.protection_mode.content"
               )}
               <ha-button
+                variant="danger"
                 slot="action"
-                .label=${this.supervisor.localize(
-                  "addon.dashboard.protection_mode.enable"
-                )}
                 @click=${this._protectionToggled}
               >
+                ${this.supervisor.localize(
+                  "addon.dashboard.protection_mode.enable"
+                )}
               </ha-button>
             </ha-alert>
           `
@@ -692,14 +694,16 @@ class HassioAddonInfo extends LitElement {
               ? this._computeIsRunning
                 ? html`
                     <ha-progress-button
-                      class="warning"
+                      variant="danger"
+                      appearance="plain"
                       @click=${this._stopClicked}
                       .disabled=${systemManaged && !this.controlEnabled}
                     >
                       ${this.supervisor.localize("addon.dashboard.stop")}
                     </ha-progress-button>
                     <ha-progress-button
-                      class="warning"
+                      variant="danger"
+                      appearance="plain"
                       @click=${this._restartClicked}
                     >
                       ${this.supervisor.localize("addon.dashboard.restart")}
@@ -709,10 +713,60 @@ class HassioAddonInfo extends LitElement {
                     <ha-progress-button
                       @click=${this._startClicked}
                       .progress=${this.addon.state === "startup"}
+                      appearance="plain"
                     >
                       ${this.supervisor.localize("addon.dashboard.start")}
                     </ha-progress-button>
                   `
+              : nothing}
+          </div>
+          <div>
+            ${this.addon.version
+              ? html`
+                  <ha-progress-button
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._uninstallClicked}
+                    .disabled=${systemManaged && !this.controlEnabled}
+                  >
+                    ${this.supervisor.localize("addon.dashboard.uninstall")}
+                  </ha-progress-button>
+                  ${this.addon.build
+                    ? html`
+                        <ha-progress-button
+                          variant="danger"
+                          appearance="plain"
+                          @click=${this._rebuildClicked}
+                        >
+                          ${this.supervisor.localize("addon.dashboard.rebuild")}
+                        </ha-progress-button>
+                      `
+                    : nothing}
+                  ${this._computeShowWebUI || this._computeShowIngressUI
+                    ? html`
+                        <ha-button
+                          href=${ifDefined(
+                            !this._computeShowIngressUI
+                              ? this._pathWebui!
+                              : nothing
+                          )}
+                          target=${ifDefined(
+                            !this._computeShowIngressUI ? "_blank" : nothing
+                          )}
+                          rel=${ifDefined(
+                            !this._computeShowIngressUI ? "noopener" : nothing
+                          )}
+                          @click=${!this._computeShowWebUI
+                            ? this._openIngress
+                            : undefined}
+                        >
+                          ${this.supervisor.localize(
+                            "addon.dashboard.open_web_ui"
+                          )}
+                        </ha-button>
+                      `
+                    : nothing}
+                `
               : html`
                   <ha-progress-button
                     .disabled=${!this.addon.available}
@@ -722,58 +776,12 @@ class HassioAddonInfo extends LitElement {
                   </ha-progress-button>
                 `}
           </div>
-          <div>
-            ${this.addon.version
-              ? html` ${this._computeShowWebUI
-                    ? html`
-                        <a
-                          href=${this._pathWebui!}
-                          tabindex="-1"
-                          target="_blank"
-                          rel="noopener"
-                        >
-                          <ha-button>
-                            ${this.supervisor.localize(
-                              "addon.dashboard.open_web_ui"
-                            )}
-                          </ha-button>
-                        </a>
-                      `
-                    : nothing}
-                  ${this._computeShowIngressUI
-                    ? html`
-                        <ha-button @click=${this._openIngress}>
-                          ${this.supervisor.localize(
-                            "addon.dashboard.open_web_ui"
-                          )}
-                        </ha-button>
-                      `
-                    : nothing}
-                  <ha-progress-button
-                    class="warning"
-                    @click=${this._uninstallClicked}
-                    .disabled=${systemManaged && !this.controlEnabled}
-                  >
-                    ${this.supervisor.localize("addon.dashboard.uninstall")}
-                  </ha-progress-button>
-                  ${this.addon.build
-                    ? html`
-                        <ha-progress-button
-                          class="warning"
-                          @click=${this._rebuildClicked}
-                        >
-                          ${this.supervisor.localize("addon.dashboard.rebuild")}
-                        </ha-progress-button>
-                      `
-                    : nothing}`
-              : nothing}
-          </div>
         </div>
       </ha-card>
 
       ${this.addon.long_description
         ? html`
-            <ha-card outlined>
+            <ha-card class="long-description" outlined>
               <div class="card-content">
                 <ha-markdown
                   .content=${this.addon.long_description}
@@ -1146,15 +1154,17 @@ class HassioAddonInfo extends LitElement {
           ),
           dismissText: this.supervisor.localize("common.cancel"),
         });
+        button.actionError();
         button.progress = false;
         return;
       }
     } catch (err: any) {
+      button.actionError();
+      button.progress = false;
       showAlertDialog(this, {
         title: "Failed to validate addon configuration",
         text: extractApiErrorMessage(err),
       });
-      button.progress = false;
       return;
     }
 
@@ -1168,11 +1178,15 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
+      button.actionError();
+      button.progress = false;
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.start"),
         text: extractApiErrorMessage(err),
       });
+      return;
     }
+    button.actionSuccess();
     button.progress = false;
   }
 
@@ -1228,6 +1242,7 @@ class HassioAddonInfo extends LitElement {
         path: "uninstall",
       };
       fireEvent(this, "hass-api-called", eventdata);
+      button.actionSuccess();
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
@@ -1235,6 +1250,7 @@ class HassioAddonInfo extends LitElement {
         ),
         text: extractApiErrorMessage(err),
       });
+      button.actionError();
     }
     button.progress = false;
   }
@@ -1316,6 +1332,9 @@ class HassioAddonInfo extends LitElement {
         }
         .description a {
           color: var(--primary-color);
+        }
+        .long-description {
+          direction: ltr;
         }
         ha-assist-chip {
           --md-sys-color-primary: var(--text-primary-color);

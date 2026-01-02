@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
@@ -24,6 +24,12 @@ export class HaWaitForTriggerAction
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ type: Boolean, attribute: "indent" }) public indent = false;
+
   public static get defaultConfig(): WaitForTriggerAction {
     return { wait_for_trigger: [] };
   }
@@ -32,34 +38,43 @@ export class HaWaitForTriggerAction
     const timeData = createDurationData(this.action.timeout);
 
     return html`
-      <ha-duration-input
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.wait_for_trigger.timeout"
-        )}
-        .data=${timeData}
-        .disabled=${this.disabled}
-        enable-millisecond
-        @value-changed=${this._timeoutChanged}
-      ></ha-duration-input>
-      <ha-formfield
-        .disabled=${this.disabled}
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.wait_for_trigger.continue_timeout"
-        )}
-      >
-        <ha-switch
-          .checked=${this.action.continue_on_timeout ?? true}
-          .disabled=${this.disabled}
-          @change=${this._continueChanged}
-        ></ha-switch>
-      </ha-formfield>
-      <ha-automation-trigger
-        .triggers=${ensureArray(this.action.wait_for_trigger)}
-        .hass=${this.hass}
-        .disabled=${this.disabled}
-        .name=${"wait_for_trigger"}
-        @value-changed=${this._valueChanged}
-      ></ha-automation-trigger>
+      ${this.inSidebar || (!this.inSidebar && !this.indent)
+        ? html`
+            <ha-duration-input
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.wait_for_trigger.timeout"
+              )}
+              .data=${timeData}
+              .disabled=${this.disabled}
+              enable-millisecond
+              @value-changed=${this._timeoutChanged}
+            ></ha-duration-input>
+            <ha-formfield
+              .disabled=${this.disabled}
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.wait_for_trigger.continue_timeout"
+              )}
+            >
+              <ha-switch
+                .checked=${this.action.continue_on_timeout ?? true}
+                .disabled=${this.disabled}
+                @change=${this._continueChanged}
+              ></ha-switch>
+            </ha-formfield>
+          `
+        : nothing}
+      ${this.indent || (!this.inSidebar && !this.indent)
+        ? html`<ha-automation-trigger
+            class=${!this.inSidebar && !this.indent ? "expansion-panel" : ""}
+            .triggers=${ensureArray(this.action.wait_for_trigger)}
+            .hass=${this.hass}
+            .disabled=${this.disabled}
+            .name=${"wait_for_trigger"}
+            @value-changed=${this._valueChanged}
+            .optionsInSidebar=${this.indent}
+            .narrow=${this.narrow}
+          ></ha-automation-trigger>`
+        : nothing}
     `;
   }
 
@@ -86,7 +101,7 @@ export class HaWaitForTriggerAction
       display: block;
       margin-bottom: 24px;
     }
-    ha-automation-trigger {
+    ha-automation-trigger.expansion-panel {
       display: block;
       margin-top: 24px;
     }

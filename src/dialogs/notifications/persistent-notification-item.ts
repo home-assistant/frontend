@@ -28,20 +28,22 @@ export class HuiPersistentNotificationItem extends LitElement {
 
         <div class="time">
           <span>
-            <ha-tooltip
-              .content=${this._computeTooltip(this.hass, this.notification)}
-              placement="bottom"
-            >
-              <ha-relative-time
-                .hass=${this.hass}
-                .datetime=${this.notification.created_at}
-                capitalize
-              ></ha-relative-time>
+            <ha-relative-time
+              id="relative-time"
+              .hass=${this.hass}
+              .datetime=${this.notification.created_at}
+              capitalize
+            ></ha-relative-time>
+            <ha-tooltip for="relative-time" placement="bottom">
+              ${this._computeTooltip(this.hass, this.notification)}
             </ha-tooltip>
           </span>
         </div>
 
-        <ha-button slot="actions" @click=${this._handleDismiss}
+        <ha-button
+          appearance="plain"
+          slot="actions"
+          @click=${this._handleDismiss}
           >${this.hass.localize(
             "ui.card.persistent_notification.dismiss"
           )}</ha-button

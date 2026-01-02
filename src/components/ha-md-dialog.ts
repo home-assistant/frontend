@@ -159,6 +159,7 @@ export class HaMdDialog extends Dialog {
         --md-dialog-headline-size: var(--ha-font-size-xl);
         --md-dialog-supporting-text-size: var(--ha-font-size-m);
         --md-dialog-supporting-text-line-height: var(--ha-line-height-normal);
+        --md-divider-color: var(--divider-color);
       }
 
       :host([type="alert"]) {
@@ -167,15 +168,17 @@ export class HaMdDialog extends Dialog {
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
         :host(:not([type="alert"])) {
-          min-width: calc(
-            100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-          );
-          max-width: calc(
-            100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
-          );
+          min-width: var(--mdc-dialog-min-width, 100vw);
           min-height: 100%;
           max-height: 100%;
           --md-dialog-container-shape: 0;
+        }
+
+        .container {
+          margin-top: var(--safe-area-inset-top, 0);
+          margin-bottom: var(--safe-area-inset-bottom, 0);
+          margin-left: var(--safe-area-inset-left, 0);
+          margin-right: var(--safe-area-inset-right, 0);
         }
       }
 
@@ -183,12 +186,16 @@ export class HaMdDialog extends Dialog {
         display: contents;
       }
 
+      slot[name="actions"]::slotted(*) {
+        padding: var(--ha-space-4);
+      }
+
       .scroller {
         overflow: var(--dialog-content-overflow, auto);
       }
 
       slot[name="content"]::slotted(*) {
-        padding: var(--dialog-content-padding, 24px);
+        padding: var(--dialog-content-padding, var(--ha-space-6));
       }
       .scrim {
         z-index: 10; /* overlay navigation */

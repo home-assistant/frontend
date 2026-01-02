@@ -1,16 +1,16 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
-import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-relative-time";
@@ -22,12 +22,12 @@ import {
   subscribeBluetoothAdvertisements,
   subscribeBluetoothScannersDetails,
 } from "../../../../../data/bluetooth";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
 export const bluetoothAdvertisementMonitorTabs: PageNavigation[] = [
   {

@@ -1,22 +1,25 @@
 import "@material/mwc-linear-progress";
-import { type PropertyValues, css, html, nothing } from "lit";
+import { mdiOpenInNew } from "@mdi/js";
+import { css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { extractSearchParam } from "../../src/common/url/search-params";
 import "../../src/components/ha-alert";
+import "../../src/components/ha-button";
 import "../../src/components/ha-fade-in";
 import "../../src/components/ha-spinner";
-import { haStyle } from "../../src/resources/styles";
-import "../../src/onboarding/onboarding-welcome-links";
-import "./components/landing-page-network";
-import "./components/landing-page-logs";
-import { extractSearchParam } from "../../src/common/url/search-params";
-import { onBoardingStyles } from "../../src/onboarding/styles";
+import "../../src/components/ha-svg-icon";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
-import { LandingPageBaseElement } from "./landing-page-base-element";
+import "../../src/onboarding/onboarding-welcome-links";
+import { onBoardingStyles } from "../../src/onboarding/styles";
+import { haStyle } from "../../src/resources/styles";
+import "./components/landing-page-logs";
+import "./components/landing-page-network";
 import {
   getSupervisorNetworkInfo,
   pingSupervisor,
   type NetworkInfo,
 } from "./data/supervisor";
+import { LandingPageBaseElement } from "./landing-page-base-element";
 
 export const ASSUME_CORE_START_SECONDS = 60;
 const SCHEDULE_CORE_CHECK_SECONDS = 1;
@@ -94,16 +97,21 @@ class HaLandingPage extends LandingPageBaseElement {
         <ha-language-picker
           .value=${this.language}
           .label=${""}
+          button-style
           native-name
           @value-changed=${this._languageChanged}
           inline-arrow
         ></ha-language-picker>
-        <a
+        <ha-button
+          appearance="plain"
+          variant="neutral"
           href="https://www.home-assistant.io/getting-started/onboarding/"
           target="_blank"
           rel="noreferrer noopener"
-          >${this.localize("ui.panel.page-onboarding.help")}</a
         >
+          ${this.localize("ui.panel.page-onboarding.help")}
+          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+        </ha-button>
       </div>
     `;
   }
@@ -213,31 +221,13 @@ class HaLandingPage extends LandingPageBaseElement {
       ha-card .card-content {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: var(--ha-space-4);
       }
       ha-alert p {
         text-align: unset;
       }
-      ha-language-picker {
-        display: block;
-        width: 200px;
-        border-radius: 4px;
-        overflow: hidden;
-        --ha-select-height: 40px;
-        --mdc-select-fill-color: none;
-        --mdc-select-label-ink-color: var(--primary-text-color, #212121);
-        --mdc-select-ink-color: var(--primary-text-color, #212121);
-        --mdc-select-idle-line-color: transparent;
-        --mdc-select-hover-line-color: transparent;
-        --mdc-select-dropdown-icon-color: var(--primary-text-color, #212121);
-        --mdc-shape-small: 0;
-      }
-      a {
-        text-decoration: none;
-        color: var(--primary-text-color);
-        margin-right: 16px;
-        margin-inline-end: 16px;
-        margin-inline-start: initial;
+      .footer ha-svg-icon {
+        --mdc-icon-size: var(--ha-space-5);
       }
       ha-fade-in {
         min-height: calc(100vh - 64px - 88px);

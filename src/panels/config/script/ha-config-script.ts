@@ -6,7 +6,7 @@ import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
 import { fullEntitiesContext } from "../../../data/context";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { ScriptEntity } from "../../../data/script";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
@@ -18,7 +18,7 @@ const equal = (a: ScriptEntity[], b: ScriptEntity[]): boolean => {
   if (a.length !== b.length) {
     return false;
   }
-  return a.every((enityA, index) => enityA === b[index]);
+  return a.every((entityA, index) => entityA === b[index]);
 };
 
 @customElement("ha-config-script")
@@ -98,7 +98,7 @@ class HaConfigScript extends HassRouterPage {
       this._currentPage === "show"
     ) {
       pageEl.creatingNew = undefined;
-      const scriptId = this.routeTail.path.substr(1);
+      const scriptId = this.routeTail.path.slice(1);
       pageEl.entityId = scriptId === "new" ? null : scriptId;
       return;
     }
@@ -108,7 +108,7 @@ class HaConfigScript extends HassRouterPage {
       this._currentPage !== "dashboard"
     ) {
       pageEl.creatingNew = undefined;
-      const scriptId = this.routeTail.path.substr(1);
+      const scriptId = this.routeTail.path.slice(1);
       pageEl.scriptId = scriptId === "new" ? null : scriptId;
     }
   }

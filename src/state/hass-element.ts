@@ -8,6 +8,7 @@ import { HassBaseEl } from "./hass-base-mixin";
 import { loggingMixin } from "./logging-mixin";
 import { contextMixin } from "./context-mixin";
 import MoreInfoMixin from "./more-info-mixin";
+import AutomationEditorMixin from "./automation-editor-mixin";
 import ActionMixin from "./action-mixin";
 import NotificationMixin from "./notification-mixin";
 import { panelTitleMixin } from "./panel-title-mixin";
@@ -26,6 +27,7 @@ export class HassElement extends ext(HassBaseEl, [
   TranslationsMixin,
   StateDisplayMixin,
   MoreInfoMixin,
+  AutomationEditorMixin,
   ActionMixin,
   SidebarMixin,
   DisconnectToastMixin,

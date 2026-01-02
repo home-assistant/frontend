@@ -7,27 +7,27 @@ import type {
   Layer,
   Map,
   Marker,
-  Polyline,
   MarkerClusterGroup,
+  Polyline,
 } from "leaflet";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
   formatTimeWithSeconds,
 } from "../../common/datetime/format_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { DecoratedMarker } from "../../common/map/decorated_marker";
 import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
-import { DecoratedMarker } from "../../common/map/decorated_marker";
 
 declare global {
   // for fire event
@@ -560,10 +560,11 @@ export class HaMap extends ReactiveElement {
           radius,
         });
 
+        const markerIconSize = this._getMarkerSize(computedStyles) / 2;
         const marker = new DecoratedMarker([latitude, longitude], circle, {
           icon: Leaflet.divIcon({
             html: iconHTML,
-            iconSize: [24, 24],
+            iconSize: [markerIconSize, markerIconSize],
             className,
           }),
           interactive: this.interactiveZones,
@@ -618,10 +619,11 @@ export class HaMap extends ReactiveElement {
       }
 
       // create marker with the icon
+      const markerSize = this._getMarkerSize(computedStyles);
       const marker = new DecoratedMarker([latitude, longitude], undefined, {
         icon: Leaflet.divIcon({
           html: entityMarker,
-          iconSize: [48, 48],
+          iconSize: [markerSize, markerSize],
           className: "",
         }),
         title: title,
@@ -655,6 +657,13 @@ export class HaMap extends ReactiveElement {
     }
 
     this._mapZones.forEach((marker) => map.addLayer(marker));
+  }
+
+  private _getMarkerSize(computedStyles: CSSStyleDeclaration): number {
+    const markerSizeVarValue =
+      computedStyles.getPropertyValue("--ha-marker-size");
+    const parsed = parseFloat(markerSizeVarValue);
+    return Number.isNaN(parsed) ? 48 : parsed;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -710,7 +719,7 @@ export class HaMap extends ReactiveElement {
       cursor: move !important;
     }
     .leaflet-edit-resize {
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       cursor: nesw-resize !important;
     }
     .named-icon {
@@ -734,19 +743,24 @@ export class HaMap extends ReactiveElement {
       font-size: var(--ha-font-size-s);
       background: rgba(80, 80, 80, 0.9) !important;
       color: white !important;
-      border-radius: 4px;
+      border-radius: var(--ha-border-radius-sm);
       box-shadow: none !important;
       text-align: center;
+    }
+
+    ha-icon {
+      --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
     }
 
     .marker-cluster div {
       background-clip: padding-box;
       background-color: var(--primary-color);
       border: 3px solid rgba(var(--rgb-primary-color), 0.2);
-      width: 32px;
-      height: 32px;
-      border-radius: 20px;
+      width: calc(var(--ha-marker-size, 48px) * 0.667);
+      height: calc(var(--ha-marker-size, 48px) * 0.667);
+      border-radius: 50%;
       text-align: center;
+      align-content: center;
       color: var(--text-primary-color);
       font-size: var(--ha-font-size-m);
     }

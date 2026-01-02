@@ -26,7 +26,11 @@ export const cardFeatureStyles = css`
     --control-button-padding: 0px;
   }
   ha-control-button {
+    --control-button-border-radius: var(--feature-border-radius);
     --control-button-focus-color: var(--feature-color);
+  }
+  ha-control-number-buttons {
+    --control-number-buttons-border-radius: var(--feature-border-radius);
   }
   ha-control-slider {
     --control-slider-color: var(--feature-color);

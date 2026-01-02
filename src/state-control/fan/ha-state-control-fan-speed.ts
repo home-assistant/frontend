@@ -7,8 +7,8 @@ import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-select";
 import type { ControlSelectOption } from "../../components/ha-control-select";
 import "../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../data/entity";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
+import { UNAVAILABLE } from "../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../data/fan";
 import {
   computeFanSpeedCount,
@@ -141,7 +141,7 @@ export class HaStateControlFanSpeed extends LitElement {
       max-height: 320px;
       min-height: 200px;
       --control-slider-thickness: 130px;
-      --control-slider-border-radius: 36px;
+      --control-slider-border-radius: var(--ha-border-radius-6xl);
       --control-slider-color: var(--primary-color);
       --control-slider-background: var(--disabled-color);
       --control-slider-background-opacity: 0.2;
@@ -152,7 +152,7 @@ export class HaStateControlFanSpeed extends LitElement {
       max-height: 320px;
       min-height: 200px;
       --control-select-thickness: 130px;
-      --control-select-border-radius: 36px;
+      --control-select-border-radius: var(--ha-border-radius-6xl);
       --control-select-color: var(--primary-color);
       --control-select-background: var(--disabled-color);
       --control-select-background-opacity: 0.2;

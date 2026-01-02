@@ -2,7 +2,7 @@ import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
-import { isUnavailableState } from "./entity";
+import { isUnavailableState } from "./entity/entity";
 
 export interface Calendar {
   entity_id: string;
@@ -31,6 +31,7 @@ export interface CalendarEventData {
   dtend: string;
   rrule?: string;
   description?: string;
+  location?: string;
 }
 
 export interface CalendarEventMutableParams {
@@ -39,6 +40,7 @@ export interface CalendarEventMutableParams {
   dtend: string;
   rrule?: string;
   description?: string;
+  location?: string;
 }
 
 // The scope of a delete/update for a recurring event
@@ -96,6 +98,7 @@ export const fetchCalendarEvents = async (
         uid: ev.uid,
         summary: ev.summary,
         description: ev.description,
+        location: ev.location,
         dtstart: eventStart,
         dtend: eventEnd,
         recurrence_id: ev.recurrence_id,
@@ -134,8 +137,12 @@ const getCalendarDate = (dateObj: any): string | undefined => {
   return undefined;
 };
 
-export const getCalendars = (hass: HomeAssistant): Calendar[] =>
-  Object.keys(hass.states)
+export const getCalendars = (
+  hass: HomeAssistant,
+  element: Element
+): Calendar[] => {
+  const computedStyles = getComputedStyle(element);
+  return Object.keys(hass.states)
     .filter(
       (eid) =>
         computeDomain(eid) === "calendar" &&
@@ -146,8 +153,9 @@ export const getCalendars = (hass: HomeAssistant): Calendar[] =>
     .map((eid, idx) => ({
       ...hass.states[eid],
       name: computeStateName(hass.states[eid]),
-      backgroundColor: getColorByIndex(idx),
+      backgroundColor: getColorByIndex(idx, computedStyles),
     }));
+};
 
 export const createCalendarEvent = (
   hass: HomeAssistant,

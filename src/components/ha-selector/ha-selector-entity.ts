@@ -4,12 +4,12 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
+import type { EntitySources } from "../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { EntitySelector } from "../../data/selector";
 import {
-  filterSelectorEntities,
   computeCreateDomains,
+  filterSelectorEntities,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entities-picker";
@@ -28,6 +28,8 @@ export class HaEntitySelector extends LitElement {
   @property() public label?: string;
 
   @property() public helper?: string;
+
+  @property() public placeholder?: any;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -64,6 +66,7 @@ export class HaEntitySelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .placeholder=${this.placeholder}
         .helper=${this.helper}
         .includeEntities=${this.selector.entity?.include_entities}
         .excludeEntities=${this.selector.entity?.exclude_entities}
@@ -71,7 +74,6 @@ export class HaEntitySelector extends LitElement {
         .createDomains=${this._createDomains}
         .disabled=${this.disabled}
         .required=${this.required}
-        allow-custom-entity
       ></ha-entity-picker>`;
     }
 
@@ -80,6 +82,7 @@ export class HaEntitySelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .placeholder=${this.placeholder}
         .helper=${this.helper}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}

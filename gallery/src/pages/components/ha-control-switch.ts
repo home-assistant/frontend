@@ -9,8 +9,8 @@ import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-control-switch";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-control-switch";
 
 const switches: {
   id: string;
@@ -118,7 +118,7 @@ export class DemoHaControlSwitch extends LitElement {
       --control-switch-on-color: var(--green-color);
       --control-switch-off-color: var(--red-color);
       --control-switch-thickness: 130px;
-      --control-switch-border-radius: 36px;
+      --control-switch-border-radius: var(--ha-border-radius-6xl);
       --control-switch-padding: 6px;
       --mdc-icon-size: 24px;
     }

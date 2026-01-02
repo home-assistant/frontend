@@ -1,6 +1,7 @@
 import {
   mdiBackupRestore,
   mdiFolder,
+  mdiInformation,
   mdiNas,
   mdiPlayBox,
   mdiReload,
@@ -10,17 +11,23 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-metric";
+import "../../../components/ha-segmented-bar";
+import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { HassioHostInfo } from "../../../data/hassio/host";
-import { fetchHassioHostInfo } from "../../../data/hassio/host";
+import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
+import {
+  fetchHassioHostInfo,
+  fetchHostDisksUsage,
+} from "../../../data/hassio/host";
 import type {
   SupervisorMount,
   SupervisorMounts,
@@ -35,13 +42,10 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import {
-  getValueInPercentage,
-  roundWithOneDecimal,
-} from "../../../util/calculate";
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
+import "./storage-breakdown-chart";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -54,6 +58,8 @@ class HaConfigSectionStorage extends LitElement {
   @state() private _error?: { code: string; message: string };
 
   @state() private _hostInfo?: HassioHostInfo;
+
+  @state() private _storageInfo?: HostDisksUsage | null;
 
   @state() private _mountsInfo?: SupervisorMounts | null;
 
@@ -96,48 +102,23 @@ class HaConfigSectionStorage extends LitElement {
                   )}
                 >
                   <div class="card-content">
-                    <ha-metric
-                      .heading=${this.hass.localize(
-                        "ui.panel.config.storage.used_space"
-                      )}
-                      .value=${this._getUsedSpace(
-                        this._hostInfo?.disk_used,
-                        this._hostInfo?.disk_total
-                      )}
-                      .tooltip=${`${this._hostInfo.disk_used} GB/${this._hostInfo.disk_total} GB`}
-                    ></ha-metric>
-                    <div class="detailed-storage-info">
-                      ${this.hass.localize(
-                        "ui.panel.config.storage.detailed_description",
-                        {
-                          used: `${this._hostInfo?.disk_used} GB`,
-                          total: `${this._hostInfo?.disk_total} GB`,
-                          free_space: `${this._hostInfo.disk_free} GB`,
-                        }
-                      )}
-                    </div>
-                    ${this._hostInfo.disk_life_time !== "" &&
-                    this._hostInfo.disk_life_time >= 10
-                      ? // prettier-ignore
-                        html`
-                          <ha-metric
-                            .heading=${this.hass.localize(
-                              "ui.panel.config.storage.emmc_lifetime_used"
-                            )}
-                            .value=${this._hostInfo.disk_life_time}
-                            .tooltip=${`${this._hostInfo.disk_life_time - 10}% - ${this._hostInfo.disk_life_time}%`}
-                            class="emmc"
-                          ></ha-metric>
-                        `
-                      : ""}
+                    <storage-breakdown-chart
+                      .hass=${this.hass}
+                      .hostInfo=${this._hostInfo}
+                      .storageInfo=${this._storageInfo}
+                    ></storage-breakdown-chart>
+                    ${this._renderDiskLifeTime(this._hostInfo.disk_life_time)}
                   </div>
                   ${this._hostInfo
                     ? html`<div class="card-actions">
-                        <mwc-button @click=${this._moveDatadisk}>
+                        <ha-button
+                          appearance="plain"
+                          @click=${this._moveDatadisk}
+                        >
                           ${this.hass.localize(
                             "ui.panel.config.storage.datadisk.title"
                           )}
-                        </mwc-button>
+                        </ha-button>
                       </div>`
                     : nothing}
                 </ha-card>
@@ -163,14 +144,15 @@ class HaConfigSectionStorage extends LitElement {
                           "ui.panel.config.storage.network_mounts.not_supported.os",
                           { version: "10.2" }
                         )}
-                        <mwc-button
+                        <ha-button
+                          appearance="plain"
                           slot="action"
                           @click=${this._navigateToUpdates}
                         >
                           ${this.hass.localize(
                             "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
                           )}
-                        </mwc-button>`
+                        </ha-button>`
                     : this.hass.localize(
                         "ui.panel.config.storage.network_mounts.not_supported.supervised"
                       )}
@@ -228,11 +210,11 @@ class HaConfigSectionStorage extends LitElement {
                   </div>`}
             ${this._mountsInfo !== null
               ? html`<div class="card-actions">
-                  <mwc-button @click=${this._addMount}>
+                  <ha-button appearance="plain" @click=${this._addMount}>
                     ${this.hass.localize(
                       "ui.panel.config.storage.network_mounts.add_title"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>`
               : nothing}
           </ha-card>
@@ -241,7 +223,53 @@ class HaConfigSectionStorage extends LitElement {
     `;
   }
 
+  private _renderDiskLifeTime(diskLifeTime: number | null) {
+    if (diskLifeTime === null) {
+      return nothing;
+    }
+
+    const segments: Segment[] = [
+      {
+        color: "var(--primary-color)",
+        value: diskLifeTime,
+      },
+      {
+        color:
+          "var(--ha-bar-background-color, var(--secondary-background-color))",
+        value: 100 - diskLifeTime,
+      },
+    ];
+
+    return html`
+      <ha-segmented-bar
+        .heading=${this.hass.localize("ui.panel.config.storage.lifetime")}
+        .description=${this.hass.localize(
+          "ui.panel.config.storage.lifetime_description",
+          {
+            lifetime: `${diskLifeTime}${blankBeforePercent(this.hass.locale)}%`,
+          }
+        )}
+        .segments=${segments}
+        hide-legend
+        hide-tooltip
+      >
+        <ha-tooltip slot="extra">
+          <ha-icon-button
+            .path=${mdiInformation}
+            class="help-button"
+          ></ha-icon-button>
+          <p class="metric-description" slot="content">
+            ${this.hass.localize(
+              "ui.panel.config.storage.lifetime_used_description"
+            )}
+          </p>
+        </ha-tooltip>
+      </ha-segmented-bar>
+    `;
+  }
+
   private async _load() {
+    this._loadStorageInfo();
     try {
       this._hostInfo = await fetchHassioHostInfo(this.hass);
     } catch (err: any) {
@@ -251,6 +279,15 @@ class HaConfigSectionStorage extends LitElement {
       await this._reloadMounts();
     } else {
       this._mountsInfo = null;
+    }
+  }
+
+  private async _loadStorageInfo() {
+    try {
+      this._storageInfo = await fetchHostDisksUsage(this.hass);
+    } catch (err: any) {
+      this._error = err.message || err;
+      this._storageInfo = null;
     }
   }
 
@@ -305,14 +342,15 @@ class HaConfigSectionStorage extends LitElement {
     }
   }
 
-  private _getUsedSpace = (used: number, total: number) =>
-    roundWithOneDecimal(getValueInPercentage(used, 0, total));
-
   static styles = css`
     .content {
       padding: 28px 20px 0;
       max-width: 1040px;
       margin: 0 auto;
+    }
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
     }
     ha-card {
       max-width: 600px;
@@ -327,10 +365,22 @@ class HaConfigSectionStorage extends LitElement {
       flex-direction: column;
     }
 
-    .detailed-storage-info {
-      font-size: var(--ha-font-size-s);
-      color: var(--secondary-text-color);
+    .loading-container {
+      position: relative;
     }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(var(--rgb-card-background-color), 0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .mount-state-failed {
       color: var(--error-color);
     }
@@ -351,6 +401,12 @@ class HaConfigSectionStorage extends LitElement {
       inset-inline-start: initial;
     }
 
+    .help-button {
+      --mdc-icon-button-size: 20px;
+      --mdc-icon-size: 20px;
+      color: var(--secondary-text-color);
+    }
+
     .no-mounts {
       display: flex;
       flex-direction: column;
@@ -362,7 +418,7 @@ class HaConfigSectionStorage extends LitElement {
       background-color: var(--light-primary-color);
       color: var(--secondary-text-color);
       padding: 16px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       margin-bottom: 8px;
     }
     ha-list-item {
@@ -372,6 +428,10 @@ class HaConfigSectionStorage extends LitElement {
     ha-svg-icon,
     ha-icon-next {
       width: 24px;
+    }
+
+    ha-alert {
+      --ha-alert-icon-size: 24px;
     }
   `;
 }

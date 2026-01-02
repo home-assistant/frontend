@@ -5,20 +5,24 @@ import {
   mdiDevices,
   mdiDotsVertical,
   mdiHandExtendedOutline,
+  mdiRenameBox,
   mdiShapeOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
-import { deleteSubEntry } from "../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import { deleteSubEntry, updateSubEntry } from "../../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import type { HomeAssistant } from "../../../types";
-import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
+import {
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../lovelace/custom-card-helpers";
 import "./ha-config-entry-device-row";
 
 @customElement("ha-config-sub-entry-row")
@@ -141,7 +145,16 @@ class HaConfigSubEntryRow extends LitElement {
                 </ha-md-menu-item>
               `
             : nothing}
-          <ha-md-menu-item class="warning" @click=${this._handleDeleteSub}>
+          <ha-md-menu-item .clickAction=${this._handleRenameSub}>
+            <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.rename"
+            )}
+          </ha-md-menu-item>
+          <ha-md-menu-item
+            class="warning"
+            .clickAction=${this._handleDeleteSub}
+          >
             <ha-svg-icon
               slot="start"
               class="warning"
@@ -212,7 +225,26 @@ class HaConfigSubEntryRow extends LitElement {
     });
   }
 
-  private async _handleDeleteSub(): Promise<void> {
+  private _handleRenameSub = async (): Promise<void> => {
+    const newName = await showPromptDialog(this, {
+      title: this.hass.localize("ui.common.rename"),
+      defaultValue: this.subEntry.title,
+      inputLabel: this.hass.localize(
+        "ui.panel.config.integrations.rename_input_label"
+      ),
+    });
+    if (newName === null) {
+      return;
+    }
+    await updateSubEntry(
+      this.hass,
+      this.entry.entry_id,
+      this.subEntry.subentry_id,
+      { title: newName }
+    );
+  };
+
+  private _handleDeleteSub = async (): Promise<void> => {
     const confirmed = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm_title",
@@ -234,7 +266,7 @@ class HaConfigSubEntryRow extends LitElement {
       this.entry.entry_id,
       this.subEntry.subentry_id
     );
-  }
+  };
 
   static styles = css`
     .expand-button {
@@ -246,7 +278,7 @@ class HaConfigSubEntryRow extends LitElement {
     }
     ha-md-list {
       border: 1px solid var(--divider-color);
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       padding: 0;
       margin: 16px;
       margin-top: 0;

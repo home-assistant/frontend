@@ -1,5 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -27,6 +27,7 @@ export interface DisplayItem {
   label: string;
   description?: string;
   disableSorting?: boolean;
+  disableHiding?: boolean;
 }
 
 export interface DisplayValue {
@@ -101,6 +102,7 @@ export class HaItemDisplayEditor extends LitElement {
                 icon,
                 iconPath,
                 disableSorting,
+                disableHiding,
               } = item;
               return html`
                 <ha-md-list-item
@@ -155,18 +157,21 @@ export class HaItemDisplayEditor extends LitElement {
                         </div>
                       `
                     : nothing}
-                  <ha-icon-button
-                    .path=${isVisible ? mdiEye : mdiEyeOff}
-                    slot="end"
-                    .label=${this.hass.localize(
-                      `ui.components.items-display-editor.${isVisible ? "hide" : "show"}`,
-                      {
-                        label: label,
-                      }
-                    )}
-                    .value=${value}
-                    @click=${this._toggle}
-                  ></ha-icon-button>
+                  ${!isVisible || !disableHiding
+                    ? html`<ha-icon-button
+                        .path=${isVisible ? mdiEye : mdiEyeOff}
+                        slot="end"
+                        .label=${this.hass.localize(
+                          `ui.components.items-display-editor.${isVisible ? "hide" : "show"}`,
+                          {
+                            label: label,
+                          }
+                        )}
+                        .value=${value}
+                        @click=${this._toggle}
+                        .disabled=${disableHiding || false}
+                      ></ha-icon-button>`
+                    : nothing}
                   ${isVisible && !disableSorting
                     ? html`
                         <ha-svg-icon
@@ -178,7 +183,7 @@ export class HaItemDisplayEditor extends LitElement {
                             ? this._dragHandleKeydown
                             : undefined}
                           class="handle"
-                          .path=${mdiDrag}
+                          .path=${mdiDragHorizontalVariant}
                           slot="end"
                         ></ha-svg-icon>
                       `
@@ -393,10 +398,13 @@ export class HaItemDisplayEditor extends LitElement {
       --md-list-item-one-line-container-height: 48px;
     }
     ha-md-list-item.drag-selected {
-      box-shadow:
-        0px 0px 8px 4px rgba(var(--rgb-accent-color), 0.8),
-        inset 0px 2px 8px 4px rgba(var(--rgb-accent-color), 0.4);
-      border-radius: 8px;
+      --md-focus-ring-color: rgba(var(--rgb-accent-color), 0.6);
+      border-radius: var(--ha-border-radius-md);
+      outline: solid;
+      outline-color: rgba(var(--rgb-accent-color), 0.6);
+      outline-offset: -2px;
+      outline-width: 2px;
+      background-color: rgba(var(--rgb-accent-color), 0.08);
     }
     ha-md-list-item ha-icon-button {
       margin-left: -12px;

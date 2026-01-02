@@ -28,6 +28,9 @@ export const getMyRedirects = (): Redirects => ({
   developer_assist: {
     redirect: "/developer-tools/assist",
   },
+  developer_debug: {
+    redirect: "/developer-tools/debug",
+  },
   developer_states: {
     redirect: "/developer-tools/state",
   },
@@ -188,6 +191,13 @@ export const getMyRedirects = (): Redirects => ({
   helpers: {
     redirect: "/config/helpers",
   },
+  labs: {
+    redirect: "/config/labs",
+    params: {
+      domain: "string?",
+      preview_feature: "string?",
+    },
+  },
   tags: {
     component: "tag",
     redirect: "/config/tags",
@@ -322,6 +332,9 @@ export const getMyRedirects = (): Redirects => ({
       repository: "string",
       category: "string?",
     },
+  },
+  lights: {
+    redirect: "/lights",
   },
 });
 

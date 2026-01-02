@@ -13,11 +13,11 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../../../data/entity";
+import { UNAVAILABLE } from "../../../../data/entity/entity";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity/entity_attributes";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import { LightColorMode } from "../../../../data/light";
 import type { HomeAssistant } from "../../../../types";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
 
 declare global {
   interface HASSDomEvents {
@@ -179,7 +179,7 @@ class LightColorTempPicker extends LitElement {
           max-height: 320px;
           min-height: 200px;
           --control-slider-thickness: 130px;
-          --control-slider-border-radius: 36px;
+          --control-slider-border-radius: var(--ha-border-radius-6xl);
           --control-slider-color: var(--primary-color);
           --control-slider-background: -webkit-linear-gradient(
             top,

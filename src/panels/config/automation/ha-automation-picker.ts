@@ -9,6 +9,7 @@ import {
   mdiHelpCircle,
   mdiInformationOutline,
   mdiMenuDown,
+  mdiOpenInNew,
   mdiPlay,
   mdiPlus,
   mdiRobotHappy,
@@ -34,6 +35,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
+import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -63,6 +65,7 @@ import "../../../components/ha-md-menu-item";
 import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
 import {
@@ -84,17 +87,17 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+} from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
@@ -291,14 +294,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           extraTemplate: (automation) =>
             automation.labels.length
               ? html`<ha-data-table-labels
-                  @label-clicked=${this._labelClicked}
+                  @label-clicked=${narrow ? undefined : this._labelClicked}
                   .labels=${automation.labels}
                 ></ha-data-table-labels>`
               : nothing,
         },
         area: {
           title: localize("ui.panel.config.automation.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -327,14 +329,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             const date = new Date(automation.last_triggered);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
+            const formattedTime = formatShortDateTimeWithConditionalYear(
+              date,
+              this.hass.locale,
+              this.hass.config
+            );
+            const elementId = "last-triggered-" + slugify(automation.entity_id);
             return html`
               ${dayDifference > 3
-                ? formatShortDateTimeWithConditionalYear(
-                    date,
-                    this.hass.locale,
-                    this.hass.config
-                  )
-                : relativeTime(date, locale)}
+                ? formattedTime
+                : html`
+                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
+                    <span id=${elementId}>${relativeTime(date, locale)}</span>
+                  `}
             `;
           },
         },
@@ -451,7 +458,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             .indeterminate=${partial}
             reducedTouchTarget
           ></ha-checkbox>
-          <ha-label style=${color ? `--color: ${color}` : ""}>
+          <ha-label
+            style=${color ? `--color: ${color}` : ""}
+            .description=${label.description}
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -804,18 +814,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                     { user: this.hass.user?.name || "Alice" }
                   )}
                 </p>
-                <a
+                <ha-button
                   href=${documentationUrl(
                     this.hass,
                     "/docs/automation/editor/"
                   )}
                   target="_blank"
+                  appearance="plain"
                   rel="noreferrer"
+                  size="small"
                 >
-                  <ha-button>
-                    ${this.hass.localize("ui.panel.config.common.learn_more")}
-                  </ha-button>
-                </a>
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}> </ha-svg-icon>
+                </ha-button>
               </div>`
             : nothing
         }
@@ -1156,6 +1167,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private async _delete(automation) {
     try {
       await deleteAutomation(this.hass, automation.attributes.id);
+      this._selected = this._selected.filter(
+        (entityId) => entityId !== automation.entity_id
+      );
     } catch (err: any) {
       await showAlertDialog(this, {
         text:
@@ -1453,6 +1467,9 @@ ${rejected
         .empty {
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty ha-button {
+          --mdc-icon-size: 24px;
         }
         .empty h1 {
           font-size: var(--ha-font-size-3xl);

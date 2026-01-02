@@ -5,13 +5,13 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import { getDeviceIntegrationLookup } from "../../data/device_registry";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
-import type { DeviceSelector } from "../../data/selector";
 import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
+import type { EntitySources } from "../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
+import type { DeviceSelector } from "../../data/selector";
 import {
   filterSelectorDevices,
   filterSelectorEntities,
@@ -35,6 +35,8 @@ export class HaDeviceSelector extends LitElement {
   @property() public label?: string;
 
   @property() public helper?: string;
+
+  @property() public placeholder?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -102,9 +104,9 @@ export class HaDeviceSelector extends LitElement {
           .entityFilter=${this.selector.device?.entity
             ? this._filterEntities
             : undefined}
+          .placeholder=${this.placeholder}
           .disabled=${this.disabled}
           .required=${this.required}
-          allow-custom-entity
         ></ha-device-picker>
       `;
     }

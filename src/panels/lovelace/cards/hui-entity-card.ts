@@ -8,7 +8,6 @@ import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   stateColorBrightness,
   stateColorCss,
@@ -24,9 +23,10 @@ import "../../../components/ha-attribute-value";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -125,7 +125,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       ? this._config.attribute in stateObj.attributes
       : !isUnavailableState(stateObj.state);
 
-    const name = this._config.name || computeStateName(stateObj);
+    const name = computeLovelaceEntityName(
+      this.hass,
+      stateObj,
+      this._config.name
+    );
 
     const colored = stateObj && this._getStateColor(stateObj, this._config);
 
@@ -161,15 +165,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <span class="value"
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
-                ? html`
-                    <ha-attribute-value
-                      hide-unit
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      .attribute=${this._config.attribute!}
-                    >
-                    </ha-attribute-value>
-                  `
+                ? html`<ha-attribute-value
+                    hide-unit
+                    .hass=${this.hass}
+                    .stateObj=${stateObj}
+                    .attribute=${this._config.attribute!}
+                  >
+                  </ha-attribute-value>`
                 : this.hass.localize("state.default.unknown")
               : (isNumericState(stateObj) || this._config.unit) &&
                   stateObj.attributes.device_class !== "duration"

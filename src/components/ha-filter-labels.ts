@@ -10,8 +10,8 @@ import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
-import type { LabelRegistryEntry } from "../data/label_registry";
-import { subscribeLabelRegistry } from "../data/label_registry";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
+import { subscribeLabelRegistry } from "../data/label/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -109,7 +109,10 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                       .selected=${(this.value || []).includes(label.label_id)}
                       hasMeta
                     >
-                      <ha-label style=${color ? `--color: ${color}` : ""}>
+                      <ha-label
+                        style=${color ? `--color: ${color}` : ""}
+                        .description=${label.description}
+                      >
                         ${label.icon
                           ? html`<ha-icon
                               slot="icon"
@@ -164,30 +167,33 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
   }
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
-    if (!ev.detail.index.size) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
-      return;
-    }
-
-    const value: string[] = [];
     const filteredLabels = this._filteredLabels(
       this._labels,
       this._filter,
       this.value
     );
 
+    const filteredLabelIds = new Set(filteredLabels.map((l) => l.label_id));
+
+    // Keep previously selected labels that are not in the current filtered view
+    const preservedLabels = (this.value || []).filter(
+      (id) => !filteredLabelIds.has(id)
+    );
+
+    // Build the new selection from the filtered labels based on selected indices
+    const newlySelectedLabels: string[] = [];
     for (const index of ev.detail.index) {
-      const labelId = filteredLabels[index].label_id;
-      value.push(labelId);
+      const labelId = filteredLabels[index]?.label_id;
+      if (labelId) {
+        newlySelectedLabels.push(labelId);
+      }
     }
-    this.value = value;
+
+    const value = [...preservedLabels, ...newlySelectedLabels];
+    this.value = value.length ? value : [];
 
     fireEvent(this, "data-table-filter-changed", {
-      value,
+      value: value.length ? value : undefined,
       items: undefined,
     });
   }
@@ -214,7 +220,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           height: 0;
         }
         ha-expansion-panel {
-          --ha-card-border-radius: 0;
+          --ha-card-border-radius: var(--ha-border-radius-square);
           --expansion-panel-content-padding: 0;
         }
         .header {
@@ -232,7 +238,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           margin-inline-end: 0;
           min-width: 16px;
           box-sizing: border-box;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
@@ -256,7 +262,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         }
         search-input-outlined {
           display: block;
-          padding: 0 8px;
+          padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
       `,
     ];

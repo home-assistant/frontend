@@ -7,7 +7,13 @@ import type {
   EntityConfig,
   LovelaceRow,
 } from "../entity-rows/types";
+import { fireEvent } from "../../../common/dom/fire_event";
 
+declare global {
+  interface HASSDomEvents {
+    "row-visibility-changed": { row: LovelaceRow; value: boolean };
+  }
+}
 @customElement("hui-conditional-row")
 class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
   public setConfig(config: ConditionalRowConfig): void {
@@ -25,6 +31,15 @@ class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
           } as EntityConfig)
         : config.row
     ) as LovelaceRow;
+  }
+
+  protected setVisibility(conditionMet: boolean): void {
+    const visible = this.preview || conditionMet;
+    const previouslyHidden = this.hidden;
+    super.setVisibility(conditionMet);
+    if (previouslyHidden !== this.hidden) {
+      fireEvent(this, "row-visibility-changed", { row: this, value: visible });
+    }
   }
 }
 

@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiChevronLeft, mdiClose, mdiMenuDown } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -14,8 +13,8 @@ import "../../components/ha-md-button-menu";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { getLanguageScores } from "../../data/conversation";
-import { UNAVAILABLE } from "../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import { UNAVAILABLE } from "../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
@@ -194,12 +193,12 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                     ).map(
                       (lang) =>
                         html`<ha-md-menu-item
-                          .value=${lang.value}
+                          .value=${lang.id}
                           @click=${this._handlePickLanguage}
                           @keydown=${this._handlePickLanguage}
-                          .selected=${this._language === lang.value}
+                          .selected=${this._language === lang.id}
                         >
-                          ${lang.label}
+                          ${lang.primary}
                         </ha-md-menu-item>`
                     )}
                   </ha-md-button-menu>`

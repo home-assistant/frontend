@@ -1,18 +1,18 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import type { HomeAssistant } from "../../../../../../types";
-import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
-import "../../../../../../components/ha-button";
 import "../../../../../../components/buttons/ha-progress-button";
-import "../../../../../../components/ha-textfield";
-import "../../../../../../components/ha-select";
-import "../../../../../../components/ha-list-item";
-import "../../../../../../components/ha-alert";
-import type { HaSelect } from "../../../../../../components/ha-select";
-import type { HaTextField } from "../../../../../../components/ha-textfield";
-import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
 import type { HaProgressButton } from "../../../../../../components/buttons/ha-progress-button";
+import "../../../../../../components/ha-alert";
+import "../../../../../../components/ha-button";
+import "../../../../../../components/ha-list-item";
+import "../../../../../../components/ha-select";
+import type { HaSelect } from "../../../../../../components/ha-select";
+import "../../../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../../../components/ha-textfield";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
+import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
+import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../../types";
 
 // enum with special states
 enum SpecialState {
@@ -209,7 +209,7 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 16px;
+      gap: var(--ha-space-4);
     }
     :host > ha-select {
       width: 100%;
@@ -225,7 +225,7 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
     .setback-state {
       width: 100%;
       display: flex;
-      gap: 16px;
+      gap: var(--ha-space-4);
     }
     .setback-state ha-select,
     ha-textfield {

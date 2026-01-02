@@ -32,11 +32,11 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { supportsFeature } from "../common/entity/supports-feature";
 import { stateActive } from "../common/entity/state_active";
+import { supportsFeature } from "../common/entity/supports-feature";
 import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
-import { isUnavailableState } from "./entity";
+import { isUnavailableState } from "./entity/entity";
 import { isTTSMediaSource } from "./tts";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
@@ -199,10 +199,12 @@ export interface MediaPlayerItem {
   media_content_type: string;
   media_content_id: string;
   media_class: keyof TranslationDict["ui"]["components"]["media-browser"]["class"];
-  children_media_class?: string;
+  children_media_class?: string | null;
   can_play: boolean;
   can_expand: boolean;
+  can_search: boolean;
   thumbnail?: string;
+  iconPath?: string;
   children?: MediaPlayerItem[];
   not_shown?: number;
 }

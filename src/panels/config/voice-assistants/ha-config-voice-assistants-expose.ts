@@ -10,8 +10,10 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import type { EntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import {
@@ -19,6 +21,7 @@ import {
   isEmptyEntityDomainFilter,
 } from "../../../common/entity/entity_domain_filter";
 import { navigate } from "../../../common/navigate";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -26,32 +29,30 @@ import type {
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-button";
 import "../../../components/ha-fab";
 import "../../../components/ha-tooltip";
 import type { AlexaEntity } from "../../../data/alexa";
 import { fetchCloudAlexaEntities } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { entitiesContext } from "../../../data/context";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
-import { getExtendedEntityRegistryEntries } from "../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { getExtendedEntityRegistryEntries } from "../../../data/entity/entity_registry";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { exposeEntities, voiceAssistants } from "../../../data/expose";
 import type { GoogleEntity } from "../../../data/google_assistant";
 import { fetchCloudGoogleEntities } from "../../../data/google_assistant";
+import { domainToName } from "../../../data/integration";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
-import { storage } from "../../../common/decorators/storage";
-import { domainToName } from "../../../data/integration";
-import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -195,6 +196,7 @@ export class VoiceAssistantsExpose extends LitElement {
         sortable: true,
         groupable: true,
         filterable: true,
+        template: (entry) => entry.area || "—",
       },
       assistants: {
         title: localize(
@@ -384,7 +386,7 @@ export class VoiceAssistantsExpose extends LitElement {
               "ui.panel.config.entities.picker.unnamed_entity"
             ),
           domain: domainToName(localize, computeDomain(entityState.entity_id)),
-          area: area ? area.name : "—",
+          area: area ? area.name : undefined,
           assistants: Object.keys(
             exposedEntities?.[entityState.entity_id]
           ).filter(
@@ -432,7 +434,7 @@ export class VoiceAssistantsExpose extends LitElement {
               entity_id: entityState.entity_id,
               entity: entityState,
               name: computeStateName(entityState),
-              area: area ? area.name : "—",
+              area: area ? area.name : undefined,
               assistants: [
                 ...(exposedEntities
                   ? Object.keys(
@@ -588,46 +590,50 @@ export class VoiceAssistantsExpose extends LitElement {
               <div class="header-btns" slot="selection-bar">
                 ${!this.narrow
                   ? html`
-                      <mwc-button @click=${this._exposeSelected}
+                      <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._exposeSelected}
                         >${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.expose"
-                        )}</mwc-button
+                        )}</ha-button
                       >
-                      <mwc-button @click=${this._unexposeSelected}
+                      <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._unexposeSelected}
                         >${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.unexpose"
-                        )}</mwc-button
+                        )}</ha-button
                       >
                     `
                   : html`
-                      <ha-tooltip
-                        .content=${this.hass.localize(
+                      <ha-icon-button
+                        id="expose-button"
+                        @click=${this._exposeSelected}
+                        .path=${mdiPlusBoxMultiple}
+                        .label=${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.expose"
                         )}
-                        placement="left"
-                      >
-                        <ha-icon-button
-                          @click=${this._exposeSelected}
-                          .path=${mdiPlusBoxMultiple}
-                          .label=${this.hass.localize(
-                            "ui.panel.config.voice_assistants.expose.expose"
-                          )}
-                        ></ha-icon-button>
+                      ></ha-icon-button>
+                      <ha-tooltip for="expose-button" placement="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.voice_assistants.expose.expose"
+                        )}
                       </ha-tooltip>
-                      <ha-tooltip
-                        content=${this.hass.localize(
+                      <ha-tooltip for="unexpose-button" placement="left">
+                        ${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.unexpose"
                         )}
-                        placement="left"
-                      >
-                        <ha-icon-button
-                          @click=${this._unexposeSelected}
-                          .path=${mdiCloseBoxMultiple}
-                          .label=${this.hass.localize(
-                            "ui.panel.config.voice_assistants.expose.unexpose"
-                          )}
-                        ></ha-icon-button>
                       </ha-tooltip>
+                      <ha-icon-button
+                        id="unexpose-button"
+                        @click=${this._unexposeSelected}
+                        .path=${mdiCloseBoxMultiple}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.voice_assistants.expose.unexpose"
+                        )}
+                      ></ha-icon-button>
                     `}
               </div>
             `
@@ -831,7 +837,7 @@ export class VoiceAssistantsExpose extends LitElement {
         .header-btns {
           display: flex;
         }
-        .header-btns > mwc-button,
+        .header-btns > ha-button,
         .header-btns > ha-icon-button {
           margin: 8px;
         }

@@ -1,18 +1,18 @@
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import {
-  getMobileOpenFromBottomAnimation,
-  getMobileCloseToBottomAnimation,
-} from "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button-toggle";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import {
+  getMobileCloseToBottomAnimation,
+  getMobileOpenFromBottomAnimation,
+} from "../../../../components/ha-md-dialog";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import {
   LightColorMode,
@@ -228,7 +228,7 @@ class DialogLightColorFavorite extends LitElement {
           </div>
         </div>
         <div slot="actions">
-          <ha-button @click=${this._cancelDialog}>
+          <ha-button appearance="plain" @click=${this._cancelDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button @click=${this._save} .disabled=${!this._color}
@@ -268,20 +268,20 @@ class DialogLightColorFavorite extends LitElement {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: var(--ha-space-6);
           flex: 1;
         }
         .modes {
           display: flex;
           flex-direction: row;
           justify-content: flex-end;
-          padding: 0 24px;
+          padding: 0 var(--ha-space-6);
         }
         .wheel {
           width: 30px;
           height: 30px;
           flex: none;
-          border-radius: 15px;
+          border-radius: var(--ha-border-radius-xl);
         }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");

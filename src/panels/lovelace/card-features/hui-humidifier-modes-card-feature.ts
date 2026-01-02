@@ -11,7 +11,7 @@ import type { ControlSelectOption } from "../../../components/ha-control-select"
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HumidifierEntity } from "../../../data/humidifier";
 import { HumidifierEntityFeature } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";
@@ -71,9 +71,7 @@ class HuiHumidifierModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-humidifier-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-humidifier-modes-card-feature-editor");
     return document.createElement("hui-humidifier-modes-card-feature-editor");
   }
 

@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
-import type { Trigger } from "../../../../src/data/automation";
+import type { LegacyTrigger } from "../../../../src/data/automation";
 import { describeTrigger } from "../../../../src/data/automation_i18n";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
@@ -66,7 +66,7 @@ const triggers = [
   },
 ];
 
-const initialTrigger: Trigger = {
+const initialTrigger: LegacyTrigger = {
   trigger: "state",
   entity_id: "light.kitchen",
 };

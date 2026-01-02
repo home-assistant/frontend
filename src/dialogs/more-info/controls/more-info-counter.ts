@@ -1,8 +1,8 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { isUnavailableState } from "../../../data/entity";
+import "../../../components/ha-button";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-counter")
@@ -20,29 +20,35 @@ class MoreInfoCounter extends LitElement {
 
     return html`
       <div class="actions">
-        <mwc-button
+        <ha-button
+          appearance="plain"
+          size="small"
           .action=${"increment"}
           @click=${this._handleActionClick}
           .disabled=${disabled ||
           Number(this.stateObj.state) === this.stateObj.attributes.maximum}
         >
           ${this.hass!.localize("ui.card.counter.actions.increment")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
+          appearance="plain"
+          size="small"
           .action=${"decrement"}
           @click=${this._handleActionClick}
           .disabled=${disabled ||
           Number(this.stateObj.state) === this.stateObj.attributes.minimum}
         >
           ${this.hass!.localize("ui.card.counter.actions.decrement")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
+          appearance="plain"
+          size="small"
           .action=${"reset"}
           @click=${this._handleActionClick}
           .disabled=${disabled}
         >
           ${this.hass!.localize("ui.card.counter.actions.reset")}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -56,7 +62,7 @@ class MoreInfoCounter extends LitElement {
 
   static styles = css`
     .actions {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;

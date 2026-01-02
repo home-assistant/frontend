@@ -20,7 +20,7 @@ import {
   setProtectedAlarmControlPanelMode,
   supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -62,9 +62,7 @@ class HuiAlarmModeCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-alarm-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-alarm-modes-card-feature-editor");
     return document.createElement("hui-alarm-modes-card-feature-editor");
   }
 

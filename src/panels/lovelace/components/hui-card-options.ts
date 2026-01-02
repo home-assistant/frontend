@@ -1,5 +1,4 @@
-import "@material/mwc-button";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -15,10 +14,12 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAssignedElements } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { saveConfig } from "../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../data/lovelace/config/view";
@@ -95,10 +96,10 @@ export class HuiCardOptions extends LitElement {
       <div class="card"><slot></slot></div>
       <ha-card>
         <div class="card-actions">
-          <mwc-button @click=${this._editCard}
+          <ha-button appearance="plain" @click=${this._editCard}
             >${this.hass!.localize(
               "ui.panel.lovelace.editor.edit_card.edit"
-            )}</mwc-button
+            )}</ha-button
           >
           <div class="right">
             <slot name="buttons"></slot>
@@ -132,7 +133,10 @@ export class HuiCardOptions extends LitElement {
                   ></ha-icon-button>
                 `
               : nothing}
-            <ha-button-menu @action=${this._handleAction}>
+            <ha-dropdown
+              @wa-select=${this._handleDropdownSelect}
+              placement="bottom-end"
+            >
               <ha-icon-button
                 slot="trigger"
                 .label=${this.hass!.localize(
@@ -140,52 +144,46 @@ export class HuiCardOptions extends LitElement {
                 )}
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
-              <ha-list-item graphic="icon">
+              <ha-dropdown-item value="move">
                 <ha-svg-icon
-                  slot="graphic"
+                  slot="icon"
                   .path=${mdiFileMoveOutline}
                 ></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.move"
                 )}
-              </ha-list-item>
-              <ha-list-item graphic="icon">
+              </ha-dropdown-item>
+              <ha-dropdown-item value="duplicate">
                 <ha-svg-icon
-                  slot="graphic"
+                  slot="icon"
                   .path=${mdiPlusCircleMultipleOutline}
                 ></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.duplicate"
                 )}
-              </ha-list-item>
-              <ha-list-item graphic="icon">
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiContentCopy}
-                ></ha-svg-icon>
+              </ha-dropdown-item>
+              <ha-dropdown-item value="copy">
+                <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.copy"
                 )}
-              </ha-list-item>
-              <ha-list-item graphic="icon">
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiContentCut}
-                ></ha-svg-icon>
+              </ha-dropdown-item>
+              <ha-dropdown-item value="cut">
+                <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
                 ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.cut")}
-              </ha-list-item>
-              <li divider role="separator"></li>
-              <ha-list-item class="warning" graphic="icon">
+              </ha-dropdown-item>
+              <wa-divider></wa-divider>
+              <ha-dropdown-item value="delete" variant="danger">
                 <ha-svg-icon
                   class="warning"
-                  slot="graphic"
+                  slot="icon"
                   .path=${mdiDelete}
                 ></ha-svg-icon>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"
                 )}
-              </ha-list-item>
-            </ha-button-menu>
+              </ha-dropdown-item>
+            </ha-dropdown>
           </div>
         </div>
       </ha-card>
@@ -229,7 +227,7 @@ export class HuiCardOptions extends LitElement {
           width: 24px;
           line-height: var(--ha-line-height-normal);
           box-sizing: border-box;
-          border-radius: 50%;
+          border-radius: var(--ha-border-radius-circle);
           font-weight: var(--ha-font-weight-medium);
           text-align: center;
           font-size: var(--ha-font-size-m);
@@ -244,30 +242,31 @@ export class HuiCardOptions extends LitElement {
         ha-icon-button.move-arrow[disabled] {
           color: var(--disabled-text-color);
         }
-
-        ha-list-item {
-          cursor: pointer;
-          white-space: nowrap;
-        }
       `,
     ];
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "move":
         this._moveCard();
         break;
-      case 1:
+      case "duplicate":
         this._duplicateCard();
         break;
-      case 2:
+      case "copy":
         this._copyCard();
         break;
-      case 3:
+      case "cut":
         this._cutCard();
         break;
-      case 4:
+      case "delete":
         this._deleteCard();
         break;
     }

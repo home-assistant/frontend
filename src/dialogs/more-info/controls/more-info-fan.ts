@@ -16,7 +16,7 @@ import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { FanEntity } from "../../../data/fan";
 import {
   FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
@@ -42,7 +42,7 @@ class MoreInfoFan extends LitElement {
 
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     this.hass.callService("fan", service, {
       entity_id: this.stateObj!.entity_id,
     });

@@ -17,8 +17,8 @@ import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LightEntity } from "../../../data/light";
 import {
@@ -310,7 +310,7 @@ class MoreInfoLight extends LitElement {
 
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     this.hass.callService("light", service, {
       entity_id: this.stateObj!.entity_id,
     });
@@ -344,7 +344,7 @@ class MoreInfoLight extends LitElement {
           flex-direction: row;
           align-items: center;
           height: 48px;
-          border-radius: 24px;
+          border-radius: var(--ha-border-radius-3xl);
           background-color: rgba(139, 145, 151, 0.1);
           box-sizing: border-box;
           width: auto;
@@ -353,7 +353,7 @@ class MoreInfoLight extends LitElement {
           width: 30px;
           height: 30px;
           flex: none;
-          border-radius: 15px;
+          border-radius: var(--ha-border-radius-xl);
         }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");

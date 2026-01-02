@@ -164,7 +164,7 @@ class HassioHardwareDialog extends LitElement {
         pre,
         code {
           background-color: var(--markdown-code-background-color, none);
-          border-radius: 3px;
+          border-radius: var(--ha-border-radius-sm);
         }
         pre {
           padding: 16px;

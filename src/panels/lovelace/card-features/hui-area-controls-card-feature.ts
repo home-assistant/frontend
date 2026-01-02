@@ -142,9 +142,7 @@ class HuiAreaControlsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-area-controls-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-area-controls-card-feature-editor");
     return document.createElement("hui-area-controls-card-feature-editor");
   }
 
@@ -177,7 +175,7 @@ class HuiAreaControlsCardFeature
       .map((entityId) => this.hass!.states[entityId] as HassEntity | undefined)
       .filter((v): v is HassEntity => Boolean(v));
 
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     toggleGroupEntities(this.hass, entities);
   }
 

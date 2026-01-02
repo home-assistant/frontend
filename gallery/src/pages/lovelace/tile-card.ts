@@ -11,6 +11,7 @@ import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { ClimateEntityFeature } from "../../../../src/data/climate";
+import { FanEntityFeature } from "../../../../src/data/fan";
 
 const ENTITIES = [
   getEntity("switch", "tv_outlet", "on", {
@@ -99,6 +100,15 @@ const ENTITIES = [
       ClimateEntityFeature.PRESET_MODE +
       ClimateEntityFeature.FAN_MODE +
       ClimateEntityFeature.TARGET_TEMPERATURE_RANGE,
+  }),
+  getEntity("fan", "fan_demo", "on", {
+    friendly_name: "Ceiling fan",
+    device_class: "fan",
+    direction: "reverse",
+    supported_features:
+      FanEntityFeature.DIRECTION +
+      FanEntityFeature.SET_SPEED +
+      FanEntityFeature.OSCILLATE,
   }),
 ];
 
@@ -259,6 +269,33 @@ const CONFIGS = [
   entity: climate.dual_thermostat
   features:
   - type: target-temperature
+    `,
+  },
+  {
+    heading: "Fan direction feature",
+    config: `
+- type: tile
+  entity: fan.fan_demo
+  features:
+  - type: fan-direction
+    `,
+  },
+  {
+    heading: "Fan speed feature",
+    config: `
+- type: tile
+  entity: fan.fan_demo
+  features:
+  - type: fan-speed
+    `,
+  },
+  {
+    heading: "Fan oscillate feature",
+    config: `
+- type: tile
+  entity: fan.fan_demo
+  features:
+  - type: fan-oscillate
     `,
   },
 ];

@@ -18,7 +18,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-switch";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
@@ -112,7 +112,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     if (!this.hass || !this._stateObj) {
       return;
     }
-    forwardHaptic("light");
+    forwardHaptic(this, "light");
     const stateDomain = computeDomain(this._stateObj.entity_id);
     const serviceDomain = stateDomain;
     const service = turnOn ? "turn_on" : "turn_off";

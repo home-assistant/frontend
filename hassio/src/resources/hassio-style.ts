@@ -31,7 +31,7 @@ export const hassioStyle = css`
   .card-group {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    grid-gap: 8px;
+    grid-gap: var(--ha-space-2);
   }
   @media screen and (min-width: 640px) {
     .card-group {

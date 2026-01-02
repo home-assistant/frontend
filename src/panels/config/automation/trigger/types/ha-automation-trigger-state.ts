@@ -19,6 +19,7 @@ import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import type { StateTrigger } from "../../../../../data/automation";
+import { ANY_STATE_VALUE } from "../../../../../components/entity/const";
 import type { HomeAssistant } from "../../../../../types";
 import { baseTriggerStruct, forDictStruct } from "../../structs";
 import type { TriggerElement } from "../ha-automation-trigger-row";
@@ -36,13 +37,11 @@ const stateTriggerStruct = assign(
     trigger: literal("state"),
     entity_id: optional(union([string(), array(string())])),
     attribute: optional(string()),
-    from: optional(nullable(string())),
-    to: optional(nullable(string())),
+    from: optional(union([nullable(string()), array(string())])),
+    to: optional(union([nullable(string()), array(string())])),
     for: optional(union([number(), string(), forDictStruct])),
   })
 );
-
-const ANY_STATE_VALUE = "__ANY_STATE_IGNORE_ATTRIBUTES__";
 
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
@@ -57,7 +56,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, attribute) =>
+    (
+      localize: LocalizeFunc,
+      attribute: string | undefined,
+      hideInFrom: string[],
+      hideInTo: string[]
+    ) =>
       [
         {
           name: "entity_id",
@@ -131,6 +135,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           },
           selector: {
             state: {
+              multiple: true,
               extra_options: (attribute
                 ? []
                 : [
@@ -142,6 +147,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                     },
                   ]) as any,
               attribute: attribute,
+              hide_states: hideInFrom,
             },
           },
         },
@@ -152,6 +158,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           },
           selector: {
             state: {
+              multiple: true,
               extra_options: (attribute
                 ? []
                 : [
@@ -163,6 +170,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                     },
                   ]) as any,
               attribute: attribute,
+              hide_states: hideInTo,
             },
           },
         },
@@ -207,13 +215,15 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       entity_id: ensureArray(this.trigger.entity_id),
       for: trgFor,
     };
-    if (!data.attribute && data.to === null) {
-      data.to = ANY_STATE_VALUE;
-    }
-    if (!data.attribute && data.from === null) {
-      data.from = ANY_STATE_VALUE;
-    }
-    const schema = this._schema(this.hass.localize, this.trigger.attribute);
+
+    data.to = this._normalizeStates(this.trigger.to, data.attribute);
+    data.from = this._normalizeStates(this.trigger.from, data.attribute);
+    const schema = this._schema(
+      this.hass.localize,
+      this.trigger.attribute,
+      data.to,
+      data.from
+    );
 
     return html`
       <ha-form
@@ -231,20 +241,58 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
 
-    if (newTrigger.to === ANY_STATE_VALUE) {
-      newTrigger.to = newTrigger.attribute ? undefined : null;
+    newTrigger.to = this._applyAnyStateExclusive(
+      newTrigger.to,
+      newTrigger.attribute
+    );
+    if (Array.isArray(newTrigger.to) && newTrigger.to.length === 0) {
+      delete newTrigger.to;
     }
-    if (newTrigger.from === ANY_STATE_VALUE) {
-      newTrigger.from = newTrigger.attribute ? undefined : null;
+    newTrigger.from = this._applyAnyStateExclusive(
+      newTrigger.from,
+      newTrigger.attribute
+    );
+    if (Array.isArray(newTrigger.from) && newTrigger.from.length === 0) {
+      delete newTrigger.from;
     }
 
-    Object.keys(newTrigger).forEach((key) =>
-      newTrigger[key] === undefined || newTrigger[key] === ""
-        ? delete newTrigger[key]
-        : {}
-    );
+    Object.keys(newTrigger).forEach((key) => {
+      const val = newTrigger[key];
+      if (val === undefined || val === "") {
+        delete newTrigger[key];
+      }
+    });
 
     fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private _applyAnyStateExclusive(
+    val: string | string[] | null | undefined,
+    attribute?: string
+  ): string | string[] | null | undefined {
+    const anyStateSelected = Array.isArray(val)
+      ? val.includes(ANY_STATE_VALUE)
+      : val === ANY_STATE_VALUE;
+    if (anyStateSelected) {
+      // Any state is exclusive: null if no attribute, undefined if attribute
+      return attribute ? undefined : null;
+    }
+    return val;
+  }
+
+  private _normalizeStates(
+    value: string | string[] | null | undefined,
+    attribute?: string
+  ): string[] {
+    // If no attribute is selected and backend value is null,
+    // expose it as the special ANY state option in the UI.
+    if (!attribute && value === null) {
+      return [ANY_STATE_VALUE];
+    }
+    if (value === undefined || value === null) {
+      return [];
+    }
+    return ensureArray(value);
   }
 
   private _computeLabelCallback = (

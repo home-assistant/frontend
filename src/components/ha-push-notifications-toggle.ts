@@ -93,7 +93,7 @@ class HaPushNotificationsToggle extends LitElement {
         return;
       }
 
-      let applicationServerKey: Uint8Array | null;
+      let applicationServerKey: Uint8Array<ArrayBuffer> | null;
       try {
         applicationServerKey = await getAppKey(this.hass);
       } catch (_err) {

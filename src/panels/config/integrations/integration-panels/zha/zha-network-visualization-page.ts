@@ -1,26 +1,26 @@
-import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { mdiRefresh } from "@mdi/js";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
-import { mdiRefresh } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type {
   NetworkData,
-  NetworkNode,
   NetworkLink,
+  NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
-import { colorVariables } from "../../../../../resources/theme/color.globals";
-import { navigate } from "../../../../../common/navigate";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -119,8 +119,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
     } else {
       label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_not_in_db")}</b>`;
     }
-    if (device.area_id) {
-      const area = this.hass.areas[device.area_id];
+    const haDevice = this.hass.devices[device.device_reg_id] as
+      | DeviceRegistryEntry
+      | undefined;
+    if (haDevice) {
+      const area = getDeviceContext(haDevice, this.hass).area;
       if (area) {
         label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
       }
@@ -157,10 +160,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _createChartData(devices: ZHADevice[]): NetworkData {
-    const primaryColor = colorVariables["primary-color"];
-    const routerColor = colorVariables["cyan-color"];
-    const endDeviceColor = colorVariables["teal-color"];
-    const offlineColor = colorVariables["error-color"];
+    const style = getComputedStyle(this);
+
+    const primaryColor = style.getPropertyValue("--primary-color");
+    const routerColor = style.getPropertyValue("--cyan-color");
+    const endDeviceColor = style.getPropertyValue("--teal-color");
+    const offlineColor = style.getPropertyValue("--error-color");
     const nodes: NetworkNode[] = [];
     const links: NetworkLink[] = [];
     const categories = [
@@ -204,10 +209,17 @@ export class ZHANetworkVisualizationPage extends LitElement {
         category = 2; // End Device
       }
 
+      const haDevice = this.hass.devices[device.device_reg_id] as
+        | DeviceRegistryEntry
+        | undefined;
+      const area = haDevice
+        ? getDeviceContext(haDevice, this.hass).area
+        : undefined;
       // Create node
       nodes.push({
         id: device.ieee,
         name: device.user_given_name || device.name || device.ieee,
+        context: area?.name,
         category,
         value: isCoordinator ? 3 : device.device_type === "Router" ? 2 : 1,
         symbolSize: isCoordinator
@@ -283,7 +295,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 color:
                   route.route_status === "Active"
                     ? primaryColor
-                    : colorVariables["disabled-color"],
+                    : style.getPropertyValue("--dark-primary-color"),
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
                   : "dotted",
@@ -323,7 +335,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             symbolSize: 5,
             lineStyle: {
               width: 1,
-              color: colorVariables["disabled-color"],
+              color: style.getPropertyValue("--dark-primary-color"),
               type: "dotted",
             },
             ignoreForceLayout: true,

@@ -1,9 +1,9 @@
-import "@material/mwc-button";
-
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
+  mdiAccount,
   mdiCodeBraces,
   mdiCommentProcessingOutline,
+  mdiDevices,
   mdiDotsVertical,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
@@ -11,8 +11,12 @@ import {
   mdiMagnify,
   mdiPencil,
   mdiPlus,
+  mdiRedo,
   mdiRefresh,
+  mdiRobot,
   mdiShape,
+  mdiSofa,
+  mdiUndo,
   mdiViewDashboard,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -22,9 +26,10 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -34,6 +39,7 @@ import {
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
+import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -42,9 +48,15 @@ import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
-import "../../components/sl-tab-group";
+import "../../components/ha-tab-group";
+import "../../components/ha-tab-group-tab";
+import "../../components/ha-tooltip";
+import { createAreaRegistryEntry } from "../../data/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
-import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import type {
+  LovelaceConfig,
+  LovelaceRawConfig,
+} from "../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import {
@@ -53,6 +65,8 @@ import {
   updateDashboard,
 } from "../../data/lovelace/dashboard";
 import { getPanelTitle } from "../../data/panel";
+import { createPerson } from "../../data/person";
+import { showListItemsDialog } from "../../dialogs/dialog-list-items/show-list-items-dialog";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -67,7 +81,13 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { isMobileClient } from "../../util/is_mobile";
+import { showToast } from "../../util/toast";
+import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
+import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
+import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
 import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-dialog-lovelace-dashboard-detail";
+import { showPersonDetailDialog } from "../config/person/show-dialog-person-detail";
 import { swapView } from "./editor/config-util";
 import { showDashboardStrategyEditorDialog } from "./editor/dashboard-strategy-editor/dialogs/show-dialog-dashboard-strategy-editor";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
@@ -80,9 +100,40 @@ import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
 
+interface ActionItem {
+  icon: string;
+  key: LocalizeKeys;
+  overflowAction?: any;
+  buttonAction?: any;
+  visible: boolean | undefined;
+  overflow: boolean;
+  overflow_can_promote?: boolean;
+  suffix?: string;
+  subItems?: SubActionItem[];
+}
+
+export interface ExtraActionItem {
+  icon: string;
+  labelKey: LocalizeKeys;
+  action: () => void;
+}
+
+interface SubActionItem {
+  icon: string;
+  key: LocalizeKeys;
+  overflowAction?: any;
+  action?: any;
+  visible: boolean | undefined;
+}
+
+interface UndoStackItem {
+  location: string;
+  config: LovelaceRawConfig;
+}
+
 @customElement("hui-root")
 class HUIRoot extends LitElement {
-  @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
+  @property({ attribute: false }) public panel?: PanelInfo;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -95,13 +146,25 @@ class HUIRoot extends LitElement {
     prefix: string;
   };
 
+  @property({ attribute: false }) public extraActionItems?: ExtraActionItem[];
+
   @state() private _curView?: number | "hass-unused-entities";
+
+  private _configChangedByUndo = false;
 
   private _viewCache?: Record<string, HUIView>;
 
   private _viewScrollPositions: Record<string, number> = {};
 
   private _restoreScroll = false;
+
+  private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
+    apply: (config) => this._applyUndoRedo(config),
+    currentConfig: () => ({
+      location: this.route!.path.split("/")[1],
+      config: this.lovelace!.rawConfig,
+    }),
+  });
 
   private _debouncedConfigChanged: () => void;
 
@@ -124,14 +187,36 @@ class HUIRoot extends LitElement {
     const result: TemplateResult[] = [];
     if (this._editMode) {
       result.push(
-        html`<mwc-button
-            outlined
+        html`<ha-icon-button
+            slot="toolbar-icon"
+            .path=${mdiUndo}
+            @click=${this._undo}
+            .disabled=${!this._undoRedoController.canUndo}
+            id="button-undo"
+          >
+          </ha-icon-button>
+          <ha-tooltip placement="bottom" for="button-undo">
+            ${this.hass.localize("ui.common.undo")}
+          </ha-tooltip>
+          <ha-icon-button
+            slot="toolbar-icon"
+            .path=${mdiRedo}
+            @click=${this._redo}
+            .disabled=${!this._undoRedoController.canRedo}
+            id="button-redo"
+          >
+          </ha-icon-button>
+          <ha-tooltip placement="bottom" for="button-redo">
+            ${this.hass.localize("ui.common.redo")}
+          </ha-tooltip>
+          <ha-button
+            appearance="filled"
+            size="small"
             class="exit-edit-mode"
-            .label=${this.hass!.localize(
-              "ui.panel.lovelace.menu.exit_edit_mode"
-            )}
             @click=${this._editModeDisable}
-          ></mwc-button>
+          >
+            ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
+          </ha-button>
           <a
             href=${documentationUrl(this.hass, "/dashboards/")}
             rel="noreferrer"
@@ -146,16 +231,7 @@ class HUIRoot extends LitElement {
       );
     }
 
-    const items: {
-      icon: string;
-      key: LocalizeKeys;
-      overflowAction?: any;
-      buttonAction?: any;
-      visible: boolean | undefined;
-      overflow: boolean;
-      overflow_can_promote?: boolean;
-      suffix?: string;
-    }[] = [
+    const items: ActionItem[] = [
       {
         icon: mdiFormatListBulletedTriangle,
         key: "ui.panel.lovelace.unused_entities.title",
@@ -185,13 +261,51 @@ class HUIRoot extends LitElement {
         overflow: true,
       },
       {
+        icon: mdiPlus,
+        key: "ui.panel.lovelace.menu.add",
+        visible:
+          !this._editMode && this.hass.user?.is_admin && !this.hass.kioskMode,
+        overflow: this.narrow,
+        subItems: [
+          {
+            icon: mdiDevices,
+            key: "ui.panel.lovelace.menu.add_device",
+            visible: true,
+            action: this._addDevice,
+            overflowAction: this._handleAddDevice,
+          },
+          {
+            icon: mdiRobot,
+            key: "ui.panel.lovelace.menu.create_automation",
+            visible: true,
+            action: this._createAutomation,
+            overflowAction: this._handleCreateAutomation,
+          },
+          {
+            icon: mdiSofa,
+            key: "ui.panel.lovelace.menu.create_area",
+            visible: true,
+            action: this._createArea,
+            overflowAction: this._handleCreateArea,
+          },
+          {
+            icon: mdiAccount,
+            key: "ui.panel.lovelace.menu.add_person",
+            visible: true,
+            action: this._addPerson,
+            overflowAction: this._handleAddPerson,
+          },
+        ],
+      },
+      {
         icon: mdiMagnify,
         key: "ui.panel.lovelace.menu.search_entities",
         buttonAction: this._showQuickBar,
         overflowAction: this._handleShowQuickBar,
-        visible: !this._editMode,
+        visible: !this._editMode && !this.hass.kioskMode,
         overflow: this.narrow,
-        suffix: this.hass.enableShortcuts ? "(E)" : undefined,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(E)" : undefined,
       },
       {
         icon: mdiCommentProcessingOutline,
@@ -201,7 +315,8 @@ class HUIRoot extends LitElement {
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
-        suffix: this.hass.enableShortcuts ? "(A)" : undefined,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(A)" : undefined,
       },
       {
         icon: mdiRefresh,
@@ -235,11 +350,31 @@ class HUIRoot extends LitElement {
         visible:
           !this._editMode &&
           this.hass!.user?.is_admin &&
-          !this.hass!.config.recovery_mode,
+          !this.hass!.config.recovery_mode &&
+          !this.hass.kioskMode,
         overflow: true,
         overflow_can_promote: true,
       },
     ];
+
+    // Add extra action items from parent components
+    if (this.extraActionItems) {
+      this.extraActionItems.forEach((extraItem) => {
+        items.push({
+          icon: extraItem.icon,
+          key: extraItem.labelKey,
+          buttonAction: extraItem.action,
+          overflowAction: (ev: CustomEvent<RequestSelectedDetail>) => {
+            if (!shouldHandleRequestSelectedEvent(ev)) {
+              return;
+            }
+            extraItem.action();
+          },
+          visible: true,
+          overflow: this.narrow,
+        });
+      });
+    }
 
     const overflowItems = items.filter((i) => i.visible && i.overflow);
     const overflowCanPromote =
@@ -248,43 +383,95 @@ class HUIRoot extends LitElement {
       (i) => i.visible && (!i.overflow || overflowCanPromote)
     );
 
-    buttonItems.forEach((i) => {
-      result.push(
-        html`<ha-tooltip
-          slot="actionItems"
-          placement="bottom"
-          .content=${[this.hass!.localize(i.key), i.suffix].join(" ")}
-        >
-          <ha-icon-button
-            .path=${i.icon}
-            @click=${i.buttonAction}
-          ></ha-icon-button>
-        </ha-tooltip>`
-      );
+    buttonItems.forEach((item, index) => {
+      const label = [this.hass!.localize(item.key), item.suffix].join(" ");
+      const button = item.subItems
+        ? html`
+            <ha-button-menu
+              slot="actionItems"
+              corner="BOTTOM_END"
+              menu-corner="END"
+            >
+              <ha-icon-button
+                .id="button-${index}"
+                .path=${item.icon}
+                slot="trigger"
+                .label=${label}
+                hide-title
+              ></ha-icon-button>
+              ${item.subItems
+                .filter((subItem) => subItem.visible)
+                .map(
+                  (subItem) => html`
+                    <ha-list-item
+                      graphic="icon"
+                      .key=${subItem.key}
+                      @request-selected=${subItem.overflowAction}
+                    >
+                      ${this.hass!.localize(subItem.key)}
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${subItem.icon}
+                      ></ha-svg-icon>
+                    </ha-list-item>
+                  `
+                )}
+            </ha-button-menu>
+          `
+        : html`
+            <ha-icon-button
+              slot="actionItems"
+              .id="button-${index}"
+              .path=${item.icon}
+              @click=${item.buttonAction}
+            ></ha-icon-button>
+            <ha-tooltip placement="bottom" .for="button-${index}">
+              ${label}
+            </ha-tooltip>
+          `;
+      result.push(button);
     });
+
     if (overflowItems.length && !overflowCanPromote) {
       const listItems: TemplateResult[] = [];
       overflowItems.forEach((i) => {
+        const title = [this.hass!.localize(i.key), i.suffix].join(" ");
+        const action = i.subItems
+          ? (e) => {
+              if (!shouldHandleRequestSelectedEvent(e)) {
+                return;
+              }
+              showListItemsDialog(this, {
+                title: title,
+                mode: this.narrow ? "bottom-sheet" : "dialog",
+                items: i.subItems!.map((si) => ({
+                  iconPath: si.icon,
+                  label: this.hass!.localize(si.key),
+                  action: si.action,
+                })),
+              });
+            }
+          : i.overflowAction;
+
         listItems.push(
-          html`<ha-list-item
-            graphic="icon"
-            @request-selected=${i.overflowAction}
-          >
-            ${[this.hass!.localize(i.key), i.suffix].join(" ")}
+          html`<ha-list-item graphic="icon" @request-selected=${action}>
+            ${title}
             <ha-svg-icon slot="graphic" .path=${i.icon}></ha-svg-icon>
           </ha-list-item>`
         );
       });
-      result.push(
-        html`<ha-button-menu slot="actionItems">
+      result.push(html`
+        <ha-button-menu slot="actionItems">
           <ha-icon-button
             slot="trigger"
-            .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+            id="dashboardmenu"
             .path=${mdiDotsVertical}
+            .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
+            hide-title
           ></ha-icon-button>
           ${listItems}
-        </ha-button-menu>`
-      );
+        </ha-button-menu>
+      `);
     }
     return html`${result}`;
   }
@@ -307,12 +494,12 @@ class HUIRoot extends LitElement {
         !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
         view.visible === false);
 
-    const tabs = html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
+    const tabs = html`<ha-tab-group @wa-tab-show=${this._handleViewSelected}>
       ${views.map((view, index) => {
         const hidden =
           !this._editMode && (view.subview || _isTabHiddenForUser(view));
         return html`
-          <sl-tab
+          <ha-tab-group-tab
             slot="nav"
             panel=${index}
             .active=${this._curView === index}
@@ -369,79 +556,91 @@ class HUIRoot extends LitElement {
                   ></ha-icon-button-arrow-next>
                 `
               : nothing}
-          </sl-tab>
+          </ha-tab-group-tab>
         `;
       })}
-    </sl-tab-group>`;
+    </ha-tab-group>`;
+
+    const isSubview = curViewConfig?.subview;
+    const hasTabViews = views.filter((view) => !view.subview).length > 1;
 
     return html`
       <div
         class=${classMap({
           "edit-mode": this._editMode,
+          narrow: this.narrow,
         })}
       >
         <div class="header">
-          <div class="toolbar">
+          <slot name="toolbar">
+            <div class="toolbar">
+              ${this._editMode
+                ? html`
+                    <div class="main-title">
+                      ${dashboardTitle ||
+                      this.hass!.localize("ui.panel.lovelace.editor.header")}
+                      <ha-icon-button
+                        slot="actionItems"
+                        .label=${this.hass!.localize(
+                          "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                        )}
+                        .path=${mdiPencil}
+                        class="edit-icon"
+                        @click=${this._editDashboard}
+                      ></ha-icon-button>
+                    </div>
+                    <div class="action-items">${this._renderActionItems()}</div>
+                  `
+                : html`
+                    ${isSubview
+                      ? html`
+                          <ha-icon-button-arrow-prev
+                            .hass=${this.hass}
+                            slot="navigationIcon"
+                            @click=${this._goBack}
+                          ></ha-icon-button-arrow-prev>
+                        `
+                      : html`
+                          <ha-menu-button
+                            slot="navigationIcon"
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                          ></ha-menu-button>
+                        `}
+                    ${isSubview
+                      ? html`
+                          <div class="main-title">${curViewConfig.title}</div>
+                        `
+                      : hasTabViews
+                        ? tabs
+                        : html`
+                            <div class="main-title">
+                              ${views[0]?.title ?? dashboardTitle}
+                            </div>
+                          `}
+                    <div class="action-items">${this._renderActionItems()}</div>
+                  `}
+            </div>
             ${this._editMode
               ? html`
-                  <div class="main-title">
-                    ${dashboardTitle ||
-                    this.hass!.localize("ui.panel.lovelace.editor.header")}
+                  <div class="tab-bar">
+                    ${tabs}
                     <ha-icon-button
-                      slot="actionItems"
+                      slot="nav"
+                      id="add-view"
+                      @click=${this._addView}
                       .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                        "ui.panel.lovelace.editor.edit_view.add"
                       )}
-                      .path=${mdiPencil}
-                      class="edit-icon"
-                      @click=${this._editDashboard}
+                      .path=${mdiPlus}
                     ></ha-icon-button>
                   </div>
-                  <div class="action-items">${this._renderActionItems()}</div>
                 `
-              : html`
-                  ${curViewConfig?.subview
-                    ? html`
-                        <ha-icon-button-arrow-prev
-                          slot="navigationIcon"
-                          @click=${this._goBack}
-                        ></ha-icon-button-arrow-prev>
-                      `
-                    : html`
-                        <ha-menu-button
-                          slot="navigationIcon"
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                        ></ha-menu-button>
-                      `}
-                  ${curViewConfig?.subview
-                    ? html`<div class="main-title">${curViewConfig.title}</div>`
-                    : views.filter((view) => !view.subview).length > 1
-                      ? tabs
-                      : html`
-                          <div class="main-title">
-                            ${views[0]?.title ?? dashboardTitle}
-                          </div>
-                        `}
-                  <div class="action-items">${this._renderActionItems()}</div>
-                `}
-          </div>
-          ${this._editMode
-            ? html`<div class="edit-tab-bar">
-                ${tabs}
-                <ha-icon-button
-                  slot="nav"
-                  id="add-view"
-                  @click=${this._addView}
-                  .label=${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_view.add"
-                  )}
-                  .path=${mdiPlus}
-                ></ha-icon-button>
-              </div>`
-            : nothing}
+              : nothing}
+          </slot>
         </div>
         <hui-view-container
+          class=${this._editMode ? "has-tab-bar" : ""}
           .hass=${this.hass}
           .theme=${curViewConfig?.theme}
           id="view"
@@ -458,17 +657,22 @@ class HUIRoot extends LitElement {
     this.toggleAttribute("scrolled", window.scrollY !== 0);
   };
 
+  private _locationChanged = () => {
+    this._handleUrlChanged();
+  };
+
   private _handlePopState = () => {
     this._restoreScroll = true;
+    this._handleUrlChanged();
   };
 
   private _isVisible = (view: LovelaceViewConfig) =>
     Boolean(
       this._editMode ||
-        view.visible === undefined ||
-        view.visible === true ||
-        (Array.isArray(view.visible) &&
-          view.visible.some((show) => show.user === this.hass!.user?.id))
+      view.visible === undefined ||
+      view.visible === true ||
+      (Array.isArray(view.visible) &&
+        view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
   private _clearParam(param: string) {
@@ -481,6 +685,34 @@ class HUIRoot extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+    this._handleUrlChanged();
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener("scroll", this._handleWindowScroll, {
+      passive: true,
+    });
+    window.addEventListener("popstate", this._handlePopState);
+    window.addEventListener("location-changed", this._locationChanged);
+    // Disable history scroll restoration because it is managed manually here
+    window.history.scrollRestoration = "manual";
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("scroll", this._handleWindowScroll);
+    window.removeEventListener("popstate", this._handlePopState);
+    window.removeEventListener("location-changed", this._locationChanged);
+    this.toggleAttribute("scrolled", window.scrollY !== 0);
+    // Re-enable history scroll restoration when leaving the page
+    window.history.scrollRestoration = "auto";
+  }
+
+  private _handleUrlChanged() {
     // Check for requested edit mode
     const searchParams = extractSearchParamsObject();
     if (searchParams.edit === "1") {
@@ -500,29 +732,28 @@ class HUIRoot extends LitElement {
         this._showMoreInfoDialog(entityId);
       });
     }
-
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    window.addEventListener("scroll", this._handleWindowScroll, {
-      passive: true,
-    });
-    window.addEventListener("popstate", this._handlePopState);
-    // Disable history scroll restoration because it is managed manually here
-    window.history.scrollRestoration = "manual";
-  }
+  protected willUpdate(changedProperties: PropertyValues): void {
+    if (changedProperties.has("lovelace")) {
+      const oldLovelace = changedProperties.get("lovelace") as
+        | Lovelace
+        | undefined;
 
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("scroll", this._handleWindowScroll);
-    window.removeEventListener("popstate", this._handlePopState);
-    this.toggleAttribute("scrolled", window.scrollY !== 0);
-    // Re-enable history scroll restoration when leaving the page
-    window.history.scrollRestoration = "auto";
+      if (
+        oldLovelace &&
+        this.lovelace!.rawConfig !== oldLovelace!.rawConfig &&
+        !this._configChangedByUndo
+      ) {
+        const viewPath: string | undefined = this.route!.path.split("/")[1];
+        this._undoRedoController.commit({
+          location: viewPath,
+          config: oldLovelace.rawConfig,
+        });
+      } else {
+        this._configChangedByUndo = false;
+      }
+    }
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -689,13 +920,101 @@ class HUIRoot extends LitElement {
     if (curViewConfig?.back_path != null) {
       navigate(curViewConfig.back_path, { replace: true });
     } else if (history.length > 1) {
-      history.back();
+      goBack();
     } else if (!views[0].subview) {
       navigate(this.route!.prefix, { replace: true });
     } else {
       navigate("/");
     }
   }
+
+  private _handleAddDevice(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._addDevice();
+  }
+
+  private _addDevice = async () => {
+    await this.hass.loadFragmentTranslation("config");
+    showAddIntegrationDialog(this);
+  };
+
+  private _handleCreateAutomation(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._createAutomation();
+  }
+
+  private _createAutomation = async () => {
+    await this.hass.loadFragmentTranslation("config");
+    showNewAutomationDialog(this, { mode: "automation" });
+  };
+
+  private _handleCreateArea(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._createArea();
+  }
+
+  private _createArea = async () => {
+    await this.hass.loadFragmentTranslation("config");
+    showAreaRegistryDetailDialog(this, {
+      createEntry: async (values) => {
+        const area = await createAreaRegistryEntry(this.hass, values);
+        if (isStrategyDashboard(this.lovelace!.rawConfig)) {
+          fireEvent(this, "config-refresh");
+        }
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.panel.lovelace.menu.create_area_success"
+          ),
+          action: {
+            action: () => {
+              navigate(`/config/areas/area/${area.area_id}`);
+            },
+            text: this.hass.localize(
+              "ui.panel.lovelace.menu.create_area_action"
+            ),
+          },
+        });
+      },
+    });
+  };
+
+  private _handleAddPerson(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._addPerson();
+  }
+
+  private _addPerson = async () => {
+    await this.hass.loadFragmentTranslation("config");
+    showPersonDetailDialog(this, {
+      users: [],
+      createEntry: async (values) => {
+        await createPerson(this.hass!, values);
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.panel.lovelace.menu.add_person_success"
+          ),
+          action: {
+            action: () => {
+              navigate(`/config/person`);
+            },
+            text: this.hass.localize(
+              "ui.panel.lovelace.menu.add_person_action"
+            ),
+          },
+        });
+      },
+    });
+  };
 
   private _handleRawEditor(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
@@ -821,6 +1140,7 @@ class HUIRoot extends LitElement {
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
+    this._undoRedoController.reset();
   }
 
   private async _editDashboard() {
@@ -999,6 +1319,36 @@ class HUIRoot extends LitElement {
     showShortcutsDialog(this);
   }
 
+  private async _applyUndoRedo(item: UndoStackItem) {
+    this._configChangedByUndo = true;
+    try {
+      await this.lovelace!.saveConfig(item.config);
+    } catch (err: any) {
+      this._configChangedByUndo = false;
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
+          {
+            error: err.message,
+          }
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
+
+    this._navigateToView(item.location);
+  }
+
+  private _undo() {
+    this._undoRedoController.undo();
+  }
+
+  private _redo() {
+    this._undoRedoController.redo();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -1014,12 +1364,27 @@ class HUIRoot extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
-          width: var(--mdc-top-app-bar-width, 100%);
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-right,
+                0px
+              )
+          );
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
+          padding-right: var(--safe-area-inset-right);
           z-index: 4;
           transition: box-shadow 200ms linear;
+        }
+        .narrow .header {
+          width: calc(
+            var(--mdc-top-app-bar-width, 100%) - var(
+                --safe-area-inset-left,
+                0px
+              ) - var(--safe-area-inset-right, 0px)
+          );
+          padding-left: var(--safe-area-inset-left);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -1042,22 +1407,28 @@ class HUIRoot extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 0 4px;
-          }
+        .narrow .toolbar {
+          padding: 0 4px;
         }
         .main-title {
           margin: var(--margin-title);
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          min-width: 0;
+        }
+        .narrow .main-title {
+          margin: 0;
+          margin-inline-start: 8px;
         }
         .action-items {
           white-space: nowrap;
           display: flex;
           align-items: center;
         }
-        sl-tab-group {
+        ha-tab-group {
           --ha-tab-indicator-color: var(
             --app-header-selection-bar-color,
             var(--app-header-text-color, white)
@@ -1069,10 +1440,10 @@ class HUIRoot extends LitElement {
           min-width: 0;
           height: 100%;
         }
-        sl-tab-group::part(nav) {
+        ha-tab-group::part(nav) {
           padding: 0;
         }
-        sl-tab-group::part(scroll-button) {
+        ha-tab-group::part(scroll-button) {
           background-color: var(--app-header-background-color);
           background: linear-gradient(
             90deg,
@@ -1081,14 +1452,14 @@ class HUIRoot extends LitElement {
           );
           z-index: 1;
         }
-        sl-tab-group::part(scroll-button--end) {
+        ha-tab-group::part(scroll-button-end) {
           background: linear-gradient(
             270deg,
             var(--app-header-background-color),
             transparent
           );
         }
-        .edit-mode sl-tab-group::part(scroll-button) {
+        .edit-mode ha-tab-group::part(scroll-button) {
           background-color: var(--app-header-edit-background-color, #455a64);
           background: linear-gradient(
             90deg,
@@ -1096,7 +1467,7 @@ class HUIRoot extends LitElement {
             transparent
           );
         }
-        .edit-mode sl-tab-group::part(scroll-button--end) {
+        .edit-mode ha-tab-group::part(scroll-button--end) {
           background: linear-gradient(
             270deg,
             var(--app-header-edit-background-color, #455a64),
@@ -1106,44 +1477,40 @@ class HUIRoot extends LitElement {
         .edit-mode div[main-title] {
           pointer-events: auto;
         }
-        .edit-tab-bar {
+        .tab-bar {
           display: flex;
         }
-        .edit-mode sl-tab-group {
+        .edit-mode ha-tab-group {
           flex-grow: 0;
           color: var(--app-header-edit-text-color, #fff);
           --ha-tab-active-text-color: var(--app-header-edit-text-color, #fff);
           --ha-tab-indicator-color: var(--app-header-edit-text-color, #fff);
         }
-        .edit-mode sl-tab {
-          height: 54px;
+        ha-tab-group-tab {
+          --ha-tab-group-tab-height: var(--header-height, 56px);
         }
-        sl-tab {
-          height: calc(var(--header-height, 56px) - 2px);
-        }
-        sl-tab[aria-selected="true"] .edit-icon {
+        ha-tab-group-tab[aria-selected="true"] .edit-icon {
           display: inline-flex;
         }
-        sl-tab::part(base) {
-          padding-inline-start: var(
-            --ha-tab-padding-start,
-            var(--sl-spacing-large)
+        ha-tab-group-tab::part(base) {
+          padding-inline-start: var(--ha-tab-padding-start, var(--wa-space-l));
+          padding-inline-end: var(--ha-tab-padding-end, var(--wa-space-l));
+        }
+        ha-tab-group-tab::part(base) {
+          padding-top: calc((var(--ha-tab-group-tab-height) - 20px) / 2);
+        }
+        ha-tab-group-tab.icon::part(base) {
+          padding-top: calc((var(--ha-tab-group-tab-height) - 20px) / 2 - 2px);
+          padding-bottom: calc(
+            (var(--ha-tab-group-tab-height) - 20px) / 2 - 4px
           );
-          padding-inline-end: var(
-            --ha-tab-padding-end,
-            var(--sl-spacing-large)
-          );
         }
-        sl-tab::part(base) {
-          padding-top: calc((var(--header-height) - 20px) / 2);
-          padding-bottom: calc((var(--header-height) - 20px) / 2 - 2px);
+        .tab-bar ha-tab-group-tab {
+          --ha-tab-group-tab-height: var(--tab-bar-height, 56px);
         }
-        sl-tab.icon::part(base) {
-          padding-top: calc((var(--header-height) - 20px) / 2 - 2px);
-          padding-bottom: calc((var(--header-height) - 20px) / 2 - 4px);
-        }
-        .edit-mode sl-tab[aria-selected="true"]::part(base) {
-          padding: 4px 0 2px 0;
+        .edit-mode ha-tab-group-tab[aria-selected="true"]::part(base) {
+          padding: 0;
+          margin-top: calc((var(--tab-bar-height, 56px) - 48px) / 2);
         }
         .edit-icon {
           color: var(--accent-color);
@@ -1165,13 +1532,10 @@ class HUIRoot extends LitElement {
         }
         #add-view ha-svg-icon {
           background-color: var(--accent-color);
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
         }
         a {
           color: var(--text-primary-color, white);
-        }
-        mwc-button.warning:not([disabled]) {
-          color: var(--error-color);
         }
         hui-view-container {
           position: relative;
@@ -1179,11 +1543,16 @@ class HUIRoot extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
-          padding-left: var(--safe-area-inset-left);
           padding-right: var(--safe-area-inset-right);
-          padding-inline-start: var(--safe-area-inset-left);
           padding-inline-end: var(--safe-area-inset-right);
-          padding-bottom: var(--safe-area-inset-bottom);
+          padding-bottom: calc(
+            var(--safe-area-inset-bottom) +
+              var(--view-container-padding-bottom, 0px)
+          );
+        }
+        .narrow hui-view-container {
+          padding-left: var(--safe-area-inset-left);
+          padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view-container > * {
           flex: 1 1 100%;
@@ -1192,9 +1561,11 @@ class HUIRoot extends LitElement {
         /**
          * In edit mode we have the tab bar on a new line *
          */
-        .edit-mode hui-view-container {
+        hui-view-container.has-tab-bar {
           padding-top: calc(
-            var(--header-height) + 48px + var(--safe-area-inset-top)
+            var(--header-height, 56px) +
+              calc(var(--tab-bar-height, 56px) - 2px) +
+              var(--safe-area-inset-top, 0px)
           );
         }
         .hide-tab {

@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateTimeValue } from "../../../data/datetime";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-datetime")
@@ -72,8 +72,8 @@ class MoreInfoDatetime extends LitElement {
       justify-content: flex-end;
     }
     ha-date-input + ha-time-input {
-      margin-left: 4px;
-      margin-inline-start: 4px;
+      margin-left: var(--ha-space-1);
+      margin-inline-start: var(--ha-space-1);
       margin-inline-end: initial;
     }
   `;

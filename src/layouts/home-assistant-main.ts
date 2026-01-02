@@ -1,5 +1,5 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
@@ -44,12 +44,17 @@ export class HomeAssistantMain extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const sidebarNarrow = this._sidebarNarrow || this._externalSidebar;
+    const sidebarNarrow =
+      this._sidebarNarrow || this._externalSidebar || this.hass.kioskMode;
+
+    const isPanelReady =
+      this.hass.panels && this.hass.userData && this.hass.systemData;
 
     return html`
+      <ha-snowflakes .hass=${this.hass} .narrow=${this.narrow}></ha-snowflakes>
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
-        .open=${sidebarNarrow ? this._drawerOpen : undefined}
+        .open=${sidebarNarrow ? this._drawerOpen : false}
         .direction=${computeRTLDirection(this.hass)}
         @MDCDrawer:closed=${this._drawerClosed}
       >
@@ -59,18 +64,21 @@ export class HomeAssistantMain extends LitElement {
           .route=${this.route}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>
-        <partial-panel-resolver
-          .narrow=${this.narrow}
-          .hass=${this.hass}
-          .route=${this.route}
-          slot="appContent"
-        ></partial-panel-resolver>
+        ${isPanelReady
+          ? html`<partial-panel-resolver
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+              .route=${this.route}
+              slot="appContent"
+            ></partial-panel-resolver>`
+          : nothing}
       </ha-drawer>
     `;
   }
 
   protected firstUpdated() {
     import(/* webpackPreload: true */ "../components/ha-sidebar");
+    import("../components/ha-snowflakes");
 
     if (this.hass.auth.external) {
       this._externalSidebar =
@@ -126,7 +134,7 @@ export class HomeAssistantMain extends LitElement {
     toggleAttribute(
       this,
       "modal",
-      this._sidebarNarrow || this._externalSidebar
+      this._sidebarNarrow || this._externalSidebar || this.hass.kioskMode
     );
   }
 
@@ -144,15 +152,18 @@ export class HomeAssistantMain extends LitElement {
       color: var(--primary-text-color);
       /* remove the grey tap highlights in iOS on the fullscreen touch targets */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-      --mdc-drawer-width: 56px;
+      --mdc-drawer-width: calc(56px + var(--safe-area-inset-left, 0px));
       --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
+      --safe-area-content-inset-left: 0px;
+      --safe-area-content-inset-right: var(--safe-area-inset-right);
     }
     :host([expanded]) {
-      --mdc-drawer-width: calc(256px + var(--safe-area-inset-left));
+      --mdc-drawer-width: calc(256px + var(--safe-area-inset-left, 0px));
     }
     :host([modal]) {
       --mdc-drawer-width: unset;
       --mdc-top-app-bar-width: unset;
+      --safe-area-content-inset-left: var(--safe-area-inset-left);
     }
     partial-panel-resolver,
     ha-sidebar {

@@ -7,20 +7,16 @@ interface DockSidebarParams {
   dock: HomeAssistant["dockedSidebar"];
 }
 
-interface DefaultPanelParams {
-  defaultPanel: HomeAssistant["defaultPanel"];
-}
-
 declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-dock-sidebar": DockSidebarParams;
-    "hass-default-panel": DefaultPanelParams;
+    "hass-kiosk-mode": { enable: boolean };
   }
   // for add event listener
   interface HTMLElementEventMap {
     "hass-dock-sidebar": HASSDomEvent<DockSidebarParams>;
-    "hass-default-panel": HASSDomEvent<DefaultPanelParams>;
+    "hass-kiosk-mode": HASSDomEvent<HASSDomEvents["hass-kiosk-mode"]>;
   }
 }
 
@@ -32,9 +28,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this._updateHass({ dockedSidebar: ev.detail.dock });
         storeState(this.hass!);
       });
-      this.addEventListener("hass-default-panel", (ev) => {
-        this._updateHass({ defaultPanel: ev.detail.defaultPanel });
-        storeState(this.hass!);
+      window.addEventListener("hass-kiosk-mode", (ev) => {
+        this._updateHass({ kioskMode: ev.detail.enable });
       });
     }
   };

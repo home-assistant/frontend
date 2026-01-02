@@ -5,6 +5,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { BINARY_STATE_OFF } from "../../../common/const";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
@@ -16,13 +17,15 @@ import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
-import { isUnavailableState } from "../../../data/entity";
-import type { EntitySources } from "../../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import { isUnavailableState } from "../../../data/entity/entity";
+import type { EntitySources } from "../../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
 import type { UpdateEntity, UpdateType } from "../../../data/update";
 import {
   getUpdateType,
+  latestVersionIsSkipped,
+  updateButtonIsDisabled,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
@@ -180,11 +183,6 @@ class MoreInfoUpdate extends LitElement {
       return nothing;
     }
 
-    const skippedVersion =
-      this.stateObj.attributes.latest_version &&
-      this.stateObj.attributes.skipped_version ===
-        this.stateObj.attributes.latest_version;
-
     const createBackupTexts = this._computeCreateBackupTexts();
 
     return html`
@@ -251,15 +249,17 @@ class MoreInfoUpdate extends LitElement {
                 <hr />
                 ${this._markdownLoading ? this._renderLoader() : nothing}
               `
-            : html`
-                <hr />
-                <ha-markdown
-                  @content-resize=${this._markdownLoaded}
-                  .content=${this._releaseNotes}
-                  class=${this._markdownLoading ? "hidden" : ""}
-                ></ha-markdown>
-                ${this._markdownLoading ? this._renderLoader() : nothing}
-              `
+            : this._releaseNotes
+              ? html`
+                  <hr />
+                  <ha-markdown
+                    @content-resize=${this._markdownLoaded}
+                    .content=${this._releaseNotes}
+                    class=${this._markdownLoading ? "hidden" : ""}
+                  ></ha-markdown>
+                  ${this._markdownLoading ? this._renderLoader() : nothing}
+                `
+              : nothing
           : this.stateObj.attributes.release_summary
             ? html`
                 <hr />
@@ -299,7 +299,10 @@ class MoreInfoUpdate extends LitElement {
           ${this.stateObj.state === BINARY_STATE_OFF &&
           this.stateObj.attributes.skipped_version
             ? html`
-                <ha-button @click=${this._handleClearSkipped}>
+                <ha-button
+                  appearance="plain"
+                  @click=${this._handleClearSkipped}
+                >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.clear_skipped"
                   )}
@@ -307,8 +310,9 @@ class MoreInfoUpdate extends LitElement {
               `
             : html`
                 <ha-button
+                  appearance="plain"
                   @click=${this._handleSkip}
-                  .disabled=${skippedVersion ||
+                  .disabled=${latestVersionIsSkipped(this.stateObj) ||
                   this.stateObj.state === BINARY_STATE_OFF ||
                   updateIsInstalling(this.stateObj)}
                 >
@@ -321,9 +325,8 @@ class MoreInfoUpdate extends LitElement {
             ? html`
                 <ha-button
                   @click=${this._handleInstall}
-                  .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
-                    !skippedVersion) ||
-                  updateIsInstalling(this.stateObj)}
+                  .loading=${updateIsInstalling(this.stateObj)}
+                  .disabled=${updateButtonIsDisabled(this.stateObj)}
                 >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.update"
@@ -445,14 +448,14 @@ class MoreInfoUpdate extends LitElement {
     hr {
       border-color: var(--divider-color);
       border-bottom: none;
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
     ha-expansion-panel {
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
 
     .summary {
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
 
     .row {
@@ -470,9 +473,10 @@ class MoreInfoUpdate extends LitElement {
       );
       position: sticky;
       bottom: 0;
-      margin: 0 -24px 0 -24px;
-      margin-bottom: calc(-1 * max(var(--safe-area-inset-bottom), 24px));
-      padding-bottom: var(--safe-area-inset-bottom);
+      margin: 0 calc(var(--ha-space-6) * -1) 0 calc(var(--ha-space-6) * -1);
+      margin-bottom: calc(
+        -1 * max(var(--safe-area-inset-bottom), var(--ha-space-6))
+      );
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -484,8 +488,8 @@ class MoreInfoUpdate extends LitElement {
     ha-md-list {
       width: 100%;
       box-sizing: border-box;
-      margin-bottom: -16px;
-      margin-top: -4px;
+      margin-bottom: calc(var(--ha-space-4) * -1);
+      margin-top: calc(var(--ha-space-1) * -1);
       --md-sys-color-surface: var(
         --ha-dialog-surface-background,
         var(--mdc-theme-surface, #fff)
@@ -493,8 +497,8 @@ class MoreInfoUpdate extends LitElement {
     }
 
     ha-md-list-item {
-      --md-list-item-leading-space: 24px;
-      --md-list-item-trailing-space: 24px;
+      --md-list-item-leading-space: var(--ha-space-6);
+      --md-list-item-trailing-space: var(--ha-space-6);
     }
 
     .actions {
@@ -504,9 +508,9 @@ class MoreInfoUpdate extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 12px;
+      padding: var(--ha-space-4);
       z-index: 1;
-      gap: 8px;
+      gap: var(--ha-space-2);
     }
 
     a {
@@ -518,12 +522,12 @@ class MoreInfoUpdate extends LitElement {
       align-items: center;
     }
     mwc-linear-progress {
-      margin-bottom: -8px;
-      margin-top: 4px;
+      margin-bottom: calc(var(--ha-space-2) * -1);
+      margin-top: var(--ha-space-1);
     }
     ha-markdown {
       direction: ltr;
-      padding-bottom: 16px;
+      padding-bottom: var(--ha-space-4);
       box-sizing: border-box;
     }
     ha-markdown.hidden {
@@ -532,7 +536,7 @@ class MoreInfoUpdate extends LitElement {
     .loader {
       height: 80px;
       box-sizing: border-box;
-      padding-bottom: 16px;
+      padding-bottom: var(--ha-space-4);
     }
   `;
 }

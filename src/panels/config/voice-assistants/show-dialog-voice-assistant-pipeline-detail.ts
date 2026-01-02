@@ -6,9 +6,9 @@ import type {
 
 export interface VoiceAssistantPipelineDetailsDialogParams {
   cloudActiveSubscription?: boolean;
-  pipeline?: AssistPipeline;
+  pipeline?: AssistPipeline | Omit<AssistPipeline, "id">;
   hideWakeWord?: boolean;
-  updatePipeline: (updates: AssistPipelineMutableParams) => Promise<unknown>;
+  updatePipeline?: (updates: AssistPipelineMutableParams) => Promise<unknown>;
   createPipeline?: (values: AssistPipelineMutableParams) => Promise<unknown>;
 }
 

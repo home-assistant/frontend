@@ -11,6 +11,7 @@ import {
   optional,
   string,
   type,
+  union,
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -37,14 +38,14 @@ const genericElementConfigStruct = type({
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    image: optional(string()),
+    image: optional(union([string(), object()])),
     camera_image: optional(string()),
     camera_view: optional(string()),
     elements: array(genericElementConfigStruct),
     title: optional(string()),
     state_filter: optional(any()),
     theme: optional(string()),
-    dark_mode_image: optional(string()),
+    dark_mode_image: optional(union([string(), object()])),
     dark_mode_filter: optional(any()),
   })
 );
@@ -76,8 +77,34 @@ export class HuiPictureElementsCardEditor
           ),
           schema: [
             { name: "title", selector: { text: {} } },
-            { name: "image", selector: { image: {} } },
-            { name: "dark_mode_image", selector: { image: {} } },
+            {
+              name: "image",
+              selector: {
+                media: {
+                  accept: ["image/*"] as string[],
+                  clearable: true,
+                  image_upload: true,
+                  hide_content_type: true,
+                  content_id_helper: localize(
+                    "ui.panel.lovelace.editor.card.picture.content_id_helper"
+                  ),
+                },
+              },
+            },
+            {
+              name: "dark_mode_image",
+              selector: {
+                media: {
+                  accept: ["image/*"] as string[],
+                  clearable: true,
+                  image_upload: true,
+                  hide_content_type: true,
+                  content_id_helper: localize(
+                    "ui.panel.lovelace.editor.card.picture.content_id_helper"
+                  ),
+                },
+              },
+            },
             {
               name: "camera_image",
               selector: { entity: { domain: "camera" } },
@@ -124,7 +151,7 @@ export class HuiPictureElementsCardEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${this._processData(this._config)}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._formChanged}
@@ -137,6 +164,16 @@ export class HuiPictureElementsCardEditor
       ></hui-picture-elements-card-row-editor>
     `;
   }
+
+  private _processData = memoizeOne((config: PictureElementsCardConfig) => ({
+    ...config,
+    ...(typeof config.image === "string"
+      ? { image: { media_content_id: config.image } }
+      : {}),
+    ...(typeof config.dark_mode_image === "string"
+      ? { dark_mode_image: { media_content_id: config.dark_mode_image } }
+      : {}),
+  }));
 
   private _formChanged(ev: CustomEvent): void {
     ev.stopPropagation();

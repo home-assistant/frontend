@@ -6,6 +6,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
+import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import { DEFAULT_PANEL } from "../data/panel";
 import {
   DateFormat,
@@ -37,7 +38,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
-  addEntities(entites: Entity | Entity[], replace?: boolean);
+  addEntities(entities: Entity | Entity[], replace?: boolean);
   updateTranslations(fragment: null | string, language?: string);
   addTranslations(translations: Record<string, string>, language?: string);
   mockWS<T extends (...args) => any = any>(
@@ -114,17 +115,22 @@ export const provideHass = (
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityName,
     } = await computeFormatFunctions(
       hass().localize,
       hass().locale,
       hass().config,
       hass().entities,
+      hass().devices,
+      hass().areas,
+      hass().floors,
       [] // numericDeviceClasses
     );
     hass().updateHass({
       formatEntityState,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityName,
     });
   }
 
@@ -142,6 +148,17 @@ export const provideHass = (
     } else {
       updateStates(states);
     }
+
+    for (const ent of ensureArray(newEntities)) {
+      hass().entities[ent.entityId] = {
+        entity_id: ent.entityId,
+        name: ent.name,
+        icon: ent.icon,
+        platform: "demo",
+        labels: [],
+      } satisfies EntityRegistryDisplayEntry;
+    }
+
     updateFormatFunctions();
   }
 
@@ -150,7 +167,7 @@ export const provideHass = (
   }
 
   mockAPI(/states\/.+/, (_method, path, parameters) => {
-    const [domain, objectId] = path.substr(7).split(".", 2);
+    const [domain, objectId] = path.slice(7).split(".", 2);
     if (!domain || !objectId) {
       return;
     }
@@ -265,6 +282,7 @@ export const provideHass = (
     dockedSidebar: "auto",
     vibrate: true,
     debugConnection: false,
+    kioskMode: false,
     suspendWhenHidden: false,
     moreInfoEntityId: null as any,
     // @ts-ignore

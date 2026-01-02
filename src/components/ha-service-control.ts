@@ -13,6 +13,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
+import { hasTemplate } from "../common/string/has-template";
 import {
   fetchIntegrationManifest,
   type IntegrationManifest,
@@ -32,13 +33,13 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-icon-button";
+import "./ha-markdown";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
+import "./ha-service-section-icon";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
-import "./ha-service-section-icon";
-import { hasTemplate } from "../common/string/has-template";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -449,7 +450,7 @@ export class HaServiceControl extends LitElement {
 
     const hasOptional = Boolean(
       !shouldRenderServiceDataYaml &&
-        serviceData?.flatFields.some((field) => showOptionalToggle(field))
+      serviceData?.flatFields.some((field) => showOptionalToggle(field))
     );
 
     const targetEntities = this._getTargetedEntities(
@@ -464,10 +465,16 @@ export class HaServiceControl extends LitElement {
       ? computeObjectId(this._value.action)
       : undefined;
 
+    const descriptionPlaceholders =
+      domain && serviceName
+        ? this.hass.services[domain]?.[serviceName]?.description_placeholders
+        : undefined;
+
     const description =
       (serviceName &&
         this.hass.localize(
-          `component.${domain}.services.${serviceName}.description`
+          `component.${domain}.services.${serviceName}.description`,
+          descriptionPlaceholders
         )) ||
       serviceData?.description;
 
@@ -536,7 +543,8 @@ export class HaServiceControl extends LitElement {
             .disabled=${this.disabled}
             .value=${this._value?.data?.entity_id}
             .label=${this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.entity_id.description`
+              `component.${domain}.services.${serviceName}.fields.entity_id.description`,
+              descriptionPlaceholders
             ) || entityId.description}
             @value-changed=${this._entityPicked}
             allow-custom-entity
@@ -574,7 +582,8 @@ export class HaServiceControl extends LitElement {
                 left-chevron
                 .expanded=${!dataField.collapsed}
                 .header=${this.hass.localize(
-                  `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`
+                  `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`,
+                  descriptionPlaceholders
                 ) ||
                 dataField.name ||
                 dataField.key}
@@ -610,7 +619,10 @@ export class HaServiceControl extends LitElement {
     serviceName: string | undefined
   ) {
     return this.hass!.localize(
-      `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`
+      `component.${domain}.services.${serviceName}.sections.${dataField.key}.description`,
+      domain && serviceName
+        ? this.hass.services[domain][serviceName].description_placeholders
+        : undefined
     );
   }
 
@@ -657,6 +669,10 @@ export class HaServiceControl extends LitElement {
     }
 
     const showOptional = showOptionalToggle(dataField);
+    const descriptionPlaceholders =
+      domain && serviceName
+        ? this.hass.services[domain][serviceName].description_placeholders
+        : undefined;
 
     return dataField.selector &&
       (!dataField.advanced ||
@@ -678,16 +694,22 @@ export class HaServiceControl extends LitElement {
               ></ha-checkbox>`}
           <span slot="heading"
             >${this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`
+              `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
+              descriptionPlaceholders
             ) ||
             dataField.name ||
             dataField.key}</span
           >
           <span slot="description"
-            >${this.hass.localize(
-              `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`
-            ) || dataField?.description}</span
-          >
+            ><ha-markdown
+              breaks
+              allow-svg
+              .content=${this.hass.localize(
+                `component.${domain}.services.${serviceName}.fields.${dataField.key}.description`,
+                descriptionPlaceholders
+              ) || dataField?.description}
+            ></ha-markdown>
+          </span>
           <ha-selector
             .context=${this._selectorContext(targetEntities)}
             .disabled=${this.disabled ||
@@ -704,6 +726,7 @@ export class HaServiceControl extends LitElement {
               : undefined}
             .placeholder=${dataField.default}
             .localizeValue=${this._localizeValueCallback}
+            .required=${dataField.required}
           ></ha-selector>
         </ha-settings-row>`
       : "";
@@ -999,7 +1022,7 @@ export class HaServiceControl extends LitElement {
       direction: ltr;
     }
     ha-expansion-panel {
-      --ha-card-border-radius: 0;
+      --ha-card-border-radius: var(--ha-border-radius-square);
       --expansion-panel-summary-padding: 0 16px;
       --expansion-panel-content-padding: 0;
     }

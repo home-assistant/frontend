@@ -1,16 +1,16 @@
-import "@material/mwc-button";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-button";
 import "../../../components/ha-state-icon";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import type { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-button-row")
 export class HuiButtonRow extends LitElement implements LovelaceRow {
@@ -49,8 +49,11 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         ? this.hass.states[this._config.entity]
         : undefined;
 
-    const name =
-      this._config.name ?? (stateObj ? computeStateName(stateObj) : "");
+    const name = computeLovelaceEntityName(
+      this.hass!,
+      stateObj,
+      this._config.name
+    );
 
     return html`
       <ha-state-icon
@@ -61,7 +64,9 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       </ha-state-icon>
       <div class="flex">
         <div .title=${name}>${name}</div>
-        <mwc-button
+        <ha-button
+          appearance="filled"
+          size="small"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config!.hold_action),
@@ -69,7 +74,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
           })}
           >${this._config.action_name
             ? this._config.action_name
-            : this.hass!.localize("ui.card.service.run")}</mwc-button
+            : this.hass!.localize("ui.card.service.run")}</ha-button
         >
       </div>
     `;
@@ -98,11 +103,6 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-    mwc-button {
-      margin-right: -0.57em;
-      margin-inline-end: -0.57em;
-      margin-inline-start: initial;
     }
   `;
 

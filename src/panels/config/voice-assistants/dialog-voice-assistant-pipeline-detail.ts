@@ -48,7 +48,11 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     this._error = undefined;
     this._cloudActive = this._params.cloudActiveSubscription;
 
-    if (this._params.pipeline) {
+    if (
+      this._params.pipeline &&
+      "id" in this._params.pipeline &&
+      this._params.pipeline.id
+    ) {
       this._data = { prefer_local_intents: false, ...this._params.pipeline };
 
       this._hideWakeWord =
@@ -79,11 +83,15 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       }
     }
     this._data = {
-      language: (
-        this.hass.config.language || this.hass.locale.language
-      ).substring(0, 2),
-      stt_engine: sstDefault,
-      tts_engine: ttsDefault,
+      ...(this._params.pipeline || {}),
+      language:
+        this._params.pipeline?.language ||
+        (this.hass.config.language || this.hass.locale.language).substring(
+          0,
+          2
+        ),
+      stt_engine: this._params.pipeline?.stt_engine || sstDefault,
+      tts_engine: this._params.pipeline?.tts_engine || ttsDefault,
     };
   }
 
@@ -112,11 +120,17 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       return nothing;
     }
 
-    const title = this._params.pipeline?.id
-      ? this._params.pipeline.name
-      : this.hass.localize(
-          "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_assistant_title"
-        );
+    const isExistingPipeline =
+      this._params.pipeline &&
+      "id" in this._params.pipeline &&
+      !!this._params.pipeline.id;
+
+    const title =
+      isExistingPipeline && this._params.pipeline?.name
+        ? this._params.pipeline.name
+        : this.hass.localize(
+            "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_assistant_title"
+          );
 
     return html`
       <ha-dialog
@@ -166,7 +180,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .supportedLanguages=${this._supportedLanguages}
             keys="name,language"
             @value-changed=${this._valueChanged}
-            ?dialogInitialFocus=${!this._params.pipeline?.id}
+            ?dialogInitialFocus=${!isExistingPipeline}
           ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
@@ -182,13 +196,11 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
                   )}
-                  <a href="/config/cloud" slot="action">
-                    <ha-button>
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
-                      )}
-                    </ha-button>
-                  </a>
+                  <ha-button size="small" href="/config/cloud" slot="action">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
+                    )}
+                  </ha-button>
                 </ha-alert>
               `
             : nothing}
@@ -216,10 +228,10 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         <ha-button
           slot="primaryAction"
           @click=${this._updatePipeline}
-          .disabled=${this._submitting}
+          .loading=${this._submitting}
           dialogInitialFocus
         >
-          ${this._params.pipeline?.id
+          ${isExistingPipeline
             ? this.hass.localize(
                 "ui.panel.config.voice_assistants.assistants.pipeline.detail.update_assistant_action"
               )
@@ -265,7 +277,12 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         wake_word_entity: data.wake_word_entity ?? null,
         wake_word_id: data.wake_word_id ?? null,
       };
-      if (this._params!.pipeline?.id) {
+      if (
+        this._params!.pipeline &&
+        "id" in this._params!.pipeline &&
+        !!this._params!.pipeline.id &&
+        this._params!.updatePipeline
+      ) {
         await this._params!.updatePipeline(values);
       } else if (this._params!.createPipeline) {
         await this._params!.createPipeline(values);

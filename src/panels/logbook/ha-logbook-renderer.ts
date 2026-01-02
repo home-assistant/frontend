@@ -400,7 +400,9 @@ class HaLogbookRenderer extends LitElement {
         ? `${domainToName(this.hass.localize, item.context_domain)}:
       ${
         this.hass.localize(
-          `component.${item.context_domain}.services.${item.context_service}.name`
+          `component.${item.context_domain}.services.${item.context_service}.name`,
+          this.hass.services[item.context_domain][item.context_service]
+            .description_placeholders
         ) ||
         this.hass.services[item.context_domain]?.[item.context_service]?.name ||
         item.context_service
@@ -598,7 +600,7 @@ class HaLogbookRenderer extends LitElement {
           background-color: var(--disabled-color);
           height: 8px;
           width: 8px;
-          border-radius: 4px;
+          border-radius: var(--ha-border-radius-sm);
           flex-shrink: 0;
           margin-right: 12px;
           margin-inline-start: initial;

@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
-import { isUnavailableState, UNKNOWN } from "../../../data/entity";
+import { isUnavailableState, UNKNOWN } from "../../../data/entity/entity";
 import {
   setInputDateTimeValue,
   stateToIsoDateString,
@@ -84,8 +84,8 @@ class MoreInfoInputDatetime extends LitElement {
       justify-content: flex-end;
     }
     ha-date-input + ha-time-input {
-      margin-left: 4px;
-      margin-inline-start: 4px;
+      margin-left: var(--ha-space-1);
+      margin-inline-start: var(--ha-space-1);
       margin-inline-end: initial;
     }
   `;

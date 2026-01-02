@@ -159,7 +159,7 @@ class HassioSystemManagedDialog extends LitElement {
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 16px;
+          gap: var(--ha-space-4);
           --mdc-icon-size: 48px;
           margin-bottom: 32px;
         }

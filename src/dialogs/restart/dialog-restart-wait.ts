@@ -1,14 +1,10 @@
-import { mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { LitElement, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
-import "../../components/ha-dialog-header";
-import "../../components/ha-icon-button";
-import "../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../components/ha-md-dialog";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-spinner";
 import {
   subscribeBackupEvents,
@@ -37,8 +33,6 @@ class DialogRestartWait extends LitElement {
 
   private _backupEventsSubscription?: Promise<UnsubscribeFunc>;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
-
   public async showDialog(params: RestartWaitDialogParams): Promise<void> {
     this._open = true;
     this._loadBackupState();
@@ -49,9 +43,11 @@ class DialogRestartWait extends LitElement {
     this._actionOnIdle = params.action;
   }
 
-  private _dialogClosed(): void {
+  public closeDialog(): void {
     this._open = false;
+  }
 
+  private _dialogClosed(): void {
     if (this._backupEventsSubscription) {
       this._backupEventsSubscription.then((unsub) => {
         unsub();
@@ -60,10 +56,6 @@ class DialogRestartWait extends LitElement {
     }
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  public closeDialog(): void {
-    this._dialog?.close();
   }
 
   private _getWaitMessage() {
@@ -80,28 +72,17 @@ class DialogRestartWait extends LitElement {
   }
 
   protected render() {
-    if (!this._open) {
-      return nothing;
-    }
-
     const waitMessage = this._getWaitMessage();
 
     return html`
-      <ha-md-dialog
-        open
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        .headerTitle=${this._title}
+        width="medium"
         @closed=${this._dialogClosed}
-        .disableCancelAction=${true}
       >
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.cancel")}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-          ></ha-icon-button>
-          <span slot="title" .title=${this._title}> ${this._title} </span>
-        </ha-dialog-header>
-        <div slot="content" class="content">
+        <div class="content">
           ${this._error
             ? html`<ha-alert alert-type="error"
                 >${this.hass.localize("ui.dialogs.restart.error_backup_state", {
@@ -113,7 +94,7 @@ class DialogRestartWait extends LitElement {
                 ${waitMessage}
               `}
         </div>
-      </ha-md-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -139,14 +120,8 @@ class DialogRestartWait extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
-        }
-        @media all and (min-width: 550px) {
-          ha-md-dialog {
-            min-width: 500px;
-            max-width: 500px;
-          }
         }
         .content {
           display: flex;

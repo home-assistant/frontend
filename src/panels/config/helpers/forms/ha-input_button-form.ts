@@ -14,6 +14,8 @@ class HaInputButtonForm extends LitElement {
 
   @property({ type: Boolean }) public new = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _name!: string;
 
   @state() private _icon!: string;
@@ -59,6 +61,7 @@ class HaInputButtonForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-icon-picker
           .hass=${this.hass}
@@ -68,6 +71,7 @@ class HaInputButtonForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
+          .disabled=${this.disabled}
         ></ha-icon-picker>
       </div>
     `;

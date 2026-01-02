@@ -1,12 +1,12 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-textfield";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import type { TextEntity } from "../../../data/text";
 import { setValue } from "../../../data/text";
 import type { HomeAssistant } from "../../../types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -46,6 +46,12 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const name = computeLovelaceEntityName(
+      this.hass!,
+      stateObj,
+      this._config.name
+    );
+
     return html`
       <hui-generic-entity-row
         .hass=${this.hass}
@@ -53,7 +59,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
         hide-name
       >
         <ha-textfield
-          .label=${this._config.name || computeStateName(stateObj)}
+          .label=${name}
           .disabled=${stateObj.state === UNAVAILABLE}
           .value=${stateObj.state}
           .minlength=${stateObj.attributes.min}

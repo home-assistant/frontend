@@ -17,6 +17,10 @@ import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import {
+  PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
+} from "../../../common/integrations/protocolIntegrationPicked";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -29,12 +33,12 @@ import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES, getConfigEntries } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { fetchDiagnosticHandler } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import type {
   IntegrationLogInfo,
@@ -64,10 +68,6 @@ import "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
-import {
-  PROTOCOL_INTEGRATIONS,
-  protocolIntegrationPicked,
-} from "../../../common/integrations/protocolIntegrationPicked";
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
@@ -442,9 +442,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     : nothing}
                   ${this._manifest?.is_built_in &&
                   this._manifest.quality_scale &&
-                  Object.keys(QUALITY_SCALE_MAP).includes(
-                    this._manifest.quality_scale
-                  )
+                  this._manifest.quality_scale in QUALITY_SCALE_MAP
                     ? html`
                         <div class="integration-info">
                           <a
@@ -523,36 +521,36 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             <div class="actions">
               ${canAddDevice
                 ? html`
-                    <ha-button unelevated @click=${this._addDevice}>
+                    <ha-button @click=${this._addDevice}>
                       ${this.hass.localize(
                         "ui.panel.config.integrations.integration_page.add_device"
                       )}
                     </ha-button>
                   `
                 : nothing}
-              <ha-button
-                .unelevated=${!canAddDevice}
-                .outlined=${canAddDevice}
-                @click=${this._addIntegration}
-              >
-                ${this._manifest?.integration_type
-                  ? this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
-                    )
-                  : this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.add_entry`
-                    )}
-              </ha-button>
+              ${this._manifest?.integration_type !== "hardware"
+                ? html`<ha-button
+                    .appearance=${canAddDevice ? "filled" : "accent"}
+                    @click=${this._addIntegration}
+                  >
+                    ${this._manifest?.integration_type
+                      ? this.hass.localize(
+                          `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
+                        )
+                      : this.hass.localize(
+                          `ui.panel.config.integrations.integration_page.add_entry`
+                        )}
+                  </ha-button>`
+                : nothing}
               ${Array.from(supportedSubentryTypes).map(
                 (flowType) =>
                   html`<ha-button
-                    outlined
+                    appearance="filled"
                     @click=${this._addSubEntry}
                     .flowType=${flowType}
                     .disabled=${!normalEntries.length}
-                    graphic="icon"
                   >
-                    <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(
                       `component.${this.domain}.config_subentries.${flowType}.initiate_flow.user`
                     )}</ha-button
@@ -569,6 +567,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     "ui.panel.config.integrations.config_entry.debug_logging_enabled"
                   )}
                   <ha-button
+                    size="small"
+                    variant="warning"
                     slot="action"
                     @click=${this._handleDisableDebugLogging}
                   >
@@ -592,11 +592,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           ${flow.localized_title}
                           <ha-button
                             slot="end"
-                            unelevated
+                            variant="success"
+                            size="small"
                             .flow=${flow}
                             @click=${this._continueFlow}
-                            .label=${this.hass.localize("ui.common.add")}
-                          ></ha-button>
+                          >
+                            ${this.hass.localize("ui.common.add")}
+                          </ha-button>
                         </ha-md-list-item>`
                     )}
                   </ha-md-list>
@@ -630,9 +632,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             >
                             <ha-button
                               slot="end"
-                              unelevated
                               .flow=${flow}
                               @click=${this._continueFlow}
+                              variant="warning"
                               >${this.hass.localize(
                                 `ui.panel.config.integrations.${
                                   attention ? "reconfigure" : "configure"
@@ -788,7 +790,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const logFileName = `home-assistant_${integration}_${timeString}.log`;
-    const signedUrl = await getSignedPath(this.hass, getErrorLogDownloadUrl);
+    const signedUrl = await getSignedPath(
+      this.hass,
+      getErrorLogDownloadUrl(this.hass)
+    );
     fileDownload(signedUrl.path, logFileName);
   }
 
@@ -910,13 +915,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           max-width: 1000px;
           padding: 32px;
         }
+        :host([narrow]) .container {
+          padding: 16px;
+        }
         .container > * {
           flex-grow: 1;
         }
         .header {
           display: flex;
           flex-wrap: wrap;
-          gap: 24px;
+          gap: var(--ha-space-6);
           align-items: center;
           justify-content: space-between;
           margin-bottom: 24px;
@@ -927,7 +935,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .title {
           display: flex;
-          gap: 4px;
+          gap: var(--ha-space-1);
           flex-direction: column;
           justify-content: space-between;
         }
@@ -949,9 +957,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .card-content {
           padding: 16px 0 8px;
-        }
-        :host([narrow]) .container {
-          padding: 16px;
         }
         .card-header {
           padding-bottom: 0;
@@ -989,7 +994,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .actions {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .section {
           width: 100%;
@@ -1011,7 +1016,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .integration-info {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .integration-info ha-svg-icon {
           min-width: 24px;
@@ -1049,20 +1054,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-md-list {
           border: 1px solid var(--divider-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           padding: 0;
         }
         .discovered {
           --md-list-container-color: rgba(var(--rgb-success-color), 0.2);
         }
-        .discovered ha-button {
-          --mdc-theme-primary: var(--success-color);
-        }
         .attention {
           --md-list-container-color: rgba(var(--rgb-warning-color), 0.2);
-        }
-        .attention ha-button {
-          --mdc-theme-primary: var(--warning-color);
         }
         ha-md-list-item {
           --md-list-item-top-space: 4px;

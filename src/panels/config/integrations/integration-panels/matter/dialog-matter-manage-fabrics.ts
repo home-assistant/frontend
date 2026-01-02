@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";

@@ -14,18 +14,18 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
-import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import {
   fetchZwaveNodeStatus,
   NodeStatus,
   removeFailedZwaveNode,
 } from "../../../../../data/zwave_js";
-import "../../../../../components/ha-list-item";
-import "../../../../../components/ha-icon-next";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import { haStyleDialog } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
 
 const EXCLUSION_TIMEOUT_SECONDS = 120;
 
@@ -219,7 +219,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_removal") {
       return html`
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button
@@ -234,7 +238,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_exclusion") {
       return html`
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button
@@ -354,7 +362,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
           display: flex;
           align-items: center;
           flex-direction: column;
-          gap: 16px;
+          gap: var(--ha-space-4);
           text-align: center;
         }
 

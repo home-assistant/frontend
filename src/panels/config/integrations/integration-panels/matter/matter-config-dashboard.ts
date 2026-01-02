@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -6,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-button";
 import {
   acceptSharedMatterDevice,
   canCommissionMatterExternal,
@@ -40,43 +40,60 @@ export class MatterConfigDashboard extends LitElement {
       <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Matter">
         ${isComponentLoaded(this.hass, "otbr")
           ? html`
-              <a href="/config/thread" slot="toolbar-icon">
-                <mwc-button>Visit Thread Panel</mwc-button>
-              </a>
+              <ha-button
+                appearance="plain"
+                size="small"
+                href="/config/thread"
+                slot="toolbar-icon"
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.matter.panel.thread_panel"
+                )}</ha-button
+              >
             `
           : ""}
         <div class="content">
           <ha-card header="Matter">
             <ha-alert alert-type="warning"
-              >Matter is still in the early phase of development, it is not
-              meant to be used in production. This panel is for development
-              only.</ha-alert
+              >${this.hass.localize(
+                "ui.panel.config.matter.panel.experimental_note"
+              )}</ha-alert
             >
             <div class="card-content">
               ${this._error
                 ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                 : ""}
-              You can add Matter devices by commissing them if they are not
-              setup yet, or share them from another controller and enter the
-              share code.
+              ${this.hass.localize("ui.panel.config.matter.panel.add_devices")}
             </div>
             <div class="card-actions">
               ${canCommissionMatterExternal(this.hass)
-                ? html`<mwc-button @click=${this._startMobileCommissioning}
-                    >Commission device with mobile app</mwc-button
+                ? html`<ha-button
+                    appearance="plain"
+                    @click=${this._startMobileCommissioning}
+                    >${this.hass.localize(
+                      "ui.panel.config.matter.panel.mobile_app_commisioning"
+                    )}</ha-button
                   >`
                 : ""}
-              <mwc-button @click=${this._commission}
-                >Commission device</mwc-button
+              <ha-button appearance="plain" @click=${this._commission}
+                >${this.hass.localize(
+                  "ui.panel.config.matter.panel.commission_device"
+                )}</ha-button
               >
-              <mwc-button @click=${this._acceptSharedDevice}
-                >Add shared device</mwc-button
+              <ha-button appearance="plain" @click=${this._acceptSharedDevice}
+                >${this.hass.localize(
+                  "ui.panel.config.matter.panel.add_shared_device"
+                )}</ha-button
               >
-              <mwc-button @click=${this._setWifi}
-                >Set WiFi Credentials</mwc-button
+              <ha-button appearance="plain" @click=${this._setWifi}
+                >${this.hass.localize(
+                  "ui.panel.config.matter.panel.set_wifi_credentials"
+                )}</ha-button
               >
-              <mwc-button @click=${this._setThread}
-                >Set Thread Credentials</mwc-button
+              <ha-button appearance="plain" @click=${this._setThread}
+                >${this.hass.localize(
+                  "ui.panel.config.matter.panel.set_thread_credentials"
+                )}</ha-button
               >
             </div>
           </ha-card>
@@ -107,19 +124,31 @@ export class MatterConfigDashboard extends LitElement {
   private async _setWifi(): Promise<void> {
     this._error = undefined;
     const networkName = await showPromptDialog(this, {
-      title: "Network name",
-      inputLabel: "Network name",
+      title: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.network_name.title"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.network_name.input_label"
+      ),
       inputType: "string",
-      confirmText: "Continue",
+      confirmText: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.network_name.confirm"
+      ),
     });
     if (!networkName) {
       return;
     }
     const psk = await showPromptDialog(this, {
-      title: "Passcode",
-      inputLabel: "Code",
+      title: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.passcode.title"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.passcode.input_label"
+      ),
       inputType: "password",
-      confirmText: "Set Wifi",
+      confirmText: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.passcode.confirm"
+      ),
     });
     if (!psk) {
       return;
@@ -133,10 +162,16 @@ export class MatterConfigDashboard extends LitElement {
 
   private async _commission(): Promise<void> {
     const code = await showPromptDialog(this, {
-      title: "Commission device",
-      inputLabel: "Code",
+      title: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.commission_device.title"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.commission_device.input_label"
+      ),
       inputType: "string",
-      confirmText: "Commission",
+      confirmText: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.commission_device.confirm"
+      ),
     });
     if (!code) {
       return;
@@ -153,10 +188,16 @@ export class MatterConfigDashboard extends LitElement {
 
   private async _acceptSharedDevice(): Promise<void> {
     const code = await showPromptDialog(this, {
-      title: "Add shared device",
-      inputLabel: "Pin",
+      title: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.add_shared_device.title"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.add_shared_device.input_label"
+      ),
       inputType: "number",
-      confirmText: "Accept device",
+      confirmText: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.add_shared_device.confirm"
+      ),
     });
     if (!code) {
       return;
@@ -173,10 +214,16 @@ export class MatterConfigDashboard extends LitElement {
 
   private async _setThread(): Promise<void> {
     const code = await showPromptDialog(this, {
-      title: "Set Thread operation",
-      inputLabel: "Dataset",
+      title: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.set_thread.title"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.set_thread.input_label"
+      ),
       inputType: "string",
-      confirmText: "Set Thread",
+      confirmText: this.hass.localize(
+        "ui.panel.config.matter.panel.prompts.set_thread.confirm"
+      ),
     });
     if (!code) {
       return;

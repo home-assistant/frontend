@@ -1,16 +1,16 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
-import { isUnavailableState } from "../data/entity";
+import "../components/ha-button";
+import { isUnavailableState } from "../data/entity/entity";
 import type { ScriptEntity } from "../data/script";
 import { canRun, hasScriptFields } from "../data/script";
+import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 
 @customElement("state-card-script")
 class StateCardScript extends LitElement {
@@ -30,23 +30,29 @@ class StateCardScript extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         ${stateObj.state === "on"
-          ? html`<mwc-button @click=${this._cancelScript}>
+          ? html`<ha-button
+              appearance="plain"
+              size="small"
+              @click=${this._cancelScript}
+            >
               ${stateObj.attributes.mode !== "single" &&
               (stateObj.attributes.current || 0) > 0
                 ? this.hass.localize("ui.card.script.cancel_multiple", {
                     number: stateObj.attributes.current,
                   })
                 : this.hass.localize("ui.card.script.cancel")}
-            </mwc-button>`
+            </ha-button>`
           : ""}
         ${stateObj.state === "off" || stateObj.attributes.max
-          ? html`<mwc-button
+          ? html`<ha-button
+              appearance="plain"
+              size="small"
               @click=${this._runScript}
               .disabled=${isUnavailableState(stateObj.state) ||
               !canRun(stateObj)}
             >
               ${this.hass!.localize("ui.card.script.run")}
-            </mwc-button>`
+            </ha-button>`
           : ""}
       </div>
     `;

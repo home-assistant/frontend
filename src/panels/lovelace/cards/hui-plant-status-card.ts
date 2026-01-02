@@ -11,11 +11,11 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { batteryLevelIcon } from "../../../common/entity/battery_icon";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -119,7 +119,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
-            ${this._config.name || computeStateName(stateObj)}
+            ${computeLovelaceEntityName(this.hass, stateObj, this._config.name)}
           </div>
         </div>
         <div class="content">
@@ -223,7 +223,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     .attributes:focus {
       outline: none;
       background: var(--divider-color);
-      border-radius: 100%;
+      border-radius: var(--ha-border-radius-pill);
     }
 
     .attributes div {

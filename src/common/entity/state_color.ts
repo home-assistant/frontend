@@ -1,6 +1,6 @@
 /** Return a color representing a state. */
 import type { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
 import { computeCssVariable } from "../../resources/css-variables";
@@ -40,6 +40,7 @@ const STATE_COLORED_DOMAIN = new Set([
   "vacuum",
   "valve",
   "water_heater",
+  "weather",
 ]);
 
 export const stateColorCss = (stateObj: HassEntity, state?: string) => {

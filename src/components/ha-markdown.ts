@@ -1,5 +1,12 @@
-import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type ReactiveElement,
+  type CSSResultGroup,
+} from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "./ha-markdown-element";
 
 @customElement("ha-markdown")
@@ -17,6 +24,14 @@ export class HaMarkdown extends LitElement {
     false;
 
   @property({ type: Boolean }) public cache = false;
+
+  @query("ha-markdown-element") private _markdownElement?: ReactiveElement;
+
+  protected async getUpdateComplete() {
+    const result = await super.getUpdateComplete();
+    await this._markdownElement?.updateComplete;
+    return result;
+  }
 
   protected render() {
     if (!this.content) {
@@ -50,22 +65,42 @@ export class HaMarkdown extends LitElement {
     }
     ha-alert {
       display: block;
-      margin: 4px 0;
+      margin: var(--ha-space-1) 0;
     }
     a {
-      color: var(--primary-color);
+      color: var(--markdown-link-color, var(--primary-color));
     }
     img {
+      background-color: var(--markdown-image-background-color);
+      border-radius: var(--markdown-image-border-radius);
       max-width: 100%;
     }
-    code,
-    pre {
-      background-color: var(--markdown-code-background-color, none);
-      border-radius: 3px;
+    p:first-child > img:first-child {
+      vertical-align: top;
+    }
+    p:first-child > img:last-child {
+      vertical-align: top;
+    }
+    ha-markdown-element > :is(ol, ul) {
+      padding-inline-start: var(--markdown-list-indent, revert);
+    }
+    li {
+      &:has(input[type="checkbox"]) {
+        list-style: none;
+        & > input[type="checkbox"] {
+          margin-left: 0;
+        }
+      }
     }
     svg {
       background-color: var(--markdown-svg-background-color, none);
       color: var(--markdown-svg-color, none);
+    }
+    code,
+    pre {
+      background-color: var(--markdown-code-background-color, none);
+      border-radius: var(--ha-border-radius-sm);
+      color: var(--markdown-code-text-color, inherit);
     }
     code {
       font-size: var(--ha-font-size-s);
@@ -75,7 +110,7 @@ export class HaMarkdown extends LitElement {
       padding: 0;
     }
     pre {
-      padding: 16px;
+      padding: var(--ha-space-4);
       overflow: auto;
       line-height: var(--ha-line-height-condensed);
       font-family: var(--ha-font-family-code);
@@ -95,7 +130,41 @@ export class HaMarkdown extends LitElement {
     hr {
       border-color: var(--divider-color);
       border-bottom: none;
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
+    }
+    table[role="presentation"] {
+      --markdown-table-border-collapse: separate;
+      --markdown-table-border-width: attr(border, 0);
+      --markdown-table-padding-inline: 0;
+      --markdown-table-padding-block: 0;
+      th {
+        vertical-align: attr(align, center);
+      }
+      td {
+        vertical-align: attr(align, left);
+      }
+    }
+    table {
+      border-collapse: var(--markdown-table-border-collapse, collapse);
+    }
+    div:has(> table) {
+      overflow: auto;
+    }
+    th {
+      text-align: var(--markdown-table-text-align, start);
+    }
+    td,
+    th {
+      border-width: var(--markdown-table-border-width, 1px);
+      border-style: var(--markdown-table-border-style, solid);
+      border-color: var(--markdown-table-border-color, var(--divider-color));
+      padding-inline: var(--markdown-table-padding-inline, 0.5em);
+      padding-block: var(--markdown-table-padding-block, 0.25em);
+    }
+    blockquote {
+      border-left: 4px solid var(--divider-color);
+      margin-inline: 0;
+      padding-inline: 1em;
     }
   ` as CSSResultGroup;
 }

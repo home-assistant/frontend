@@ -86,9 +86,11 @@ class HaMenuButton extends LitElement {
       : this.narrow;
 
     const oldShowButton =
-      oldNarrow || oldHass?.dockedSidebar === "always_hidden";
+      oldHass?.kioskMode === false &&
+      (oldNarrow || oldHass?.dockedSidebar === "always_hidden");
     const showButton =
-      this.narrow || this.hass.dockedSidebar === "always_hidden";
+      this.hass.kioskMode === false &&
+      (this.narrow || this.hass.dockedSidebar === "always_hidden");
 
     if (this.hasUpdated && oldShowButton === showButton) {
       return;
@@ -137,7 +139,7 @@ class HaMenuButton extends LitElement {
       right: 7px;
       inset-inline-end: 7px;
       inset-inline-start: initial;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       border: 2px solid var(--app-header-background-color);
     }
   `;

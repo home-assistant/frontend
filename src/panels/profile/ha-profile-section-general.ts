@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
+import "../../components/ha-button";
 import "../../components/ha-card";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
@@ -113,9 +113,13 @@ class HaProfileSectionGeneral extends LitElement {
                 : ""}
             </div>
             <div class="card-actions">
-              <mwc-button class="warning" @click=${this._handleLogOut}>
+              <ha-button
+                variant="danger"
+                appearance="plain"
+                @click=${this._handleLogOut}
+              >
                 ${this.hass.localize("ui.panel.profile.logout")}
-              </mwc-button>
+              </ha-button>
             </div>
           </ha-card>
           <ha-card
@@ -150,6 +154,10 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
+            <ha-pick-dashboard-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-dashboard-row>
             <ha-settings-row .narrow=${this.narrow}>
               <span slot="heading">
                 ${this.hass.localize(
@@ -161,11 +169,15 @@ class HaProfileSectionGeneral extends LitElement {
                   "ui.panel.profile.customize_sidebar.description"
                 )}
               </span>
-              <mwc-button @click=${this._customizeSidebar}>
+              <ha-button
+                appearance="plain"
+                size="small"
+                @click=${this._customizeSidebar}
+              >
                 ${this.hass.localize(
                   "ui.panel.profile.customize_sidebar.button"
                 )}
-              </mwc-button>
+              </ha-button>
             </ha-settings-row>
             ${this.hass.user!.is_admin
               ? html`
@@ -200,10 +212,6 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-theme-row>
-            <ha-pick-dashboard-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-dashboard-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row

@@ -32,6 +32,12 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public step = 1;
 
+  @property({ type: Boolean, attribute: "rows-disabled" })
+  public rowsDisabled?: boolean;
+
+  @property({ type: Boolean, attribute: "columns-disabled" })
+  public columnsDisabled?: boolean;
+
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
   protected willUpdate(changedProperties) {
@@ -42,9 +48,11 @@ export class HaGridSizeEditor extends LitElement {
 
   protected render() {
     const disabledColumns =
-      this.columnMin !== undefined && this.columnMin === this.columnMax;
+      this.columnsDisabled ||
+      (this.columnMin !== undefined && this.columnMin === this.columnMax);
     const disabledRows =
-      this.rowMin !== undefined && this.rowMin === this.rowMax;
+      this.rowsDisabled ||
+      (this.rowMin !== undefined && this.rowMin === this.rowMax);
 
     const autoHeight = this._localValue?.rows === "auto";
     const fullWidth = this._localValue?.columns === "full";
@@ -72,7 +80,7 @@ export class HaGridSizeEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledColumns}
-          tooltip-mode="always"
+          tooltip-mode=${disabledColumns ? "never" : "always"}
         ></ha-grid-layout-slider>
 
         <ha-grid-layout-slider
@@ -88,7 +96,7 @@ export class HaGridSizeEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledRows}
-          tooltip-mode="always"
+          tooltip-mode=${disabledRows ? "never" : "always"}
         ></ha-grid-layout-slider>
         ${!this.isDefault
           ? html`
@@ -227,7 +235,7 @@ export class HaGridSizeEditor extends LitElement {
           "row-slider preview";
         grid-template-rows: auto auto;
         grid-template-columns: auto 1fr;
-        gap: 8px;
+        gap: var(--ha-space-2);
       }
       #columns {
         grid-area: column-slider;
@@ -264,7 +272,7 @@ export class HaGridSizeEditor extends LitElement {
         left: 0;
         background-color: var(--primary-color);
         opacity: 0.3;
-        border-radius: 8px;
+        border-radius: var(--ha-border-radius-md);
         height: calc(var(--rows, 1) * 30px);
         width: calc(var(--columns, 1) * 100% / var(--total-columns, 12));
         pointer-events: none;

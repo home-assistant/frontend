@@ -3,21 +3,21 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { isHelperDomain } from "../panels/config/helpers/const";
 import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
 import type { HomeAssistant } from "../types";
 import {
   type DeviceRegistryEntry,
   getDeviceIntegrationLookup,
-} from "./device_registry";
+} from "./device/device_registry";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "./entity_registry";
-import type { EntitySources } from "./entity_sources";
+} from "./entity/entity_registry";
+import type { EntitySources } from "./entity/entity_sources";
 
 export type Selector =
   | ActionSelector
@@ -27,6 +27,7 @@ export type Selector =
   | AttributeSelector
   | BooleanSelector
   | ButtonToggleSelector
+  | ChooseSelector
   | ColorRGBSelector
   | ColorTempSelector
   | ConditionSelector
@@ -41,12 +42,11 @@ export type Selector =
   | LegacyDeviceSelector
   | DurationSelector
   | EntitySelector
+  | EntityNameSelector
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
   | LabelSelector
-  | ImageSelector
-  | BackgroundSelector
   | LanguageSelector
   | LocationSelector
   | MediaSelector
@@ -74,7 +74,9 @@ export type Selector =
   | BackupLocationSelector;
 
 export interface ActionSelector {
-  action: {} | null;
+  action: {
+    optionsInSidebar?: boolean;
+  } | null;
 }
 
 export interface AddonSelector {
@@ -115,6 +117,13 @@ export interface ButtonToggleSelector {
   } | null;
 }
 
+export interface ChooseSelector {
+  choose: {
+    choices: Record<string, { selector: Selector }>;
+    translation_key?: string;
+  };
+}
+
 export interface ColorRGBSelector {
   color_rgb: {} | null;
 }
@@ -130,7 +139,9 @@ export interface ColorTempSelector {
 }
 
 export interface ConditionSelector {
-  condition: {} | null;
+  condition: {
+    optionsInSidebar?: boolean;
+  } | null;
 }
 
 export interface ConversationAgentSelector {
@@ -267,14 +278,6 @@ export interface IconSelector {
   } | null;
 }
 
-export interface ImageSelector {
-  image: { original?: boolean; crop?: CropOptions } | null;
-}
-
-export interface BackgroundSelector {
-  background: { original?: boolean; crop?: CropOptions } | null;
-}
-
 export interface LabelSelector {
   label: {
     multiple?: boolean;
@@ -306,6 +309,10 @@ export interface LocationSelectorValue {
 export interface MediaSelector {
   media: {
     accept?: string[];
+    image_upload?: boolean;
+    clearable?: boolean;
+    hide_content_type?: boolean;
+    content_id_helper?: string;
   } | null;
 }
 
@@ -319,6 +326,7 @@ export interface MediaSelectorValue {
     media_class?: string;
     children_media_class?: string | null;
     navigateIds?: { media_content_type: string; media_content_id: string }[];
+    browse_entity_id?: string;
   };
 }
 
@@ -341,6 +349,7 @@ export interface NumberSelector {
 interface ObjectSelectorField {
   selector: Selector;
   label?: string;
+  description?: string;
   required?: boolean;
 }
 
@@ -397,6 +406,7 @@ export interface StateSelector {
     entity_id?: string | string[];
     attribute?: string;
     hide_states?: string[];
+    multiple?: boolean;
   } | null;
 }
 
@@ -490,6 +500,13 @@ export interface UiStateContentSelector {
   ui_state_content: {
     entity_id?: string;
     allow_name?: boolean;
+  } | null;
+}
+
+export interface EntityNameSelector {
+  entity_name: {
+    entity_id?: string;
+    default_name?: EntityNameItem | EntityNameItem[] | string;
   } | null;
 }
 

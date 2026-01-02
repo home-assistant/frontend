@@ -1,6 +1,9 @@
 import { expose } from "comlink";
-import { stringCompare, ipCompare } from "../../common/string/compare";
+import Fuse, { type FuseOptionKey } from "fuse.js";
+import memoizeOne from "memoize-one";
+import { ipCompare, stringCompare } from "../../common/string/compare";
 import { stripDiacritics } from "../../common/string/strip-diacritics";
+import { multiTermSearch } from "../../resources/fuseMultiTerm";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
@@ -8,29 +11,46 @@ import type {
   SortingDirection,
 } from "./ha-data-table";
 
+const getSearchKeys = memoizeOne(
+  (columns: SortableColumnContainer): FuseOptionKey<DataTableRowData>[] => {
+    const searchKeys = new Set<string>();
+
+    Object.entries(columns).forEach(([key, column]) => {
+      if (column.filterable) {
+        searchKeys.add(
+          column.filterKey
+            ? `${column.valueColumn || key}.${column.filterKey}`
+            : key
+        );
+      }
+    });
+    return Array.from(searchKeys);
+  }
+);
+
+const fuseIndex = memoizeOne(
+  (data: DataTableRowData[], keys: FuseOptionKey<DataTableRowData>[]) =>
+    Fuse.createIndex(keys, data)
+);
+
 const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
 ) => {
   filter = stripDiacritics(filter.toLowerCase());
-  return data.filter((row) =>
-    Object.entries(columns).some((columnEntry) => {
-      const [key, column] = columnEntry;
-      if (column.filterable) {
-        const value = String(
-          column.filterKey
-            ? row[column.valueColumn || key][column.filterKey]
-            : row[column.valueColumn || key]
-        );
 
-        if (stripDiacritics(value).toLowerCase().includes(filter)) {
-          return true;
-        }
-      }
-      return false;
-    })
-  );
+  if (filter === "") {
+    return data;
+  }
+
+  const keys = getSearchKeys(columns);
+
+  const index = fuseIndex(data, keys);
+
+  return multiTermSearch<DataTableRowData>(data, filter, keys, index, {
+    threshold: 0.2, // reduce fuzzy matches in data tables
+  });
 };
 
 const sortData = (

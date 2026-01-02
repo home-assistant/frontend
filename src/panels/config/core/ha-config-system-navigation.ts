@@ -15,8 +15,6 @@ import type { CloudStatus } from "../../../data/cloud";
 import { fetchCloudStatus } from "../../../data/cloud";
 import type { HardwareInfo } from "../../../data/hardware";
 import { BOARD_NAMES } from "../../../data/hardware";
-import type { HassioBackup } from "../../../data/hassio/backup";
-import { fetchHassioBackups } from "../../../data/hassio/backup";
 import type {
   HassioHassOSInfo,
   HassioHostInfo,
@@ -25,6 +23,8 @@ import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
 } from "../../../data/hassio/host";
+import type { LabPreviewFeature } from "../../../data/labs";
+import { fetchLabFeatures } from "../../../data/labs";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -44,13 +44,15 @@ class HaConfigSystemNavigation extends LitElement {
 
   @property({ attribute: false }) public showAdvanced = false;
 
-  @state() private _latestBackupDate?: string;
+  @state() private _latestBackupDate?: Date;
 
   @state() private _boardName?: string;
 
   @state() private _storageInfo?: { used: number; free: number; total: number };
 
   @state() private _externalAccess = false;
+
+  @state() private _labFeatures?: LabPreviewFeature[];
 
   protected render(): TemplateResult {
     const pages = configSections.general
@@ -63,7 +65,7 @@ class HaConfigSystemNavigation extends LitElement {
             description = this._latestBackupDate
               ? this.hass.localize("ui.panel.config.backup.description", {
                   relative_time: relativeTime(
-                    new Date(this._latestBackupDate),
+                    this._latestBackupDate,
                     this.hass.locale
                   ),
                 })
@@ -96,6 +98,12 @@ class HaConfigSystemNavigation extends LitElement {
               this._boardName ||
               this.hass.localize("ui.panel.config.hardware.description");
             break;
+          case "labs":
+            description =
+              this._labFeatures && this._labFeatures.some((f) => f.enabled)
+                ? this.hass.localize("ui.panel.config.labs.description_enabled")
+                : this.hass.localize("ui.panel.config.labs.description");
+            break;
 
           default:
             description = this.hass.localize(
@@ -120,6 +128,7 @@ class HaConfigSystemNavigation extends LitElement {
         .hass=${this.hass}
         back-path="/config"
         .header=${this.hass.localize("ui.panel.config.dashboard.system.main")}
+        .narrow=${this.narrow}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -155,26 +164,25 @@ class HaConfigSystemNavigation extends LitElement {
 
     this._fetchNetworkStatus();
     const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
-    this._fetchBackupInfo(isHassioLoaded);
+    this._fetchBackupInfo();
     this._fetchHardwareInfo(isHassioLoaded);
+    this._fetchLabFeatures();
     if (isHassioLoaded) {
       this._fetchStorageInfo();
     }
   }
 
-  private async _fetchBackupInfo(isHassioLoaded: boolean) {
-    const backups: BackupContent[] | HassioBackup[] = isHassioLoaded
-      ? await fetchHassioBackups(this.hass)
-      : isComponentLoaded(this.hass, "backup")
-        ? await fetchBackupInfo(this.hass).then(
-            (backupData) => backupData.backups
-          )
-        : [];
+  private async _fetchBackupInfo() {
+    const backups: BackupContent[] = isComponentLoaded(this.hass, "backup")
+      ? await fetchBackupInfo(this.hass).then(
+          (backupData) => backupData.backups
+        )
+      : [];
 
     if (backups.length > 0) {
-      this._latestBackupDate = (backups as any[]).reduce((a, b) =>
-        a.date > b.date ? a : b
-      ).date;
+      this._latestBackupDate = backups
+        .map((backup) => new Date(backup.date))
+        .reduce((a, b) => (a > b ? a : b));
     }
   }
 
@@ -212,6 +220,12 @@ class HaConfigSystemNavigation extends LitElement {
       }
     }
     this._externalAccess = this.hass.config.external_url !== null;
+  }
+
+  private async _fetchLabFeatures() {
+    if (isComponentLoaded(this.hass, "labs")) {
+      this._labFeatures = await fetchLabFeatures(this.hass);
+    }
   }
 
   private async _showRestartDialog() {
@@ -260,7 +274,7 @@ class HaConfigSystemNavigation extends LitElement {
         @media all and (max-width: 600px) {
           ha-card {
             border-width: 1px 0;
-            border-radius: 0;
+            border-radius: var(--ha-border-radius-square);
             box-shadow: unset;
           }
           ha-config-section {

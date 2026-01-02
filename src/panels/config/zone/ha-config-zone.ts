@@ -8,6 +8,8 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
+import { slugify } from "../../../common/string/slugify";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -21,7 +23,7 @@ import type {
   MarkerLocation,
 } from "../../../components/map/ha-locations-editor";
 import { saveCoreConfig } from "../../../data/core";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import type {
   HomeZoneMutableParams,
   Zone,
@@ -136,8 +138,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             <div class="empty">
               ${hass.localize("ui.panel.config.zone.no_zones_created_yet")}
               <br />
-              <mwc-button @click=${this._createZone}>
-                ${hass.localize("ui.panel.config.zone.create_zone")}</mwc-button
+              <ha-button size="small" @click=${this._createZone}>
+                ${hass.localize("ui.panel.config.zone.create_zone")}</ha-button
               >
             </div>
           `
@@ -164,9 +166,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                               .entry=${entry}
                               @click=${this._openEditEntry}
                               .path=${mdiPencil}
-                              .label=${hass.localize(
-                                "ui.panel.config.zone.edit_zone"
-                              )}
+                              .label=${hass.localize("ui.common.edit_item", {
+                                name: entry.name,
+                              })}
                             ></ha-icon-button>
                           </div>
                         `
@@ -199,17 +201,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     stateObject.entity_id === "zone.home" &&
                     !this._canEditCore
                       ? nothing
-                      : html`<ha-tooltip
-                          slot="meta"
-                          placement="left"
-                          .content=${hass.localize(
-                            "ui.panel.config.zone.configured_in_yaml"
-                          )}
-                          .disabled=${stateObject.entity_id === "zone.home"}
-                          hoist
-                        >
-                          <ha-icon-button
-                            .id=${!this.narrow ? stateObject.entity_id : ""}
+                      : html`<ha-icon-button
+                            .id="zone-${slugify(stateObject.entity_id)}"
                             .entityId=${stateObject.entity_id}
                             .noEdit=${stateObject.entity_id !== "zone.home" ||
                             !this._canEditCore}
@@ -217,12 +210,22 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             this._canEditCore
                               ? mdiPencil
                               : mdiPencilOff}
-                            .label=${stateObject.entity_id === "zone.home"
-                              ? hass.localize("ui.panel.config.zone.edit_home")
-                              : hass.localize("ui.panel.config.zone.edit_zone")}
+                            .label=${hass.localize("ui.common.edit_item", {
+                              name: hass.config.location_name,
+                            })}
                             @click=${this._editHomeZone}
+                            slot="meta"
                           ></ha-icon-button>
-                        </ha-tooltip>`}
+                          <ha-tooltip
+                            .for="zone-${slugify(stateObject.entity_id)}"
+                            placement="left"
+                            .disabled=${stateObject.entity_id === "zone.home"}
+                            hoist
+                          >
+                            ${hass.localize(
+                              "ui.panel.config.zone.configured_in_yaml"
+                            )}
+                          </ha-tooltip>`}
                   </ha-list-item>
                 `
               )}

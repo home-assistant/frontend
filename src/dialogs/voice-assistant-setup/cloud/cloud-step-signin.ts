@@ -76,7 +76,6 @@ export class CloudStepSignin extends LitElement {
       </div>
       <div class="footer">
         <ha-button
-          unelevated
           @click=${this._handleLogin}
           .disabled=${this._requestInProgress}
           >${this.hass.localize(
@@ -138,7 +137,7 @@ export class CloudStepSignin extends LitElement {
             ),
           });
           if (totpCode !== null && totpCode !== "") {
-            await doLogin(username, totpCode);
+            await doLogin(username, totpCode.trim());
             return;
           }
         }

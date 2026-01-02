@@ -1,5 +1,5 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-icon-next";
@@ -8,6 +8,7 @@ import type { DataEntryFlowStepMenu } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { stringCompare } from "../../common/string/compare";
 
 @customElement("step-flow-menu")
 class StepFlowMenu extends LitElement {
@@ -17,9 +18,18 @@ class StepFlowMenu extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepMenu;
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      changedProps.size > 1 ||
+      !changedProps.has("hass") ||
+      this.hass.localize !== changedProps.get("hass")?.localize
+    );
+  }
+
   protected render(): TemplateResult {
     let options: string[];
     let translations: Record<string, string>;
+    let optionDescriptions: Record<string, string> = {};
 
     if (Array.isArray(this.step.menu_options)) {
       options = this.step.menu_options;
@@ -30,10 +40,36 @@ class StepFlowMenu extends LitElement {
           this.step,
           option
         );
+        optionDescriptions[option] =
+          this.flowConfig.renderMenuOptionDescription(
+            this.hass,
+            this.step,
+            option
+          );
       }
     } else {
       options = Object.keys(this.step.menu_options);
       translations = this.step.menu_options;
+      optionDescriptions = Object.fromEntries(
+        options.map((key) => [
+          key,
+          this.flowConfig.renderMenuOptionDescription(
+            this.hass,
+            this.step,
+            key
+          ),
+        ])
+      );
+    }
+
+    if (this.step.sort) {
+      options = options.sort((a, b) =>
+        stringCompare(
+          translations[a]!,
+          translations[b]!,
+          this.hass.locale.language
+        )
+      );
     }
 
     const description = this.flowConfig.renderMenuDescription(
@@ -46,8 +82,19 @@ class StepFlowMenu extends LitElement {
       <div class="options">
         ${options.map(
           (option) => html`
-            <ha-list-item hasMeta .step=${option} @click=${this._handleStep}>
+            <ha-list-item
+              hasMeta
+              .step=${option}
+              @click=${this._handleStep}
+              ?twoline=${optionDescriptions[option]}
+              ?multiline-secondary=${optionDescriptions[option]}
+            >
               <span>${translations[option]}</span>
+              ${optionDescriptions[option]
+                ? html`<span slot="secondary">
+                    ${optionDescriptions[option]}
+                  </span>`
+                : nothing}
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
           `
@@ -73,11 +120,10 @@ class StepFlowMenu extends LitElement {
     css`
       .options {
         margin-top: 20px;
-        margin-bottom: 8px;
+        margin-bottom: 16px;
       }
       .content {
         padding-bottom: 16px;
-        border-bottom: 1px solid var(--divider-color);
       }
       .content + .options {
         margin-top: 8px;

@@ -157,7 +157,7 @@ export class HaControlSwitch extends LitElement {
       --control-switch-off-color: var(--disabled-color);
       --control-switch-background-opacity: 0.2;
       --control-switch-thickness: 40px;
-      --control-switch-border-radius: 12px;
+      --control-switch-border-radius: var(--ha-border-radius-lg);
       --control-switch-padding: 4px;
       --mdc-icon-size: 20px;
       height: var(--control-switch-thickness);

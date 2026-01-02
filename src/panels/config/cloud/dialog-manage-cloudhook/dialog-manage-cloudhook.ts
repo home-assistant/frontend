@@ -1,8 +1,7 @@
-import "@material/mwc-button";
 import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -11,8 +10,10 @@ import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
+import "../../../../components/ha-button";
 import "../../../../components/ha-copy-textfield";
 
+@customElement("dialog-manage-cloudhook")
 export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
 
@@ -86,21 +87,20 @@ export class DialogManageCloudhook extends LitElement {
           ></ha-copy-textfield>
         </div>
 
-        <a
+        <ha-button
           href=${docsUrl}
           target="_blank"
           rel="noreferrer"
           slot="secondaryAction"
+          appearance="plain"
         >
-          <mwc-button>
-            ${this.hass!.localize(
-              "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
-            )}
-          </mwc-button>
-        </a>
-        <mwc-button @click=${this.closeDialog} slot="primaryAction">
+          ${this.hass!.localize(
+            "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
+          )}
+        </ha-button>
+        <ha-button @click=${this.closeDialog} slot="primaryAction">
           ${this.hass!.localize("ui.panel.config.cloud.dialog_cloudhook.close")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -156,5 +156,3 @@ declare global {
     "dialog-manage-cloudhook": DialogManageCloudhook;
   }
 }
-
-customElements.define("dialog-manage-cloudhook", DialogManageCloudhook);

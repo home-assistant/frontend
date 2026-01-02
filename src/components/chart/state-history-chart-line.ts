@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
@@ -11,7 +11,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import type { ECOption } from "../../resources/echarts";
+import type { ECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   getNumberFormatOptions,
@@ -27,6 +27,7 @@ const safeParseFloat = (value) => {
   return isFinite(parsed) ? parsed : null;
 };
 
+@customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -66,6 +67,9 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
+  @property({ attribute: "hide-reset-button", type: Boolean })
+  public hideResetButton?: boolean;
+
   @state() private _chartData: LineSeriesOption[] = [];
 
   @state() private _entityIds: string[] = [];
@@ -84,6 +88,8 @@ export class StateHistoryChartLine extends LitElement {
 
   private _previousYAxisLabelValue = 0;
 
+  private _yAxisMaximumFractionDigits = 0;
+
   protected render() {
     return html`
       <ha-chart-base
@@ -94,7 +100,9 @@ export class StateHistoryChartLine extends LitElement {
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
+        @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
+        .hideResetButton=${this.hideResetButton}
       ></ha-chart-base>
     `;
   }
@@ -190,6 +198,19 @@ export class StateHistoryChartLine extends LitElement {
 
   private _datasetUnhidden(ev: CustomEvent) {
     this._hiddenStats.delete(ev.detail.id);
+  }
+
+  public zoom(start: number, end: number) {
+    const chartBase = this.shadowRoot!.querySelector("ha-chart-base")!;
+    chartBase.zoom(start, end, true);
+  }
+
+  private _handleDataZoom(ev: CustomEvent) {
+    fireEvent(this, "chart-zoom-with-index", {
+      start: ev.detail.start ?? 0,
+      end: ev.detail.end ?? 100,
+      chartIndex: this.chartIndex,
+    });
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -739,8 +760,12 @@ export class StateHistoryChartLine extends LitElement {
         Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
       )
     );
+    this._yAxisMaximumFractionDigits = Math.max(
+      this._yAxisMaximumFractionDigits,
+      maximumFractionDigits
+    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits,
+      maximumFractionDigits: this._yAxisMaximumFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
@@ -771,7 +796,6 @@ export class StateHistoryChartLine extends LitElement {
     return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 }
-customElements.define("state-history-chart-line", StateHistoryChartLine);
 
 declare global {
   interface HTMLElementTagNameMap {

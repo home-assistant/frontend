@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import {
   mdiArrowDown,
   mdiArrowLeft,
@@ -14,25 +13,26 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, svg, nothing } from "lit";
+import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  energySourcesByType,
-  getEnergyDataCollection,
-  formatConsumptionShort,
-  getSummedData,
   computeConsumptionData,
+  energySourcesByType,
+  formatConsumptionShort,
+  getEnergyDataCollection,
+  getSummedData,
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
+import { hasConfigChanged } from "../../common/has-changed";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
-import { hasConfigChanged } from "../../common/has-changed";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
@@ -789,13 +789,11 @@ class HuiEnergyDistrubutionCard
         ${this._config.link_dashboard
           ? html`
               <div class="card-actions">
-                <a href="/energy"
-                  ><mwc-button>
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
-                    )}
-                  </mwc-button></a
-                >
+                <ha-button appearance="plain" size="small" href="/energy">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
+                  )}
+                </ha-button>
               </div>
             `
           : ""}
@@ -879,7 +877,7 @@ class HuiEnergyDistrubutionCard
     .circle {
       width: 80px;
       height: 80px;
-      border-radius: 50%;
+      border-radius: var(--ha-border-radius-circle);
       box-sizing: border-box;
       border: 2px solid;
       display: flex;

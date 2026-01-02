@@ -1,11 +1,11 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-spinner";
+import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
+import "../../components/ha-spinner";
 import { autocompleteLoginFields } from "../../data/auth";
 import type {
   DataEntryFlowStep,
@@ -127,23 +127,30 @@ class HaMfaModuleSetupFlow extends LitElement {
                         ></ha-form>`
                     : ""}`}
         </div>
-        ${["abort", "create_entry"].includes(this._step?.type || "")
-          ? html`<mwc-button slot="primaryAction" @click=${this.closeDialog}
-              >${this.hass.localize(
-                "ui.panel.profile.mfa_setup.close"
-              )}</mwc-button
-            >`
-          : ""}
+        <ha-button
+          slot="primaryAction"
+          @click=${this.closeDialog}
+          appearance=${["abort", "create_entry"].includes(
+            this._step?.type || ""
+          )
+            ? "accent"
+            : "plain"}
+          >${this.hass.localize(
+            ["abort", "create_entry"].includes(this._step?.type || "")
+              ? "ui.panel.profile.mfa_setup.close"
+              : "ui.common.cancel"
+          )}</ha-button
+        >
         ${this._step?.type === "form"
-          ? html`<mwc-button
+          ? html`<ha-button
               slot="primaryAction"
               .disabled=${this._loading}
               @click=${this._submitStep}
               >${this.hass.localize(
                 "ui.panel.profile.mfa_setup.submit"
-              )}</mwc-button
+              )}</ha-button
             >`
-          : ""}
+          : nothing}
       </ha-dialog>
     `;
   }
@@ -179,11 +186,6 @@ class HaMfaModuleSetupFlow extends LitElement {
         .init-spinner {
           padding: 10px 100px 34px;
           text-align: center;
-        }
-        .submit-spinner {
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
         }
       `,
     ];

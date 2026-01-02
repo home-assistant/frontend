@@ -117,7 +117,7 @@ export class DemoHaBadge extends LitElement {
     }
     .card-content {
       display: flex;
-      gap: 24px;
+      gap: var(--ha-space-6);
     }
   `;
 }
