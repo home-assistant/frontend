@@ -110,11 +110,7 @@ class HaConfigSectionUpdates extends LitElement {
           </ha-button-menu>
         </div>
         <div class="content">
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.config.updates.installable_updates"
-            )}
-          >
+          <ha-card>
             <div class="card-content">
               ${canInstallUpdates.length
                 ? html`
@@ -135,11 +131,7 @@ class HaConfigSectionUpdates extends LitElement {
                   `}
             </div>
           </ha-card>
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.config.updates.not_installable_updates"
-            )}
-          >
+          <ha-card>
             <div class="card-content">
               ${notInstallableUpdates.length
                 ? html`
@@ -175,14 +167,6 @@ class HaConfigSectionUpdates extends LitElement {
     }
 
     this._showSkipped = !this._showSkipped;
-  }
-
-  private _toggleNotInstallable(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-
-    this._showNotInstallable = !this._showNotInstallable;
   }
 
   private async _toggleBeta(
