@@ -12,9 +12,10 @@ import "../../../../../components/ha-list-item";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
-import "../../../../../layouts/hass-subpage";
+import "../../../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, Route } from "../../../../../types";
 import {
   subscribeBluetoothConnectionAllocations,
   subscribeBluetoothScannerState,
@@ -27,11 +28,34 @@ import type {
   HaScannerType,
 } from "../../../../../data/bluetooth";
 
+export const bluetoothTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.bluetooth.tabs.overview",
+    path: `/config/bluetooth/dashboard`,
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.tabs.advertisements",
+    path: `/config/bluetooth/advertisement-monitor`,
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.tabs.visualization",
+    path: `/config/bluetooth/visualization`,
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.tabs.connections",
+    path: `/config/bluetooth/connection-monitor`,
+  },
+];
+
 @customElement("bluetooth-config-dashboard")
 export class BluetoothConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public route!: Route;
+
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state() private _configEntries: ConfigEntry[] = [];
 
@@ -121,10 +145,11 @@ export class BluetoothConfigDashboard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage
-        header="Bluetooth"
-        .narrow=${this.narrow}
+      <hass-tabs-subpage
         .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${bluetoothTabs}
       >
         <div class="content">
           <ha-card
@@ -134,60 +159,8 @@ export class BluetoothConfigDashboard extends LitElement {
           >
             <ha-list>${this._renderAdaptersList()}</ha-list>
           </ha-card>
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.config.bluetooth.advertisement_monitor"
-            )}
-          >
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.bluetooth.advertisement_monitor_details"
-                )}
-              </p>
-            </div>
-            <div class="card-actions">
-              <ha-button
-                href="/config/bluetooth/advertisement-monitor"
-                appearance="plain"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.bluetooth.advertisement_monitor"
-                )}
-              </ha-button>
-              <ha-button
-                href="/config/bluetooth/visualization"
-                appearance="plain"
-              >
-                ${this.hass.localize("ui.panel.config.bluetooth.visualization")}
-              </ha-button>
-            </div>
-          </ha-card>
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.config.bluetooth.connection_slot_allocations_monitor"
-            )}
-          >
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.bluetooth.connection_slot_allocations_monitor_description"
-                )}
-              </p>
-            </div>
-            <div class="card-actions">
-              <ha-button
-                href="/config/bluetooth/connection-monitor"
-                appearance="plain"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.bluetooth.connection_monitor"
-                )}
-              </ha-button>
-            </div>
-          </ha-card>
         </div>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
