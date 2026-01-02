@@ -110,10 +110,10 @@ class HaConfigSectionUpdates extends LitElement {
           </ha-button-menu>
         </div>
         <div class="content">
-          <ha-card>
-            <div class="card-content">
-              ${canInstallUpdates.length
-                ? html`
+          ${canInstallUpdates.length
+            ? html`
+                <ha-card>
+                  <div class="card-content">
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
@@ -121,20 +121,14 @@ class HaConfigSectionUpdates extends LitElement {
                       .isInstallable=${true}
                       showAll
                     ></ha-config-updates>
-                  `
-                : html`
-                    <div class="no-updates">
-                      ${this.hass.localize(
-                        "ui.panel.config.updates.no_updates"
-                      )}
-                    </div>
-                  `}
-            </div>
-          </ha-card>
-          <ha-card>
-            <div class="card-content">
-              ${notInstallableUpdates.length
-                ? html`
+                  </div>
+                </ha-card>
+              `
+            : ""}
+          ${notInstallableUpdates.length
+            ? html`
+                <ha-card>
+                  <div class="card-content">
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
@@ -142,16 +136,19 @@ class HaConfigSectionUpdates extends LitElement {
                       .isInstallable=${false}
                       showAll
                     ></ha-config-updates>
-                  `
-                : html`
-                    <div class="no-updates">
-                      ${this.hass.localize(
-                        "ui.panel.config.updates.no_updates"
-                      )}
-                    </div>
-                  `}
-            </div>
-          </ha-card>
+                  </div>
+                </ha-card>
+              `
+            : ""}
+          ${canInstallUpdates.length + notInstallableUpdates.length
+            ? ""
+            : html`
+                <ha-card>
+                  <div class="no-updates">
+                    ${this.hass.localize("ui.panel.config.updates.no_updates")}
+                  </div>
+                </ha-card>
+              `}
         </div>
       </hass-subpage>
     `;
