@@ -134,7 +134,7 @@ document.addEventListener(
   { once: true }
 );
 
-window.addEventListener("unload", () => {
+window.addEventListener("pagehide", () => {
   // allow disconnected callback to fire
   while (document.body.lastChild) {
     document.body.removeChild(document.body.lastChild);
