@@ -66,7 +66,7 @@ const polyfillIntl = async () => {
   if (polyfills.length === 0) {
     return;
   }
-  Promise.all(polyfills).then(async () => {
+  Promise.allSettled(polyfills).then(async () => {
     // Load the default language
     await polyfillLocaleData(locale);
   });
