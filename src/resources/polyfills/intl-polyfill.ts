@@ -29,7 +29,7 @@ const polyfillIntl = async () => {
     await import("@formatjs/intl-getcanonicallocales/polyfill-force");
   }
   if (shouldPolyfillLocale()) {
-    await import("@formatjs/intl-locale/polyfill-force");
+    import("@formatjs/intl-locale/polyfill-force");
   }
   if (shouldPolyfillDateTimeFormat(locale)) {
     polyfills.push(
