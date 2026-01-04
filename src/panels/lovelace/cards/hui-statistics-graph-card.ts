@@ -336,7 +336,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .endTime=${this._energyEnd && this._energyStart
               ? getSuggestedMax(
                   differenceInDays(this._energyEnd, this._energyStart),
-                  this._energyEnd
+                  this._energyEnd,
+                  this._config?.period === "5minute"
                 )
               : undefined}
             .fitYData=${this._config.fit_y_data || false}
