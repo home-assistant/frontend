@@ -408,9 +408,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             "ui.panel.config.script.picker.headers.voice_assistants"
           ),
           type: "icon",
+          defaultHidden: true,
           showNarrow: true,
-          sortable: true,
-          filterable: true,
           template: (script) => {
             const entry = entityRegistryByEntityId(this._entityReg)[
               script.entity_id

@@ -487,9 +487,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           "ui.panel.config.helpers.picker.headers.voice_assistants"
         ),
         type: "icon",
+        defaultHidden: true,
         showNarrow: true,
-        sortable: true,
-        filterable: true,
         template: (helper) => {
           const entry = entityRegistryByEntityId(this._entityReg)[
             helper.entity_id

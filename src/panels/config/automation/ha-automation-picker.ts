@@ -386,9 +386,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             "ui.panel.config.automation.picker.headers.voice_assistants"
           ),
           type: "icon",
+          defaultHidden: true,
           showNarrow: true,
-          sortable: true,
-          filterable: true,
           template: (automation) => {
             const entry = entityRegistryByEntityId(this._entityReg)[
               automation.entity_id

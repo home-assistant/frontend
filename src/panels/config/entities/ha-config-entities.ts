@@ -500,9 +500,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           "ui.panel.config.entities.picker.headers.voice_assistants"
         ),
         type: "icon",
+        defaultHidden: true,
         showNarrow: true,
-        sortable: true,
-        filterable: true,
         template: (entry) =>
           html` ${Object.keys(voiceAssistants).filter(
             (vaKey) => entry?.options?.[vaKey]?.should_expose

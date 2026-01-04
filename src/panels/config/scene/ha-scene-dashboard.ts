@@ -420,9 +420,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             "ui.panel.config.scene.picker.headers.voice_assistants"
           ),
           type: "icon",
+          defaultHidden: true,
           showNarrow: true,
-          sortable: true,
-          filterable: true,
           template: (scene) => {
             const entry = entityRegistryByEntityId(this._entityReg)[
               scene.entity_id
