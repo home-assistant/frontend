@@ -390,9 +390,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           sortable: true,
           filterable: true,
           template: (automation) => {
-            // const entry = this._entityReg.find(
-            //   (reg) => reg.entity_id === automation.entity_id
-            // );
             const entry = entityRegistryByEntityId(this._entityReg)[
               automation.entity_id
             ];
