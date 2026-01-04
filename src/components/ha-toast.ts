@@ -23,10 +23,15 @@ export class HaToast extends Snackbar {
       .mdc-snackbar__surface {
         min-width: 350px;
         max-width: 650px;
+        background-color: var(--ha-color-fill-warning-normal-active);
+      }
+
+      .mdc-snackbar__label {
+        color: var(--ha-color-on-warning-normal);
       }
 
       .mdc-snackbar__actions {
-        color: rgba(255, 255, 255, 0.87);
+        color: var(--ha-color-on-warning-normal);
       }
 
       /* Revert the default styles set by mwc-snackbar */
