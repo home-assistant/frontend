@@ -173,20 +173,6 @@ export class HaIconPicker extends LitElement {
         }
       }
 
-      // Allow preview for custom icon not in list
-      if (rankedItems.length === 0) {
-        rankedItems.push({
-          item: {
-            id: filter,
-            primary: filter,
-            icon: filter,
-            search_labels: { keyword: filter },
-            sorting_label: filter,
-          },
-          rank: 0,
-        });
-      }
-
       return rankedItems
         .sort((itemA, itemB) => itemA.rank - itemB.rank)
         .map((item) => item.item);

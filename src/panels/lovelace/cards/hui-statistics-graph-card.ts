@@ -196,6 +196,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+    if (changedProps.has("hass") || changedProps.has("_config")) {
+      this._computeNames();
+    }
+
     if (!this._config || !changedProps.has("_config")) {
       return;
     }
@@ -223,10 +227,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         this._unsubscribeEnergy();
         this._subscribeEnergy();
       }
-    }
-
-    if (changedProps.has("hass")) {
-      this._computeNames();
     }
 
     if (
@@ -334,10 +334,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .maxYAxis=${this._config.max_y_axis}
             .startTime=${this._energyStart}
             .endTime=${this._energyEnd && this._energyStart
-              ? getSuggestedMax(
-                  differenceInDays(this._energyEnd, this._energyStart),
-                  this._energyEnd
-                )
+              ? getSuggestedMax(this._period!, this._energyEnd)
               : undefined}
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
