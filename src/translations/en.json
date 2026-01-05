@@ -672,8 +672,7 @@
             "device_missing": "No related device"
           },
           "add": "Add",
-          "custom_name": "Custom name",
-          "no_match": "No entities found"
+          "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -771,9 +770,6 @@
         "language": "Language",
         "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
-      },
-      "icon-picker": {
-        "no_match": "No matching icons found"
       },
       "tts-picker": {
         "tts": "Text-to-speech",
@@ -1314,7 +1310,6 @@
         "add": "Add interaction"
       },
       "combo-box": {
-        "no_match": "No matching items found",
         "no_items": "No items available",
         "unknown_item": "Unknown item",
         "search_or_custom": "Search | Add custom item",
