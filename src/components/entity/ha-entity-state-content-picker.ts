@@ -19,7 +19,10 @@ import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-input-helper-text";
-import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import {
+  NO_ITEMS_AVAILABLE_ID,
+  type PickerComboBoxItem,
+} from "../ha-picker-combo-box";
 import "../ha-sortable";
 
 const HIDDEN_ATTRIBUTES = [
@@ -199,6 +202,7 @@ export class HaStateContentPicker extends LitElement {
         .value=${this._getPickerValue()}
         .getItems=${this._getFilteredItems}
         .getAdditionalItems=${this._getAdditionalItems}
+        .searchFn=${this._searchFn}
         @value-changed=${this._pickerValueChanged}
       >
         <div slot="field" class="container">
@@ -373,6 +377,19 @@ export class HaStateContentPicker extends LitElement {
     }
 
     return [];
+  };
+
+  private _searchFn = (
+    search: string,
+    filteredItems: PickerComboBoxItem[],
+    _allItems: PickerComboBoxItem[]
+  ): PickerComboBoxItem[] => {
+    if (!search) {
+      return filteredItems;
+    }
+
+    // Always exclude NO_ITEMS_AVAILABLE_ID (since custom values are allowed) and currentValue (the custom value being edited)
+    return filteredItems.filter((item) => item.id !== NO_ITEMS_AVAILABLE_ID);
   };
 
   private async _moveItem(ev: CustomEvent) {
