@@ -55,9 +55,9 @@ export const listExposedEntities = (hass: HomeAssistant) =>
     type: "homeassistant/expose_entity/list",
   });
 
-export const getEntityVoiceAssistants = (
+export const getEntityVoiceAssistantsKeys = (
   entity: EntityRegistryEntry | EntityRow
 ) =>
-  Object.keys(voiceAssistants)
-    .filter((vaKey) => entity?.options?.[vaKey]?.should_expose)
-    .map((vaKey) => voiceAssistants[vaKey]);
+  Object.keys(voiceAssistants).filter(
+    (vaKey) => entity?.options?.[vaKey]?.should_expose
+  );

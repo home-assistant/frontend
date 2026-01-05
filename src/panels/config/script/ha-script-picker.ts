@@ -114,8 +114,8 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistants } from "../../../data/expose";
-import { brandsUrl } from "../../../util/brands-url";
+import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import "../voice-assistants/expose/expose-assistant-icon";
 
 type ScriptItem = ScriptEntity & {
   name: string;
@@ -409,24 +409,22 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           ),
           type: "icon",
           defaultHidden: true,
+          minWidth: "160px",
+          maxWidth: "160px",
           template: (script) => {
             const entry = entityRegistryByEntityId(this._entityReg)[
               script.entity_id
             ];
-            const exposedToVoiceAssistants = getEntityVoiceAssistants(entry);
-            return html` ${exposedToVoiceAssistants.length !== 0
-              ? exposedToVoiceAssistants.map(
-                  (va) =>
-                    html` <img
-                      alt=${va.name}
-                      src=${brandsUrl({
-                        domain: va.domain,
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
-                      crossorigin="anonymous"
-                      referrerpolicy="no-referrer"
-                    />`
+            const exposedToVoiceAssistantKeys =
+              getEntityVoiceAssistantsKeys(entry);
+            return html` ${exposedToVoiceAssistantKeys.length !== 0
+              ? exposedToVoiceAssistantKeys.map(
+                  (vaKey) =>
+                    html` <voice-assistants-expose-assistant-icon
+                      .assistant=${vaKey}
+                      .hass=${this.hass}
+                    >
+                    </voice-assistants-expose-assistant-icon>`
                 )
               : "—"}`;
           },

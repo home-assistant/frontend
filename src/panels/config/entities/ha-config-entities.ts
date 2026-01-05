@@ -115,8 +115,8 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistants } from "../../../data/expose";
-import { brandsUrl } from "../../../util/brands-url";
+import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import "../voice-assistants/expose/expose-assistant-icon";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -501,21 +501,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ),
         type: "icon",
         defaultHidden: true,
+        minWidth: "160px",
+        maxWidth: "160px",
         template: (entry) => {
-          const exposedToVoiceAssistants = getEntityVoiceAssistants(entry);
-          return html` ${exposedToVoiceAssistants.length !== 0
-            ? exposedToVoiceAssistants.map(
-                (va) =>
-                  html` <img
-                    alt=${va.name}
-                    src=${brandsUrl({
-                      domain: va.domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                  />`
+          const exposedToVoiceAssistantKeys =
+            getEntityVoiceAssistantsKeys(entry);
+          return html` ${exposedToVoiceAssistantKeys.length !== 0
+            ? exposedToVoiceAssistantKeys.map(
+                (vaKey) =>
+                  html` <voice-assistants-expose-assistant-icon
+                    .assistant=${vaKey}
+                    .hass=${this.hass}
+                  >
+                  </voice-assistants-expose-assistant-icon>`
               )
             : "—"}`;
         },
