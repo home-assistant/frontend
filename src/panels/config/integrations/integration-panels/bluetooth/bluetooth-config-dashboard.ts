@@ -1,4 +1,10 @@
-import { mdiCogOutline } from "@mdi/js";
+import {
+  mdiBroadcast,
+  mdiCogOutline,
+  mdiLan,
+  mdiLinkVariant,
+  mdiNetwork,
+} from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -32,18 +38,22 @@ export const bluetoothTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.bluetooth.tabs.overview",
     path: `/config/bluetooth/dashboard`,
+    iconPath: mdiNetwork,
   },
   {
     translationKey: "ui.panel.config.bluetooth.tabs.advertisements",
     path: `/config/bluetooth/advertisement-monitor`,
+    iconPath: mdiBroadcast,
   },
   {
     translationKey: "ui.panel.config.bluetooth.tabs.visualization",
     path: `/config/bluetooth/visualization`,
+    iconPath: mdiLan,
   },
   {
     translationKey: "ui.panel.config.bluetooth.tabs.connections",
     path: `/config/bluetooth/connection-monitor`,
+    iconPath: mdiLinkVariant,
   },
 ];
 
