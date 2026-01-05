@@ -341,32 +341,34 @@ export class HaStateContentPicker extends LitElement {
 
   private _getFilteredItemsMemoized = memoizeOne(
     (searchString?: string): PickerComboBoxItem[] => {
-    const stateObj = this.entityId
-      ? this.hass.states[this.entityId]
-      : undefined;
-    const items = this._getItems(this.entityId, stateObj, this.allowName);
-    const currentValue =
-      this._editIndex != null ? this._value[this._editIndex] : undefined;
+      const stateObj = this.entityId
+        ? this.hass.states[this.entityId]
+        : undefined;
+      const items = this._getItems(this.entityId, stateObj, this.allowName);
+      const currentValue =
+        this._editIndex != null ? this._value[this._editIndex] : undefined;
 
-    const value = this._value;
+      const value = this._value;
 
-    const filteredItems = items.filter(
-      (item) => !value.includes(item.id) || item.id === currentValue
-    );
+      const filteredItems = items.filter(
+        (item) => !value.includes(item.id) || item.id === currentValue
+      );
 
-    // When editing an existing custom value, include it in the base items
-    if (
-      currentValue &&
-      !items.find((item) => item.id === currentValue) &&
-      !searchString
-    ) {
-      filteredItems.push(this._customValueOption(currentValue));
+      // When editing an existing custom value, include it in the base items
+      if (
+        currentValue &&
+        !items.find((item) => item.id === currentValue) &&
+        !searchString
+      ) {
+        filteredItems.push(this._customValueOption(currentValue));
+      }
+
+      return filteredItems;
     }
+  );
 
-    return filteredItems;
-  });
-  
-  private _getFilteredItems = (searchString?: string, _section?: string) => this._getFilteredItemsMemoized(searchString);
+  private _getFilteredItems = (searchString?: string, _section?: string) =>
+    this._getFilteredItemsMemoized(searchString);
 
   private async _moveItem(ev: CustomEvent) {
     ev.stopPropagation();
