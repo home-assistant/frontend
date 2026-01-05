@@ -8,7 +8,7 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -39,7 +39,6 @@ import {
 } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
-import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -155,8 +154,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @state() private _tip?: string;
 
   @state() private _repairsIssues: { issues: RepairsIssue[]; total: number } = {
@@ -164,21 +161,24 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     total: 0,
   };
 
-  private _pages = memoizeOne((cloudStatus, isCloudLoaded) => {
-    const pages: PageNavigation[] = [];
-    if (isCloudLoaded) {
-      pages.push({
-        component: "cloud",
-        path: "/config/cloud",
-        name: "Home Assistant Cloud",
-        info: cloudStatus,
-        iconPath: mdiCloudLock,
-        iconColor: "#3B808E",
-        translationKey: "cloud",
-      });
-    }
-    return [...pages, ...configSections.dashboard];
-  });
+  private _pages = memoizeOne((cloudStatus, isCloudLoaded) => [
+    isCloudLoaded
+      ? [
+          {
+            component: "cloud",
+            path: "/config/cloud",
+            name: "Home Assistant Cloud",
+            info: cloudStatus,
+            iconPath: mdiCloudLock,
+            iconColor: "#3B808E",
+            translationKey: "cloud",
+          },
+          ...configSections.dashboard,
+        ]
+      : configSections.dashboard,
+    configSections.dashboard_2,
+    configSections.dashboard_3,
+  ]);
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -308,18 +308,22 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                   : ""}
               </ha-card>`
             : ""}
-
-          <ha-card outlined>
-            <ha-config-navigation
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .showAdvanced=${this.showAdvanced}
-              .pages=${this._pages(
-                this.cloudStatus,
-                isComponentLoaded(this.hass, "cloud")
-              )}
-            ></ha-config-navigation>
-          </ha-card>
+          ${this._pages(
+            this.cloudStatus,
+            isComponentLoaded(this.hass, "cloud")
+          ).map((categoryPages) =>
+            categoryPages.length === 0
+              ? nothing
+              : html`
+                  <ha-card outlined>
+                    <ha-config-navigation
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .pages=${categoryPages}
+                    ></ha-config-navigation>
+                  </ha-card>
+                `
+          )}
           <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
         </ha-config-section>
       </ha-top-app-bar-fixed>

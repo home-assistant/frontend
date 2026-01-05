@@ -196,6 +196,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+    if (changedProps.has("hass") || changedProps.has("_config")) {
+      this._computeNames();
+    }
+
     if (!this._config || !changedProps.has("_config")) {
       return;
     }
@@ -223,10 +227,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         this._unsubscribeEnergy();
         this._subscribeEnergy();
       }
-    }
-
-    if (changedProps.has("hass")) {
-      this._computeNames();
     }
 
     if (
