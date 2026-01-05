@@ -30,36 +30,41 @@ import {
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
+import {
+  STATISTIC_PERIOD,
+  type StatisticPeriod,
+} from "../../../../../data/recorder";
 
-export function getSuggestedMax(
-  dayDifference: number,
-  end: Date,
-  detailedDailyData = false
-): number {
+export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
   let suggestedMax = new Date(end);
 
+  if (period === STATISTIC_PERIOD.FIVE_MINUTE) {
+    return suggestedMax.getTime();
+  }
+  suggestedMax.setMinutes(0, 0, 0);
+  if (period === STATISTIC_PERIOD.HOUR) {
+    return suggestedMax.getTime();
+  }
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
   // Correct for this when showing days/months so we don't get an extra day.
-  if (dayDifference > 2 && suggestedMax.getHours() === 0) {
+  if (suggestedMax.getHours() === 0) {
     suggestedMax = subHours(suggestedMax, 1);
   }
-
-  if (!detailedDailyData) {
-    suggestedMax.setMinutes(0, 0, 0);
-    if (dayDifference > 35) {
-      suggestedMax.setDate(1);
-    }
-    if (dayDifference > 2) {
-      suggestedMax.setHours(0);
-    }
+  suggestedMax.setHours(0);
+  if (period === STATISTIC_PERIOD.DAY || period === STATISTIC_PERIOD.WEEK) {
+    return suggestedMax.getTime();
   }
+  // period === month
+  suggestedMax.setDate(1);
   return suggestedMax.getTime();
 }
 
-export function getSuggestedPeriod(
-  dayDifference: number
-): "month" | "day" | "hour" {
-  return dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+export function getSuggestedPeriod(dayDifference: number): StatisticPeriod {
+  return dayDifference > 35
+    ? STATISTIC_PERIOD.MONTH
+    : dayDifference > 2
+      ? STATISTIC_PERIOD.DAY
+      : STATISTIC_PERIOD.HOUR;
 }
 
 function createYAxisLabelFormatter(locale: FrontendLocaleData) {
@@ -96,7 +101,12 @@ export function getCommonOptions(
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(dayDifference, end, detailedDailyData),
+      max: getSuggestedMax(
+        detailedDailyData
+          ? STATISTIC_PERIOD.FIVE_MINUTE
+          : getSuggestedPeriod(dayDifference),
+        end
+      ),
     },
     yAxis: {
       type: "value",
