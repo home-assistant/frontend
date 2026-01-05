@@ -4119,7 +4119,8 @@
               "targets": "{count} {count, plural,\n  one {target}\n  other {targets}\n}",
               "invalid": "Invalid target",
               "all_entities": "All entities",
-              "none_entities": "No entities"
+              "none_entities": "No entities",
+              "template": "Template"
             },
             "triggers": {
               "name": "Triggers",
