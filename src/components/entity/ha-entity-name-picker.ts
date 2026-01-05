@@ -189,6 +189,9 @@ export class HaEntityNamePicker extends LitElement {
         )}
         @value-changed=${this._pickerValueChanged}
         .searchFn=${this._searchFn}
+        .searchLabel=${this.hass.localize(
+          "ui.components.entity.entity-name-picker.search"
+        )}
       >
         <div slot="field" class="container">
           <ha-sortable
@@ -342,9 +345,9 @@ export class HaEntityNamePicker extends LitElement {
     const currentId =
       currentItem?.type === "text" && currentItem.text
         ? this._customNameOption(currentItem.text).id
-        : "";
+        : undefined;
 
-    // Remove custom name option if search string is present
+    // Remove custom name option if search string is present to avoid duplicates
     if (searchString && currentId) {
       return filteredItems.filter((item) => item.id !== currentId);
     }
