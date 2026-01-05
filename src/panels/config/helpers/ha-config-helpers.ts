@@ -122,7 +122,7 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { voiceAssistants } from "../../../data/expose";
+import { getEntityVoiceAssistants } from "../../../data/expose";
 import { brandsUrl } from "../../../util/brands-url";
 
 interface HelperItem {
@@ -488,30 +488,25 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ),
         type: "icon",
         defaultHidden: true,
-        showNarrow: true,
         template: (helper) => {
           const entry = entityRegistryByEntityId(this._entityReg)[
             helper.entity_id
           ];
-          return html` ${Object.keys(voiceAssistants).filter(
-            (vaKey) => entry?.options?.[vaKey]?.should_expose
-          ).length !== 0
-            ? Object.keys(voiceAssistants)
-                .filter((vaKey) => entry?.options?.[vaKey]?.should_expose)
-                .map(
-                  (vaKey) =>
-                    html`<img
-                      alt=""
-                      src=${brandsUrl({
-                        domain: voiceAssistants[vaKey].domain,
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
-                      crossorigin="anonymous"
-                      referrerpolicy="no-referrer"
-                      slot="prefix"
-                    />`
-                )
+          const exposedToVoiceAssistants = getEntityVoiceAssistants(entry);
+          return html` ${exposedToVoiceAssistants.length !== 0
+            ? exposedToVoiceAssistants.map(
+                (va) =>
+                  html` <img
+                    alt=${va.name}
+                    src=${brandsUrl({
+                      domain: va.domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    })}
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                  />`
+              )
             : "—"}`;
         },
       },

@@ -1,4 +1,6 @@
 import type { HomeAssistant } from "../types";
+import type { EntityRegistryEntry } from "./entity/entity_registry";
+import type { EntityRow } from "../panels/config/entities/ha-config-entities";
 
 export const voiceAssistants = {
   conversation: { domain: "assist_pipeline", name: "Assist" },
@@ -52,3 +54,10 @@ export const listExposedEntities = (hass: HomeAssistant) =>
   hass.callWS<{ exposed_entities: Record<string, ExposeEntitySettings> }>({
     type: "homeassistant/expose_entity/list",
   });
+
+export const getEntityVoiceAssistants = (
+  entity: EntityRegistryEntry | EntityRow
+) =>
+  Object.keys(voiceAssistants)
+    .filter((vaKey) => entity?.options?.[vaKey]?.should_expose)
+    .map((vaKey) => voiceAssistants[vaKey]);

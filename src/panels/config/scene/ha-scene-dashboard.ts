@@ -110,7 +110,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { voiceAssistants } from "../../../data/expose";
+import { getEntityVoiceAssistants } from "../../../data/expose";
 import { brandsUrl } from "../../../util/brands-url";
 
 type SceneItem = SceneEntity & {
@@ -421,30 +421,25 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           ),
           type: "icon",
           defaultHidden: true,
-          showNarrow: true,
           template: (scene) => {
             const entry = entityRegistryByEntityId(this._entityReg)[
               scene.entity_id
             ];
-            return html` ${Object.keys(voiceAssistants).filter(
-              (vaKey) => entry?.options?.[vaKey]?.should_expose
-            ).length !== 0
-              ? Object.keys(voiceAssistants)
-                  .filter((vaKey) => entry?.options?.[vaKey]?.should_expose)
-                  .map(
-                    (vaKey) =>
-                      html`<img
-                        alt=""
-                        src=${brandsUrl({
-                          domain: voiceAssistants[vaKey].domain,
-                          type: "icon",
-                          darkOptimized: this.hass.themes?.darkMode,
-                        })}
-                        crossorigin="anonymous"
-                        referrerpolicy="no-referrer"
-                        slot="prefix"
-                      />`
-                  )
+            const exposedToVoiceAssistants = getEntityVoiceAssistants(entry);
+            return html` ${exposedToVoiceAssistants.length !== 0
+              ? exposedToVoiceAssistants.map(
+                  (va) =>
+                    html` <img
+                      alt=${va.name}
+                      src=${brandsUrl({
+                        domain: va.domain,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      })}
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                    />`
+                )
               : "—"}`;
           },
         },
