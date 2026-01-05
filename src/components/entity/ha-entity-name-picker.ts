@@ -18,10 +18,7 @@ import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-input-helper-text";
-import {
-  NO_ITEMS_AVAILABLE_ID,
-  type PickerComboBoxItem,
-} from "../ha-picker-combo-box";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../ha-sortable";
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
@@ -185,7 +182,6 @@ export class HaEntityNamePicker extends LitElement {
         .required=${this.required && !value.length}
         .getItems=${this._getFilteredItems}
         .rowRenderer=${rowRenderer}
-        .searchFn=${this._searchFn}
         .value=${this._getPickerValue()}
         allow-custom-value
         .customValueLabel=${this.hass.localize(
@@ -340,19 +336,6 @@ export class HaEntityNamePicker extends LitElement {
 
   private _getFilteredItems = (searchString?: string, _section?: string) =>
     this._getFilteredItemsMemoized(searchString);
-
-  private _searchFn = (
-    search: string,
-    filteredItems: PickerComboBoxItem[],
-    _allItems: PickerComboBoxItem[]
-  ): PickerComboBoxItem[] => {
-    if (search) {
-      return filteredItems.filter(
-        (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
-      );
-    }
-    return filteredItems;
-  };
 
   private async _moveItem(ev: CustomEvent) {
     ev.stopPropagation();
