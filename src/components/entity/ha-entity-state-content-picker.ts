@@ -198,10 +198,7 @@ export class HaStateContentPicker extends LitElement {
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}
         .getItems=${this._getFilteredItems}
-        allow-custom-value
-        .customValueLabel=${this.hass.localize(
-          "ui.components.entity.entity-state-content-picker.custom_state"
-        )}
+        .getAdditionalItems=${this._getAdditionalItems}
         @value-changed=${this._pickerValueChanged}
       >
         <div slot="field" class="container">
@@ -326,7 +323,7 @@ export class HaStateContentPicker extends LitElement {
     (text: string): PickerComboBoxItem => ({
       id: text,
       primary: this.hass.localize(
-        "ui.components.entity.entity-state-content-picker.custom_state"
+        "ui.components.entity.entity-state-content-picker.custom_attribute"
       ),
       secondary: `"${text}"`,
       search_labels: {
@@ -338,36 +335,45 @@ export class HaStateContentPicker extends LitElement {
     })
   );
 
-  private _getFilteredItemsMemoized = memoizeOne(
-    (searchString?: string): PickerComboBoxItem[] => {
-      const stateObj = this.entityId
-        ? this.hass.states[this.entityId]
-        : undefined;
-      const items = this._getItems(this.entityId, stateObj, this.allowName);
-      const currentValue =
-        this._editIndex != null ? this._value[this._editIndex] : undefined;
+  private _getFilteredItems = (): PickerComboBoxItem[] => {
+    const stateObj = this.entityId
+      ? this.hass.states[this.entityId]
+      : undefined;
+    const items = this._getItems(this.entityId, stateObj, this.allowName);
+    const currentValue =
+      this._editIndex != null ? this._value[this._editIndex] : undefined;
 
-      const value = this._value;
+    const value = this._value;
 
-      const filteredItems = items.filter(
-        (item) => !value.includes(item.id) || item.id === currentValue
-      );
+    const filteredItems = items.filter(
+      (item) => !value.includes(item.id) || item.id === currentValue
+    );
 
-      // When editing an existing custom value, include it in the base items
-      if (
-        currentValue &&
-        !items.find((item) => item.id === currentValue) &&
-        !searchString
-      ) {
-        filteredItems.push(this._customValueOption(currentValue));
-      }
-
-      return filteredItems;
+    // When editing an existing custom value, include it in the base items
+    if (currentValue && !items.find((item) => item.id === currentValue)) {
+      filteredItems.push(this._customValueOption(currentValue));
     }
-  );
 
-  private _getFilteredItems = (searchString?: string, _section?: string) =>
-    this._getFilteredItemsMemoized(searchString);
+    return filteredItems;
+  };
+
+  private _getAdditionalItems = (
+    searchString?: string
+  ): PickerComboBoxItem[] => {
+    const stateObj = this.entityId
+      ? this.hass.states[this.entityId]
+      : undefined;
+    const items = this._getItems(this.entityId, stateObj, this.allowName);
+
+    // If the search string does not match with the id of any of the items,
+    // offer to add it as a custom attribute
+    const existingItem = items.find((item) => item.id === searchString);
+    if (searchString && !existingItem) {
+      return [this._customValueOption(searchString)];
+    }
+
+    return [];
+  };
 
   private async _moveItem(ev: CustomEvent) {
     ev.stopPropagation();
