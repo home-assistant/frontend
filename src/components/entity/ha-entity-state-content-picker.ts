@@ -339,10 +339,8 @@ export class HaStateContentPicker extends LitElement {
     })
   );
 
-  private _getFilteredItems = (
-    searchString?: string,
-    _section?: string
-  ): PickerComboBoxItem[] => {
+  private _getFilteredItemsMemoized = memoizeOne(
+    (searchString?: string): PickerComboBoxItem[] => {
     const stateObj = this.entityId
       ? this.hass.states[this.entityId]
       : undefined;
@@ -366,7 +364,9 @@ export class HaStateContentPicker extends LitElement {
     }
 
     return filteredItems;
-  };
+  });
+  
+  private _getFilteredItems = (searchString?: string, _section?: string) => this._getFilteredItemsMemoized(searchString);
 
   private async _moveItem(ev: CustomEvent) {
     ev.stopPropagation();
