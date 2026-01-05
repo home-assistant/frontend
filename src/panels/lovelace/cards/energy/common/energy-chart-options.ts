@@ -30,19 +30,16 @@ import {
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
-import {
-  STATISTIC_PERIOD,
-  type StatisticPeriod,
-} from "../../../../../data/recorder";
+import type { StatisticPeriod } from "../../../../../data/recorder";
 
 export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
   let suggestedMax = new Date(end);
 
-  if (period === STATISTIC_PERIOD.FIVE_MINUTE) {
+  if (period === "5minute") {
     return suggestedMax.getTime();
   }
   suggestedMax.setMinutes(0, 0, 0);
-  if (period === STATISTIC_PERIOD.HOUR) {
+  if (period === "hour") {
     return suggestedMax.getTime();
   }
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
@@ -51,7 +48,7 @@ export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
     suggestedMax = subHours(suggestedMax, 1);
   }
   suggestedMax.setHours(0);
-  if (period === STATISTIC_PERIOD.DAY || period === STATISTIC_PERIOD.WEEK) {
+  if (period === "day" || period === "week") {
     return suggestedMax.getTime();
   }
   // period === month
@@ -60,11 +57,7 @@ export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
 }
 
 export function getSuggestedPeriod(dayDifference: number): StatisticPeriod {
-  return dayDifference > 35
-    ? STATISTIC_PERIOD.MONTH
-    : dayDifference > 2
-      ? STATISTIC_PERIOD.DAY
-      : STATISTIC_PERIOD.HOUR;
+  return dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 }
 
 function createYAxisLabelFormatter(locale: FrontendLocaleData) {
@@ -102,9 +95,7 @@ export function getCommonOptions(
       type: "time",
       min: start,
       max: getSuggestedMax(
-        detailedDailyData
-          ? STATISTIC_PERIOD.FIVE_MINUTE
-          : getSuggestedPeriod(dayDifference),
+        detailedDailyData ? "5minute" : getSuggestedPeriod(dayDifference),
         end
       ),
     },
