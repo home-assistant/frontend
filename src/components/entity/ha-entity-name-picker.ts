@@ -188,6 +188,7 @@ export class HaEntityNamePicker extends LitElement {
           "ui.components.entity.entity-name-picker.custom_name"
         )}
         @value-changed=${this._pickerValueChanged}
+        .searchFn=${this._searchFn}
       >
         <div slot="field" class="container">
           <ha-sortable
@@ -308,34 +309,47 @@ export class HaEntityNamePicker extends LitElement {
     return undefined;
   }
 
-  private _getFilteredItemsMemoized = memoizeOne(
-    (searchString?: string): PickerComboBoxItem[] => {
-      const items = this._getItems(this.entityId);
-      const currentItem =
-        this._editIndex != null ? this._items[this._editIndex] : undefined;
-      const currentValue = currentItem ? formatOptionValue(currentItem) : "";
+  private _getFilteredItems = (): PickerComboBoxItem[] => {
+    const items = this._getItems(this.entityId);
+    const currentItem =
+      this._editIndex != null ? this._items[this._editIndex] : undefined;
+    const currentValue = currentItem ? formatOptionValue(currentItem) : "";
 
-      const excludedValues = new Set(
-        this._items
-          .filter((item) => UNIQUE_TYPES.has(item.type))
-          .map((item) => formatOptionValue(item))
-      );
+    const excludedValues = new Set(
+      this._items
+        .filter((item) => UNIQUE_TYPES.has(item.type))
+        .map((item) => formatOptionValue(item))
+    );
 
-      const filteredItems = items.filter(
-        (item) => !excludedValues.has(item.id) || item.id === currentValue
-      );
+    const filteredItems = items.filter(
+      (item) => !excludedValues.has(item.id) || item.id === currentValue
+    );
 
-      // When editing an existing text item, include it in the base items
-      if (currentItem?.type === "text" && currentItem.text && !searchString) {
-        filteredItems.push(this._customNameOption(currentItem.text));
-      }
-
-      return filteredItems;
+    // When editing an existing text item, include it in the base items
+    if (currentItem?.type === "text" && currentItem.text) {
+      filteredItems.push(this._customNameOption(currentItem.text));
     }
-  );
 
-  private _getFilteredItems = (searchString?: string, _section?: string) =>
-    this._getFilteredItemsMemoized(searchString);
+    return filteredItems;
+  };
+
+  private _searchFn = (
+    searchString: string,
+    filteredItems: PickerComboBoxItem[]
+  ): PickerComboBoxItem[] => {
+    const currentItem =
+      this._editIndex != null ? this._items[this._editIndex] : undefined;
+    const currentId =
+      currentItem?.type === "text" && currentItem.text
+        ? this._customNameOption(currentItem.text).id
+        : "";
+
+    // Remove custom name option if search string is present
+    if (searchString && currentId) {
+      return filteredItems.filter((item) => item.id !== currentId);
+    }
+    return filteredItems;
+  };
 
   private async _moveItem(ev: CustomEvent) {
     ev.stopPropagation();

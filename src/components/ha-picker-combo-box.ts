@@ -446,21 +446,15 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       }
 
       if (this.allowCustomValue && searchString) {
-        // Only add custom value option if an item with this id doesn't already exist
-        const existingItem = filteredItems.find(
-          (item) => item.id === searchString
-        );
-        if (!existingItem) {
-          filteredItems.push({
-            id: searchString,
-            primary:
-              this.customValueLabel ??
-              this.hass?.localize("ui.components.combo-box.add_custom_item") ??
-              "Add custom item",
-            secondary: `"${searchString}"`,
-            icon_path: mdiPlus,
-          });
-        }
+        filteredItems.push({
+          id: searchString,
+          primary:
+            this.customValueLabel ??
+            this.hass?.localize("ui.components.combo-box.add_custom_item") ??
+            "Add custom item",
+          secondary: `"${searchString}"`,
+          icon_path: mdiPlus,
+        });
       }
 
       this._items = filteredItems;
