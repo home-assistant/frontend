@@ -1,10 +1,12 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import type { StateSelector } from "../../data/selector";
 import { extractFromTarget } from "../../data/target";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../entity/ha-entity-state-picker";
 import "../entity/ha-entity-states-picker";
 
@@ -32,6 +34,21 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
 
   @state() private _entityIds?: string | string[];
 
+  private _convertExtraOptions = memoizeOne(
+    (
+      extraOptions?: { label: string; value: any }[]
+    ): PickerComboBoxItem[] | undefined => {
+      if (!extraOptions) {
+        return undefined;
+      }
+      return extraOptions.map((option) => ({
+        id: option.value,
+        primary: option.label,
+        sorting_label: option.label,
+      }));
+    }
+  );
+
   willUpdate(changedProps) {
     if (changedProps.has("selector") || changedProps.has("context")) {
       this._resolveEntityIds(
@@ -45,6 +62,9 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
+    const extraOptions = this._convertExtraOptions(
+      this.selector.state?.extra_options
+    );
     if (this.selector.state?.multiple) {
       return html`
         <ha-entity-states-picker
@@ -52,7 +72,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
           .entityId=${this._entityIds}
           .attribute=${this.selector.state?.attribute ||
           this.context?.filter_attribute}
-          .extraOptions=${this.selector.state?.extra_options}
+          .extraOptions=${extraOptions}
           .value=${this.value}
           .label=${this.label}
           .helper=${this.helper}
@@ -69,7 +89,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
         .entityId=${this._entityIds}
         .attribute=${this.selector.state?.attribute ||
         this.context?.filter_attribute}
-        .extraOptions=${this.selector.state?.extra_options}
+        .extraOptions=${extraOptions}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
