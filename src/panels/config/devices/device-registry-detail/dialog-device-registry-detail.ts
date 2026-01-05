@@ -8,7 +8,6 @@ import "../../../../components/ha-area-picker";
 import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
