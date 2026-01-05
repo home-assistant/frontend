@@ -324,7 +324,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       });
     }
 
-    if (!items.length) {
+    if (!items.length && !this.allowCustomValue) {
       items.push({ id: NO_ITEMS_AVAILABLE_ID, primary: "" });
     }
 
@@ -430,7 +430,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         index
       );
 
-      if (!filteredItems.length) {
+      if (!filteredItems.length && !this.allowCustomValue) {
         filteredItems.push({ id: NO_ITEMS_AVAILABLE_ID, primary: "" });
       }
 
