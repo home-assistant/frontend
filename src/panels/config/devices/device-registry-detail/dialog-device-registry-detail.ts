@@ -5,8 +5,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
+import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
@@ -18,6 +19,8 @@ import type { DeviceRegistryDetailDialogParams } from "./show-dialog-device-regi
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _open = false;
 
   @state() private _nameByUser!: string;
 
@@ -42,10 +45,15 @@ class DialogDeviceRegistryDetail extends LitElement {
     this._areaId = this._params.device.area_id || "";
     this._labels = this._params.device.labels || [];
     this._disabledBy = this._params.device.disabled_by;
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -57,10 +65,12 @@ class DialogDeviceRegistryDetail extends LitElement {
     }
     const device = this._params.device;
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${computeDeviceNameDisplay(device, this.hass)}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${computeDeviceNameDisplay(device, this.hass)}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error
@@ -68,6 +78,7 @@ class DialogDeviceRegistryDetail extends LitElement {
             : ""}
           <div class="form">
             <ha-textfield
+              autofocus
               .value=${this._nameByUser}
               @input=${this._nameChanged}
               .label=${this.hass.localize(
@@ -75,7 +86,6 @@ class DialogDeviceRegistryDetail extends LitElement {
               )}
               .placeholder=${device.name || ""}
               .disabled=${this._submitting}
-              dialogInitialFocus
             ></ha-textfield>
             <ha-area-picker
               .hass=${this.hass}
@@ -131,22 +141,25 @@ class DialogDeviceRegistryDetail extends LitElement {
             </div>
           </div>
         </div>
-        <ha-button
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-          .disabled=${this._submitting}
-          appearance="plain"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${this._submitting}
-        >
-          ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
-        </ha-button>
-      </ha-dialog>
+
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+            .disabled=${this._submitting}
+            appearance="plain"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${this._submitting}
+          >
+            ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
