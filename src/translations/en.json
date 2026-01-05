@@ -137,9 +137,9 @@
       },
       "counter": {
         "actions": {
-          "increment": "increment",
-          "decrement": "decrement",
-          "reset": "reset"
+          "increment": "Increment",
+          "decrement": "Decrement",
+          "reset": "Reset"
         }
       },
       "cover": {
