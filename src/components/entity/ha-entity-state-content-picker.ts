@@ -198,7 +198,6 @@ export class HaStateContentPicker extends LitElement {
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}
         .getItems=${this._getFilteredItems}
-        .getAdditionalItems=${this._getAdditionalItems}
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         allow-custom-value
         .customValueLabel=${this.hass.localize(
@@ -367,36 +366,6 @@ export class HaStateContentPicker extends LitElement {
     }
 
     return filteredItems;
-  };
-
-  private _getAdditionalItems = (
-    searchString?: string
-  ): PickerComboBoxItem[] => {
-    if (!searchString) {
-      return [];
-    }
-
-    const currentValue =
-      this._editIndex != null ? this._value[this._editIndex] : undefined;
-
-    // Don't add if it's the same as the current item being edited
-    if (currentValue && currentValue === searchString) {
-      return [];
-    }
-
-    // Check if the search string matches an existing item
-    const stateObj = this.entityId
-      ? this.hass.states[this.entityId]
-      : undefined;
-    const items = this._getItems(this.entityId, stateObj, this.allowName);
-    const existingItem = items.find((item) => item.id === searchString);
-
-    // Only return custom value option if it doesn't match an existing item
-    if (!existingItem) {
-      return [this._customValueOption(searchString)];
-    }
-
-    return [];
   };
 
   private async _moveItem(ev: CustomEvent) {

@@ -184,7 +184,6 @@ export class HaEntityNamePicker extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .getItems=${this._getFilteredItems}
-        .getAdditionalItems=${this._getAdditionalItems}
         .rowRenderer=${rowRenderer}
         .searchFn=${this._searchFn}
         .notFoundLabel=${this.hass.localize(
@@ -343,39 +342,14 @@ export class HaEntityNamePicker extends LitElement {
     return filteredItems;
   };
 
-  private _getAdditionalItems = (
-    searchString?: string
-  ): PickerComboBoxItem[] => {
-    if (!searchString) {
-      return [];
-    }
-
-    const currentItem =
-      this._editIndex != null ? this._items[this._editIndex] : undefined;
-
-    // Don't add if it's the same as the current item being edited
-    if (
-      currentItem?.type === "text" &&
-      currentItem.text &&
-      currentItem.text === searchString
-    ) {
-      return [];
-    }
-
-    // Always return custom name option when there's a search string
-    // This prevents "No matching items found" from showing
-    return [this._customNameOption(searchString)];
-  };
-
   private _searchFn = (
     search: string,
     filteredItems: PickerComboBoxItem[],
     _allItems: PickerComboBoxItem[]
   ): PickerComboBoxItem[] => {
-    // Remove NO_ITEMS_AVAILABLE_ID if we have additional items (custom name option)
-    // This prevents "No matching items found" from showing when custom values are allowed
-    const hasAdditionalItems = this._getAdditionalItems(search).length > 0;
-    if (hasAdditionalItems) {
+    // Remove NO_ITEMS_AVAILABLE_ID when custom values are allowed
+    // The combo box automatically adds custom value option, so we don't need "No matching items found"
+    if (search) {
       return filteredItems.filter(
         (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
       );
