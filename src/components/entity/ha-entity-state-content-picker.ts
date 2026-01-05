@@ -198,7 +198,6 @@ export class HaStateContentPicker extends LitElement {
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}
         .getItems=${this._getFilteredItems}
-        .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         allow-custom-value
         .customValueLabel=${this.hass.localize(
           "ui.components.entity.entity-state-content-picker.custom_state"

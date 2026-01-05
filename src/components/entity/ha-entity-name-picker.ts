@@ -186,9 +186,6 @@ export class HaEntityNamePicker extends LitElement {
         .getItems=${this._getFilteredItems}
         .rowRenderer=${rowRenderer}
         .searchFn=${this._searchFn}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.entity.entity-name-picker.no_match"
-        )}
         .value=${this._getPickerValue()}
         allow-custom-value
         .customValueLabel=${this.hass.localize(
