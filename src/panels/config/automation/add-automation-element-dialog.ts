@@ -2053,6 +2053,10 @@ class DialogAddAutomationElement
             0;
         }
 
+        ha-button-toggle-group button {
+          color: var(--ha-color-on-surface-variant);
+        }
+
         .content {
           flex: 1;
           min-height: 0;
