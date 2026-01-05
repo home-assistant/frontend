@@ -346,8 +346,6 @@ export class HaEntityNamePicker extends LitElement {
     filteredItems: PickerComboBoxItem[],
     _allItems: PickerComboBoxItem[]
   ): PickerComboBoxItem[] => {
-    // Remove NO_ITEMS_AVAILABLE_ID when custom values are allowed
-    // The combo box automatically adds custom value option, so we don't need "No matching items found"
     if (search) {
       return filteredItems.filter(
         (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
