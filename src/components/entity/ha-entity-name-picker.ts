@@ -315,32 +315,34 @@ export class HaEntityNamePicker extends LitElement {
     return undefined;
   }
 
-  private _getFilteredItems = (
-    searchString?: string,
-    _section?: string
-  ): PickerComboBoxItem[] => {
-    const items = this._getItems(this.entityId);
-    const currentItem =
-      this._editIndex != null ? this._items[this._editIndex] : undefined;
-    const currentValue = currentItem ? formatOptionValue(currentItem) : "";
+  private _getFilteredItemsMemoized = memoizeOne(
+    (searchString?: string): PickerComboBoxItem[] => {
+      const items = this._getItems(this.entityId);
+      const currentItem =
+        this._editIndex != null ? this._items[this._editIndex] : undefined;
+      const currentValue = currentItem ? formatOptionValue(currentItem) : "";
 
-    const excludedValues = new Set(
-      this._items
-        .filter((item) => UNIQUE_TYPES.has(item.type))
-        .map((item) => formatOptionValue(item))
-    );
+      const excludedValues = new Set(
+        this._items
+          .filter((item) => UNIQUE_TYPES.has(item.type))
+          .map((item) => formatOptionValue(item))
+      );
 
-    const filteredItems = items.filter(
-      (item) => !excludedValues.has(item.id) || item.id === currentValue
-    );
+      const filteredItems = items.filter(
+        (item) => !excludedValues.has(item.id) || item.id === currentValue
+      );
 
-    // When editing an existing text item, include it in the base items
-    if (currentItem?.type === "text" && currentItem.text && !searchString) {
-      filteredItems.push(this._customNameOption(currentItem.text));
+      // When editing an existing text item, include it in the base items
+      if (currentItem?.type === "text" && currentItem.text && !searchString) {
+        filteredItems.push(this._customNameOption(currentItem.text));
+      }
+
+      return filteredItems;
     }
+  );
 
-    return filteredItems;
-  };
+  private _getFilteredItems = (searchString?: string, _section?: string) =>
+    this._getFilteredItemsMemoized(searchString);
 
   private _searchFn = (
     search: string,
