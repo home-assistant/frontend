@@ -1310,6 +1310,7 @@
         "add": "Add interaction"
       },
       "combo-box": {
+        "no_match": "No matching items found",
         "no_items": "No items available",
         "unknown_item": "Unknown item",
         "search_or_custom": "Search | Add custom item",
