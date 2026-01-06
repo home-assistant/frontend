@@ -271,6 +271,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(dialog) {
+          color: var(--primary-text-color);
           min-width: var(--width, var(--full-width));
           max-width: var(--width, var(--full-width));
           max-height: var(
