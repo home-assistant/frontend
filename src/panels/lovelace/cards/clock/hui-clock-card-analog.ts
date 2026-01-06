@@ -47,53 +47,20 @@ export class HuiClockCardAnalog extends LitElement {
 
   @state() private _secondOffsetSec?: number;
 
-  @state() private _year?: string;
+  @state() private _year = "----";
 
-  @state() private _month?: string;
+  @state() private _month = "------";
 
-  @state() private _day?: string;
+  @state() private _day = "--";
 
   private _tickInterval?: undefined | number;
 
-  private _initDate() {
-    if (!this.config || !this.hass) {
-      return;
-    }
-
-    let locale = this.hass.locale;
-    if (this.config.time_format) {
-      locale = { ...locale, time_format: this.config.time_format };
-    }
-
-    this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
-      year: "2-digit",
-      month: this.config?.date === "short" ? "short" : "long",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hourCycle: "h12",
-      timeZone:
-        this.config.time_zone ||
-        resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
-    });
-
-    this._computeOffsets();
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.locale !== this.hass?.locale) {
-        this._initDate();
-      }
-    }
-  }
+  private _currentDate = new Date();
 
   public connectedCallback() {
     super.connectedCallback();
     document.addEventListener("visibilitychange", this._handleVisibilityChange);
-    this._computeOffsets();
+    this._computeDateTime();
     if (this.config?.date && this.config.date !== "none") {
       this._startTick();
     }
@@ -108,9 +75,54 @@ export class HuiClockCardAnalog extends LitElement {
     this._stopTick();
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (!oldHass || oldHass.locale !== this.hass?.locale) {
+        this._initDate();
+      }
+    }
+  }
+
+  private _handleVisibilityChange = () => {
+    if (!document.hidden) {
+      this._computeDateTime();
+    }
+  };
+
+  private _initDate() {
+    if (!this.config || !this.hass) {
+      return;
+    }
+
+    let locale = this.hass.locale;
+    if (this.config.time_format) {
+      locale = { ...locale, time_format: this.config.time_format };
+    }
+
+    this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
+      ...(this.config.date && this.config.date !== "none"
+        ? {
+            year: this.config.date === "short" ? "2-digit" : "numeric",
+            month: this.config.date === "short" ? "short" : "long",
+            day: "numeric",
+          }
+        : {}),
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h12",
+      timeZone:
+        this.config.time_zone ||
+        resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
+    });
+
+    this._computeDateTime();
+  }
+
   private _startTick() {
-    this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
     this._tick();
+    this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
   }
 
   private _stopTick() {
@@ -120,16 +132,16 @@ export class HuiClockCardAnalog extends LitElement {
     }
   }
 
-  private _handleVisibilityChange = () => {
-    if (!document.hidden) {
-      this._computeOffsets();
-    }
-  };
+  private _updateDate() {
+    this._currentDate = new Date();
+  }
 
-  private _computeOffsets() {
+  private _computeDateTime() {
     if (!this._dateTimeFormat) return;
 
-    const parts = this._dateTimeFormat.formatToParts();
+    this._updateDate();
+
+    const parts = this._dateTimeFormat.formatToParts(this._currentDate);
     const hourStr = parts.find((p) => p.type === "hour")?.value;
     const minuteStr = parts.find((p) => p.type === "minute")?.value;
     const secondStr = parts.find((p) => p.type === "second")?.value;
@@ -137,7 +149,7 @@ export class HuiClockCardAnalog extends LitElement {
     const hour = hourStr ? parseInt(hourStr, 10) : 0;
     const minute = minuteStr ? parseInt(minuteStr, 10) : 0;
     const second = secondStr ? parseInt(secondStr, 10) : 0;
-    const ms = new Date().getMilliseconds();
+    const ms = this._currentDate.getMilliseconds();
     const secondsWithMs = second + ms / 1000;
 
     const hour12 = hour % 12;
@@ -145,16 +157,23 @@ export class HuiClockCardAnalog extends LitElement {
     this._secondOffsetSec = secondsWithMs;
     this._minuteOffsetSec = minute * 60 + secondsWithMs;
     this._hourOffsetSec = hour12 * 3600 + minute * 60 + secondsWithMs;
+
+    // Also update date parts if date is shown
+    if (this.config?.date && this.config.date !== "none") {
+      this._year =
+        this.config.clock_size === "small"
+          ? ""
+          : (parts.find((p) => p.type === "year")?.value ?? "----");
+      this._month =
+        this.config.clock_size === "small"
+          ? ""
+          : (parts.find((p) => p.type === "month")?.value ?? "------");
+      this._day = parts.find((p) => p.type === "day")?.value ?? "--";
+    }
   }
 
   private _tick() {
-    if (!this._dateTimeFormat) return;
-
-    const parts = this._dateTimeFormat.formatToParts();
-
-    this._year = parts.find((p) => p.type === "year")?.value;
-    this._month = parts.find((p) => p.type === "month")?.value;
-    this._day = parts.find((p) => p.type === "day")?.value;
+    this._computeDateTime();
   }
 
   private _computeClock = memoizeOne((config: ClockCardConfig) => {
@@ -261,6 +280,15 @@ export class HuiClockCardAnalog extends LitElement {
                       `
                   )
                 : nothing}
+          ${this.config?.date && this.config.date !== "none"
+            ? html`<div class="date-parts ${sizeClass}">
+                <span class="date-part day-month"
+                  >${this._day} ${this._month}</span
+                >
+                <span class="date-part year">${this._year}</span>
+              </div>`
+            : nothing}
+
           <div class="center-dot"></div>
           <div
             class="hand hour"
@@ -465,6 +493,40 @@ export class HuiClockCardAnalog extends LitElement {
       to {
         transform: translate(-50%, 0) rotate(360deg);
       }
+    }
+
+    .date-parts {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: grid;
+      align-items: center;
+      grid-template-areas:
+        "day-month"
+        "year";
+      direction: ltr;
+      color: var(--primary-text-color);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-medium);
+      text-align: center;
+      opacity: 0.8;
+    }
+
+    .date-parts.size-medium {
+      font-size: var(--ha-font-size-l);
+    }
+
+    .date-parts.size-large {
+      font-size: var(--ha-font-size-xl);
+    }
+
+    .date-part.day-month {
+      grid-area: day-month;
+    }
+
+    .date-part.year {
+      grid-area: year;
     }
   `;
 }
