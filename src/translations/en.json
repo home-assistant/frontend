@@ -6839,8 +6839,14 @@
         "matter": {
           "panel": {
             "thread_panel": "Visit Thread Panel",
-            "experimental_note": "Matter is still in the early phase of development, it is not meant to be used in production. This panel is for development only.",
-            "add_devices": "You can add Matter devices by commissioning them if they are not set up yet, or share them from another controller and enter the sharing code.",
+            "add_device": "Add device",
+            "status_title": "status",
+            "status_online": "online",
+            "status_offline": "offline",
+            "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+            "developer_tools_title": "Developer tools",
+            "developer_tools_description": "Advanced commissioning options for development",
+            "developer_tools_info": "These options are intended for developers and advanced users. In most cases, use the \"Add device\" button in the bottom right corner instead.",
             "mobile_app_commisioning": "Commission device with mobile app",
             "commission_device": "Commission device",
             "add_shared_device": "Add shared device",
