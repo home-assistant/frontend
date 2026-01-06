@@ -441,7 +441,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
-  date?: "none" | "short" | "long" | "day" | "day-month";
+  date?: "none" | "short" | "long" | "day" | "day-month" | "day-month-long";
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";

@@ -47,6 +47,7 @@ const cardConfigStruct = assign(
           literal("long"),
           literal("day"),
           literal("day-month"),
+          literal("day-month-long"),
         ]),
         literal("none")
       )
@@ -136,7 +137,7 @@ export class HuiClockCardEditor
           selector: {
             select: {
               mode: "dropdown",
-              options: ["none", "short", "long", "day", "day-month"].map(
+              options: ["none", "short", "long", "day", "day-month", "day-month-long"].map(
                 (value) => ({
                   value,
                   label: localize(

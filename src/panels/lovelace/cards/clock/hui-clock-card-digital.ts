@@ -42,11 +42,25 @@ export class HuiClockCardDigital extends LitElement {
     const h12 = useAmPm(locale);
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
       ...(this.config.date && this.config.date !== "none"
-        ? {
-            year: "numeric",
-            month: this.config.date === "long" ? "long" : "short",
-            day: "numeric",
-          }
+        ? this.config.date === "day"
+          ? {
+              day: "numeric",
+            }
+          : this.config.date === "day-month"
+            ? {
+                month: "short",
+                day: "numeric",
+              }
+            : this.config.date === "day-month-long"
+              ? {
+                  month: "long",
+                  day: "numeric",
+                }
+              : {
+                  year: "numeric",
+                  month: this.config.date === "long" ? "long" : "short",
+                  day: "numeric",
+                }
         : {}),
       hour: h12 ? "numeric" : "2-digit",
       minute: "2-digit",

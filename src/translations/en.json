@@ -9375,7 +9375,8 @@
                 "short": "Short",
                 "long": "Long",
                 "day": "Day only",
-                "day-month": "Day and month"
+                "day-month": "Day and month",
+                "day-month-long": "Day and month (long)"
               },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
