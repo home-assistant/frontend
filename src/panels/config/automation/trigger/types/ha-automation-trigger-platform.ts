@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../../common/entity/compute_domain";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
@@ -414,7 +413,7 @@ export class HaPlatformTrigger extends LitElement {
       return "";
     }
     return this.hass.localize(
-      `component.${computeDomain(this.trigger.trigger)}.selector.${key}`
+      `component.${getTriggerDomain(this.trigger.trigger)}.selector.${key}`
     );
   };
 
