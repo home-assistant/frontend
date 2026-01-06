@@ -23,11 +23,22 @@ import {
   subscribeBluetoothScannersDetails,
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { bluetoothTabs } from "./bluetooth-config-dashboard";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
+
+export const bluetoothAdvertisementMonitorTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.bluetooth.advertisement_monitor",
+    path: "advertisement-monitor",
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.visualization",
+    path: "visualization",
+  },
+];
 
 @customElement("bluetooth-advertisement-monitor")
 export class BluetoothAdvertisementMonitorPanel extends LitElement {
@@ -221,7 +232,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         @collapsed-changed=${this._handleCollapseChanged}
         filter=${this.address || ""}
         clickable
-        .tabs=${bluetoothTabs}
+        .tabs=${bluetoothAdvertisementMonitorTabs}
       ></hass-tabs-subpage-data-table>
     `;
   }
