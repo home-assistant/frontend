@@ -103,8 +103,8 @@ export class HuiClockCardAnalog extends LitElement {
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
       ...(this.config.date && this.config.date !== "none"
         ? {
-            year: this.config.date === "short" ? "2-digit" : "numeric",
-            month: this.config.date === "short" ? "short" : "long",
+            year: "numeric",
+            month: this.config.date === "long" ? "long" : "short",
             day: "numeric",
           }
         : {}),
@@ -160,14 +160,8 @@ export class HuiClockCardAnalog extends LitElement {
 
     // Also update date parts if date is shown
     if (this.config?.date && this.config.date !== "none") {
-      this._year =
-        this.config.clock_size === "small"
-          ? ""
-          : (parts.find((p) => p.type === "year")?.value ?? "----");
-      this._month =
-        this.config.clock_size === "small"
-          ? ""
-          : (parts.find((p) => p.type === "month")?.value ?? "------");
+      this._year = parts.find((p) => p.type === "year")?.value ?? "----";
+      this._month = parts.find((p) => p.type === "month")?.value ?? "------";
       this._day = parts.find((p) => p.type === "day")?.value ?? "--";
     }
   }
@@ -497,7 +491,7 @@ export class HuiClockCardAnalog extends LitElement {
 
     .date-parts {
       position: absolute;
-      top: 70%;
+      top: 68%;
       left: 50%;
       transform: translate(-50%, -50%);
       display: grid;
@@ -509,6 +503,7 @@ export class HuiClockCardAnalog extends LitElement {
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-condensed);
       text-align: center;
       opacity: 0.8;
     }

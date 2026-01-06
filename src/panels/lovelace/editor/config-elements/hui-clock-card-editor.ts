@@ -41,8 +41,14 @@ const cardConfigStruct = assign(
     no_background: optional(boolean()),
     date: optional(
       defaulted(
-        union([literal("none"), literal("default"), literal("short")]),
-        "none"
+        union([
+          literal("none"),
+          literal("short"),
+          literal("long"),
+          literal("day"),
+          literal("day-month"),
+        ]),
+        literal("none")
       )
     ),
     // Analog clock options
@@ -99,7 +105,7 @@ export class HuiClockCardEditor
           name: "clock_style",
           selector: {
             select: {
-              mode: "dropdown",
+              mode: "box",
               options: ["digital", "analog"].map((value) => ({
                 value,
                 label: localize(
@@ -130,12 +136,14 @@ export class HuiClockCardEditor
           selector: {
             select: {
               mode: "dropdown",
-              options: ["none", "default", "short"].map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.clock.dates.${value}`
-                ),
-              })),
+              options: ["none", "short", "long", "day", "day-month"].map(
+                (value) => ({
+                  value,
+                  label: localize(
+                    `ui.panel.lovelace.editor.card.clock.dates.${value}`
+                  ),
+                })
+              ),
             },
           },
         },
@@ -291,8 +299,9 @@ export class HuiClockCardEditor
         .data=${this._data(this._config)}
         .schema=${this._schema(
           this.hass.localize,
-          this._data(this._config).clock_style,
-          this._data(this._config).ticks,
+          this._data(this._config)
+            .clock_style as ClockCardConfig["clock_style"],
+          this._data(this._config).ticks as ClockCardConfig["ticks"],
           this._data(this._config).show_seconds
         )}
         .computeLabel=${this._computeLabelCallback}

@@ -9368,12 +9368,14 @@
               "show_seconds": "Display seconds",
               "date": {
                 "label": "Date",
-                "description": "Whether to show the date on the clock"
+                "description": "Whether to show the date on the clock. Can also be a custom date format."
               },
               "dates": {
                 "none": "No date",
-                "default": "Default",
-                "short": "Short"
+                "short": "Short",
+                "long": "Long",
+                "day": "Day only",
+                "day-month": "Day and month"
               },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
