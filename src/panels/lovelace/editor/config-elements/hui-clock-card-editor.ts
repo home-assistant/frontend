@@ -39,6 +39,12 @@ const cardConfigStruct = assign(
     time_zone: optional(enums(Object.keys(timezones))),
     show_seconds: optional(boolean()),
     no_background: optional(boolean()),
+    date: optional(
+      defaulted(
+        union([literal("none"), literal("default"), literal("short")]),
+        "none"
+      )
+    ),
     // Analog clock options
     border: optional(defaulted(boolean(), false)),
     ticks: optional(
@@ -119,6 +125,20 @@ export class HuiClockCardEditor
         },
         { name: "show_seconds", selector: { boolean: {} } },
         { name: "no_background", selector: { boolean: {} } },
+        {
+          name: "date",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: ["none", "default", "short"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.clock.dates.${value}`
+                ),
+              })),
+            },
+          },
+        },
         ...(clockStyle === "digital"
           ? ([
               {
@@ -247,6 +267,7 @@ export class HuiClockCardEditor
     time_format: "auto",
     show_seconds: false,
     no_background: false,
+    date: "none",
     // Analog clock options
     border: false,
     ticks: "hour",
@@ -344,6 +365,10 @@ export class HuiClockCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.no_background`
         );
+      case "date":  
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.date.label`
+        );
       case "border":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.border.label`
@@ -369,6 +394,10 @@ export class HuiClockCardEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "date":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.date.description`
+        );
       case "border":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.border.description`

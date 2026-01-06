@@ -9366,6 +9366,15 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
+              "date": {
+                "label": "Date",
+                "description": "Whether to show the date on the clock"
+              },
+              "dates": {
+                "none": "No date",
+                "default": "Default",
+                "short": "Short"
+              },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
                 "auto": "Use user settings",
