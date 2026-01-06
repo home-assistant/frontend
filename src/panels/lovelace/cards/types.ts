@@ -420,7 +420,12 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
-  face_style?: "markers" | "numbers_upright" | "roman";
+  face_style?:
+    | "markers"
+    | "numbers_upright"
+    | "numbers_upright_quarter"
+    | "roman"
+    | "roman_quarter";
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {

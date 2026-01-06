@@ -8271,9 +8271,17 @@
                   "label": "Numbers",
                   "description": "Show numbers around the clock face"
                 },
+                "numbers_upright_quarter": {
+                  "label": "Numbers upright quarter",
+                  "description": "Show numbers around the clock with quarter marks"
+                },
                 "roman": {
                   "label": "Roman numerals",
                   "description": "Show Roman numerals (I-XII) around the clock face"
+                },
+                "roman_quarter": {
+                  "label": "Roman numerals quarter",
+                  "description": "Show Roman numerals (I-XII) around the clock with quarter marks"
                 }
               }
             },
