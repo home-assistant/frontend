@@ -449,16 +449,9 @@ const getEnergyData = async (
   const allStatIDs = [...energyStatIds, ...waterStatIds, ...powerStatIds];
 
   const dayDifference = differenceInDays(end || new Date(), start);
-  const period =
-    isFirstDayOfMonth(start) &&
-    (!end || isLastDayOfMonth(end)) &&
-    dayDifference > 35
-      ? "month"
-      : dayDifference > 2
-        ? "day"
-        : "hour";
-  const finePeriod =
-    dayDifference > 64 ? "day" : dayDifference > 8 ? "hour" : "5minute";
+
+  const period = getSuggestedPeriod(start, end);
+  const finePeriod = getSuggestedPeriod(start, end, true);
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
@@ -589,7 +582,7 @@ const getEnergyData = async (
       consumptionStatIDs,
       co2SignalEntity,
       end,
-      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+      period
     );
     if (compare) {
       _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
@@ -598,7 +591,7 @@ const getEnergyData = async (
         consumptionStatIDs,
         co2SignalEntity,
         endCompare,
-        dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+        period
       );
     }
   }
@@ -1427,3 +1420,22 @@ export const formatPowerShort = (
     units[unitIndex]
   );
 };
+
+export function getSuggestedPeriod(
+  start: Date,
+  end?: Date,
+  fine = false
+): "5minute" | "hour" | "day" | "month" {
+  const dayDifference = differenceInDays(end || new Date(), start);
+
+  if (fine) {
+    return dayDifference > 64 ? "day" : dayDifference > 8 ? "hour" : "5minute";
+  }
+  return isFirstDayOfMonth(start) &&
+    (!end || isLastDayOfMonth(end)) &&
+    dayDifference > 35
+    ? "month"
+    : dayDifference > 2
+      ? "day"
+      : "hour";
+}

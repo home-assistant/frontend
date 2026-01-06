@@ -8,7 +8,10 @@ import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-tooltip";
-import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getSuggestedPeriod,
+} from "../../../data/energy";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -26,10 +29,7 @@ import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import {
-  getSuggestedMax,
-  getSuggestedPeriod,
-} from "./energy/common/energy-chart-options";
+import { getSuggestedMax } from "./energy/common/energy-chart-options";
 import type { StatisticsGraphCardConfig } from "./types";
 
 export const DEFAULT_DAYS_TO_SHOW = 30;
@@ -268,9 +268,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     return (
       this._config?.period ??
       (this._energyStart && this._energyEnd
-        ? getSuggestedPeriod(
-            differenceInDays(this._energyEnd, this._energyStart)
-          )
+        ? getSuggestedPeriod(this._energyStart, this._energyEnd)
         : undefined)
     );
   }
