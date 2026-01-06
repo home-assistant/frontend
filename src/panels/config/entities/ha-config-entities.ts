@@ -501,8 +501,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ),
         type: "icon",
         defaultHidden: true,
-        minWidth: "160px",
-        maxWidth: "160px",
+        minWidth: "100px",
+        maxWidth: "100px",
         template: (entry) => {
           const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
             this._entities,
