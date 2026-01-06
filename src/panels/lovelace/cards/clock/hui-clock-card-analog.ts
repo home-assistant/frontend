@@ -47,11 +47,11 @@ export class HuiClockCardAnalog extends LitElement {
 
   @state() private _secondOffsetSec?: number;
 
-  @state() private _year = "----";
+  @state() private _year = "";
 
-  @state() private _month = "------";
+  @state() private _month = "";
 
-  @state() private _day = "--";
+  @state() private _day = "";
 
   private _tickInterval?: undefined | number;
 
@@ -102,11 +102,25 @@ export class HuiClockCardAnalog extends LitElement {
 
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
       ...(this.config.date && this.config.date !== "none"
-        ? {
-            year: "numeric",
-            month: this.config.date === "long" ? "long" : "short",
-            day: "numeric",
-          }
+        ? this.config.date === "day"
+          ? {
+              day: "numeric",
+            }
+          : this.config.date === "day-month"
+            ? {
+                month: "short",
+                day: "numeric",
+              }
+            : this.config.date === "day-month-long"
+              ? {
+                  month: "long",
+                  day: "numeric",
+                }
+              : {
+                  year: "numeric",
+                  month: this.config.date === "long" ? "long" : "short",
+                  day: "numeric",
+                }
         : {}),
       hour: "2-digit",
       minute: "2-digit",
@@ -160,9 +174,9 @@ export class HuiClockCardAnalog extends LitElement {
 
     // Also update date parts if date is shown
     if (this.config?.date && this.config.date !== "none") {
-      this._year = parts.find((p) => p.type === "year")?.value ?? "----";
-      this._month = parts.find((p) => p.type === "month")?.value ?? "------";
-      this._day = parts.find((p) => p.type === "day")?.value ?? "--";
+      this._year = parts.find((p) => p.type === "year")?.value ?? "";
+      this._month = parts.find((p) => p.type === "month")?.value ?? "";
+      this._day = parts.find((p) => p.type === "day")?.value ?? "";
     }
   }
 
