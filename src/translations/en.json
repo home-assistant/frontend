@@ -6027,7 +6027,7 @@
           "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
           "no_connection_slot_allocations": "No connection slot allocations information available",
-          "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
+          "no_connection_slots": "No connection slots",
           "no_scanner_state_available": "No scanner state available",
           "scanner_state_unknown": "State unknown",
           "current_scanning_mode": "Current scanning mode",

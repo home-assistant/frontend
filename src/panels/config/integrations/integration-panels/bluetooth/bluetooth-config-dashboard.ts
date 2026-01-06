@@ -1,6 +1,6 @@
 import { mdiCogOutline } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -9,23 +9,24 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-list-item";
 
-import type { ConfigEntry } from "../../../../../data/config_entries";
-import { getConfigEntries } from "../../../../../data/config_entries";
-import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
-import "../../../../../layouts/hass-subpage";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import {
-  subscribeBluetoothConnectionAllocations,
-  subscribeBluetoothScannerState,
-  subscribeBluetoothScannersDetails,
-} from "../../../../../data/bluetooth";
 import type {
   BluetoothAllocationsData,
   BluetoothScannerState,
   BluetoothScannersDetails,
   HaScannerType,
 } from "../../../../../data/bluetooth";
+import {
+  subscribeBluetoothConnectionAllocations,
+  subscribeBluetoothScannerState,
+  subscribeBluetoothScannersDetails,
+} from "../../../../../data/bluetooth";
+import type { ConfigEntry } from "../../../../../data/config_entries";
+import { getConfigEntries } from "../../../../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
+import "../../../../../layouts/hass-subpage";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("bluetooth-config-dashboard")
 export class BluetoothConfigDashboard extends LitElement {
@@ -200,13 +201,27 @@ export class BluetoothConfigDashboard extends LitElement {
       </ha-list-item>`;
     }
 
-    return this._configEntries.map((entry) => {
-      // Find scanner state by matching scanner details name to config entry title
-      const scannerState = Object.values(this._scannerStates).find(
-        (s) => this._scannerDetails?.[s.source]?.name === entry.title
+    // Build source to device mapping (same as visualization)
+    const sourceDevices: Record<string, DeviceRegistryEntry> = {};
+    Object.values(this.hass.devices).forEach((device) => {
+      const btConnection = device.connections.find(
+        (connection) => connection[0] === "bluetooth"
       );
-      const scannerDetails = scannerState
-        ? this._scannerDetails?.[scannerState.source]
+      if (btConnection) {
+        sourceDevices[btConnection[1]] = device;
+      }
+    });
+
+    return this._configEntries.map((entry) => {
+      // Find scanner by matching device's config_entries to this entry
+      const scannerDetails = this._scannerDetails
+        ? Object.values(this._scannerDetails).find((d) => {
+            const device = sourceDevices[d.source];
+            return device?.config_entries.includes(entry.entry_id);
+          })
+        : undefined;
+      const scannerState = scannerDetails
+        ? this._scannerStates[scannerDetails.source]
         : undefined;
       const scannerType: HaScannerType =
         scannerDetails?.scanner_type ?? "unknown";
@@ -216,9 +231,9 @@ export class BluetoothConfigDashboard extends LitElement {
         scannerState.current_mode !== scannerState.requested_mode;
 
       // Find allocation data for this scanner
-      const allocations = scannerState
+      const allocations = scannerDetails
         ? this._connectionAllocationData.find(
-            (a) => a.source === scannerState.source
+            (a) => a.source === scannerDetails.source
           )
         : undefined;
 
@@ -228,8 +243,10 @@ export class BluetoothConfigDashboard extends LitElement {
         <ha-list-item twoline hasMeta noninteractive>
           <span>${entry.title}</span>
           <span slot="secondary">
-            ${secondaryText}${allocations && allocations.slots > 0
-              ? ` · ${allocations.slots - allocations.free}/${allocations.slots} ${this.hass.localize("ui.panel.config.bluetooth.active_connections")}`
+            ${secondaryText}${allocations
+              ? allocations.slots > 0
+                ? ` · ${allocations.slots - allocations.free}/${allocations.slots} ${this.hass.localize("ui.panel.config.bluetooth.active_connections")}`
+                : ` · ${this.hass.localize("ui.panel.config.bluetooth.no_connection_slots")}`
               : nothing}
           </span>
           ${!isRemoteScanner
@@ -244,7 +261,7 @@ export class BluetoothConfigDashboard extends LitElement {
               ></ha-icon-button>`
             : nothing}
         </ha-list-item>
-        ${hasMismatch
+        ${hasMismatch && scannerDetails
           ? this._renderScannerMismatchWarning(
               entry.title,
               scannerState,
