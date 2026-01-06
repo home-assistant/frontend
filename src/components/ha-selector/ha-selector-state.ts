@@ -2,16 +2,16 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type {
-  TargetSelector,
+import {
   resolveEntityIDs,
   type StateSelector,
+  type TargetSelector,
 } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
-import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../entity/ha-entity-state-picker";
 import "../entity/ha-entity-states-picker";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 
 @customElement("ha-selector-state")
 export class HaSelectorState extends SubscribeMixin(LitElement) {
