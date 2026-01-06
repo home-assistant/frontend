@@ -1,4 +1,4 @@
-import { mdiChevronUp } from "@mdi/js";
+import { mdiChevronRight } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -42,7 +42,7 @@ export class HaAutomationRow extends LitElement {
           ? html`
               <ha-icon-button
                 class="expand-button"
-                .path=${mdiChevronUp}
+                .path=${mdiChevronRight}
                 @click=${this._handleExpand}
                 @keydown=${this._handleExpand}
               ></ha-icon-button>
@@ -158,8 +158,8 @@ export class HaAutomationRow extends LitElement {
       color: var(--white-color);
       transform: rotate(-45deg);
     }
-    :host([collapsed]) .expand-button {
-      transform: rotate(180deg);
+    :host(:not([collapsed])) .expand-button {
+      transform: rotate(90deg);
     }
     :host([selected]) .row,
     :host([selected]) .row:focus {
