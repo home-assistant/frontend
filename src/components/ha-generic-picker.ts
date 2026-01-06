@@ -39,7 +39,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   public getItems!: (
     searchString?: string,
     section?: string
-  ) => (PickerComboBoxItem | string)[];
+  ) => (PickerComboBoxItem | string)[] | undefined;
 
   @property({ attribute: false, type: Array })
   public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
