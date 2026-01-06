@@ -4,7 +4,10 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-tooltip";
 import { getEnergyDataCollection } from "../../../data/energy";
 import type {
   Statistics,
@@ -72,6 +75,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   private _entities: EntityConfig[] = [];
 
   private _entityIds: string[] = [];
+
+  private _historyLinkId = `history-${Math.random().toString(36).substring(2, 9)}`;
 
   private _names: Record<string, string> = {};
 
@@ -191,6 +196,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+    if (changedProps.has("hass") || changedProps.has("_config")) {
+      this._computeNames();
+    }
+
     if (!this._config || !changedProps.has("_config")) {
       return;
     }
@@ -218,10 +227,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
         this._unsubscribeEnergy();
         this._subscribeEnergy();
       }
-    }
-
-    if (changedProps.has("hass")) {
-      this._computeNames();
     }
 
     if (
@@ -277,10 +282,37 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
     const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
 
+    const daysToShow =
+      this._energyStart && this._energyEnd
+        ? differenceInDays(this._energyEnd, this._energyStart)
+        : this._config.days_to_show || DEFAULT_DAYS_TO_SHOW;
+
+    const start =
+      this._energyStart || subHours(new Date(), 24 * daysToShow + 1);
+
+    const configUrl = `/history?${createSearchParam({
+      entity_id: this._entityIds.join(","),
+      start_date: start.toISOString(),
+    })}`;
+
     return html`
       <ha-card>
         ${this._config.title
-          ? html`<h1 class="card-header">${this._config.title}</h1>`
+          ? html`
+              <h1 class="card-header">
+                ${this._config.title}
+                <a
+                  id=${this._historyLinkId}
+                  href=${configUrl}
+                  aria-label=${this.hass.localize("panel.history")}
+                >
+                  <ha-icon-next></ha-icon-next>
+                </a>
+                <ha-tooltip for=${this._historyLinkId} placement="left">
+                  ${this.hass.localize("panel.history")}
+                </ha-tooltip>
+              </h1>
+            `
           : nothing}
         <div
           class="content ${classMap({
@@ -302,17 +334,12 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .maxYAxis=${this._config.max_y_axis}
             .startTime=${this._energyStart}
             .endTime=${this._energyEnd && this._energyStart
-              ? getSuggestedMax(
-                  differenceInDays(this._energyEnd, this._energyStart),
-                  this._energyEnd
-                )
+              ? getSuggestedMax(this._period!, this._energyEnd)
               : undefined}
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
-            .daysToShow=${this._energyStart && this._energyEnd
-              ? differenceInDays(this._energyEnd, this._energyStart)
-              : this._config.days_to_show || DEFAULT_DAYS_TO_SHOW}
+            .daysToShow=${daysToShow}
             .height=${hasFixedHeight ? "100%" : undefined}
             .expandLegend=${this._config.expand_legend}
           ></statistics-chart>
@@ -396,7 +423,14 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       height: 100%;
     }
     .card-header {
+      justify-content: space-between;
+      display: flex;
       padding-bottom: 0;
+    }
+    .card-header ha-icon-next {
+      --mdc-icon-button-size: 24px;
+      line-height: 24px;
+      color: var(--primary-text-color);
     }
     .content {
       padding: 16px;

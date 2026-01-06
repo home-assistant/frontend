@@ -9,13 +9,15 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { localizeContext } from "../data/context";
+import { PickerMixin } from "../mixins/picker-mixin";
 import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
-import "./ha-icon-button";
 import "./ha-icon";
+import "./ha-icon-button";
 
 declare global {
   interface HASSDomEvents {
@@ -26,32 +28,7 @@ declare global {
 export type PickerValueRenderer = (value: string) => TemplateResult<1>;
 
 @customElement("ha-picker-field")
-export class HaPickerField extends LitElement {
-  @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Boolean }) public required = false;
-
-  @property() public value?: string;
-
-  @property() public icon?: string;
-
-  @property() public helper?: string;
-
-  @property() public placeholder?: string;
-
-  @property({ type: Boolean, reflect: true }) public unknown = false;
-
-  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
-
-  @property({ attribute: "hide-clear-icon", type: Boolean })
-  public hideClearIcon = false;
-
-  @property({ attribute: "show-label", type: Boolean })
-  public showLabel = false;
-
-  @property({ attribute: false })
-  public valueRenderer?: PickerValueRenderer;
-
+export class HaPickerField extends PickerMixin(LitElement) {
   @property({ type: Boolean, reflect: true }) public invalid = false;
 
   @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
@@ -66,15 +43,17 @@ export class HaPickerField extends LitElement {
   }
 
   protected render() {
-    const hasValue = !!this.value?.length;
+    const hasValue = !!this.value;
 
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
 
+    const placeholderText = this.placeholder ?? this.label;
+
     const overlineLabel =
-      this.showLabel && hasValue && this.placeholder
+      this.label && hasValue
         ? html`<span slot="overline"
-            >${this.placeholder}${this.required ? " *" : ""}</span
+            >${this.label}${this.required ? " *" : ""}</span
           >`
         : nothing;
 
@@ -82,17 +61,30 @@ export class HaPickerField extends LitElement {
       ? this.valueRenderer
         ? this.valueRenderer(this.value ?? "")
         : html`<span slot="headline">${this.value}</span>`
-      : this.placeholder
+      : placeholderText
         ? html`<span slot="headline" class="placeholder">
-            ${this.placeholder}${this.required ? " *" : ""}
+            ${placeholderText}${this.required ? " *" : ""}
           </span>`
         : nothing;
 
     return html`
-      <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
-        ${this.icon
-          ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
-          : nothing}
+      <ha-combo-box-item
+        aria-label=${ifDefined(this.label || this.placeholder)}
+        .disabled=${this.disabled}
+        type="button"
+        compact
+      >
+        ${this.image
+          ? html`<img
+              alt=${this.label ?? ""}
+              slot="start"
+              .src=${this.image}
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+            />`
+          : this.icon
+            ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
+            : html`<slot name="start"></slot>`}
         ${overlineLabel}${headlineContent}
         ${this.unknown
           ? html`<div slot="supporting-text" class="unknown">
@@ -119,7 +111,7 @@ export class HaPickerField extends LitElement {
     `;
   }
 
-  private _clear(e) {
+  private _clear(e: CustomEvent) {
     e.stopPropagation();
     fireEvent(this, "clear");
   }
@@ -202,7 +194,10 @@ export class HaPickerField extends LitElement {
 
         .placeholder {
           color: var(--secondary-text-color);
-          padding: 0 8px;
+        }
+
+        :host([invalid]) .placeholder {
+          color: var(--mdc-theme-error, var(--error-color, #b00020));
         }
 
         .unknown {

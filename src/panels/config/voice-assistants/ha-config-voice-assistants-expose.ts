@@ -196,6 +196,7 @@ export class VoiceAssistantsExpose extends LitElement {
         sortable: true,
         groupable: true,
         filterable: true,
+        template: (entry) => entry.area || "—",
       },
       assistants: {
         title: localize(
@@ -385,7 +386,7 @@ export class VoiceAssistantsExpose extends LitElement {
               "ui.panel.config.entities.picker.unnamed_entity"
             ),
           domain: domainToName(localize, computeDomain(entityState.entity_id)),
-          area: area ? area.name : "—",
+          area: area ? area.name : undefined,
           assistants: Object.keys(
             exposedEntities?.[entityState.entity_id]
           ).filter(
@@ -433,7 +434,7 @@ export class VoiceAssistantsExpose extends LitElement {
               entity_id: entityState.entity_id,
               entity: entityState,
               name: computeStateName(entityState),
-              area: area ? area.name : "—",
+              area: area ? area.name : undefined,
               assistants: [
                 ...(exposedEntities
                   ? Object.keys(

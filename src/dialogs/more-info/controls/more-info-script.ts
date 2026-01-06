@@ -227,24 +227,24 @@ class MoreInfoScript extends LitElement {
       visibility: hidden;
       color: var(--secondary-text-color);
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
       height: 21px;
     }
     .queue.has-queue {
       visibility: visible;
     }
     .fields {
-      padding: 16px;
+      padding: var(--ha-space-4);
       border: 1px solid var(--divider-color);
       border-radius: var(--ha-border-radius-md);
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
     .fields .title {
       font-weight: var(--ha-font-weight-bold);
     }
     ha-control-button ha-svg-icon {
       z-index: -1;
-      margin-right: 4px;
+      margin-right: var(--ha-space-1);
     }
     ha-service-control {
       --service-control-padding: 0;
@@ -252,7 +252,7 @@ class MoreInfoScript extends LitElement {
     }
     ha-markdown {
       text-align: center;
-      padding: 0 16px;
+      padding: 0 var(--ha-space-4);
     }
   `;
 }

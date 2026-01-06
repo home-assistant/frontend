@@ -673,12 +673,12 @@ class HaPanelDevAction extends LitElement {
       haStyle,
       css`
         .content {
-          padding: 16px;
+          padding: var(--ha-space-4);
           max-width: 1200px;
           margin: auto;
         }
         .button-row {
-          padding: 8px 16px;
+          padding: var(--ha-space-2) var(--ha-space-4);
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
           background: var(--card-background-color);
@@ -698,8 +698,8 @@ class HaPanelDevAction extends LitElement {
           align-items: center;
         }
         .switch-mode-container .error {
-          margin-left: 8px;
-          margin-inline-start: 8px;
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
         }
         .attributes {
@@ -732,7 +732,7 @@ class HaPanelDevAction extends LitElement {
         }
 
         .attributes td {
-          padding: 4px;
+          padding: var(--ha-space-1);
           vertical-align: middle;
         }
 
@@ -748,7 +748,7 @@ class HaPanelDevAction extends LitElement {
         .response img {
           max-width: 100%;
           height: auto;
-          margin-top: 24px;
+          margin-top: var(--ha-space-6);
         }
       `,
     ];

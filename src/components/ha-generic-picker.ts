@@ -7,8 +7,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
+import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
+import { isIosApp } from "../util/is_ios";
 import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-combo-box-item";
@@ -20,38 +22,17 @@ import type {
   PickerComboBoxSearchFn,
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
-import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
-export class HaGenericPicker extends LitElement {
+export class HaGenericPicker extends PickerMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
-  @property() public value?: string;
-
-  @property() public icon?: string;
-
-  @property() public label?: string;
-
-  @property() public helper?: string;
-
-  @property() public placeholder?: string;
-
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
-
-  @property({ attribute: "hide-clear-icon", type: Boolean })
-  public hideClearIcon = false;
-
-  @property({ attribute: "show-label", type: Boolean })
-  public showLabel = false;
 
   /** To prevent lags, getItems needs to be memoized */
   @property({ attribute: false })
@@ -65,9 +46,6 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: false })
   public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
-
-  @property({ attribute: false })
-  public valueRenderer?: PickerValueRenderer;
 
   @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
@@ -118,7 +96,11 @@ export class HaGenericPicker extends LitElement {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
-  @property({ attribute: "unknown-item-text" }) public unknownItemText?: string;
+  @property({ type: Boolean, attribute: "use-top-label" })
+  public useTopLabel = false;
+
+  @property({ attribute: "custom-value-label" })
+  public customValueLabel?: string;
 
   @query(".container") private _containerElement?: HTMLDivElement;
 
@@ -149,11 +131,13 @@ export class HaGenericPicker extends LitElement {
   private _unsubscribeTinyKeys?: () => void;
 
   protected render() {
-    return html`
-      ${this.label
-        ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
-        : nothing}
-      <div class="container">
+    // Only show label if it's not a top label and there is a value.
+    const label = this.useTopLabel && this.value ? undefined : this.label;
+
+    return html`<div class="container">
+        ${this.useTopLabel && this.label
+          ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
+          : nothing}
         <div id="picker">
           <slot name="field">
             ${this.addButtonLabel && !this.value
@@ -173,14 +157,20 @@ export class HaGenericPicker extends LitElement {
                   type="button"
                   class=${this._opened ? "opened" : ""}
                   compact
-                  .unknown=${this._unknownValue(this.value, this.getItems())}
+                  .unknown=${this._unknownValue(
+                    this.allowCustomValue,
+                    this.value,
+                    this.getItems()
+                  )}
                   .unknownItemText=${this.unknownItemText}
                   aria-label=${ifDefined(this.label)}
                   @click=${this.open}
                   @clear=${this._clear}
                   .icon=${this.icon}
-                  .showLabel=${this.showLabel}
+                  .image=${this.image}
+                  .label=${label}
                   .placeholder=${this.placeholder}
+                  .helper=${this.helper}
                   .value=${this.value}
                   .valueRenderer=${this.valueRenderer}
                   .required=${this.required}
@@ -188,6 +178,7 @@ export class HaGenericPicker extends LitElement {
                   .invalid=${this.invalid}
                   .hideClearIcon=${this.hideClearIcon}
                 >
+                  <slot name="start"></slot>
                 </ha-picker-field>`}
           </slot>
         </div>
@@ -226,8 +217,7 @@ export class HaGenericPicker extends LitElement {
               </ha-bottom-sheet>`
             : nothing}
       </div>
-      ${this._renderHelper()}
-    `;
+      ${this._renderHelper()}`;
   }
 
   private _renderComboBox(dialogMode = false) {
@@ -236,6 +226,7 @@ export class HaGenericPicker extends LitElement {
     }
     return html`
       <ha-picker-combo-box
+        id="combo-box"
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
@@ -252,13 +243,24 @@ export class HaGenericPicker extends LitElement {
         .sectionTitleFunction=${this.sectionTitleFunction}
         .selectedSection=${this.selectedSection}
         .searchKeys=${this.searchKeys}
+        .customValueLabel=${this.customValueLabel}
       ></ha-picker-combo-box>
     `;
   }
 
   private _unknownValue = memoizeOne(
-    (value?: string, items?: (PickerComboBoxItem | string)[]) => {
-      if (value === undefined || value === null || value === "" || !items) {
+    (
+      allowCustomValue: boolean,
+      value?: string,
+      items?: (PickerComboBoxItem | string)[]
+    ) => {
+      if (
+        allowCustomValue ||
+        value === undefined ||
+        value === null ||
+        value === "" ||
+        !items
+      ) {
         return false;
       }
 
@@ -284,6 +286,15 @@ export class HaGenericPicker extends LitElement {
   private _dialogOpened = () => {
     this._opened = true;
     requestAnimationFrame(() => {
+      if (this.hass && isIosApp(this.hass)) {
+        this.hass.auth.external!.fireMessage({
+          type: "focus_element",
+          payload: {
+            element_id: "combo-box",
+          },
+        });
+        return;
+      }
       this._comboBox?.focus();
     });
   };
@@ -310,7 +321,7 @@ export class HaGenericPicker extends LitElement {
     this._newValue = value;
   }
 
-  private _clear(e) {
+  private _clear(e: CustomEvent) {
     e.stopPropagation();
     this._setValue(undefined);
   }
@@ -382,7 +393,7 @@ export class HaGenericPicker extends LitElement {
         }
 
         wa-popover {
-          --wa-space-l: var(--ha-space-0);
+          --wa-space-l: 0;
         }
 
         wa-popover::part(body) {
@@ -407,7 +418,7 @@ export class HaGenericPicker extends LitElement {
           --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
           --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
           --ha-bottom-sheet-max-width: 600px;
-          --ha-bottom-sheet-padding: var(--ha-space-0);
+          --ha-bottom-sheet-padding: 0;
           --ha-bottom-sheet-surface-background: var(--card-background-color);
           --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
         }

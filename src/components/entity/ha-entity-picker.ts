@@ -1,5 +1,5 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus, mdiShape } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -172,9 +172,9 @@ export class HaEntityPicker extends LitElement {
     return this.showEntityId || this.hass.userData?.showEntityIdPicker;
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<EntityComboBoxItem> = (
+  private _rowRenderer: RenderItemFunction<EntityComboBoxItem> = (
     item,
-    { index }
+    index
   ) => {
     const showEntityId = this._showEntityId;
 
@@ -277,13 +277,13 @@ export class HaEntityPicker extends LitElement {
         .disabled=${this.disabled}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
-        .label=${this.label}
         .required=${this.required}
+        .label=${this.label}
+        .placeholder=${placeholder}
         .helper=${this.helper}
+        .value=${this.addButton ? undefined : this.value}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}
-        .placeholder=${placeholder}
-        .value=${this.addButton ? undefined : this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
@@ -291,6 +291,7 @@ export class HaEntityPicker extends LitElement {
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         .searchKeys=${entityComboBoxKeys}
+        use-top-label
         .addButtonLabel=${this.addButton
           ? this.hass.localize("ui.components.entity.entity-picker.add")
           : undefined}

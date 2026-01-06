@@ -278,8 +278,8 @@ export class HaTargetPickerValueChip extends LitElement {
       direction: var(--direction);
     }
     .expand-btn {
-      margin-right: var(--ha-space-0);
-      margin-inline-end: var(--ha-space-0);
+      margin-right: 0;
+      margin-inline-end: 0;
       margin-inline-start: initial;
     }
     .mdc-chip.area:not(.add),

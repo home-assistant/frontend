@@ -528,11 +528,11 @@ class MoreInfoMediaPlayer extends LitElement {
       display: flex;
       align-items: center;
       gap: var(--ha-space-3);
-      margin-left: 8px;
+      margin-left: var(--ha-space-2);
     }
 
     .volume ha-svg-icon {
-      padding: 4px;
+      padding: var(--ha-space-1);
       height: 16px;
       width: 16px;
     }
@@ -545,17 +545,17 @@ class MoreInfoMediaPlayer extends LitElement {
     .badge {
       position: absolute;
       top: -10px;
-      left: 16px;
+      left: var(--ha-space-4);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 16px;
-      min-width: 8px;
+      min-width: var(--ha-space-2);
       border-radius: var(--ha-border-radius-md);
       font-weight: var(--ha-font-weight-normal);
       font-size: var(--ha-font-size-xs);
       background-color: var(--primary-color);
-      padding: 0 4px;
+      padding: 0 var(--ha-space-1);
       color: var(--text-primary-color);
     }
 
@@ -572,13 +572,13 @@ class MoreInfoMediaPlayer extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      margin: 8px 0 8px 8px;
+      margin: var(--ha-space-2) 0 var(--ha-space-2) var(--ha-space-2);
     }
 
     .media-title {
       font-size: var(--ha-font-size-xl);
       font-weight: var(--ha-font-weight-bold);
-      margin-bottom: 4px;
+      margin-bottom: var(--ha-space-1);
     }
 
     .media-artist {
