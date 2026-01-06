@@ -92,10 +92,7 @@ import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
-import {
-  entityRegistryByEntityId,
-  updateEntityRegistryEntry,
-} from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
@@ -387,14 +384,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           ),
           type: "icon",
           defaultHidden: true,
-          minWidth: "160px",
-          maxWidth: "160px",
+          minWidth: "100px",
+          maxWidth: "100px",
           template: (automation) => {
-            const entry = entityRegistryByEntityId(this._entityReg)[
+            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+              this._entityReg,
               automation.entity_id
-            ];
-            const exposedToVoiceAssistantKeys =
-              getEntityVoiceAssistantsKeys(entry);
+            );
             return html` ${exposedToVoiceAssistantKeys.length !== 0
               ? exposedToVoiceAssistantKeys.map(
                   (vaKey) =>

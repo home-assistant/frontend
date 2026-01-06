@@ -504,8 +504,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         minWidth: "160px",
         maxWidth: "160px",
         template: (entry) => {
-          const exposedToVoiceAssistantKeys =
-            getEntityVoiceAssistantsKeys(entry);
+          const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+            this._entities,
+            entry.entity_id
+          );
           return html` ${exposedToVoiceAssistantKeys.length !== 0
             ? exposedToVoiceAssistantKeys.map(
                 (vaKey) =>

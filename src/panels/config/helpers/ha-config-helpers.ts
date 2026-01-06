@@ -488,22 +488,22 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         ),
         type: "icon",
         defaultHidden: true,
-        minWidth: "160px",
-        maxWidth: "160px",
+        minWidth: "100px",
+        maxWidth: "100px",
         template: (helper) => {
-          const entry = entityRegistryByEntityId(this._entityReg)[
+          const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+            this._entityReg,
             helper.entity_id
-          ];
-          const exposedToVoiceAssistantKeys =
-            getEntityVoiceAssistantsKeys(entry);
+          );
           return html` ${exposedToVoiceAssistantKeys.length !== 0
             ? exposedToVoiceAssistantKeys.map(
-                (vaKey) =>
-                  html` <voice-assistants-expose-assistant-icon
+                (vaKey) => html`
+                  <voice-assistants-expose-assistant-icon
                     .assistant=${vaKey}
                     .hass=${this.hass}
                   >
-                  </voice-assistants-expose-assistant-icon>`
+                  </voice-assistants-expose-assistant-icon>
+                `
               )
             : "—"}`;
         },
