@@ -123,7 +123,7 @@ export class BluetoothConfigDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        header="Bluetooth"
+        header=${this.hass.localize("ui.panel.config.bluetooth.title")}
         .narrow=${this.narrow}
         .hass=${this.hass}
       >
