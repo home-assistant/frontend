@@ -24,6 +24,8 @@ export class HuiClockCardDigital extends LitElement {
 
   @state() private _timeAmPm?: string;
 
+  @state() private _date?: string;
+
   private _tickInterval?: undefined | number;
 
   private _initDate() {
@@ -39,6 +41,9 @@ export class HuiClockCardDigital extends LitElement {
 
     const h12 = useAmPm(locale);
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
+      year: "numeric",
+      month: this.config?.date === "short" ? "short" : "long",
+      day: "numeric",
       hour: h12 ? "numeric" : "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -93,6 +98,16 @@ export class HuiClockCardDigital extends LitElement {
       ? parts.find((part) => part.type === "second")?.value
       : undefined;
     this._timeAmPm = parts.find((part) => part.type === "dayPeriod")?.value;
+
+    this._date = this.config?.date
+      ? [
+          parts.find((part) => part.type === "day")?.value,
+          parts.find((part) => part.type === "month")?.value,
+          parts.find((part) => part.type === "year")?.value,
+        ]
+          .filter(Boolean)
+          .join(" ")
+      : undefined;
   }
 
   render() {
@@ -113,6 +128,9 @@ export class HuiClockCardDigital extends LitElement {
           ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
           : nothing}
       </div>
+      ${this.config.date !== "none"
+        ? html`<div class="date ${sizeClass}">${this._date}</div>`
+        : nothing}
     `;
   }
 
@@ -187,6 +205,20 @@ export class HuiClockCardDigital extends LitElement {
     .time-parts .time-part.hour:after {
       content: ":";
       margin: 0 2px;
+    }
+
+    .date {
+      text-align: center;
+      opacity: 0.8;
+      font-size: var(--ha-font-size-s);
+    }
+
+    .date.size-medium {
+      font-size: var(--ha-font-size-l);
+    }
+
+    .date.size-large {
+      font-size: var(--ha-font-size-2xl);
     }
   `;
 }
