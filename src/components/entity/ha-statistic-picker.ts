@@ -141,6 +141,7 @@ export class HaStatisticPicker extends LitElement {
 
   private async _getStatisticIds() {
     this.statisticIds = await getStatisticIds(this.hass, this.statisticTypes);
+    this._picker?.requestUpdate();
   }
 
   private _getItems = () =>
@@ -177,9 +178,9 @@ export class HaStatisticPicker extends LitElement {
       entitiesOnly?: boolean,
       excludeStatistics?: string[],
       value?: string
-    ): StatisticComboBoxItem[] => {
+    ): StatisticComboBoxItem[] | undefined => {
       if (!statisticIds) {
-        return [];
+        return undefined;
       }
 
       if (includeStatisticsUnitOfMeasurement) {
