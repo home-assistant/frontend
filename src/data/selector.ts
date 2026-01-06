@@ -388,6 +388,7 @@ export interface SelectSelector {
     multiple?: boolean;
     custom_value?: boolean;
     mode?: "list" | "dropdown" | "box";
+    picker?: boolean;
     options: readonly string[] | readonly SelectOption[];
     translation_key?: string;
     sort?: boolean;

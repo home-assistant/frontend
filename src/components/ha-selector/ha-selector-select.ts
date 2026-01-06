@@ -9,6 +9,7 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import type { PickerValueRenderer } from "../ha-picker-field";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
@@ -223,8 +224,26 @@ export class HaSelectSelector extends LitElement {
           .required=${this.required}
           .getItems=${this._getItems(options)}
           .value=${this.value as string | undefined}
+          .valueRenderer=${this._getValueRenderer(options)}
           @value-changed=${this._comboBoxValueChanged}
           allow-custom-value
+        ></ha-generic-picker>
+      `;
+    }
+
+    if (this._mode === "dropdown" && this.selector.select?.picker) {
+      return html`
+        <ha-generic-picker
+          .hass=${this.hass}
+          .label=${this.label}
+          .helper=${this.helper}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          .getItems=${this._getItems(options)}
+          .value=${this.value as string | undefined}
+          .valueRenderer=${this._getValueRenderer(options)}
+          @value-changed=${this._comboBoxValueChanged}
+          .allowCustomValue=${this.selector.select?.custom_value ?? false}
         ></ha-generic-picker>
       `;
     }
@@ -283,6 +302,15 @@ export class HaSelectSelector extends LitElement {
           sorting_label: option.label,
         }));
     }
+  );
+
+  private _getValueRenderer = memoizeOne(
+    (options: SelectOption[]): PickerValueRenderer =>
+      (value: string) => {
+        const option = options.find((opt) => opt.value === value);
+        const label = option?.label || value;
+        return html`<span slot="headline">${label}</span>`;
+      }
   );
 
   private get _mode(): "list" | "dropdown" | "box" {

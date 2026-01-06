@@ -242,6 +242,7 @@ export class HuiClockCardEditor
           selector: {
             select: {
               mode: "dropdown",
+              picker: true,
               options: [
                 [
                   "auto",
