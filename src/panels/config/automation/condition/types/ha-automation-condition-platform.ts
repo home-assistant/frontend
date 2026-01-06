@@ -268,8 +268,11 @@ export class HaPlatformCondition extends LitElement {
       return undefined;
     }
 
-    const context = {};
+    const context: Record<string, any> = {};
     for (const [context_key, data_key] of Object.entries(field.context)) {
+      if (data_key === "target" && this.description?.target) {
+        context.target_selector = this._targetSelector(this.description.target);
+      }
       context[context_key] =
         data_key === "target"
           ? this.condition.target
