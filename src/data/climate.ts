@@ -53,6 +53,7 @@ export type ClimateEntity = HassEntityBase & {
     current_humidity?: number;
     target_humidity_low?: number;
     target_humidity_high?: number;
+    target_humidity_step?: number;
     min_humidity?: number;
     max_humidity?: number;
     fan_mode?: string;
