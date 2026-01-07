@@ -149,6 +149,15 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     }
   }
 
+  public setFieldValue(value: string) {
+    if (this._comboBox) {
+      this._comboBox.setFieldValue(value);
+      return;
+    }
+    // Store initial value to set when opened
+    this._initialFieldValue = value;
+  }
+
   protected render() {
     // Only show label if it's not a top label and there is a value.
     const label = this.useTopLabel && this.value ? undefined : this.label;
@@ -197,40 +206,42 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                 </ha-picker-field>`}
           </slot>
         </div>
-        ${!this._openedNarrow && (this._pickerWrapperOpen || this._opened)
-          ? html`
-              <wa-popover
-                .open=${this._pickerWrapperOpen}
-                style="--body-width: ${this._popoverWidth}px;"
-                without-arrow
-                distance="-4"
-                .placement=${this.popoverPlacement}
-                for="picker"
-                auto-size="vertical"
-                auto-size-padding="16"
-                @wa-after-show=${this._dialogOpened}
-                @wa-after-hide=${this._hidePicker}
-                trap-focus
-                role="dialog"
-                aria-modal="true"
-                aria-label=${this.label || "Select option"}
-              >
-                ${this._renderComboBox()}
-              </wa-popover>
-            `
-          : this._pickerWrapperOpen || this._opened
-            ? html`<ha-bottom-sheet
-                flexcontent
-                .open=${this._pickerWrapperOpen}
-                @wa-after-show=${this._dialogOpened}
-                @closed=${this._hidePicker}
-                role="dialog"
-                aria-modal="true"
-                aria-label=${this.label || "Select option"}
-              >
-                ${this._renderComboBox(true)}
-              </ha-bottom-sheet>`
-            : nothing}
+        ${this._pickerWrapperOpen || this._opened
+          ? this._openedNarrow
+            ? html`
+                <ha-bottom-sheet
+                  flexcontent
+                  .open=${this._pickerWrapperOpen}
+                  @wa-after-show=${this._dialogOpened}
+                  @closed=${this._hidePicker}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label=${this.label || "Select option"}
+                >
+                  ${this._renderComboBox(true)}
+                </ha-bottom-sheet>
+              `
+            : html`
+                <wa-popover
+                  .open=${this._pickerWrapperOpen}
+                  style="--body-width: ${this._popoverWidth}px;"
+                  without-arrow
+                  distance="-4"
+                  .placement=${this.popoverPlacement}
+                  for="picker"
+                  auto-size="vertical"
+                  auto-size-padding="16"
+                  @wa-after-show=${this._dialogOpened}
+                  @wa-after-hide=${this._hidePicker}
+                  trap-focus
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label=${this.label || "Select option"}
+                >
+                  ${this._renderComboBox()}
+                </wa-popover>
+              `
+          : nothing}
       </div>
       ${this._renderHelper()}`;
   }
@@ -311,9 +322,16 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     </ha-input-helper-text>`;
   }
 
+  private _initialFieldValue?: string;
+
   private _dialogOpened = () => {
     this._opened = true;
     requestAnimationFrame(() => {
+      // Set initial field value if needed
+      if (this._initialFieldValue) {
+        this._comboBox?.setFieldValue(this._initialFieldValue);
+        this._initialFieldValue = undefined;
+      }
       if (this.hass && isIosApp(this.hass)) {
         this.hass.auth.external!.fireMessage({
           type: "focus_element",
@@ -323,6 +341,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         });
         return;
       }
+
       this._comboBox?.focus();
     });
   };

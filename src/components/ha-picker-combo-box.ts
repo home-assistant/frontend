@@ -153,6 +153,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @state() private _items: PickerComboBoxItem[] = [];
 
+  public setFieldValue(value: string) {
+    if (this._searchFieldElement) {
+      this._searchFieldElement.value = value;
+    }
+  }
+
   protected get scrollableElement(): HTMLElement | null {
     return this._virtualizerElement as HTMLElement | null;
   }
