@@ -29,7 +29,6 @@ import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
-import "../../../../../layouts/hass-subpage";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
