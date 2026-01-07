@@ -50,7 +50,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
     /**
      * Safe area padding in pixels for the scrollable element.
      */
-    protected scrollFadeSafeAreaPadding = 16;
+    protected scrollFadeSafeAreaPadding = 4;
 
     /**
      * Scroll threshold in pixels for showing the fades.
@@ -73,6 +73,9 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
 
     protected firstUpdated(changedProperties: PropertyValues) {
       super.firstUpdated?.(changedProperties);
+      if (this.scrollableElement) {
+        this._updateScrollableState(this.scrollableElement);
+      }
       this._attachScrollableElement();
     }
 
@@ -83,6 +86,8 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
 
     disconnectedCallback() {
       this._detachScrollableElement();
+      this._contentScrolled = false;
+      this._contentScrollable = false;
       super.disconnectedCallback();
     }
 
@@ -125,16 +130,16 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
             position: absolute;
             left: 0;
             right: 0;
-            height: var(--ha-space-4);
+            height: var(--ha-space-2);
             pointer-events: none;
             transition: opacity 180ms ease-in-out;
-            background: linear-gradient(
-              to bottom,
-              var(--shadow-color),
-              transparent
-            );
             border-radius: var(--ha-border-radius-square);
             opacity: 0;
+            background: linear-gradient(
+              to bottom,
+              var(--ha-color-shadow-scrollable-fade),
+              transparent
+            );
           }
           .fade-top {
             top: 0;

@@ -263,7 +263,8 @@ class HUIRoot extends LitElement {
       {
         icon: mdiPlus,
         key: "ui.panel.lovelace.menu.add",
-        visible: !this._editMode && this.hass.user?.is_admin,
+        visible:
+          !this._editMode && this.hass.user?.is_admin && !this.hass.kioskMode,
         overflow: this.narrow,
         subItems: [
           {
@@ -301,7 +302,7 @@ class HUIRoot extends LitElement {
         key: "ui.panel.lovelace.menu.search_entities",
         buttonAction: this._showQuickBar,
         overflowAction: this._handleShowQuickBar,
-        visible: !this._editMode,
+        visible: !this._editMode && !this.hass.kioskMode,
         overflow: this.narrow,
         suffix:
           this.hass.enableShortcuts && !isMobileClient ? "(E)" : undefined,
@@ -349,7 +350,8 @@ class HUIRoot extends LitElement {
         visible:
           !this._editMode &&
           this.hass!.user?.is_admin &&
-          !this.hass!.config.recovery_mode,
+          !this.hass!.config.recovery_mode &&
+          !this.hass.kioskMode,
         overflow: true,
         overflow_can_promote: true,
       },
