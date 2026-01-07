@@ -251,11 +251,34 @@ export class HaEntityPicker extends LitElement {
     }
   );
 
-  private _getEntitiesMemoized = memoizeOne(getEntities);
+  private _getEntitiesMemoized = memoizeOne(
+    (
+      _entities: HomeAssistant["entities"],
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      includeDeviceClasses?: string[],
+      includeUnitOfMeasurement?: string[],
+      includeEntities?: string[],
+      excludeEntities?: string[],
+      value?: string
+    ) =>
+      getEntities(
+        this.hass,
+        includeDomains,
+        excludeDomains,
+        entityFilter,
+        includeDeviceClasses,
+        includeUnitOfMeasurement,
+        includeEntities,
+        excludeEntities,
+        value
+      )
+  );
 
   private _getItems = () =>
     this._getEntitiesMemoized(
-      this.hass,
+      this.hass.entities,
       this.includeDomains,
       this.excludeDomains,
       this.entityFilter,
