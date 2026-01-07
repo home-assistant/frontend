@@ -57,9 +57,9 @@ export const listExposedEntities = (hass: HomeAssistant) =>
 
 export const getEntityVoiceAssistantsKeys = (
   entityRegistry: EntityRegistryEntry[],
-  entity_id: string
+  entityId: string
 ) => {
-  const entity = entityRegistryByEntityId(entityRegistry)[entity_id];
+  const entity = entityRegistryByEntityId(entityRegistry)[entityId];
   return Object.keys(voiceAssistants).filter(
     (vaKey) => entity?.options?.[vaKey]?.should_expose
   );
