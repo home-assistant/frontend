@@ -395,6 +395,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .container {
           position: relative;
           display: block;
+          max-width: 100%;
         }
         label[disabled] {
           color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.6));
