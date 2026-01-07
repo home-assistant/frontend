@@ -115,6 +115,8 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import "../voice-assistants/expose/expose-assistant-icon";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -375,6 +377,31 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               @click=${this._showOverflowMenu}
             ></ha-icon-button>
           `,
+        },
+        voice_assistants: {
+          title: localize(
+            "ui.panel.config.automation.picker.headers.voice_assistants"
+          ),
+          type: "icon",
+          defaultHidden: true,
+          minWidth: "100px",
+          maxWidth: "100px",
+          template: (automation) => {
+            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+              this._entityReg,
+              automation.entity_id
+            );
+            return html` ${exposedToVoiceAssistantKeys.length !== 0
+              ? exposedToVoiceAssistantKeys.map(
+                  (vaKey) =>
+                    html` <voice-assistants-expose-assistant-icon
+                      .assistant=${vaKey}
+                      .hass=${this.hass}
+                    >
+                    </voice-assistants-expose-assistant-icon>`
+                )
+              : "—"}`;
+          },
         },
       };
       return columns;
