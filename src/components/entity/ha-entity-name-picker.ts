@@ -275,6 +275,11 @@ export class HaEntityNamePicker extends LitElement {
     this._editIndex = idx;
     await this.updateComplete;
     await this._picker?.open();
+    const value = this._items[idx];
+    // Pre-fill the field value when editing a text item
+    if (value.type === "text" && value.text) {
+      this._picker?.setFieldValue(value.text);
+    }
   }
 
   private get _items(): EntityNameItem[] {
