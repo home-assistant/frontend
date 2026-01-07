@@ -156,6 +156,22 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             </ha-icon-picker>
           `
         : nothing}
+      ${this._visibleOptionals.includes("description")
+        ? html`<ha-textarea
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.description.label"
+            )}
+            .placeholder=${this.hass.localize(
+              "ui.panel.config.automation.editor.description.placeholder"
+            )}
+            name="description"
+            autogrow
+            .value=${this._newDescription}
+            .helper=${supportsMarkdownHelper(this.hass.localize)}
+            helperPersistent
+            @input=${this._valueChanged}
+          ></ha-textarea>`
+        : nothing}
       ${this._visibleOptionals.includes("category")
         ? html` <ha-category-picker
             id="category"
@@ -183,21 +199,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             .value=${this._entryUpdates.area}
             @value-changed=${this._registryEntryChanged}
           ></ha-area-picker>`
-        : nothing}
-      ${this._visibleOptionals.includes("description")
-        ? html` <ha-textarea
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.description.label"
-            )}
-            .placeholder=${this.hass.localize(
-              "ui.panel.config.automation.editor.description.placeholder"
-            )}
-            name="description"
-            autogrow
-            .value=${this._newDescription}
-            .helper=${supportsMarkdownHelper(this.hass.localize)}
-            @input=${this._valueChanged}
-          ></ha-textarea>`
         : nothing}
 
       <ha-chip-set>
@@ -549,11 +550,6 @@ ${dump(this._params.config)}
       css`
         ha-dialog {
           --dialog-content-padding: 0 24px 24px 24px;
-        }
-        ha-dialog:not(:has(ha-chip-set ha-assist-chip)) {
-          --dialog-content-padding: 0 24px
-            calc(24px - var(--ha-line-height-condensed) * var(--ha-font-size-m))
-            24px;
         }
 
         @media all and (min-width: 500px) {
