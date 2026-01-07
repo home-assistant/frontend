@@ -50,7 +50,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
     /**
      * Safe area padding in pixels for the scrollable element.
      */
-    protected scrollFadeSafeAreaPadding = 8;
+    protected scrollFadeSafeAreaPadding = 4;
 
     /**
      * Scroll threshold in pixels for showing the fades.
