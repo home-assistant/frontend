@@ -31,6 +31,7 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
 import type { StatisticPeriod } from "../../../../../data/recorder";
+import { getSuggestedPeriod } from "../../../../../data/energy";
 
 export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
   let suggestedMax = new Date(end);
@@ -54,10 +55,6 @@ export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
   // period === month
   suggestedMax.setDate(1);
   return suggestedMax.getTime();
-}
-
-export function getSuggestedPeriod(dayDifference: number): StatisticPeriod {
-  return dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
 }
 
 function createYAxisLabelFormatter(locale: FrontendLocaleData) {
@@ -95,7 +92,7 @@ export function getCommonOptions(
       type: "time",
       min: start,
       max: getSuggestedMax(
-        detailedDailyData ? "5minute" : getSuggestedPeriod(dayDifference),
+        getSuggestedPeriod(start, end, detailedDailyData),
         end
       ),
     },

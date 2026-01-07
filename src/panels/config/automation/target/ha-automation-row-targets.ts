@@ -223,6 +223,8 @@ export class HaAutomationRowTargets extends LitElement {
       background: var(--ha-color-fill-neutral-normal-resting);
       padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
       color: var(--ha-color-on-neutral-normal);
+      border: var(--ha-border-width-sm) solid
+        var(--ha-color-border-neutral-quiet);
       overflow: hidden;
       height: 32px;
     }
