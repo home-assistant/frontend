@@ -150,7 +150,7 @@
     "@babel/helper-define-polyfill-provider": "0.6.5",
     "@babel/plugin-transform-runtime": "7.28.5",
     "@babel/preset-env": "7.28.5",
-    "@bundle-stats/plugin-webpack-filter": "4.21.7",
+    "@bundle-stats/plugin-webpack-filter": "4.21.8",
     "@lokalise/node-api": "15.6.0",
     "@octokit/auth-oauth-device": "8.0.3",
     "@octokit/plugin-retry": "8.0.3",
