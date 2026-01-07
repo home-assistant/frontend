@@ -1,11 +1,12 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-navigation-list";
 import type { CloudStatus } from "../../../data/cloud";
+import { getConfigEntries } from "../../../data/config_entries";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../../types";
 
@@ -17,13 +18,29 @@ class HaConfigNavigation extends LitElement {
 
   @property({ attribute: false }) public pages!: PageNavigation[];
 
+  @state() private _hasBluetoothConfigEntries = false;
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    getConfigEntries(this.hass, {
+      domain: "bluetooth",
+    }).then((bluetoothEntries) => {
+      this._hasBluetoothConfigEntries = bluetoothEntries.length > 0;
+    });
+  }
+
   protected render(): TemplateResult {
     const pages = this.pages
-      .filter((page) =>
-        page.path === "#external-app-configuration"
-          ? this.hass.auth.external?.config.hasSettingsScreen
-          : canShowPage(this.hass, page)
-      )
+      .filter((page) => {
+        if (page.path === "#external-app-configuration") {
+          return this.hass.auth.external?.config.hasSettingsScreen;
+        }
+        // Only show Bluetooth page if there are Bluetooth config entries
+        if (page.component === "bluetooth") {
+          return this._hasBluetoothConfigEntries;
+        }
+        return canShowPage(this.hass, page);
+      })
       .map((page) => ({
         ...page,
         name:

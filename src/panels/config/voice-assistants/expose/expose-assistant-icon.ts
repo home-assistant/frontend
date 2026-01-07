@@ -23,7 +23,6 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
 
   render() {
     if (!this.assistant || !voiceAssistants[this.assistant]) return nothing;
-
     return html`
       <div class="container" id="container">
         <img
