@@ -3,5 +3,5 @@ export const filterModes = <T extends string = string>(
   selectedModes: T[] | undefined
 ): T[] =>
   selectedModes
-    ? selectedModes.filter((mode) => (supportedModes || []).includes(mode))
+    ? (supportedModes || []).filter((mode) => selectedModes.includes(mode))
     : supportedModes || [];
