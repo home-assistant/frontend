@@ -131,9 +131,16 @@ export interface FlowToGridSourceEnergyPreference {
   number_energy_price: number | null;
 }
 
+export interface PowerConfig {
+  stat_rate?: string; // Standard single sensor
+  stat_rate_inverted?: string; // Inverted single sensor
+  stat_rate_from?: string; // Battery: discharge / Grid: consumption
+  stat_rate_to?: string; // Battery: charge / Grid: return
+}
+
 export interface GridPowerSourceEnergyPreference {
-  // W meter
   stat_rate: string;
+  power_config?: PowerConfig;
 }
 
 export interface GridSourceTypeEnergyPreference {
@@ -159,6 +166,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_energy_from: string;
   stat_energy_to: string;
   stat_rate?: string;
+  power_config?: PowerConfig;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
