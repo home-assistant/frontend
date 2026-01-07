@@ -135,22 +135,18 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
             transition: opacity 180ms ease-in-out;
             border-radius: var(--ha-border-radius-square);
             opacity: 0;
-          }
-          .fade-top {
-            top: 0;
             background: linear-gradient(
               to bottom,
               var(--ha-color-shadow-scrollable-fade),
               transparent
             );
           }
+          .fade-top {
+            top: 0;
+          }
           .fade-bottom {
             bottom: 0;
-            background: linear-gradient(
-              to top,
-              var(--ha-color-shadow-scrollable-fade),
-              transparent
-            );
+            transform: rotate(180deg);
           }
 
           .fade-top.visible,
