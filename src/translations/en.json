@@ -2173,7 +2173,7 @@
         "other": {
           "title": "Other",
           "my_link": "get My Home Assistant link",
-          "show_shortcuts": "show this shortcuts dialog"
+          "show_shortcuts": "show keyboard shortcuts"
         }
       }
     },
