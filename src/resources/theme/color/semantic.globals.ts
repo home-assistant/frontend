@@ -158,8 +158,7 @@ export const semanticColorStyles = css`
     --ha-color-on-surface-default: var(--ha-color-neutral-05);
 
     /* Scrollable fade */
-    --ha-scrollable-fade-top-shadow-color: rgba(0, 0, 0, 0.08);
-    --ha-scrollable-fade-fade-bottom-shadow-color: rgba(0, 0, 0, 0.08);
+    --ha-color-shadow-scrollable-fade: rgba(0, 0, 0, 0.08);
   }
 `;
 

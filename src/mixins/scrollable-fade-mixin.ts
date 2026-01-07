@@ -140,7 +140,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
             top: 0;
             background: linear-gradient(
               to bottom,
-              var(--ha-scrollable-fade-top-shadow-color),
+              var(--ha-color-shadow-scrollable-fade),
               transparent
             );
           }
@@ -148,7 +148,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
             bottom: 0;
             background: linear-gradient(
               to top,
-              var(--ha-fade-bottom-shadow-color),
+              var(--ha-color-shadow-scrollable-fade),
               transparent
             );
           }
