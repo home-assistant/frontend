@@ -64,6 +64,7 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
+import "../../../components/ha-filter-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-divider";
@@ -1103,6 +1104,15 @@ ${
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
+        <ha-filter-assistants
+          .hass=${this.hass}
+          .value=${[]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-assistants"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-assistants>
         ${
           includeAddDeviceFab
             ? html`<ha-fab
@@ -1149,6 +1159,7 @@ ${
     };
   }
 
+  // TODO: extend for assistant
   private _setFiltersFromUrl() {
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
