@@ -11,7 +11,6 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { throttle } from "../common/util/throttle";
@@ -141,10 +140,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   private _unsubscribeTinyKeys?: () => void;
 
   protected willUpdate(changedProperties: PropertyValues) {
-    if (
-      !changedProperties.has("_unknownValue") &&
-      (changedProperties.has("value") || changedProperties.has("hass"))
-    ) {
+    if (changedProperties.has("value")) {
+      this._setUnknownValue();
+      return;
+    }
+    if (changedProperties.has("hass")) {
       this._throttleUnknownValue();
     }
   }
@@ -274,39 +274,29 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     `;
   }
 
+  private _setUnknownValue = () => {
+    const items = this.getItems();
+    if (
+      this.allowCustomValue ||
+      this.value === undefined ||
+      this.value === null ||
+      this.value === "" ||
+      !items
+    ) {
+      this._unknownValue = false;
+      return;
+    }
+
+    this._unknownValue = !items.some(
+      (item) => typeof item !== "string" && item.id === this.value
+    );
+  };
+
   private _throttleUnknownValue = throttle(
-    () => {
-      this._unknownValue = this._isUnknownValue(
-        this.allowCustomValue,
-        this.value,
-        this.getItems()
-      );
-    },
+    this._setUnknownValue,
     1000,
     true,
     false
-  );
-
-  private _isUnknownValue = memoizeOne(
-    (
-      allowCustomValue: boolean,
-      value?: string,
-      items?: (PickerComboBoxItem | string)[]
-    ) => {
-      if (
-        allowCustomValue ||
-        value === undefined ||
-        value === null ||
-        value === "" ||
-        !items
-      ) {
-        return false;
-      }
-
-      return !items.some(
-        (item) => typeof item !== "string" && item.id === value
-      );
-    }
   );
 
   private _renderHelper() {
@@ -364,11 +354,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     if (!value) {
       return;
     }
-    this._unknownValue = this._isUnknownValue(
-      this.allowCustomValue,
-      value,
-      this.getItems()
-    );
     this._pickerWrapperOpen = false;
     this._newValue = value;
   }
