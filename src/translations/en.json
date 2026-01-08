@@ -7442,6 +7442,14 @@
               "compare_previous_period": "Compare previous period"
             }
           },
+          "horizontal_stacked_bar": {
+            "no_entities": "No entities specified",
+            "unit_mismatch": "All entities must have the same unit. Found: {units}",
+            "domain_mismatch": "All entities must be from the same domain. Found: {domains}",
+            "device_class_mismatch": "All entities must have the same device class. Found: {classes}",
+            "no_data": "No data to display. All entities are hidden or have zero values.",
+            "add_entities": "Add entities to display in the stacked bar chart"
+          },
           "heading": {
             "default_heading": "Kitchen"
           }
@@ -8025,6 +8033,10 @@
               "max_y_axis": "Y axis maximum",
               "fit_y_data": "Extend Y axis limits to fit data"
             },
+            "horizontal-stacked-bar": {
+              "name": "Horizontal stacked bar",
+              "description": "Display multiple numeric entities with the same unit as a proportional horizontal bar chart"
+            },
             "statistics-graph": {
               "name": "Statistics graph",
               "description": "The Statistics graph card allows you to display a graph of the statistics for each of the entities listed.",
@@ -8085,6 +8097,10 @@
               "name": "Horizontal stack",
               "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
+            },
+            "horizontal-stacked-bar": {
+              "name": "Horizontal stacked bar",
+              "description": "The Horizontal stacked bar card displays multiple numerical entities as a proportional bar chart with an interactive legend."
             },
             "humidifier": {
               "name": "Humidifier",

@@ -640,3 +640,15 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
+
+export interface HorizontalStackedBarEntityConfig extends EntityConfig {
+  entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+}
+
+export interface HorizontalStackedBarCardConfig extends LovelaceCardConfig {
+  type: "horizontal-stacked-bar";
+  title?: string;
+  entities: (string | HorizontalStackedBarEntityConfig)[];
+  theme?: string;
+}

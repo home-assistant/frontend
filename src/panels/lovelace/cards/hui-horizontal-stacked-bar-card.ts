@@ -1,0 +1,654 @@
+import { mdiChartBox, mdiChevronDown, mdiChevronUp } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { getGraphColorByIndex } from "../../../common/color/colors";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
+import type { HomeAssistant } from "../../../types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
+import { processConfigEntities } from "../common/process-config-entities";
+import { findEntities } from "../common/find-entities";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  HorizontalStackedBarCardConfig,
+  HorizontalStackedBarEntityConfig,
+} from "./types";
+
+const LEGEND_OVERFLOW_LIMIT = 10;
+const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
+
+interface ProcessedEntity {
+  entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+}
+
+interface SegmentData {
+  entity: string;
+  value: number;
+  percentage: number;
+  color: string;
+  label: string;
+  unit?: string;
+}
+
+interface LegendItem {
+  entity: string;
+  name: string;
+  value: number;
+  formattedValue: string;
+  color: string;
+  isHidden: boolean;
+  isDisabled: boolean;
+  unit?: string;
+}
+
+@customElement("hui-horizontal-stacked-bar-card")
+export class HuiHorizontalStackedBarCard
+  extends LitElement
+  implements LovelaceCard
+{
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-horizontal-stacked-bar-card-editor");
+    return document.createElement("hui-horizontal-stacked-bar-card-editor");
+  }
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): HorizontalStackedBarCardConfig {
+    const includeDomains = ["sensor"];
+    const maxEntities = 3;
+
+    // Strategy 1: Try to find power sensors (W, kW) - most common use case
+    const powerFilter = (stateObj: HassEntity): boolean => {
+      const unit = stateObj.attributes.unit_of_measurement;
+      const stateValue = Number(stateObj.state);
+      return (unit === "W" || unit === "kW") && !isNaN(stateValue);
+    };
+
+    let foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFallback,
+      includeDomains,
+      powerFilter
+    );
+
+    // Strategy 2: If not enough power entities, find largest group with matching device_class
+    if (foundEntities.length < 2) {
+      // Get all numeric sensors
+      const allNumericSensors = entitiesFallback.filter((entityId) => {
+        if (!entityId.startsWith("sensor.")) return false;
+        const stateObj = hass.states[entityId];
+        if (!stateObj) return false;
+        const stateValue = Number(stateObj.state);
+        return !isNaN(stateValue);
+      });
+
+      // Group by device_class
+      const deviceClassGroups = new Map<string, string[]>();
+      allNumericSensors.forEach((entityId) => {
+        const deviceClass =
+          hass.states[entityId].attributes.device_class || "none";
+        if (!deviceClassGroups.has(deviceClass)) {
+          deviceClassGroups.set(deviceClass, []);
+        }
+        deviceClassGroups.get(deviceClass)!.push(entityId);
+      });
+
+      // Find largest group with at least 2 entities
+      let largestGroup: string[] = [];
+      deviceClassGroups.forEach((group) => {
+        if (group.length > largestGroup.length) {
+          largestGroup = group;
+        }
+      });
+
+      // Take first maxEntities from largest group
+      if (largestGroup.length >= 2) {
+        foundEntities = largestGroup.slice(0, maxEntities);
+      }
+    }
+
+    return {
+      type: "horizontal-stacked-bar",
+      entities: foundEntities,
+    };
+  }
+
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @state() private _config?: HorizontalStackedBarCardConfig;
+
+  @state() private _configEntities?: ProcessedEntity[];
+
+  @state() private _hiddenEntities: string[] = [];
+
+  @state() private _expandLegend = false;
+
+  public setConfig(config: HorizontalStackedBarCardConfig): void {
+    this._config = config;
+
+    // Handle empty entities gracefully
+    if (!config.entities || config.entities.length === 0) {
+      this._configEntities = [];
+      return;
+    }
+
+    const entities = processConfigEntities<HorizontalStackedBarEntityConfig>(
+      config.entities
+    );
+
+    this._configEntities = entities.map((entity) => ({
+      entity: entity.entity,
+      name: entity.name,
+    }));
+  }
+
+  public getCardSize(): number {
+    return 3;
+  }
+
+  private _validateDeviceClasses = memoizeOne(
+    (entities: ProcessedEntity[], hass: HomeAssistant): string | null => {
+      const domains = new Set<string>();
+      const deviceClasses = new Set<string>();
+
+      entities.forEach((entity) => {
+        const stateObj = hass.states[entity.entity];
+        if (stateObj) {
+          // Check domain
+          const domain = computeDomain(entity.entity);
+          domains.add(domain);
+
+          // Default to "none" if no device_class (Home Assistant pattern)
+          const deviceClass = stateObj.attributes.device_class || "none";
+          deviceClasses.add(deviceClass);
+        }
+      });
+
+      // If more than one domain, entities are incompatible
+      if (domains.size > 1) {
+        return (
+          this.hass?.localize(
+            "ui.panel.lovelace.cards.horizontal_stacked_bar.domain_mismatch",
+            { domains: Array.from(domains).join(", ") }
+          ) ||
+          `All entities must be from the same domain. Found: ${Array.from(domains).join(", ")}`
+        );
+      }
+
+      // If more than one device_class, entities are incompatible
+      if (deviceClasses.size > 1) {
+        return (
+          this.hass?.localize(
+            "ui.panel.lovelace.cards.horizontal_stacked_bar.device_class_mismatch",
+            { classes: Array.from(deviceClasses).join(", ") }
+          ) ||
+          `All entities must have the same device class. Found: ${Array.from(deviceClasses).join(", ")}`
+        );
+      }
+
+      return null;
+    }
+  );
+
+  private _computeSegments = memoizeOne(
+    (
+      entities: ProcessedEntity[],
+      hiddenEntities: string[],
+      hass: HomeAssistant
+    ): SegmentData[] => {
+      const computedStyles = getComputedStyle(this);
+      const segments: SegmentData[] = [];
+
+      // Map entities with their original index before filtering
+      const entitiesWithIndex = entities.map((entity, originalIndex) => ({
+        ...entity,
+        originalIndex,
+      }));
+
+      // Filter visible entities with positive values
+      const visiblePositive = entitiesWithIndex.filter((entity) => {
+        const stateObj = hass.states[entity.entity];
+        if (!stateObj) return false;
+        const value = Number(stateObj.state);
+        return (
+          !hiddenEntities.includes(entity.entity) && value > 0 && !isNaN(value)
+        );
+      });
+
+      if (visiblePositive.length === 0) {
+        return [];
+      }
+
+      // Calculate total for percentage
+      const total = visiblePositive.reduce((sum, entity) => {
+        const stateObj = hass.states[entity.entity];
+        return sum + Number(stateObj!.state);
+      }, 0);
+
+      // Create segments - use original index for consistent colors
+      visiblePositive.forEach((entity) => {
+        const stateObj = hass.states[entity.entity];
+        const value = Number(stateObj!.state);
+        // Use original index to maintain consistent colors when hiding entities
+        const color = getGraphColorByIndex(
+          entity.originalIndex,
+          computedStyles
+        );
+
+        // Compute entity name using the name config
+        const name = computeLovelaceEntityName(hass, stateObj!, entity.name);
+
+        segments.push({
+          entity: entity.entity,
+          value: value,
+          percentage: (value / total) * 100,
+          color: color,
+          label: name,
+          unit: stateObj!.attributes.unit_of_measurement,
+        });
+      });
+
+      return segments;
+    }
+  );
+
+  private _computeLegendItems = memoizeOne(
+    (
+      entities: ProcessedEntity[],
+      hiddenEntities: string[],
+      hass: HomeAssistant
+    ): LegendItem[] => {
+      const computedStyles = getComputedStyle(this);
+
+      return entities.map((entity, index) => {
+        const stateObj = hass.states[entity.entity];
+        const value = stateObj ? Number(stateObj.state) : 0;
+        const isHidden = hiddenEntities.includes(entity.entity);
+        const isZeroOrNegative = !stateObj || value <= 0 || isNaN(value);
+
+        const name = stateObj
+          ? computeLovelaceEntityName(hass, stateObj, entity.name)
+          : entity.entity;
+
+        const formattedValue = stateObj ? hass.formatEntityState(stateObj) : "";
+
+        return {
+          entity: entity.entity,
+          name: name,
+          value: value,
+          formattedValue: formattedValue,
+          color: getGraphColorByIndex(index, computedStyles),
+          isHidden: isHidden,
+          isDisabled: isZeroOrNegative,
+          unit: stateObj?.attributes.unit_of_measurement,
+        };
+      });
+    }
+  );
+
+  private _toggleEntity(entityId: string): void {
+    if (this._hiddenEntities.includes(entityId)) {
+      // Show: remove from hidden list
+      this._hiddenEntities = this._hiddenEntities.filter((e) => e !== entityId);
+    } else {
+      // Hide: add to hidden list
+      this._hiddenEntities = [...this._hiddenEntities, entityId];
+    }
+  }
+
+  private _handleSegmentClick(ev: Event): void {
+    const entityId = (ev.currentTarget as HTMLElement).dataset.entity;
+    if (entityId) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
+  }
+
+  private _handleLegendClick(ev: Event): void {
+    const target = ev.currentTarget as HTMLElement;
+    const entityId = target.dataset.entity;
+    const disabled = target.dataset.disabled === "true";
+    if (entityId && !disabled) {
+      this._toggleEntity(entityId);
+    }
+  }
+
+  private _toggleExpandLegend(): void {
+    this._expandLegend = !this._expandLegend;
+  }
+
+  protected render(): TemplateResult | typeof nothing {
+    if (!this._config || !this.hass) {
+      return nothing;
+    }
+
+    // Show friendly empty state when no entities are configured
+    if (!this._configEntities || this._configEntities.length === 0) {
+      return html`
+        <ha-card .header=${this._config.title}>
+          <div class="card-content">
+            <div class="empty-state">
+              <ha-svg-icon .path=${mdiChartBox}></ha-svg-icon>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.horizontal_stacked_bar.add_entities"
+                ) || "Add entities to display in the stacked bar chart"}
+              </p>
+            </div>
+          </div>
+        </ha-card>
+      `;
+    }
+
+    // Check for missing entities
+    const missingEntities = this._configEntities.filter(
+      (entity) => !this.hass!.states[entity.entity]
+    );
+
+    if (missingEntities.length === this._configEntities.length) {
+      return html`
+        <hui-warning .hass=${this.hass}>
+          ${missingEntities.map((entity) =>
+            createEntityNotFoundWarning(this.hass!, entity.entity)
+          )}
+        </hui-warning>
+      `;
+    }
+
+    // Validate device classes
+    const deviceClassError = this._validateDeviceClasses(
+      this._configEntities,
+      this.hass
+    );
+    if (deviceClassError) {
+      return html`
+        <hui-warning .hass=${this.hass}>
+          <ha-alert alert-type="error">${deviceClassError}</ha-alert>
+        </hui-warning>
+      `;
+    }
+
+    const segments = this._computeSegments(
+      this._configEntities,
+      this._hiddenEntities,
+      this.hass
+    );
+    const legendItems = this._computeLegendItems(
+      this._configEntities,
+      this._hiddenEntities,
+      this.hass
+    );
+
+    return html`
+      <ha-card .header=${this._config.title}>
+        <div class="card-content">
+          ${segments.length === 0
+            ? html`
+                <div class="empty-state">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.horizontal_stacked_bar.no_data"
+                  ) || "No data to display"}
+                </div>
+              `
+            : html`
+                <div class="bar-container">
+                  <!-- The bar -->
+                  <div class="bar">
+                    ${segments.map(
+                      (segment) => html`
+                        <div
+                          class="segment"
+                          style=${styleMap({
+                            width: `${segment.percentage}%`,
+                            backgroundColor: segment.color,
+                          })}
+                        ></div>
+                      `
+                    )}
+                  </div>
+                  <!-- Clickable overlay -->
+                  <div class="bar-overlay">
+                    ${segments.map(
+                      (segment) => html`
+                        <div
+                          class="segment-click-area"
+                          style=${styleMap({
+                            width: `${segment.percentage}%`,
+                          })}
+                          data-entity=${segment.entity}
+                          @click=${this._handleSegmentClick}
+                          title=${segment.label}
+                        ></div>
+                      `
+                    )}
+                  </div>
+                </div>
+              `}
+
+          <!-- Legend -->
+          <ul class="legend">
+            ${(() => {
+              const isMobile = window.matchMedia(
+                "all and (max-width: 450px), all and (max-height: 500px)"
+              ).matches;
+              const overflowLimit = isMobile
+                ? LEGEND_OVERFLOW_LIMIT_MOBILE
+                : LEGEND_OVERFLOW_LIMIT;
+
+              return html`
+                ${legendItems.map((item, index) => {
+                  if (!this._expandLegend && index >= overflowLimit) {
+                    return nothing;
+                  }
+                  return html`
+                    <li
+                      class=${classMap({
+                        "legend-item": true,
+                        hidden: item.isHidden,
+                        disabled: item.isDisabled,
+                      })}
+                      data-entity=${item.entity}
+                      data-disabled=${item.isDisabled}
+                      @click=${this._handleLegendClick}
+                    >
+                      <div
+                        class="bullet"
+                        style=${styleMap({ backgroundColor: item.color })}
+                      ></div>
+                      <span class="label">${item.name}</span>
+                      ${item.formattedValue
+                        ? html`<span class="value">${item.formattedValue}</span>`
+                        : nothing}
+                    </li>
+                  `;
+                })}
+                ${legendItems.length > overflowLimit
+                  ? html`
+                      <li>
+                        <ha-assist-chip
+                          @click=${this._toggleExpandLegend}
+                          filled
+                          .label=${this._expandLegend
+                            ? this.hass.localize(
+                                "ui.components.history_charts.collapse_legend"
+                              )
+                            : `${this.hass.localize(
+                                "ui.components.history_charts.expand_legend"
+                              )} (${legendItems.length - overflowLimit})`}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${this._expandLegend ? mdiChevronUp : mdiChevronDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                      </li>
+                    `
+                  : nothing}
+              `;
+            })()}
+          </ul>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  static styles = css`
+    :host {
+      display: block;
+    }
+
+    .card-content {
+      padding: var(--ha-space-4);
+    }
+
+    .bar-container {
+      position: relative;
+      margin-bottom: var(--ha-space-4);
+    }
+
+    .bar {
+      display: flex;
+      overflow: hidden;
+      border-radius: var(--ha-bar-border-radius, var(--ha-border-radius-sm));
+      width: 100%;
+      height: 12px;
+      background-color: var(
+        --ha-bar-background-color,
+        var(--secondary-background-color)
+      );
+    }
+
+    .bar .segment {
+      height: 100%;
+      transition: opacity 0.2s;
+    }
+
+    .bar-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
+    .segment-click-area {
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .segment-click-area:hover + .bar .segment,
+    .segment-click-area:hover {
+      opacity: 0.8;
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--ha-space-3);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-1);
+      font-size: var(--ha-font-size-s);
+      cursor: pointer;
+      opacity: 1;
+      transition: opacity 0.2s;
+    }
+
+    .legend-item:hover {
+      opacity: 0.8;
+    }
+
+    .legend-item.hidden {
+      opacity: 0.5;
+    }
+
+    .legend-item.hidden .label {
+      text-decoration: line-through;
+    }
+
+    .legend-item.disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .legend-item .bullet {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--ha-border-radius-circle);
+      flex-shrink: 0;
+    }
+
+    .legend-item .label {
+      flex: 0 1 auto;
+    }
+
+    .legend-item .value {
+      color: var(--secondary-text-color);
+      margin-left: var(--ha-space-1);
+      flex-shrink: 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--secondary-text-color);
+      padding: var(--ha-space-4) 0;
+    }
+
+    .empty-state ha-svg-icon {
+      display: block;
+      margin: 0 auto var(--ha-space-2);
+      width: 48px;
+      height: 48px;
+      opacity: 0.3;
+    }
+
+    .empty-state p {
+      margin: 0;
+    }
+
+    @media (max-width: 600px) {
+      .card-content {
+        padding: var(--ha-space-2);
+      }
+    }
+
+    ha-assist-chip {
+      height: 24px;
+      --_label-text-weight: 500;
+      --_leading-space: 8px;
+      --_trailing-space: 8px;
+      --_icon-label-space: 4px;
+    }
+
+    .legend li:has(ha-assist-chip) {
+      cursor: default;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-horizontal-stacked-bar-card": HuiHorizontalStackedBarCard;
+  }
+}
