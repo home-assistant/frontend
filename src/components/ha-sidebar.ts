@@ -898,7 +898,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         }
 
         .divider {
-          bottom: 112px; /* two list items (96px) + padding (16x) */
+          bottom: 112px; /* two list items (96px) + padding (16px) */
           padding-bottom: 3px; /* makes a height = 4px */
         }
         .divider::before {
