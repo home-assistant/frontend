@@ -1,7 +1,10 @@
 import type { Selector } from "../../data/selector";
-import type { HaFormSchema } from "./types";
+import type { HaFormData, HaFormSchema } from "./types";
 
-const setDefaultValue = (field: HaFormSchema, value: any) => {
+const setDefaultValue = (
+  field: HaFormSchema,
+  value: HaFormData | undefined
+) => {
   if ("selector" in field && "choose" in field.selector) {
     const firstChoice = Object.keys(field.selector.choose.choices)[0];
     if (firstChoice) {
