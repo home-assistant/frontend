@@ -137,14 +137,19 @@ export class HuiClockCardEditor
           selector: {
             select: {
               mode: "dropdown",
-              options: ["none", "short", "long", "day", "day-month", "day-month-long"].map(
-                (value) => ({
-                  value,
-                  label: localize(
-                    `ui.panel.lovelace.editor.card.clock.dates.${value}`
-                  ),
-                })
-              ),
+              options: [
+                "none",
+                "short",
+                "long",
+                "day",
+                "day-month",
+                "day-month-long",
+              ].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.clock.dates.${value}`
+                ),
+              })),
             },
           },
         },
