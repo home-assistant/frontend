@@ -1,7 +1,9 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -9,6 +11,8 @@ import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import type { Calendar, CalendarEvent } from "../../../data/calendar";
 import { fetchCalendarEvents } from "../../../data/calendar";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import type {
   CalendarViewChanged,
   FullCalendarView,
@@ -65,11 +69,17 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: string = undefined;
 
+  @state() private _entityRegistry?: EntityRegistryEntry[];
+
+  @state() private _entityRegistryLoaded = false;
+
   private _startDate?: Date;
 
   private _endDate?: Date;
 
   private _resizeObserver?: ResizeObserver;
+
+  private _unsubEntityRegistry?: UnsubscribeFunc;
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
@@ -89,16 +99,34 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+    // Don't build calendars until entity registry is loaded
+    if (!this._entityRegistryLoaded) {
+      return;
+    }
+
     if (
       !this.hasUpdated ||
-      (changedProps.has("_config") && this._config?.entities)
+      (changedProps.has("_config") && this._config?.entities) ||
+      changedProps.has("_entityRegistry")
     ) {
       const computedStyles = getComputedStyle(this);
+      const entityOptionsMap = new Map(
+        this._entityRegistry?.map((entry) => [
+          entry.entity_id,
+          entry.options,
+        ]) ?? []
+      );
       if (this._config?.entities) {
-        this._calendars = this._config.entities.map((entity, idx) => ({
-          entity_id: entity,
-          backgroundColor: getColorByIndex(idx, computedStyles),
-        }));
+        this._calendars = this._config.entities.map((entity, idx) => {
+          const entityColor = entityOptionsMap.get(entity)?.calendar?.color;
+          const backgroundColor = entityColor
+            ? computeCssColor(entityColor)
+            : getColorByIndex(idx, computedStyles);
+          return {
+            entity_id: entity,
+            backgroundColor,
+          };
+        });
       }
     }
   }
@@ -119,6 +147,9 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachObserver());
+    if (this.hass) {
+      this._subscribeEntityRegistry();
+    }
   }
 
   public disconnectedCallback(): void {
@@ -126,10 +157,36 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
+    this._unsubscribeEntityRegistry();
+  }
+
+  private _subscribeEntityRegistry(): void {
+    if (this._unsubEntityRegistry || !this.hass) {
+      return;
+    }
+    this._unsubEntityRegistry = subscribeEntityRegistry(
+      this.hass.connection!,
+      (entities) => {
+        this._entityRegistry = entities;
+        this._entityRegistryLoaded = true;
+      }
+    );
+  }
+
+  private _unsubscribeEntityRegistry(): void {
+    if (this._unsubEntityRegistry) {
+      this._unsubEntityRegistry();
+      this._unsubEntityRegistry = undefined;
+    }
   }
 
   protected render() {
-    if (!this._config || !this.hass || !this._calendars.length) {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this._calendars.length ||
+      !this._entityRegistryLoaded
+    ) {
       return nothing;
     }
 
@@ -150,6 +207,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           })}
           .narrow=${this._narrow}
           .events=${this._events}
+          .calendars=${this._calendars}
           .hass=${this.hass}
           .views=${views}
           .initialView=${this._config.initial_view!}
@@ -162,8 +220,19 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+
+    // Subscribe to entity registry when hass becomes available
+    if (changedProps.has("hass") && this.hass) {
+      this._subscribeEntityRegistry();
+    }
+
     if (!this._config || !this.hass) {
       return;
+    }
+
+    // Refetch events when entity registry changes (to update colors)
+    if (changedProps.has("_entityRegistry") && this._entityRegistry) {
+      this._fetchCalendarEvents();
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;

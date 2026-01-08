@@ -1,7 +1,8 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -22,14 +23,17 @@ import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
 import type { Calendar, CalendarEvent } from "../../data/calendar";
 import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
 
 @customElement("ha-panel-calendar")
-class PanelCalendar extends LitElement {
+class PanelCalendar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -41,6 +45,8 @@ class PanelCalendar extends LitElement {
   @state() private _events: CalendarEvent[] = [];
 
   @state() private _error?: string = undefined;
+
+  @state() private _entityRegistry?: EntityRegistryEntry[];
 
   @state()
   @storage({
@@ -84,11 +90,26 @@ class PanelCalendar extends LitElement {
     this.mobile = ev.matches;
   };
 
-  public willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
-      this._calendars = getCalendars(this.hass, this);
-    }
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        const isInitialLoad = this._entityRegistry === undefined;
+        this._entityRegistry = entities;
+        // Refresh calendars when entity registry updates (includes color changes)
+        this._calendars = getCalendars(this.hass, this, this._entityRegistry);
+        // Fetch events on initial load (after entity registry is available)
+        if (isInitialLoad && this._start && this._end) {
+          this._fetchEvents(
+            this._start,
+            this._end,
+            this._selectedCalendars
+          ).then((result) => {
+            this._events = result.events;
+            this._handleErrors(result.errors);
+          });
+        }
+      }),
+    ];
   }
 
   protected render(): TemplateResult {
@@ -243,7 +264,7 @@ class PanelCalendar extends LitElement {
       manifest: await fetchIntegrationManifest(this.hass, "local_calendar"),
       dialogClosedCallback: ({ flowFinished }) => {
         if (flowFinished) {
-          this._calendars = getCalendars(this.hass, this);
+          this._calendars = getCalendars(this.hass, this, this._entityRegistry);
         }
       },
     });
