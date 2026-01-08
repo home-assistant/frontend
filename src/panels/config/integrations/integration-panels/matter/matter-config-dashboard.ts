@@ -396,7 +396,10 @@ export class MatterConfigDashboard extends LitElement {
           margin-top: var(--ha-space-4);
           max-width: 500px;
           background: var(--card-background-color);
-          border-radius: var(--ha-card-border-radius, 12px);
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
           --expansion-panel-summary-padding: var(--ha-space-2) var(--ha-space-4);
           --expansion-panel-content-padding: 0 var(--ha-space-4);
         }
