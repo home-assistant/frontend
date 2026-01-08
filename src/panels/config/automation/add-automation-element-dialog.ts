@@ -431,6 +431,29 @@ class DialogAddAutomationElement
 
   // #region render
 
+  private _getEmptyNote(automationElementType: string) {
+    if (
+      automationElementType !== "trigger" &&
+      automationElementType !== "condition"
+    ) {
+      return undefined;
+    }
+    const noteKey =
+      `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target_note` as LocalizeKeys;
+    const localized = this.hass.localize(noteKey, {
+      labs_link: "LABS_LINK_PLACEHOLDER",
+    });
+    const parts = localized.split("LABS_LINK_PLACEHOLDER");
+    if (parts.length > 1) {
+      const labsLabel =
+        this.hass.localize("ui.panel.config.labs.caption") || "Labs";
+      return html`${parts[0]}<a href="/config/labs" @click=${this._close}
+          >${labsLabel}</a
+        >${parts[1]}`;
+    }
+    return localized;
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -696,6 +719,7 @@ class DialogAddAutomationElement
                 .emptyLabel=${this.hass.localize(
                   `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
                 )}
+                .emptyNote=${this._getEmptyNote(automationElementType)}
                 .tooltipDescription=${this._tab === "targets"}
                 .target=${(this._tab === "targets" &&
                   this._selectedTarget &&
@@ -2118,8 +2142,7 @@ class DialogAddAutomationElement
           flex: 6;
         }
 
-        .content.column ha-automation-add-from-target,
-        .content.column ha-automation-add-items {
+        .content.column ha-automation-add-from-target {
           flex: none;
         }
         .content.column ha-automation-add-items {
