@@ -349,7 +349,7 @@ export class MatterConfigDashboard extends LitElement {
       css`
         ha-card {
           margin: auto;
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
           max-width: 500px;
         }
 
@@ -364,7 +364,7 @@ export class MatterConfigDashboard extends LitElement {
         }
 
         .network-status div.heading .icon {
-          margin-inline-end: 16px;
+          margin-inline-end: var(--ha-space-4);
         }
 
         .network-status div.heading ha-svg-icon {
@@ -393,27 +393,27 @@ export class MatterConfigDashboard extends LitElement {
 
         ha-expansion-panel {
           margin: auto;
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
           max-width: 500px;
           background: var(--card-background-color);
           border-radius: var(--ha-card-border-radius, 12px);
-          --expansion-panel-summary-padding: 8px 16px;
-          --expansion-panel-content-padding: 0 16px;
+          --expansion-panel-summary-padding: var(--ha-space-2) var(--ha-space-4);
+          --expansion-panel-content-padding: 0 var(--ha-space-4);
         }
 
         .dev-tools-content {
-          padding: 0 0 16px;
+          padding: 0 0 var(--ha-space-4);
         }
 
         .dev-tools-content p {
-          margin: 0 0 16px;
+          margin: 0 0 var(--ha-space-4);
           color: var(--primary-text-color);
         }
 
         .dev-tools-actions {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
 
         a[slot="toolbar-icon"] {
