@@ -6,7 +6,7 @@ import {
   mdiPlusBoxMultiple,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
@@ -209,7 +209,7 @@ export class VoiceAssistantsExpose extends LitElement {
         maxWidth: "160px",
         type: "flex",
         template: (entry) =>
-          html`${availableAssistants.map((key) => {
+          availableAssistants.map((key) => {
             const supported =
               !supportedEntities?.[key] ||
               supportedEntities[key].includes(entry.entity_id);
@@ -224,8 +224,8 @@ export class VoiceAssistantsExpose extends LitElement {
                   >
                   </voice-assistants-expose-assistant-icon>
                 `
-              : html`<div style="width: 40px;"></div>`;
-          })}`,
+              : nothing;
+          }),
       },
       aliases: {
         title: localize(
