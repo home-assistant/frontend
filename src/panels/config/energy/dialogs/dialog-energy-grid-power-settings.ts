@@ -9,10 +9,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
-import type {
-  GridPowerSourceEnergyPreference,
-  PowerConfig,
-} from "../../../../data/energy";
+import type { PowerConfig } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -315,23 +312,8 @@ export class DialogEnergyGridPowerSettings
 
   private async _save() {
     try {
-      // Compute stat_rate from power_config for backwards compatibility
-      // Backend does this too, but we need it for TypeScript
-      let statRate: string;
-      switch (this._sensorType) {
-        case "standard":
-          statRate = this._powerConfig.stat_rate!;
-          break;
-        case "inverted":
-          statRate = this._powerConfig.stat_rate_inverted!;
-          break;
-        case "two_sensors":
-          statRate = this._powerConfig.stat_rate_from!;
-          break;
-      }
-
-      const source: GridPowerSourceEnergyPreference = {
-        stat_rate: statRate,
+      const source = {
+        stat_rate: "", // will be overridden but needed to satisfy typescript
         power_config: { ...this._powerConfig },
       };
       await this._params!.saveCallback(source);
