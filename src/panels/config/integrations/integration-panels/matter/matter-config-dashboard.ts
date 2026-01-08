@@ -3,6 +3,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -12,10 +13,7 @@ import "../../../../../components/ha-fab";
 import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
-import {
-  fetchDeviceRegistry,
-  type DeviceRegistryEntry,
-} from "../../../../../data/device/device_registry";
+import type { HomeAssistant } from "../../../../../types";
 import {
   acceptSharedMatterDevice,
   canCommissionMatterExternal,
@@ -28,7 +26,6 @@ import {
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 
 @customElement("matter-config-dashboard")
 export class MatterConfigDashboard extends LitElement {
@@ -37,8 +34,6 @@ export class MatterConfigDashboard extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _configEntry?: ConfigEntry;
-
-  @state() private _totalDevices = 0;
 
   @state() private _error?: string;
 
@@ -53,9 +48,15 @@ export class MatterConfigDashboard extends LitElement {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchConfigEntry();
-      this._fetchDevicesAndUpdateStatus();
     }
   }
+
+  private _matterDeviceCount = memoizeOne(
+    (devices: HomeAssistant["devices"]): number =>
+      Object.values(devices).filter((device) =>
+        device.identifiers.some((identifier) => identifier[0] === "matter")
+      ).length
+  );
 
   protected render(): TemplateResult {
     const isOnline = this._configEntry?.state === "loaded";
@@ -101,7 +102,7 @@ export class MatterConfigDashboard extends LitElement {
                   <small>
                     ${this.hass.localize(
                       "ui.panel.config.matter.panel.devices",
-                      { count: this._totalDevices }
+                      { count: this._matterDeviceCount(this.hass.devices) }
                     )}
                   </small>
                 </div>
@@ -332,15 +333,6 @@ export class MatterConfigDashboard extends LitElement {
     if (configEntries.length) {
       this._configEntry = configEntries[0];
     }
-  }
-
-  private async _fetchDevicesAndUpdateStatus(): Promise<void> {
-    const devices = await fetchDeviceRegistry(this.hass.connection);
-    const matterDevices = Object.values(devices).filter(
-      (device: DeviceRegistryEntry) =>
-        device.identifiers.some((identifier) => identifier[0] === "matter")
-    );
-    this._totalDevices = matterDevices.length;
   }
 
   static get styles(): CSSResultGroup {
