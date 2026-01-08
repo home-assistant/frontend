@@ -105,6 +105,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#3263C3",
     },
   ],
+  dashboard_external_settings: [
+    {
+      path: "#external-app-configuration",
+      translationKey: "companion",
+      iconPath: mdiCellphoneCog,
+      iconColor: "#8E24AA",
+    },
+  ],
   dashboard_2: [
     {
       path: "/config/zha",
@@ -172,12 +180,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiAccount,
       iconColor: "#5A87FA",
       component: ["person", "users"],
-    },
-    {
-      path: "#external-app-configuration",
-      translationKey: "companion",
-      iconPath: mdiCellphoneCog,
-      iconColor: "#8E24AA",
     },
     {
       path: "/config/system",

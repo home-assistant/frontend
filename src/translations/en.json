@@ -2319,7 +2319,7 @@
           },
           "companion": {
             "main": "Companion app",
-            "secondary": "Location and notifications"
+            "secondary": "Sensors, widgets, notifications and more"
           },
           "system": {
             "main": "System",

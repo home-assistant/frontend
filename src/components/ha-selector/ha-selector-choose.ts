@@ -38,6 +38,13 @@ export class HaChooseSelector extends LitElement {
     ) {
       this._setActiveChoice();
     }
+    if (
+      changedProperties.has("value") &&
+      changedProperties.get("value")?.active_choice &&
+      changedProperties.get("value")?.active_choice !== this._activeChoice
+    ) {
+      this._setActiveChoice();
+    }
   }
 
   protected render() {
