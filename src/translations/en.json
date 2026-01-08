@@ -7603,6 +7603,7 @@
               "sidebar": "Sidebar",
               "panel": "Panel (single card)"
             },
+            "show_icon_and_title": "Show icon and title",
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
             "section_specifics": "Sections view specific settings",
@@ -7610,6 +7611,7 @@
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "top_margin": "Add additional space above",
             "top_margin_helper": "Helps reveal more of the background",
+            "show_icon_and_title_helper": "Show both icon and text title.",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "path_helper": "This value will become part of the URL path to open this view.",
             "edit_ui": "Edit in visual editor",
