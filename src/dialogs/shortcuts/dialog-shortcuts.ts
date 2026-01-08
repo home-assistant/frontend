@@ -1,4 +1,3 @@
-import { mdiAppleKeyboardCommand } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -154,6 +153,10 @@ const _SHORTCUTS: Section[] = [
         shortcut: ["M"],
         descriptionTranslationKey: "ui.dialogs.shortcuts.other.my_link",
       },
+      {
+        shortcut: ["Shift", "/"],
+        descriptionTranslationKey: "ui.dialogs.shortcuts.other.show_shortcuts",
+      },
     ],
   },
 ];
@@ -184,9 +187,7 @@ class DialogShortcuts extends LitElement {
             html`<span
               >${shortcutKey === CTRL_CMD
                 ? isMac
-                  ? html`<ha-svg-icon
-                      .path=${mdiAppleKeyboardCommand}
-                    ></ha-svg-icon>`
+                  ? "⌘"
                   : this.hass.localize("ui.panel.config.automation.editor.ctrl")
                 : typeof shortcutKey === "string"
                   ? shortcutKey

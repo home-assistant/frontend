@@ -107,6 +107,8 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import "../voice-assistants/expose/expose-assistant-icon";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -409,6 +411,31 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             >
             </ha-icon-overflow-menu>
           `,
+        },
+        voice_assistants: {
+          title: localize(
+            "ui.panel.config.scene.picker.headers.voice_assistants"
+          ),
+          type: "icon",
+          defaultHidden: true,
+          minWidth: "100px",
+          maxWidth: "100px",
+          template: (scene) => {
+            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+              this._entityReg,
+              scene.entity_id
+            );
+            return html` ${exposedToVoiceAssistantKeys.length !== 0
+              ? exposedToVoiceAssistantKeys.map(
+                  (vaKey) =>
+                    html` <voice-assistants-expose-assistant-icon
+                      .assistant=${vaKey}
+                      .hass=${this.hass}
+                    >
+                    </voice-assistants-expose-assistant-icon>`
+                )
+              : "—"}`;
+          },
         },
       };
 
