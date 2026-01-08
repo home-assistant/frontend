@@ -115,6 +115,8 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import "../voice-assistants/expose/expose-assistant-icon";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -492,6 +494,31 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         template: (entry) =>
           entry.label_entries.map((lbl) => lbl.name).join(" "),
+      },
+      voice_assistants: {
+        title: localize(
+          "ui.panel.config.entities.picker.headers.voice_assistants"
+        ),
+        type: "icon",
+        defaultHidden: true,
+        minWidth: "100px",
+        maxWidth: "100px",
+        template: (entry) => {
+          const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+            this._entities,
+            entry.entity_id
+          );
+          return html` ${exposedToVoiceAssistantKeys.length !== 0
+            ? exposedToVoiceAssistantKeys.map(
+                (vaKey) =>
+                  html` <voice-assistants-expose-assistant-icon
+                    .assistant=${vaKey}
+                    .hass=${this.hass}
+                  >
+                  </voice-assistants-expose-assistant-icon>`
+              )
+            : "—"}`;
+        },
       },
     })
   );

@@ -163,7 +163,7 @@ class DialogImportBlueprint extends LitElement {
         </div>
         <ha-button
           appearance="plain"
-          slot="primaryAction"
+          slot="secondaryAction"
           @click=${this.closeDialog}
           .disabled=${this._saving}
         >
