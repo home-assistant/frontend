@@ -13,8 +13,6 @@ export class VoiceAssistantBrandicon extends LitElement {
   @property({ attribute: false }) public voiceAssistantId!: string;
 
   protected render() {
-    // eslint-disable-next-line no-console
-    console.log("input va-brand-icon: " + this.voiceAssistantId);
     return html`
       <img
         class="logo"

@@ -1,13 +1,10 @@
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
-// import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { stringCompare } from "../common/string/compare";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -20,10 +17,13 @@ import "./ha-list-item";
 import "./search-input-outlined";
 import "./voice-assistant-brand-icon";
 import { voiceAssistants } from "../data/expose";
+import type { CloudStatus } from "../data/cloud";
 
-@customElement("ha-filter-assistants")
-export class HaFilterAssistants extends LitElement {
+@customElement("ha-filter-voice-assistants")
+export class HaFilterVoiceAssistants extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -34,31 +34,6 @@ export class HaFilterAssistants extends LitElement {
   @state() private _assistantKeys: string[] = [];
 
   @state() private _shouldRender = false;
-
-  @state() private _filter?: string;
-
-  // TODO
-  private _filteredAssistantKeys = memoizeOne(
-    // `_value` used to recalculate the memoization when the selection changes
-    (assistantKeys: string[], filter: string | undefined, _value) =>
-      assistantKeys
-        .filter(
-          (assistantKey) =>
-            !filter ||
-            // label.name.toLowerCase().includes(filter) ||
-            // label.label_id.toLowerCase().includes(filter)
-            assistantKey === filter
-        )
-        .sort((a, b) =>
-          stringCompare(
-            // a.name || a.label_id,
-            // b.name || b.label_id,
-            a,
-            b // ,
-            // this.hass.locale.language
-          )
-        )
-  );
 
   protected render() {
     return html`
@@ -87,13 +62,7 @@ export class HaFilterAssistants extends LitElement {
               multi
             >
               ${repeat(
-                // TODO
-                // this._filteredAssistantKeys(
-                //   this._assistantKeys,
-                //   this._filter,
-                //   this.value
-                // ),
-                Object.keys(voiceAssistants),
+                this._assistantKeys,
                 (assistantKey) => assistantKey,
                 (assistantKey) =>
                   html`<ha-check-list-item
@@ -118,16 +87,27 @@ export class HaFilterAssistants extends LitElement {
   }
 
   protected updated(changed) {
-    // eslint-disable-next-line no-console
-    console.log(changed);
-
-    // if (changed.has("expanded") && this.expanded) {
-    //   setTimeout(() => {
-    //     if (!this.expanded) return;
-    //     this.renderRoot.querySelector("ha-list")!.style.height =
-    //       `${this.clientHeight - (49 + 48 + 32)}px`;
-    //   }, 300);
-    // }
+    if (changed.has("expanded") && this.expanded) {
+      // TODO: refactor this
+      this._assistantKeys = ["conversation"];
+      if (
+        this.cloudStatus.alexa_registered &&
+        this.cloudStatus.prefs?.alexa_enabled
+      ) {
+        this._assistantKeys.push("cloud.alexa");
+      }
+      if (
+        this.cloudStatus.google_registered &&
+        this.cloudStatus.prefs?.google_enabled
+      ) {
+        this._assistantKeys.push("cloud.google_assistant");
+      }
+      setTimeout(() => {
+        if (!this.expanded) return;
+        this.renderRoot.querySelector("ha-list")!.style.height =
+          `${this.clientHeight - (49 + 48 + 32)}px`;
+      }, 300);
+    }
   }
 
   private _expandedWillChange(ev) {
@@ -138,37 +118,29 @@ export class HaFilterAssistants extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  // TODO
+  // TODO: review
   private async _assistantsSelected(
     ev: CustomEvent<SelectedDetail<Set<number>>>
   ) {
-    const filteredAssistantKeys = this._filteredAssistantKeys(
-      this._assistantKeys,
-      this._filter,
-      this.value
-    );
-
-    // const filteredLabelIds = new Set(filteredAssistants.map((l) => l.label_id));
-
-    // Keep previously selected assistants that are not in the current filtered view
-    const preservedAssistantKeys = (this.value || []).filter(
-      (id) => !(id in filteredAssistantKeys)
-    );
-
-    // Build the new selection from the filtered assistants based on selected indices
-    const newlySelectedAssistants: string[] = [];
-    for (const index of ev.detail.index) {
-      const assistentKey = filteredAssistantKeys[index];
-      if (assistentKey) {
-        newlySelectedAssistants.push(assistentKey);
-      }
+    if (!ev.detail.index) {
+      fireEvent(this, "data-table-filter-changed", {
+        value: [],
+        items: undefined,
+      });
+      this.value = [];
+      return;
     }
 
-    const value = [...preservedAssistantKeys, ...newlySelectedAssistants];
-    this.value = value.length ? value : [];
+    const value: string[] = [];
+
+    for (const index of ev.detail.index) {
+      value.push(this._assistantKeys![index]);
+    }
+
+    this.value = value;
 
     fireEvent(this, "data-table-filter-changed", {
-      value: value.length ? value : undefined,
+      value: this.value,
       items: undefined,
     });
   }
@@ -235,6 +207,6 @@ export class HaFilterAssistants extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-filter-assistants": HaFilterAssistants;
+    "ha-filter-voice-assistants": HaFilterVoiceAssistants;
   }
 }
