@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
+import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import {
@@ -114,6 +115,8 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   @state()
   private _bodyScrolled = false;
 
+  private _escapePressed = false;
+
   protected get scrollableElement(): HTMLElement | null {
     return this.bodyContainer;
   }
@@ -140,6 +143,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         )}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @keydown=${this._handleKeyDown}
+        @wa-hide=${this._handleHide}
         @wa-show=${this._handleShow}
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
@@ -224,12 +228,21 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
   }
 
-  @eventOptions({ capture: true })
   private _handleKeyDown(ev: KeyboardEvent) {
-    if (ev.key === "Escape" && this.preventScrimClose) {
-      ev.stopPropagation();
+    if (ev.key === "Escape") {
+      this._escapePressed = true;
+    }
+  }
+
+  private _handleHide(ev: CustomEvent<{ source: Element }>) {
+    if (
+      this.preventScrimClose &&
+      this._escapePressed &&
+      ev.detail.source === (ev.target as WaDialog).dialog
+    ) {
       ev.preventDefault();
     }
+    this._escapePressed = false;
   }
 
   static get styles() {
