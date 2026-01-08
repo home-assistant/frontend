@@ -209,7 +209,7 @@ export class VoiceAssistantsExpose extends LitElement {
         maxWidth: "160px",
         type: "flex",
         template: (entry) =>
-          availableAssistants.map((key) => {
+          html`${availableAssistants.map((key) => {
             const supported =
               !supportedEntities?.[key] ||
               supportedEntities[key].includes(entry.entity_id);
@@ -225,7 +225,7 @@ export class VoiceAssistantsExpose extends LitElement {
                   </voice-assistants-expose-assistant-icon>
                 `
               : nothing;
-          }),
+          })}`,
       },
       aliases: {
         title: localize(
