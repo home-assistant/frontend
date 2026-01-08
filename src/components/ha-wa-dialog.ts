@@ -139,6 +139,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
             (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
         )}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
+        @keydown=${this._handleKeyDown}
         @wa-show=${this._handleShow}
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
@@ -221,6 +222,14 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   @eventOptions({ passive: true })
   private _handleBodyScroll(ev: Event) {
     this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
+  }
+
+  @eventOptions({ capture: true })
+  private _handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Escape" && this.preventScrimClose) {
+      ev.stopPropagation();
+      ev.preventDefault();
+    }
   }
 
   static get styles() {
