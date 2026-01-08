@@ -1,6 +1,6 @@
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+// import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,7 +8,6 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -19,11 +18,11 @@ import "./ha-label";
 import "./ha-list";
 import "./ha-list-item";
 import "./search-input-outlined";
-import "../panels/config/voice-assistants/expose/expose-assistant-icon";
+import "./voice-assistant-brand-icon";
 import { voiceAssistants } from "../data/expose";
 
 @customElement("ha-filter-assistants")
-export class HaFilterAssistants extends SubscribeMixin(LitElement) {
+export class HaFilterAssistants extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: string[];
@@ -32,22 +31,11 @@ export class HaFilterAssistants extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  // TODO
-  // @state() private _labels: LabelRegistryEntry[] = [];
   @state() private _assistantKeys: string[] = [];
 
   @state() private _shouldRender = false;
 
   @state() private _filter?: string;
-
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      // TODO
-      // subscribeLabelRegistry(this.hass.connection, (labels) => {
-      //   this._labels = labels;
-      // }),
-    ];
-  }
 
   // TODO
   private _filteredAssistantKeys = memoizeOne(
@@ -112,13 +100,15 @@ export class HaFilterAssistants extends SubscribeMixin(LitElement) {
                     .value=${assistantKey}
                     .selected=${(this.value || []).includes(assistantKey)}
                     hasMeta
+                    graphic="icon"
                   >
-                    <voice-assistants-expose-assistant-icon
-                      .assistant=${assistantKey}
+                    <voice-assistant-brand-icon
+                      slot="graphic"
+                      .voiceAssistantId=${assistantKey}
                       .hass=${this.hass}
                     >
-                    </voice-assistants-expose-assistant-icon>
-                    ${voiceAssistants[assistantKey].label}
+                    </voice-assistant-brand-icon>
+                    ${voiceAssistants[assistantKey].name}
                   </ha-check-list-item>`
               )}
             </ha-list> `
@@ -220,7 +210,7 @@ export class HaFilterAssistants extends SubscribeMixin(LitElement) {
           display: inline-block;
           margin-left: 8px;
           margin-inline-start: 8px;
-          margin-inline-end: 0;
+          margin-inline-end: initial;
           min-width: 16px;
           box-sizing: border-box;
           border-radius: var(--ha-border-radius-circle);
@@ -232,22 +222,11 @@ export class HaFilterAssistants extends SubscribeMixin(LitElement) {
           padding: 0px 2px;
           color: var(--text-primary-color);
         }
-        .warning {
-          color: var(--error-color);
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
-        }
         .add {
           position: absolute;
           bottom: 0;
           right: 0;
           left: 0;
-        }
-        search-input-outlined {
-          display: block;
-          padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
       `,
     ];
