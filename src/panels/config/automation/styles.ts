@@ -138,6 +138,7 @@ export const manualEditorStyles = css`
     left: unset;
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
+    z-index: 301;
   }
   .fab-positioner ha-fab.dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));

@@ -1264,6 +1264,7 @@ export class HaScriptEditor extends SubscribeMixin(
           right: 16px;
           bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
+          z-index: 301;
         }
         ha-fab.dirty {
           bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
