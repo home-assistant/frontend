@@ -58,8 +58,11 @@ export class MatterConfigDashboard extends LitElement {
       ).length
   );
 
-  protected render(): TemplateResult {
-    const isOnline = this._configEntry?.state === "loaded";
+  protected render(): TemplateResult | typeof nothing {
+    if (!this._configEntry) {
+      return nothing;
+    }
+    const isOnline = this._configEntry.state === "loaded";
     return html`
       <hass-subpage
         .narrow=${this.narrow}
