@@ -9146,7 +9146,7 @@ __metadata:
     lint-staged: "npm:16.2.7"
     lit: "npm:3.3.2"
     lit-analyzer: "npm:2.0.3"
-    lit-html: "npm:3.3.1"
+    lit-html: "npm:3.3.2"
     lodash.merge: "npm:4.6.2"
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.7.2"
@@ -10521,12 +10521,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-html@npm:3.3.1":
-  version: 3.3.1
-  resolution: "lit-html@npm:3.3.1"
+"lit-html@npm:3.3.2":
+  version: 3.3.2
+  resolution: "lit-html@npm:3.3.2"
   dependencies:
     "@types/trusted-types": "npm:^2.0.2"
-  checksum: 10/7b438ca58670313beac29e4bb3b56f4ac8150def10b9fa222ad04f1caf6189a194ced8bfed3296cf1c94003a1bd1960ef4c22b00bbeda15fda6b7be398b27e9f
+  checksum: 10/5e938739641e312673e722eb41d5ca48dfcf69277e665c72dadd6514f53fc3dc4d5172cf8ca6af67736df1bce267f6189b3ef6fcb4125386b2490cd10c266b8f
   languageName: node
   linkType: hard
 
