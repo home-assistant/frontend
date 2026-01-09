@@ -40,6 +40,7 @@ import {
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
 import type {
+  DataTableColumnData,
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -119,6 +120,7 @@ import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-
 type ScriptItem = ScriptEntity & {
   name: string;
   area: string | undefined;
+  ast_triggered: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
   assistants: string[];
@@ -264,7 +266,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       localize: LocalizeFunc,
       entitiesToCheck?: any[]
     ): DataTableColumnContainer<ScriptItem> => {
-      const columns: DataTableColumnContainer = {
+      const columns: DataTableColumnContainer<<ScriptItem>> = {
         icon: {
           title: "",
           showNarrow: true,
@@ -418,7 +420,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           this.hass,
           this._availableAssistants,
           entitiesToCheck
-        ),
+        ) as DataTableColumnData<ScriptItem>,
       };
       return columns;
     }
