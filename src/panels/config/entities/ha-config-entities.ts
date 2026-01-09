@@ -512,7 +512,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this.hass,
         this._availableAssistants,
         entitiesToCheck
-      ),
+      ) as DataTableColumnData<EntityRow>,
     })
   );
 
