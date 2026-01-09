@@ -1,5 +1,6 @@
 import { html, nothing } from "lit";
 import type { HomeAssistant } from "../../../../types";
+import type { DataTableColumnData } from "../../../../components/data-table/ha-data-table";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "./expose-assistant-icon";
 
@@ -8,7 +9,7 @@ export const getAssistantsTableColumn = (
   hass: HomeAssistant,
   availableAssistants: string[],
   entitiesToCheck?: any[]
-) => ({
+): DataTableColumnData => ({
   title: localize("ui.panel.config.voice_assistants.expose.headers.assistants"),
   type: "flex",
   defaultHidden: true,
@@ -16,7 +17,7 @@ export const getAssistantsTableColumn = (
   minWidth: "160px",
   maxWidth: "160px",
   template: (entry) =>
-    entry.assistants.length !== 0
+    html`${entry.assistants.length !== 0
       ? availableAssistants.map((vaKey) => {
           const manual = false;
           const supported = true;
@@ -29,7 +30,7 @@ export const getAssistantsTableColumn = (
             entitiesToCheck
           );
         })
-      : nothing,
+      : nothing}`,
 });
 
 export const getAssistantsTableColumnIcon = (
