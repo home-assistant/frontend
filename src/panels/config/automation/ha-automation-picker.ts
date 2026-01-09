@@ -81,6 +81,7 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
@@ -116,7 +117,8 @@ import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-table-column";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -125,6 +127,7 @@ type AutomationItem = AutomationEntity & {
   formatted_state: string;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  assistants: string[];
 };
 
 @customElement("ha-automation-picker")
@@ -136,6 +139,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
@@ -212,6 +217,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus);
+  }
+
   private _automations = memoizeOne(
     (
       automations: AutomationEntity[],
@@ -250,6 +259,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
+          assistants: getEntityVoiceAssistantsKeys(
+            entityReg,
+            automation.entity_id
+          ),
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -260,7 +273,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     (
       narrow: boolean,
       localize: LocalizeFunc,
-      locale: HomeAssistant["locale"]
+      locale: HomeAssistant["locale"],
+      entitiesToCheck?: any[]
     ): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<AutomationItem> = {
         icon: {
@@ -378,31 +392,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           `,
         },
-        voice_assistants: {
-          title: localize(
-            "ui.panel.config.automation.picker.headers.voice_assistants"
-          ),
-          type: "icon",
-          defaultHidden: true,
-          minWidth: "100px",
-          maxWidth: "100px",
-          template: (automation) => {
-            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
-              this._entityReg,
-              automation.entity_id
-            );
-            return html` ${exposedToVoiceAssistantKeys.length !== 0
-              ? exposedToVoiceAssistantKeys.map(
-                  (vaKey) =>
-                    html` <voice-assistants-expose-assistant-icon
-                      .assistant=${vaKey}
-                      .hass=${this.hass}
-                    >
-                    </voice-assistants-expose-assistant-icon>`
-                )
-              : "—"}`;
-          },
-        },
+        assistants: getAssistantsTableColumn(
+          localize,
+          this.hass,
+          this._availableAssistants,
+          entitiesToCheck
+        ),
       };
       return columns;
     }
@@ -581,7 +576,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         .columns=${this._columns(
           this.narrow,
           this.hass.localize,
-          this.hass.locale
+          this.hass.locale,
+          automations
         )}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
