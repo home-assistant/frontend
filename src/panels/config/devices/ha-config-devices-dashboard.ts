@@ -992,6 +992,15 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 </ha-sub-menu>
                 <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
             : nothing}
+          <ha-md-menu-item .clickAction=${this._disableSelected}>
+            <ha-svg-icon slot="start" .path=${mdiCancel}></ha-svg-icon>
+            <div slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.devices.picker.bulk_actions.disable_selected"
+              )}
+            </div>
+          </ha-md-menu-item>
+          <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
           <ha-md-menu-item
             .clickAction=${this._deleteSelected}
             .disabled=${!this._selectedCanDelete.length}
@@ -1175,6 +1184,48 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
+      },
+    });
+  };
+
+  private _disableSelected = () => {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.devices.picker.bulk_actions.disable_selected.confirm_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.devices.picker.bulk_actions.disable_selected.confirm_text",
+        { number: this._selected.length }
+      ),
+      confirmText: this.hass.localize("ui.common.disable"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirm: async () => {
+        const promises: Promise<DeviceRegistryEntry>[] = [];
+        this._selected.forEach((deviceId) => {
+          promises.push(
+            updateDeviceRegistryEntry(this.hass, deviceId, {
+              disabled_by: "user",
+            })
+          );
+        });
+        const result = await Promise.allSettled(promises);
+        if (hasRejectedItems(result)) {
+          const rejected = rejectedItems(result);
+          showAlertDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.common.multiselect.failed",
+              {
+                number: rejected.length,
+              }
+            ),
+            text: html`<pre>
+${rejected
+  .map((r) => r.reason.message || r.reason.code || r.reason)
+  .join("\r\n")}</pre
+            >`,
+          });
+        }
+        this._clearSelection();
       },
     });
   };
