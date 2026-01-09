@@ -38,6 +38,7 @@ import {
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
 import type {
+  DataTableColumnData,
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -117,6 +118,7 @@ type SceneItem = SceneEntity & {
   area: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  assistants: string[];
 };
 
 @customElement("ha-scene-dashboard")
@@ -253,7 +255,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     (
       localize: LocalizeFunc,
       entitiesToCheck?: any[]
-    ): DataTableColumnContainer => {
+    ): DataTableColumnContainer<SceneItem> => {
       const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
@@ -429,7 +431,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           this.hass,
           this._availableAssistants,
           entitiesToCheck
-        ),
+        ) as DataTableColumnData<SceneItem>,
       };
 
       return columns;
