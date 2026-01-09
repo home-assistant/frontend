@@ -34,7 +34,7 @@
     "@codemirror/legacy-modes": "6.5.2",
     "@codemirror/search": "6.5.11",
     "@codemirror/state": "6.5.3",
-    "@codemirror/view": "6.39.8",
+    "@codemirror/view": "6.39.9",
     "@date-fns/tz": "1.4.1",
     "@egjs/hammerjs": "2.0.17",
     "@formatjs/intl-datetimeformat": "7.1.1",
