@@ -18,20 +18,23 @@ import "./search-input-outlined";
 import "./voice-assistant-brand-icon";
 import { voiceAssistants } from "../data/expose";
 import type { CloudStatus } from "../data/cloud";
+import { fetchCloudStatus } from "../data/cloud";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 
 @customElement("ha-filter-voice-assistants")
 export class HaFilterVoiceAssistants extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus?: CloudStatus;
-
-  @property({ attribute: false }) public value?: string[];
+  @property({ attribute: false }) public selectedVoiceAssistantIds: string[] =
+    [];
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @state() private _assistantKeys: string[] = [];
+  @state() private _cloudStatus?: CloudStatus;
+
+  @state() private _voiceAssistantOptions: string[] = [];
 
   @state() private _shouldRender = false;
 
@@ -47,8 +50,10 @@ export class HaFilterVoiceAssistants extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.voice_assistants.assistants.caption"
           )}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
+          ${this.selectedVoiceAssistantIds?.length
+            ? html`<div class="badge">
+                  ${this.selectedVoiceAssistantIds?.length}
+                </div>
                 <ha-icon-button
                   .path=${mdiFilterVariantRemove}
                   @click=${this._clearFilter}
@@ -62,12 +67,14 @@ export class HaFilterVoiceAssistants extends LitElement {
               multi
             >
               ${repeat(
-                this._assistantKeys,
+                this._voiceAssistantOptions,
                 (assistantKey) => assistantKey,
                 (assistantKey) =>
                   html`<ha-check-list-item
                     .value=${assistantKey}
-                    .selected=${(this.value || []).includes(assistantKey)}
+                    .selected=${(this.selectedVoiceAssistantIds || []).includes(
+                      assistantKey
+                    )}
                     hasMeta
                     graphic="icon"
                   >
@@ -86,27 +93,83 @@ export class HaFilterVoiceAssistants extends LitElement {
     `;
   }
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
+    // HA Assist is always one of the options
+    this._voiceAssistantOptions = ["conversation"];
+
+    // whether cloud based voice assistants are listed as options
+    // depends on the current cloudStatus
+    if (isComponentLoaded(this.hass, "cloud")) {
+      this._handleCloudStatusUpdate();
+    }
+  }
+
   protected updated(changed) {
     if (changed.has("expanded") && this.expanded) {
-      // TODO: refactor this
-      this._assistantKeys = ["conversation"];
-      if (
-        this.cloudStatus.alexa_registered &&
-        this.cloudStatus.prefs?.alexa_enabled
-      ) {
-        this._assistantKeys.push("cloud.alexa");
-      }
-      if (
-        this.cloudStatus.google_registered &&
-        this.cloudStatus.prefs?.google_enabled
-      ) {
-        this._assistantKeys.push("cloud.google_assistant");
-      }
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - (49 + 48 + 32)}px`;
       }, 300);
+    }
+  }
+
+  // translate the current CloudStatus to visible filter options
+  private async _handleCloudStatusUpdate() {
+    this._cloudStatus = await fetchCloudStatus(this.hass);
+
+    if (
+      // Relayer connecting
+      this._cloudStatus.cloud === "connecting" ||
+      // Remote connecting
+      (this._cloudStatus.logged_in &&
+        this._cloudStatus.prefs.remote_enabled &&
+        !this._cloudStatus.remote_connected)
+    ) {
+      setTimeout(() => this._handleCloudStatusUpdate(), 5000);
+    }
+
+    if (this._cloudStatus.logged_in) {
+      this._processCloudAssistantState(
+        "cloud.alexa",
+        this._cloudStatus.alexa_registered
+      );
+      this._processCloudAssistantState(
+        "cloud.google_assistant",
+        this._cloudStatus.google_registered
+      );
+    }
+  }
+
+  // translate the current registered state of a particular cloud-based voice assistant to
+  // visible filter options, taking into account de-registration and re-registration
+  // of these assistants
+  private _processCloudAssistantState(
+    voiceAssistantId: string,
+    registered: boolean
+  ) {
+    if (registered) {
+      // add to options (when not yet present)
+      if (!this._voiceAssistantOptions.includes(voiceAssistantId))
+        this._voiceAssistantOptions.push(voiceAssistantId);
+    } else {
+      // remove from options
+      this._voiceAssistantOptions = this._voiceAssistantOptions.filter(
+        (e) => e !== voiceAssistantId
+      );
+      // when this cloud assistent is de-registered while it is currently
+      // selected, then unselect
+      if (this.selectedVoiceAssistantIds.includes(voiceAssistantId)) {
+        this.selectedVoiceAssistantIds = this.selectedVoiceAssistantIds.filter(
+          (e) => e !== voiceAssistantId
+        );
+        fireEvent(this, "data-table-filter-changed", {
+          value: this.selectedVoiceAssistantIds,
+          items: undefined,
+        });
+      }
     }
   }
 
@@ -127,27 +190,27 @@ export class HaFilterVoiceAssistants extends LitElement {
         value: [],
         items: undefined,
       });
-      this.value = [];
+      this.selectedVoiceAssistantIds = [];
       return;
     }
 
     const value: string[] = [];
 
     for (const index of ev.detail.index) {
-      value.push(this._assistantKeys![index]);
+      value.push(this._voiceAssistantOptions![index]);
     }
 
-    this.value = value;
+    this.selectedVoiceAssistantIds = value;
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
+      value: this.selectedVoiceAssistantIds,
       items: undefined,
     });
   }
 
   private _clearFilter(ev) {
     ev.preventDefault();
-    this.value = undefined;
+    this.selectedVoiceAssistantIds = [];
     fireEvent(this, "data-table-filter-changed", {
       value: undefined,
       items: undefined,
