@@ -71,6 +71,7 @@ import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
@@ -116,7 +117,8 @@ import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-table-column";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -139,6 +141,7 @@ export interface EntityRow extends StateEntity {
   localized_platform: string;
   domain: string;
   label_entries: LabelRegistryEntry[];
+  assistants: string[];
   enabled: string;
   visible: string;
   available: string;
@@ -153,6 +156,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @state() private _stateEntities: StateEntity[] = [];
 
@@ -224,6 +229,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus);
+  }
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -289,7 +298,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   ]);
 
   private _columns = memoize(
-    (localize: LocalizeFunc): DataTableColumnContainer<EntityRow> => ({
+    (
+      localize: LocalizeFunc,
+      entitiesToCheck: any[]
+    ): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
         label: localize("ui.panel.config.entities.picker.headers.state_icon"),
@@ -495,31 +507,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         template: (entry) =>
           entry.label_entries.map((lbl) => lbl.name).join(" "),
       },
-      voice_assistants: {
-        title: localize(
-          "ui.panel.config.entities.picker.headers.voice_assistants"
-        ),
-        type: "icon",
-        defaultHidden: true,
-        minWidth: "100px",
-        maxWidth: "100px",
-        template: (entry) => {
-          const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
-            this._entities,
-            entry.entity_id
-          );
-          return html` ${exposedToVoiceAssistantKeys.length !== 0
-            ? exposedToVoiceAssistantKeys.map(
-                (vaKey) =>
-                  html` <voice-assistants-expose-assistant-icon
-                    .assistant=${vaKey}
-                    .hass=${this.hass}
-                  >
-                  </voice-assistants-expose-assistant-icon>`
-              )
-            : "—"}`;
-        },
-      },
+      assistants: getAssistantsTableColumn(
+        localize,
+        this.hass,
+        this._availableAssistants,
+        entitiesToCheck
+      ),
     })
   );
 
@@ -736,6 +729,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           restored,
           localized_platform: domainToName(localize, entry.platform),
           domain: domainToName(localize, computeDomain(entry.entity_id)),
+          assistants: getEntityVoiceAssistantsKeys(
+            entities as EntityRegistryEntry[],
+            entry.entity_id
+          ),
           status: restored
             ? localize("ui.panel.config.entities.picker.status.not_provided")
             : unavailable
@@ -849,7 +846,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         .route=${this.route}
         .tabs=${configSections.devices}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, filteredEntities)}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search",
