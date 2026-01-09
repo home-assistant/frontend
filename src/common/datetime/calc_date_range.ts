@@ -93,8 +93,13 @@ export const calcDateRange = (
       ];
     case "now-12m":
       return [
-        calcDate(subMonths(today, 12), startOfMonth, hass.locale, hass.config),
-        calcDate(subMonths(today, 1), endOfMonth, hass.locale, hass.config),
+        calcDate(
+          subMonths(today, 12),
+          (date) => date,
+          hass.locale,
+          hass.config
+        ),
+        calcDate(today, (date) => date, hass.locale, hass.config),
       ];
     case "now-1h":
       return [

@@ -45,6 +45,7 @@ const EXTENDED_RANGE_KEYS: DateRange[] = [
   "now-24h",
   "now-7d",
   "now-30d",
+  "now-12m",
 ];
 
 @customElement("ha-date-range-picker")
