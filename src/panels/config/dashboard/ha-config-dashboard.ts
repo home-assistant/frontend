@@ -161,24 +161,27 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     total: 0,
   };
 
-  private _pages = memoizeOne((cloudStatus, isCloudLoaded) => [
-    isCloudLoaded
-      ? [
-          {
-            component: "cloud",
-            path: "/config/cloud",
-            name: "Home Assistant Cloud",
-            info: cloudStatus,
-            iconPath: mdiCloudLock,
-            iconColor: "#3B808E",
-            translationKey: "cloud",
-          },
-          ...configSections.dashboard,
-        ]
-      : configSections.dashboard,
-    configSections.dashboard_2,
-    configSections.dashboard_3,
-  ]);
+  private _pages = memoizeOne(
+    (cloudStatus, isCloudLoaded, hasExternalSettings) => [
+      isCloudLoaded
+        ? [
+            {
+              component: "cloud",
+              path: "/config/cloud",
+              name: "Home Assistant Cloud",
+              info: cloudStatus,
+              iconPath: mdiCloudLock,
+              iconColor: "#3B808E",
+              translationKey: "cloud",
+            },
+            ...configSections.dashboard,
+          ]
+        : configSections.dashboard,
+      hasExternalSettings ? configSections.dashboard_external_settings : [],
+      configSections.dashboard_2,
+      configSections.dashboard_3,
+    ]
+  );
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -310,7 +313,8 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             : ""}
           ${this._pages(
             this.cloudStatus,
-            isComponentLoaded(this.hass, "cloud")
+            isComponentLoaded(this.hass, "cloud"),
+            this.hass.auth.external?.config.hasSettingsScreen
           ).map((categoryPages) =>
             categoryPages.length === 0
               ? nothing
