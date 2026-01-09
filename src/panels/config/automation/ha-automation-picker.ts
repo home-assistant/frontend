@@ -115,7 +115,7 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import "../voice-assistants/expose/expose-assistant-icon";
 
 type AutomationItem = AutomationEntity & {
@@ -387,15 +387,15 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           minWidth: "100px",
           maxWidth: "100px",
           template: (automation) => {
-            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+            const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
               this._entityReg,
               automation.entity_id
             );
-            return html` ${exposedToVoiceAssistantKeys.length !== 0
-              ? exposedToVoiceAssistantKeys.map(
-                  (vaKey) =>
+            return html` ${exposedToVoiceAssistantIds.length !== 0
+              ? exposedToVoiceAssistantIds.map(
+                  (vaId) =>
                     html` <voice-assistants-expose-assistant-icon
-                      .assistant=${vaKey}
+                      .assistant=${vaId}
                       .hass=${this.hass}
                     >
                     </voice-assistants-expose-assistant-icon>`
