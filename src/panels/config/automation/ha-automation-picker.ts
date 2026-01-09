@@ -43,6 +43,7 @@ import {
 } from "../../../common/util/promise-all-settled-results";
 import "../../../components/chips/ha-assist-chip";
 import type {
+  DataTableColumnData,
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -123,7 +124,7 @@ import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-
 type AutomationItem = AutomationEntity & {
   name: string;
   area: string | undefined;
-  last_triggered?: string | undefined;
+  last_triggered: string | undefined;
   formatted_state: string;
   category: string | undefined;
   labels: LabelRegistryEntry[];
@@ -275,7 +276,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       localize: LocalizeFunc,
       locale: HomeAssistant["locale"],
       entitiesToCheck?: any[]
-    ): DataTableColumnContainer => {
+    ): DataTableColumnContainer<AutomationItem> => {
       const columns: DataTableColumnContainer<AutomationItem> = {
         icon: {
           title: "",
@@ -397,7 +398,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           this.hass,
           this._availableAssistants,
           entitiesToCheck
-        ),
+        ) as DataTableColumnData<AutomationItem>,
       };
       return columns;
     }
