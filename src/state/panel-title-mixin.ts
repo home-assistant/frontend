@@ -2,7 +2,7 @@ import { getPanelTitleFromUrlPath } from "../data/panel";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 
-const setTitle = (title: string | undefined) => {
+export const setPageTitle = (title: string | undefined) => {
   document.title = title ? `${title} – Home Assistant` : "Home Assistant";
 };
 
@@ -24,7 +24,7 @@ export const panelTitleMixin = <T extends Constructor<HassBaseEl>>(
         oldHass.panelUrl !== this.hass.panelUrl ||
         oldHass.localize !== this.hass.localize
       ) {
-        setTitle(getPanelTitleFromUrlPath(this.hass, this.hass.panelUrl));
+        setPageTitle(getPanelTitleFromUrlPath(this.hass, this.hass.panelUrl));
       }
     }
   };

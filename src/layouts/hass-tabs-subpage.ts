@@ -6,12 +6,16 @@ import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
 import { goBack } from "../common/navigate";
 import { restoreScroll } from "../common/decorators/restore-scroll";
-import type { LocalizeFunc } from "../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { haStyleScrollbar } from "../resources/styles";
+import { setPageTitle } from "../state/panel-title-mixin";
 import type { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
@@ -119,6 +123,19 @@ class HassTabsSubpage extends LitElement {
       );
     }
     super.willUpdate(changedProperties);
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    if (changedProperties.has("_activeTab") && this._activeTab) {
+      const localizeFunc = this.localizeFunc || this.hass.localize;
+      const title = this._activeTab.translationKey
+        ? localizeFunc(this._activeTab.translationKey as LocalizeKeys)
+        : this._activeTab.name;
+      if (title) {
+        setPageTitle(title);
+      }
+    }
   }
 
   protected render(): TemplateResult {
