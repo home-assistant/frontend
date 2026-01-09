@@ -497,9 +497,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           );
           return html` ${exposedToVoiceAssistantIds.length !== 0
             ? exposedToVoiceAssistantIds.map(
-                (vaKey) => html`
+                (vaId) => html`
                   <voice-assistants-expose-assistant-icon
-                    .assistant=${vaKey}
+                    .assistant=${vaId}
                     .hass=${this.hass}
                   >
                   </voice-assistants-expose-assistant-icon>

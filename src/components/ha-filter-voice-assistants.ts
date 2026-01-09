@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
@@ -23,8 +24,8 @@ import "../panels/config/voice-assistants/expose/expose-assistant-icon";
 export class HaFilterVoiceAssistants extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public selectedVoiceAssistantIds: string[] =
-    [];
+  // the list of selected voiceAssistantIds
+  @property({ attribute: false }) public value: string[] = [];
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -35,6 +36,9 @@ export class HaFilterVoiceAssistants extends LitElement {
   @state() private _shouldRender = false;
 
   protected render() {
+    console.log("render");
+    console.log("selected");
+    console.log(this.value);
     return html`
       <ha-expansion-panel
         left-chevron
@@ -46,10 +50,8 @@ export class HaFilterVoiceAssistants extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.dashboard.voice_assistants.main"
           )}
-          ${this.selectedVoiceAssistantIds?.length
-            ? html`<div class="badge">
-                  ${this.selectedVoiceAssistantIds?.length}
-                </div>
+          ${this.value?.length
+            ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
                   .path=${mdiFilterVariantRemove}
                   @click=${this._clearFilter}
@@ -68,9 +70,7 @@ export class HaFilterVoiceAssistants extends LitElement {
                 (voiceAssistantId) =>
                   html`<ha-check-list-item
                     .value=${voiceAssistantId}
-                    .selected=${(this.selectedVoiceAssistantIds || []).includes(
-                      voiceAssistantId
-                    )}
+                    .selected=${(this.value || []).includes(voiceAssistantId)}
                     hasMeta
                     graphic="icon"
                   >
@@ -95,6 +95,8 @@ export class HaFilterVoiceAssistants extends LitElement {
   }
 
   protected updated(changed) {
+    console.log("updated");
+    console.log(changed);
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
@@ -120,25 +122,25 @@ export class HaFilterVoiceAssistants extends LitElement {
         value: [],
         items: undefined,
       });
-      this.selectedVoiceAssistantIds = [];
+      this.value = [];
       return;
     }
 
-    const newSelectedVoiceAssistantIds: string[] = [];
+    const newvalue: string[] = [];
     for (const index of ev.detail.index) {
-      newSelectedVoiceAssistantIds.push(this._voiceAssistantOptions![index]);
+      newvalue.push(this._voiceAssistantOptions![index]);
     }
-    this.selectedVoiceAssistantIds = newSelectedVoiceAssistantIds;
+    this.value = newvalue;
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.selectedVoiceAssistantIds,
+      value: this.value,
       items: undefined,
     });
   }
 
   private _clearFilter(ev) {
     ev.preventDefault();
-    this.selectedVoiceAssistantIds = [];
+    this.value = [];
     fireEvent(this, "data-table-filter-changed", {
       value: undefined,
       items: undefined,
