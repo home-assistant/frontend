@@ -42,13 +42,17 @@ class HaSegmentedBar extends LitElement {
     }, 0);
     return html`
       <div class="container">
-        <div class="heading">
-          <div class="title">
-            <span>${this.heading}</span>
-            <span>${this.description}</span>
-          </div>
-          <slot name="extra"></slot>
-        </div>
+        ${this.heading || this.description
+          ? html`
+              <div class="heading">
+                <div class="title">
+                  <span>${this.heading}</span>
+                  <span>${this.description}</span>
+                </div>
+                <slot name="extra"></slot>
+              </div>
+            `
+          : nothing}
         <div class="bar">
           ${this.segments.map(
             (segment, index) => html`
