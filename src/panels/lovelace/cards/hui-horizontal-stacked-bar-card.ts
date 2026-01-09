@@ -12,6 +12,8 @@ import type { EntityNameItem } from "../../../common/entity/compute_entity_name_
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
+import "../../../components/ha-segmented-bar";
+import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -29,15 +31,6 @@ const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 interface ProcessedEntity {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
-}
-
-interface SegmentData {
-  entity: string;
-  value: number;
-  percentage: number;
-  color: string;
-  label: string;
-  unit?: string;
 }
 
 interface LegendItem {
@@ -204,65 +197,54 @@ export class HuiHorizontalStackedBarCard
     }
   );
 
-  private _computeSegments = memoizeOne(
+  private _convertToSegments = memoizeOne(
     (
       entities: ProcessedEntity[],
       hiddenEntities: string[],
       hass: HomeAssistant
-    ): SegmentData[] => {
+    ): { segments: Segment[]; hiddenIndices: number[] } => {
       const computedStyles = getComputedStyle(this);
-      const segments: SegmentData[] = [];
+      const segments: Segment[] = [];
+      const hiddenIndices: number[] = [];
 
-      // Map entities with their original index before filtering
+      // Map entities with their original index
       const entitiesWithIndex = entities.map((entity, originalIndex) => ({
         ...entity,
         originalIndex,
       }));
 
-      // Filter visible entities with positive values
-      const visiblePositive = entitiesWithIndex.filter((entity) => {
+      // Create segments for ALL entities (including hidden ones with positive values)
+      entitiesWithIndex.forEach((entity) => {
         const stateObj = hass.states[entity.entity];
-        if (!stateObj) return false;
+        if (!stateObj) return;
+
         const value = Number(stateObj.state);
-        return (
-          !hiddenEntities.includes(entity.entity) && value > 0 && !isNaN(value)
-        );
-      });
+        if (value <= 0 || isNaN(value)) return;
 
-      if (visiblePositive.length === 0) {
-        return [];
-      }
-
-      // Calculate total for percentage
-      const total = visiblePositive.reduce((sum, entity) => {
-        const stateObj = hass.states[entity.entity];
-        return sum + Number(stateObj!.state);
-      }, 0);
-
-      // Create segments - use original index for consistent colors
-      visiblePositive.forEach((entity) => {
-        const stateObj = hass.states[entity.entity];
-        const value = Number(stateObj!.state);
-        // Use original index to maintain consistent colors when hiding entities
         const color = getGraphColorByIndex(
           entity.originalIndex,
           computedStyles
         );
-
-        // Compute entity name using the name config
-        const name = computeLovelaceEntityName(hass, stateObj!, entity.name);
+        const name = computeLovelaceEntityName(hass, stateObj, entity.name);
+        const formattedValue = hass.formatEntityState(stateObj);
 
         segments.push({
-          entity: entity.entity,
           value: value,
-          percentage: (value / total) * 100,
           color: color,
-          label: name,
-          unit: stateObj!.attributes.unit_of_measurement,
+          label: html`${name}
+            <span style="color: var(--secondary-text-color)"
+              >${formattedValue}</span
+            >`,
+          entityId: entity.entity,
         });
+
+        // Track hidden indices
+        if (hiddenEntities.includes(entity.entity)) {
+          hiddenIndices.push(segments.length - 1);
+        }
       });
 
-      return segments;
+      return { segments, hiddenIndices };
     }
   );
 
@@ -310,10 +292,10 @@ export class HuiHorizontalStackedBarCard
     }
   }
 
-  private _handleSegmentClick(ev: Event): void {
-    const entityId = (ev.currentTarget as HTMLElement).dataset.entity;
-    if (entityId) {
-      fireEvent(this, "hass-more-info", { entityId });
+  private _handleSegmentClick(ev: CustomEvent): void {
+    const { segment } = ev.detail;
+    if (segment.entityId) {
+      fireEvent(this, "hass-more-info", { entityId: segment.entityId });
     }
   }
 
@@ -381,7 +363,7 @@ export class HuiHorizontalStackedBarCard
       `;
     }
 
-    const segments = this._computeSegments(
+    const segmentData = this._convertToSegments(
       this._configEntities,
       this._hiddenEntities,
       this.hass
@@ -395,7 +377,7 @@ export class HuiHorizontalStackedBarCard
     return html`
       <ha-card .header=${this._config.title}>
         <div class="card-content">
-          ${segments.length === 0
+          ${segmentData.segments.length === 0
             ? html`
                 <div class="empty-state">
                   ${this.hass.localize(
@@ -404,38 +386,14 @@ export class HuiHorizontalStackedBarCard
                 </div>
               `
             : html`
-                <div class="bar-container">
-                  <!-- The bar -->
-                  <div class="bar">
-                    ${segments.map(
-                      (segment) => html`
-                        <div
-                          class="segment"
-                          style=${styleMap({
-                            width: `${segment.percentage}%`,
-                            backgroundColor: segment.color,
-                          })}
-                        ></div>
-                      `
-                    )}
-                  </div>
-                  <!-- Clickable overlay -->
-                  <div class="bar-overlay">
-                    ${segments.map(
-                      (segment) => html`
-                        <div
-                          class="segment-click-area"
-                          style=${styleMap({
-                            width: `${segment.percentage}%`,
-                          })}
-                          data-entity=${segment.entity}
-                          @click=${this._handleSegmentClick}
-                          title=${segment.label}
-                        ></div>
-                      `
-                    )}
-                  </div>
-                </div>
+                <ha-segmented-bar
+                  .heading=${""}
+                  .segments=${segmentData.segments}
+                  .hiddenSegments=${segmentData.hiddenIndices}
+                  bar-clickable
+                  hide-legend
+                  @segment-clicked=${this._handleSegmentClick}
+                ></ha-segmented-bar>
               `}
 
           <!-- Legend -->
@@ -470,7 +428,9 @@ export class HuiHorizontalStackedBarCard
                       ></div>
                       <span class="label">${item.name}</span>
                       ${item.formattedValue
-                        ? html`<span class="value">${item.formattedValue}</span>`
+                        ? html`<span class="value"
+                            >${item.formattedValue}</span
+                          >`
                         : nothing}
                     </li>
                   `;
@@ -491,7 +451,9 @@ export class HuiHorizontalStackedBarCard
                         >
                           <ha-svg-icon
                             slot="trailing-icon"
-                            .path=${this._expandLegend ? mdiChevronUp : mdiChevronDown}
+                            .path=${this._expandLegend
+                              ? mdiChevronUp
+                              : mdiChevronDown}
                           ></ha-svg-icon>
                         </ha-assist-chip>
                       </li>
@@ -512,47 +474,6 @@ export class HuiHorizontalStackedBarCard
 
     .card-content {
       padding: var(--ha-space-4);
-    }
-
-    .bar-container {
-      position: relative;
-      margin-bottom: var(--ha-space-4);
-    }
-
-    .bar {
-      display: flex;
-      overflow: hidden;
-      border-radius: var(--ha-bar-border-radius, var(--ha-border-radius-sm));
-      width: 100%;
-      height: 12px;
-      background-color: var(
-        --ha-bar-background-color,
-        var(--secondary-background-color)
-      );
-    }
-
-    .bar .segment {
-      height: 100%;
-      transition: opacity 0.2s;
-    }
-
-    .bar-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-    }
-
-    .segment-click-area {
-      height: 100%;
-      cursor: pointer;
-    }
-
-    .segment-click-area:hover + .bar .segment,
-    .segment-click-area:hover {
-      opacity: 0.8;
     }
 
     .legend {

@@ -641,10 +641,7 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface HorizontalStackedBarEntityConfig extends EntityConfig {
-  entity: string;
-  name?: string | EntityNameItem | EntityNameItem[];
-}
+export interface HorizontalStackedBarEntityConfig extends EntityConfig {}
 
 export interface HorizontalStackedBarCardConfig extends LovelaceCardConfig {
   type: "horizontal-stacked-bar";
