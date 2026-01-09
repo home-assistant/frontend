@@ -33,24 +33,6 @@ export const getAssistantsTableColumn = (
       : nothing,
 });
 
-//   template: (entry) => {
-//     const manual = false;
-//     const unsupported = false;
-//     return entry.assistants.length !== 0
-//       ? entry.assistants.map((vaKey) =>
-//           getAssistantsTableColumnIcon(
-//             true,
-//             vaKey,
-//             hass,
-//             manual,
-//             unsupported,
-//             entitiesToCheck
-//           )
-//         )
-//       : nothing;
-//   },
-// });
-
 export const getAssistantsTableColumnIcon = (
   show: boolean,
   vaKey: string,
@@ -61,13 +43,6 @@ export const getAssistantsTableColumnIcon = (
 ) => {
   const preserveSpacing = entitiesToCheck?.some((entry) =>
     entry.assistants.includes(vaKey)
-  );
-  // eslint-disable-next-line no-console
-  console.log("getAssistantsTableColumnIcon(): vaKey %s", vaKey);
-  // eslint-disable-next-line no-console
-  console.log(
-    "getAssistantsTableColumnIcon(): preserveSpacing %s",
-    preserveSpacing
   );
   return show
     ? html`<voice-assistants-expose-assistant-icon
