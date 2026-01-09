@@ -1119,7 +1119,6 @@ ${
         ></ha-filter-labels>
         <ha-filter-voice-assistants
           .hass=${this.hass}
-          .cloudStatus=${this.cloudStatus}
           .value=${this._filters["ha-filter-voice-assistants"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
