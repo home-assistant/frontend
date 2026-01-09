@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
@@ -36,9 +35,6 @@ export class HaFilterVoiceAssistants extends LitElement {
   @state() private _shouldRender = false;
 
   protected render() {
-    console.log("render");
-    console.log("selected");
-    console.log(this.value);
     return html`
       <ha-expansion-panel
         left-chevron
@@ -95,8 +91,6 @@ export class HaFilterVoiceAssistants extends LitElement {
   }
 
   protected updated(changed) {
-    console.log("updated");
-    console.log(changed);
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
