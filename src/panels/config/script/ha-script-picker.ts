@@ -266,7 +266,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       localize: LocalizeFunc,
       entitiesToCheck?: any[]
     ): DataTableColumnContainer<ScriptItem> => {
-      const columns: DataTableColumnContainer<<ScriptItem>> = {
+      const columns: DataTableColumnContainer<ScriptItem> = {
         icon: {
           title: "",
           showNarrow: true,
