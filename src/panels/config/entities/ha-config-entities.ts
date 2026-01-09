@@ -118,7 +118,6 @@ import { showAddIntegrationDialog } from "../integrations/show-add-integration-d
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import "../voice-assistants/expose/expose-assistant-icon";
-import type { CloudStatus } from "../../../data/cloud";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -149,8 +148,6 @@ export interface EntityRow extends StateEntity {
 @customElement("ha-config-entities")
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
