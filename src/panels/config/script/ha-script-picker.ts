@@ -67,6 +67,7 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
@@ -112,13 +113,15 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-table-column";
 
 type ScriptItem = ScriptEntity & {
   name: string;
   area: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  assistants: string[];
 };
 
 @customElement("ha-script-picker")
@@ -132,6 +135,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
@@ -206,6 +211,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus);
+  }
+
   private _scripts = memoizeOne(
     (
       scripts: ScriptEntity[],
@@ -243,6 +252,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
+          assistants: getEntityVoiceAssistantsKeys(entityReg, script.entity_id),
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -250,7 +260,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer<ScriptItem> => {
+    (
+      localize: LocalizeFunc,
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer<ScriptItem> => {
       const columns: DataTableColumnContainer = {
         icon: {
           title: "",
@@ -400,31 +413,12 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             </ha-icon-overflow-menu>
           `,
         },
-        voice_assistants: {
-          title: localize(
-            "ui.panel.config.script.picker.headers.voice_assistants"
-          ),
-          type: "icon",
-          defaultHidden: true,
-          minWidth: "100px",
-          maxWidth: "100px",
-          template: (script) => {
-            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
-              this._entityReg,
-              script.entity_id
-            );
-            return html` ${exposedToVoiceAssistantKeys.length !== 0
-              ? exposedToVoiceAssistantKeys.map(
-                  (vaKey) =>
-                    html` <voice-assistants-expose-assistant-icon
-                      .assistant=${vaKey}
-                      .hass=${this.hass}
-                    >
-                    </voice-assistants-expose-assistant-icon>`
-                )
-              : "—"}`;
-          },
-        },
+        assistants: getAssistantsTableColumn(
+          localize,
+          this.hass,
+          this._availableAssistants,
+          entitiesToCheck
+        ),
       };
       return columns;
     }
@@ -590,7 +584,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, scripts)}
         .data=${scripts}
         .empty=${!this.scripts.length}
         .activeFilters=${this._activeFilters}
