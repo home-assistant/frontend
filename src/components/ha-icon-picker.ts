@@ -124,9 +124,6 @@ export class HaIconPicker extends LitElement {
         .label=${this.label}
         .value=${this._value}
         .searchFn=${this._filterIcons}
-        .notFoundLabel=${this.hass?.localize(
-          "ui.components.icon-picker.no_match"
-        )}
         popover-placement="bottom-start"
         @value-changed=${this._valueChanged}
       >

@@ -109,7 +109,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   public getItems!: (
     searchString?: string,
     section?: string
-  ) => PickerComboBoxItem[];
+  ) => PickerComboBoxItem[] | undefined;
 
   @property({ attribute: false, type: Array })
   public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
@@ -152,6 +152,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @query("ha-textfield") private _searchFieldElement?: HaTextField;
 
   @state() private _items: PickerComboBoxItem[] = [];
+
+  public setFieldValue(value: string) {
+    if (this._searchFieldElement) {
+      this._searchFieldElement.value = value;
+    }
+  }
 
   protected get scrollableElement(): HTMLElement | null {
     return this._virtualizerElement as HTMLElement | null;
@@ -295,7 +301,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this.getAdditionalItems?.(searchString) || [];
 
   private _getItems = () => {
-    let items = [...this.getItems(this._search, this.selectedSection)];
+    let items = [...(this.getItems(this._search, this.selectedSection) || [])];
 
     if (!this.sections?.length) {
       items = items.sort((entityA, entityB) => {
@@ -324,7 +330,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       });
     }
 
-    if (!items.length) {
+    if (!items.length && !this.allowCustomValue) {
       items.push({ id: NO_ITEMS_AVAILABLE_ID, primary: "" });
     }
 
@@ -430,7 +436,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         index
       );
 
-      if (!filteredItems.length) {
+      if (!filteredItems.length && !this.allowCustomValue) {
         filteredItems.push({ id: NO_ITEMS_AVAILABLE_ID, primary: "" });
       }
 
@@ -787,7 +793,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         .section-title,
         .title {
           background-color: var(--ha-color-fill-neutral-quiet-resting);
-          padding: var(--ha-space-1) var(--ha-space-2);
+          padding: var(--ha-space-2) var(--ha-space-3);
           font-weight: var(--ha-font-weight-bold);
           color: var(--secondary-text-color);
           min-height: var(--ha-space-6);

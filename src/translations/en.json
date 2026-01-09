@@ -137,9 +137,9 @@
       },
       "counter": {
         "actions": {
-          "increment": "increment",
-          "decrement": "decrement",
-          "reset": "reset"
+          "increment": "Increment",
+          "decrement": "Decrement",
+          "reset": "Reset"
         }
       },
       "cover": {
@@ -672,8 +672,8 @@
             "device_missing": "No related device"
           },
           "add": "Add",
-          "custom_name": "Custom name",
-          "no_match": "No entities found"
+          "search": "Search or enter custom name",
+          "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -685,7 +685,7 @@
         },
         "entity-state-content-picker": {
           "add": "Add",
-          "custom_state": "Custom state"
+          "custom_attribute": "Custom attribute"
         }
       },
       "target-picker": {
@@ -771,9 +771,6 @@
         "language": "Language",
         "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
-      },
-      "icon-picker": {
-        "no_match": "No matching icons found"
       },
       "tts-picker": {
         "tts": "Text-to-speech",
@@ -2175,7 +2172,8 @@
         },
         "other": {
           "title": "Other",
-          "my_link": "get My Home Assistant link"
+          "my_link": "get My Home Assistant link",
+          "show_shortcuts": "show keyboard shortcuts"
         }
       }
     },
@@ -2321,7 +2319,7 @@
           },
           "companion": {
             "main": "Companion app",
-            "secondary": "Location and notifications"
+            "secondary": "Sensors, widgets, notifications and more"
           },
           "system": {
             "main": "System",
@@ -3342,7 +3340,8 @@
               "type": "Type",
               "editable": "Editable",
               "category": "Category",
-              "area": "Area"
+              "area": "Area",
+              "voice_assistants": "Voice assistants"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -3983,7 +3982,8 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon"
+              "icon": "Icon",
+              "voice_assistants": "Voice assistants"
             },
             "bulk_action": "Action",
             "bulk_actions": {
@@ -5000,7 +5000,8 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon"
+              "icon": "Icon",
+              "voice_assistants": "Voice assistants"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5128,7 +5129,8 @@
               "category": "Category",
               "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
               "area": "Area",
-              "icon": "Icon"
+              "icon": "Icon",
+              "voice_assistants": "Voice assistants"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5581,7 +5583,8 @@
               "domain": "Domain",
               "availability": "Availability",
               "visibility": "Visibility",
-              "enabled": "Enabled"
+              "enabled": "Enabled",
+              "voice_assistants": "Voice assistants"
             },
             "selected": "{number} selected",
             "enable_selected": {
@@ -6014,26 +6017,31 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
-          "settings_title": "Bluetooth settings",
+          "settings_title": "Bluetooth adapters",
           "option_flow": "Configure Bluetooth options",
           "advertisement_monitor": "Advertisement monitor",
           "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
           "connection_slot_allocations_monitor": "Connection slot allocations monitor",
-          "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
+          "connection_slot_allocations_monitor_description": "The connection slot allocations monitor displays the (GATT) connection slot allocations for each adapter. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
           "connection_monitor": "Connection monitor",
           "visualization": "Visualization",
           "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
+          "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
           "no_connection_slot_allocations": "No connection slot allocations information available",
-          "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
+          "no_connection_slots": "No connection slots",
           "no_scanner_state_available": "No scanner state available",
+          "scanner_state_unknown": "State unknown",
           "current_scanning_mode": "Current scanning mode",
           "requested_scanning_mode": "Requested scanning mode",
           "scanning_mode_none": "none",
           "scanning_mode_active": "active",
           "scanning_mode_passive": "passive",
-          "scanner_mode_mismatch": "Scanner requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
+          "scanning_mode_active_label": "Active scanning",
+          "scanning_mode_passive_label": "Passive scanning",
+          "scanning_mode_none_label": "No scanning",
+          "scanner_mode_mismatch": "{name} requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
           "scanner_mode_mismatch_remote": "For proxies: reboot the device",
           "scanner_mode_mismatch_usb": "For USB adapters: unplug and plug back in",
           "scanner_mode_mismatch_uart": "For UART/onboard adapters: power down the system completely and power it back up",
@@ -7346,7 +7354,7 @@
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
               "total_returned": "Total returned {num} kWh",
-              "total_usage": "{num} kWh used",
+              "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
               "consumed_battery": "Consumed battery"
@@ -7595,6 +7603,7 @@
               "sidebar": "Sidebar",
               "panel": "Panel (single card)"
             },
+            "show_icon_and_title": "Show icon and title",
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
             "section_specifics": "Sections view specific settings",
@@ -7602,6 +7611,7 @@
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "top_margin": "Add additional space above",
             "top_margin_helper": "Helps reveal more of the background",
+            "show_icon_and_title_helper": "Show both icon and text title.",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "path_helper": "This value will become part of the URL path to open this view.",
             "edit_ui": "Edit in visual editor",
@@ -9233,6 +9243,9 @@
             "active_listeners": "Active listeners",
             "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
             "listen_to_events": "Listen to events",
+            "filter_events": "Filter events",
+            "filter_helper": "Only capture events containing the filter string.",
+            "filter_ignored": "Ignored {count} events.",
             "listening_to": "Listening to",
             "subscribe_to": "Event to subscribe to",
             "start_listening": "Start listening",
