@@ -3340,8 +3340,7 @@
               "type": "Type",
               "editable": "Editable",
               "category": "Category",
-              "area": "Area",
-              "voice_assistants": "Voice assistants"
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -3982,8 +3981,7 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "bulk_action": "Action",
             "bulk_actions": {
@@ -5000,8 +4998,7 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5129,8 +5126,7 @@
               "category": "Category",
               "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5583,8 +5579,7 @@
               "domain": "Domain",
               "availability": "Availability",
               "visibility": "Visibility",
-              "enabled": "Enabled",
-              "voice_assistants": "Voice assistants"
+              "enabled": "Enabled"
             },
             "selected": "{number} selected",
             "enable_selected": {
