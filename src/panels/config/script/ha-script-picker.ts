@@ -120,7 +120,7 @@ import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-
 type ScriptItem = ScriptEntity & {
   name: string;
   area: string | undefined;
-  ast_triggered: string | undefined;
+  last_triggered: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
   assistants: string[];
