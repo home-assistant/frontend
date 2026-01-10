@@ -314,7 +314,7 @@ class PanelEnergy extends LitElement {
     if (hasPower) {
       views.push(POWER_VIEW);
     }
-    if (views.length > 1) {
+    if ([hasEnergy, hasGas, hasWater].filter(Boolean).length > 1) {
       views.unshift(OVERVIEW_VIEW);
     }
     return {
