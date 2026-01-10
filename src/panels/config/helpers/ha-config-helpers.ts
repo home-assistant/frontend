@@ -124,7 +124,7 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsTableColumn,
@@ -604,7 +604,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             areaId && this.hass.areas?.[areaId]
               ? computeAreaName(this.hass.areas[areaId])
               : undefined;
-          const assistants = getEntityVoiceAssistantsKeys(
+          const assistants = getEntityVoiceAssistantsIds(
             entityReg,
             item.entity_id
           );
