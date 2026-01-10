@@ -929,8 +929,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(categoryItems)
             : new Set([...items].filter((x) => categoryItems!.has(x)));
-      }
-      if (
+      } else if (
         key === "ha-filter-labels" &&
         Array.isArray(filter.value) &&
         filter.value.length

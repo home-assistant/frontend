@@ -1015,7 +1015,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(filter.items)
             : new Set([...items].filter((x) => filter.items!.has(x)));
-      } else if (
+      }
+      if (
         key === "ha-filter-categories" &&
         Array.isArray(filter.value) &&
         filter.value.length
