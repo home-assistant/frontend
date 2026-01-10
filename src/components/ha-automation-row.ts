@@ -174,12 +174,14 @@ export class HaAutomationRow extends LitElement {
     }
     ::slotted([slot="header"]) {
       flex: 1;
+      min-width: 0;
       overflow-wrap: anywhere;
       margin: 0 var(--ha-space-3);
     }
     .icons {
       display: flex;
       align-items: center;
+      flex-shrink: 0;
     }
     :host([sort-selected]) .row {
       outline: solid;
