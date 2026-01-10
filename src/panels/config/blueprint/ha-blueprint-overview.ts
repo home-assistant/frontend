@@ -206,8 +206,8 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         valueColumn: "usageCount",
         type: "numeric",
-        minWidth: "100px",
-        maxWidth: "120px",
+        minWidth: "80px",
+        maxWidth: "80px",
         template: (blueprint) => {
           const count = blueprint.usageCount ?? 0;
           return html`
