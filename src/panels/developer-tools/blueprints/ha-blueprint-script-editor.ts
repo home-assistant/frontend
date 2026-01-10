@@ -37,7 +37,6 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
   }
 
   protected renderEditor() {
-    // TODO: Update manual-script-editor to allow for `!input <scalar>` YAML values
     return html`
       <manual-script-editor
         .hass=${this.hass}
@@ -46,6 +45,7 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
         .config=${this._blueprint}
         .disabled=${this._readOnly}
         @value-changed=${this._valueChanged}
+        @resize-sidebar=${this._resizeSidebar}
       ></manual-script-editor>
     `;
   }

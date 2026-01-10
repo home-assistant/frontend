@@ -358,6 +358,7 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
       "--sidebar-dynamic-width",
       `${this._sidebarWidthPx}px`
     );
+    fireEvent(this, "resize-sidebar", `${this._sidebarWidthPx}px`);
 
     const expanded = extractSearchParam("expanded");
     if (expanded === "1") {
@@ -721,6 +722,7 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
       "--sidebar-dynamic-width",
       `${this._sidebarWidthPx}px`
     );
+    fireEvent(this, "resize-sidebar", `${this._sidebarWidthPx}px`);
   }
 
   private _stopResizeSidebar(ev) {
@@ -736,6 +738,7 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
       "--sidebar-dynamic-width",
       `${this._sidebarWidthPx}px`
     );
+    fireEvent(this, "resize-sidebar", `${this._sidebarWidthPx}px`);
   }
 
   static get styles(): CSSResultGroup {
@@ -783,5 +786,6 @@ declare global {
     "open-sidebar": SidebarConfig;
     "request-close-sidebar": undefined;
     "close-sidebar": undefined;
+    "resize-sidebar": string;
   }
 }

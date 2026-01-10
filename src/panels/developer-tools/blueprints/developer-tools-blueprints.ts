@@ -28,6 +28,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { manualEditorStyles } from "../../config/automation/styles";
 
 @customElement("developer-tools-blueprints")
 class HaPanelDevBlueprints extends LitElement {
@@ -262,6 +263,10 @@ class HaPanelDevBlueprints extends LitElement {
     this._dirty = false;
   }
 
+  private _resizeSidebar(ev: CustomEvent<string>) {
+    this.style.setProperty("--sidebar-dynamic-width", ev.detail);
+  }
+
   protected render() {
     if (!this._blueprints) {
       return nothing;
@@ -297,7 +302,7 @@ class HaPanelDevBlueprints extends LitElement {
             )}
           </ha-button>
         </div>
-        <ha-card>
+        <ha-card class="has-sidebar">
           ${!this._selectedBlueprint
             ? html`
                 ${this.hass.localize(
@@ -311,11 +316,13 @@ class HaPanelDevBlueprints extends LitElement {
                   )}
                 `
               : html`
-                  <blueprint-metadata-editor
-                    .hass=${this.hass}
-                    .metadata=${blueprintMetadata}
-                    @value-changed=${this._onBlueprintMetadataChanged}
-                  ></blueprint-metadata-editor>
+                  <div class="content-wrapper">
+                    <blueprint-metadata-editor
+                      .hass=${this.hass}
+                      .metadata=${blueprintMetadata}
+                      @value-changed=${this._onBlueprintMetadataChanged}
+                    ></blueprint-metadata-editor>
+                  </div>
                   <ha-blueprint-editor
                     .hass=${this.hass}
                     .narrow=${this.narrow}
@@ -329,6 +336,7 @@ class HaPanelDevBlueprints extends LitElement {
                     @value-changed=${this._onBlueprintContentChanged}
                     @value-init=${this._onBlueprintInit}
                     @reset=${this._resetBlueprint}
+                    @resize-sidebar=${this._resizeSidebar}
                   >
                   </ha-blueprint-editor>
                 `}
@@ -358,7 +366,16 @@ class HaPanelDevBlueprints extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      manualEditorStyles,
       css`
+        :host {
+          --ha-automation-editor-max-width: var(
+            --ha-automation-editor-width,
+            1540px
+          );
+          --hass-subpage-bottom-inset: 0px;
+        }
+
         .container {
           margin: 16px;
           gap: 16px;

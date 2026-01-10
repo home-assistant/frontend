@@ -31,6 +31,7 @@ import { haStyle } from "../../../resources/styles";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 import "../../../components/ha-button";
+import { manualEditorStyles } from "../../config/automation/styles";
 
 declare global {
   // for fire event
@@ -181,48 +182,54 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     this._loadBlueprint();
   }
 
+  protected _resizeSidebar(ev: CustomEvent<string>) {
+    this.style.setProperty("--sidebar-dynamic-width", ev.detail);
+  }
+
   protected render() {
     if (!this._blueprint) {
       return nothing;
     }
 
     return html`
-      <div class="editor-content">
-        <div class="header">
-          <h2 id="variables-heading" class="name">
-            ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.blueprints.editor.inputs.header"
-            )}
-          </h2>
-          <a
-            href=${documentationUrl(this.hass, "/docs/blueprint/variable/")}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <ha-icon-button
-              .path=${mdiHelpCircle}
-              .label=${this.hass.localize(
-                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.learn_more"
-              )}
-            ></ha-icon-button>
-          </a>
-        </div>
-        ${!Object.entries(this._blueprint?.metadata?.input || {})?.length
-          ? html`<p class="section-description">
+      <div class="editor-content has-sidebar">
+        <div class="content-wrapper">
+          <div class="header">
+            <h2 id="variables-heading" class="name">
               ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.section_description"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.header"
               )}
-            </p>`
-          : nothing}
+            </h2>
+            <a
+              href=${documentationUrl(this.hass, "/docs/blueprint/variable/")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                .label=${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.blueprints.editor.inputs.learn_more"
+                )}
+              ></ha-icon-button>
+            </a>
+          </div>
+          ${!Object.entries(this._blueprint?.metadata?.input || {})?.length
+            ? html`<p class="section-description">
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.blueprints.editor.inputs.section_description"
+                )}
+              </p>`
+            : nothing}
 
-        <ha-blueprint-input
-          role="region"
-          aria-labelledby="inputs-heading"
-          .inputs=${Object.entries(this._blueprint?.metadata?.input || {})}
-          @value-changed=${this._inputChanged}
-          .hass=${this.hass}
-          .disabled=${this._readOnly}
-        ></ha-blueprint-input>
+          <ha-blueprint-input
+            role="region"
+            aria-labelledby="inputs-heading"
+            .inputs=${Object.entries(this._blueprint?.metadata?.input || {})}
+            @value-changed=${this._inputChanged}
+            .hass=${this.hass}
+            .disabled=${this._readOnly}
+          ></ha-blueprint-input>
+        </div>
 
         ${this.renderEditor()}
 
@@ -253,6 +260,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      manualEditorStyles,
       css`
         .content {
           padding-bottom: 20px;

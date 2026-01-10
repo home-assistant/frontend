@@ -59,6 +59,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
         .config=${this._blueprint}
         .disabled=${Boolean(this._readOnly)}
         @value-changed=${this._valueChanged}
+        @resize-sidebar=${this._resizeSidebar}
       ></manual-automation-editor>
     `;
   }

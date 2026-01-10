@@ -302,6 +302,7 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
       "--sidebar-dynamic-width",
       `${this._sidebarWidthPx}px`
     );
+    fireEvent(this, "resize-sidebar", `${this._sidebarWidthPx}px`);
 
     const expanded = extractSearchParam("expanded");
     if (expanded === "1") {
@@ -630,6 +631,7 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
       "--sidebar-dynamic-width",
       `${this._sidebarWidthPx}px`
     );
+    fireEvent(this, "resize-sidebar", `${this._sidebarWidthPx}px`);
   }
 
   private _stopResizeSidebar(ev) {
@@ -645,6 +647,7 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
       "--sidebar-dynamic-width",
       `${this._sidebarWidthPx}px`
     );
+    fireEvent(this, "resize-sidebar", `${this._sidebarWidthPx}px`);
   }
 
   static get styles(): CSSResultGroup {
@@ -676,5 +679,9 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "manual-script-editor": HaManualScriptEditor;
+  }
+
+  interface HASSDomEvents {
+    "resize-sidebar": string;
   }
 }
