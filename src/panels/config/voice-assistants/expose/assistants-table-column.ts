@@ -23,14 +23,14 @@ export const getAssistantsTableColumn = (
   valueColumn: "assistants_sortable_key",
   template: (entry) =>
     html`${entry.assistants.length !== 0
-      ? availableAssistants.map((vaKey) => {
+      ? availableAssistants.map((vaId) => {
           const supported =
-            !supportedEntities?.[vaKey] ||
-            supportedEntities[vaKey].includes(entry.entity_id);
-          const manual = entry.manAssistants?.includes(vaKey);
+            !supportedEntities?.[vaId] ||
+            supportedEntities[vaId].includes(entry.entity_id);
+          const manual = entry.manAssistants?.includes(vaId);
           return getAssistantsTableColumnIcon(
-            entry.assistants.includes(vaKey),
-            vaKey,
+            entry.assistants.includes(vaId),
+            vaId,
             hass,
             entitiesToCheck,
             manual,
@@ -42,18 +42,18 @@ export const getAssistantsTableColumn = (
 
 export const getAssistantsTableColumnIcon = (
   show: boolean,
-  vaKey: string,
+  vaId: string,
   hass: HomeAssistant,
   entitiesToCheck?: any[],
   manual?: boolean,
   unsupported?: boolean
 ) => {
   const preserveSpacing = entitiesToCheck?.some((entry) =>
-    entry.assistants!.includes(vaKey)
+    entry.assistants!.includes(vaId)
   );
   return show
     ? html`<voice-assistants-expose-assistant-icon
-        .assistant=${vaKey}
+        .assistant=${vaId}
         .hass=${hass}
         .manual=${manual ?? false}
         .unsupported=${unsupported ?? false}
@@ -73,9 +73,9 @@ export const getAssistantsSortableKey = (
     "cloud.alexa",
     "cloud.google_assistant",
   ];
-  assistantsOrdered.forEach((vaKey) => {
-    if (entityAssistants.includes(vaKey)) {
-      const weight = assistantsOrdered.indexOf(vaKey);
+  assistantsOrdered.forEach((vaId) => {
+    if (entityAssistants.includes(vaId)) {
+      const weight = assistantsOrdered.indexOf(vaId);
       result += 2 ** weight;
     }
   });
