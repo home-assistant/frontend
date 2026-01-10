@@ -95,7 +95,7 @@ export class HaFilterVoiceAssistants extends LitElement {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - (49 + 48 + 32)}px`;
+          `${this.clientHeight - 49}px`;
       }, 300);
     }
   }
