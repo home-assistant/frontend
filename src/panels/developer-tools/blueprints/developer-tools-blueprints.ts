@@ -7,6 +7,7 @@ import "../../../components/ha-textfield";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import { dump } from "js-yaml";
+import { classMap } from "lit/directives/class-map";
 import type { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
 import type {
@@ -29,6 +30,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { manualEditorStyles } from "../../config/automation/styles";
+import type { SidebarConfig } from "../../../data/automation";
 
 @customElement("developer-tools-blueprints")
 class HaPanelDevBlueprints extends LitElement {
@@ -49,6 +51,8 @@ class HaPanelDevBlueprints extends LitElement {
   @state() private _selectedBlueprintPath?: string;
 
   @state() private _originalBlueprintPath?: string;
+
+  @state() private _sidebarConfig?: SidebarConfig;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -267,6 +271,14 @@ class HaPanelDevBlueprints extends LitElement {
     this.style.setProperty("--sidebar-dynamic-width", ev.detail);
   }
 
+  private async _openSidebar(ev: CustomEvent<SidebarConfig>) {
+    this._sidebarConfig = ev.detail;
+  }
+
+  private async _closeSidebar() {
+    this._sidebarConfig = undefined;
+  }
+
   protected render() {
     if (!this._blueprints) {
       return nothing;
@@ -302,7 +314,11 @@ class HaPanelDevBlueprints extends LitElement {
             )}
           </ha-button>
         </div>
-        <ha-card class="has-sidebar">
+        <ha-card
+          class=${classMap({
+            "has-sidebar": this._sidebarConfig && !this.narrow,
+          })}
+        >
           ${!this._selectedBlueprint
             ? html`
                 ${this.hass.localize(
@@ -337,6 +353,8 @@ class HaPanelDevBlueprints extends LitElement {
                     @value-init=${this._onBlueprintInit}
                     @reset=${this._resetBlueprint}
                     @resize-sidebar=${this._resizeSidebar}
+                    @open-sidebar=${this._openSidebar}
+                    @close-sidebar=${this._closeSidebar}
                   >
                   </ha-blueprint-editor>
                 `}
@@ -369,6 +387,8 @@ class HaPanelDevBlueprints extends LitElement {
       manualEditorStyles,
       css`
         :host {
+          --safe-area-inset-top: 52.4px;
+          --sidebar-width: 0;
           --ha-automation-editor-max-width: var(
             --ha-automation-editor-width,
             1540px

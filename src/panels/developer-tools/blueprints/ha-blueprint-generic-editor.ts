@@ -4,6 +4,7 @@ import { mdiHelpCircle } from "@mdi/js";
 import { property, state } from "lit/decorators";
 import yaml from "js-yaml";
 import "../../../layouts/hass-subpage";
+import { classMap } from "lit/directives/class-map";
 import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-fab";
 import "../../../components/ha-button-menu";
@@ -32,6 +33,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 
 import "../../../components/ha-button";
 import { manualEditorStyles } from "../../config/automation/styles";
+import type { SidebarConfig } from "../../../data/automation";
 
 declare global {
   // for fire event
@@ -64,6 +66,8 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   @state() protected _readOnly = false;
 
   @state() private _blueprintPath?: string;
+
+  @state() private _sidebarConfig?: SidebarConfig;
 
   protected abstract _blueprint: Blueprint | undefined;
 
@@ -186,13 +190,26 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     this.style.setProperty("--sidebar-dynamic-width", ev.detail);
   }
 
+  protected async _openSidebar(ev: CustomEvent<SidebarConfig>) {
+    this._sidebarConfig = ev.detail;
+  }
+
+  protected async _closeSidebar() {
+    this._sidebarConfig = undefined;
+  }
+
   protected render() {
     if (!this._blueprint) {
       return nothing;
     }
 
     return html`
-      <div class="editor-content has-sidebar">
+      <div
+        class=${classMap({
+          "has-sidebar": this._sidebarConfig && !this.narrow,
+          "editor-content": true,
+        })}
+      >
         <div class="content-wrapper">
           <div class="header">
             <h2 id="variables-heading" class="name">
@@ -262,6 +279,9 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       haStyle,
       manualEditorStyles,
       css`
+        :host {
+          --sidebar-width: 0;
+        }
         .content {
           padding-bottom: 20px;
         }

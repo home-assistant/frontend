@@ -46,6 +46,8 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
         .disabled=${this._readOnly}
         @value-changed=${this._valueChanged}
         @resize-sidebar=${this._resizeSidebar}
+        @open-sidebar=${this._openSidebar}
+        @close-sidebar=${this._closeSidebar}
       ></manual-script-editor>
     `;
   }
