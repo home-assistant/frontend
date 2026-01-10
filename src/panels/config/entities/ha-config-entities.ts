@@ -117,7 +117,7 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsTableColumn,
@@ -721,7 +721,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             ? `${deviceName} (${areaName})`
             : deviceName
           : undefined;
-        const assistants = getEntityVoiceAssistantsKeys(
+        const assistants = getEntityVoiceAssistantsIds(
           entities as EntityRegistryEntry[],
           entry.entity_id
         );
