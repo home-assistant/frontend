@@ -113,7 +113,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsTableColumn,
@@ -245,7 +245,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.script;
         const labels = labelReg && entityRegEntry?.labels;
-        const assistants = getEntityVoiceAssistantsKeys(
+        const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           script.entity_id
         );
