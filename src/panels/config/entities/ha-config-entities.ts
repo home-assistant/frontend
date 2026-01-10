@@ -119,7 +119,10 @@ import { showAddIntegrationDialog } from "../integrations/show-add-integration-d
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-table-column";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -143,6 +146,7 @@ export interface EntityRow extends StateEntity {
   domain: string;
   label_entries: LabelRegistryEntry[];
   assistants: string[];
+  assistants_sortable_key: number | undefined;
   enabled: string;
   visible: string;
   available: string;
@@ -301,7 +305,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   private _columns = memoize(
     (
       localize: LocalizeFunc,
-      entitiesToCheck: any[]
+      entitiesToCheck?: any[]
     ): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
@@ -712,12 +716,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
-
         const deviceFullName = deviceName
           ? duplicatedDevicesNames.has(deviceName) && areaName
             ? `${deviceName} (${areaName})`
             : deviceName
           : undefined;
+        const assistants = getEntityVoiceAssistantsKeys(
+          entities as EntityRegistryEntry[],
+          entry.entity_id
+        );
 
         result.push({
           ...entry,
@@ -730,10 +737,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           restored,
           localized_platform: domainToName(localize, entry.platform),
           domain: domainToName(localize, computeDomain(entry.entity_id)),
-          assistants: getEntityVoiceAssistantsKeys(
-            entities as EntityRegistryEntry[],
-            entry.entity_id
-          ),
+          assistants: assistants,
+          assistants_sortable_key: getAssistantsSortableKey(assistants),
           status: restored
             ? localize("ui.panel.config.entities.picker.status.not_provided")
             : unavailable
