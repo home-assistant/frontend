@@ -826,6 +826,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           display: flex;
           flex-direction: column;
           min-height: 0;
+          flex: 1;
         }
         ha-md-list.before-spacer {
           padding-bottom: 0;
