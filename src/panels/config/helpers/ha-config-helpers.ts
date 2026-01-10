@@ -122,7 +122,7 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import "../voice-assistants/expose/expose-assistant-icon";
 
 interface HelperItem {
@@ -491,15 +491,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         minWidth: "100px",
         maxWidth: "100px",
         template: (helper) => {
-          const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+          const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
             this._entityReg,
             helper.entity_id
           );
-          return html` ${exposedToVoiceAssistantKeys.length !== 0
-            ? exposedToVoiceAssistantKeys.map(
-                (vaKey) => html`
+          return html` ${exposedToVoiceAssistantIds.length !== 0
+            ? exposedToVoiceAssistantIds.map(
+                (vaId) => html`
                   <voice-assistants-expose-assistant-icon
-                    .assistant=${vaKey}
+                    .assistant=${vaId}
                     .hass=${this.hass}
                   >
                   </voice-assistants-expose-assistant-icon>
