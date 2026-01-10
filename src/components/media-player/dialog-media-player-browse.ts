@@ -44,6 +44,8 @@ class DialogMediaPlayerBrowse extends LitElement {
 
   @state() _preferredLayout: MediaPlayerLayoutType = "auto";
 
+  @state() private _open = false;
+
   @query("ha-media-player-browse") private _browser!: HaMediaPlayerBrowse;
 
   public showDialog(params: MediaPlayerBrowseDialogParams): void {
@@ -54,9 +56,11 @@ class DialogMediaPlayerBrowse extends LitElement {
         media_content_type: undefined,
       },
     ];
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
     this._params = undefined;
     this._navigateIds = undefined;
     this._currentItem = undefined;
@@ -73,7 +77,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     return html`
       <ha-wa-dialog
         .hass=${this.hass}
-        .open=${true}
+        .open=${this._open}
         flexcontent
         @closed=${this.closeDialog}
         @opened=${this._dialogOpened}
@@ -219,7 +223,6 @@ class DialogMediaPlayerBrowse extends LitElement {
       haStyleDialogFixedTop,
       css`
         ha-wa-dialog {
-          --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
 

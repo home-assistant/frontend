@@ -409,9 +409,6 @@ class DialogAreaDetail
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
-          --dialog-z-index: 8;
-        }
         ha-textfield {
           display: block;
         }
