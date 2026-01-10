@@ -115,7 +115,10 @@ import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-table-column";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 type ScriptItem = ScriptEntity & {
   name: string;
@@ -124,6 +127,7 @@ type ScriptItem = ScriptEntity & {
   category: string | undefined;
   labels: LabelRegistryEntry[];
   assistants: string[];
+  assistants_sortable_key: number | undefined;
 };
 
 @customElement("ha-script-picker")
@@ -241,6 +245,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.script;
         const labels = labelReg && entityRegEntry?.labels;
+        const assistants = getEntityVoiceAssistantsKeys(
+          entityReg,
+          script.entity_id
+        );
         return {
           ...script,
           name: computeStateName(script),
@@ -254,7 +262,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
-          assistants: getEntityVoiceAssistantsKeys(entityReg, script.entity_id),
+          assistants: assistants,
+          assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -264,7 +273,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   private _columns = memoizeOne(
     (
       localize: LocalizeFunc,
-      entitiesToCheck?: any[]
+      entitiesToCheck: any[]
     ): DataTableColumnContainer<ScriptItem> => {
       const columns: DataTableColumnContainer<ScriptItem> = {
         icon: {
