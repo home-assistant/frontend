@@ -11,7 +11,7 @@ A compact, accessible dropdown menu for choosing actions or settings. `ha-dropdo
 ### Example usage (composition)
 
 ```html
-<ha-dropdown open>
+<ha-dropdown>
   <ha-button slot="trigger" with-caret>Dropdown</ha-button>
 
   <ha-dropdown-item>

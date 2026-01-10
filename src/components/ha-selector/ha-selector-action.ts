@@ -7,7 +7,7 @@ import { fullEntitiesContext } from "../../data/context";
 import {
   subscribeEntityRegistry,
   type EntityRegistryEntry,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import type { Action } from "../../data/script";
 import { migrateAutomationAction } from "../../data/script";
 import type { ActionSelector } from "../../data/selector";

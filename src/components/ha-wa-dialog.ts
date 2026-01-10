@@ -1,3 +1,6 @@
+import "@home-assistant/webawesome/dist/components/dialog/dialog";
+import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
+import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import {
   customElement,
@@ -7,9 +10,8 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { mdiClose } from "@mdi/js";
-import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { fireEvent } from "../common/dom/fire_event";
+import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-dialog-header";
@@ -49,10 +51,10 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @cssprop --ha-dialog-surface-background - Dialog background color.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
  * @cssprop --dialog-z-index - Z-index for the dialog.
- * @cssprop --dialog-surface-position - CSS position of the dialog surface.
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
+ * @attr {("alert"|"standard")} type - Dialog type. Defaults to "standard".
  * @attr {("small"|"medium"|"large"|"full")} width - Preferred dialog width preset. Defaults to "medium".
  * @attr {boolean} prevent-scrim-close - Prevents closing the dialog by clicking the scrim/overlay. Defaults to false.
  * @attr {string} header-title - Header title text. If not set, the headerTitle slot is used.
@@ -72,7 +74,7 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @see https://github.com/home-assistant/frontend/issues/27143
  */
 @customElement("ha-wa-dialog")
-export class HaWaDialog extends LitElement {
+export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "aria-labelledby" })
@@ -83,6 +85,9 @@ export class HaWaDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true })
   public open = false;
+
+  @property({ reflect: true })
+  public type: "alert" | "standard" = "standard";
 
   @property({ type: String, reflect: true, attribute: "width" })
   public width: DialogWidth = "medium";
@@ -110,6 +115,12 @@ export class HaWaDialog extends LitElement {
   @state()
   private _bodyScrolled = false;
 
+  private _escapePressed = false;
+
+  protected get scrollableElement(): HTMLElement | null {
+    return this.bodyContainer;
+  }
+
   protected updated(
     changedProperties: Map<string | number | symbol, unknown>
   ): void {
@@ -131,6 +142,8 @@ export class HaWaDialog extends LitElement {
             (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
         )}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
+        @keydown=${this._handleKeyDown}
+        @wa-hide=${this._handleHide}
         @wa-show=${this._handleShow}
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
@@ -158,8 +171,11 @@ export class HaWaDialog extends LitElement {
             <slot name="headerActionItems" slot="actionItems"></slot>
           </ha-dialog-header>
         </slot>
-        <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
-          <slot></slot>
+        <div class="content-wrapper">
+          <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
+            <slot></slot>
+          </div>
+          ${this.renderScrollableFades()}
         </div>
         <slot name="footer" slot="footer"></slot>
       </wa-dialog>
@@ -172,7 +188,25 @@ export class HaWaDialog extends LitElement {
 
     await this.updateComplete;
 
-    (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+    requestAnimationFrame(() => {
+      // temporary disabled because of issues with focus in iOS app, can be reenabled in 2026.2.0
+      // if (isIosApp(this.hass)) {
+      //   const element = this.querySelector("[autofocus]");
+      //   if (element !== null) {
+      //     if (!element.id) {
+      //       element.id = "ha-wa-dialog-autofocus";
+      //     }
+      //     this.hass.auth.external!.fireMessage({
+      //       type: "focus_element",
+      //       payload: {
+      //         element_id: element.id,
+      //       },
+      //     });
+      //   }
+      //   return;
+      // }
+      (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+    });
   };
 
   private _handleAfterShow = () => {
@@ -194,155 +228,204 @@ export class HaWaDialog extends LitElement {
     this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
   }
 
-  static styles = [
-    haStyleScrollbar,
-    css`
-      wa-dialog {
-        --full-width: var(
-          --ha-dialog-width-full,
-          min(
-            95vw,
-            calc(
-              100vw - var(--safe-area-inset-left, var(--ha-space-0)) - var(
-                  --safe-area-inset-right,
-                  var(--ha-space-0)
-                )
-            )
-          )
-        );
-        --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
-        --spacing: var(--dialog-content-padding, var(--ha-space-6));
-        --show-duration: var(--ha-dialog-show-duration, 200ms);
-        --hide-duration: var(--ha-dialog-hide-duration, 200ms);
-        --ha-dialog-surface-background: var(
-          --card-background-color,
-          var(--ha-color-surface-default)
-        );
-        --wa-color-surface-raised: var(
-          --ha-dialog-surface-background,
-          var(--card-background-color, var(--ha-color-surface-default))
-        );
-        --wa-panel-border-radius: var(
-          --ha-dialog-border-radius,
-          var(--ha-border-radius-3xl)
-        );
-        max-width: var(--ha-dialog-max-width, 100vw);
-        max-width: var(--ha-dialog-max-width, 100svw);
-      }
+  private _handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Escape") {
+      this._escapePressed = true;
+    }
+  }
 
-      :host([width="small"]) wa-dialog {
-        --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
-      }
+  private _handleHide(ev: CustomEvent<{ source: Element }>) {
+    if (
+      this.preventScrimClose &&
+      this._escapePressed &&
+      ev.detail.source === (ev.target as WaDialog).dialog
+    ) {
+      ev.preventDefault();
+    }
+    this._escapePressed = false;
+  }
 
-      :host([width="large"]) wa-dialog {
-        --width: min(var(--ha-dialog-width-lg, 720px), var(--full-width));
-      }
-
-      :host([width="full"]) wa-dialog {
-        --width: var(--full-width);
-      }
-
-      wa-dialog::part(dialog) {
-        min-width: var(--width, var(--full-width));
-        max-width: var(--width, var(--full-width));
-        max-height: var(
-          --ha-dialog-max-height,
-          calc(100% - var(--ha-space-20))
-        );
-        min-height: var(--ha-dialog-min-height);
-        position: var(--dialog-surface-position, relative);
-        margin-top: var(--dialog-surface-margin-top, auto);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        :host {
-          --ha-dialog-border-radius: var(--ha-space-0);
+  static get styles() {
+    return [
+      ...super.styles,
+      haStyleScrollbar,
+      css`
+        wa-dialog {
+          --full-width: var(
+            --ha-dialog-width-full,
+            min(95vw, var(--safe-width))
+          );
+          --width: min(var(--ha-dialog-width-md, 580px), var(--full-width));
+          --spacing: var(--dialog-content-padding, var(--ha-space-6));
+          --show-duration: var(--ha-dialog-show-duration, 200ms);
+          --hide-duration: var(--ha-dialog-hide-duration, 200ms);
+          --ha-dialog-surface-background: var(
+            --card-background-color,
+            var(--ha-color-surface-default)
+          );
+          --wa-color-surface-raised: var(
+            --ha-dialog-surface-background,
+            var(--card-background-color, var(--ha-color-surface-default))
+          );
+          --wa-panel-border-radius: var(
+            --ha-dialog-border-radius,
+            var(--ha-border-radius-3xl)
+          );
+          max-width: var(--ha-dialog-max-width, var(--safe-width));
+        }
+        @media (prefers-reduced-motion: reduce) {
+          wa-dialog {
+            --show-duration: 0ms;
+            --hide-duration: 0ms;
+          }
         }
 
-        wa-dialog {
-          --full-width: var(--ha-dialog-width-full, 100vw);
+        :host([width="small"]) wa-dialog {
+          --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
+        }
+
+        :host([width="large"]) wa-dialog {
+          --width: min(var(--ha-dialog-width-lg, 1024px), var(--full-width));
+        }
+
+        :host([width="full"]) wa-dialog {
+          --width: var(--full-width);
         }
 
         wa-dialog::part(dialog) {
-          min-height: var(--ha-dialog-min-height, 100vh);
-          min-height: var(--ha-dialog-min-height, 100svh);
-          max-height: var(--ha-dialog-max-height, 100vh);
-          max-height: var(--ha-dialog-max-height, 100svh);
-          padding-top: var(--safe-area-inset-top, var(--ha-space-0));
-          padding-bottom: var(--safe-area-inset-bottom, var(--ha-space-0));
-          padding-left: var(--safe-area-inset-left, var(--ha-space-0));
-          padding-right: var(--safe-area-inset-right, var(--ha-space-0));
+          color: var(--primary-text-color);
+          min-width: var(--width, var(--full-width));
+          max-width: var(--width, var(--full-width));
+          max-height: var(
+            --ha-dialog-max-height,
+            calc(var(--safe-height) - var(--ha-space-20))
+          );
+          min-height: var(--ha-dialog-min-height);
+          margin-top: var(--dialog-surface-margin-top, auto);
+          /* Used to offset the dialog from the safe areas when space is limited */
+          transform: translate(
+            calc(
+              var(--safe-area-offset-left, 0px) - var(
+                  --safe-area-offset-right,
+                  0px
+                )
+            ),
+            calc(
+              var(--safe-area-offset-top, 0px) - var(
+                  --safe-area-offset-bottom,
+                  0px
+                )
+            )
+          );
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
         }
-      }
 
-      .header-title-container {
-        display: flex;
-        align-items: center;
-      }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          :host([type="standard"]) {
+            --ha-dialog-border-radius: 0;
 
-      .header-title {
-        margin: 0;
-        margin-bottom: 0;
-        color: var(--ha-dialog-header-title-color, var(--primary-text-color));
-        font-size: var(
-          --ha-dialog-header-title-font-size,
-          var(--ha-font-size-2xl)
-        );
-        line-height: var(
-          --ha-dialog-header-title-line-height,
-          var(--ha-line-height-condensed)
-        );
-        font-weight: var(
-          --ha-dialog-header-title-font-weight,
-          var(--ha-font-weight-normal)
-        );
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        margin-right: var(--ha-space-3);
-      }
+            wa-dialog {
+              /* Make the container fill the whole screen width and not the safe width */
+              --full-width: var(--ha-dialog-width-full, 100vw);
+              --width: var(--full-width);
+            }
 
-      wa-dialog::part(body) {
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        max-width: 100%;
-        overflow: hidden;
-      }
+            wa-dialog::part(dialog) {
+              /* Make the dialog fill the whole screen height and not the safe height */
+              min-height: var(--ha-dialog-min-height, 100vh);
+              min-height: var(--ha-dialog-min-height, 100dvh);
+              max-height: var(--ha-dialog-max-height, 100vh);
+              max-height: var(--ha-dialog-max-height, 100dvh);
+              margin-top: 0;
+              margin-bottom: 0;
+              /* Use safe area as padding instead of the container size */
+              padding-top: var(--safe-area-inset-top);
+              padding-bottom: var(--safe-area-inset-bottom);
+              padding-left: var(--safe-area-inset-left);
+              padding-right: var(--safe-area-inset-right);
+              /* Reset the transform to center the dialog */
+              transform: none;
+            }
+          }
+        }
 
-      .body {
-        position: var(--dialog-content-position, relative);
-        padding: 0 var(--dialog-content-padding, var(--ha-space-6))
-          var(--dialog-content-padding, var(--ha-space-6))
-          var(--dialog-content-padding, var(--ha-space-6));
-        overflow: auto;
-        flex-grow: 1;
-      }
-      :host([flexcontent]) .body {
-        max-width: 100%;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
+        .header-title-container {
+          display: flex;
+          align-items: center;
+        }
 
-      wa-dialog::part(footer) {
-        padding: var(--ha-space-0);
-      }
+        .header-title {
+          margin: 0;
+          margin-bottom: 0;
+          color: var(--ha-dialog-header-title-color, var(--primary-text-color));
+          font-size: var(
+            --ha-dialog-header-title-font-size,
+            var(--ha-font-size-2xl)
+          );
+          line-height: var(
+            --ha-dialog-header-title-line-height,
+            var(--ha-line-height-condensed)
+          );
+          font-weight: var(
+            --ha-dialog-header-title-font-weight,
+            var(--ha-font-weight-normal)
+          );
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          margin-right: var(--ha-space-3);
+        }
 
-      ::slotted([slot="footer"]) {
-        display: flex;
-        padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4)
-          var(--ha-space-4);
-        gap: var(--ha-space-3);
-        justify-content: flex-end;
-        align-items: center;
-        width: 100%;
-      }
-    `,
-  ];
+        wa-dialog::part(body) {
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          max-width: 100%;
+          overflow: hidden;
+        }
+
+        .content-wrapper {
+          position: relative;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+
+        .body {
+          position: var(--dialog-content-position, relative);
+          padding: var(
+            --dialog-content-padding,
+            0 var(--ha-space-6) var(--ha-space-6) var(--ha-space-6)
+          );
+          overflow: auto;
+          flex-grow: 1;
+        }
+        :host([flexcontent]) .body {
+          max-width: 100%;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        wa-dialog::part(footer) {
+          padding: 0;
+        }
+
+        ::slotted([slot="footer"]) {
+          display: flex;
+          padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4)
+            var(--ha-space-4);
+          gap: var(--ha-space-3);
+          justify-content: flex-end;
+          align-items: center;
+          width: 100%;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

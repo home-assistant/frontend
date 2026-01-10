@@ -11,21 +11,21 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-request-selected-event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-list";
+import "../../../../components/ha-list-item";
 import type { AutomationConfig } from "../../../../data/automation";
 import { showAutomationEditor } from "../../../../data/automation";
 import type {
   DeviceAction,
   DeviceCondition,
   DeviceTrigger,
-} from "../../../../data/device_automation";
+} from "../../../../data/device/device_automation";
 import {
   fetchDeviceActions,
   fetchDeviceConditions,
   fetchDeviceTriggers,
   sortDeviceAutomations,
-} from "../../../../data/device_automation";
+} from "../../../../data/device/device_automation";
 import type { ScriptConfig } from "../../../../data/script";
 import { showScriptEditor } from "../../../../data/script";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";

@@ -1,7 +1,9 @@
-import { stringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
-import type { DeviceRegistryEntry } from "./device_registry";
-import type { EntityRegistryEntry } from "./entity_registry";
+import type { DeviceRegistryEntry } from "./device/device_registry";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "./entity/entity_registry";
 import type { RegistryEntry } from "./registry";
 
 export { subscribeAreaRegistry } from "./ws-area_registry";
@@ -18,7 +20,10 @@ export interface AreaRegistryEntry extends RegistryEntry {
   temperature_entity_id: string | null;
 }
 
-export type AreaEntityLookup = Record<string, EntityRegistryEntry[]>;
+export type AreaEntityLookup = Record<
+  string,
+  (EntityRegistryEntry | EntityRegistryDisplayEntry)[]
+>;
 
 export type AreaDeviceLookup = Record<string, DeviceRegistryEntry[]>;
 
@@ -59,8 +64,17 @@ export const deleteAreaRegistryEntry = (hass: HomeAssistant, areaId: string) =>
     area_id: areaId,
   });
 
+export const reorderAreaRegistryEntries = (
+  hass: HomeAssistant,
+  areaIds: string[]
+) =>
+  hass.callWS({
+    type: "config/area_registry/reorder",
+    area_ids: areaIds,
+  });
+
 export const getAreaEntityLookup = (
-  entities: EntityRegistryEntry[]
+  entities: (EntityRegistryEntry | EntityRegistryDisplayEntry)[]
 ): AreaEntityLookup => {
   const areaEntityLookup: AreaEntityLookup = {};
   for (const entity of entities) {
@@ -90,22 +104,3 @@ export const getAreaDeviceLookup = (
   }
   return areaDeviceLookup;
 };
-
-export const areaCompare =
-  (entries?: HomeAssistant["areas"], order?: string[]) =>
-  (a: string, b: string) => {
-    const indexA = order ? order.indexOf(a) : -1;
-    const indexB = order ? order.indexOf(b) : -1;
-    if (indexA === -1 && indexB === -1) {
-      const nameA = entries?.[a]?.name ?? a;
-      const nameB = entries?.[b]?.name ?? b;
-      return stringCompare(nameA, nameB);
-    }
-    if (indexA === -1) {
-      return 1;
-    }
-    if (indexB === -1) {
-      return -1;
-    }
-    return indexA - indexB;
-  };

@@ -9,7 +9,7 @@ import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
-import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { EntityConfig } from "../entity-rows/types";
 
@@ -167,7 +167,6 @@ export class HuiEntityEditor extends LitElement {
                       .index=${index}
                       .entityFilter=${this.entityFilter}
                       @value-changed=${this._valueChanged}
-                      allow-custom-entity
                     ></ha-entity-picker>
                   </div>
                 `

@@ -651,6 +651,18 @@ export class HaCodeEditor extends ReactiveElement {
           }
         }
       }
+
+      // Properties that should never suggest entities
+      const negativeProperties = ["action"];
+
+      // Create regex pattern for negative properties
+      const negativePropertyPattern = negativeProperties.join("|");
+      const negativeEntityFieldRegex = new RegExp(
+        `^\\s*(-\\s+)?(${negativePropertyPattern}):\\s*`
+      );
+      if (lineText.match(negativeEntityFieldRegex)) {
+        return null;
+      }
     }
 
     // Original entity completion logic for non-YAML or when not in entity_id field

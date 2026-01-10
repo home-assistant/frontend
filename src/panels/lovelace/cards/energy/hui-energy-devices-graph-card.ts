@@ -135,11 +135,13 @@ export class HuiEnergyDevicesGraphCard
       return nothing;
     }
 
+    const modes = this._getAllowedModes();
+
     return html`
       <ha-card>
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
-          ${this._getAllowedModes().length > 1
+          ${modes.length > 1
             ? html`
                 <ha-icon-button
                   .path=${this._chartType === "pie"
@@ -166,7 +168,7 @@ export class HuiEnergyDevicesGraphCard
               this._chartType,
               this._legendData
             )}
-            .height=${`${Math.max(300, (this._legendData?.length || 0) * 28 + 50)}px`}
+            .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
             .extraComponents=${[PieChart]}
             @chart-click=${this._handleChartClick}
             @dataset-hidden=${this._datasetHidden}
@@ -184,7 +186,7 @@ export class HuiEnergyDevicesGraphCard
       params.value[0] as number,
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    )} kWh`;
+    )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
     return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
 
@@ -215,6 +217,9 @@ export class HuiEnergyDevicesGraphCard
           show: true,
           type: "value",
           name: "kWh",
+          axisPointer: {
+            show: false,
+          },
         };
         options.yAxis = {
           show: true,
@@ -492,7 +497,7 @@ export class HuiEnergyDevicesGraphCard
           show: true,
           position: "center",
           color: computedStyle.getPropertyValue("--secondary-text-color"),
-          fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
+          fontSize: computedStyle.getPropertyValue("--ha-font-size-m"),
           lineHeight: 24,
           fontWeight: "bold",
           formatter: `{a}\n${formatNumber(totalChart, this.hass.locale)} kWh`,
@@ -549,9 +554,12 @@ export class HuiEnergyDevicesGraphCard
       e.detail.seriesType === "pie" &&
       e.detail.event?.target?.type === "tspan" // label
     ) {
-      fireEvent(this, "hass-more-info", {
-        entityId: (e.detail.data as any).id as string,
-      });
+      const id = (e.detail.data as any).id as string;
+      if (id !== "untracked") {
+        fireEvent(this, "hass-more-info", {
+          entityId: id,
+        });
+      }
     }
   }
 

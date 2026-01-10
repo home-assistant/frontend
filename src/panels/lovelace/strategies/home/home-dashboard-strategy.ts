@@ -4,14 +4,13 @@ import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { getAreas } from "../areas/helpers/areas-strategy-helper";
 import type { LovelaceStrategyEditor } from "../types";
 import {
   getSummaryLabel,
   HOME_SUMMARIES_ICONS,
 } from "./helpers/home-summaries";
 import type { HomeAreaViewStrategyConfig } from "./home-area-view-strategy";
-import type { HomeMainViewStrategyConfig } from "./home-main-view-strategy";
+import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strategy";
 
 export interface HomeDashboardStrategyConfig {
   type: "home";
@@ -46,7 +45,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
       };
     }
 
-    const areas = getAreas(hass.areas);
+    const areas = Object.values(hass.areas);
 
     const areaViews = areas.map<LovelaceViewRawConfig>((area) => {
       const path = `areas-${area.area_id}`;
@@ -72,18 +71,29 @@ export class HomeDashboardStrategy extends ReactiveElement {
       icon: HOME_SUMMARIES_ICONS.media_players,
     } satisfies LovelaceViewRawConfig;
 
+    const otherDevicesView = {
+      title: hass.localize("ui.panel.lovelace.strategy.home.devices"),
+      path: "other-devices",
+      subview: true,
+      strategy: {
+        type: "home-other-devices",
+      },
+      icon: "mdi:devices",
+    } satisfies LovelaceViewRawConfig;
+
     return {
       views: [
         {
           icon: "mdi:home",
-          path: "home",
+          path: "overview",
           strategy: {
-            type: "home-main",
+            type: "home-overview",
             favorite_entities: config.favorite_entities,
-          } satisfies HomeMainViewStrategyConfig,
+          } satisfies HomeOverviewViewStrategyConfig,
         },
         ...areaViews,
         mediaPlayersView,
+        otherDevicesView,
       ],
     };
   }

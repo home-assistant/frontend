@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
@@ -21,30 +22,31 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
-
-import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { fullEntitiesContext } from "../../../data/context";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   type EntityRegistryEntry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
   deleteScript,
@@ -65,7 +67,6 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { isMac } from "../../../util/is_mac";
@@ -73,12 +74,13 @@ import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 
+@customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
@@ -240,7 +242,10 @@ export class HaScriptEditor extends SubscribeMixin(
               </ha-button>
             `
           : ""}
-        <ha-button-menu slot="toolbar-icon">
+        <ha-dropdown
+          slot="toolbar-icon"
+          @wa-select=${this._handleDropdownSelect}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -248,133 +253,107 @@ export class HaScriptEditor extends SubscribeMixin(
           ></ha-icon-button>
 
           ${this._mode === "gui" && this.narrow
-            ? html`<ha-list-item
-                  graphic="icon"
-                  @click=${this._undo}
+            ? html`<ha-dropdown-item
+                  value="undo"
                   .disabled=${!this._undoRedoController.canUndo}
                 >
                   ${this.hass.localize("ui.common.undo")}
-                  <ha-svg-icon slot="graphic" .path=${mdiUndo}></ha-svg-icon>
-                </ha-list-item>
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._redo}
+                  <ha-svg-icon slot="icon" .path=${mdiUndo}></ha-svg-icon>
+                </ha-dropdown-item>
+                <ha-dropdown-item
+                  value="redo"
                   .disabled=${!this._undoRedoController.canRedo}
                 >
                   ${this.hass.localize("ui.common.redo")}
-                  <ha-svg-icon slot="graphic" .path=${mdiRedo}></ha-svg-icon>
-                </ha-list-item>`
+                  <ha-svg-icon slot="icon" .path=${mdiRedo}></ha-svg-icon>
+                </ha-dropdown-item>`
             : nothing}
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!this.scriptId}
-            @click=${this._showInfo}
-          >
+          <ha-dropdown-item .disabled=${!this.scriptId} value="info">
             ${this.hass.localize("ui.panel.config.script.editor.show_info")}
             <ha-svg-icon
-              slot="graphic"
+              slot="icon"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </ha-list-item>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._showSettings}
-          >
+          <ha-dropdown-item .disabled=${!stateObj} value="settings">
             ${this.hass.localize(
               "ui.panel.config.automation.picker.show_settings"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!stateObj}
-            @click=${this._editCategory}
-          >
+          <ha-dropdown-item .disabled=${!stateObj} value="category">
             ${this.hass.localize(
               `ui.panel.config.scene.picker.${this._registryEntry?.categories?.script ? "edit_category" : "assign_category"}`
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            graphic="icon"
-            .disabled=${!this.scriptId}
-            @click=${this._runScript}
-          >
+          <ha-dropdown-item .disabled=${!this.scriptId} value="run">
             ${this.hass.localize("ui.panel.config.script.picker.run_script")}
-            <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
+          </ha-dropdown-item>
 
           ${this.scriptId && this.narrow
-            ? html`
-                <a href="/config/script/trace/${this.scriptId}">
-                  <ha-list-item graphic="icon">
-                    ${this.hass.localize(
-                      "ui.panel.config.script.editor.show_trace"
-                    )}
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${mdiTransitConnection}
-                    ></ha-svg-icon>
-                  </ha-list-item>
-                </a>
-              `
+            ? html`<ha-dropdown-item value="trace">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.show_trace"
+                )}
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiTransitConnection}
+                ></ha-svg-icon>
+              </ha-dropdown-item>`
             : nothing}
           ${!useBlueprint && !("fields" in this._config)
             ? html`
-                <ha-list-item
-                  graphic="icon"
+                <ha-dropdown-item
                   .disabled=${this._readOnly || this._mode === "yaml"}
-                  @click=${this._addFields}
+                  value="add_fields"
                 >
                   ${this.hass.localize(
                     "ui.panel.config.script.editor.field.add_fields"
                   )}
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="icon"
                     .path=${mdiFormTextbox}
                   ></ha-svg-icon>
-                </ha-list-item>
+                </ha-dropdown-item>
               `
             : nothing}
 
-          <ha-list-item
-            graphic="icon"
-            @click=${this._promptScriptAlias}
+          <ha-dropdown-item
+            value="rename"
             .disabled=${!this.scriptId ||
             this._readOnly ||
             this._mode === "yaml"}
           >
             ${this.hass.localize("ui.panel.config.script.editor.rename")}
-            <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
+          </ha-dropdown-item>
           ${!useBlueprint
             ? html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._promptScriptMode}
+                <ha-dropdown-item
+                  value="change_mode"
                   .disabled=${this._readOnly || this._mode === "yaml"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.script.editor.change_mode"
                   )}
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="icon"
                     .path=${mdiDebugStepOver}
                   ></ha-svg-icon>
-                </ha-list-item>
+                </ha-dropdown-item>
               `
             : nothing}
 
-          <ha-list-item
-            .disabled=${this._blueprintConfig ||
+          <ha-dropdown-item
+            .disabled=${!!this._blueprintConfig ||
             (!this._readOnly && !this.scriptId)}
-            graphic="icon"
-            @click=${this._duplicate}
+            value="duplicate"
           >
             ${this.hass.localize(
               this._readOnly
@@ -382,58 +361,48 @@ export class HaScriptEditor extends SubscribeMixin(
                 : "ui.panel.config.script.editor.duplicate"
             )}
             <ha-svg-icon
-              slot="graphic"
+              slot="icon"
               .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
-          </ha-list-item>
+          </ha-dropdown-item>
 
           ${useBlueprint
             ? html`
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._takeControl}
+                <ha-dropdown-item
+                  value="take_control"
                   .disabled=${this._readOnly}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.script.editor.take_control"
                   )}
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiFileEdit}
-                  ></ha-svg-icon>
-                </ha-list-item>
+                  <ha-svg-icon slot="icon" .path=${mdiFileEdit}></ha-svg-icon>
+                </ha-dropdown-item>
               `
             : nothing}
 
-          <ha-list-item
-            graphic="icon"
-            @click=${this._mode === "gui"
-              ? this._switchYamlMode
-              : this._switchUiMode}
-          >
+          <ha-dropdown-item value="toggle_yaml_mode">
             ${this.hass.localize(
               `ui.panel.config.automation.editor.edit_${this._mode === "gui" ? "yaml" : "ui"}`
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <li divider role="separator"></li>
+          <wa-divider></wa-divider>
 
-          <ha-list-item
+          <ha-dropdown-item
             .disabled=${this._readOnly || !this.scriptId}
-            class=${classMap({ warning: Boolean(this.scriptId) })}
-            graphic="icon"
-            @click=${this._deleteConfirm}
+            value="delete"
+            .variant=${this.scriptId ? "danger" : "default"}
           >
             ${this.hass.localize("ui.panel.config.script.picker.delete")}
             <ha-svg-icon
               class=${classMap({ warning: Boolean(this.scriptId) })}
-              slot="graphic"
+              slot="icon"
               .path=${mdiDelete}
             >
             </ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <div class=${this._mode === "yaml" ? "yaml-mode" : ""}>
           ${this._mode === "gui"
             ? html`
@@ -687,9 +656,7 @@ export class HaScriptEditor extends SubscribeMixin(
     this._dirty = true;
   }
 
-  private async _runScript(ev: CustomEvent) {
-    ev.stopPropagation();
-
+  private async _runScript() {
     if (hasScriptFields(this.hass, this._entityId!)) {
       showMoreInfoDialog(this, {
         entityId: this._entityId!,
@@ -1154,6 +1121,63 @@ export class HaScriptEditor extends SubscribeMixin(
     this._undoRedoController.redo();
   }
 
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "undo":
+        this._undo();
+        break;
+      case "redo":
+        this._redo();
+        break;
+      case "info":
+        this._showInfo();
+        break;
+      case "settings":
+        this._showSettings();
+        break;
+      case "category":
+        this._editCategory();
+        break;
+      case "run":
+        this._runScript();
+        break;
+      case "add_fields":
+        this._addFields();
+        break;
+      case "rename":
+        this._promptScriptAlias();
+        break;
+      case "change_mode":
+        this._promptScriptMode();
+        break;
+      case "duplicate":
+        this._duplicate();
+        break;
+      case "take_control":
+        this._takeControl();
+        break;
+      case "toggle_yaml_mode":
+        if (this._mode === "gui") {
+          this._switchYamlMode();
+          break;
+        }
+        this._switchUiMode();
+        break;
+      case "delete":
+        this._deleteConfirm();
+        break;
+      case "trace":
+        this._showTrace();
+        break;
+    }
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -1244,9 +1268,6 @@ export class HaScriptEditor extends SubscribeMixin(
         ha-fab.dirty {
           bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
-        }
         .header {
           display: flex;
           margin: 16px 0;
@@ -1259,10 +1280,6 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        ha-button-menu a {
-          text-decoration: none;
-          color: var(--primary-color);
         }
         ha-tooltip ha-svg-icon {
           width: 12px;
@@ -1277,8 +1294,6 @@ export class HaScriptEditor extends SubscribeMixin(
     ];
   }
 }
-
-customElements.define("ha-script-editor", HaScriptEditor);
 
 declare global {
   interface HTMLElementTagNameMap {

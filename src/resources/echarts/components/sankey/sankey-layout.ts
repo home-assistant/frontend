@@ -14,6 +14,8 @@ interface PassThroughNode {
   id: string;
   value: number;
   depth: number;
+  sourceId: string;
+  targetId: string;
 }
 
 interface GraphLink extends GraphEdge {
@@ -152,6 +154,8 @@ export function createPassThroughNode(
     id: `${sourceId}-${targetId}-${depth}`,
     value,
     depth,
+    sourceId,
+    targetId,
   };
 }
 
@@ -235,6 +239,79 @@ export function groupNodesBySection(
   });
 
   return nodesPerSection;
+}
+
+export function sortNodesInSections(
+  nodesPerSection: Record<number, Node[]>,
+  depths: number[]
+): Record<number, Node[]> {
+  const sortedSections: Record<number, Node[]> = {};
+
+  depths.forEach((depth, depthIndex) => {
+    const sectionNodes = nodesPerSection[depth] || [];
+
+    // Sort nodes to minimize crossings
+    const sortedNodes = [...sectionNodes].sort((a, b) => {
+      const aIsPassthrough = isPassThroughNode(a);
+      const bIsPassthrough = isPassThroughNode(b);
+
+      // Both are passthrough nodes - sort by source position
+      if (aIsPassthrough && bIsPassthrough) {
+        // Find positions of source nodes in previous section (use already sorted section)
+        if (depthIndex > 0) {
+          const prevDepth = depths[depthIndex - 1];
+          const prevSection =
+            sortedSections[prevDepth] || nodesPerSection[prevDepth] || [];
+
+          const aSourceIndex = prevSection.findIndex((n) => {
+            const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
+            return nodeId === a.sourceId;
+          });
+          const bSourceIndex = prevSection.findIndex((n) => {
+            const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
+            return nodeId === b.sourceId;
+          });
+
+          if (
+            aSourceIndex !== bSourceIndex &&
+            aSourceIndex !== -1 &&
+            bSourceIndex !== -1
+          ) {
+            return aSourceIndex - bSourceIndex;
+          }
+        }
+
+        // Fall back to target node positions in next section (not sorted yet, use original)
+        if (depthIndex < depths.length - 1) {
+          const nextDepth = depths[depthIndex + 1];
+          const nextSection = nodesPerSection[nextDepth] || [];
+
+          const aTargetIndex = nextSection.findIndex((n) => {
+            const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
+            return nodeId === a.targetId;
+          });
+          const bTargetIndex = nextSection.findIndex((n) => {
+            const nodeId = isPassThroughNode(n) ? n.id : (n as GraphNode).id;
+            return nodeId === b.targetId;
+          });
+
+          if (
+            aTargetIndex !== bTargetIndex &&
+            aTargetIndex !== -1 &&
+            bTargetIndex !== -1
+          ) {
+            return aTargetIndex - bTargetIndex;
+          }
+        }
+      }
+
+      return 0;
+    });
+
+    sortedSections[depth] = sortedNodes;
+  });
+
+  return sortedSections;
 }
 
 export function createSectionNodes(nodes: Node[]): SectionNode[] {
@@ -337,10 +414,11 @@ function processNodes(
   );
 
   const nodesPerSection = groupNodesBySection(nodes, passThroughNodes);
+  const sortedNodesPerSection = sortNodesInSections(nodesPerSection, depths);
   let globalValueToSizeRatio = 0;
 
   const sections = depths.map((depth) => {
-    const sectionNodes = createSectionNodes(nodesPerSection[depth] || []);
+    const sectionNodes = createSectionNodes(sortedNodesPerSection[depth] || []);
     const availableSpace = sectionSize - (sectionNodes.length + 1) * nodeGap;
     const totalValue = sectionNodes.reduce(
       (acc: number, node: SectionNode) => acc + node.value,

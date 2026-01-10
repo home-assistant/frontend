@@ -14,15 +14,18 @@ import {
   subscribeDataEntryFlowProgress,
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
+import { showConfigFlowDialog } from "./show-dialog-config-flow";
 import type {
   DataEntryFlowDialogParams,
   LoadingReason,
 } from "./show-dialog-data-entry-flow";
+import { showOptionsFlowDialog } from "./show-dialog-options-flow";
+import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
 import "./step-flow-external";
@@ -30,9 +33,6 @@ import "./step-flow-form";
 import "./step-flow-loading";
 import "./step-flow-menu";
 import "./step-flow-progress";
-import { showOptionsFlowDialog } from "./show-dialog-options-flow";
-import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
-import { showConfigFlowDialog } from "./show-dialog-config-flow";
 
 let instance = 0;
 

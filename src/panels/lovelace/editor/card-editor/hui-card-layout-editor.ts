@@ -140,6 +140,8 @@ export class HuiCardLayoutEditor extends LitElement {
               .rowMax=${gridOptions.max_rows}
               .columnMin=${gridOptions.min_columns}
               .columnMax=${gridOptions.max_columns}
+              .rowsDisabled=${this._defaultGridOptions?.fixed_rows}
+              .columnsDisabled=${this._defaultGridOptions?.fixed_columns}
               .step=${this._preciseMode ? 1 : GRID_COLUMN_MULTIPLIER}
             ></ha-grid-size-picker>
             <ha-settings-row>

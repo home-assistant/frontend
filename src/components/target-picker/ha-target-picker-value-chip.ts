@@ -23,7 +23,7 @@ import { slugify } from "../../common/string/slugify";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
 import { domainToName } from "../../data/integration";
-import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { TargetType } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
@@ -278,8 +278,8 @@ export class HaTargetPickerValueChip extends LitElement {
       direction: var(--direction);
     }
     .expand-btn {
-      margin-right: var(--ha-space-0);
-      margin-inline-end: var(--ha-space-0);
+      margin-right: 0;
+      margin-inline-end: 0;
       margin-inline-start: initial;
     }
     .mdc-chip.area:not(.add),

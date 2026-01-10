@@ -1,5 +1,6 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
@@ -213,7 +214,7 @@ export default class HaAutomationAction extends LitElement {
     });
   }
 
-  private _addAction = (action: string) => {
+  private _addAction = (action: string, target?: HassServiceTarget) => {
     let actions: Action[];
     if (action === PASTE_VALUE) {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
@@ -223,6 +224,7 @@ export default class HaAutomationAction extends LitElement {
       actions = this.actions.concat({
         action: getValueFromDynamic(action),
         metadata: {},
+        target,
       });
     } else {
       const elClass = customElements.get(

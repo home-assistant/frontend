@@ -21,7 +21,6 @@ export const coreStyles = css`
     --ha-border-radius-square: 0;
 
     /* Spacing */
-    --ha-space-0: 0px;
     --ha-space-1: 4px;
     --ha-space-2: 8px;
     --ha-space-3: 12px;

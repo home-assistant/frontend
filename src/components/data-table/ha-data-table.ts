@@ -16,8 +16,10 @@ import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
+import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
@@ -26,8 +28,6 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import type { LocalizeFunc } from "../../common/translations/localize";
-import { nextRender } from "../../common/util/render-status";
 
 export interface RowClickedEvent {
   id: string;
@@ -838,10 +838,10 @@ export class HaDataTable extends LitElement {
     } else if (this.sortDirection === "asc") {
       this.sortDirection = "desc";
     } else {
-      this.sortDirection = null;
+      this.sortDirection = "asc";
     }
 
-    this.sortColumn = this.sortDirection === null ? undefined : columnId;
+    this.sortColumn = columnId;
 
     fireEvent(this, "sorting-changed", {
       column: columnId,
@@ -1402,6 +1402,9 @@ export class HaDataTable extends LitElement {
         }
         .secondary {
           color: var(--secondary-text-color);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .scroller {
           height: calc(100% - 57px);

@@ -3,12 +3,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
-import "../../../components/ha-button";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "./ha-category-picker";
@@ -65,6 +65,9 @@ class DialogAssignCategory extends LitElement {
             <ha-category-picker
               .hass=${this.hass}
               .scope=${this._scope}
+              .label=${this.hass.localize(
+                "ui.components.category-picker.category"
+              )}
               .value=${this._category}
               @value-changed=${this._categoryChanged}
             ></ha-category-picker>

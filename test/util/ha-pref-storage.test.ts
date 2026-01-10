@@ -24,7 +24,7 @@ describe("ha-pref-storage", () => {
     window.localStorage.setItem = vi.fn();
 
     storeState(mockHass as unknown as HomeAssistant);
-    expect(window.localStorage.setItem).toHaveBeenCalledTimes(8);
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(7);
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "dockedSidebar",
       JSON.stringify("auto")

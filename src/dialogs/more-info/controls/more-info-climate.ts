@@ -7,7 +7,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
@@ -23,7 +23,7 @@ import {
   climateHvacModeIcon,
   compareClimateHvacModes,
 } from "../../../data/climate";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import "../../../state-control/climate/ha-state-control-climate-humidity";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
 import type { HomeAssistant } from "../../../types";
@@ -32,6 +32,7 @@ import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type MainControl = "temperature" | "humidity";
 
+@customElement("more-info-climate")
 class MoreInfoClimate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -510,7 +511,7 @@ class MoreInfoClimate extends LitElement {
           align-items: center;
           justify-content: center;
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: var(--ha-space-10);
         }
 
         .current div {
@@ -533,7 +534,7 @@ class MoreInfoClimate extends LitElement {
           font-size: var(--ha-font-size-m);
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.4px;
-          margin-bottom: 4px;
+          margin-bottom: var(--ha-space-1);
         }
 
         .current .value {
@@ -544,7 +545,7 @@ class MoreInfoClimate extends LitElement {
         }
         ha-select {
           width: 100%;
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
         }
 
         .container-humidity .single-row {
@@ -560,14 +561,12 @@ class MoreInfoClimate extends LitElement {
         }
 
         .single-row {
-          padding: 8px 0;
+          padding: var(--ha-space-2) 0;
         }
       `,
     ];
   }
 }
-
-customElements.define("more-info-climate", MoreInfoClimate);
 
 declare global {
   interface HTMLElementTagNameMap {

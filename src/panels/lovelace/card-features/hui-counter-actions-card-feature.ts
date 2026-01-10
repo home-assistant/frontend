@@ -7,7 +7,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -79,9 +79,7 @@ class HuiCounterActionsCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-counter-actions-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-counter-actions-card-feature-editor");
     return document.createElement("hui-counter-actions-card-feature-editor");
   }
 

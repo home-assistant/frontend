@@ -30,30 +30,44 @@ import {
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
+import type { StatisticPeriod } from "../../../../../data/recorder";
+import { getSuggestedPeriod } from "../../../../../data/energy";
 
-export function getSuggestedMax(dayDifference: number, end: Date): number {
+export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
   let suggestedMax = new Date(end);
 
+  if (period === "5minute") {
+    return suggestedMax.getTime();
+  }
+  suggestedMax.setMinutes(0, 0, 0);
+  if (period === "hour") {
+    return suggestedMax.getTime();
+  }
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
   // Correct for this when showing days/months so we don't get an extra day.
-  if (dayDifference > 2 && suggestedMax.getHours() === 0) {
+  if (suggestedMax.getHours() === 0) {
     suggestedMax = subHours(suggestedMax, 1);
   }
-
-  suggestedMax.setMinutes(0, 0, 0);
-  if (dayDifference > 35) {
-    suggestedMax.setDate(1);
+  suggestedMax.setHours(0);
+  if (period === "day" || period === "week") {
+    return suggestedMax.getTime();
   }
-  if (dayDifference > 2) {
-    suggestedMax.setHours(0);
-  }
+  // period === month
+  suggestedMax.setDate(1);
   return suggestedMax.getTime();
 }
 
-export function getSuggestedPeriod(
-  dayDifference: number
-): "month" | "day" | "hour" {
-  return dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+function createYAxisLabelFormatter(locale: FrontendLocaleData) {
+  let previousValue: number | undefined;
+
+  return (value: number): string => {
+    const maximumFractionDigits = Math.max(
+      1,
+      -Math.floor(Math.log10(Math.abs(value - (previousValue ?? value) || 1)))
+    );
+    previousValue = value;
+    return formatNumber(value, locale, { maximumFractionDigits });
+  };
 }
 
 export function getCommonOptions(
@@ -64,7 +78,8 @@ export function getCommonOptions(
   unit?: string,
   compareStart?: Date,
   compareEnd?: Date,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  detailedDailyData = false
 ): ECOption {
   const dayDifference = differenceInDays(end, start);
 
@@ -76,7 +91,10 @@ export function getCommonOptions(
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(dayDifference, end),
+      max: getSuggestedMax(
+        getSuggestedPeriod(start, end, detailedDailyData),
+        end
+      ),
     },
     yAxis: {
       type: "value",
@@ -86,7 +104,7 @@ export function getCommonOptions(
         align: "left",
       },
       axisLabel: {
-        formatter: (value: number) => formatNumber(Math.abs(value), locale),
+        formatter: createYAxisLabelFormatter(locale),
       },
       splitLine: {
         show: true,
@@ -282,32 +300,41 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
   });
 }
 
+function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
+  const item =
+    datapoint && typeof datapoint === "object" && "value" in datapoint
+      ? datapoint
+      : { value: datapoint };
+  return Number(item.value?.[0]);
+}
+
 export function fillLineGaps(datasets: LineSeriesOption[]) {
   const buckets = Array.from(
     new Set(
       datasets
         .map((dataset) =>
-          dataset.data!.map((datapoint) => Number(datapoint![0]))
+          dataset.data!.map((datapoint) => getDatapointX(datapoint))
         )
         .flat()
     )
   ).sort((a, b) => a - b);
-  buckets.forEach((bucket, index) => {
-    for (let i = datasets.length - 1; i >= 0; i--) {
-      const dataPoint = datasets[i].data![index];
+
+  datasets.forEach((dataset) => {
+    const dataMap = new Map<number, LineDataItemOption>();
+    dataset.data!.forEach((datapoint) => {
       const item: LineDataItemOption =
-        dataPoint && typeof dataPoint === "object" && "value" in dataPoint
-          ? dataPoint
-          : ({ value: dataPoint } as LineDataItemOption);
-      const x = item.value?.[0];
-      if (x === undefined) {
-        continue;
+        datapoint && typeof datapoint === "object" && "value" in datapoint
+          ? datapoint
+          : ({ value: datapoint } as LineDataItemOption);
+      const x = getDatapointX(datapoint);
+      if (!Number.isNaN(x)) {
+        dataMap.set(x, item);
       }
-      if (Number(x) !== bucket) {
-        datasets[i].data?.splice(index, 0, [bucket, 0]);
-      }
-    }
+    });
+
+    dataset.data = buckets.map((bucket) => dataMap.get(bucket) ?? [bucket, 0]);
   });
+
   return datasets;
 }
 

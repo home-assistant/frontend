@@ -12,7 +12,7 @@ import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSControllerFirmwareUpdateFinishedMessage,
   ZWaveJSFirmwareUpdateProgressMessage,
@@ -302,10 +302,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                 </div>
                 ${this._updateFinishedMessage!.success
                   ? html`<p>
-                      ${this.hass.localize(
-                        `ui.panel.config.zwave_js.update_firmware.finished_status.done${localizationKeySuffix}`
-                      )}
-                    </p>`
+                        ${this.hass.localize(
+                          `ui.panel.config.zwave_js.update_firmware.finished_status.done${localizationKeySuffix}`
+                        )}
+                      </p>
+                      ${closeButton}`
                   : html`<p>
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.update_firmware.finished_status.try_again"

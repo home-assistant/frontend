@@ -35,7 +35,13 @@ class ZHADeviceZigbeeInfo extends LitElement {
     }
 
     return html`
-      <ha-code-editor mode="yaml" readOnly .value=${this._signature} dir="ltr">
+      <ha-code-editor
+        mode="yaml"
+        read-only
+        .hass=${this.hass}
+        .value=${this._signature}
+        dir="ltr"
+      >
       </ha-code-editor>
     `;
   }

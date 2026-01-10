@@ -16,7 +16,7 @@ import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { UNAVAILABLE } from "../../../../data/entity";
+import { UNAVAILABLE } from "../../../../data/entity/entity";
 import type { ForecastType, WeatherEntity } from "../../../../data/weather";
 import { WeatherEntityFeature } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
@@ -37,6 +37,7 @@ const cardConfigStruct = assign(
     forecast_type: optional(string()),
     forecast_slots: optional(number()),
     secondary_info_attribute: optional(string()),
+    round_temperature: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
@@ -155,6 +156,10 @@ export class HuiWeatherForecastCardEditor
             entity_name: {},
           },
           context: { entity: "entity" },
+        },
+        {
+          name: "round_temperature",
+          selector: { boolean: {} },
         },
         {
           name: "",

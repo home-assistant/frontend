@@ -194,7 +194,7 @@ class MoreInfoCover extends LitElement {
           align-items: center;
         }
         .main-control > * {
-          margin: 0 8px;
+          margin: 0 var(--ha-space-2);
         }
       `,
     ];

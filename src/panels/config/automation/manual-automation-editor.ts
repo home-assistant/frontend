@@ -1,5 +1,6 @@
+import { ContextProvider } from "@lit/context";
 import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -46,7 +47,13 @@ import {
   isTrigger,
   normalizeAutomationConfig,
 } from "../../../data/automation";
+import {
+  subscribeAndProcessConfigEntries,
+  type ConfigEntry,
+} from "../../../data/config_entries";
+import { configEntriesContext } from "../../../data/context";
 import { getActionType, type Action } from "../../../data/script";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
@@ -80,7 +87,7 @@ const automationConfigStruct = union([
 export const SIDEBAR_DEFAULT_WIDTH = 500;
 
 @customElement("manual-automation-editor")
-export class HaManualAutomationEditor extends LitElement {
+export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -117,11 +124,28 @@ export class HaManualAutomationEditor extends LitElement {
     HaAutomationAction | HaAutomationCondition
   >;
 
+  private _configEntries = new ContextProvider(this, {
+    context: configEntriesContext,
+    initialValue: [],
+  });
+
   private _prevSidebarWidthPx?: number;
 
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("paste", this._handlePaste);
+  }
+
+  public hassSubscribe(): Promise<UnsubscribeFunc>[] {
+    return [
+      subscribeAndProcessConfigEntries(
+        this.hass,
+        (message: ConfigEntry[]) => {
+          this._configEntries.setValue(message);
+        },
+        undefined
+      ),
+    ];
   }
 
   public disconnectedCallback() {
@@ -317,6 +341,7 @@ export class HaManualAutomationEditor extends LitElement {
             @value-changed=${this._sidebarConfigChanged}
             @sidebar-resized=${this._resizeSidebar}
             @sidebar-resizing-stopped=${this._stopResizeSidebar}
+            @sidebar-reset-size=${this._resetSidebarWidth}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -698,6 +723,16 @@ export class HaManualAutomationEditor extends LitElement {
   private _stopResizeSidebar(ev) {
     ev.stopPropagation();
     this._prevSidebarWidthPx = undefined;
+  }
+
+  private _resetSidebarWidth(ev: Event) {
+    ev.stopPropagation();
+    this._prevSidebarWidthPx = undefined;
+    this._sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
   }
 
   static get styles(): CSSResultGroup {

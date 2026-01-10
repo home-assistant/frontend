@@ -35,6 +35,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
+import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -64,6 +65,7 @@ import "../../../components/ha-md-menu-item";
 import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
 import {
@@ -85,17 +87,17 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
+} from "../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
-} from "../../../data/label_registry";
+} from "../../../data/label/label_registry";
 import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
@@ -113,6 +115,8 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import "../voice-assistants/expose/expose-assistant-icon";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -299,7 +303,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.automation.picker.headers.area"),
-          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -328,14 +331,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             const date = new Date(automation.last_triggered);
             const now = new Date();
             const dayDifference = differenceInDays(now, date);
+            const formattedTime = formatShortDateTimeWithConditionalYear(
+              date,
+              this.hass.locale,
+              this.hass.config
+            );
+            const elementId = "last-triggered-" + slugify(automation.entity_id);
             return html`
               ${dayDifference > 3
-                ? formatShortDateTimeWithConditionalYear(
-                    date,
-                    this.hass.locale,
-                    this.hass.config
-                  )
-                : relativeTime(date, locale)}
+                ? formattedTime
+                : html`
+                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
+                    <span id=${elementId}>${relativeTime(date, locale)}</span>
+                  `}
             `;
           },
         },
@@ -369,6 +377,31 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               @click=${this._showOverflowMenu}
             ></ha-icon-button>
           `,
+        },
+        voice_assistants: {
+          title: localize(
+            "ui.panel.config.automation.picker.headers.voice_assistants"
+          ),
+          type: "icon",
+          defaultHidden: true,
+          minWidth: "100px",
+          maxWidth: "100px",
+          template: (automation) => {
+            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+              this._entityReg,
+              automation.entity_id
+            );
+            return html` ${exposedToVoiceAssistantKeys.length !== 0
+              ? exposedToVoiceAssistantKeys.map(
+                  (vaKey) =>
+                    html` <voice-assistants-expose-assistant-icon
+                      .assistant=${vaKey}
+                      .hass=${this.hass}
+                    >
+                    </voice-assistants-expose-assistant-icon>`
+                )
+              : "—"}`;
+          },
         },
       };
       return columns;

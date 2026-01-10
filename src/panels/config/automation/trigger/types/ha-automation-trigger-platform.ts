@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../../common/entity/compute_domain";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
@@ -24,6 +23,16 @@ const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
   field.selector &&
   !field.required &&
   !("boolean" in field.selector && field.default);
+
+const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
+  "trigger",
+  "target",
+  "alias",
+  "id",
+  "variables",
+  "enabled",
+  "options",
+] as const;
 
 @customElement("ha-automation-trigger-platform")
 export class HaPlatformTrigger extends LitElement {
@@ -52,6 +61,31 @@ export class HaPlatformTrigger extends LitElement {
     if (!changedProperties.has("trigger")) {
       return;
     }
+
+    let newValue: PlatformTrigger | undefined;
+
+    for (const key in this.trigger) {
+      // Migrate old options to `options`
+      if (DEFAULT_KEYS.includes(key as keyof PlatformTrigger)) {
+        continue;
+      }
+      if (newValue === undefined) {
+        newValue = {
+          ...this.trigger,
+          options: { [key]: this.trigger[key] },
+        };
+      } else {
+        newValue.options![key] = this.trigger[key];
+      }
+      delete newValue[key];
+    }
+    if (newValue !== undefined) {
+      fireEvent(this, "value-changed", {
+        value: newValue,
+      });
+      this.trigger = newValue;
+    }
+
     const oldValue = changedProperties.get("trigger") as
       | undefined
       | this["trigger"];
@@ -69,6 +103,46 @@ export class HaPlatformTrigger extends LitElement {
     } else {
       this._manifest = undefined;
     }
+
+    if (
+      oldValue?.trigger !== this.trigger?.trigger &&
+      this.trigger &&
+      this.description?.fields
+    ) {
+      let updatedDefaultValue = false;
+      const updatedOptions = {};
+      const loadDefaults = !("options" in this.trigger);
+      // Set mandatory bools without a default value to false
+      Object.entries(this.description.fields).forEach(([key, field]) => {
+        if (
+          field.selector &&
+          field.required &&
+          field.default === undefined &&
+          "boolean" in field.selector &&
+          updatedOptions[key] === undefined
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = false;
+        } else if (
+          loadDefaults &&
+          field.selector &&
+          field.default !== undefined &&
+          updatedOptions[key] === undefined
+        ) {
+          updatedDefaultValue = true;
+          updatedOptions[key] = field.default;
+        }
+      });
+
+      if (updatedDefaultValue) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.trigger,
+            options: updatedOptions,
+          },
+        });
+      }
+    }
   }
 
   protected render() {
@@ -85,9 +159,9 @@ export class HaPlatformTrigger extends LitElement {
 
     const hasOptional = Boolean(
       triggerDesc?.fields &&
-        Object.values(triggerDesc.fields).some((field) =>
-          showOptionalToggle(field)
-        )
+      Object.values(triggerDesc.fields).some((field) =>
+        showOptionalToggle(field)
+      )
     );
 
     return html`
@@ -217,6 +291,7 @@ export class HaPlatformTrigger extends LitElement {
               : undefined}
             .placeholder=${dataField.default}
             .localizeValue=${this._localizeValueCallback}
+            .required=${dataField.required}
           ></ha-selector>
         </ha-settings-row>`
       : nothing;
@@ -229,8 +304,11 @@ export class HaPlatformTrigger extends LitElement {
       return undefined;
     }
 
-    const context = {};
+    const context: Record<string, any> = {};
     for (const [context_key, data_key] of Object.entries(field.context)) {
+      if (data_key === "target" && this.description?.target) {
+        context.target_selector = this._targetSelector(this.description.target);
+      }
       context[context_key] =
         data_key === "target"
           ? this.trigger.target
@@ -338,7 +416,7 @@ export class HaPlatformTrigger extends LitElement {
       return "";
     }
     return this.hass.localize(
-      `component.${computeDomain(this.trigger.trigger)}.selector.${key}`
+      `component.${getTriggerDomain(this.trigger.trigger)}.selector.${key}`
     );
   };
 
@@ -354,6 +432,10 @@ export class HaPlatformTrigger extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin: 0px calc(-1 * var(--ha-space-4));
+    }
     ha-settings-row {
       padding: 0 var(--ha-space-4);
     }

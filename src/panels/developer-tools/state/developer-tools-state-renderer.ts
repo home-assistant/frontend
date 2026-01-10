@@ -61,7 +61,7 @@ class HaPanelDevStateRenderer extends LitElement {
   protected render() {
     const showAttributes = !this.narrow && this.showAttributes;
     return html`
-        <div 
+        <div
           class=${classMap({ entities: true, "hide-attributes": !showAttributes })}
           role="table"
         >
@@ -245,6 +245,7 @@ class HaPanelDevStateRenderer extends LitElement {
         :host([virtualize]) {
           display: block;
           height: 100%;
+          overflow: auto;
         }
 
         .entities {
@@ -297,7 +298,7 @@ class HaPanelDevStateRenderer extends LitElement {
         }
 
         .cell .padded {
-          padding: 4px;
+          padding: var(--ha-space-1);
         }
 
         .entities .row .header:nth-child(1),
@@ -327,11 +328,11 @@ class HaPanelDevStateRenderer extends LitElement {
 
         .entities ha-svg-icon {
           --mdc-icon-size: 20px;
-          padding: 4px;
+          padding: var(--ha-space-1);
           cursor: pointer;
           flex-shrink: 0;
-          margin-right: 8px;
-          margin-inline-end: 8px;
+          margin-right: var(--ha-space-2);
+          margin-inline-end: var(--ha-space-2);
           margin-inline-start: initial;
         }
 

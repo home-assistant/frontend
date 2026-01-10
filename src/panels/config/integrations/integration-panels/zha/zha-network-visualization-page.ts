@@ -6,6 +6,7 @@ import type {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type {
@@ -13,14 +14,13 @@ import type {
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -295,7 +295,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 color:
                   route.route_status === "Active"
                     ? primaryColor
-                    : style.getPropertyValue("--disabled-color"),
+                    : style.getPropertyValue("--dark-primary-color"),
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
                   : "dotted",
@@ -335,7 +335,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             symbolSize: 5,
             lineStyle: {
               width: 1,
-              color: style.getPropertyValue("--disabled-color"),
+              color: style.getPropertyValue("--dark-primary-color"),
               type: "dotted",
             },
             ignoreForceLayout: true,

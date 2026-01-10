@@ -7,15 +7,15 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import { getDeviceIntegrationLookup } from "../../data/device_registry";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
+import type { EntitySources } from "../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { TargetSelector } from "../../data/selector";
 import {
+  computeCreateDomains,
   filterSelectorDevices,
   filterSelectorEntities,
-  computeCreateDomains,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-target-picker";
