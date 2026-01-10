@@ -49,7 +49,6 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @cssprop --ha-dialog-hide-duration - Hide animation duration.
  * @cssprop --ha-dialog-surface-background - Dialog background color.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
- * @cssprop --dialog-z-index - Z-index for the dialog.
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
@@ -250,7 +249,6 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
             var(--ha-border-radius-3xl)
           );
           max-width: var(--ha-dialog-max-width, var(--safe-width));
-          z-index: var(--dialog-z-index, 8);
         }
         @media (prefers-reduced-motion: reduce) {
           wa-dialog {
