@@ -21,7 +21,7 @@ import type {
 } from "../../data/media-player";
 import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../ha-dialog";
+import "../ha-wa-dialog";
 import "../ha-dialog-header";
 import "../ha-list-item";
 import "./ha-media-manage-button";
@@ -71,21 +71,14 @@ class DialogMediaPlayerBrowse extends LitElement {
     }
 
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        hideActions
-        flexContent
-        .heading=${!this._currentItem
-          ? this.hass.localize(
-              "ui.components.media-browser.media-player-browser"
-            )
-          : this._currentItem.title}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${true}
+        flexcontent
         @closed=${this.closeDialog}
         @opened=${this._dialogOpened}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dialog-header show-border slot="header">
           ${this._navigateIds.length > (this._params.minimumNavigateLevel ?? 1)
             ? html`
                 <ha-icon-button
@@ -153,7 +146,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           <ha-icon-button
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
-            dialogAction="close"
+            data-dialog="close"
             slot="actionItems"
           ></ha-icon-button>
         </ha-dialog-header>
@@ -173,7 +166,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}
         ></ha-media-player-browse>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -225,7 +218,7 @@ class DialogMediaPlayerBrowse extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-z-index: 9;
           --dialog-content-padding: 0;
         }
@@ -241,9 +234,9 @@ class DialogMediaPlayerBrowse extends LitElement {
         }
 
         @media (min-width: 800px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 800px;
-            --mdc-dialog-max-height: calc(
+          ha-wa-dialog {
+            --ha-dialog-max-width: 800px;
+            --ha-dialog-max-height: calc(
               100vh - var(--ha-space-18) - var(--safe-area-inset-y)
             );
           }

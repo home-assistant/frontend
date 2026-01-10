@@ -8,6 +8,7 @@ import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-floor-picker";
 import "../../../components/ha-icon-picker";
@@ -16,7 +17,7 @@ import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
@@ -250,9 +251,10 @@ class DialogAreaDetail
     const isNew = !entry;
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
+        .hass=${this.hass}
         .open=${this._open}
-        .heading=${entry
+        header-title=${entry
           ? this.hass.localize("ui.panel.config.areas.editor.update_area")
           : this.hass.localize("ui.panel.config.areas.editor.create_area")}
         @closed=${this._dialogClosed}
@@ -266,28 +268,31 @@ class DialogAreaDetail
             ${!isNew ? this._renderRelatedEntitiesExpansion() : nothing}
           </div>
         </div>
-        ${!isNew
-          ? html`
-              <ha-button
-                slot="primaryAction"
-                appearance="plain"
-                @click=${this._deleteArea}
-                .disabled=${this._submitting}
-              >
-                ${this.hass.localize("ui.common.delete")}
-              </ha-button>
-            `
-          : nothing}
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${nameInvalid || !!this._submitting}
-        >
-          ${entry
-            ? this.hass.localize("ui.common.save")
-            : this.hass.localize("ui.common.create")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          ${!isNew
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  variant="danger"
+                  appearance="plain"
+                  @click=${this._deleteArea}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass.localize("ui.common.delete")}
+                </ha-button>
+              `
+            : nothing}
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${nameInvalid || !!this._submitting}
+          >
+            ${entry
+              ? this.hass.localize("ui.common.save")
+              : this.hass.localize("ui.common.create")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -404,7 +409,7 @@ class DialogAreaDetail
     return [
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-z-index: 8;
         }
         ha-textfield {
