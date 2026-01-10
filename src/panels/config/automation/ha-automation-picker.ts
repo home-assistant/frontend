@@ -119,7 +119,10 @@ import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-table-column";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -129,6 +132,7 @@ type AutomationItem = AutomationEntity & {
   category: string | undefined;
   labels: LabelRegistryEntry[];
   assistants: string[];
+  assistants_sortable_key: number | undefined;
 };
 
 @customElement("ha-automation-picker")
@@ -246,6 +250,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.automation;
         const labels = labelReg && entityRegEntry?.labels;
+        const assistants = getEntityVoiceAssistantsKeys(
+          entityReg,
+          automation.entity_id
+        );
         return {
           ...automation,
           name: computeStateName(automation),
@@ -260,10 +268,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
-          assistants: getEntityVoiceAssistantsKeys(
-            entityReg,
-            automation.entity_id
-          ),
+          assistants: assistants,
+          assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
         };
       });
