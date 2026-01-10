@@ -126,7 +126,10 @@ import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import { getAssistantsTableColumn } from "../voice-assistants/expose/assistants-table-column";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 interface HelperItem {
   id: string;
@@ -141,6 +144,7 @@ interface HelperItem {
   area?: string;
   label_entries: LabelRegistryEntry[];
   assistants: string[];
+  assistants_sortable_key: number | undefined;
   disabled?: boolean;
 }
 
@@ -600,6 +604,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             areaId && this.hass.areas?.[areaId]
               ? computeAreaName(this.hass.areas[areaId])
               : undefined;
+          const assistants = getEntityVoiceAssistantsKeys(
+            entityReg,
+            item.entity_id
+          );
           return {
             ...item,
             localized_type:
@@ -615,7 +623,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
             area: area,
-            assistants: getEntityVoiceAssistantsKeys(entityReg, item.entity_id),
+            assistants: assistants,
+            assistants_sortable_key: getAssistantsSortableKey(assistants),
           };
         });
     }
