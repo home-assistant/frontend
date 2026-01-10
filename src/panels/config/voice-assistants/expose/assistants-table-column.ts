@@ -8,7 +8,11 @@ export const getAssistantsTableColumn = (
   localize: LocalizeFunc,
   hass: HomeAssistant,
   availableAssistants: string[],
-  entitiesToCheck?: any[]
+  entitiesToCheck?: any[],
+  supportedEntities?: Record<
+    "cloud.google_assistant" | "cloud.alexa" | "conversation",
+    string[] | undefined
+  >
 ): DataTableColumnData => ({
   title: localize("ui.panel.config.voice_assistants.expose.headers.assistants"),
   type: "flex",
@@ -16,18 +20,21 @@ export const getAssistantsTableColumn = (
   sortable: true,
   minWidth: "160px",
   maxWidth: "160px",
+  valueColumn: "assistants_sortable_key",
   template: (entry) =>
     html`${entry.assistants.length !== 0
       ? availableAssistants.map((vaKey) => {
-          const manual = false;
-          const supported = true;
+          const supported =
+            !supportedEntities?.[vaKey] ||
+            supportedEntities[vaKey].includes(entry.entity_id);
+          const manual = entry.manAssistants?.includes(vaKey);
           return getAssistantsTableColumnIcon(
             entry.assistants.includes(vaKey),
             vaKey,
             hass,
+            entitiesToCheck,
             manual,
-            !supported,
-            entitiesToCheck
+            !supported
           );
         })
       : nothing}`,
@@ -37,21 +44,44 @@ export const getAssistantsTableColumnIcon = (
   show: boolean,
   vaKey: string,
   hass: HomeAssistant,
-  manual: boolean,
-  unsupported: boolean,
-  entitiesToCheck?: any[]
+  entitiesToCheck?: any[],
+  manual?: boolean,
+  unsupported?: boolean
 ) => {
   const preserveSpacing = entitiesToCheck?.some((entry) =>
-    entry.assistants.includes(vaKey)
+    entry.assistants!.includes(vaKey)
   );
   return show
     ? html`<voice-assistants-expose-assistant-icon
         .assistant=${vaKey}
         .hass=${hass}
-        .manual=${manual}
-        .unsupported=${unsupported}
+        .manual=${manual ?? false}
+        .unsupported=${unsupported ?? false}
       ></voice-assistants-expose-assistant-icon>`
     : preserveSpacing
       ? html`<div style="width: 40px;"></div>`
       : nothing;
+};
+
+export const getAssistantsSortableKey = (
+  entityAssistants: string[]
+): number | undefined => {
+  let result = 0;
+  if (!entityAssistants.length) return undefined;
+  const assistantsOrdered = [
+    "conversation",
+    "cloud.alexa",
+    "cloud.google_assistant",
+  ];
+  assistantsOrdered.forEach((vaKey) => {
+    if (entityAssistants.includes(vaKey)) {
+      const weight = assistantsOrdered.indexOf(vaKey);
+      result += 2 ** weight;
+    }
+  });
+  if (result === 3) result = 4;
+  else if (result === 4) result = 3;
+  // eslint-disable-next-line no-console
+  console.log(entityAssistants, result);
+  return result;
 };
