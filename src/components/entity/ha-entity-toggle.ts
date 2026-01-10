@@ -143,9 +143,13 @@ export class HaEntityToggle extends LitElement {
     // Optimistic update.
     this._isOn = turnOn;
 
-    await this.hass.callService(serviceDomain, service, {
-      entity_id: this.stateObj.entity_id,
-    });
+    try {
+      await this.hass.callService(serviceDomain, service, {
+        entity_id: this.stateObj.entity_id,
+      });
+    } catch (_err) {
+      // silently swallow exception
+    }
 
     setTimeout(async () => {
       // If after 2 seconds we have not received a state update
