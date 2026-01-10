@@ -221,6 +221,7 @@ export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
+    allow_negative?: boolean;
   } | null;
 }
 
