@@ -117,7 +117,7 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsTableColumn,
@@ -250,7 +250,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.automation;
         const labels = labelReg && entityRegEntry?.labels;
-        const assistants = getEntityVoiceAssistantsKeys(
+        const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           automation.entity_id
         );
