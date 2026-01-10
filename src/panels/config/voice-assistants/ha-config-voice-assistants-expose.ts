@@ -50,7 +50,10 @@ import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "./expose/expose-assistant-icon";
-import { getAssistantsTableColumnIcon } from "./expose/assistants-table-column";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "./expose/assistants-table-column";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
@@ -142,7 +145,6 @@ export class VoiceAssistantsExpose extends LitElement {
   private _columns = memoize(
     (
       narrow: boolean,
-      entitiesToCheck: any[],
       availableAssistants: string[],
       supportedEntities:
         | Record<
@@ -151,7 +153,8 @@ export class VoiceAssistantsExpose extends LitElement {
           >
         | undefined,
       _language: string,
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      entitiesToCheck?: any[]
     ): DataTableColumnContainer => ({
       icon: {
         title: "",
@@ -205,32 +208,13 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         template: (entry) => entry.area || "—",
       },
-      assistants: {
-        title: localize(
-          "ui.panel.config.voice_assistants.expose.headers.assistants"
-        ),
-        showNarrow: true,
-        sortable: true,
-        filterable: true,
-        minWidth: "160px",
-        maxWidth: "160px",
-        type: "flex",
-        template: (entry) =>
-          html`${availableAssistants.map((key) => {
-            const supported =
-              !supportedEntities?.[key] ||
-              supportedEntities[key].includes(entry.entity_id);
-            const manual = entry.manAssistants?.includes(key);
-            return getAssistantsTableColumnIcon(
-              entry.assistants.includes(key),
-              key,
-              this.hass,
-              manual,
-              !supported,
-              entitiesToCheck
-            );
-          })}`,
-      },
+      assistants: getAssistantsTableColumn(
+        localize,
+        this.hass,
+        availableAssistants,
+        entitiesToCheck,
+        supportedEntities
+      ),
       aliases: {
         title: localize(
           "ui.panel.config.voice_assistants.expose.headers.aliases"
@@ -354,7 +338,13 @@ export class VoiceAssistantsExpose extends LitElement {
           entry?.area_id ??
           (entry?.device_id ? devices[entry.device_id!]?.area_id : undefined);
         const area = areaId ? areas[areaId] : undefined;
-
+        const _assistants = Object.keys(
+          exposedEntities?.[entityState.entity_id]
+        ).filter(
+          (key) =>
+            showAssistants.includes(key) &&
+            exposedEntities?.[entityState.entity_id]?.[key]
+        );
         result[entityState.entity_id] = {
           entity_id: entityState.entity_id,
           entity: entityState,
@@ -365,13 +355,8 @@ export class VoiceAssistantsExpose extends LitElement {
             ),
           domain: domainToName(localize, computeDomain(entityState.entity_id)),
           area: area ? area.name : undefined,
-          assistants: Object.keys(
-            exposedEntities?.[entityState.entity_id]
-          ).filter(
-            (key) =>
-              showAssistants.includes(key) &&
-              exposedEntities?.[entityState.entity_id]?.[key]
-          ),
+          assistants: _assistants,
+          assistants_sortable_key: getAssistantsSortableKey(_assistants),
           aliases: entry?.aliases || [],
         };
       }
@@ -429,9 +414,11 @@ export class VoiceAssistantsExpose extends LitElement {
               aliases: entry?.aliases || [],
             };
           }
+          result[entityId].assistants_sortable_key = getAssistantsSortableKey(
+            result[entityId].assistants
+          );
         });
       }
-
       return Object.values(result);
     }
   );
@@ -531,11 +518,11 @@ export class VoiceAssistantsExpose extends LitElement {
         .tabs=${voiceAssistantTabs}
         .columns=${this._columns(
           this.narrow,
-          filteredEntities,
           this._availableAssistants,
           this._supportedEntities,
           this.hass.language,
-          this.hass.localize
+          this.hass.localize,
+          filteredEntities
         )}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
