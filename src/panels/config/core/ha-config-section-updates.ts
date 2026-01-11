@@ -53,15 +53,13 @@ class HaConfigSectionUpdates extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const canInstallUpdates = this._filterUpdateEntitiesParameterized(
+    const canInstallUpdates = this._filterInstallableUpdateEntities(
       this.hass.states,
-      this._showSkipped,
-      false
+      this._showSkipped
     );
-    const notInstallableUpdates = this._filterUpdateEntitiesParameterized(
+    const notInstallableUpdates = this._filterNotInstallableUpdateEntities(
       this.hass.states,
-      this._showSkipped,
-      true
+      this._showSkipped
     );
 
     return html`
@@ -112,7 +110,7 @@ class HaConfigSectionUpdates extends LitElement {
         <div class="content">
           ${canInstallUpdates.length
             ? html`
-                <ha-card>
+                <ha-card outlined>
                   <div class="card-content">
                     <ha-config-updates
                       .hass=${this.hass}
@@ -127,7 +125,7 @@ class HaConfigSectionUpdates extends LitElement {
             : nothing}
           ${notInstallableUpdates.length
             ? html`
-                <ha-card>
+                <ha-card outlined>
                   <div class="card-content">
                     <ha-config-updates
                       .hass=${this.hass}
@@ -143,7 +141,7 @@ class HaConfigSectionUpdates extends LitElement {
           ${canInstallUpdates.length + notInstallableUpdates.length
             ? nothing
             : html`
-                <ha-card>
+                <ha-card outlined>
                   <div class="no-updates">
                     ${this.hass.localize("ui.panel.config.updates.no_updates")}
                   </div>
@@ -202,17 +200,14 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
-  private _filterUpdateEntitiesParameterized = memoizeOne(
-    (
-      entities: HassEntities,
-      showSkipped: boolean,
-      showNotInstallable: boolean
-    ) =>
-      filterUpdateEntitiesParameterized(
-        entities,
-        showSkipped,
-        showNotInstallable
-      )
+  private _filterInstallableUpdateEntities = memoizeOne(
+    (entities: HassEntities, showSkipped: boolean) =>
+      filterUpdateEntitiesParameterized(entities, showSkipped, false)
+  );
+
+  private _filterNotInstallableUpdateEntities = memoizeOne(
+    (entities: HassEntities, showSkipped: boolean) =>
+      filterUpdateEntitiesParameterized(entities, showSkipped, true)
   );
 
   static styles = css`
