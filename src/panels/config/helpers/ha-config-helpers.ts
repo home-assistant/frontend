@@ -1061,7 +1061,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filter = history.state?.filter || "";
 
     this._filters = {
-      "ha-filter-areas": area ? [area] : [],
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
       "ha-filter-categories": category ? [category] : [],
