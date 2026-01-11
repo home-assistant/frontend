@@ -8,6 +8,8 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
 import "../../../components/ha-dialog";
@@ -142,37 +144,105 @@ class DialogExposeEntity extends LitElement {
       exposedEntities: Record<string, ExposeEntitySettings>,
       filter?: string
     ) => {
-      const lowerFilter = filter?.toLowerCase();
-      return Object.values(this.hass.states).filter(
-        (entity) =>
+      const isRTL = computeRTL(this.hass);
+
+      // First filter by exposure and pre-compute all entity context
+      const itemsWithContext = Object.values(this.hass.states)
+        .filter((entity) =>
           this._params!.filterAssistants.some(
             (ass) => !exposedEntities[entity.entity_id]?.[ass]
-          ) &&
-          (!lowerFilter ||
-            entity.entity_id.toLowerCase().includes(lowerFilter) ||
-            computeStateName(entity)?.toLowerCase().includes(lowerFilter))
+          )
+        )
+        .map((entity) => {
+          // Pre-compute entity context (following entity_picker.ts pattern)
+          const [entityName, deviceName, areaName] = computeEntityNameList(
+            entity,
+            [{ type: "entity" }, { type: "device" }, { type: "area" }],
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          );
+
+          const primary = entityName || deviceName || entity.entity_id;
+          const secondary = [areaName, entityName ? deviceName : undefined]
+            .filter(Boolean)
+            .join(isRTL ? " ◂ " : " ▸ ");
+
+          return {
+            entity,
+            primary,
+            secondary,
+            search_labels: {
+              entityName: entityName || null,
+              deviceName: deviceName || null,
+              areaName: areaName || null,
+              friendlyName: computeStateName(entity) || null,
+              entityId: entity.entity_id,
+            },
+          };
+        });
+
+      // If no search filter, return all items
+      if (!filter?.trim()) {
+        return itemsWithContext;
+      }
+
+      // Multi-word search: split by spaces and require ALL terms to match
+      const terms = filter
+        .toLowerCase()
+        .split(" ")
+        .filter((t) => t.trim());
+
+      return itemsWithContext.filter((item) =>
+        // Each term must match in at least one searchable field
+        terms.every(
+          (term) =>
+            item.search_labels.entityId.toLowerCase().includes(term) ||
+            item.search_labels.entityName?.toLowerCase().includes(term) ||
+            item.search_labels.friendlyName?.toLowerCase().includes(term) ||
+            item.search_labels.deviceName?.toLowerCase().includes(term) ||
+            item.search_labels.areaName?.toLowerCase().includes(term)
+        )
       );
     }
   );
 
-  private _renderItem = (entityState: HassEntity) => html`
-    <ha-check-list-item
-      graphic="icon"
-      twoLine
-      .value=${entityState.entity_id}
-      .selected=${this._selected.includes(entityState.entity_id)}
-      @request-selected=${this._handleSelected}
-    >
-      <ha-state-icon
-        title=${ifDefined(entityState?.state)}
-        slot="graphic"
-        .hass=${this.hass}
-        .stateObj=${entityState}
-      ></ha-state-icon>
-      ${computeStateName(entityState)}
-      <span slot="secondary">${entityState.entity_id}</span>
-    </ha-check-list-item>
-  `;
+  private _renderItem = (item: {
+    entity: HassEntity;
+    primary: string;
+    secondary: string;
+  }) => {
+    const entityId = item.entity.entity_id;
+
+    // Check if user wants to see entity IDs (user preference)
+    const showEntityId = this.hass.userData?.showEntityIdPicker;
+
+    return html`
+      <ha-check-list-item
+        graphic="icon"
+        ?twoLine=${item.secondary || showEntityId}
+        class=${showEntityId ? "three-line" : ""}
+        .value=${entityId}
+        .selected=${this._selected.includes(entityId)}
+        @request-selected=${this._handleSelected}
+      >
+        <ha-state-icon
+          title=${ifDefined(item.entity?.state)}
+          slot="graphic"
+          .hass=${this.hass}
+          .stateObj=${item.entity}
+        ></ha-state-icon>
+        ${item.primary}
+        ${item.secondary
+          ? html`<span slot="secondary">${item.secondary}</span>`
+          : nothing}
+        ${showEntityId
+          ? html`<span slot="secondary" class="code">${entityId}</span>`
+          : nothing}
+      </ha-check-list-item>
+    `;
+  };
 
   private _expose() {
     this._params!.exposeEntities(this._selected);
@@ -224,6 +294,14 @@ class DialogExposeEntity extends LitElement {
         ha-check-list-item {
           width: 100%;
           height: 72px;
+        }
+        ha-check-list-item.three-line {
+          height: 88px;
+        }
+        ha-check-list-item .code {
+          font-family: var(--code-font-family, monospace);
+          font-size: var(--ha-font-size-s, 12px);
+          direction: ltr;
         }
         ha-check-list-item ha-state-icon {
           margin-left: 24px;
