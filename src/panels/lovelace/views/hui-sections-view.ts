@@ -8,6 +8,7 @@ import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { clamp } from "../../../common/number/clamp";
+import { parsePx } from "../../../common/util/parse-px";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
@@ -34,8 +35,6 @@ import "./hui-view-header";
 import "./hui-view-sidebar";
 
 export const DEFAULT_MAX_COLUMNS = 4;
-
-const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
