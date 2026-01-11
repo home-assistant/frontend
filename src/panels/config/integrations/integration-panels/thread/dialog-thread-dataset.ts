@@ -45,9 +45,9 @@ class DialogThreadDataset extends LitElement implements HassDialog {
       <div>
         Network name: ${dataset.network_name}<br />
         Channel: ${dataset.channel}<br />
-        Dataset id: ${dataset.dataset_id}<br />
-        Pan id: ${dataset.pan_id}<br />
-        Extended Pan id: ${dataset.extended_pan_id}<br />
+        Dataset ID: ${dataset.dataset_id}<br />
+        PAN ID: ${dataset.pan_id}<br />
+        Extended PAN ID: ${dataset.extended_pan_id}<br />
 
         ${hasOTBR
           ? html`OTBR URL: ${otbrInfo.url}<br />

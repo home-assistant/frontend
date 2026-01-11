@@ -122,6 +122,8 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
+import "../voice-assistants/expose/expose-assistant-icon";
 
 interface HelperItem {
   id: string;
@@ -479,6 +481,32 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           >
           </ha-icon-overflow-menu>
         `,
+      },
+      voice_assistants: {
+        title: localize(
+          "ui.panel.config.helpers.picker.headers.voice_assistants"
+        ),
+        type: "icon",
+        defaultHidden: true,
+        minWidth: "100px",
+        maxWidth: "100px",
+        template: (helper) => {
+          const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
+            this._entityReg,
+            helper.entity_id
+          );
+          return html` ${exposedToVoiceAssistantIds.length !== 0
+            ? exposedToVoiceAssistantIds.map(
+                (vaId) => html`
+                  <voice-assistants-expose-assistant-icon
+                    .assistant=${vaId}
+                    .hass=${this.hass}
+                  >
+                  </voice-assistants-expose-assistant-icon>
+                `
+              )
+            : "—"}`;
+        },
       },
     })
   );

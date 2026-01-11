@@ -50,7 +50,6 @@ import {
 import "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
-import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {
   loadAreaRegistryDetailDialog,

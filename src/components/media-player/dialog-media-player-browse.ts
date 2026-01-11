@@ -1,7 +1,6 @@
 import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAlphaABoxOutline,
-  mdiArrowLeft,
   mdiClose,
   mdiDotsVertical,
   mdiGrid,
@@ -24,6 +23,7 @@ import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
 import "../ha-dialog-header";
 import "../ha-list-item";
+import "../ha-icon-button-arrow-prev";
 import "./ha-media-manage-button";
 import "./ha-media-player-browse";
 import type {
@@ -88,11 +88,10 @@ class DialogMediaPlayerBrowse extends LitElement {
         <ha-dialog-header show-border slot="heading">
           ${this._navigateIds.length > (this._params.minimumNavigateLevel ?? 1)
             ? html`
-                <ha-icon-button
+                <ha-icon-button-arrow-prev
                   slot="navigationIcon"
-                  .path=${mdiArrowLeft}
                   @click=${this._goBack}
-                ></ha-icon-button>
+                ></ha-icon-button-arrow-prev>
               `
             : nothing}
           <span slot="title">
