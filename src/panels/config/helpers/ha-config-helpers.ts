@@ -225,6 +225,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-filters",
@@ -1020,6 +1022,20 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     this._filteredStateItems = items ? [...items] : undefined;
   }
+
+  private _locationChanged = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
+    }
+  };
+
+  private _popState = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
+    }
+  };
 
   private _setFiltersFromUrl() {
     const area = this._searchParms.get("area");
