@@ -1021,6 +1021,26 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filteredStateItems = items ? [...items] : undefined;
   }
 
+  private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
+    const device = this._searchParms.get("device");
+    const label = this._searchParms.get("label");
+    const category = this._searchParms.get("category");
+
+    if (!area && !category && !label && !device) {
+      return;
+    }
+
+    this._filter = history.state?.filter || "";
+
+    this._filters = {
+      "ha-filter-areas": area ? [area] : [],
+      "ha-filter-devices": device ? [device] : [],
+      "ha-filter-labels": label ? [label] : [],
+      "ha-filter-categories": category ? [category] : [],
+    };
+  }
+
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
@@ -1121,7 +1141,7 @@ ${rejected
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-
+    this._setFiltersFromUrl();
     this._fetchEntitySources();
 
     if (isComponentLoaded(this.hass, "diagnostics")) {
@@ -1233,6 +1253,10 @@ ${rejected
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
 
     if (!this._entityEntries || !this._configEntries) {
       return;
