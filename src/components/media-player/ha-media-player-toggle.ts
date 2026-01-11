@@ -1,6 +1,7 @@
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { mdiSpeaker, mdiSpeakerPause, mdiSpeakerPlay } from "@mdi/js";
+import memoizeOne from "memoize-one";
 
 import type { HomeAssistant } from "../../types";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
@@ -20,6 +21,34 @@ class HaMediaPlayerToggle extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  private _computeDisplayData = memoizeOne(
+    (
+      entityId: string,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"],
+      isRTL: boolean,
+      stateObj: HomeAssistant["states"][string]
+    ) => {
+      const [entityName, deviceName, areaName] = computeEntityNameList(
+        stateObj,
+        [{ type: "entity" }, { type: "device" }, { type: "area" }],
+        entities,
+        devices,
+        areas,
+        floors
+      );
+
+      const primary = entityName || deviceName || entityId;
+      const secondary = [areaName, entityName ? deviceName : undefined]
+        .filter(Boolean)
+        .join(isRTL ? " ◂ " : " ▸ ");
+
+      return { primary, secondary };
+    }
+  );
+
   protected render() {
     const stateObj = this.hass.states[this.entityId];
 
@@ -30,21 +59,17 @@ class HaMediaPlayerToggle extends LitElement {
       icon = mdiSpeakerPause;
     }
 
-    const [entityName, deviceName, areaName] = computeEntityNameList(
-      stateObj,
-      [{ type: "entity" }, { type: "device" }, { type: "area" }],
+    const isRTL = computeRTL(this.hass);
+
+    const { primary, secondary } = this._computeDisplayData(
+      this.entityId,
       this.hass.entities,
       this.hass.devices,
       this.hass.areas,
-      this.hass.floors
+      this.hass.floors,
+      isRTL,
+      stateObj
     );
-
-    const isRTL = computeRTL(this.hass);
-
-    const primary = entityName || deviceName || this.entityId;
-    const secondary = [areaName, entityName ? deviceName : undefined]
-      .filter(Boolean)
-      .join(isRTL ? " ◂ " : " ▸ ");
 
     return html`<div class="list-item">
       <ha-svg-icon .path=${icon}></ha-svg-icon>
