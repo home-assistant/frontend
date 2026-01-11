@@ -1050,12 +1050,11 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   };
 
   private _setFiltersFromUrl() {
-    const area = this._searchParms.get("area");
     const device = this._searchParms.get("device");
     const label = this._searchParms.get("label");
     const category = this._searchParms.get("category");
 
-    if (!area && !category && !label && !device) {
+    if (!category && !label && !device) {
       return;
     }
 
