@@ -147,17 +147,15 @@ export class HaEntityToggle extends LitElement {
       await this.hass.callService(serviceDomain, service, {
         entity_id: this.stateObj.entity_id,
       });
-    } catch (_err) {
-      // silently swallow exception
+    } finally {
+      setTimeout(async () => {
+        // If after 2 seconds we have not received a state update
+        // reset the switch to it's original state.
+        if (this.stateObj === currentState) {
+          this._isOn = isOn(this.stateObj);
+        }
+      }, 2000);
     }
-
-    setTimeout(async () => {
-      // If after 2 seconds we have not received a state update
-      // reset the switch to it's original state.
-      if (this.stateObj === currentState) {
-        this._isOn = isOn(this.stateObj);
-      }
-    }, 2000);
   }
 
   static styles = css`
