@@ -1177,7 +1177,7 @@ ${
     const label = this._searchParms.get("label");
     const voiceAssistant = this._searchParms.get("voice_assistant");
 
-    if (!domain && !configEntry && !label && !device) {
+    if (!domain && !configEntry && !label && !device && !voiceAssistant) {
       return;
     }
 
