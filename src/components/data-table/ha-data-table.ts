@@ -19,6 +19,7 @@ import { stringCompare } from "../../common/string/compare";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
+import { parsePx } from "../../common/util/parse-px";
 import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -380,8 +381,18 @@ export class HaDataTable extends LitElement {
 
     const columns = this._sortedColumns(this.columns, this.columnOrder);
 
+    const lastVisibleColumn = this._getLastVisibleColumn(columns);
+    const scrollBarWidth = this._getScrollBarWidth();
+
     const renderRow = (row: DataTableRowData, index: number) =>
-      this._renderRow(columns, this.narrow, row, index);
+      this._renderRow(
+        columns,
+        this.narrow,
+        lastVisibleColumn,
+        scrollBarWidth,
+        row,
+        index
+      );
 
     return html`
       <div class="mdc-data-table">
@@ -437,13 +448,7 @@ export class HaDataTable extends LitElement {
                   `
                 : ""}
               ${Object.entries(columns).map(([key, column]) => {
-                if (
-                  column.hidden ||
-                  (this.columnOrder && this.columnOrder.includes(key)
-                    ? (this.hiddenColumns?.includes(key) ??
-                      column.defaultHidden)
-                    : column.defaultHidden)
-                ) {
+                if (this._isColumnHidden(key, column)) {
                   return nothing;
                 }
                 const sorted = key === this.sortColumn;
@@ -537,6 +542,8 @@ export class HaDataTable extends LitElement {
   private _renderRow = (
     columns: DataTableColumnContainer,
     narrow: boolean,
+    lastVisibleColumn: string | undefined,
+    scrollBarWidth: number,
     row: DataTableRowData,
     index: number
   ) => {
@@ -587,13 +594,11 @@ export class HaDataTable extends LitElement {
         ${Object.entries(columns).map(([key, column]) => {
           if (
             (narrow && !column.main && !column.showNarrow) ||
-            column.hidden ||
-            (this.columnOrder && this.columnOrder.includes(key)
-              ? (this.hiddenColumns?.includes(key) ?? column.defaultHidden)
-              : column.defaultHidden)
+            this._isColumnHidden(key, column)
           ) {
             return nothing;
           }
+          const delta = key === lastVisibleColumn ? scrollBarWidth : 0;
           return html`
             <div
               @mouseover=${this._setTitle}
@@ -611,8 +616,12 @@ export class HaDataTable extends LitElement {
                 forceLTR: Boolean(column.forceLTR),
               })}"
               style=${styleMap({
-                minWidth: column.minWidth,
-                maxWidth: column.maxWidth,
+                minWidth: column.minWidth
+                  ? `${parsePx(column.minWidth) - delta}px`
+                  : column.minWidth,
+                maxWidth: column.maxWidth
+                  ? `${parsePx(column.maxWidth) - delta}px`
+                  : column.maxWidth,
                 flex: column.flex || 1,
               })}
             >
@@ -624,14 +633,9 @@ export class HaDataTable extends LitElement {
                         ${Object.entries(columns)
                           .filter(
                             ([key2, column2]) =>
-                              !column2.hidden &&
                               !column2.main &&
                               !column2.showNarrow &&
-                              !(this.columnOrder &&
-                              this.columnOrder.includes(key2)
-                                ? (this.hiddenColumns?.includes(key2) ??
-                                  column2.defaultHidden)
-                                : column2.defaultHidden)
+                              !this._isColumnHidden(key2, column2)
                           )
                           .map(
                             ([key2, column2], i) =>
@@ -1041,6 +1045,40 @@ export class HaDataTable extends LitElement {
     this._collapsedGroups = Object.keys(grouped);
     this._lastSelectedRowId = null;
     fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
+  }
+
+  private _isColumnHidden = (key, column) =>
+    column.hidden ||
+    (this.columnOrder && this.columnOrder.includes(key)
+      ? (this.hiddenColumns?.includes(key) ?? column.defaultHidden)
+      : column.defaultHidden);
+
+  private _getLastVisibleColumn(columns): string | undefined {
+    let result;
+    const reversed = Object.entries(columns).reverse();
+    for (const [key, column] of reversed) {
+      if (!this._isColumnHidden(key, column)) {
+        result = key;
+        break;
+      }
+    }
+    return result;
+  }
+
+  private _getScrollBarWidth(): number {
+    let scrollBarWidth = 0;
+    const elementVirt = this.renderRoot.querySelector(`lit-virtualizer`);
+    if (elementVirt) {
+      const widthVirt = elementVirt.getBoundingClientRect().width;
+      const elementRow = this.renderRoot.querySelector(
+        `lit-virtualizer > div[role="row"]`
+      );
+      if (elementRow) {
+        const widthRow = elementRow.getBoundingClientRect().width;
+        scrollBarWidth = widthVirt - widthRow;
+      }
+    }
+    return scrollBarWidth;
   }
 
   static get styles(): CSSResultGroup {
