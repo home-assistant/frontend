@@ -2,7 +2,7 @@ import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -106,7 +106,7 @@ class HaConfigSectionUpdates extends LitElement {
                         )}
                   </ha-list-item>
                 `
-              : ""}
+              : nothing}
           </ha-button-menu>
         </div>
         <div class="content">
@@ -124,7 +124,7 @@ class HaConfigSectionUpdates extends LitElement {
                   </div>
                 </ha-card>
               `
-            : ""}
+            : nothing}
           ${notInstallableUpdates.length
             ? html`
                 <ha-card>
@@ -139,9 +139,9 @@ class HaConfigSectionUpdates extends LitElement {
                   </div>
                 </ha-card>
               `
-            : ""}
+            : nothing}
           ${canInstallUpdates.length + notInstallableUpdates.length
-            ? ""
+            ? nothing
             : html`
                 <ha-card>
                   <div class="no-updates">
