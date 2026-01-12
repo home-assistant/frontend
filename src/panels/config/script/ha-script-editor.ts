@@ -508,7 +508,6 @@ export class HaScriptEditor extends SubscribeMixin(
                     @editor-save=${this._handleSaveScript}
                     .showErrors=${false}
                   ></ha-yaml-editor>
-                  <div class="fab-bottom-space"></div>
                   <ha-fab
                     slot="fab"
                     class=${!this._readOnly && this._dirty ? "dirty" : ""}
@@ -1253,10 +1252,6 @@ export class HaScriptEditor extends SubscribeMixin(
           min-height: 0;
           display: flex;
           flex-direction: column;
-        }
-        .yaml-mode .fab-bottom-space {
-          flex-shrink: 0;
-          height: calc(80px + var(--safe-area-inset-bottom, 0px));
         }
         p {
           margin-bottom: 0;
