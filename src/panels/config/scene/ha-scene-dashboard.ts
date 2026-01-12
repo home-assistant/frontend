@@ -210,7 +210,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   });
 
   private get _availableAssistants() {
-    return getAvailableAssistants(this.cloudStatus);
+    return getAvailableAssistants(this.cloudStatus, this.hass);
   }
 
   private _scenes = memoizeOne(
