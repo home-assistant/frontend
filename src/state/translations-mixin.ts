@@ -34,9 +34,7 @@ import type { HassBaseEl } from "./hass-base-mixin";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "hass-language-select": {
-      language: string;
-    };
+    "hass-language-select": string;
     "hass-number-format-select": {
       number_format: NumberFormat;
     };
