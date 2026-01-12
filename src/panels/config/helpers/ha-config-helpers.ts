@@ -225,6 +225,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-filters",
@@ -1021,6 +1023,50 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filteredStateItems = items ? [...items] : undefined;
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._popState);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._popState);
+  }
+
+  private _locationChanged = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
+    }
+  };
+
+  private _popState = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
+    }
+  };
+
+  private _setFiltersFromUrl() {
+    const device = this._searchParms.get("device");
+    const label = this._searchParms.get("label");
+    const category = this._searchParms.get("category");
+
+    if (!category && !label && !device) {
+      return;
+    }
+
+    this._filter = history.state?.filter || "";
+
+    this._filters = {
+      "ha-filter-devices": device ? [device] : [],
+      "ha-filter-labels": label ? [label] : [],
+      "ha-filter-categories": category ? [category] : [],
+    };
+  }
+
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
@@ -1121,7 +1167,7 @@ ${rejected
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-
+    this._setFiltersFromUrl();
     this._fetchEntitySources();
 
     if (isComponentLoaded(this.hass, "diagnostics")) {
@@ -1233,6 +1279,10 @@ ${rejected
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
 
     if (!this._entityEntries || !this._configEntries) {
       return;

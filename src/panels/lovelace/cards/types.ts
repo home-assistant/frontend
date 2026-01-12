@@ -58,8 +58,12 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
 }
 
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
-  content: string;
+  content_only?: boolean;
+  icon?: string;
   title?: string;
+  content?: string;
+  action_label?: string;
+  tap_action?: ActionConfig;
 }
 
 export interface EntityCardConfig extends LovelaceCardConfig {
