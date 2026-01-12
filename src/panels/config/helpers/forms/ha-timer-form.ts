@@ -105,7 +105,7 @@ class HaTimerForm extends LitElement {
           <ha-checkbox
             .configValue=${"restore"}
             .checked=${this._restore}
-            @click=${this._toggleRestore}
+            @change=${this._toggleRestore}
             .disabled=${this.disabled}
           >
           </ha-checkbox>
@@ -135,11 +135,8 @@ class HaTimerForm extends LitElement {
     });
   }
 
-  private _toggleRestore() {
-    if (this.disabled) {
-      return;
-    }
-    this._restore = !this._restore;
+  private _toggleRestore(ev) {
+    this._restore = ev.target.checked;
     fireEvent(this, "value-changed", {
       value: { ...this._item, restore: this._restore },
     });

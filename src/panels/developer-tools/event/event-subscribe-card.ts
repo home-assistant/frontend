@@ -21,6 +21,8 @@ class EventSubscribeCard extends LitElement {
 
   @state() private _subscribed?: () => void;
 
+  @state() private _eventFilter = "";
+
   @state() private _events: {
     id: number;
     event: HassEvent;
@@ -29,6 +31,8 @@ class EventSubscribeCard extends LitElement {
   @state() private _error?: string;
 
   private _eventCount = 0;
+
+  @state() _ignoredEventsCount = 0;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -69,6 +73,16 @@ class EventSubscribeCard extends LitElement {
             .disabled=${this._subscribed !== undefined}
             .value=${this._eventType}
             @input=${this._valueChanged}
+          ></ha-textfield>
+          <ha-textfield
+            .label=${this.hass!.localize(
+              "ui.panel.developer-tools.tabs.events.filter_events"
+            )}
+            .value=${this._eventFilter}
+            .disabled=${this._subscribed !== undefined}
+            helperPersistent
+            .helper=${`${this.hass!.localize("ui.panel.developer-tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.developer-tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
+            @input=${this._filterChanged}
           ></ha-textfield>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -135,6 +149,46 @@ class EventSubscribeCard extends LitElement {
     this._error = undefined;
   }
 
+  private _filterChanged(ev): void {
+    this._eventFilter = ev.target.value;
+  }
+
+  private _testEventFilter(event: HassEvent): boolean {
+    if (!this._eventFilter) {
+      return true;
+    }
+
+    const searchStr = this._eventFilter;
+
+    function visit(node) {
+      // Handle primitives directly
+      if (node === null || typeof node !== "object") {
+        return String(node).includes(searchStr);
+      }
+
+      // Handle arrays and plain objects
+      for (const key in node) {
+        if (!Object.prototype.hasOwnProperty.call(node, key)) continue;
+        // Check key
+        if (key.includes(searchStr)) return true;
+
+        const value = node[key];
+
+        // Check primitive value
+        if (value === null || typeof value !== "object") {
+          if (String(value).includes(searchStr)) return true;
+        } else if (visit(value)) {
+          // Recurse into nested object/array
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return visit(event);
+  }
+
   private async _startOrStopListening(): Promise<void> {
     if (this._subscribed) {
       this._subscribed();
@@ -144,6 +198,10 @@ class EventSubscribeCard extends LitElement {
       try {
         this._subscribed =
           await this.hass!.connection.subscribeEvents<HassEvent>((event) => {
+            if (!this._testEventFilter(event)) {
+              this._ignoredEventsCount++;
+              return;
+            }
             const tail =
               this._events.length > 30
                 ? this._events.slice(0, 29)
@@ -168,6 +226,7 @@ class EventSubscribeCard extends LitElement {
   private _clearEvents(): void {
     this._events = [];
     this._eventCount = 0;
+    this._ignoredEventsCount = 0;
     this._error = undefined;
   }
 
