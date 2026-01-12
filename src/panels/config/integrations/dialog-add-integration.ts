@@ -327,8 +327,6 @@ class AddIntegrationDialog extends LitElement {
     return html`<ha-dialog
       open
       @closed=${this.closeDialog}
-      scrimClickAction="close"
-      escapeKeyAction="close"
       hideActions
       .heading=${createCloseHeading(
         this.hass,

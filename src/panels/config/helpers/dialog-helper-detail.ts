@@ -260,8 +260,6 @@ export class DialogHelperDetail extends LitElement {
         open
         @closed=${this.closeDialog}
         class=${classMap({ "button-left": !this._domain })}
-        scrimClickAction="close"
-        escapeKeyAction="close"
         .hideActions=${!this._domain}
         .heading=${createCloseHeading(
           this.hass,
