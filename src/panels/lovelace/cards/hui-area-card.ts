@@ -67,6 +67,19 @@ export const SUM_DEVICE_CLASSES = [
   "water",
 ];
 
+// Additional sources for sensor device classes from entity attributes
+// Maps device_class -> array of { domain, attribute } to include in aggregation
+export const SENSOR_ATTRIBUTE_SOURCES: Record<
+  string,
+  { domain: string; attribute: string }[]
+> = {
+  temperature: [{ domain: "climate", attribute: "current_temperature" }],
+  humidity: [
+    { domain: "climate", attribute: "current_humidity" },
+    { domain: "humidifier", attribute: "current_humidity" },
+  ],
+};
+
 export interface AreaCardFeatureContext extends LovelaceCardFeatureContext {
   exclude_entities?: string[];
 }
@@ -251,6 +264,24 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   );
 
+  private _domainEntityIds = memoizeOne(
+    (
+      entities: HomeAssistant["entities"],
+      areaId: string,
+      domains: string[],
+      excludeEntities?: string[]
+    ): string[] => {
+      const filter = generateEntityFilter(this.hass, {
+        area: areaId,
+        entity_category: "none",
+        domain: domains,
+      });
+      return Object.keys(entities).filter(
+        (id) => filter(id) && !excludeEntities?.includes(id)
+      );
+    }
+  );
+
   private _computeActiveAlertStates(): HassEntity[] {
     const areaId = this._config?.area;
     const area = areaId ? this.hass.areas[areaId] : undefined;
@@ -359,58 +390,91 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             : this.hass.formatEntityState(stateObj);
         }
 
-        const entityIds = groupedEntities.get(sensorClass);
+        const sensorEntityIds = groupedEntities.get(sensorClass) || [];
+        const values: number[] = [];
+        let uom: string | undefined;
 
-        if (!entityIds) {
-          return undefined;
+        // Track devices that have sensor entities contributing values
+        // to avoid duplicate readings from climate/humidifier attributes
+        const devicesWithSensorValues = new Set<string>();
+
+        for (const entityId of sensorEntityIds) {
+          const stateObj = this.hass.states[entityId];
+          if (
+            stateObj &&
+            !isUnavailableState(stateObj.state) &&
+            isNumericState(stateObj) &&
+            !isNaN(Number(stateObj.state))
+          ) {
+            if (!uom) {
+              uom = stateObj.attributes.unit_of_measurement;
+            }
+            if (stateObj.attributes.unit_of_measurement === uom) {
+              values.push(Number(stateObj.state));
+              // Track the device this sensor belongs to
+              const entityEntry = this.hass.entities[entityId];
+              if (entityEntry?.device_id) {
+                devicesWithSensorValues.add(entityEntry.device_id);
+              }
+            }
+          }
         }
 
-        // Ensure all entities have state
-        const entities = entityIds
-          .map((entityId) => this.hass.states[entityId])
-          .filter(Boolean);
+        // Collect values from additional attribute sources
+        const attrSources = SENSOR_ATTRIBUTE_SOURCES[sensorClass];
+        if (attrSources) {
+          const domains = [...new Set(attrSources.map((s) => s.domain))];
+          const attrEntityIds = this._domainEntityIds(
+            this.hass.entities,
+            area.area_id,
+            domains,
+            excludeEntities
+          );
 
-        if (entities.length === 0) {
-          return undefined;
+          for (const entityId of attrEntityIds) {
+            const stateObj = this.hass.states[entityId];
+            if (!stateObj) continue;
+
+            // Skip if this entity's device already has a sensor contributing values
+            const entityEntry = this.hass.entities[entityId];
+            if (
+              entityEntry?.device_id &&
+              devicesWithSensorValues.has(entityEntry.device_id)
+            ) {
+              continue;
+            }
+
+            const domain = entityId.split(".")[0];
+            const source = attrSources.find((s) => s.domain === domain);
+            if (!source) continue;
+
+            const attrValue = stateObj.attributes[source.attribute];
+            if (attrValue == null || isNaN(Number(attrValue))) continue;
+
+            if (!uom) {
+              // Determine unit from attribute
+              uom = this._getAttributeUnit(sensorClass, domain);
+            }
+            values.push(Number(attrValue));
+          }
         }
 
-        // If only one entity, return its formatted state
-        if (entities.length === 1) {
-          const stateObj = entities[0];
-          return isUnavailableState(stateObj.state)
-            ? ""
-            : this.hass.formatEntityState(stateObj);
-        }
-
-        // Use the first entity's unit_of_measurement for formatting
-        const uom = entities.find(
-          (entity) => entity.attributes.unit_of_measurement
-        )?.attributes.unit_of_measurement;
-
-        // Ensure all entities have the same unit_of_measurement
-        const validEntities = entities.filter(
-          (entity) =>
-            entity.attributes.unit_of_measurement === uom &&
-            isNumericState(entity) &&
-            !isNaN(Number(entity.state))
-        );
-
-        if (validEntities.length === 0) {
+        if (values.length === 0) {
           return undefined;
         }
 
         const value = SUM_DEVICE_CLASSES.includes(sensorClass)
-          ? this._computeSumState(validEntities)
-          : this._computeMedianState(validEntities);
+          ? values.reduce((acc, v) => acc + v, 0)
+          : this._computeMedianValue(values);
 
-        const formattedAverage = formatNumber(value, this.hass!.locale, {
+        const formattedValue = formatNumber(value, this.hass.locale, {
           maximumFractionDigits: 1,
         });
         const formattedUnit = uom
-          ? `${blankBeforeUnit(uom, this.hass!.locale)}${uom}`
+          ? `${blankBeforeUnit(uom, this.hass.locale)}${uom}`
           : "";
 
-        return `${formattedAverage}${formattedUnit}`;
+        return `${formattedValue}${formattedUnit}`;
       })
       .filter(Boolean)
       .join(" · ");
@@ -418,20 +482,25 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return sensorStates;
   }
 
-  private _computeSumState(entities: HassEntity[]): number {
-    return entities.reduce((acc, entity) => acc + Number(entity.state), 0);
+  private _getAttributeUnit(sensorClass: string, domain: string): string {
+    // Return the expected unit for attributes from specific domains
+    if (sensorClass === "temperature" && domain === "climate") {
+      return this.hass.config.unit_system.temperature;
+    }
+    if (sensorClass === "humidity") {
+      return "%";
+    }
+    return "";
   }
 
-  private _computeMedianState(entities: HassEntity[]): number {
-    const sortedStates = entities
-      .map((entity) => Number(entity.state))
-      .sort((a, b) => a - b);
-    if (sortedStates.length % 2 === 0) {
-      const medianIndex = sortedStates.length / 2;
-      return (sortedStates[medianIndex] + sortedStates[medianIndex - 1]) / 2;
+  private _computeMedianValue(values: number[]): number {
+    const sortedValues = [...values].sort((a, b) => a - b);
+    if (sortedValues.length % 2 === 0) {
+      const medianIndex = sortedValues.length / 2;
+      return (sortedValues[medianIndex] + sortedValues[medianIndex - 1]) / 2;
     }
-    const medianIndex = Math.floor(sortedStates.length / 2);
-    return sortedStates[medianIndex];
+    const medianIndex = Math.floor(sortedValues.length / 2);
+    return sortedValues[medianIndex];
   }
 
   private _featurePosition = memoizeOne((config: AreaCardConfig) => {
