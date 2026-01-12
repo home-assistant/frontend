@@ -213,7 +213,8 @@ export class VoiceAssistantsExpose extends LitElement {
         this.hass,
         availableAssistants,
         entitiesToCheck,
-        supportedEntities
+        supportedEntities,
+        true
       ),
       aliases: {
         title: localize(
