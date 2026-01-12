@@ -7,6 +7,11 @@ const calcPoints = (
   height: number,
   limits?: { minX?: number; maxX?: number; minY?: number; maxY?: number }
 ) => {
+  // handling empty history (for example unavailable for long time)
+  if (history.length === 0) {
+    return { points: [], yAxisOrigin: height };
+  }
+
   let yAxisOrigin = height;
   let minY = limits?.minY ?? history[0][1];
   let maxY = limits?.maxY ?? history[0][1];
