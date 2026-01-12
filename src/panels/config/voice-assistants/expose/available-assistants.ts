@@ -11,7 +11,7 @@ export const getAvailableAssistants = memoizeOne(
       cloudStatus?.logged_in === true &&
       cloudStatus.prefs.alexa_enabled === true;
 
-    const showAssistants = [];
+    const showAssistants: string[] = [];
     if (conversationEnabled) {
       showAssistants.push("conversation");
     }
