@@ -171,6 +171,7 @@ export const getAreas = (
       icon: area.icon || undefined,
       icon_path: area.icon ? undefined : mdiTextureBox,
       search_labels: {
+        areaId: area.area_id,
         aliases: area.aliases.join(" "),
       },
     };
@@ -190,10 +191,14 @@ export const areaComboBoxKeys: FuseWeightedKey[] = [
   },
   {
     name: "secondary",
-    weight: 8,
+    weight: 6,
   },
   {
     name: "search_labels.domain",
     weight: 4,
+  },
+  {
+    name: "search_labels.areaId",
+    weight: 2,
   },
 ];
