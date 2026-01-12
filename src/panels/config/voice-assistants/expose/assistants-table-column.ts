@@ -77,10 +77,9 @@ export const getAssistantsSortableKey = (
     "cloud.alexa",
     "cloud.google_assistant",
   ];
-  assistantsOrdered.forEach((vaId) => {
+  assistantsOrdered.forEach((vaId, index) => {
     if (entityAssistants.includes(vaId)) {
-      const weight = assistantsOrdered.indexOf(vaId);
-      result += 2 ** weight;
+      result += 2 ** index;
     }
   });
   if (result === 3) {
