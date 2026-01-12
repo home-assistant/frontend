@@ -622,8 +622,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             category: category
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
-            area: area,
-            assistants: assistants,
+            area,
+            assistants,
             assistants_sortable_key: getAssistantsSortableKey(assistants),
           };
         });
