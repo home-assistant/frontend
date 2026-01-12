@@ -265,7 +265,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   });
 
   private get _availableAssistants() {
-    return getAvailableAssistants(this.cloudStatus. this.hass);
+    return getAvailableAssistants(this.cloudStatus, this.hass);
   }
 
   private _debouncedFetchEntitySources = debounce(
