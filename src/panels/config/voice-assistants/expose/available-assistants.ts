@@ -1,9 +1,9 @@
 import memoizeOne from "memoize-one";
 import type { CloudStatus } from "../../../../data/cloud";
-import { voiceAssistants } from "../../../../data/expose";
 
 export const getAvailableAssistants = memoizeOne(
   (cloudStatus: CloudStatus | undefined) => {
+    const conversationEnabled = cloudStatus?.logged_in === true;
     const googleEnabled =
       cloudStatus?.logged_in === true &&
       cloudStatus.prefs.google_enabled === true;
@@ -11,19 +11,16 @@ export const getAvailableAssistants = memoizeOne(
       cloudStatus?.logged_in === true &&
       cloudStatus.prefs.alexa_enabled === true;
 
-    const showAssistants = [...Object.keys(voiceAssistants)];
-
-    if (!googleEnabled) {
-      showAssistants.splice(
-        showAssistants.indexOf("cloud.google_assistant"),
-        1
-      );
+    const showAssistants = [];
+    if (conversationEnabled) {
+      showAssistants.push("conversation");
     }
-
-    if (!alexaEnabled) {
-      showAssistants.splice(showAssistants.indexOf("cloud.alexa"), 1);
+    if (googleEnabled) {
+      showAssistants.push("cloud.google_assistant");
     }
-
+    if (alexaEnabled) {
+      showAssistants.push("cloud.alexa");
+    }
     return showAssistants;
   }
 );
