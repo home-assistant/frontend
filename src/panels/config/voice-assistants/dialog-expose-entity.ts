@@ -218,14 +218,10 @@ class DialogExposeEntity extends LitElement {
   }) => {
     const entityId = item.entity.entity_id;
 
-    // Check if user wants to see entity IDs (user preference)
-    const showEntityId = this.hass.userData?.showEntityIdPicker;
-
     return html`
       <ha-check-list-item
         graphic="icon"
-        ?twoLine=${item.secondary || showEntityId}
-        class=${showEntityId ? "three-line" : ""}
+        ?twoLine=${item.secondary}
         .value=${entityId}
         .selected=${this._selected.includes(entityId)}
         @request-selected=${this._handleSelected}
@@ -239,9 +235,6 @@ class DialogExposeEntity extends LitElement {
         ${item.primary}
         ${item.secondary
           ? html`<span slot="secondary">${item.secondary}</span>`
-          : nothing}
-        ${showEntityId
-          ? html`<span slot="secondary" class="code">${entityId}</span>`
           : nothing}
       </ha-check-list-item>
     `;
@@ -297,15 +290,6 @@ class DialogExposeEntity extends LitElement {
         ha-check-list-item {
           width: 100%;
           height: 72px;
-        }
-        ha-check-list-item.three-line {
-          height: 88px;
-        }
-        ha-check-list-item .code {
-          display: block;
-          font-family: var(--code-font-family, monospace);
-          font-size: var(--ha-font-size-s, 12px);
-          direction: ltr;
         }
         ha-check-list-item ha-state-icon {
           margin-left: 24px;
