@@ -1422,7 +1422,7 @@
         },
         "filter_placeholder": "Search entities",
         "filter_placeholder_devices": "Search devices",
-        "title": "Quick search",
+        "title": "Search Home Assistant",
         "key_c_tip": "[%key:ui::tips::key_c_tip%]",
         "nothing_found": "Nothing found!"
       },
@@ -7482,6 +7482,7 @@
           "search_entities": "Search entities",
           "assist": "Assist",
           "assist_tooltip": "Assist",
+          "search_home_assistant": "Search Home Assistant",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close",

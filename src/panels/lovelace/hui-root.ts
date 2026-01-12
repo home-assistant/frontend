@@ -296,7 +296,7 @@ class HUIRoot extends LitElement {
       },
       {
         icon: mdiMagnify,
-        key: "ui.common.search",
+        key: "ui.panel.lovelace.menu.search_home_assistant",
         buttonAction: this._showQuickBar,
         overflowAction: this._handleShowQuickBar,
         visible: !this._editMode && !this.hass.kioskMode,

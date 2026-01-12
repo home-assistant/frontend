@@ -166,6 +166,20 @@ export class QuickBar extends LitElement {
 
     const sections = [
       {
+        id: "navigate",
+        label: this.hass.localize("ui.dialogs.quick-bar.navigate_title"),
+      },
+      ...(this.hass.user?.is_admin
+        ? [
+            "separator" as const,
+            {
+              id: "command",
+              label: this.hass.localize("ui.dialogs.quick-bar.commands_title"),
+            },
+          ]
+        : []),
+      "separator" as const,
+      {
         id: "entity",
         label: this.hass.localize("ui.components.target-picker.type.entities"),
       },
@@ -182,20 +196,6 @@ export class QuickBar extends LitElement {
               label: this.hass.localize(
                 "ui.components.target-picker.type.areas"
               ),
-            },
-          ]
-        : []),
-      "separator" as const,
-      {
-        id: "navigate",
-        label: this.hass.localize("ui.dialogs.quick-bar.navigate_title"),
-      },
-      ...(this.hass.user?.is_admin
-        ? [
-            "separator" as const,
-            {
-              id: "command",
-              label: this.hass.localize("ui.dialogs.quick-bar.commands_title"),
             },
           ]
         : []),
@@ -219,6 +219,7 @@ export class QuickBar extends LitElement {
               .notFoundLabel=${this.hass.localize(
                 "ui.dialogs.quick-bar.nothing_found"
               )}
+              .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
               .getItems=${this._getItems}
               .rowRenderer=${this._renderRow}
               mode="dialog"
@@ -699,8 +700,7 @@ export class QuickBar extends LitElement {
 
   static styles = css`
     :host {
-      --ha-dialog-min-height: 80vh;
-      --ha-dialog-min-height: 80dvh;
+      --ha-dialog-min-height: 620px;
       --ha-bottom-sheet-height: calc(
         100vh - max(var(--safe-area-inset-top), 48px)
       );
