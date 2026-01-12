@@ -235,7 +235,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   private _activeHiddenColumns?: string[];
 
   private get _availableAssistants() {
-    return getAvailableAssistants(this.cloudStatus);
+    return getAvailableAssistants(this.cloudStatus, this.hass);
   }
 
   @query("hass-tabs-subpage-data-table", true)
