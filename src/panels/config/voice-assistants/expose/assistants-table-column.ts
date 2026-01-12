@@ -81,7 +81,5 @@ export const getAssistantsSortableKey = (
   });
   if (result === 3) result = 4;
   else if (result === 4) result = 3;
-  // eslint-disable-next-line no-console
-  console.log(entityAssistants, result);
   return result;
 };
