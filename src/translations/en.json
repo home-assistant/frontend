@@ -137,9 +137,9 @@
       },
       "counter": {
         "actions": {
-          "increment": "increment",
-          "decrement": "decrement",
-          "reset": "reset"
+          "increment": "Increment",
+          "decrement": "Decrement",
+          "reset": "Reset"
         }
       },
       "cover": {
@@ -672,8 +672,8 @@
             "device_missing": "No related device"
           },
           "add": "Add",
-          "custom_name": "Custom name",
-          "no_match": "No entities found"
+          "search": "Search or enter custom name",
+          "custom_name": "Custom name"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -685,7 +685,7 @@
         },
         "entity-state-content-picker": {
           "add": "Add",
-          "custom_state": "Custom state"
+          "custom_attribute": "Custom attribute"
         }
       },
       "target-picker": {
@@ -771,9 +771,6 @@
         "language": "Language",
         "no_match": "No languages found for {term}",
         "no_languages": "No languages available"
-      },
-      "icon-picker": {
-        "no_match": "No matching icons found"
       },
       "tts-picker": {
         "tts": "Text-to-speech",
@@ -2178,7 +2175,8 @@
         },
         "other": {
           "title": "Other",
-          "my_link": "get My Home Assistant link"
+          "my_link": "get My Home Assistant link",
+          "show_shortcuts": "show keyboard shortcuts"
         }
       }
     },
@@ -2324,7 +2322,7 @@
           },
           "companion": {
             "main": "Companion app",
-            "secondary": "Location and notifications"
+            "secondary": "Sensors, widgets, notifications and more"
           },
           "system": {
             "main": "System",
@@ -2336,6 +2334,27 @@
           },
           "cloud": {
             "secondary": "Loading..."
+          },
+          "zwave_js": {
+            "secondary": "Sub-GHz mesh protocol"
+          },
+          "zha": {
+            "secondary": "Low-power mesh network"
+          },
+          "matter": {
+            "secondary": "Cross-vendor smart home standard"
+          },
+          "thread": {
+            "secondary": "Mesh network often used for Matter devices"
+          },
+          "bluetooth": {
+            "secondary": "Local device connectivity"
+          },
+          "knx": {
+            "secondary": "Building automation standard"
+          },
+          "insteon": {
+            "secondary": "Dual-mesh home automation"
           }
         },
         "common": {
@@ -3324,7 +3343,8 @@
               "type": "Type",
               "editable": "Editable",
               "category": "Category",
-              "area": "Area"
+              "area": "Area",
+              "voice_assistants": "Voice assistants"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -3965,7 +3985,8 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon"
+              "icon": "Icon",
+              "voice_assistants": "Voice assistants"
             },
             "bulk_action": "Action",
             "bulk_actions": {
@@ -4072,7 +4093,7 @@
             "new_automation_setup_failed_title": "New {type} setup timed out",
             "new_automation_setup_failed_text": "Your new {type} was saved, but waiting for it to set up has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
             "new_automation_setup_keep_waiting": "You may continue to wait for a response from the server, in case it is just taking an unusually long time to process this {type}.",
-            "new_automation_setup_timedout_success": "The server has responded and this has now setup successfully. You may now close this dialog.",
+            "new_automation_setup_timedout_success": "The server has responded and this has now set up successfully. You may now close this dialog.",
             "item_pasted": "{item} pasted",
             "ctrl": "Ctrl",
             "del": "Del",
@@ -4101,7 +4122,8 @@
               "targets": "{count} {count, plural,\n  one {target}\n  other {targets}\n}",
               "invalid": "Invalid target",
               "all_entities": "All entities",
-              "none_entities": "No entities"
+              "none_entities": "No entities",
+              "template": "Template"
             },
             "triggers": {
               "name": "Triggers",
@@ -4981,7 +5003,8 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon"
+              "icon": "Icon",
+              "voice_assistants": "Voice assistants"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5109,7 +5132,8 @@
               "category": "Category",
               "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
               "area": "Area",
-              "icon": "Icon"
+              "icon": "Icon",
+              "voice_assistants": "Voice assistants"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5562,7 +5586,8 @@
               "domain": "Domain",
               "availability": "Availability",
               "visibility": "Visibility",
-              "enabled": "Enabled"
+              "enabled": "Enabled",
+              "voice_assistants": "Voice assistants"
             },
             "selected": "{number} selected",
             "enable_selected": {
@@ -5995,26 +6020,31 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
-          "settings_title": "Bluetooth settings",
+          "settings_title": "Bluetooth adapters",
           "option_flow": "Configure Bluetooth options",
           "advertisement_monitor": "Advertisement monitor",
           "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
           "connection_slot_allocations_monitor": "Connection slot allocations monitor",
-          "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
+          "connection_slot_allocations_monitor_description": "The connection slot allocations monitor displays the (GATT) connection slot allocations for each adapter. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
           "connection_monitor": "Connection monitor",
           "visualization": "Visualization",
           "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
+          "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
           "no_connection_slot_allocations": "No connection slot allocations information available",
-          "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
+          "no_connection_slots": "No connection slots",
           "no_scanner_state_available": "No scanner state available",
+          "scanner_state_unknown": "State unknown",
           "current_scanning_mode": "Current scanning mode",
           "requested_scanning_mode": "Requested scanning mode",
           "scanning_mode_none": "none",
           "scanning_mode_active": "active",
           "scanning_mode_passive": "passive",
-          "scanner_mode_mismatch": "Scanner requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
+          "scanning_mode_active_label": "Active scanning",
+          "scanning_mode_passive_label": "Passive scanning",
+          "scanning_mode_none_label": "No scanning",
+          "scanner_mode_mismatch": "{name} requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
           "scanner_mode_mismatch_remote": "For proxies: reboot the device",
           "scanner_mode_mismatch_usb": "For USB adapters: unplug and plug back in",
           "scanner_mode_mismatch_uart": "For UART/onboard adapters: power down the system completely and power it back up",
@@ -6235,7 +6265,7 @@
             "new_channel": "New channel",
             "change_channel": "Change channel",
             "migration_warning": "Zigbee channel migration is an experimental feature and relies on devices on your network to support it. Device support for this feature varies and only a portion of your network may end up migrating! It may take up to an hour for changes to propagate to all devices.",
-            "description": "Change your Zigbee channel only after you have eliminated all other sources of 2.4GHz interference by using a USB extension cable and moving your coordinator away from USB 3.0 devices and ports, SSDs, 2.4GHz WiFi networks on the same channel, motherboards, and so on.",
+            "description": "Change your Zigbee channel only after you have eliminated all other sources of 2.4GHz interference by using a USB extension cable and moving your coordinator away from USB 3.0 devices and ports, SSDs, 2.4GHz Wi-Fi networks on the same channel, motherboards, and so on.",
             "smart_explanation": "It is recommended to use the \"Smart\" option once your environment is optimized as opposed to manually choosing a channel, as it picks the best channel for you after scanning all Zigbee channels. This does not configure ZHA to automatically change channels in the future, it only changes the channel a single time.",
             "channel_has_been_changed": "Network channel has been changed",
             "devices_will_rejoin": "Devices will re-join the network over time. This may take a few minutes.",
@@ -6809,9 +6839,50 @@
                 }
               }
             }
+          },
+          "picker": {
+            "title": "Select Z-Wave network",
+            "no_entries": "No Z-Wave networks configured. Set up the Z-Wave JS integration first."
           }
         },
         "matter": {
+          "panel": {
+            "thread_panel": "Visit Thread Panel",
+            "experimental_note": "Matter is still in the early phase of development, it is not meant to be used in production. This panel is for development only.",
+            "add_devices": "You can add Matter devices by commissioning them if they are not set up yet, or share them from another controller and enter the sharing code.",
+            "mobile_app_commisioning": "Commission device with mobile app",
+            "commission_device": "Commission device",
+            "add_shared_device": "Add shared device",
+            "set_wifi_credentials": "Set Wi-Fi credentials",
+            "set_thread_credentials": "Set Thread credentials",
+            "prompts": {
+              "network_name": {
+                "title": "Network name",
+                "input_label": "Network name",
+                "confirm": "Continue"
+              },
+              "passcode": {
+                "title": "Passcode",
+                "input_label": "Code",
+                "confirm": "Set Wi-Fi"
+              },
+              "commission_device": {
+                "title": "Commission device",
+                "input_label": "Code",
+                "confirm": "Commission"
+              },
+              "add_shared_device": {
+                "title": "Add shared device",
+                "input_label": "PIN",
+                "confirm": "Accept device"
+              },
+              "set_thread": {
+                "title": "Set Thread operation",
+                "input_label": "Dataset",
+                "confirm": "Set Thread"
+              }
+            }
+          },
           "network_type": {
             "thread": "Thread",
             "wifi": "Wi-Fi",
@@ -7286,7 +7357,7 @@
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
               "total_returned": "Total returned {num} kWh",
-              "total_usage": "{num} kWh used",
+              "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
               "consumed_battery": "Consumed battery"
@@ -7535,6 +7606,7 @@
               "sidebar": "Sidebar",
               "panel": "Panel (single card)"
             },
+            "show_icon_and_title": "Show icon and title",
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
             "section_specifics": "Sections view specific settings",
@@ -7542,6 +7614,7 @@
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "top_margin": "Add additional space above",
             "top_margin_helper": "Helps reveal more of the background",
+            "show_icon_and_title_helper": "Show both icon and text title.",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
             "path_helper": "This value will become part of the URL path to open this view.",
             "edit_ui": "Edit in visual editor",
@@ -9173,6 +9246,9 @@
             "active_listeners": "Active listeners",
             "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
             "listen_to_events": "Listen to events",
+            "filter_events": "Filter events",
+            "filter_helper": "Only capture events containing the filter string.",
+            "filter_ignored": "Ignored {count} events.",
             "listening_to": "Listening to",
             "subscribe_to": "Event to subscribe to",
             "start_listening": "Start listening",

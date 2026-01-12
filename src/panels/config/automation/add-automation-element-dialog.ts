@@ -2062,6 +2062,7 @@ class DialogAddAutomationElement
 
         .content.column {
           flex-direction: column;
+          gap: var(--ha-space-3);
         }
 
         ha-md-list {

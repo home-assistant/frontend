@@ -368,6 +368,7 @@ export const generateViewConfig = (
   path: string,
   title: string | undefined,
   icon: string | undefined,
+  show_icon_and_title: boolean | undefined,
   entities: HassEntities
 ): LovelaceViewConfig => {
   const ungroupedEntitites: Record<string, string[]> = {};
@@ -497,6 +498,9 @@ export const generateViewConfig = (
   if (icon) {
     view.icon = icon;
   }
+  if (show_icon_and_title) {
+    view.show_icon_and_title = show_icon_and_title;
+  }
 
   return view;
 };
@@ -517,6 +521,7 @@ export const generateDefaultViewConfig = (
   const path = "default_view";
   const title = "Home";
   const icon = undefined;
+  const show_icon_and_title = undefined;
 
   // In the case of a default view, we want to use the group order attribute
   const groupOrders = {};
@@ -566,6 +571,7 @@ export const generateDefaultViewConfig = (
     path,
     title,
     icon,
+    show_icon_and_title,
     splittedByGroups.ungrouped
   );
 

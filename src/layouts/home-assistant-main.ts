@@ -44,7 +44,8 @@ export class HomeAssistantMain extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const sidebarNarrow = this._sidebarNarrow || this._externalSidebar;
+    const sidebarNarrow =
+      this._sidebarNarrow || this._externalSidebar || this.hass.kioskMode;
 
     const isPanelReady =
       this.hass.panels && this.hass.userData && this.hass.systemData;
@@ -133,7 +134,7 @@ export class HomeAssistantMain extends LitElement {
     toggleAttribute(
       this,
       "modal",
-      this._sidebarNarrow || this._externalSidebar
+      this._sidebarNarrow || this._externalSidebar || this.hass.kioskMode
     );
   }
 

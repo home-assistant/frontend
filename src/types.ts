@@ -250,6 +250,7 @@ export interface HomeAssistant {
   enableShortcuts: boolean;
   vibrate: boolean;
   debugConnection: boolean;
+  kioskMode: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   moreInfoEntityId: string | null;
   user?: CurrentUser;

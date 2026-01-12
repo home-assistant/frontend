@@ -187,5 +187,11 @@ export default tseslint.config(
       ],
       "no-use-before-define": "off",
     },
+  },
+  {
+    files: ["src/util/recorder-worklet.js"],
+    languageOptions: {
+      globals: globals.audioWorklet,
+    },
   }
 );

@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
+import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import {
@@ -13,7 +14,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import { isIosApp } from "../util/is_ios";
 import "./ha-dialog-header";
 import "./ha-icon-button";
 
@@ -115,6 +115,8 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   @state()
   private _bodyScrolled = false;
 
+  private _escapePressed = false;
+
   protected get scrollableElement(): HTMLElement | null {
     return this.bodyContainer;
   }
@@ -140,6 +142,8 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
             (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
         )}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
+        @keydown=${this._handleKeyDown}
+        @wa-hide=${this._handleHide}
         @wa-show=${this._handleShow}
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
@@ -185,21 +189,22 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (isIosApp(this.hass)) {
-        const element = this.querySelector("[autofocus]");
-        if (element !== null) {
-          if (!element.id) {
-            element.id = "ha-wa-dialog-autofocus";
-          }
-          this.hass.auth.external!.fireMessage({
-            type: "focus_element",
-            payload: {
-              element_id: element.id,
-            },
-          });
-        }
-        return;
-      }
+      // temporary disabled because of issues with focus in iOS app, can be reenabled in 2026.2.0
+      // if (isIosApp(this.hass)) {
+      //   const element = this.querySelector("[autofocus]");
+      //   if (element !== null) {
+      //     if (!element.id) {
+      //       element.id = "ha-wa-dialog-autofocus";
+      //     }
+      //     this.hass.auth.external!.fireMessage({
+      //       type: "focus_element",
+      //       payload: {
+      //         element_id: element.id,
+      //       },
+      //     });
+      //   }
+      //   return;
+      // }
       (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
     });
   };
@@ -208,9 +213,11 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "after-show");
   };
 
-  private _handleAfterHide = () => {
-    this._open = false;
-    fireEvent(this, "closed");
+  private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
+    if (ev.eventPhase === Event.AT_TARGET) {
+      this._open = false;
+      fireEvent(this, "closed");
+    }
   };
 
   public disconnectedCallback(): void {
@@ -221,6 +228,23 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   @eventOptions({ passive: true })
   private _handleBodyScroll(ev: Event) {
     this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
+  }
+
+  private _handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Escape") {
+      this._escapePressed = true;
+    }
+  }
+
+  private _handleHide(ev: CustomEvent<{ source: Element }>) {
+    if (
+      this.preventScrimClose &&
+      this._escapePressed &&
+      ev.detail.source === (ev.target as WaDialog).dialog
+    ) {
+      ev.preventDefault();
+    }
+    this._escapePressed = false;
   }
 
   static get styles() {
@@ -271,6 +295,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(dialog) {
+          color: var(--primary-text-color);
           min-width: var(--width, var(--full-width));
           max-width: var(--width, var(--full-width));
           max-height: var(
