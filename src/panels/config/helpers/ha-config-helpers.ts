@@ -1091,6 +1091,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const device = this._searchParms.get("device");
     const label = this._searchParms.get("label");
     const category = this._searchParms.get("category");
+    const voiceAssistant = this._searchParms.get("voice_assistant");
 
     if (!category && !label && !device) {
       return;
@@ -1102,6 +1103,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
       "ha-filter-categories": category ? [category] : [],
+      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
     };
   }
 
