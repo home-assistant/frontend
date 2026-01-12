@@ -201,21 +201,13 @@ class DialogExposeEntity extends LitElement {
       // Use the SAME fuzzy search as ha-entity-picker (reusing existing infrastructure)
       // Creates Fuse index and performs multi-term weighted fuzzy search
       const fuseIndex = this._fuseIndex(itemsWithContext);
-      const results = multiTermSortedSearch(
+      return multiTermSortedSearch(
         itemsWithContext,
         filter,
         entityComboBoxKeys, // Same weighted keys as entity picker
         (item) => item.id,
         fuseIndex
       );
-
-      // Debug logging for testing
-      // eslint-disable-next-line no-console
-      console.log(
-        `[Fuzzy Search] Query: "${filter}", Results: ${results.length}/${itemsWithContext.length}`
-      );
-
-      return results;
     }
   );
 

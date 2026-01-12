@@ -7,39 +7,39 @@ describe("Fuzzy search (multiTermSortedSearch) tests", () => {
   // Sample data matching the structure used in dialog-expose-entity.ts
   const sampleEntities = [
     {
-      id: "binary_sensor.microphone_bureau",
+      id: "binary_sensor.microphone_office",
       primary: "Microphone",
-      secondary: "Bureau ▸ Assistant vocal",
+      secondary: "Office ▸ Voice Assistant",
       search_labels: {
         entityName: "Microphone",
-        deviceName: "Assistant vocal",
-        areaName: "Bureau",
+        deviceName: "Voice Assistant",
+        areaName: "Office",
         friendlyName: "Microphone",
-        entityId: "binary_sensor.microphone_bureau",
+        entityId: "binary_sensor.microphone_office",
       },
     },
     {
-      id: "binary_sensor.microphone_chambre",
+      id: "binary_sensor.microphone_bedroom",
       primary: "Microphone",
-      secondary: "Chambre ▸ Assistant vocal",
+      secondary: "Bedroom ▸ Voice Assistant",
       search_labels: {
         entityName: "Microphone",
-        deviceName: "Assistant vocal",
-        areaName: "Chambre",
+        deviceName: "Voice Assistant",
+        areaName: "Bedroom",
         friendlyName: "Microphone",
-        entityId: "binary_sensor.microphone_chambre",
+        entityId: "binary_sensor.microphone_bedroom",
       },
     },
     {
-      id: "binary_sensor.microphone_salon",
+      id: "binary_sensor.microphone_living_room",
       primary: "Microphone",
-      secondary: "Salon ▸ Assistant vocal",
+      secondary: "Living Room ▸ Voice Assistant",
       search_labels: {
         entityName: "Microphone",
-        deviceName: "Assistant vocal",
-        areaName: "Salon",
+        deviceName: "Voice Assistant",
+        areaName: "Living Room",
         friendlyName: "Microphone",
-        entityId: "binary_sensor.microphone_salon",
+        entityId: "binary_sensor.microphone_living_room",
       },
     },
     {
@@ -67,15 +67,15 @@ describe("Fuzzy search (multiTermSortedSearch) tests", () => {
       },
     },
     {
-      id: "switch.assistants_vocaux",
-      primary: "Assistants vocaux",
+      id: "switch.voice_assistants",
+      primary: "Voice Assistants",
       secondary: "",
       search_labels: {
         entityName: null,
         deviceName: null,
         areaName: null,
-        friendlyName: "Assistants vocaux",
-        entityId: "switch.assistants_vocaux",
+        friendlyName: "Voice Assistants",
+        entityId: "switch.voice_assistants",
       },
     },
   ];
@@ -99,10 +99,10 @@ describe("Fuzzy search (multiTermSortedSearch) tests", () => {
     );
   });
 
-  it("Multi-word search: 'microphone bureau' requires BOTH terms to match", () => {
+  it("Multi-word search: 'microphone office' requires BOTH terms to match", () => {
     const results = multiTermSortedSearch(
       sampleEntities,
-      "microphone bureau",
+      "microphone office",
       entityComboBoxKeys,
       (item) => item.id,
       fuseIndex
@@ -115,8 +115,8 @@ describe("Fuzzy search (multiTermSortedSearch) tests", () => {
     );
     assert.strictEqual(
       results[0].id,
-      "binary_sensor.microphone_bureau",
-      "Should find the microphone in Bureau area"
+      "binary_sensor.microphone_office",
+      "Should find the microphone in Office area"
     );
   });
 
@@ -312,20 +312,20 @@ describe("Fuzzy search (multiTermSortedSearch) tests", () => {
     );
   });
 
-  it("Search by area name: 'bureau' finds entities in Bureau area", () => {
+  it("Search by area name: 'office' finds entities in Office area", () => {
     const results = multiTermSortedSearch(
       sampleEntities,
-      "bureau",
+      "office",
       entityComboBoxKeys,
       (item) => item.id,
       fuseIndex
     );
 
-    assert.isTrue(results.length > 0, "Should find entities in Bureau area");
+    assert.isTrue(results.length > 0, "Should find entities in Office area");
     assert.strictEqual(
       results[0].search_labels.areaName,
-      "Bureau",
-      "Should find entity in Bureau area"
+      "Office",
+      "Should find entity in Office area"
     );
   });
 
@@ -352,7 +352,7 @@ describe("Fuzzy search (multiTermSortedSearch) tests", () => {
   it("Search by entity_id: exact match by entity ID works", () => {
     const results = multiTermSortedSearch(
       sampleEntities,
-      "switch.assistants_vocaux",
+      "switch.voice_assistants",
       entityComboBoxKeys,
       (item) => item.id,
       fuseIndex
@@ -365,7 +365,7 @@ describe("Fuzzy search (multiTermSortedSearch) tests", () => {
     );
     assert.strictEqual(
       results[0].id,
-      "switch.assistants_vocaux",
+      "switch.voice_assistants",
       "Should find the exact entity by ID"
     );
   });
