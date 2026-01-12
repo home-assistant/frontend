@@ -213,9 +213,11 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "after-show");
   };
 
-  private _handleAfterHide = () => {
-    this._open = false;
-    fireEvent(this, "closed");
+  private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
+    if (ev.eventPhase === Event.AT_TARGET) {
+      this._open = false;
+      fireEvent(this, "closed");
+    }
   };
 
   public disconnectedCallback(): void {

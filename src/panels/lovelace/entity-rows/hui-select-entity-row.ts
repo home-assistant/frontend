@@ -112,7 +112,20 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
 
     forwardHaptic(this, "light");
 
-    setSelectOption(this.hass!, stateObj.entity_id, option);
+    setSelectOption(this.hass!, stateObj.entity_id, option)
+      .catch((_err) => {
+        // silently swallow exception
+      })
+      .finally(() =>
+        setTimeout(() => {
+          const newStateObj = this.hass!.states[this._config!.entity];
+          if (newStateObj === stateObj) {
+            const select = this.shadowRoot?.querySelector("ha-select");
+            const index = select?.options.indexOf(stateObj.state) ?? -1;
+            select?.select(index);
+          }
+        }, 2000)
+      );
   }
 }
 
