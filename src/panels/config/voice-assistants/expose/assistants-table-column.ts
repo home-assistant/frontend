@@ -21,7 +21,7 @@ export const getAssistantsTableColumn = (
   minWidth: "160px",
   maxWidth: "160px",
   valueColumn: "assistants_sortable_key",
-  template: (entry) =>
+  template: (entry: any) =>
     html`${entry.assistants.length !== 0
       ? availableAssistants.map((vaId) => {
           const supported =
@@ -81,7 +81,10 @@ export const getAssistantsSortableKey = (
       result += 2 ** weight;
     }
   });
-  if (result === 3) result = 4;
-  else if (result === 4) result = 3;
+  if (result === 3) {
+    result = 4;
+  } else if (result === 4) {
+    result = 3;
+  }
   return result;
 };
