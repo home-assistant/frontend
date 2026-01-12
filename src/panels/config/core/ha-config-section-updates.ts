@@ -10,13 +10,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/ha-alert";
-import "../../../components/ha-bar";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-check-list-item";
-import "../../../components/ha-list-item";
-import "../../../components/ha-metric";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
   HassioSupervisorInfo,
