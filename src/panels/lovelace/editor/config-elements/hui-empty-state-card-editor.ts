@@ -47,7 +47,6 @@ export class HuiEmptyStateCardEditor
       [
         {
           name: "style",
-          required: true,
           selector: {
             select: {
               mode: "box",
