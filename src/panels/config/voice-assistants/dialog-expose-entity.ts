@@ -6,10 +6,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import Fuse from "fuse.js";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { multiTermSortedSearch } from "../../../resources/fuseMultiTerm";
+import { entityComboBoxKeys } from "../../../data/entity/entity_picker";
 import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
 import "../../../components/ha-dialog";
@@ -33,6 +36,12 @@ class DialogExposeEntity extends LitElement {
   @state() private _filter?: string;
 
   @state() private _selected: string[] = [];
+
+  // Memoized Fuse index for fuzzy search (matches ha-entity-picker pattern)
+  private _fuseIndex = memoizeOne(
+    (items: { id: string; search_labels: any }[]) =>
+      Fuse.createIndex(entityComboBoxKeys, items)
+  );
 
   public async showDialog(params: ExposeEntityDialogParams): Promise<void> {
     this._params = params;
@@ -170,6 +179,7 @@ class DialogExposeEntity extends LitElement {
             .join(isRTL ? " ◂ " : " ▸ ");
 
           return {
+            id: entity.entity_id, // Required by multiTermSortedSearch
             entity,
             primary,
             secondary,
@@ -188,23 +198,24 @@ class DialogExposeEntity extends LitElement {
         return itemsWithContext;
       }
 
-      // Multi-word search: split by spaces and require ALL terms to match
-      const terms = filter
-        .toLowerCase()
-        .split(" ")
-        .filter((t) => t.trim());
-
-      return itemsWithContext.filter((item) =>
-        // Each term must match in at least one searchable field
-        terms.every(
-          (term) =>
-            item.search_labels.entityId.toLowerCase().includes(term) ||
-            item.search_labels.entityName?.toLowerCase().includes(term) ||
-            item.search_labels.friendlyName?.toLowerCase().includes(term) ||
-            item.search_labels.deviceName?.toLowerCase().includes(term) ||
-            item.search_labels.areaName?.toLowerCase().includes(term)
-        )
+      // Use the SAME fuzzy search as ha-entity-picker (reusing existing infrastructure)
+      // Creates Fuse index and performs multi-term weighted fuzzy search
+      const fuseIndex = this._fuseIndex(itemsWithContext);
+      const results = multiTermSortedSearch(
+        itemsWithContext,
+        filter,
+        entityComboBoxKeys, // Same weighted keys as entity picker
+        (item) => item.id,
+        fuseIndex
       );
+
+      // Debug logging for testing
+      // eslint-disable-next-line no-console
+      console.log(
+        `[Fuzzy Search] Query: "${filter}", Results: ${results.length}/${itemsWithContext.length}`
+      );
+
+      return results;
     }
   );
 
