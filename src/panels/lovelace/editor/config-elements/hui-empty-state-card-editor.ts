@@ -23,7 +23,7 @@ const cardConfigStruct = assign(
     icon: optional(string()),
     title: optional(string()),
     content: optional(string()),
-    action_label: optional(string()),
+    action_button_text: optional(string()),
     tap_action: optional(actionConfigStruct),
   })
 );
@@ -78,7 +78,7 @@ export class HuiEmptyStateCardEditor
           flatten: true,
           iconPath: mdiGestureTap,
           schema: [
-            { name: "action_label", selector: { text: {} } },
+            { name: "action_button_text", selector: { text: {} } },
             {
               name: "tap_action",
               selector: {
@@ -134,7 +134,7 @@ export class HuiEmptyStateCardEditor
     switch (schema.name) {
       case "style":
       case "content":
-      case "action_label":
+      case "action_button_text":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.empty_state.${schema.name}`
         );
