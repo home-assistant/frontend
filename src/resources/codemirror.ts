@@ -15,7 +15,11 @@ import { tags } from "@lezer/highlight";
 export { autocompletion } from "@codemirror/autocomplete";
 export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 export { highlightingFor, foldGutter } from "@codemirror/language";
-export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+export {
+  highlightSelectionMatches,
+  search,
+  searchKeymap,
+} from "@codemirror/search";
 export { EditorState } from "@codemirror/state";
 export {
   crosshairCursor,
@@ -39,6 +43,7 @@ export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();
 export const linewrapCompartment = new Compartment();
 export const foldingCompartment = new Compartment();
+export const searchCompartment = new Compartment();
 
 export const tabKeyBindings: KeyBinding[] = [
   { key: "Tab", run: indentMore },
