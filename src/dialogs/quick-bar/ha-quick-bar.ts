@@ -203,6 +203,7 @@ export class QuickBar extends LitElement {
 
     return html`
       <ha-adaptive-dialog
+        without-header
         .hass=${this.hass}
         aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}
@@ -211,7 +212,6 @@ export class QuickBar extends LitElement {
         @wa-after-show=${this._dialogOpened}
         @closed=${this._dialogClosed}
       >
-        <div slot="header"></div>
         ${!this._loading && this._opened
           ? html`<ha-picker-combo-box
               .hass=${this.hass}
