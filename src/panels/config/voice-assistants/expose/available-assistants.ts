@@ -4,7 +4,7 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import type { HomeAssistant } from "../../../../types";
 
 export const getAvailableAssistants = memoizeOne(
-  (cloudStatus: CloudStatus | undefined) => {
+  (cloudStatus: CloudStatus | undefined, hass: HomeAssistant) => {
     const conversationEnabled = isComponentLoaded(hass, "conversation");
     const googleEnabled =
       cloudStatus?.logged_in === true &&
