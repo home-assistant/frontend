@@ -6838,7 +6838,7 @@
         },
         "matter": {
           "panel": {
-            "thread_panel": "Visit Thread Panel",
+            "thread_panel": "Visit Thread panel",
             "add_device": "Add device",
             "status_title": "status",
             "status_online": "online",
