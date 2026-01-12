@@ -49,7 +49,6 @@ import {
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
 import type {
-  DataTableColumnData,
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -518,7 +517,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this.hass,
         this._availableAssistants,
         entitiesToCheck
-      ) as DataTableColumnData<EntityRow>,
+      ),
     })
   );
 
