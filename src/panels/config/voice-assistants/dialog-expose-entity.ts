@@ -302,6 +302,7 @@ class DialogExposeEntity extends LitElement {
           height: 88px;
         }
         ha-check-list-item .code {
+          display: block;
           font-family: var(--code-font-family, monospace);
           font-size: var(--ha-font-size-s, 12px);
           direction: ltr;
