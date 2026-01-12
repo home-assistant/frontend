@@ -126,7 +126,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     }
   );
 
-  private _getItems = () => this._getCategories(this._categories);
+  private _getItems = () => this._getCategories(this._categories) || [];
 
   private _allCategoryNames = memoizeOne(
     (categories?: CategoryRegistryEntry[]) => {
