@@ -67,7 +67,9 @@ export const getAssistantsSortableKey = (
   entityAssistants: string[]
 ): number | undefined => {
   let result = 0;
-  if (!entityAssistants.length) return undefined;
+  if (!entityAssistants.length) {
+  	return undefined;
+  }
   const assistantsOrdered = [
     "conversation",
     "cloud.alexa",
