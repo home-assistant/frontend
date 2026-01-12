@@ -747,7 +747,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           restored,
           localized_platform: domainToName(localize, entry.platform),
           domain: domainToName(localize, computeDomain(entry.entity_id)),
-          assistants: assistants,
+          assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           status: restored
             ? localize("ui.panel.config.entities.picker.status.not_provided")
