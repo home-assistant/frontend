@@ -38,7 +38,6 @@ import {
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
 import type {
-  DataTableColumnData,
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
@@ -440,7 +439,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           this.hass,
           this._availableAssistants,
           entitiesToCheck
-        ) as DataTableColumnData<SceneItem>,
+        ),
       };
 
       return columns;
