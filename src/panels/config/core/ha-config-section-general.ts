@@ -2,6 +2,7 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { UNIT_C } from "../../../common/const";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { navigate } from "../../../common/navigate";
 import "../../../components/buttons/ha-progress-button";
@@ -363,6 +364,8 @@ class HaConfigSectionGeneral extends LitElement {
 
     this._error = undefined;
 
+    const languageChanged = this._language !== this.hass.language;
+
     try {
       await saveCoreConfig(this.hass, {
         currency: this._currency,
@@ -376,6 +379,9 @@ class HaConfigSectionGeneral extends LitElement {
         ...locationConfig,
       });
       button.actionSuccess();
+      if (languageChanged && this._language) {
+        fireEvent(this, "hass-language-select", this._language);
+      }
     } catch (err: any) {
       button.actionError();
       this._error = err.message;
