@@ -6,6 +6,7 @@ import type { AreasDisplayValue } from "../../../../components/ha-areas-display-
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import type { EmptyStateCardConfig } from "../../cards/types";
 import { generateDefaultViewConfig } from "../../common/generate-lovelace-config";
 
 export interface OriginalStatesViewStrategyConfig {
@@ -64,9 +65,33 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
 
     // User has no entities
     if (view.cards!.length === 0) {
-      view.cards!.push({
-        type: "empty-state",
-      });
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:home-assistant",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.original-states.empty_state_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.original-states.empty_state_content"
+            ),
+            ...(hass.user?.is_admin
+              ? {
+                  action_label: hass.localize(
+                    "ui.panel.lovelace.strategy.original-states.empty_state_action"
+                  ),
+                  tap_action: {
+                    action: "navigate",
+                    navigation_path: "/config/integrations/dashboard",
+                  },
+                }
+              : {}),
+          } as EmptyStateCardConfig,
+        ],
+      };
     }
 
     return view;
