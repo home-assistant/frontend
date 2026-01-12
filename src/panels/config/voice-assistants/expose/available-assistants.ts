@@ -3,7 +3,7 @@ import type { CloudStatus } from "../../../../data/cloud";
 
 export const getAvailableAssistants = memoizeOne(
   (cloudStatus: CloudStatus | undefined) => {
-    const conversationEnabled = cloudStatus?.logged_in === true;
+    const conversationEnabled = true; // until a better method is found
     const googleEnabled =
       cloudStatus?.logged_in === true &&
       cloudStatus.prefs.google_enabled === true;
