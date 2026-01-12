@@ -122,11 +122,6 @@ class HassTabsSubpage extends LitElement {
         `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
     }
-    super.willUpdate(changedProperties);
-  }
-
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
     if (changedProperties.has("_activeTab") && this._activeTab) {
       const localizeFunc = this.localizeFunc || this.hass.localize;
       const title = this._activeTab.translationKey
@@ -136,6 +131,7 @@ class HassTabsSubpage extends LitElement {
         setPageTitle(title);
       }
     }
+    super.willUpdate(changedProperties);
   }
 
   protected render(): TemplateResult {
