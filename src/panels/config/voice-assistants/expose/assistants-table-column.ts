@@ -4,7 +4,7 @@ import type { DataTableColumnData } from "../../../../components/data-table/ha-d
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "./expose-assistant-icon";
 
-export const getAssistantsTableColumn = (
+export function getAssistantsTableColumn<T>(
   localize: LocalizeFunc,
   hass: HomeAssistant,
   availableAssistants: string[],
@@ -13,32 +13,36 @@ export const getAssistantsTableColumn = (
     "cloud.google_assistant" | "cloud.alexa" | "conversation",
     string[] | undefined
   >
-): DataTableColumnData => ({
-  title: localize("ui.panel.config.voice_assistants.expose.headers.assistants"),
-  type: "flex",
-  defaultHidden: true,
-  sortable: true,
-  minWidth: "160px",
-  maxWidth: "160px",
-  valueColumn: "assistants_sortable_key",
-  template: (entry: any) =>
-    html`${entry.assistants.length !== 0
-      ? availableAssistants.map((vaId) => {
-          const supported =
-            !supportedEntities?.[vaId] ||
-            supportedEntities[vaId].includes(entry.entity_id);
-          const manual = entry.manAssistants?.includes(vaId);
-          return getAssistantsTableColumnIcon(
-            entry.assistants.includes(vaId),
-            vaId,
-            hass,
-            entitiesToCheck,
-            manual,
-            !supported
-          );
-        })
-      : nothing}`,
-});
+): DataTableColumnData<T> {
+  return {
+    title: localize(
+      "ui.panel.config.voice_assistants.expose.headers.assistants"
+    ),
+    type: "flex",
+    defaultHidden: true,
+    sortable: true,
+    minWidth: "160px",
+    maxWidth: "160px",
+    valueColumn: "assistants_sortable_key",
+    template: (entry: any) =>
+      html`${entry.assistants.length !== 0
+        ? availableAssistants.map((vaId) => {
+            const supported =
+              !supportedEntities?.[vaId] ||
+              supportedEntities[vaId].includes(entry.entity_id);
+            const manual = entry.manAssistants?.includes(vaId);
+            return getAssistantsTableColumnIcon(
+              entry.assistants.includes(vaId),
+              vaId,
+              hass,
+              entitiesToCheck,
+              manual,
+              !supported
+            );
+          })
+        : nothing}`,
+  };
+}
 
 export const getAssistantsTableColumnIcon = (
   show: boolean,
@@ -67,9 +71,7 @@ export const getAssistantsSortableKey = (
   entityAssistants: string[]
 ): number | undefined => {
   let result = 0;
-  if (!entityAssistants.length) {
-  	return undefined;
-  }
+  if (!entityAssistants.length) return undefined;
   const assistantsOrdered = [
     "conversation",
     "cloud.alexa",
