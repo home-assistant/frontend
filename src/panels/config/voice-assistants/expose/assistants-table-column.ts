@@ -12,14 +12,15 @@ export function getAssistantsTableColumn<T>(
   supportedEntities?: Record<
     "cloud.google_assistant" | "cloud.alexa" | "conversation",
     string[] | undefined
-  >
+  >,
+  visible?: boolean
 ): DataTableColumnData<T> {
   return {
     title: localize(
       "ui.panel.config.voice_assistants.expose.headers.assistants"
     ),
     type: "flex",
-    defaultHidden: true,
+    defaultHidden: !visible,
     sortable: true,
     minWidth: "160px",
     maxWidth: "160px",
@@ -82,6 +83,12 @@ export const getAssistantsSortableKey = (
       result += 2 ** index;
     }
   });
+  // assistantsOrdered.forEach((vaId) => {
+  //   if (entityAssistants.includes(vaId)) {
+  //     const weight = assistantsOrdered.indexOf(vaId);
+  //     result += 2 ** weight;
+  //   }
+  // });
   if (result === 3) {
     result = 4;
   } else if (result === 4) {
