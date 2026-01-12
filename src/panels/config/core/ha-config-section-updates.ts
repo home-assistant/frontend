@@ -6,7 +6,7 @@ import {
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -29,7 +29,7 @@ import {
 } from "../../../data/hassio/supervisor";
 import {
   checkForEntityUpdates,
-  filterUpdateEntitiesWithInstall,
+  filterUpdateEntitiesParameterized,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
@@ -59,7 +59,11 @@ class HaConfigSectionUpdates extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const canInstallUpdates = this._filterUpdateEntitiesWithInstall(
+    const canInstallUpdates = this._filterInstallableUpdateEntities(
+      this.hass.states,
+      this._showSkipped
+    );
+    const notInstallableUpdates = this._filterNotInstallableUpdateEntities(
       this.hass.states,
       this._showSkipped
     );
@@ -106,6 +110,9 @@ class HaConfigSectionUpdates extends LitElement {
                         : mdiLocationExit}
                       slot="icon"
                     ></ha-svg-icon>
+                    ${this.hass.localize(
+                      `ui.panel.config.updates.${this._supervisorInfo.channel === "stable" ? "join" : "leave"}_beta`
+                    )}
                     ${this._supervisorInfo.channel === "stable"
                       ? this.hass.localize("ui.panel.config.updates.join_beta")
                       : this.hass.localize(
@@ -113,30 +120,49 @@ class HaConfigSectionUpdates extends LitElement {
                         )}
                   </ha-dropdown-item>
                 `
-              : ""}
+              : nothing}
           </ha-dropdown>
         </div>
         <div class="content">
-          <ha-card outlined>
-            <div class="card-content">
-              ${canInstallUpdates.length
-                ? html`
+          ${canInstallUpdates.length
+            ? html`
+                <ha-card outlined>
+                  <div class="card-content">
                     <ha-config-updates
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${canInstallUpdates}
+                      .isInstallable=${true}
                       showAll
                     ></ha-config-updates>
-                  `
-                : html`
-                    <div class="no-updates">
-                      ${this.hass.localize(
-                        "ui.panel.config.updates.no_updates"
-                      )}
-                    </div>
-                  `}
-            </div>
-          </ha-card>
+                  </div>
+                </ha-card>
+              `
+            : nothing}
+          ${notInstallableUpdates.length
+            ? html`
+                <ha-card outlined>
+                  <div class="card-content">
+                    <ha-config-updates
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .updateEntities=${notInstallableUpdates}
+                      .isInstallable=${false}
+                      showAll
+                    ></ha-config-updates>
+                  </div>
+                </ha-card>
+              `
+            : nothing}
+          ${canInstallUpdates.length + notInstallableUpdates.length
+            ? nothing
+            : html`
+                <ha-card outlined>
+                  <div class="no-updates">
+                    ${this.hass.localize("ui.panel.config.updates.no_updates")}
+                  </div>
+                </ha-card>
+              `}
         </div>
       </hass-subpage>
     `;
@@ -146,13 +172,13 @@ class HaConfigSectionUpdates extends LitElement {
     this._supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
   }
 
-  private async _handleOverflowAction(
+  private _handleOverflowAction(
     ev: CustomEvent<{ item: { value: string } }>
-  ): Promise<void> {
+  ): void {
     if (ev.detail.item.value === "toggle_beta") {
       if (this._supervisorInfo!.channel === "stable") {
         showJoinBetaDialog(this, {
-          join: async () => this._setChannel("beta"),
+          join: () => this._setChannel("beta"),
         });
       } else {
         this._setChannel("stable");
@@ -182,9 +208,14 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
-  private _filterUpdateEntitiesWithInstall = memoizeOne(
+  private _filterInstallableUpdateEntities = memoizeOne(
     (entities: HassEntities, showSkipped: boolean) =>
-      filterUpdateEntitiesWithInstall(entities, showSkipped)
+      filterUpdateEntitiesParameterized(entities, showSkipped, false)
+  );
+
+  private _filterNotInstallableUpdateEntities = memoizeOne(
+    (entities: HassEntities, showSkipped: boolean) =>
+      filterUpdateEntitiesParameterized(entities, showSkipped, true)
   );
 
   static styles = css`

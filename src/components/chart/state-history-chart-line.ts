@@ -21,6 +21,7 @@ import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
+import { filterXSS } from "../../common/util/xss";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -184,7 +185,7 @@ export class StateHistoryChartLine extends LitElement {
           }
 
           if (param.seriesName) {
-            return `${param.marker} ${param.seriesName}: ${value}`;
+            return `${param.marker} ${filterXSS(param.seriesName)}: ${value}`;
           }
           return `${param.marker} ${value}`;
         })
