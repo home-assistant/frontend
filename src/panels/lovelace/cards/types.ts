@@ -62,7 +62,7 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
   icon?: string;
   title?: string;
   content?: string;
-  action_label?: string;
+  action_button_text?: string;
   tap_action?: ActionConfig;
 }
 

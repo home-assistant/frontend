@@ -80,7 +80,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
             ),
             ...(hass.user?.is_admin
               ? {
-                  action_label: hass.localize(
+                  action_button_text: hass.localize(
                     "ui.panel.lovelace.strategy.original-states.empty_state_action"
                   ),
                   tap_action: {

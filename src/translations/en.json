@@ -7992,7 +7992,7 @@
                 "content-only": "Content only"
               },
               "content": "Content",
-              "action_label": "Action label"
+              "action_text": "Action button text"
             },
             "button": {
               "name": "Button",

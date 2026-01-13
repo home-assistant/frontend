@@ -55,10 +55,10 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
           ${this._config.content
             ? html`<p>${this._config.content}</p>`
             : nothing}
-          ${this._config.tap_action && this._config.action_label
+          ${this._config.tap_action && this._config.action_button_text
             ? html`
                 <ha-button @click=${this._handleAction}>
-                  ${this._config.action_label}
+                  ${this._config.action_button_text}
                 </ha-button>
               `
             : nothing}

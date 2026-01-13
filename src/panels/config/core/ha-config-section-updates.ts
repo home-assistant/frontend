@@ -1,19 +1,16 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiLocationEnter,
+  mdiLocationExit,
+  mdiRefresh,
+} from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import "../../../components/ha-alert";
-import "../../../components/ha-bar";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-check-list-item";
-import "../../../components/ha-list-item";
-import "../../../components/ha-metric";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
   HassioSupervisorInfo,
@@ -33,6 +30,9 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -77,35 +77,45 @@ class HaConfigSectionUpdates extends LitElement {
             .path=${mdiRefresh}
             @click=${this._checkUpdates}
           ></ha-icon-button>
-          <ha-button-menu multi>
+          <ha-dropdown @wa-select=${this._handleOverflowAction}>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-check-list-item
-              left
-              @request-selected=${this._toggleSkipped}
-              .selected=${this._showSkipped}
+
+            <ha-dropdown-item
+              type="checkbox"
+              .checked=${this._showSkipped}
+              value="show_skipped"
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
-            </ha-check-list-item>
+            </ha-dropdown-item>
             ${this._supervisorInfo
               ? html`
-                  <li divider role="separator"></li>
-                  <ha-list-item
-                    @request-selected=${this._toggleBeta}
+                  <wa-divider></wa-divider>
+                  <ha-dropdown-item
+                    value="toggle_beta"
                     .disabled=${this._supervisorInfo.channel === "dev"}
                   >
+                    <ha-svg-icon
+                      .path=${this._supervisorInfo.channel === "stable"
+                        ? mdiLocationEnter
+                        : mdiLocationExit}
+                      slot="icon"
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      `ui.panel.config.updates.${this._supervisorInfo.channel === "stable" ? "join" : "leave"}_beta`
+                    )}
                     ${this._supervisorInfo.channel === "stable"
                       ? this.hass.localize("ui.panel.config.updates.join_beta")
                       : this.hass.localize(
                           "ui.panel.config.updates.leave_beta"
                         )}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `
               : nothing}
-          </ha-button-menu>
+          </ha-dropdown>
         </div>
         <div class="content">
           ${canInstallUpdates.length
@@ -156,27 +166,19 @@ class HaConfigSectionUpdates extends LitElement {
     this._supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
   }
 
-  private _toggleSkipped(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-
-    this._showSkipped = !this._showSkipped;
-  }
-
-  private async _toggleBeta(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): Promise<void> {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
-    if (this._supervisorInfo!.channel === "stable") {
-      showJoinBetaDialog(this, {
-        join: async () => this._setChannel("beta"),
-      });
-    } else {
-      this._setChannel("stable");
+  private _handleOverflowAction(
+    ev: CustomEvent<{ item: { value: string } }>
+  ): void {
+    if (ev.detail.item.value === "toggle_beta") {
+      if (this._supervisorInfo!.channel === "stable") {
+        showJoinBetaDialog(this, {
+          join: () => this._setChannel("beta"),
+        });
+      } else {
+        this._setChannel("stable");
+      }
+    } else if (ev.detail.item.value === "show_skipped") {
+      this._showSkipped = !this._showSkipped;
     }
   }
 
