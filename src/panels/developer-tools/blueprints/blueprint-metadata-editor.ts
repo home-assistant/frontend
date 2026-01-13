@@ -81,23 +81,23 @@ class BlueprintMetadataEditor extends LitElement {
         .container {
           margin: 0 auto;
           max-width: 1040px;
-          padding: 8px 20px 0;
+          padding: var(--ha-space-2) var(--ha-space-5) 0;
         }
 
         .header {
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
           display: flex;
           align-items: center;
         }
 
         .header:first-child {
-          margin-top: -16px;
+          margin-top: calc(var(--ha-space-4) * -1);
         }
 
         .header .name {
           font-weight: var(--ha-font-weight-normal);
           flex: 1;
-          margin-bottom: 8px;
+          margin-bottom: var(--ha-space-2);
         }
       `,
     ];

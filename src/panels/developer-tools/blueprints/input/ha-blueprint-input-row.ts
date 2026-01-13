@@ -374,7 +374,7 @@ export default class HaBlueprintInputRow extends LitElement {
           pointer-events: none;
         }
         ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 8px;
+          --expansion-panel-summary-padding: 0 0 0 var(--ha-space-2);
           --expansion-panel-content-padding: 0;
         }
         h3 {
@@ -390,19 +390,19 @@ export default class HaBlueprintInputRow extends LitElement {
             display: inline-block;
             color: var(--secondary-text-color);
             opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
+            margin-right: var(--ha-space-2);
+            margin-inline-end: var(--ha-space-2);
             margin-inline-start: initial;
           }
         }
         .card-content {
-          padding: 16px;
+          padding: var(--ha-space-4);
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+          border-top-left-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         }
         ha-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
@@ -417,15 +417,15 @@ export default class HaBlueprintInputRow extends LitElement {
           left: 0px;
           text-transform: uppercase;
           font-weight: bold;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           background-color: var(--divider-color, #e0e0e0);
           color: var(--text-primary-color);
           max-height: 0px;
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+          border-top-left-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         }
         .testing.active {
           max-height: 100px;

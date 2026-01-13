@@ -229,9 +229,9 @@ export class HaBlueprintInput extends LitElement {
     .inputs {
       display: flex;
       flex-direction: column;
-      padding: 16px;
-      margin: -16px;
-      gap: 16px;
+      padding: var(--ha-space-4);
+      margin: calc(var(--ha-space-4) * -1);
+      gap: var(--ha-space-4);
     }
   `;
 }

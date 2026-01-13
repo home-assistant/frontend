@@ -87,7 +87,7 @@ export class HaBlueprintInputInput extends LitElement {
     ha-select,
     ha-selector {
       display: block;
-      margin-bottom: 24px;
+      margin-bottom: var(--ha-space-6);
     }
   `;
 }
