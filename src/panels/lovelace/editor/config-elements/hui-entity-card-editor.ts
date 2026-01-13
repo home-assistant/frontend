@@ -1,12 +1,5 @@
 import { mdiGestureTap } from "@mdi/js";
-import {
-  assert,
-  assign,
-  boolean,
-  object,
-  optional,
-  string,
-} from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
