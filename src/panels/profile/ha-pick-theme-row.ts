@@ -1,4 +1,3 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -39,7 +38,7 @@ export class HaPickThemeRow extends LitElement {
 
   @state() private _migrating = false;
 
-  private _unsubThemePreferences?: Promise<UnsubscribeFunc>;
+  private _unsubThemePreferences?: ReturnType<typeof subscribeThemePreferences>;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -58,13 +57,13 @@ export class HaPickThemeRow extends LitElement {
     if (this._unsubThemePreferences || !this.hass) {
       return;
     }
-    this._unsubThemePreferences = subscribeThemePreferences(
-      this.hass,
-      ({ value }) => {
-        this._backendTheme = value;
-      }
-    ).catch(() => {
+    const unsubscribe = subscribeThemePreferences(this.hass, ({ value }) => {
+      this._backendTheme = value;
+    });
+    this._unsubThemePreferences = unsubscribe;
+    unsubscribe.catch(() => {
       this._backendTheme = undefined;
+      this._unsubThemePreferences = undefined;
     });
   }
 
