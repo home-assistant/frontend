@@ -387,6 +387,7 @@ export class HuiStatisticsGraphCardEditor
     switch (schema.name) {
       case "chart_type":
       case "stat_types":
+      case "days_to_show":
       case "period":
       case "unit":
       case "hide_legend":

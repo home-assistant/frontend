@@ -8045,6 +8045,7 @@
             "statistics-graph": {
               "name": "Statistics graph",
               "description": "The Statistics graph card allows you to display a graph of the statistics for each of the entities listed.",
+              "days_to_show": "Days to show",
               "period": "Period",
               "unit": "Unit",
               "stat_types": "Show stat types",
