@@ -14,7 +14,6 @@ import "./ha-icon-button";
 import "./ha-label";
 import "./ha-list";
 import "./ha-list-item";
-import "./search-input-outlined";
 import "./voice-assistant-brand-icon";
 import { voiceAssistants } from "../data/expose";
 import "../panels/config/voice-assistants/expose/expose-assistant-icon";

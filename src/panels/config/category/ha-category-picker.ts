@@ -101,7 +101,13 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
   );
 
   private _getCategories = memoizeOne(
-    (categories: CategoryRegistryEntry[] | undefined): PickerComboBoxItem[] => {
+    (
+      categories: CategoryRegistryEntry[] | undefined
+    ): PickerComboBoxItem[] | undefined => {
+      if (!categories) {
+        return undefined;
+      }
+
       if (!categories || categories.length === 0) {
         return [
           {
