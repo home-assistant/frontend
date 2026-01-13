@@ -220,6 +220,17 @@ export class HaAutomationAddItems extends LitElement {
       justify-content: center;
     }
 
+    .empty-note {
+      color: var(--ha-color-text-secondary);
+      margin-top: var(--ha-space-2);
+      text-align: center;
+    }
+
+    .empty-note a {
+      color: currentColor;
+      text-decoration: underline;
+    }
+
     .items.error {
       background-color: var(--ha-color-fill-danger-quiet-resting);
       color: var(--ha-color-on-danger-normal);
