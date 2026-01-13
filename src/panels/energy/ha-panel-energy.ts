@@ -283,13 +283,18 @@ class PanelEnergy extends LitElement {
       ["grid", "solar", "battery"].includes(source.type)
     );
 
-    const hasPower =
-      this._prefs.energy_sources.some(
-        (source) =>
-          (source.type === "solar" && source.stat_rate) ||
-          (source.type === "battery" && source.stat_rate) ||
-          (source.type === "grid" && source.power?.length)
-      ) || this._prefs.device_consumption.some((device) => device.stat_rate);
+    const hasPowerSource = this._prefs.energy_sources.some(
+      (source) =>
+        (source.type === "solar" && source.stat_rate) ||
+        (source.type === "battery" && source.stat_rate) ||
+        (source.type === "grid" && source.power?.length)
+    );
+
+    const hasDevicePower = this._prefs.device_consumption.some(
+      (device) => device.stat_rate
+    );
+
+    const hasPower = hasPowerSource || hasDevicePower;
 
     const hasWater =
       this._prefs.energy_sources.some((source) => source.type === "water") ||
@@ -314,7 +319,10 @@ class PanelEnergy extends LitElement {
     if (hasPower) {
       views.push(POWER_VIEW);
     }
-    if (views.length > 1) {
+    if (
+      hasPowerSource ||
+      [hasEnergy, hasGas, hasWater].filter(Boolean).length > 1
+    ) {
       views.unshift(OVERVIEW_VIEW);
     }
     return {

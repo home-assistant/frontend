@@ -50,7 +50,6 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @cssprop --ha-dialog-hide-duration - Hide animation duration.
  * @cssprop --ha-dialog-surface-background - Dialog background color.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
- * @cssprop --dialog-z-index - Z-index for the dialog.
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
@@ -213,9 +212,11 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "after-show");
   };
 
-  private _handleAfterHide = () => {
-    this._open = false;
-    fireEvent(this, "closed");
+  private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
+    if (ev.eventPhase === Event.AT_TARGET) {
+      this._open = false;
+      fireEvent(this, "closed");
+    }
   };
 
   public disconnectedCallback(): void {
