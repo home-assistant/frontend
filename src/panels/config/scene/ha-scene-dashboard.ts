@@ -121,7 +121,7 @@ type SceneItem = SceneEntity & {
   category: string | undefined;
   labels: LabelRegistryEntry[];
   assistants: string[];
-  assistants_sortable_key: number | undefined;
+  assistants_sortable_key: string;
 };
 
 @customElement("ha-scene-dashboard")
