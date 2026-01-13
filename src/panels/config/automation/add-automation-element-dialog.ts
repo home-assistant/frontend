@@ -118,6 +118,7 @@ import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
+import type HaAutomationAddFromTarget from "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
@@ -1736,6 +1737,10 @@ class DialogAddAutomationElement
       Object.values(this._selectedTarget)[0]
     ) {
       target = this._selectedTarget;
+      const targetPicker = this.shadowRoot!.querySelector(
+        "ha-automation-add-from-target"
+      ) as HaAutomationAddFromTarget;
+      targetPicker?.saveRecentTarget(this._selectedTarget);
     }
     this._params!.add(ev.detail.value, target);
     this.closeDialog();

@@ -20,6 +20,7 @@ import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import { stringCompare } from "../../../../common/string/compare";
+import "../../../../components/ha-button";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
@@ -65,6 +66,8 @@ import {
 } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
+
+const RECENT_TARGETS_KEY = "hass-automation-recent-targets-v1";
 
 interface Level1Entries {
   open: boolean;
@@ -135,6 +138,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
     | UnassignedAreasFloorComboBoxItem
   )[] = [];
 
+  @state()
+  private _recentTargets: SingleHassServiceTarget[] = [];
+
   @state() private _entries: Record<string, Level1Entries> = {};
 
   @state() private _showShowMoreButton?: boolean;
@@ -173,6 +179,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private async _initialDataLoad() {
     await this._loadConfigEntries();
+    this._loadRecentTargets();
     this._getTreeData();
   }
 
@@ -189,7 +196,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   // #region render
   protected render() {
-    if (!this.manifests || !this._configEntryLookup) {
+    if (!this.manifests || Object.keys(this._configEntryLookup).length === 0) {
       return nothing;
     }
 
@@ -197,6 +204,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       ${this.narrow && this.value
         ? this._renderNarrow(this._entries, this.value)
         : html`
+            ${this._renderRecent(this.narrow, this.value, this._recentTargets)}
             ${this._renderFloors(this.narrow, this._entries, this.value)}
             ${this._renderUnassigned(this.narrow, this._entries, this.value)}
             ${this._renderLabels(this.narrow, this.value)}
@@ -294,6 +302,152 @@ export default class HaAutomationAddFromTarget extends LitElement {
       }
 
       return nothing;
+    }
+  );
+
+  private _renderRecent = memoizeOne(
+    (
+      narrow: boolean,
+      value: SingleHassServiceTarget | undefined,
+      recentTargets: SingleHassServiceTarget[]
+    ) => {
+      if (!recentTargets.length) {
+        return nothing;
+      }
+
+      const labels = this._getLabelsMemoized(
+        this.states,
+        this.areas,
+        this.devices,
+        this.entities,
+        this._labelRegistry,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        `label${TARGET_SEPARATOR}`
+      );
+
+      const items = recentTargets.map((target) => {
+        const [typeId, id] = Object.entries(target)[0];
+        const type = typeId.replace("_id", "") as
+          | "area"
+          | "device"
+          | "entity"
+          | "label";
+
+        if (!id) return nothing;
+
+        const targetId = `${type}${TARGET_SEPARATOR}${id}`;
+        const selected = this._getSelectedTargetId(value) === targetId;
+
+        if (type === "area") {
+          const area = this.areas[id];
+          if (!area) return nothing;
+          return this._renderItem(
+            computeAreaName(area) || area.area_id,
+            targetId,
+            false,
+            selected,
+            false,
+            false,
+            this._renderAreaIcon(area.icon || undefined)
+          );
+        }
+        if (type === "device") {
+          const device = this.devices[id];
+          if (!device) return nothing;
+          const configEntry = device.primary_config_entry
+            ? this._configEntryLookup?.[device.primary_config_entry]
+            : undefined;
+          const domain = configEntry?.domain;
+          return this._renderItem(
+            computeDeviceName(device) || id,
+            targetId,
+            false,
+            selected,
+            false,
+            false,
+            domain ? this._renderDomainIcon(domain) : undefined
+          );
+        }
+        if (type === "entity") {
+          const stateObj = this.states[id];
+          if (!stateObj) return nothing;
+          const [entityName, deviceName] = computeEntityNameList(
+            stateObj,
+            [{ type: "entity" }, { type: "device" }, { type: "area" }],
+            this.entities,
+            this.devices,
+            this.areas,
+            this.floors
+          );
+          let label = entityName || deviceName || id;
+          if (this.entities[id]?.hidden) {
+            label += ` (${this.localize("ui.panel.config.automation.editor.entity_hidden")})`;
+          }
+          return this._renderItem(
+            label,
+            targetId,
+            false,
+            selected,
+            false,
+            false,
+            this._renderEntityIcon(stateObj)
+          );
+        }
+        if (type === "label") {
+          const labelEntry = labels.find((l) => l.id === targetId);
+          if (!labelEntry) return nothing;
+          return this._renderItem(
+            labelEntry.primary,
+            targetId,
+            false,
+            selected,
+            false,
+            false,
+            (slot?: string) =>
+              labelEntry.icon
+                ? html`<ha-icon
+                    slot=${ifDefined(slot)}
+                    .icon=${labelEntry.icon}
+                  ></ha-icon>`
+                : labelEntry.icon_path
+                  ? html`<ha-svg-icon
+                      slot=${ifDefined(slot)}
+                      .path=${labelEntry.icon_path}
+                    ></ha-svg-icon>`
+                  : html`${nothing}`
+          );
+        }
+
+        return nothing;
+      });
+
+      const validItems = items.filter((i) => i !== nothing);
+      if (validItems.length === 0) return nothing;
+
+      return html`
+        <ha-section-title>
+          <span style="flex: 1">
+            ${this.localize("ui.panel.config.automation.editor.recent" as any)}
+          </span>
+          <ha-button
+            appearance="plain"
+            size="small"
+            @click=${this._clearRecentTargets}
+          >
+            ${this.localize("ui.common.clear")}
+          </ha-button>
+        </ha-section-title>
+        ${narrow
+          ? html`<ha-md-list>${validItems}</ha-md-list>`
+          : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}
+              >${validItems}</wa-tree
+            >`}
+      `;
     }
   );
 
@@ -860,6 +1014,60 @@ export default class HaAutomationAddFromTarget extends LitElement {
   // #endregion memoized data helpers
 
   // #region data
+
+  private _loadRecentTargets() {
+    try {
+      const stored = localStorage.getItem(RECENT_TARGETS_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          this._recentTargets = parsed;
+        } else {
+          this._recentTargets = [];
+        }
+      }
+    } catch (_e) {
+      this._recentTargets = [];
+      // Clear corrupted data
+      try {
+        localStorage.removeItem(RECENT_TARGETS_KEY);
+      } catch (_clearError) {
+        // Ignore
+      }
+    }
+  }
+
+  public saveRecentTarget(target: SingleHassServiceTarget) {
+    const existingIndex = this._recentTargets.findIndex((t) => {
+      const [type] = Object.keys(t);
+      const [targetType] = Object.keys(target);
+      if (type !== targetType) return false;
+      return t[type] === target[targetType];
+    });
+
+    let newRecent = [...this._recentTargets];
+    if (existingIndex >= 0) {
+      newRecent.splice(existingIndex, 1);
+    }
+    newRecent.unshift(target);
+    newRecent = newRecent.slice(0, 10); // keep last 10
+
+    this._recentTargets = newRecent;
+    try {
+      localStorage.setItem(RECENT_TARGETS_KEY, JSON.stringify(newRecent));
+    } catch (_e) {
+      // Ignore localStorage errors (e.g., quota exceeded)
+    }
+  }
+
+  private _clearRecentTargets = () => {
+    this._recentTargets = [];
+    try {
+      localStorage.removeItem(RECENT_TARGETS_KEY);
+    } catch (_e) {
+      // Ignore localStorage errors
+    }
+  };
 
   private _getTreeData() {
     this._floorAreas = getAreasNestedInFloors(
