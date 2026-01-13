@@ -213,8 +213,8 @@ export class HaAutomationAddItems extends LitElement {
       background-color: var(--ha-color-surface-default);
       align-items: center;
       color: var(--ha-color-text-secondary);
-      padding: var(--ha-space-0);
-      margin: var(--ha-space-0) var(--ha-space-4)
+      padding: 0;
+      margin: 0 var(--ha-space-4)
         max(var(--safe-area-inset-bottom), var(--ha-space-3));
       line-height: var(--ha-line-height-expanded);
       justify-content: center;
@@ -233,7 +233,7 @@ export class HaAutomationAddItems extends LitElement {
       --md-list-item-supporting-text-font: var(--ha-font-family-body);
       --ha-md-list-item-gap: var(--ha-space-3);
       gap: var(--ha-space-2);
-      padding: var(--ha-space-0) var(--ha-space-4);
+      padding: 0 var(--ha-space-4);
     }
     .items ha-md-list ha-md-list-item {
       border-radius: var(--ha-border-radius-lg);
@@ -285,6 +285,8 @@ export class HaAutomationAddItems extends LitElement {
       border-radius: var(--ha-border-radius-md);
       background: var(--ha-color-fill-neutral-normal-resting);
       padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
+      border: var(--ha-border-width-sm) solid
+        var(--ha-color-border-neutral-quiet);
       color: var(--ha-color-on-neutral-normal);
       overflow: hidden;
     }

@@ -766,7 +766,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         .content-wrapper.settings-view .fade-bottom {
-          bottom: var(--ha-space-18);
+          bottom: calc(
+            var(--ha-space-14) +
+              max(var(--safe-area-inset-bottom), var(--ha-space-4))
+          );
         }
 
         .child-view {
@@ -802,8 +805,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin: var(--ha-space-0) var(--ha-space-0)
-            calc(var(--ha-space-2) * -1) var(--ha-space-0);
+          margin: 0 0 calc(var(--ha-space-2) * -1) 0;
         }
 
         .title p {

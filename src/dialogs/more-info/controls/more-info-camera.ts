@@ -106,7 +106,7 @@ class MoreInfoCamera extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 16px;
+      padding: var(--ha-space-4);
       z-index: 1;
       gap: var(--ha-space-2);
     }

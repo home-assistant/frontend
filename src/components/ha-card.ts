@@ -46,14 +46,17 @@ export class HaCard extends LitElement {
       line-height: var(--ha-line-height-expanded);
       padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4);
       display: block;
-      margin-block-start: var(--ha-space-0);
-      margin-block-end: var(--ha-space-0);
+      margin-block-start: 0;
+      margin-block-end: 0;
       font-weight: var(--ha-font-weight-normal);
     }
 
-    :host ::slotted(.card-content:not(:first-child)),
+    :host
+      ::slotted(
+        .card-content:not(:nth-child(1 of .card-content, .card-header))
+      ),
     slot:not(:first-child)::slotted(.card-content) {
-      padding-top: var(--ha-space-0);
+      padding-top: 0;
       margin-top: calc(var(--ha-space-2) * -1);
     }
 

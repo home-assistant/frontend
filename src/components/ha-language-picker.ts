@@ -14,6 +14,12 @@ import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "secondary", weight: 8 },
+  { name: "search_labels.english", weight: 5 },
+];
+
 export const getLanguageOptions = (
   languages: string[],
   nativeName: boolean,
@@ -22,6 +28,7 @@ export const getLanguageOptions = (
 ): PickerComboBoxItem[] => {
   let options: PickerComboBoxItem[] = [];
 
+  const enLocale = { language: "en" } as FrontendLocaleData;
   if (nativeName) {
     const translations = translationMetadata.translations;
     options = languages.map((lang) => {
@@ -37,16 +44,35 @@ export const getLanguageOptions = (
           primary = lang;
         }
       }
+      const currentLang = formatLanguageCode(
+        lang,
+        locale || ({ language: navigator.language } as FrontendLocaleData)
+      );
+      const englishName = formatLanguageCode(lang, enLocale);
+
+      const secondary = currentLang !== primary ? currentLang : undefined;
+
       return {
         id: lang,
         primary,
+        secondary,
+        search_labels: {
+          english: englishName !== primary ? englishName : null,
+        },
       };
     });
   } else if (locale) {
-    options = languages.map((lang) => ({
-      id: lang,
-      primary: formatLanguageCode(lang, locale),
-    }));
+    options = languages.map((lang) => {
+      const primary = formatLanguageCode(lang, locale);
+      const englishName = formatLanguageCode(lang, enLocale);
+      return {
+        id: lang,
+        primary,
+        search_labels: {
+          english: englishName !== primary ? englishName : null,
+        },
+      };
+    });
   }
 
   if (!noSort && locale) {
@@ -140,6 +166,7 @@ export class HaLanguagePicker extends LitElement {
         .disabled=${this.disabled}
         .helper=${this.helper}
         .getItems=${this._getItems}
+        .searchKeys=${SEARCH_KEYS}
         @value-changed=${this._changed}
         hide-clear-icon
       >

@@ -15,9 +15,13 @@ import type { HomeAssistant } from "../../../types";
 class EventSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public selectedEventType = "";
+
   @state() private _eventType = "";
 
   @state() private _subscribed?: () => void;
+
+  @state() private _eventFilter = "";
 
   @state() private _events: {
     id: number;
@@ -28,11 +32,25 @@ class EventSubscribeCard extends LitElement {
 
   private _eventCount = 0;
 
+  @state() _ignoredEventsCount = 0;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._subscribed) {
       this._subscribed();
       this._subscribed = undefined;
+    }
+  }
+
+  protected willUpdate(changedProperties: Map<string, any>) {
+    super.willUpdate(changedProperties);
+
+    if (
+      changedProperties.has("selectedEventType") &&
+      this.selectedEventType &&
+      !this._subscribed
+    ) {
+      this._eventType = this.selectedEventType;
     }
   }
 
@@ -55,6 +73,16 @@ class EventSubscribeCard extends LitElement {
             .disabled=${this._subscribed !== undefined}
             .value=${this._eventType}
             @input=${this._valueChanged}
+          ></ha-textfield>
+          <ha-textfield
+            .label=${this.hass!.localize(
+              "ui.panel.developer-tools.tabs.events.filter_events"
+            )}
+            .value=${this._eventFilter}
+            .disabled=${this._subscribed !== undefined}
+            helperPersistent
+            .helper=${`${this.hass!.localize("ui.panel.developer-tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.developer-tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
+            @input=${this._filterChanged}
           ></ha-textfield>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -121,6 +149,46 @@ class EventSubscribeCard extends LitElement {
     this._error = undefined;
   }
 
+  private _filterChanged(ev): void {
+    this._eventFilter = ev.target.value;
+  }
+
+  private _testEventFilter(event: HassEvent): boolean {
+    if (!this._eventFilter) {
+      return true;
+    }
+
+    const searchStr = this._eventFilter;
+
+    function visit(node) {
+      // Handle primitives directly
+      if (node === null || typeof node !== "object") {
+        return String(node).includes(searchStr);
+      }
+
+      // Handle arrays and plain objects
+      for (const key in node) {
+        if (!Object.prototype.hasOwnProperty.call(node, key)) continue;
+        // Check key
+        if (key.includes(searchStr)) return true;
+
+        const value = node[key];
+
+        // Check primitive value
+        if (value === null || typeof value !== "object") {
+          if (String(value).includes(searchStr)) return true;
+        } else if (visit(value)) {
+          // Recurse into nested object/array
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    return visit(event);
+  }
+
   private async _startOrStopListening(): Promise<void> {
     if (this._subscribed) {
       this._subscribed();
@@ -130,6 +198,10 @@ class EventSubscribeCard extends LitElement {
       try {
         this._subscribed =
           await this.hass!.connection.subscribeEvents<HassEvent>((event) => {
+            if (!this._testEventFilter(event)) {
+              this._ignoredEventsCount++;
+              return;
+            }
             const tail =
               this._events.length > 30
                 ? this._events.slice(0, 29)
@@ -154,22 +226,23 @@ class EventSubscribeCard extends LitElement {
   private _clearEvents(): void {
     this._events = [];
     this._eventCount = 0;
+    this._ignoredEventsCount = 0;
     this._error = undefined;
   }
 
   static styles = css`
     ha-textfield {
       display: block;
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
     .error-message {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
     .event {
       border-top: 1px solid var(--divider-color);
-      padding-top: 8px;
-      padding-bottom: 8px;
-      margin: 16px 0;
+      padding-top: var(--ha-space-2);
+      padding-bottom: var(--ha-space-2);
+      margin: var(--ha-space-4) 0;
     }
     .event:last-child {
       border-bottom: 0;
@@ -179,7 +252,7 @@ class EventSubscribeCard extends LitElement {
       font-family: var(--ha-font-family-code);
     }
     ha-card {
-      margin-bottom: 5px;
+      margin-bottom: var(--ha-space-1);
     }
   `;
 }

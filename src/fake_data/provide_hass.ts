@@ -152,7 +152,7 @@ export const provideHass = (
     for (const ent of ensureArray(newEntities)) {
       hass().entities[ent.entityId] = {
         entity_id: ent.entityId,
-        name: ent.name,
+        name: ent.attributes.friendly_name || null,
         icon: ent.icon,
         platform: "demo",
         labels: [],
@@ -282,6 +282,7 @@ export const provideHass = (
     dockedSidebar: "auto",
     vibrate: true,
     debugConnection: false,
+    kioskMode: false,
     suspendWhenHidden: false,
     moreInfoEntityId: null as any,
     // @ts-ignore

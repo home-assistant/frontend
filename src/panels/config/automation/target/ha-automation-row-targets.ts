@@ -1,17 +1,21 @@
 import { consume } from "@lit/context";
-import { mdiAlert, mdiFormatListBulleted, mdiShape } from "@mdi/js";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
-import { LitElement, css, html, nothing, type TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { until } from "lit/directives/until";
-import { ensureArray } from "../../../../common/array/ensure-array";
-import "../../../../components/ha-svg-icon";
 import {
-  getConfigEntries,
-  type ConfigEntry,
-} from "../../../../data/config_entries";
+  mdiAlert,
+  mdiCodeBraces,
+  mdiFormatListBulleted,
+  mdiShape,
+} from "@mdi/js";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { css, html, LitElement, type nothing, type TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ensureArray } from "../../../../common/array/ensure-array";
+import { transform } from "../../../../common/decorators/transform";
+import { isTemplate } from "../../../../common/string/has-template";
+import "../../../../components/ha-svg-icon";
+import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   areasContext,
+  configEntriesContext,
   devicesContext,
   floorsContext,
   labelsContext,
@@ -55,6 +59,13 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, ConfigEntry>>({
+    transformer: function (value) {
+      return Object.fromEntries(value.map((entry) => [entry.entry_id, entry]));
+    },
+  })
   private _configEntryLookup?: Record<string, ConfigEntry>;
 
   protected render() {
@@ -149,13 +160,6 @@ export class HaAutomationRowTargets extends LitElement {
     </div>`;
   }
 
-  private async _loadConfigEntries() {
-    const configEntries = await getConfigEntries(this.hass);
-    this._configEntryLookup = Object.fromEntries(
-      configEntries.map((entry) => [entry.entry_id, entry])
-    );
-  }
-
   private _renderTarget(
     targetType: "floor" | "area" | "device" | "entity" | "label",
     targetId: string
@@ -169,6 +173,16 @@ export class HaAutomationRowTargets extends LitElement {
       );
     }
 
+    // Check if the target is a template
+    if (isTemplate(targetId)) {
+      return this._renderTargetBadge(
+        html`<ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon>`,
+        this.localize(
+          "ui.panel.config.automation.editor.target_summary.template"
+        )
+      );
+    }
+
     const exists = this._checkTargetExists(targetType, targetId);
     if (!exists) {
       return this._renderTargetBadge(
@@ -176,22 +190,6 @@ export class HaAutomationRowTargets extends LitElement {
         getTargetText(this.hass, targetType, targetId, this._getLabel),
         true
       );
-    }
-
-    if (targetType === "device" && !this._configEntryLookup) {
-      const loadConfigEntries = this._loadConfigEntries().then(() =>
-        this._renderTargetBadge(
-          getTargetIcon(
-            this.hass,
-            targetType,
-            targetId,
-            this._configEntryLookup!
-          ),
-          getTargetText(this.hass, targetType, targetId)
-        )
-      );
-
-      return html`${until(loadConfigEntries, nothing)}`;
     }
 
     return this._renderTargetBadge(
@@ -225,6 +223,8 @@ export class HaAutomationRowTargets extends LitElement {
       background: var(--ha-color-fill-neutral-normal-resting);
       padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
       color: var(--ha-color-on-neutral-normal);
+      border: var(--ha-border-width-sm) solid
+        var(--ha-color-border-neutral-quiet);
       overflow: hidden;
       height: 32px;
     }

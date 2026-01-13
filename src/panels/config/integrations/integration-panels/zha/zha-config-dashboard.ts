@@ -75,7 +75,7 @@ class ZHAConfigDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public configEntryId?: string;
+  @state() private _configEntry?: ConfigEntry;
 
   @state() private _configuration?: ZHAConfiguration;
 
@@ -95,6 +95,7 @@ class ZHAConfigDashboard extends LitElement {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this.hass.loadBackendTranslation("config_panel", "zha", false);
+      this._fetchConfigEntry();
       this._fetchConfiguration();
       this._fetchSettings();
       this._fetchDevicesAndUpdateStatus();
@@ -110,7 +111,6 @@ class ZHAConfigDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${zhaTabs}
-        back-path="/config/integrations"
         has-fab
       >
         <div class="container">
@@ -151,28 +151,26 @@ class ZHAConfigDashboard extends LitElement {
                 </div>
               </div>
             </div>
-            ${this.configEntryId
-              ? html`<div class="card-actions">
-                  <ha-button
-                    href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                    appearance="plain"
-                    size="small"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.devices.caption"
-                    )}</ha-button
-                  >
-                  <ha-button
-                    appearance="plain"
-                    size="small"
-                    href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.entities.caption"
-                    )}</ha-button
-                  >
-                </div>`
-              : ""}
+            <div class="card-actions">
+              <ha-button
+                href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+                appearance="plain"
+                size="small"
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.devices.caption"
+                )}</ha-button
+              >
+              <ha-button
+                appearance="plain"
+                size="small"
+                href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.entities.caption"
+                )}</ha-button
+              >
+            </div>
           </ha-card>
           <ha-card
             class="network-settings"
@@ -321,6 +319,15 @@ class ZHAConfigDashboard extends LitElement {
     `;
   }
 
+  private async _fetchConfigEntry(): Promise<void> {
+    const configEntries = await getConfigEntries(this.hass, {
+      domain: "zha",
+    });
+    if (configEntries.length) {
+      this._configEntry = configEntries[0];
+    }
+  }
+
   private async _fetchConfiguration(): Promise<void> {
     this._configuration = await fetchZHAConfiguration(this.hass!);
   }
@@ -399,20 +406,11 @@ class ZHAConfigDashboard extends LitElement {
     fileDownload(backupJSON, `${basename}.json`);
   }
 
-  private async _openOptionFlow() {
-    if (!this.configEntryId) {
+  private _openOptionFlow() {
+    if (!this._configEntry) {
       return;
     }
-
-    const configEntries: ConfigEntry[] = await getConfigEntries(this.hass, {
-      domain: "zha",
-    });
-
-    const configEntry = configEntries.find(
-      (entry) => entry.entry_id === this.configEntryId
-    );
-
-    showOptionsFlowDialog(this, configEntry!);
+    showOptionsFlowDialog(this, this._configEntry);
   }
 
   private _dataChanged(ev) {

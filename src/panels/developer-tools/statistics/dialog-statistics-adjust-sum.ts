@@ -513,7 +513,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         .text-content,
         ha-selector-datetime,
         ha-selector-number {
-          margin-bottom: 20px;
+          margin-bottom: var(--ha-space-5);
         }
         ha-list-item {
           margin: 0 -24px;
@@ -522,7 +522,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         .table-row {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 20px;
+          margin-bottom: var(--ha-space-5);
         }
         .stat-list {
           min-height: 360px;

@@ -52,8 +52,10 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
 
   if (__DEMO__) {
     if (replace) {
-      history.replaceState(
-        history.state?.root ? { root: true } : (options?.data ?? null),
+      mainWindow.history.replaceState(
+        mainWindow.history.state?.root
+          ? { root: true }
+          : (options?.data ?? null),
         "",
         `${mainWindow.location.pathname}#${path}`
       );
@@ -61,13 +63,13 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
       mainWindow.location.hash = path;
     }
   } else if (replace) {
-    history.replaceState(
-      history.state?.root ? { root: true } : (options?.data ?? null),
+    mainWindow.history.replaceState(
+      mainWindow.history.state?.root ? { root: true } : (options?.data ?? null),
       "",
       path
     );
   } else {
-    history.pushState(options?.data ?? null, "", path);
+    mainWindow.history.pushState(options?.data ?? null, "", path);
   }
   fireEvent(mainWindow, "location-changed", {
     replace,

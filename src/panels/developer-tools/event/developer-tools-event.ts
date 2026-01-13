@@ -25,6 +25,8 @@ class HaPanelDevEvent extends LitElement {
 
   @state() private _isValid = true;
 
+  @state() private _selectedEventType = "";
+
   protected render(): TemplateResult {
     return html`
       <div
@@ -89,7 +91,10 @@ class HaPanelDevEvent extends LitElement {
             </div>
           </ha-card>
 
-          <event-subscribe-card .hass=${this.hass}></event-subscribe-card>
+          <event-subscribe-card
+            .hass=${this.hass}
+            .selectedEventType=${this._selectedEventType}
+          ></event-subscribe-card>
         </div>
 
         <div>
@@ -109,6 +114,7 @@ class HaPanelDevEvent extends LitElement {
 
   private _eventSelected(ev) {
     this._eventType = ev.detail.eventType;
+    this._selectedEventType = ev.detail.eventType;
   }
 
   private _eventTypeChanged(ev) {
@@ -148,7 +154,7 @@ class HaPanelDevEvent extends LitElement {
       css`
         .content {
           gap: var(--ha-space-4);
-          padding: 16px;
+          padding: var(--ha-space-4);
           max-width: 1200px;
           margin: auto;
         }
@@ -169,7 +175,7 @@ class HaPanelDevEvent extends LitElement {
         }
 
         ha-button {
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
         }
 
         ha-textfield {
@@ -178,7 +184,7 @@ class HaPanelDevEvent extends LitElement {
 
         event-subscribe-card {
           display: block;
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
           direction: var(--direction);
         }
 

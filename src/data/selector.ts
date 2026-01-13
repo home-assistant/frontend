@@ -27,6 +27,7 @@ export type Selector =
   | AttributeSelector
   | BooleanSelector
   | ButtonToggleSelector
+  | ChooseSelector
   | ColorRGBSelector
   | ColorTempSelector
   | ConditionSelector
@@ -114,6 +115,13 @@ export interface ButtonToggleSelector {
     translation_key?: string;
     sort?: boolean;
   } | null;
+}
+
+export interface ChooseSelector {
+  choose: {
+    choices: Record<string, { selector: Selector }>;
+    translation_key?: string;
+  };
 }
 
 export interface ColorRGBSelector {
@@ -213,6 +221,7 @@ export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
+    allow_negative?: boolean;
   } | null;
 }
 
@@ -368,7 +377,7 @@ interface SelectBoxOptionImage {
 }
 
 export interface SelectOption {
-  value: any;
+  value: string;
   label: string;
   description?: string;
   image?: string | SelectBoxOptionImage;
@@ -921,13 +930,13 @@ export const resolveEntityIDs = (
   targetPickerValue: HassServiceTarget,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"]
+  areas: HomeAssistant["areas"],
+  targetSelector: TargetSelector = { target: {} }
 ): string[] => {
   if (!targetPickerValue) {
     return [];
   }
 
-  const targetSelector = { target: {} };
   const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
   const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
   const targetAreas = new Set(ensureArray(targetPickerValue.area_id));
