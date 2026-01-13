@@ -143,7 +143,7 @@ interface HelperItem {
   area?: string;
   label_entries: LabelRegistryEntry[];
   assistants: string[];
-  assistants_sortable_key: number | undefined;
+  assistants_sortable_key: string;
   disabled?: boolean;
 }
 
