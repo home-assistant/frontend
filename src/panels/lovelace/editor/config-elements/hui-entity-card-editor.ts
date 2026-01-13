@@ -5,7 +5,6 @@ import {
   boolean,
   object,
   optional,
-  refine,
   string,
 } from "superstruct";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -15,7 +14,10 @@ import type { LovelaceConfigForm } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
-import type { UiAction } from "../../components/hui-action-editor";
+import {
+  type UiAction,
+  supportedActions,
+} from "../../components/hui-action-editor";
 
 const TAP_ACTIONS: UiAction[] = [
   "more-info",
@@ -36,13 +38,11 @@ const struct = assign(
     unit: optional(string()),
     theme: optional(string()),
     state_color: optional(boolean()),
-    tap_action: optional(
-      refine(actionConfigStruct, TAP_ACTIONS.toString(), (value) =>
-        TAP_ACTIONS.includes(value.action)
-      )
+    tap_action: optional(supportedActions(actionConfigStruct, TAP_ACTIONS)),
+    hold_action: optional(supportedActions(actionConfigStruct, TAP_ACTIONS)),
+    double_tap_action: optional(
+      supportedActions(actionConfigStruct, TAP_ACTIONS)
     ),
-    hold_action: optional(actionConfigStruct),
-    double_tap_action: optional(actionConfigStruct),
     footer: optional(headerFooterConfigStructs),
   })
 );
