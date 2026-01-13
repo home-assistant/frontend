@@ -43,7 +43,6 @@ export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();
 export const linewrapCompartment = new Compartment();
 export const foldingCompartment = new Compartment();
-export const searchCompartment = new Compartment();
 
 export const tabKeyBindings: KeyBinding[] = [
   { key: "Tab", run: indentMore },
