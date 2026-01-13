@@ -255,6 +255,7 @@ export class HaCodeEditor extends ReactiveElement {
         ...this._loadedCodeMirror.tabKeyBindings,
         saveKeyBinding,
       ]),
+      this._loadedCodeMirror.search({ top: true }),
       this._loadedCodeMirror.langCompartment.of(this._mode),
       this._loadedCodeMirror.haTheme,
       this._loadedCodeMirror.haSyntaxHighlighting,
