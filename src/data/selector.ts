@@ -377,7 +377,7 @@ interface SelectBoxOptionImage {
 }
 
 export interface SelectOption {
-  value: any;
+  value: string;
   label: string;
   description?: string;
   image?: string | SelectBoxOptionImage;
