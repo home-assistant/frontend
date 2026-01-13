@@ -1506,14 +1506,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
         var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
     }
 
-    @media (prefers-color-scheme: dark) {
-      .targets-show-more {
-        box-shadow: inset var(--ha-shadow-offset-x-lg)
-          calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
-          var(--ha-shadow-spread-lg) var(--ha-color-shadow-dark);
-      }
-    }
-
     @media all and (max-width: 870px), all and (max-height: 500px) {
       :host {
         max-height: var(--max-height, 50%);
