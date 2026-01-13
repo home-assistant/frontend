@@ -397,14 +397,14 @@ class HaPanelDevBlueprints extends LitElement {
         }
 
         .container {
-          margin: 16px;
-          gap: 16px;
+          margin: var(--ha-space-4);
+          gap: var(--ha-space-4);
           display: flex;
           flex-direction: column;
         }
 
         ha-card {
-          padding: 8px;
+          padding: var(--ha-space-2);
         }
 
         .full-row {
