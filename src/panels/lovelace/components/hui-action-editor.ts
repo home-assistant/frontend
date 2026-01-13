@@ -36,6 +36,11 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "none",
 ];
 
+export const supportedActions = (_struct, _supported_actions) =>
+  refine(_struct, _supported_actions.toString(), (value) =>
+    _supported_actions.includes(value.action)
+  );
+
 const NAVIGATE_SCHEMA = [
   {
     name: "navigation_path",
