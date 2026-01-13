@@ -6,6 +6,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
 import type { HomeAssistant } from "../../../../types";
+import { measureTextWidth } from "../../../../util/text";
 import type { ClockCardConfig } from "../types";
 
 function romanize12HourClock(num: number) {
@@ -33,6 +34,24 @@ const QUARTER_TICKS = Array.from({ length: 4 }, (_, i) => i);
 const HOUR_TICKS = Array.from({ length: 12 }, (_, i) => i);
 const MINUTE_TICKS = Array.from({ length: 60 }, (_, i) => i);
 
+const CLOCK_DATE_WIDTH_RATIOS = {
+  small: 0.87, // 87% of 100px diameter
+  medium: 0.875, // 87.5% of 160px diameter
+  large: 0.873, // 87.3% of 220px diameter
+};
+
+const CLOCK_DIAMETERS = {
+  small: 100,
+  medium: 160,
+  large: 220,
+};
+
+const BASE_FONT_SIZES = {
+  small: 12, // --ha-font-size-s
+  medium: 16, // --ha-font-size-l
+  large: 20, // --ha-font-size-xl
+};
+
 @customElement("hui-clock-card-analog")
 export class HuiClockCardAnalog extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -52,6 +71,8 @@ export class HuiClockCardAnalog extends LitElement {
   @state() private _month = "";
 
   @state() private _day = "";
+
+  @state() private _dateFontSize?: string;
 
   private _tickInterval?: undefined | number;
 
@@ -132,6 +153,11 @@ export class HuiClockCardAnalog extends LitElement {
     });
 
     this._computeDateTime();
+
+    // Recalculate font size on config/locale change
+    if (this.config?.date && this.config.date !== "none") {
+      this._dateFontSize = this._computeDateFontSize();
+    }
   }
 
   private _startTick() {
@@ -174,14 +200,63 @@ export class HuiClockCardAnalog extends LitElement {
 
     // Also update date parts if date is shown
     if (this.config?.date && this.config.date !== "none") {
-      this._year = parts.find((p) => p.type === "year")?.value ?? "";
-      this._month = parts.find((p) => p.type === "month")?.value ?? "";
-      this._day = parts.find((p) => p.type === "day")?.value ?? "";
+      const newYear = parts.find((p) => p.type === "year")?.value ?? "";
+      const newMonth = parts.find((p) => p.type === "month")?.value ?? "";
+      const newDay = parts.find((p) => p.type === "day")?.value ?? "";
+
+      // Recalculate font size if date text changed
+      if (
+        newYear !== this._year ||
+        newMonth !== this._month ||
+        newDay !== this._day
+      ) {
+        this._year = newYear;
+        this._month = newMonth;
+        this._day = newDay;
+        this._dateFontSize = this._computeDateFontSize();
+      }
     }
   }
 
   private _tick() {
     this._computeDateTime();
+  }
+
+  private _computeDateFontSize(): string {
+    if (!this.config?.date || this.config.date === "none") {
+      return "";
+    }
+
+    // Get base font size and max width from config
+    const clockSize = this.config.clock_size || "small";
+    const baseFontSize = BASE_FONT_SIZES[clockSize];
+    const maxWidth =
+      CLOCK_DIAMETERS[clockSize] * CLOCK_DATE_WIDTH_RATIOS[clockSize];
+
+    const dateText =
+      `${this._day} ${this._month}${this._year ? ` ${this._year}` : ""}`.trim();
+    if (!dateText) {
+      return `${baseFontSize}px`;
+    }
+
+    // Measure text at base font size
+    let fontSize = baseFontSize;
+    const textWidth = measureTextWidth(
+      dateText,
+      fontSize,
+      getComputedStyle(this).getPropertyValue("--ha-font-family-body").trim() ||
+        "Roboto, Noto, sans-serif"
+    );
+
+    // Scale down if needed
+    if (textWidth > maxWidth * 0.95) {
+      fontSize = Math.floor(((maxWidth * 0.95) / textWidth) * fontSize);
+
+      const minFontSize = baseFontSize * 0.6;
+      fontSize = Math.max(fontSize, minFontSize);
+    }
+
+    return `${fontSize}px`;
   }
 
   private _computeClock = memoizeOne((config: ClockCardConfig) => {
@@ -289,7 +364,12 @@ export class HuiClockCardAnalog extends LitElement {
                   )
                 : nothing}
           ${this.config?.date && this.config.date !== "none"
-            ? html`<div class="date-parts ${sizeClass}">
+            ? html`<div
+                class="date-parts ${sizeClass}"
+                style=${styleMap({
+                  "font-size": this._dateFontSize || undefined,
+                })}
+              >
                 <span class="date-part day-month"
                   >${this._day} ${this._month}</span
                 >
@@ -520,6 +600,10 @@ export class HuiClockCardAnalog extends LitElement {
       line-height: var(--ha-line-height-condensed);
       text-align: center;
       opacity: 0.8;
+      max-width: 87%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .date-parts.size-medium {
@@ -532,10 +616,14 @@ export class HuiClockCardAnalog extends LitElement {
 
     .date-part.day-month {
       grid-area: day-month;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .date-part.year {
       grid-area: year;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   `;
 }
