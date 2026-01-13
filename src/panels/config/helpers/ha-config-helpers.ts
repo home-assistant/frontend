@@ -51,6 +51,7 @@ import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
+import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-md-divider";
@@ -207,7 +208,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _stateItems: HassEntity[] = [];
+  @state() private _helperEntities: HassEntity[] = [];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -249,7 +250,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @state() private _filteredStateItems?: string[] | null;
+  @state() private _filteredHelperEntityIds?: string[] | null;
 
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
@@ -640,7 +641,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     if (
       !this.hass ||
-      this._stateItems === undefined ||
+      this._helperEntities === undefined ||
       this._entityEntries === undefined ||
       this._configEntries === undefined
     ) {
@@ -715,14 +716,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
     const helpers = this._getItems(
       this.hass.localize,
-      this._stateItems,
+      this._helperEntities,
       this._disabledEntityEntries || [],
       this._entityEntries,
       this._configEntries,
       this._entityReg,
       this._categories,
       this._labels,
-      this._filteredStateItems
+      this._filteredHelperEntityIds
     );
     return html`
       <hass-tabs-subpage-data-table
@@ -809,6 +810,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-categories>
+        <ha-filter-voice-assistants
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-voice-assistants"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-voice-assistants"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-voice-assistants>
 
         ${!this.narrow
           ? html`<ha-md-button-menu slot="selection-bar">
@@ -971,7 +981,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         filter.length
       ) {
         const labelItems = new Set<string>();
-        this._stateItems
+        this._helperEntities
           .filter((stateItem) =>
             entityRegistryByEntityId(this._entityReg)[
               stateItem.entity_id
@@ -990,14 +1000,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(labelItems)
             : new Set([...items].filter((x) => labelItems!.has(x)));
-      }
-      if (
+      } else if (
         key === "ha-filter-categories" &&
         Array.isArray(filter) &&
         filter.length
       ) {
         const categoryItems = new Set<string>();
-        this._stateItems
+        this._helperEntities
           .filter(
             (stateItem) =>
               filter[0] ===
@@ -1017,10 +1026,39 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(categoryItems)
             : new Set([...items].filter((x) => categoryItems!.has(x)));
+      } else if (
+        key === "ha-filter-voice-assistants" &&
+        Array.isArray(filter) &&
+        filter.length
+      ) {
+        const assistItems = new Set<string>();
+        this._helperEntities
+          .filter((stateItem) =>
+            getEntityVoiceAssistantsIds(
+              this._entityReg,
+              stateItem.entity_id
+            ).some((va) => (filter as string[]).includes(va))
+          )
+          .forEach((stateItem) => assistItems.add(stateItem.entity_id));
+        (this._disabledEntityEntries || [])
+          .filter((entry) =>
+            getEntityVoiceAssistantsIds(this._entityReg, entry.entity_id).some(
+              (va) => (filter as string[]).includes(va)
+            )
+          )
+          .forEach((entry) => assistItems.add(entry.entity_id));
+        if (!items) {
+          items = assistItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(assistItems)
+            : new Set([...items].filter((x) => assistItems!.has(x)));
       }
     }
-
-    this._filteredStateItems = items ? [...items] : undefined;
+    this._filteredHelperEntityIds = items ? [...items] : undefined;
   }
 
   public connectedCallback() {
@@ -1053,6 +1091,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const device = this._searchParms.get("device");
     const label = this._searchParms.get("label");
     const category = this._searchParms.get("category");
+    const voiceAssistant = this._searchParms.get("voice_assistant");
 
     if (!category && !label && !device) {
       return;
@@ -1064,6 +1103,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
       "ha-filter-categories": category ? [category] : [],
+      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
     };
   }
 
@@ -1303,7 +1343,7 @@ ${rejected
     }
 
     let changed =
-      !this._stateItems ||
+      !this._helperEntities ||
       changedProps.has("_entityEntries") ||
       changedProps.has("_configEntries") ||
       changedProps.has("_entitySource");
@@ -1318,17 +1358,17 @@ ${rejected
 
     const entityIds = Object.keys(this._entitySource);
 
-    const newStates = Object.values(this.hass!.states).filter(
+    const newHelpers = Object.values(this.hass!.states).filter(
       (entity) =>
         entityIds.includes(entity.entity_id) ||
         isHelperDomain(computeStateDomain(entity))
     );
 
     if (
-      this._stateItems.length !== newStates.length ||
-      !this._stateItems.every((val, idx) => newStates[idx] === val)
+      this._helperEntities.length !== newHelpers.length ||
+      !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
     ) {
-      this._stateItems = newStates;
+      this._helperEntities = newHelpers;
     }
   }
 
