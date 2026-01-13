@@ -360,7 +360,9 @@ export class QuickBar extends LitElement {
           ? this.hass.localize("ui.dialogs.quick-bar.navigate_title")
           : "stateObj" in firstItem
             ? this.hass.localize("ui.components.target-picker.type.entities")
-            : this.hass.localize("ui.components.target-picker.type.devices");
+            : "domain" in firstItem
+              ? this.hass.localize("ui.components.target-picker.type.devices")
+              : this.hass.localize("ui.components.target-picker.type.areas");
 
     return type;
   };
@@ -385,6 +387,51 @@ export class QuickBar extends LitElement {
       section?: QuickBarSection
     ) => {
       const items: (string | PickerComboBoxItem)[] = [];
+
+      if (!section || section === "navigate") {
+        let navigateItems = this._generateNavigationCommandsMemoized(
+          this.hass,
+          this._addons
+        ).sort(this._sortBySortingLabel);
+
+        if (filter) {
+          navigateItems = this._filterGroup(
+            "navigate",
+            navigateItems,
+            filter,
+            navigateComboBoxKeys
+          ) as NavigationComboBoxItem[];
+        }
+
+        if (!section && navigateItems.length) {
+          // show group title
+          items.push(this.hass.localize("ui.dialogs.quick-bar.navigate_title"));
+        }
+
+        items.push(...navigateItems);
+      }
+
+      if (this.hass.user?.is_admin && (!section || section === "command")) {
+        let commandItems = this._generateActionCommandsMemoized(this.hass).sort(
+          this._sortBySortingLabel
+        );
+
+        if (filter) {
+          commandItems = this._filterGroup(
+            "command",
+            commandItems,
+            filter,
+            commandComboBoxKeys
+          ) as ActionCommandComboBoxItem[];
+        }
+
+        if (!section && commandItems.length) {
+          // show group title
+          items.push(this.hass.localize("ui.dialogs.quick-bar.commands_title"));
+        }
+
+        items.push(...commandItems);
+      }
 
       if (!section || section === "entity") {
         let entityItems = this._getEntitiesMemoized(this.hass).sort(
@@ -455,51 +502,6 @@ export class QuickBar extends LitElement {
         }
 
         items.push(...areaItems);
-      }
-
-      if (!section || section === "navigate") {
-        let navigateItems = this._generateNavigationCommandsMemoized(
-          this.hass,
-          this._addons
-        ).sort(this._sortBySortingLabel);
-
-        if (filter) {
-          navigateItems = this._filterGroup(
-            "navigate",
-            navigateItems,
-            filter,
-            navigateComboBoxKeys
-          ) as NavigationComboBoxItem[];
-        }
-
-        if (!section && navigateItems.length) {
-          // show group title
-          items.push(this.hass.localize("ui.dialogs.quick-bar.navigate_title"));
-        }
-
-        items.push(...navigateItems);
-      }
-
-      if (this.hass.user?.is_admin && (!section || section === "command")) {
-        let commandItems = this._generateActionCommandsMemoized(this.hass).sort(
-          this._sortBySortingLabel
-        );
-
-        if (filter) {
-          commandItems = this._filterGroup(
-            "command",
-            commandItems,
-            filter,
-            commandComboBoxKeys
-          ) as ActionCommandComboBoxItem[];
-        }
-
-        if (!section && commandItems.length) {
-          // show group title
-          items.push(this.hass.localize("ui.dialogs.quick-bar.commands_title"));
-        }
-
-        items.push(...commandItems);
       }
 
       return items;
@@ -700,6 +702,7 @@ export class QuickBar extends LitElement {
 
   static styles = css`
     :host {
+      --dialog-surface-margin-top: var(--ha-space-10);
       --ha-dialog-min-height: 620px;
       --ha-bottom-sheet-height: calc(
         100vh - max(var(--safe-area-inset-top), 48px)

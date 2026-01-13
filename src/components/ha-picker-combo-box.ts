@@ -808,8 +808,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
         .section-title,
         .title {
+          box-sizing: border-box;
           background-color: var(--ha-color-fill-neutral-quiet-resting);
-          padding: var(--ha-space-2) var(--ha-space-3);
+          padding: var(--ha-space-1) var(--ha-space-4);
           font-weight: var(--ha-font-weight-bold);
           color: var(--secondary-text-color);
           min-height: var(--ha-space-6);
@@ -838,7 +839,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           opacity: 0;
           position: absolute;
           top: 1px;
-          width: calc(100% - var(--ha-space-8));
+          width: calc(100% - var(--ha-space-4));
         }
 
         .section-title.show {
