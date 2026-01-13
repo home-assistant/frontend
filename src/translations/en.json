@@ -8326,6 +8326,7 @@
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",
+              "position_hint": "Click on the image preview to position this element",
               "element_types": {
                 "state-badge": "State badge",
                 "state-icon": "State icon",
