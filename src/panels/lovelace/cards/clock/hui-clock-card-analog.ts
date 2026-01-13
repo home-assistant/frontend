@@ -186,21 +186,23 @@ export class HuiClockCardAnalog extends LitElement {
 
   private _computeClock = memoizeOne((config: ClockCardConfig) => {
     const faceParts = config.face_style?.split("_");
+    const isLongDate =
+      config.date === "day-month-long" || config.date === "long";
 
     return {
       sizeClass: config.clock_size ? `size-${config.clock_size}` : "",
       isNumbers: faceParts?.includes("numbers") ?? false,
       isRoman: faceParts?.includes("roman") ?? false,
       isUpright: faceParts?.includes("upright") ?? false,
+      isLongDate,
     };
   });
 
   render() {
     if (!this.config) return nothing;
 
-    const { sizeClass, isNumbers, isRoman, isUpright } = this._computeClock(
-      this.config
-    );
+    const { sizeClass, isNumbers, isRoman, isUpright, isLongDate } =
+      this._computeClock(this.config);
 
     const indicator = (number?: number) => html`
       <div
@@ -289,7 +291,13 @@ export class HuiClockCardAnalog extends LitElement {
                   )
                 : nothing}
           ${this.config?.date && this.config.date !== "none"
-            ? html`<div class="date-parts ${sizeClass}">
+            ? html`<div
+                class=${classMap({
+                  "date-parts": true,
+                  [sizeClass]: true,
+                  "long-date": isLongDate,
+                })}
+              >
                 <span class="date-part day-month"
                   >${this._day} ${this._month}</span
                 >
@@ -530,18 +538,26 @@ export class HuiClockCardAnalog extends LitElement {
       opacity: 0.8;
       max-width: 87%;
       overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
     }
 
     /* Modern browsers: Use container queries for responsive font sizing */
     @supports (container-type: inline-size) {
+      /* Small clock with long date: reduce to xs */
+      @container clock (max-width: 139px) {
+        .date-parts.long-date {
+          font-size: var(--ha-font-size-xs);
+        }
+      }
+
+      /* Medium clock: scale up */
       @container clock (min-width: 140px) {
         .date-parts {
           font-size: var(--ha-font-size-l);
         }
       }
 
+      /* Large clock: scale up more */
       @container clock (min-width: 200px) {
         .date-parts {
           font-size: var(--ha-font-size-xl);
@@ -551,6 +567,11 @@ export class HuiClockCardAnalog extends LitElement {
 
     /* Legacy browsers: Use existing size classes */
     @supports not (container-type: inline-size) {
+      /* Small clock (no size class) with long date */
+      .date-parts.long-date:not(.size-medium):not(.size-large) {
+        font-size: var(--ha-font-size-xs);
+      }
+
       .date-parts.size-medium {
         font-size: var(--ha-font-size-l);
       }
@@ -563,13 +584,11 @@ export class HuiClockCardAnalog extends LitElement {
     .date-part.day-month {
       grid-area: day-month;
       overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .date-part.year {
       grid-area: year;
       overflow: hidden;
-      text-overflow: ellipsis;
     }
   `;
 }
