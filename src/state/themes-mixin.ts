@@ -3,6 +3,7 @@ import {
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../common/dom/fire_event";
+import { subscribeThemePreferences, saveThemePreferences } from "../data/theme";
 import { subscribeThemes } from "../data/ws-themes";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
@@ -24,6 +25,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     private _themeApplied = false;
 
+    private _themePrefsAvailable = false;
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
@@ -34,7 +37,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           },
         });
         this._applyTheme(mql.matches);
-        storeState(this.hass!);
+        if (this._themePrefsAvailable) {
+          saveThemePreferences(this.hass!, this.hass!.selectedTheme!).catch(
+            () => {
+              storeState(this.hass!);
+            }
+          );
+        } else {
+          storeState(this.hass!);
+        }
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
       if (!this._themeApplied && mql.matches) {
@@ -62,6 +73,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this._updateHass({ themes });
         invalidateThemeCache();
         this._applyTheme(mql.matches);
+      });
+
+      subscribeThemePreferences(this.hass!, ({ value }) => {
+        this._themePrefsAvailable = true;
+        if (!value) {
+          return;
+        }
+        this._updateHass({ selectedTheme: value });
+        this._applyTheme(mql.matches);
+      }).catch(() => {
+        this._themePrefsAvailable = false;
       });
     }
 

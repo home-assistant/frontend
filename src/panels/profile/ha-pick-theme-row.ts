@@ -1,3 +1,4 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -15,8 +16,13 @@ import {
   DefaultAccentColor,
   DefaultPrimaryColor,
 } from "../../resources/theme/color/color.globals";
-import type { HomeAssistant } from "../../types";
+import {
+  saveThemePreferences,
+  subscribeThemePreferences,
+} from "../../data/theme";
+import type { HomeAssistant, ThemeSettings } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { clearSelectedThemeState, getState } from "../../util/ha-pref-storage";
 
 const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
 const HOME_ASSISTANT_THEME = "default";
@@ -28,6 +34,39 @@ export class HaPickThemeRow extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() _themeNames: string[] = [];
+
+  @state() private _backendTheme?: ThemeSettings | null;
+
+  @state() private _migrating = false;
+
+  private _unsubThemePreferences?: Promise<UnsubscribeFunc>;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._subscribeThemePreferences();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubThemePreferences) {
+      this._unsubThemePreferences.then((unsub) => unsub());
+      this._unsubThemePreferences = undefined;
+    }
+  }
+
+  private _subscribeThemePreferences() {
+    if (this._unsubThemePreferences || !this.hass) {
+      return;
+    }
+    this._unsubThemePreferences = subscribeThemePreferences(
+      this.hass,
+      ({ value }) => {
+        this._backendTheme = value;
+      }
+    ).catch(() => {
+      this._backendTheme = undefined;
+    });
+  }
 
   protected render(): TemplateResult {
     const hasThemes =
@@ -41,6 +80,11 @@ export class HaPickThemeRow extends LitElement {
         : this.hass.themes.default_theme;
 
     const themeSettings = this.hass.selectedTheme;
+    const localTheme = this._getLocalTheme();
+    const showMigration =
+      this._backendTheme !== undefined &&
+      this._backendTheme === null &&
+      localTheme !== null;
 
     return html`
       <ha-settings-row .narrow=${this.narrow}>
@@ -159,10 +203,35 @@ export class HaPickThemeRow extends LitElement {
               : ""}
           </div>`
         : ""}
+      ${showMigration
+        ? html`
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading">
+                ${this.hass.localize("ui.panel.profile.themes.migrate_header")}
+              </span>
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.profile.themes.migrate_description"
+                )}
+              </span>
+              <ha-button
+                appearance="plain"
+                size="small"
+                .disabled=${this._migrating}
+                @click=${this._migrateThemePreferences}
+              >
+                ${this.hass.localize("ui.panel.profile.themes.migrate_button")}
+              </ha-button>
+            </ha-settings-row>
+          `
+        : ""}
     `;
   }
 
   public willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("hass")) {
+      this._subscribeThemePreferences();
+    }
     const oldHass = changedProperties.get("hass") as undefined | HomeAssistant;
     const themesChanged =
       changedProperties.has("hass") &&
@@ -234,6 +303,31 @@ export class HaPickThemeRow extends LitElement {
       primaryColor: undefined,
       accentColor: undefined,
     });
+  }
+
+  private _getLocalTheme(): ThemeSettings | null {
+    return getState().selectedTheme ?? null;
+  }
+
+  private async _migrateThemePreferences() {
+    const localTheme = this._getLocalTheme();
+    if (!localTheme) {
+      return;
+    }
+    this._migrating = true;
+    try {
+      await saveThemePreferences(this.hass, localTheme);
+      clearSelectedThemeState();
+      fireEvent(this, "hass-notification", {
+        message: this.hass.localize("ui.panel.profile.themes.migrate_success"),
+      });
+    } catch (_err: any) {
+      fireEvent(this, "hass-notification", {
+        message: this.hass.localize("ui.panel.profile.themes.migrate_failed"),
+      });
+    } finally {
+      this._migrating = false;
+    }
   }
 
   static styles = css`
