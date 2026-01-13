@@ -2383,6 +2383,7 @@
           "updates_refreshed": "State of {count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
+          "title_not_installable": "{count} not installable {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "more_updates": "Show all updates",
           "show": "show",
@@ -6844,9 +6845,15 @@
         },
         "matter": {
           "panel": {
-            "thread_panel": "Visit Thread Panel",
-            "experimental_note": "Matter is still in the early phase of development, it is not meant to be used in production. This panel is for development only.",
-            "add_devices": "You can add Matter devices by commissioning them if they are not set up yet, or share them from another controller and enter the sharing code.",
+            "thread_panel": "Visit Thread panel",
+            "add_device": "Add device",
+            "status_title": "status",
+            "status_online": "online",
+            "status_offline": "offline",
+            "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+            "developer_tools_title": "Developer tools",
+            "developer_tools_description": "Advanced commissioning options for development",
+            "developer_tools_info": "These options are intended for developers and advanced users. In most cases, use the \"Add device\" button in the bottom right corner instead.",
             "mobile_app_commisioning": "Commission device with mobile app",
             "commission_device": "Commission device",
             "add_shared_device": "Add shared device",
@@ -7226,10 +7233,14 @@
       "lovelace": {
         "strategy": {
           "original-states": {
-            "helpers": "[%key:ui::panel::config::helpers::caption%]"
+            "helpers": "[%key:ui::panel::config::helpers::caption%]",
+            "empty_state_title": "Welcome Home",
+            "empty_state_content": "This page allows you to control your devices, however it looks like you have no devices set up yet.",
+            "empty_state_action": "Go to the integrations page"
           },
           "areas": {
-            "no_entities": "No entities in this area.",
+            "empty_state_title": "No devices",
+            "empty_state_content": "There are no devices assigned to this area yet. Assign devices to this area to see them here.",
             "sensors": "Sensors",
             "sensors_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
             "edit_the_area": "edit the area",
@@ -7300,11 +7311,6 @@
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
             "no_action": "No action to run specified"
-          },
-          "empty_state": {
-            "title": "Welcome Home",
-            "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
-            "go_to_integrations_page": "Go to the integrations page."
           },
           "entities": {
             "never_triggered": "Never triggered"
@@ -7977,6 +7983,17 @@
               "name": "Entity",
               "description": "The Entity card gives you a quick overview of your entity's state."
             },
+            "empty_state": {
+              "name": "Empty state",
+              "description": "The Empty state card displays a centered message with an optional icon and action button.",
+              "style": "Style",
+              "style_options": {
+                "card": "Card",
+                "content-only": "Content only"
+              },
+              "content": "Content",
+              "action_text": "Action button text"
+            },
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
@@ -8309,6 +8326,7 @@
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",
+              "position_hint": "Click on the image preview to position this element",
               "element_types": {
                 "state-badge": "State badge",
                 "state-icon": "State icon",

@@ -201,6 +201,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         label: this.hass.localize(
           "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
         ),
+        type: "icon",
         template: (statistic) =>
           html`${statistic.issues
             ? html`<ha-button

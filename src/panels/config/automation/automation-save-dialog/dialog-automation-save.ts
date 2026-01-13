@@ -157,7 +157,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
           `
         : nothing}
       ${this._visibleOptionals.includes("description")
-        ? html` <ha-textarea
+        ? html`<ha-textarea
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.description.label"
             )}
@@ -168,6 +168,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             autogrow
             .value=${this._newDescription}
             .helper=${supportsMarkdownHelper(this.hass.localize)}
+            helperPersistent
             @input=${this._valueChanged}
           ></ha-textarea>`
         : nothing}
@@ -570,7 +571,7 @@ ${dump(this._params.config)}
         ha-category-picker,
         ha-labels-picker,
         ha-area-picker,
-        ha-chip-set {
+        ha-chip-set:has(> ha-assist-chip) {
           margin-top: 16px;
         }
         ha-alert {
