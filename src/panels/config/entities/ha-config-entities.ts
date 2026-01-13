@@ -64,6 +64,7 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
+import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-divider";
@@ -115,7 +116,7 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import "../voice-assistants/expose/expose-assistant-icon";
 
 export interface StateEntity extends Omit<
@@ -504,15 +505,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         minWidth: "100px",
         maxWidth: "100px",
         template: (entry) => {
-          const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+          const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
             this._entities,
             entry.entity_id
           );
-          return html` ${exposedToVoiceAssistantKeys.length !== 0
-            ? exposedToVoiceAssistantKeys.map(
-                (vaKey) =>
+          return html` ${exposedToVoiceAssistantIds.length !== 0
+            ? exposedToVoiceAssistantIds.map(
+                (vaId) =>
                   html` <voice-assistants-expose-assistant-icon
-                    .assistant=${vaKey}
+                    .assistant=${vaId}
                     .hass=${this.hass}
                   >
                   </voice-assistants-expose-assistant-icon>`
@@ -663,6 +664,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
             entity.labels.some((lbl) => (filter as string[]).includes(lbl))
+          );
+        } else if (
+          key === "ha-filter-voice-assistants" &&
+          Array.isArray(filter) &&
+          filter.length
+        ) {
+          filteredEntities = filteredEntities.filter((entity) =>
+            getEntityVoiceAssistantsIds(this._entities, entity.entity_id).some(
+              (va) => (filter as string[]).includes(va)
+            )
           );
         }
       });
@@ -1103,6 +1114,15 @@ ${
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
+        <ha-filter-voice-assistants
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-voice-assistants"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-voice-assistants"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-voice-assistants>
         ${
           includeAddDeviceFab
             ? html`<ha-fab
@@ -1155,6 +1175,7 @@ ${
     const subEntry = this._searchParms.get("sub_entry");
     const device = this._searchParms.get("device");
     const label = this._searchParms.get("label");
+    const voiceAssistant = this._searchParms.get("voice_assistant");
 
     if (!domain && !configEntry && !label && !device) {
       return;
@@ -1167,6 +1188,7 @@ ${
       "ha-filter-integrations": domain ? [domain] : [],
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
+      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
       config_entry: configEntry ? [configEntry] : [],
       sub_entry: subEntry ? [subEntry] : [],
     };

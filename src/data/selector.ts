@@ -221,6 +221,7 @@ export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
+    allow_negative?: boolean;
   } | null;
 }
 
@@ -376,7 +377,7 @@ interface SelectBoxOptionImage {
 }
 
 export interface SelectOption {
-  value: any;
+  value: string;
   label: string;
   description?: string;
   image?: string | SelectBoxOptionImage;

@@ -1,5 +1,21 @@
 import type { Selector } from "../../data/selector";
-import type { HaFormSchema } from "./types";
+import type { HaFormData, HaFormSchema } from "./types";
+
+const setDefaultValue = (
+  field: HaFormSchema,
+  value: HaFormData | undefined
+) => {
+  if ("selector" in field && "choose" in field.selector) {
+    const firstChoice = Object.keys(field.selector.choose.choices)[0];
+    if (firstChoice) {
+      return {
+        active_choice: firstChoice,
+        [firstChoice]: value,
+      };
+    }
+  }
+  return value;
+};
 
 export const computeInitialHaFormData = (
   schema: HaFormSchema[] | readonly HaFormSchema[]
@@ -10,9 +26,12 @@ export const computeInitialHaFormData = (
       field.description?.suggested_value !== undefined &&
       field.description?.suggested_value !== null
     ) {
-      data[field.name] = field.description.suggested_value;
+      data[field.name] = setDefaultValue(
+        field,
+        field.description.suggested_value
+      );
     } else if ("default" in field) {
-      data[field.name] = field.default;
+      data[field.name] = setDefaultValue(field, field.default);
     } else if (field.type === "expandable") {
       const expandableData = computeInitialHaFormData(field.schema);
       if (field.required || Object.keys(expandableData).length) {
@@ -108,6 +127,21 @@ export const computeInitialHaFormData = (
         data[field.name] = {};
       } else if ("state" in selector) {
         data[field.name] = selector.state?.multiple ? [] : "";
+      } else if ("choose" in selector) {
+        const firstChoice = Object.keys(selector.choose.choices)[0];
+        if (!firstChoice) {
+          data[field.name] = {};
+        } else {
+          data[field.name] = {
+            active_choice: firstChoice,
+            [firstChoice]: computeInitialHaFormData([
+              {
+                name: firstChoice,
+                selector: selector.choose.choices[firstChoice].selector,
+              },
+            ])[firstChoice],
+          };
+        }
       } else {
         throw new Error(
           `Selector ${Object.keys(selector)[0]} not supported in initial form data`
