@@ -3341,8 +3341,7 @@
               "type": "Type",
               "editable": "Editable",
               "category": "Category",
-              "area": "Area",
-              "voice_assistants": "Voice assistants"
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
