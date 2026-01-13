@@ -1504,6 +1504,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       box-shadow: inset var(--ha-shadow-offset-x-lg)
         calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
         var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
+      z-index: 2;
     }
 
     @media (prefers-color-scheme: dark) {
