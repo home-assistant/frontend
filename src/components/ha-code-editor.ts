@@ -22,7 +22,6 @@ import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { listenMediaQuery } from "../common/dom/media_query";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { copyToClipboard } from "../common/util/copy-clipboard";
@@ -95,12 +94,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _canCopy = false;
 
-  @state() private _narrow = false;
-
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
-
-  private _unsubMediaQuery?: () => void;
 
   private _editorToolbar?: HaIconButtonToolbar;
 
@@ -133,12 +128,6 @@ export class HaCodeEditor extends ReactiveElement {
     }
     this.addEventListener("keydown", stopPropagation);
     this.addEventListener("keydown", this._handleKeyDown);
-    this._unsubMediaQuery = listenMediaQuery(
-      "(max-width: 600px)",
-      (matches) => {
-        this._narrow = matches;
-      }
-    );
     // This is unreachable as editor will not exist yet,
     // but focus should not behave like this for good a11y.
     // (@steverep to fix in autofocus PR)
@@ -154,8 +143,6 @@ export class HaCodeEditor extends ReactiveElement {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
     this.removeEventListener("keydown", this._handleKeyDown);
-    this._unsubMediaQuery?.();
-    this._unsubMediaQuery = undefined;
     this._updateFullscreenState(false);
     this.updateComplete.then(() => {
       this.codemirror!.destroy();
@@ -198,13 +185,6 @@ export class HaCodeEditor extends ReactiveElement {
       transactions.push({
         effects: this._loadedCodeMirror!.linewrapCompartment!.reconfigure(
           this.linewrap ? this._loadedCodeMirror!.EditorView.lineWrapping : []
-        ),
-      });
-    }
-    if (changedProps.has("_narrow")) {
-      transactions.push({
-        effects: this._loadedCodeMirror!.searchCompartment.reconfigure(
-          this._loadedCodeMirror!.search({ top: this._narrow })
         ),
       });
     }
@@ -276,7 +256,7 @@ export class HaCodeEditor extends ReactiveElement {
         saveKeyBinding,
       ]),
       this._loadedCodeMirror.searchCompartment.of(
-        this._loadedCodeMirror.search({ top: this._narrow })
+        this._loadedCodeMirror.search({ top: true })
       ),
       this._loadedCodeMirror.langCompartment.of(this._mode),
       this._loadedCodeMirror.haTheme,
