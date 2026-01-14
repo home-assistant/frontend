@@ -40,13 +40,14 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
   @state() private _migrating = false;
 
   protected hassSubscribe() {
-    const unsubscribe = subscribeThemePreferences(this.hass, ({ value }) => {
-      this._backendTheme = value;
-    });
-    unsubscribe.catch(() => {
-      this._backendTheme = undefined;
-    });
-    return [unsubscribe];
+    return [
+      subscribeThemePreferences(this.hass, ({ value }) => {
+        this._backendTheme = value;
+      }).catch(() => {
+        this._backendTheme = undefined;
+        return () => undefined;
+      }),
+    ];
   }
 
   protected render(): TemplateResult {
