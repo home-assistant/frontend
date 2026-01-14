@@ -22,7 +22,7 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, ThemeSettings } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import { clearSelectedThemeState, getState } from "../../util/ha-pref-storage";
+import { clearSelectedThemeState } from "../../util/ha-pref-storage";
 
 const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
 const HOME_ASSISTANT_THEME = "default";
@@ -285,7 +285,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
   }
 
   private _getLocalTheme(): ThemeSettings | null {
-    return getState().selectedTheme ?? null;
+    return this.hass.selectedTheme ?? null;
   }
 
   private async _migrateThemePreferences() {
