@@ -2235,8 +2235,8 @@
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available.",
       "reload": "Reload",
-      "theme_save_failed": "Unable to save theme settings to your user profile. Your changes are saved locally to the browser for now.",
-      "theme_preferences_unavailable": "Theme settings cannot be saved to your user profile on this Home Assistant instance."
+      "theme_save_failed": "Unable to save theme settings to your user profile.",
+      "theme_preferences_unavailable": "Unable to load user profile theme settings."
     },
     "sidebar": {
       "external_app_configuration": "App settings",

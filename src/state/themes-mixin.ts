@@ -26,11 +26,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     private _themeApplied = false;
 
-    private _themePrefsAvailable = false;
-
-    private _themeSaveFailedNotified = false;
-
-    private _themePrefsUnavailableNotified = false;
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
@@ -43,20 +38,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         });
         this._applyTheme(mql.matches);
         storeState(this.hass!);
-        if (this._themePrefsAvailable) {
-          saveThemePreferences(this.hass!, this.hass!.selectedTheme!).catch(
-            () => {
-              if (!this._themeSaveFailedNotified) {
-                this._themeSaveFailedNotified = true;
-                fireEvent(this, "hass-notification", {
-                  message: this.hass!.localize(
-                    "ui.notification_toast.theme_save_failed"
-                  ),
-                });
-              }
-            }
-          );
-        }
+        saveThemePreferences(this.hass!, this.hass!.selectedTheme!).catch(() => {
+          fireEvent(this, "hass-notification", {
+            message: this.hass!.localize(
+              "ui.notification_toast.theme_save_failed"
+            ),
+          });
+        });
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
       if (!this._themeApplied && mql.matches) {
@@ -87,22 +75,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
 
       subscribeThemePreferences(this.hass!, ({ value }) => {
-        this._themePrefsAvailable = true;
         if (!value) {
           return;
         }
         this._updateHass({ selectedTheme: value });
         this._applyTheme(mql.matches);
       }).catch(() => {
-        this._themePrefsAvailable = false;
-        if (!this._themePrefsUnavailableNotified) {
-          this._themePrefsUnavailableNotified = true;
-          fireEvent(this, "hass-notification", {
-            message: this.hass!.localize(
-              "ui.notification_toast.theme_preferences_unavailable"
-            ),
-          });
-        }
+        fireEvent(this, "hass-notification", {
+          message: this.hass!.localize(
+            "ui.notification_toast.theme_preferences_unavailable"
+          ),
+        });
       });
     }
 
