@@ -62,13 +62,7 @@ export interface MockHomeAssistant extends HomeAssistant {
     stateObj: HassEntity,
     attribute: string,
     value?: any
-  ): ValuePart[] | undefined;
-  formatEntityAttributeValuePart(
-    type: string,
-    stateObj: HassEntity,
-    attribute: string,
-    value?: any
-  ): string | undefined;
+  ): ValuePart[];
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }
 
@@ -127,7 +121,6 @@ export const provideHass = (
       formatEntityAttributeName,
       formatEntityAttributeValue,
       formatEntityAttributeValueToParts,
-      formatEntityAttributeValuePart,
       formatEntityName,
     } = await computeFormatFunctions(
       hass().localize,
@@ -144,7 +137,6 @@ export const provideHass = (
       formatEntityAttributeName,
       formatEntityAttributeValue,
       formatEntityAttributeValueToParts,
-      formatEntityAttributeValuePart,
       formatEntityName,
     });
   }
@@ -386,12 +378,6 @@ export const provideHass = (
         value: value !== null ? value : (stateObj.attributes[attribute] ?? ""),
       },
     ],
-    formatEntityAttributeValuePart: (type, stateObj, attribute, value) =>
-      type === "value"
-        ? value !== null
-          ? value
-          : (stateObj.attributes[attribute] ?? "")
-        : "",
     ...overrideData,
   };
 
