@@ -31,8 +31,7 @@ export const computeAttributeValueDisplay = (
   value?: any
 ): string => {
   // Number value, return formatted number
-  const formattedValue = computeAttributeValuePartDisplay(
-    "value",
+  const parts = computeAttributeValueToParts(
     localize,
     stateObj,
     locale,
@@ -41,30 +40,10 @@ export const computeAttributeValueDisplay = (
     attribute,
     value
   );
-  const unit = computeAttributeValuePartDisplay(
-    "unit",
-    localize,
-    stateObj,
-    locale,
-    config,
-    entities,
-    attribute,
-    value
-  );
-  const literal = computeAttributeValuePartDisplay(
-    "literal",
-    localize,
-    stateObj,
-    locale,
-    config,
-    entities,
-    attribute,
-    value
-  );
-  return `${formattedValue ?? ""}${literal ?? ""}${unit ?? ""}`;
+  return parts.map((p) => p.value).join("");
 };
 
-export const computeAttributeValueToPartsDisplay = (
+export const computeAttributeValueToParts = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
@@ -72,7 +51,7 @@ export const computeAttributeValueToPartsDisplay = (
   entities: HomeAssistant["entities"],
   attribute: string,
   value?: any
-): ValuePart[] | undefined => {
+): ValuePart[] => {
   const parts: ValuePart[] = [];
 
   let formattedValue;
@@ -176,31 +155,6 @@ export const computeAttributeValueToPartsDisplay = (
   if (literal) parts.push({ type: "literal", value: literal });
   if (unit) parts.push({ type: "unit", value: unit });
   return parts;
-};
-
-export const computeAttributeValuePartDisplay = (
-  type: string,
-  localize: LocalizeFunc,
-  stateObj: HassEntity,
-  locale: FrontendLocaleData,
-  config: HassConfig,
-  entities: HomeAssistant["entities"],
-  attribute: string,
-  value?: any
-): string | undefined => {
-  let partValue;
-  const parts = computeAttributeValueToPartsDisplay(
-    localize,
-    stateObj,
-    locale,
-    config,
-    entities,
-    attribute,
-    value
-  );
-  const foundPart = parts?.find((_part) => _part.type === type);
-  if (foundPart) partValue = foundPart.value;
-  return partValue;
 };
 
 export const computeAttributeNameDisplay = (
