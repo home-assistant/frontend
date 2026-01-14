@@ -26,6 +26,7 @@ import "./chips/ha-chip-set";
 import "./chips/ha-filter-chip";
 import "./ha-combo-box-item";
 import "./ha-icon";
+import "./ha-section-title";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -213,14 +214,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       ${this.sections?.length
         ? html`
             <div class="section-title-wrapper">
-              <div
+              <ha-section-title
                 class="section-title ${!this.selectedSection &&
                 this._sectionTitle
                   ? "show"
                   : ""}"
               >
                 ${this._sectionTitle}
-              </div>
+              </ha-section-title>
             </div>
           `
         : nothing}
@@ -375,7 +376,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       `;
     }
     if (typeof item === "string") {
-      return html`<div class="title">${item}</div>`;
+      return html`<ha-section-title>${item}</ha-section-title>`;
     }
 
     const renderer = this.rowRenderer || DEFAULT_ROW_RENDERER;
@@ -790,27 +791,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           border: 1px solid var(--ha-color-border-neutral-quiet);
         }
 
-        .section-title,
-        .title {
-          background-color: var(--ha-color-fill-neutral-quiet-resting);
-          padding: var(--ha-space-2) var(--ha-space-3);
-          font-weight: var(--ha-font-weight-bold);
-          color: var(--secondary-text-color);
-          min-height: var(--ha-space-6);
-          display: flex;
-          align-items: center;
-        }
-
-        .title {
+        ha-section-title {
           width: 100%;
         }
 
-        :host([mode="dialog"]) .title {
+        :host([mode="dialog"]) ha-section-title:not(.section-title) {
           padding: var(--ha-space-1) var(--ha-space-4);
-        }
-
-        :host([mode="dialog"]) ha-textfield {
-          padding: 0 var(--ha-space-4);
         }
 
         .section-title-wrapper {
@@ -818,14 +804,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           position: relative;
         }
 
-        .section-title {
+        .section-title-wrapper ha-section-title {
           opacity: 0;
           position: absolute;
           top: 1px;
           width: calc(100% - var(--ha-space-8));
         }
 
-        .section-title.show {
+        .section-title-wrapper ha-section-title.show {
           opacity: 1;
           z-index: 1;
         }
