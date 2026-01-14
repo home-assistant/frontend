@@ -5424,11 +5424,19 @@
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
             "save": "Save",
+            "rename": "Rename",
+            "missing_name": "Name is required",
             "unsaved_confirm_title": "Leave editor?",
             "unsaved_confirm_text": "Unsaved changes will be lost.",
             "name": "Name",
             "icon": "Icon",
             "area": "Area",
+            "dialog": {
+              "add_icon": "Add icon",
+              "add_area": "Add area",
+              "add_category": "Add category",
+              "add_labels": "Add labels"
+            },
             "devices": {
               "header": "Devices",
               "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",

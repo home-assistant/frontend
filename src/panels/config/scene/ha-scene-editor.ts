@@ -30,17 +30,14 @@ import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
-import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-picker";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-textfield";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -66,6 +63,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
@@ -304,7 +302,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           extended
           .disabled=${this._saving}
           @click=${this._saveScene}
-          class=${classMap({ dirty: this._dirty, saving: this._saving })}
+          class=${classMap({
+            dirty: this._dirty || !this.sceneId,
+            saving: this._saving,
+          })}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
@@ -371,38 +372,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                   )}
                 </ha-button>
               </ha-alert>
-              <ha-card outlined>
-                <div class="card-content">
-                  <ha-textfield
-                    .value=${this._config.name}
-                    .name=${"name"}
-                    @change=${this._valueChanged}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.scene.editor.name"
-                    )}
-                  ></ha-textfield>
-                  <ha-icon-picker
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.scene.editor.icon"
-                    )}
-                    .name=${"icon"}
-                    .value=${this._config.icon}
-                    @value-changed=${this._valueChanged}
-                  >
-                  </ha-icon-picker>
-                  <ha-area-picker
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.scene.editor.area"
-                    )}
-                    .name=${"area"}
-                    .value=${this._sceneAreaIdWithUpdates || ""}
-                    @value-changed=${this._areaChanged}
-                  >
-                  </ha-area-picker>
-                </div>
-              </ha-card>
             </div>
 
             <ha-config-section vertical .isWide=${this.isWide}>
@@ -930,44 +899,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     this._dirty = true;
   }
 
-  private _valueChanged(ev: Event) {
-    ev.stopPropagation();
-    const target = ev.target as any;
-    const name = target.name;
-    if (!name) {
-      return;
-    }
-    let newVal = (ev as CustomEvent).detail?.value ?? target.value;
-    if (target.type === "number") {
-      newVal = Number(newVal);
-    }
-    if ((this._config![name] || "") === newVal) {
-      return;
-    }
-    if (!newVal) {
-      delete this._config![name];
-      this._config = { ...this._config! };
-    } else {
-      this._config = { ...this._config!, [name]: newVal };
-    }
-    this._dirty = true;
-  }
-
-  private _areaChanged(ev: CustomEvent) {
-    const newValue = ev.detail.value === "" ? null : ev.detail.value;
-
-    if (newValue === (this._sceneAreaIdWithUpdates || "")) {
-      return;
-    }
-
-    if (newValue === this._sceneAreaIdCurrent) {
-      this._updatedAreaId = undefined;
-    } else {
-      this._updatedAreaId = newValue;
-      this._dirty = true;
-    }
-  }
-
   private _stateChanged(event: HassEvent) {
     if (
       event.context.id !== this._activateContextId &&
@@ -1112,10 +1043,84 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       return;
     }
 
-    const id = !this.sceneId ? "" + Date.now() : this.sceneId!;
     if (this._mode === "live") {
       this._generateConfigFromLive();
     }
+
+    const isNewScene = !this.sceneId;
+
+    if (isNewScene) {
+      // Show dialog for new scenes
+      const entityRegEntry = this._scene
+        ? this._entityRegistryEntries.find(
+            (reg) => reg.entity_id === this._scene!.entity_id
+          )
+        : undefined;
+
+      showSceneSaveDialog(this, {
+        config: this._config!,
+        domain: "scene",
+        entityRegistryEntry: entityRegEntry,
+        entityRegistryUpdate:
+          this._updatedAreaId !== undefined
+            ? {
+                area: this._updatedAreaId || "",
+                labels: entityRegEntry?.labels || [],
+                category: entityRegEntry?.categories.scene || "",
+              }
+            : undefined,
+        updateConfig: async (newConfig, entityRegistryUpdate) => {
+          const id = "" + Date.now();
+          try {
+            this._saving = true;
+            await saveScene(this.hass, id, newConfig);
+
+            let scene = this.scenes.find(
+              (entity: SceneEntity) => entity.attributes.id === id
+            );
+
+            if (!scene) {
+              try {
+                await new Promise<void>((resolve, reject) => {
+                  setTimeout(reject, 3000);
+                  this._scenesSet = resolve;
+                });
+                scene = this.scenes.find(
+                  (entity: SceneEntity) => entity.attributes.id === id
+                );
+              } catch (_err) {
+                // We do nothing.
+              } finally {
+                this._scenesSet = undefined;
+              }
+            }
+
+            if (scene) {
+              await updateEntityRegistryEntry(this.hass, scene.entity_id, {
+                area_id: entityRegistryUpdate.area || undefined,
+                labels: entityRegistryUpdate.labels,
+                categories: { scene: entityRegistryUpdate.category },
+              });
+            }
+
+            this._dirty = false;
+            navigate(`/config/scene/edit/${id}`, { replace: true });
+          } catch (err: any) {
+            this._errors = err.body.message || err.message;
+            showToast(this, {
+              message: err.body.message || err.message,
+            });
+            throw err;
+          } finally {
+            this._saving = false;
+          }
+        },
+      });
+      return;
+    }
+
+    // Existing scene - save directly
+    const id = this.sceneId!;
     try {
       this._saving = true;
       await saveScene(this.hass, id, this._config!);
@@ -1153,10 +1158,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       }
 
       this._dirty = false;
-
-      if (!this.sceneId) {
-        navigate(`/config/scene/edit/${id}`, { replace: true });
-      }
     } catch (err: any) {
       this._errors = err.body.message || err.message;
       showToast(this, {
@@ -1275,14 +1276,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         ha-fab.saving {
           opacity: var(--light-disabled-opacity);
         }
-        ha-icon-picker,
-        ha-area-picker,
         ha-entity-picker {
           display: block;
           margin-top: 8px;
-        }
-        ha-textfield {
-          display: block;
         }
         div[slot="meta"] {
           display: flex;
