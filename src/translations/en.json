@@ -1298,7 +1298,10 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
-        "install_status": "Install status"
+        "install_status": "Install status",
+        "device_name": "Device name",
+        "area_name": "Area name",
+        "floor_name": "Floor name"
       },
       "multi-textfield": {
         "add_item": "Add {item}"
