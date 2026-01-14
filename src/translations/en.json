@@ -1298,7 +1298,10 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
-        "install_status": "Install status"
+        "install_status": "Install status",
+        "device_name": "Device name",
+        "area_name": "Area name",
+        "floor_name": "Floor name"
       },
       "multi-textfield": {
         "add_item": "Add {item}"
@@ -2383,6 +2386,7 @@
           "updates_refreshed": "State of {count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
+          "title_not_installable": "{count} not installable {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "more_updates": "Show all updates",
           "show": "show",
@@ -3340,8 +3344,7 @@
               "type": "Type",
               "editable": "Editable",
               "category": "Category",
-              "area": "Area",
-              "voice_assistants": "Voice assistants"
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -6017,15 +6020,14 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
+          "tabs": {
+            "overview": "Overview",
+            "advertisements": "Advertisements",
+            "visualization": "Visualization",
+            "connections": "Connections"
+          },
           "settings_title": "Bluetooth adapters",
           "option_flow": "Configure Bluetooth options",
-          "advertisement_monitor": "Advertisement monitor",
-          "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
-          "connection_slot_allocations_monitor": "Connection slot allocations monitor",
-          "connection_slot_allocations_monitor_description": "The connection slot allocations monitor displays the (GATT) connection slot allocations for each adapter. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
-          "connection_monitor": "Connection monitor",
-          "visualization": "Visualization",
-          "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
           "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
@@ -6033,8 +6035,6 @@
           "no_connection_slots": "No connection slots",
           "no_scanner_state_available": "No scanner state available",
           "scanner_state_unknown": "State unknown",
-          "current_scanning_mode": "Current scanning mode",
-          "requested_scanning_mode": "Requested scanning mode",
           "scanning_mode_none": "none",
           "scanning_mode_active": "active",
           "scanning_mode_passive": "passive",
@@ -6059,7 +6059,6 @@
           "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
           "area": "Area",
-          "core": "Home Assistant",
           "scanners": "Scanners",
           "known_devices": "Known devices",
           "unknown_devices": "Unknown devices"
@@ -6844,9 +6843,15 @@
         },
         "matter": {
           "panel": {
-            "thread_panel": "Visit Thread Panel",
-            "experimental_note": "Matter is still in the early phase of development, it is not meant to be used in production. This panel is for development only.",
-            "add_devices": "You can add Matter devices by commissioning them if they are not set up yet, or share them from another controller and enter the sharing code.",
+            "thread_panel": "Visit Thread panel",
+            "add_device": "Add device",
+            "status_title": "status",
+            "status_online": "online",
+            "status_offline": "offline",
+            "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+            "developer_tools_title": "Developer tools",
+            "developer_tools_description": "Advanced commissioning options for development",
+            "developer_tools_info": "These options are intended for developers and advanced users. In most cases, use the \"Add device\" button in the bottom right corner instead.",
             "mobile_app_commisioning": "Commission device with mobile app",
             "commission_device": "Commission device",
             "add_shared_device": "Add shared device",
@@ -7226,10 +7231,14 @@
       "lovelace": {
         "strategy": {
           "original-states": {
-            "helpers": "[%key:ui::panel::config::helpers::caption%]"
+            "helpers": "[%key:ui::panel::config::helpers::caption%]",
+            "empty_state_title": "Welcome Home",
+            "empty_state_content": "This page allows you to control your devices, however it looks like you have no devices set up yet.",
+            "empty_state_action": "Go to the integrations page"
           },
           "areas": {
-            "no_entities": "No entities in this area.",
+            "empty_state_title": "No devices",
+            "empty_state_content": "There are no devices assigned to this area yet. Assign devices to this area to see them here.",
             "sensors": "Sensors",
             "sensors_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
             "edit_the_area": "edit the area",
@@ -7300,11 +7309,6 @@
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
             "no_action": "No action to run specified"
-          },
-          "empty_state": {
-            "title": "Welcome Home",
-            "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
-            "go_to_integrations_page": "Go to the integrations page."
           },
           "entities": {
             "never_triggered": "Never triggered"
@@ -7977,6 +7981,17 @@
               "name": "Entity",
               "description": "The Entity card gives you a quick overview of your entity's state."
             },
+            "empty_state": {
+              "name": "Empty state",
+              "description": "The Empty state card displays a centered message with an optional icon and action button.",
+              "style": "Style",
+              "style_options": {
+                "card": "Card",
+                "content-only": "Content only"
+              },
+              "content": "Content",
+              "action_text": "Action button text"
+            },
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
@@ -8309,6 +8324,7 @@
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",
+              "position_hint": "Click on the image preview to position this element",
               "element_types": {
                 "state-badge": "State badge",
                 "state-icon": "State icon",
