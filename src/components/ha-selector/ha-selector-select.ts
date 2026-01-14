@@ -8,9 +8,10 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ToggleButton } from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
+import "../ha-button-toggle-group";
 import "../ha-checkbox";
 import "../ha-formfield";
 import "../ha-generic-picker";
@@ -108,24 +109,23 @@ export class HaSelectSelector extends LitElement {
       this._mode === "list"
     ) {
       if (!this.selector.select?.multiple) {
+        const toggleButtons: ToggleButton[] = options.map(
+          (item: SelectOption) => ({
+            label: item.label,
+            value: item.value,
+          })
+        );
+
         return html`
           <div>
             ${this.label}
-            ${options.map(
-              (item: SelectOption) => html`
-                <ha-formfield
-                  .label=${item.label}
-                  .disabled=${item.disabled || this.disabled}
-                >
-                  <ha-radio
-                    .checked=${item.value === this.value}
-                    .value=${item.value}
-                    .disabled=${item.disabled || this.disabled}
-                    @change=${this._valueChanged}
-                  ></ha-radio>
-                </ha-formfield>
-              `
-            )}
+            <ha-button-toggle-group
+              .buttons=${toggleButtons}
+              .active=${this.value as string | undefined}
+              @value-changed=${this._valueChanged}
+              full-width
+              size="small"
+            ></ha-button-toggle-group>
           </div>
           ${this._renderHelper()}
         `;
