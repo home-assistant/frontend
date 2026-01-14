@@ -1,4 +1,4 @@
-import { mdiLabel, mdiPlus } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
