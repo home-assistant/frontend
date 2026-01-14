@@ -25,7 +25,6 @@ import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
-import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
@@ -119,27 +118,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     }
   );
 
-  private _computeValueRenderer = memoizeOne(
-    (labels: LabelRegistryEntry[] | undefined): PickerValueRenderer =>
-      (value) => {
-        const label = this._labelMap(labels).get(value);
-
-        if (!label) {
-          return html`
-            <ha-svg-icon slot="start" .path=${mdiLabel}></ha-svg-icon>
-            <span slot="headline">${value}</span>
-          `;
-        }
-
-        return html`
-          ${label.icon
-            ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
-            : html`<ha-svg-icon slot="start" .path=${mdiLabel}></ha-svg-icon>`}
-          <span slot="headline">${label.name}</span>
-        `;
-      }
-  );
-
   private _getLabelsMemoized = memoizeOne(getLabels);
 
   private _getItems = () => {
@@ -219,8 +197,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       this.placeholder ??
       this.hass.localize("ui.components.label-picker.label");
 
-    const valueRenderer = this._computeValueRenderer(this._labels);
-
     return html`
       <ha-generic-picker
         .disabled=${this.disabled}
@@ -237,7 +213,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
-        .valueRenderer=${valueRenderer}
         .searchKeys=${labelComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
