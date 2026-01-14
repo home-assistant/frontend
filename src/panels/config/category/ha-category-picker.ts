@@ -20,7 +20,6 @@ import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { showCategoryRegistryDetailDialog } from "./show-dialog-category-registry-detail";
 
 const ADD_NEW_ID = "___ADD_NEW___";
-const NO_CATEGORIES_ID = "___NO_CATEGORIES___";
 
 @customElement("ha-category-picker")
 export class HaCategoryPicker extends SubscribeMixin(LitElement) {
@@ -106,18 +105,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     ): PickerComboBoxItem[] | undefined => {
       if (!categories) {
         return undefined;
-      }
-
-      if (!categories || categories.length === 0) {
-        return [
-          {
-            id: NO_CATEGORIES_ID,
-            primary: this.hass.localize(
-              "ui.components.category-picker.no_categories"
-            ),
-            icon_path: mdiTag,
-          },
-        ];
       }
 
       const items = categories.map<PickerComboBoxItem>((category) => ({
@@ -215,10 +202,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
 
     const value = ev.detail.value;
-
-    if (value === NO_CATEGORIES_ID) {
-      return;
-    }
 
     if (!value) {
       this._setValue(undefined);
