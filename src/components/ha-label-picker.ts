@@ -28,7 +28,6 @@ import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
-const NO_LABELS = "___NO_LABELS___";
 
 @customElement("ha-label-picker")
 export class HaLabelPicker extends SubscribeMixin(LitElement) {
@@ -109,18 +108,8 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
-  private _getItems = () => {
-    if (!this._labels || this._labels.length === 0) {
-      return [
-        {
-          id: NO_LABELS,
-          primary: this.hass.localize("ui.components.label-picker.no_labels"),
-          icon_path: mdiLabel,
-        },
-      ];
-    }
-
-    return this._getLabelsMemoized(
+  private _getItems = () =>
+    this._getLabelsMemoized(
       this.hass.states,
       this.hass.areas,
       this.hass.devices,
@@ -133,7 +122,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       this.entityFilter,
       this.excludeLabels
     );
-  };
 
   private _allLabelNames = memoizeOne((labels?: LabelRegistryEntry[]) => {
     if (!labels) {
@@ -214,10 +202,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
 
     const value = ev.detail.value;
-
-    if (value === NO_LABELS) {
-      return;
-    }
 
     if (!value) {
       this._setValue(undefined);
