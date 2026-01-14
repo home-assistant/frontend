@@ -69,6 +69,7 @@ export const DOMAIN_ATTRIBUTES_UNITS = {
     current_humidity: "%",
     min_humidity: "%",
     max_humidity: "%",
+    target_humidity_step: "%",
   },
   light: {
     color_temp: "mired",

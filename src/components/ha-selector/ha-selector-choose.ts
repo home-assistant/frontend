@@ -38,6 +38,13 @@ export class HaChooseSelector extends LitElement {
     ) {
       this._setActiveChoice();
     }
+    if (
+      changedProperties.has("value") &&
+      changedProperties.get("value")?.active_choice &&
+      changedProperties.get("value")?.active_choice !== this._activeChoice
+    ) {
+      this._setActiveChoice();
+    }
   }
 
   protected render() {
@@ -54,7 +61,8 @@ export class HaChooseSelector extends LitElement {
           size="small"
           .buttons=${this._toggleButtons(
             this.selector.choose.choices,
-            this.selector.choose.translation_key
+            this.selector.choose.translation_key,
+            this.hass.localize
           )}
           .active=${this._activeChoice}
           @value-changed=${this._choiceChanged}
@@ -72,7 +80,11 @@ export class HaChooseSelector extends LitElement {
   }
 
   private _toggleButtons = memoizeOne(
-    (choices: ChooseSelector["choose"]["choices"], translationKey?: string) =>
+    (
+      choices: ChooseSelector["choose"]["choices"],
+      translationKey?: string,
+      _localize?: HomeAssistant["localize"]
+    ) =>
       Object.keys(choices).map((choice) => ({
         label:
           this.localizeValue && translationKey

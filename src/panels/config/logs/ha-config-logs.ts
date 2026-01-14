@@ -372,7 +372,7 @@ export class HaConfigLogs extends LitElement {
 
         @media all and (max-width: 870px) {
           ha-generic-picker {
-            max-width: 50%;
+            max-width: max(30%, 160px);
           }
           ha-button {
             max-width: 100%;

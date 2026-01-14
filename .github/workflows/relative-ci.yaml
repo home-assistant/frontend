@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send bundle stats and build information to RelativeCI
-        uses: relative-ci/agent-action@c45aaa919ef85620af54242a241ac17a8fa35983 # v3.2.1
+        uses: relative-ci/agent-action@3c681926017930047fc03acaa35cd6a44efcbfc3 # v3.2.2
         with:
           key: ${{ secrets[format('RELATIVE_CI_KEY_{0}_{1}', matrix.bundle, matrix.build)] }}
           token: ${{ github.token }}

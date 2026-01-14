@@ -285,6 +285,8 @@ export class HaAutomationAddItems extends LitElement {
       border-radius: var(--ha-border-radius-md);
       background: var(--ha-color-fill-neutral-normal-resting);
       padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
+      border: var(--ha-border-width-sm) solid
+        var(--ha-color-border-neutral-quiet);
       color: var(--ha-color-on-neutral-normal);
       overflow: hidden;
     }
