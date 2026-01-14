@@ -227,6 +227,7 @@ export class QuickBar extends LitElement {
               .sections=${sections}
               .selectedSection=${this._selectedSection}
               .sectionTitleFunction=${this._sectionTitleFunction}
+              clearable
             ></ha-picker-combo-box>`
           : nothing}
         ${this._hint

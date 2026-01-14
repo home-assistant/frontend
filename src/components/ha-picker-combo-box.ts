@@ -1,6 +1,6 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
+import { mdiClose, mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -26,6 +26,8 @@ import "./chips/ha-chip-set";
 import "./chips/ha-filter-chip";
 import "./ha-combo-box-item";
 import "./ha-icon";
+import "./ha-icon-button";
+import "./ha-svg-icon";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -147,6 +149,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
+  @property({ type: Boolean, reflect: true }) public clearable = false;
+
   @query("lit-virtualizer") public virtualizerElement?: LitVirtualizer;
 
   @query("ha-textfield") private _searchFieldElement?: HaTextField;
@@ -209,7 +213,15 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         .label=${searchLabel}
         @blur=${this._resetSelectedItem}
         @input=${this._filterChanged}
-      ></ha-textfield>
+        .iconTrailing=${this.clearable && !!this._search}
+      >
+        <ha-icon-button
+          @click=${this._clearSearch}
+          slot="trailingIcon"
+          .label=${this.hass?.localize("ui.common.clear") || "Clear"}
+          .path=${mdiClose}
+        ></ha-icon-button>
+      </ha-textfield>
       ${this._renderSectionButtons()}
       ${this.sections?.length
         ? html`
@@ -415,6 +427,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "index-selected", { index });
   }
+
+  private _clearSearch = () => {
+    if (this._searchFieldElement) {
+      this._searchFieldElement.value = "";
+      this._searchFieldElement.dispatchEvent(new Event("input"));
+    }
+  };
 
   private _fuseIndex = memoizeOne(
     (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
@@ -705,6 +724,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           flex-direction: column;
           padding-top: var(--ha-space-3);
           flex: 1;
+        }
+
+        :host([clearable]) {
+          --text-field-padding: 0 0 0 var(--ha-space-4);
         }
 
         ha-textfield {
