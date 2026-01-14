@@ -84,6 +84,10 @@ export class HuiMarkdownCardEditor
           iconPath: mdiGestureTap,
           schema: [
             {
+              name: "actions_warning",
+              type: "constant",
+            },
+            {
               name: "tap_action",
               selector: {
                 ui_action: {
@@ -164,6 +168,10 @@ export class HuiMarkdownCardEditor
       case "interactions":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.interactions"
+        );
+      case "actions_warning":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.markdown.actions_warning"
         );
       case "tap_action":
       case "hold_action":
