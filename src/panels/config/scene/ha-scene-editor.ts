@@ -10,6 +10,7 @@ import {
   mdiEye,
   mdiInformationOutline,
   mdiMotionPlayOutline,
+  mdiPencil,
   mdiPlay,
   mdiPlaylistEdit,
   mdiTag,
@@ -262,6 +263,11 @@ export class HaSceneEditor extends PreventUnsavedMixin(
               `ui.panel.config.scene.picker.${this._getCategory(this._entityRegistryEntries, this._scene?.entity_id) ? "edit_category" : "assign_category"}`
             )}
             <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item value="rename" .disabled=${!this.sceneId}>
+            ${this.hass.localize("ui.panel.config.scene.editor.rename")}
+            <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
           </ha-dropdown-item>
 
           <ha-dropdown-item value="toggle-yaml">
@@ -637,6 +643,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         break;
       case "edit-category":
         this._editCategory(this._scene!);
+        break;
+      case "rename":
+        this._promptSceneRename();
         break;
       case "toggle-yaml":
         if (this._mode === "yaml") {
@@ -1208,6 +1217,38 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     showAssignCategoryDialog(this, {
       scope: "scene",
       entityReg,
+    });
+  }
+
+  private async _promptSceneRename(): Promise<boolean> {
+    const entityRegEntry = this._scene
+      ? this._entityRegistryEntries.find(
+          (reg) => reg.entity_id === this._scene!.entity_id
+        )
+      : undefined;
+
+    return new Promise((resolve) => {
+      showSceneSaveDialog(this, {
+        config: this._config!,
+        domain: "scene",
+        entityRegistryEntry: entityRegEntry,
+        entityRegistryUpdate:
+          this._updatedAreaId !== undefined
+            ? {
+                area: this._updatedAreaId || "",
+                labels: entityRegEntry?.labels || [],
+                category: entityRegEntry?.categories.scene || "",
+              }
+            : undefined,
+        updateConfig: async (newConfig, entityRegistryUpdate) => {
+          this._config = newConfig;
+          this._updatedAreaId = entityRegistryUpdate.area || null;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve(true);
+        },
+        onClose: () => resolve(false),
+      });
     });
   }
 
