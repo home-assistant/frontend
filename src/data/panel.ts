@@ -92,12 +92,17 @@ export const getConfigSubpageTitle = (
   for (const sectionGroup of Object.values(configSections)) {
     const pageNav = sectionGroup.find((nav) => path.startsWith(nav.path));
     if (pageNav) {
-      // Return localized title from translationKey or fallback to name
       if (pageNav.translationKey) {
         const localized = hass.localize(pageNav.translationKey as any);
-        return localized || pageNav.name;
+        if (localized) {
+          return localized;
+        }
+        if (pageNav.name) {
+          return pageNav.name;
+        }
+      } else if (pageNav.name) {
+        return pageNav.name;
       }
-      return pageNav.name;
     }
   }
   return undefined;
