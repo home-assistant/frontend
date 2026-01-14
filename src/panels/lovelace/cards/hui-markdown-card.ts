@@ -250,9 +250,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   }
 
   private _hasAnyAction = () =>
-    hasAction(this._config.tap_action) ||
-    hasAction(this._config.hold_action) ||
-    hasAction(this._config.double_tap_action);
+    hasAction(this._config?.tap_action) ||
+    hasAction(this._config?.hold_action) ||
+    hasAction(this._config?.double_tap_action);
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
