@@ -64,7 +64,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
       .narrow=${this.narrow}
-      @wa-select=${this._handleDropdownSelect}
+      .handleDropdownSelect=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
@@ -162,7 +162,9 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect = (
+    ev: CustomEvent<{ item: HaDropdownItem }>
+  ) => {
     const action = ev.detail?.item?.value;
 
     if (!action) {
@@ -177,7 +179,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
         this.config.delete();
         break;
     }
-  }
+  };
 
   static styles = sidebarEditorStyles;
 }

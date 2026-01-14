@@ -36,7 +36,7 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
 
   @property({ attribute: false }) public warnings?: string[];
 
-  @property({ attribute: false }) public handleDropdownSelect!: (
+  @property({ attribute: false }) public handleDropdownSelect?: (
     ev: CustomEvent
   ) => void;
 
@@ -68,6 +68,7 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
           <slot slot="subtitle" name="subtitle"></slot>
           <slot name="overflow-menu" slot="actionItems">
             <ha-dropdown
+              @wa-select=${this.handleDropdownSelect}
               @click=${preventDefaultStopPropagation}
               @keydown=${stopPropagation}
               placement="bottom-end"
