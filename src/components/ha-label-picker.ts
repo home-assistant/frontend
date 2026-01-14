@@ -1,7 +1,7 @@
-import { mdiLabel, mdiPlus } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import {
   customElement,
   property,
@@ -9,7 +9,10 @@ import {
   queryAssignedElements,
   state,
 } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
 import {
@@ -24,11 +27,25 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
-import type { PickerComboBoxItem } from "./ha-picker-combo-box";
-import type { PickerValueRenderer } from "./ha-picker-field";
+import {
+  type PickerComboBoxItem,
+  DEFAULT_ROW_RENDERER_INTERNS,
+} from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
+
+export const getLabelColorBadge = (_color) =>
+  html`<div
+    style=${styleMap({
+      backgroundColor: _color ? computeCssColor(_color) : undefined,
+      borderRadius: "var(--ha-border-radius-md)",
+      border: "1px solid var(--outline-color)",
+      boxSizing: "border-box",
+      width: "var(--ha-space-5)",
+      height: "var(--ha-space-5)",
+    })}
+  ></div>`;
 
 @customElement("ha-label-picker")
 export class HaLabelPicker extends SubscribeMixin(LitElement) {
@@ -107,37 +124,15 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _labelMap = memoizeOne(
-    (
-      labels: LabelRegistryEntry[] | undefined
-    ): Map<string, LabelRegistryEntry> => {
-      if (!labels) {
-        return new Map();
-      }
-      return new Map(labels.map((label) => [label.label_id, label]));
-    }
-  );
-
-  private _computeValueRenderer = memoizeOne(
-    (labels: LabelRegistryEntry[] | undefined): PickerValueRenderer =>
-      (value) => {
-        const label = this._labelMap(labels).get(value);
-
-        if (!label) {
-          return html`
-            <ha-svg-icon slot="start" .path=${mdiLabel}></ha-svg-icon>
-            <span slot="headline">${value}</span>
-          `;
-        }
-
-        return html`
-          ${label.icon
-            ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
-            : html`<ha-svg-icon slot="start" .path=${mdiLabel}></ha-svg-icon>`}
-          <span slot="headline">${label.name}</span>
-        `;
-      }
-  );
+  private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) =>
+    html`<ha-combo-box-item type="button" compact>
+      ${DEFAULT_ROW_RENDERER_INTERNS(item)}
+      ${item.id !== ADD_NEW_ID
+        ? html`<div slot="trailing-supporting-text">
+            ${getLabelColorBadge((item as any).color)}
+          </div>`
+        : nothing}
+    </ha-combo-box-item>`;
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
@@ -207,8 +202,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       this.placeholder ??
       this.hass.localize("ui.components.label-picker.label");
 
-    const valueRenderer = this._computeValueRenderer(this._labels);
-
     return html`
       <ha-generic-picker
         .disabled=${this.disabled}
@@ -225,7 +218,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
-        .valueRenderer=${valueRenderer}
+        .rowRenderer=${this._rowRenderer}
         .searchKeys=${labelComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
