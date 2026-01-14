@@ -26,7 +26,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     private _themeApplied = false;
 
-
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
@@ -38,13 +37,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         });
         this._applyTheme(mql.matches);
         storeState(this.hass!);
-        saveThemePreferences(this.hass!, this.hass!.selectedTheme!).catch(() => {
-          fireEvent(this, "hass-notification", {
-            message: this.hass!.localize(
-              "ui.notification_toast.theme_save_failed"
-            ),
-          });
-        });
+        saveThemePreferences(this.hass!, this.hass!.selectedTheme!).catch(
+          () => {
+            fireEvent(this, "hass-notification", {
+              message: this.hass!.localize(
+                "ui.notification_toast.theme_save_failed"
+              ),
+            });
+          }
+        );
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
       if (!this._themeApplied && mql.matches) {
@@ -80,6 +81,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         }
         this._updateHass({ selectedTheme: value });
         this._applyTheme(mql.matches);
+        storeState(this.hass!);
       }).catch(() => {
         fireEvent(this, "hass-notification", {
           message: this.hass!.localize(
