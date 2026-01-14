@@ -4257,7 +4257,7 @@
                   "upper_limit": "Upper limit",
                   "value_template": "Value template",
                   "type_value": "Fixed number",
-                  "type_input": "Numeric value of another entity",
+                  "type_input": "Entity value",
                   "description": {
                     "picker": "When the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
@@ -4324,7 +4324,7 @@
                 },
                 "time": {
                   "type_value": "Fixed time",
-                  "type_input": "Value of a date/time helper or timestamp-class sensor",
+                  "type_input": "Entity",
                   "label": "Time",
                   "at": "At time",
                   "offset": "[%key:ui::panel::config::automation::editor::triggers::type::sun::offset%]",
