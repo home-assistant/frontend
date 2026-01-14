@@ -58,6 +58,7 @@ import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type {
   Action,
+  DeviceAction,
   NonConditionAction,
   RepeatAction,
   ServiceAction,
@@ -233,6 +234,13 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
+    const target =
+      type === "service" && "target" in this.action
+        ? (this.action as ServiceAction).target
+        : type === "device_id" && (this.action as DeviceAction).device_id
+          ? { device_id: (this.action as DeviceAction).device_id }
+          : undefined;
+
     return html`
       ${type === "service" && "action" in this.action && this.action.action
         ? html`
@@ -254,9 +262,7 @@ export default class HaAutomationActionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeAction(this.hass, this._entityReg, this.action)
         )}
-        ${type === "service" && "target" in this.action
-          ? this._renderTargets((this.action as ServiceAction).target)
-          : nothing}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>

@@ -1192,13 +1192,19 @@ ${rejected
   private async _duplicate(scene) {
     if (scene.attributes.id) {
       const config = await getSceneConfig(this.hass, scene.attributes.id);
-      showSceneEditor({
-        ...config,
-        id: undefined,
-        name: `${config?.name} (${this.hass.localize(
-          "ui.panel.config.scene.picker.duplicate"
-        )})`,
-      });
+      const entityRegEntry = this._entityReg.find(
+        (reg) => reg.entity_id === scene.entity_id
+      );
+      showSceneEditor(
+        {
+          ...config,
+          id: undefined,
+          name: `${config?.name} (${this.hass.localize(
+            "ui.panel.config.scene.picker.duplicate"
+          )})`,
+        },
+        entityRegEntry?.area_id || undefined
+      );
     }
   }
 

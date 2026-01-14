@@ -1,8 +1,9 @@
 import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { fullEntitiesContext } from "../../data/context";
 import type { DeviceAutomation } from "../../data/device/device_automation";
 import {
@@ -11,11 +12,12 @@ import {
 } from "../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
+import "../ha-generic-picker";
 import "../ha-md-select";
 import "../ha-md-select-option";
+import type { PickerValueRenderer } from "../ha-picker-field";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
-const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
 
 export abstract class HaDeviceAutomationPicker<
   T extends DeviceAutomation,
@@ -28,7 +30,7 @@ export abstract class HaDeviceAutomationPicker<
 
   @property({ type: Object }) public value?: T;
 
-  @state() private _automations: T[] = [];
+  @state() private _automations?: T[];
 
   // Trigger an empty render so we start with a clean DOM.
   // paper-listbox does not like changing things around.
@@ -41,12 +43,6 @@ export abstract class HaDeviceAutomationPicker<
   protected get NO_AUTOMATION_TEXT() {
     return this.hass.localize(
       "ui.panel.config.devices.automation.actions.no_actions"
-    );
-  }
-
-  protected get UNKNOWN_AUTOMATION_TEXT() {
-    return this.hass.localize(
-      "ui.panel.config.devices.automation.actions.unknown_action"
     );
   }
 
@@ -75,7 +71,7 @@ export abstract class HaDeviceAutomationPicker<
   }
 
   private get _value() {
-    if (!this.value) {
+    if (!this.value || !this._automations) {
       return "";
     }
 
@@ -88,7 +84,7 @@ export abstract class HaDeviceAutomationPicker<
     );
 
     if (idx === -1) {
-      return UNKNOWN_AUTOMATION_KEY;
+      return this.value.alias || this.value.type || "unknown";
     }
 
     return `${this._automations[idx].device_id}_${idx}`;
@@ -99,37 +95,21 @@ export abstract class HaDeviceAutomationPicker<
       return nothing;
     }
     const value = this._value;
-    return html`
-      <ha-md-select
-        .label=${this.label}
-        .value=${value}
-        @change=${this._automationChanged}
-        @closed=${stopPropagation}
-        .disabled=${this._automations.length === 0}
-      >
-        ${value === NO_AUTOMATION_KEY
-          ? html`<ha-md-select-option .value=${NO_AUTOMATION_KEY}>
-              ${this.NO_AUTOMATION_TEXT}
-            </ha-md-select-option>`
-          : nothing}
-        ${value === UNKNOWN_AUTOMATION_KEY
-          ? html`<ha-md-select-option .value=${UNKNOWN_AUTOMATION_KEY}>
-              ${this.UNKNOWN_AUTOMATION_TEXT}
-            </ha-md-select-option>`
-          : nothing}
-        ${this._automations.map(
-          (automation, idx) => html`
-            <ha-md-select-option .value=${`${automation.device_id}_${idx}`}>
-              ${this._localizeDeviceAutomation(
-                this.hass,
-                this._entityReg,
-                automation
-              )}
-            </ha-md-select-option>
-          `
-        )}
-      </ha-md-select>
-    `;
+
+    return html`<ha-generic-picker
+      .hass=${this.hass}
+      .label=${this.label}
+      .value=${value}
+      .disabled=${!this._automations || this._automations.length === 0}
+      .getItems=${this._getItems(value, this._automations)}
+      @value-changed=${this._automationChanged}
+      .valueRenderer=${this._valueRenderer}
+      .unknownItemText=${this.hass.localize(
+        "ui.panel.config.devices.automation.actions.unknown_action"
+      )}
+      hide-clear-icon
+    >
+    </ha-generic-picker>`;
   }
 
   protected updated(changedProps) {
@@ -139,6 +119,57 @@ export abstract class HaDeviceAutomationPicker<
       this._updateDeviceInfo();
     }
   }
+
+  private _getItems = memoizeOne(
+    (value: string, automations: T[] | undefined) => {
+      if (!automations) {
+        return () => undefined;
+      }
+
+      const automationListItems = automations.map((automation, idx) => {
+        const primary = this._localizeDeviceAutomation(
+          this.hass,
+          this._entityReg,
+          automation
+        );
+        return {
+          id: `${automation.device_id}_${idx}`,
+          primary,
+        };
+      });
+
+      automationListItems.sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.primary,
+          b.primary,
+          this.hass.locale.language
+        )
+      );
+
+      if (value === NO_AUTOMATION_KEY) {
+        automationListItems.unshift({
+          id: NO_AUTOMATION_KEY,
+          primary: this.NO_AUTOMATION_TEXT,
+        });
+      }
+
+      return () => automationListItems;
+    }
+  );
+
+  private _valueRenderer: PickerValueRenderer = (value: string) => {
+    const automation = this._automations?.find(
+      (a, idx) => value === `${a.device_id}_${idx}`
+    );
+
+    const text = automation
+      ? this._localizeDeviceAutomation(this.hass, this._entityReg, automation)
+      : value === NO_AUTOMATION_KEY
+        ? this.NO_AUTOMATION_TEXT
+        : value;
+
+    return html`<span slot="headline">${text}</span>`;
+  };
 
   private async _updateDeviceInfo() {
     this._automations = this.deviceId
@@ -161,13 +192,14 @@ export abstract class HaDeviceAutomationPicker<
     this._renderEmpty = false;
   }
 
-  private _automationChanged(ev) {
-    const value = ev.target.value;
-    if (!value || [UNKNOWN_AUTOMATION_KEY, NO_AUTOMATION_KEY].includes(value)) {
+  private _automationChanged(ev: CustomEvent<{ value: string }>) {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    if (!value || NO_AUTOMATION_KEY === value) {
       return;
     }
     const [deviceId, idx] = value.split("_");
-    const automation = this._automations[idx];
+    const automation = this._automations![idx];
     if (automation.device_id !== deviceId) {
       return;
     }
