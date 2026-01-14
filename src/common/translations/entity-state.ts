@@ -21,13 +21,7 @@ export type FormatEntityAttributeValueToPartsFunc = (
   stateObj: HassEntity,
   attribute: string,
   value?: any
-) => ValuePart[] | undefined;
-export type FormatEntityAttributeValuePartFunc = (
-  type: string,
-  stateObj: HassEntity,
-  attribute: string,
-  value?: any
-) => string | undefined;
+) => ValuePart[];
 export type FormatEntityAttributeNameFunc = (
   stateObj: HassEntity,
   attribute: string
@@ -54,7 +48,6 @@ export const computeFormatFunctions = async (
   formatEntityState: FormatEntityStateFunc;
   formatEntityAttributeValue: FormatEntityAttributeValueFunc;
   formatEntityAttributeValueToParts: FormatEntityAttributeValueToPartsFunc;
-  formatEntityAttributeValuePart: FormatEntityAttributeValuePartFunc;
   formatEntityAttributeName: FormatEntityAttributeNameFunc;
   formatEntityName: FormatEntityNameFunc;
 }> => {
@@ -62,8 +55,7 @@ export const computeFormatFunctions = async (
     await import("../entity/compute_state_display");
   const {
     computeAttributeValueDisplay,
-    computeAttributeValueToPartsDisplay,
-    computeAttributeValuePartDisplay,
+    computeAttributeValueToParts,
     computeAttributeNameDisplay,
   } = await import("../entity/compute_attribute_display");
 
@@ -89,18 +81,7 @@ export const computeFormatFunctions = async (
         value
       ),
     formatEntityAttributeValueToParts: (stateObj, attribute, value) =>
-      computeAttributeValueToPartsDisplay(
-        localize,
-        stateObj,
-        locale,
-        config,
-        entities,
-        attribute,
-        value
-      ),
-    formatEntityAttributeValuePart: (type, stateObj, attribute, value) =>
-      computeAttributeValuePartDisplay(
-        type,
+      computeAttributeValueToParts(
         localize,
         stateObj,
         locale,
