@@ -42,10 +42,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           },
         });
         this._applyTheme(mql.matches);
+        storeState(this.hass!);
         if (this._themePrefsAvailable) {
           saveThemePreferences(this.hass!, this.hass!.selectedTheme!).catch(
             () => {
-              storeState(this.hass!);
               if (!this._themeSaveFailedNotified) {
                 this._themeSaveFailedNotified = true;
                 fireEvent(this, "hass-notification", {
@@ -56,8 +56,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
               }
             }
           );
-        } else {
-          storeState(this.hass!);
         }
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
