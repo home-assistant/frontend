@@ -53,6 +53,7 @@ import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
+import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-md-divider";
@@ -111,7 +112,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import "../voice-assistants/expose/expose-assistant-icon";
 
 type ScriptItem = ScriptEntity & {
@@ -402,22 +403,22 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         },
         voice_assistants: {
           title: localize(
-            "ui.panel.config.script.picker.headers.voice_assistants"
+            "ui.panel.config.voice_assistants.expose.headers.assistants"
           ),
-          type: "icon",
+          type: "flex",
           defaultHidden: true,
-          minWidth: "100px",
-          maxWidth: "100px",
+          minWidth: "160px",
+          maxWidth: "160px",
           template: (script) => {
-            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
+            const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
               this._entityReg,
               script.entity_id
             );
-            return html` ${exposedToVoiceAssistantKeys.length !== 0
-              ? exposedToVoiceAssistantKeys.map(
-                  (vaKey) =>
+            return html` ${exposedToVoiceAssistantIds.length !== 0
+              ? exposedToVoiceAssistantIds.map(
+                  (vaId) =>
                     html` <voice-assistants-expose-assistant-icon
-                      .assistant=${vaKey}
+                      .assistant=${vaId}
                       .hass=${this.hass}
                     >
                     </voice-assistants-expose-assistant-icon>`
@@ -661,6 +662,15 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-categories>
+        <ha-filter-voice-assistants
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-voice-assistants"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-voice-assistants"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-voice-assistants>
         <ha-filter-blueprints
           .hass=${this.hass}
           .type=${"script"}
@@ -919,8 +929,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(categoryItems)
             : new Set([...items].filter((x) => categoryItems!.has(x)));
-      }
-      if (
+      } else if (
         key === "ha-filter-labels" &&
         Array.isArray(filter.value) &&
         filter.value.length
@@ -942,6 +951,28 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(labelItems)
             : new Set([...items].filter((x) => labelItems!.has(x)));
+      } else if (
+        key === "ha-filter-voice-assistants" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
+        const assistItems = new Set<string>();
+        this.scripts
+          .filter((script) =>
+            getEntityVoiceAssistantsIds(this._entityReg, script.entity_id).some(
+              (va) => (filter.value as string[]).includes(va)
+            )
+          )
+          .forEach((script) => assistItems.add(script.entity_id));
+        if (!items) {
+          items = assistItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(assistItems)
+            : new Set([...items].filter((x) => assistItems!.has(x)));
       }
     }
     this._filteredScripts = items ? [...items] : undefined;

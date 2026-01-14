@@ -31,7 +31,7 @@ import {
 import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
-  filterUpdateEntitiesWithInstall,
+  filterUpdateEntitiesParameterized,
 } from "../../../data/update";
 import {
   QuickBarMode,
@@ -161,24 +161,27 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     total: 0,
   };
 
-  private _pages = memoizeOne((cloudStatus, isCloudLoaded) => [
-    isCloudLoaded
-      ? [
-          {
-            component: "cloud",
-            path: "/config/cloud",
-            name: "Home Assistant Cloud",
-            info: cloudStatus,
-            iconPath: mdiCloudLock,
-            iconColor: "#3B808E",
-            translationKey: "cloud",
-          },
-          ...configSections.dashboard,
-        ]
-      : configSections.dashboard,
-    configSections.dashboard_2,
-    configSections.dashboard_3,
-  ]);
+  private _pages = memoizeOne(
+    (cloudStatus, isCloudLoaded, hasExternalSettings) => [
+      isCloudLoaded
+        ? [
+            {
+              component: "cloud",
+              path: "/config/cloud",
+              name: "Home Assistant Cloud",
+              info: cloudStatus,
+              iconPath: mdiCloudLock,
+              iconColor: "#3B808E",
+              translationKey: "cloud",
+            },
+            ...configSections.dashboard,
+          ]
+        : configSections.dashboard,
+      hasExternalSettings ? configSections.dashboard_external_settings : [],
+      configSections.dashboard_2,
+      configSections.dashboard_3,
+    ]
+  );
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -203,7 +206,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     const { updates: canInstallUpdates, total: totalUpdates } =
-      this._filterUpdateEntitiesWithInstall(
+      this._filterUpdateEntitiesParameterized(
         this.hass.states,
         this.hass.entities
       );
@@ -288,6 +291,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                         .narrow=${this.narrow}
                         .total=${totalUpdates}
                         .updateEntities=${canInstallUpdates}
+                        .isInstallable=${true}
                       ></ha-config-updates>
                       ${totalUpdates > canInstallUpdates.length
                         ? html`
@@ -310,7 +314,8 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             : ""}
           ${this._pages(
             this.cloudStatus,
-            isComponentLoaded(this.hass, "cloud")
+            isComponentLoaded(this.hass, "cloud"),
+            this.hass.auth.external?.config.hasSettingsScreen
           ).map((categoryPages) =>
             categoryPages.length === 0
               ? nothing
@@ -344,14 +349,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     showShortcutsDialog(this);
   }
 
-  private _filterUpdateEntitiesWithInstall = memoizeOne(
+  private _filterUpdateEntitiesParameterized = memoizeOne(
     (
       entities: HomeAssistant["states"],
       entityRegistry: HomeAssistant["entities"]
     ): { updates: UpdateEntity[]; total: number } => {
-      const updates = filterUpdateEntitiesWithInstall(entities).filter(
-        (entity) => !entityRegistry[entity.entity_id]?.hidden
-      );
+      const updates = filterUpdateEntitiesParameterized(
+        entities,
+        false,
+        false
+      ).filter((entity) => !entityRegistry[entity.entity_id]?.hidden);
 
       return {
         updates: updates.slice(0, updates.length === 3 ? updates.length : 2),

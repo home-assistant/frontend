@@ -52,8 +52,6 @@ import "./ha-spinner";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
-const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
-
 const SORT_VALUE_URL_PATHS = {
   energy: 1,
   map: 2,
@@ -344,17 +342,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
 
     this._calculateCounts();
-
-    if (!SUPPORT_SCROLL_IF_NEEDED) {
-      return;
-    }
-    if (oldHass?.panelUrl !== this.hass.panelUrl) {
-      const selectedEl = this.shadowRoot!.querySelector(".selected");
-      if (selectedEl) {
-        // @ts-ignore
-        selectedEl.scrollIntoViewIfNeeded();
-      }
-    }
   }
 
   private _calculateCounts = throttle(() => {

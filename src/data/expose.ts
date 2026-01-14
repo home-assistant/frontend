@@ -55,7 +55,7 @@ export const listExposedEntities = (hass: HomeAssistant) =>
     type: "homeassistant/expose_entity/list",
   });
 
-export const getEntityVoiceAssistantsKeys = (
+export const getEntityVoiceAssistantsIds = (
   entityRegistry: EntityRegistryEntry[],
   entityId: string
 ) => {
