@@ -8032,10 +8032,6 @@
               "max_y_axis": "Y axis maximum",
               "fit_y_data": "Extend Y axis limits to fit data"
             },
-            "horizontal-stacked-bar": {
-              "name": "Horizontal stacked bar",
-              "description": "Display multiple numeric entities with the same unit as a proportional horizontal bar chart"
-            },
             "statistics-graph": {
               "name": "Statistics graph",
               "description": "The Statistics graph card allows you to display a graph of the statistics for each of the entities listed.",
@@ -8097,9 +8093,9 @@
               "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
-            "horizontal-stacked-bar": {
-              "name": "Horizontal stacked bar",
-              "description": "The Horizontal stacked bar card displays multiple numerical entities as a proportional bar chart with an interactive legend."
+            "distribution": {
+              "name": "Distribution",
+              "description": "The Distribution card displays multiple numerical entities as a proportional chart with an interactive legend."
             },
             "humidifier": {
               "name": "Humidifier",
