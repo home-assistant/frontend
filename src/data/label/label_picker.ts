@@ -206,6 +206,7 @@ export const getLabels = (
       description: label.description,
       id: label.label_id,
     },
+    color: label.color || undefined,
   }));
 
   return items;
