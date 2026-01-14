@@ -381,12 +381,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         },
         voice_assistants: {
           title: localize(
-            "ui.panel.config.automation.picker.headers.voice_assistants"
+            "ui.panel.config.voice_assistants.expose.headers.assistants"
           ),
-          type: "icon",
+          type: "flex",
           defaultHidden: true,
-          minWidth: "100px",
-          maxWidth: "100px",
+          minWidth: "160px",
+          maxWidth: "160px",
           template: (automation) => {
             const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
               this._entityReg,
