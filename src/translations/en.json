@@ -6901,7 +6901,7 @@
             "unknown": "Unknown"
           },
           "device_info": {
-            "device_info": "Device info",
+            "matter_info": "Matter info",
             "node_id": "Node ID",
             "network_type": "Network type",
             "node_type": "Device type",
