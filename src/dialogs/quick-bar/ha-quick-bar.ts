@@ -717,6 +717,7 @@ export class QuickBar extends LitElement {
         100dvh - max(var(--safe-area-inset-top), 48px)
       );
       --dialog-content-padding: 0;
+      --safe-area-inset-bottom: 0px;
     }
 
     ha-tip {
