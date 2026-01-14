@@ -24,6 +24,7 @@ import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
+import { filterXSS } from "../../common/util/xss";
 import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
@@ -381,7 +382,7 @@ export class HaMap extends ReactiveElement {
         this.hass.config
       );
     }
-    return `${path.name}<br>${formattedTime}`;
+    return `${filterXSS(path.name ?? "")}<br>${formattedTime}`;
   }
 
   private _drawPaths(): void {
@@ -549,7 +550,7 @@ export class HaMap extends ReactiveElement {
           iconHTML = el.outerHTML;
         } else {
           const el = document.createElement("span");
-          el.innerHTML = title;
+          el.textContent = title;
           iconHTML = el.outerHTML;
         }
 
