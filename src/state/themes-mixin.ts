@@ -2,6 +2,7 @@ import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
+import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { subscribeThemePreferences, saveThemePreferences } from "../data/theme";
 import { subscribeThemes } from "../data/ws-themes";
@@ -27,6 +28,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _themePrefsAvailable = false;
 
+    private _themeSaveFailedNotified = false;
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
@@ -41,6 +44,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           saveThemePreferences(this.hass!, this.hass!.selectedTheme!).catch(
             () => {
               storeState(this.hass!);
+              if (!this._themeSaveFailedNotified) {
+                this._themeSaveFailedNotified = true;
+                fireEvent(this, "hass-notification", {
+                  message: this.hass!.localize(
+                    "ui.notification_toast.theme_save_failed"
+                  ),
+                });
+              }
             }
           );
         } else {
