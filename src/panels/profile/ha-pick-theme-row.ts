@@ -35,16 +35,16 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
 
   @state() _themeNames: string[] = [];
 
-  @state() private _backendTheme?: ThemeSettings | null;
+  @state() private _userTheme?: ThemeSettings | null;
 
   @state() private _migrating = false;
 
   protected hassSubscribe() {
     return [
       subscribeThemePreferences(this.hass, ({ value }) => {
-        this._backendTheme = value;
+        this._userTheme = value;
       }).catch(() => {
-        this._backendTheme = undefined;
+        this._userTheme = undefined;
         return () => undefined;
       }),
     ];
@@ -64,8 +64,8 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     const themeSettings = this.hass.selectedTheme;
     const localTheme = this._getLocalTheme();
     const showMigration =
-      this._backendTheme !== undefined &&
-      this._backendTheme === null &&
+      this._userTheme !== undefined &&
+      this._userTheme === null &&
       localTheme !== null;
 
     return html`
