@@ -107,17 +107,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _labelMap = memoizeOne(
-    (
-      labels: LabelRegistryEntry[] | undefined
-    ): Map<string, LabelRegistryEntry> => {
-      if (!labels) {
-        return new Map();
-      }
-      return new Map(labels.map((label) => [label.label_id, label]));
-    }
-  );
-
   private _getLabelsMemoized = memoizeOne(getLabels);
 
   private _getItems = () => {
