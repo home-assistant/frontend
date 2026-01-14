@@ -11,6 +11,7 @@ import {
   mdiViewDashboard,
 } from "@mdi/js";
 import type { HomeAssistant, PanelInfo } from "../types";
+import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = "lovelace";
@@ -70,6 +71,36 @@ export const getPanelTitleFromUrlPath = (
   }
 
   return getPanelTitle(hass, panel);
+};
+
+/**
+ * Get subpage title for config panel routes.
+ * Returns the specific subpage title (e.g., "Automations") if found,
+ * or undefined to fall back to the panel title (e.g., "Settings").
+ *
+ * @param hass HomeAssistant instance
+ * @param path Full route path (e.g., "/config/automation/dashboard")
+ * @param configSections Config sections metadata for resolving subpage titles
+ * @returns Localized subpage title, or undefined if not found
+ */
+export const getConfigSubpageTitle = (
+  hass: HomeAssistant,
+  path: string,
+  configSections: Record<string, PageNavigation[]>
+): string | undefined => {
+  // Search through all config section groups for a matching path
+  for (const sectionGroup of Object.values(configSections)) {
+    const pageNav = sectionGroup.find((nav) => path.startsWith(nav.path));
+    if (pageNav) {
+      // Return localized title from translationKey or fallback to name
+      if (pageNav.translationKey) {
+        const localized = hass.localize(pageNav.translationKey as any);
+        return localized || pageNav.name;
+      }
+      return pageNav.name;
+    }
+  }
+  return undefined;
 };
 
 export const getPanelIcon = (panel: PanelInfo): string | undefined => {
