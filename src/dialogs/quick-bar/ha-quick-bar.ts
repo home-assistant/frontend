@@ -214,6 +214,7 @@ export class QuickBar extends LitElement {
       >
         ${!this._loading && this._opened
           ? html`<ha-picker-combo-box
+              id="combo-box"
               .hass=${this.hass}
               @index-selected=${this._handleItemSelected}
               .notFoundLabel=${this.hass.localize(
