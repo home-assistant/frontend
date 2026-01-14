@@ -37,7 +37,7 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "none",
 ];
 
-export const supportedActions = (_struct, _supported_actions) =>
+export const supportedActions = (_struct: Struct<any, any>, _supported_actions: UiAction[]) =>
   refine(_struct, _supported_actions.toString(), (value: any) =>
     _supported_actions.includes(value.action)
   );
