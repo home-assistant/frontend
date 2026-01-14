@@ -64,7 +64,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
       .narrow=${this.narrow}
-      @sidebar-menu-select=${this._handleDropdownSelect}
+      @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>

@@ -11,7 +11,6 @@ import "../../../../components/ha-dropdown";
 import "../../../../components/ha-icon-button";
 import { ScrollableFadeMixin } from "../../../../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../../../../resources/styles";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 
@@ -71,7 +70,6 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
             <ha-dropdown
               @click=${preventDefaultStopPropagation}
               @keydown=${stopPropagation}
-              @wa-select=${this._handleMenuSelect}
               placement="bottom-end"
             >
               <ha-icon-button
@@ -96,11 +94,6 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
         </div>
       </ha-card>
     `;
-  }
-
-  private _handleMenuSelect(ev: CustomEvent) {
-    ev.stopPropagation();
-    fireEvent(this, "sidebar-menu-select", ev.detail);
   }
 
   private _closeSidebar() {
@@ -169,9 +162,5 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-sidebar-card": HaAutomationSidebarCard;
-  }
-
-  interface HASSDomEvents {
-    "sidebar-menu-select": { item: HaDropdownItem };
   }
 }

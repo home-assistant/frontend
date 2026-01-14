@@ -52,7 +52,7 @@ export default class HaAutomationSidebarOption extends LitElement {
       .hass=${this.hass}
       .isWide=${this.isWide}
       .narrow=${this.narrow}
-      @sidebar-menu-select=${this._handleDropdownSelect}
+      @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
