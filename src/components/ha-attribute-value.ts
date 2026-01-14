@@ -51,12 +51,15 @@ class HaAttributeValue extends LitElement {
       return html`<pre>${until(yaml, "")}</pre>`;
     }
 
-    if (this.hideUnit)
-      return this.hass.formatEntityAttributeValuePart(
-        "value",
+    if (this.hideUnit) {
+      const parts = this.hass.formatEntityAttributeValueToParts(
         this.stateObj!,
         this.attribute
       );
+      const value = parts.find((_part) => _part.type === "value");
+      return value;
+    }
+
     return this.hass.formatEntityAttributeValue(
       this.stateObj!,
       this.attribute
