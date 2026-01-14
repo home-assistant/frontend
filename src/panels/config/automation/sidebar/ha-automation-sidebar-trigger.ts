@@ -329,6 +329,15 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   };
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const fromHeaderMenu = ev
+      .composedPath()
+      .some(
+        (el) => el instanceof HTMLElement && el.localName === "ha-dialog-header"
+      );
+    if (!fromHeaderMenu) {
+      return;
+    }
+
     const action = ev.detail?.item?.value;
 
     if (!action) {
