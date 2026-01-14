@@ -1,6 +1,7 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { classMap } from "lit/directives/class-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-icon";
@@ -68,10 +69,7 @@ export class HuiButtonHeadingBadge
 
     const color = config.color ? computeCssColor(config.color) : undefined;
 
-    const style = {
-      "--control-button-icon-color": color,
-      "--control-button-background-color": color,
-    };
+    const style = { "--color": color };
 
     return html`
       <ha-control-button
@@ -81,13 +79,16 @@ export class HuiButtonHeadingBadge
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         style=${styleMap(style)}
-        .label=${config.content}
+        .label=${config.text}
+        class=${classMap({ colored: !!color, "with-text": !!config.text })}
       >
         <span class="content">
           ${config.icon
             ? html`<ha-icon .icon=${config.icon}></ha-icon>`
             : nothing}
-          ${config.content}
+          ${config.text
+            ? html`<span class="text">${config.text}</span>`
+            : nothing}
         </span>
       </ha-control-button>
     `;
@@ -95,20 +96,35 @@ export class HuiButtonHeadingBadge
 
   static styles = css`
     ha-control-button {
-      --control-button-border-radius: var(--ha-border-radius-md);
-      --control-button-padding: 0 var(--ha-space-1);
-      --mdc-icon-size: var(--ha-heading-badge-icon-size, 16px);
+      --control-button-border-radius: var(
+        --ha-heading-badge-border-radius,
+        var(--ha-border-radius-pill)
+      );
+      --control-button-padding: 0;
+      --mdc-icon-size: var(--ha-heading-badge-icon-size, 14px);
       width: auto;
-      height: var(--ha-heading-badge-height, 24px);
-      min-width: var(--ha-heading-badge-height, 24px);
+      height: var(--ha-heading-badge-size, 26px);
+      min-width: var(--ha-heading-badge-size, 26px);
       font-size: var(--ha-font-size-s);
+    }
+    ha-control-button.with-text {
+      --control-button-padding: 0 var(--ha-space-2);
+    }
+    ha-control-button.colored {
+      --control-button-icon-color: var(--color);
+      --control-button-background-color: var(--color);
+      --control-button-focus-color: var(--color);
+      --ha-ripple-color: var(--color);
     }
     .content {
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: var(--ha-space-1);
       white-space: nowrap;
+    }
+    .text {
+      padding: 0 var(--ha-space-1);
+      line-height: 1;
     }
   `;
 }

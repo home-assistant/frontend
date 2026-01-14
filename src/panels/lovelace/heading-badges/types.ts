@@ -29,7 +29,7 @@ export interface EntityHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
 
 export interface ButtonHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
   type: "button";
-  content?: string;
+  text?: string;
   icon?: string;
   color?: string;
   tap_action?: ActionConfig;

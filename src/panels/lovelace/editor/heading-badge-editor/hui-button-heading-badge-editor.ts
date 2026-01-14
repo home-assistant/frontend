@@ -20,7 +20,7 @@ import { actionConfigStruct } from "../structs/action-struct";
 
 const buttonConfigStruct = object({
   type: optional(string()),
-  content: optional(string()),
+  text: optional(string()),
   icon: optional(string()),
   color: optional(string()),
   tap_action: optional(actionConfigStruct),
@@ -49,13 +49,13 @@ export class HuiButtonHeadingBadgeEditor
     () =>
       [
         {
+          name: "text",
+          selector: { text: {} },
+        },
+        {
           name: "",
           type: "grid",
           schema: [
-            {
-              name: "content",
-              selector: { text: {} },
-            },
             {
               name: "icon",
               selector: { icon: {} },
@@ -177,7 +177,7 @@ export class HuiButtonHeadingBadgeEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "content":
+      case "text":
       case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.heading.button_config.${schema.name}`
