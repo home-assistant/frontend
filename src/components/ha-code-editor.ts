@@ -13,6 +13,7 @@ import {
   mdiArrowCollapse,
   mdiArrowExpand,
   mdiContentCopy,
+  mdiFindReplace,
   mdiRedo,
   mdiUndo,
 } from "@mdi/js";
@@ -385,6 +386,14 @@ export class HaCodeEditor extends ReactiveElement {
         action: (e: Event) => this._handleClipboardClick(e),
       },
       {
+        id: "find-replace",
+        label:
+          this.hass?.localize("ui.components.yaml-editor.find_and_replace") ||
+          "Find and replace",
+        path: mdiFindReplace,
+        action: (e: Event) => this._handleFindReplaceClick(e),
+      },
+      {
         id: "fullscreen",
         disabled: this.disableFullscreen,
         label: this._fullscreenLabel(),
@@ -440,6 +449,21 @@ export class HaCodeEditor extends ReactiveElement {
     e.preventDefault();
     e.stopPropagation();
     this._updateFullscreenState(!this._isFullscreen);
+  };
+
+  private _handleFindReplaceClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror || !this._loadedCodeMirror) {
+      return;
+    }
+    // Toggle search panel: close if open, open if closed
+    const searchPanel = this.codemirror.dom.querySelector(".cm-search");
+    if (searchPanel) {
+      this._loadedCodeMirror.closeSearchPanel(this.codemirror);
+    } else {
+      this._loadedCodeMirror.openSearchPanel(this.codemirror);
+    }
   };
 
   private _handleKeyDown = (e: KeyboardEvent) => {

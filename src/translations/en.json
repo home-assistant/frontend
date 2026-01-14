@@ -1290,7 +1290,8 @@
         "error": "Error in parsing YAML: {reason}",
         "error_location": "line: {line}, column: {column}",
         "enter_fullscreen": "Enter fullscreen",
-        "exit_fullscreen": "Exit fullscreen"
+        "exit_fullscreen": "Exit fullscreen",
+        "find_and_replace": "Find and replace"
       },
       "state-content-picker": {
         "state": "State",
