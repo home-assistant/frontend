@@ -109,7 +109,15 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (!this._config) {
       return nothing;
     }
-
+    const safeHandleAction = this._hasAnyAction()
+      ? this._handleAction
+      : undefined;
+    const safeActionHandler = this._hasAnyAction()
+      ? actionHandler({
+          hasHold: hasAction(this._config.hold_action),
+          hasDoubleClick: hasAction(this._config.double_tap_action),
+        })
+      : undefined;
     return html`
       ${this._error
         ? html`
@@ -127,22 +135,15 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         class=${classMap({
           "with-header": !!this._config.title,
           "text-only": this._config.text_only ?? false,
-          action:
-            hasAction(this._config.tap_action) ||
-            hasAction(this._config.hold_action) ||
-            hasAction(this._config.double_tap_action),
+          action: this._hasAnyAction(),
         })}
         tabindex=${ifDefined(
           !this._config.tap_action || hasAction(this._config.tap_action)
             ? "0"
             : undefined
         )}
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasTap: hasAction(this._config.tap_action),
-          hasHold: hasAction(this._config.hold_action),
-          hasDoubleClick: hasAction(this._config.double_tap_action),
-        })}
+        @action=${ifDefined(safeHandleAction)}
+        .actionHandler=${ifDefined(safeActionHandler)}
       >
         <ha-markdown
           cache
@@ -247,6 +248,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     this._error = undefined;
     this._errorLevel = undefined;
   }
+
+  private _hasAnyAction = () =>
+    hasAction(this._config.tap_action) ||
+    hasAction(this._config.hold_action) ||
+    hasAction(this._config.double_tap_action);
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
