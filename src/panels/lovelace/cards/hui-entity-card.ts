@@ -133,11 +133,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         if (!this._config.attribute)
           unit = stateObj.attributes.unit_of_measurement;
         else {
-          unit = this.hass.formatEntityAttributeValuePart(
-            "unit",
+          const parts = this.hass.formatEntityAttributeValueToParts(
             stateObj,
             this._config.attribute
           );
+          unit = parts.find((_part) => _part.type === "unit");
         }
       }
     }
