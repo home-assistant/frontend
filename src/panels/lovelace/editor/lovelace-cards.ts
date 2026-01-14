@@ -38,7 +38,7 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
-    type: "horizontal-stacked-bar",
+    type: "distribution",
     showElement: true,
   },
   {

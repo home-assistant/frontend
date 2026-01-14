@@ -20,10 +20,7 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { processConfigEntities } from "../common/process-config-entities";
 import { findEntities } from "../common/find-entities";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type {
-  HorizontalStackedBarCardConfig,
-  HorizontalStackedBarEntityConfig,
-} from "./types";
+import type { DistributionCardConfig, DistributionEntityConfig } from "./types";
 
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
@@ -44,21 +41,18 @@ interface LegendItem {
   unit?: string;
 }
 
-@customElement("hui-horizontal-stacked-bar-card")
-export class HuiHorizontalStackedBarCard
-  extends LitElement
-  implements LovelaceCard
-{
+@customElement("hui-distribution-card")
+export class HuiDistributionCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-horizontal-stacked-bar-card-editor");
-    return document.createElement("hui-horizontal-stacked-bar-card-editor");
+    await import("../editor/config-elements/hui-distribution-card-editor");
+    return document.createElement("hui-distribution-card-editor");
   }
 
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): HorizontalStackedBarCardConfig {
+  ): DistributionCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 3;
 
@@ -115,14 +109,14 @@ export class HuiHorizontalStackedBarCard
     }
 
     return {
-      type: "horizontal-stacked-bar",
+      type: "distribution",
       entities: foundEntities,
     };
   }
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: HorizontalStackedBarCardConfig;
+  @state() private _config?: DistributionCardConfig;
 
   @state() private _configEntities?: ProcessedEntity[];
 
@@ -130,7 +124,7 @@ export class HuiHorizontalStackedBarCard
 
   @state() private _expandLegend = false;
 
-  public setConfig(config: HorizontalStackedBarCardConfig): void {
+  public setConfig(config: DistributionCardConfig): void {
     this._config = config;
 
     // Handle empty entities gracefully
@@ -139,7 +133,7 @@ export class HuiHorizontalStackedBarCard
       return;
     }
 
-    const entities = processConfigEntities<HorizontalStackedBarEntityConfig>(
+    const entities = processConfigEntities<DistributionEntityConfig>(
       config.entities
     );
 
@@ -175,7 +169,7 @@ export class HuiHorizontalStackedBarCard
       if (domains.size > 1) {
         return (
           this.hass?.localize(
-            "ui.panel.lovelace.cards.horizontal_stacked_bar.domain_mismatch",
+            "ui.panel.lovelace.cards.distribution.domain_mismatch",
             { domains: Array.from(domains).join(", ") }
           ) ||
           `All entities must be from the same domain. Found: ${Array.from(domains).join(", ")}`
@@ -186,7 +180,7 @@ export class HuiHorizontalStackedBarCard
       if (deviceClasses.size > 1) {
         return (
           this.hass?.localize(
-            "ui.panel.lovelace.cards.horizontal_stacked_bar.device_class_mismatch",
+            "ui.panel.lovelace.cards.distribution.device_class_mismatch",
             { classes: Array.from(deviceClasses).join(", ") }
           ) ||
           `All entities must have the same device class. Found: ${Array.from(deviceClasses).join(", ")}`
@@ -326,7 +320,7 @@ export class HuiHorizontalStackedBarCard
               <ha-svg-icon .path=${mdiChartBox}></ha-svg-icon>
               <p>
                 ${this.hass.localize(
-                  "ui.panel.lovelace.cards.horizontal_stacked_bar.add_entities"
+                  "ui.panel.lovelace.cards.distribution.add_entities"
                 ) || "Add entities to display in the stacked bar chart"}
               </p>
             </div>
@@ -381,7 +375,7 @@ export class HuiHorizontalStackedBarCard
             ? html`
                 <div class="empty-state">
                   ${this.hass.localize(
-                    "ui.panel.lovelace.cards.horizontal_stacked_bar.no_data"
+                    "ui.panel.lovelace.cards.distribution.no_data"
                   ) || "No data to display"}
                 </div>
               `
@@ -570,6 +564,6 @@ export class HuiHorizontalStackedBarCard
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-horizontal-stacked-bar-card": HuiHorizontalStackedBarCard;
+    "hui-distribution-card": HuiDistributionCard;
   }
 }

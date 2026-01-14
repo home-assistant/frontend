@@ -17,7 +17,7 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity/entity";
 import type { HomeAssistant } from "../../../../types";
-import type { HorizontalStackedBarCardConfig } from "../../cards/types";
+import type { DistributionCardConfig } from "../../cards/types";
 import type { EntityConfig } from "../../entity-rows/types";
 import "../../components/hui-entity-editor";
 import type { LovelaceCardEditor } from "../../types";
@@ -52,20 +52,20 @@ const SCHEMA = [
   { name: "theme", selector: { theme: {} } },
 ] as const;
 
-@customElement("hui-horizontal-stacked-bar-card-editor")
-export class HuiHorizontalStackedBarCardEditor
+@customElement("hui-distribution-card-editor")
+export class HuiDistributionCardEditor
   extends LitElement
   implements LovelaceCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: HorizontalStackedBarCardConfig;
+  @state() private _config?: DistributionCardConfig;
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   @state() private _configEntities?: EntityConfig[];
 
-  public setConfig(config: HorizontalStackedBarCardConfig): void {
+  public setConfig(config: DistributionCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
@@ -213,6 +213,6 @@ export class HuiHorizontalStackedBarCardEditor
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-horizontal-stacked-bar-card-editor": HuiHorizontalStackedBarCardEditor;
+    "hui-distribution-card-editor": HuiDistributionCardEditor;
   }
 }

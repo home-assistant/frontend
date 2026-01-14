@@ -7442,13 +7442,12 @@
               "compare_previous_period": "Compare previous period"
             }
           },
-          "horizontal_stacked_bar": {
+          "distribution": {
             "no_entities": "No entities specified",
-            "unit_mismatch": "All entities must have the same unit. Found: {units}",
             "domain_mismatch": "All entities must be from the same domain. Found: {domains}",
             "device_class_mismatch": "All entities must have the same device class. Found: {classes}",
             "no_data": "No data to display. All entities are hidden or have zero values.",
-            "add_entities": "Add entities to display in the stacked bar chart"
+            "add_entities": "Add entities to display in the distribution chart"
           },
           "heading": {
             "default_heading": "Kitchen"
