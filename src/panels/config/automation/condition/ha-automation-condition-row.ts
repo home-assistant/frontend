@@ -76,6 +76,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import type { DeviceCondition } from "../../../../data/device/device_automation";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -184,6 +185,14 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderRow() {
+    const target =
+      "target" in (this.conditionDescriptions[this.condition.condition] || {})
+        ? (this.condition as PlatformCondition).target
+        : "device_id" in this.condition &&
+            (this.condition as DeviceCondition).device_id
+          ? { device_id: [(this.condition as DeviceCondition).device_id] }
+          : undefined;
+
     return html`
       <ha-condition-icon
         slot="leading-icon"
@@ -194,10 +203,7 @@ export default class HaAutomationConditionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
-        ${"target" in
-        (this.conditionDescriptions[this.condition.condition] || {})
-          ? this._renderTargets((this.condition as PlatformCondition).target)
-          : nothing}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
