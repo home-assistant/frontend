@@ -53,13 +53,13 @@ import "./ha-spinner";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
-const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
-
 const SORT_VALUE_URL_PATHS = {
   energy: 1,
   map: 2,
   logbook: 3,
   history: 4,
+  "developer-tools": 9,
+  config: 11,
 };
 
 const panelSorter = (
@@ -267,8 +267,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`
       ${this._renderHeader()}
       ${this._renderAllPanels(selectedPanel)}
-      ${this._renderDivider()}
-      <ha-md-list>
+      <ha-md-list class="bottommost">
         ${this._renderNotifications()}
         ${this._renderUserItem(selectedPanel)}
       </ha-md-list>
@@ -348,17 +347,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     }
 
     this._calculateCounts();
-
-    if (!SUPPORT_SCROLL_IF_NEEDED) {
-      return;
-    }
-    if (oldHass?.panelUrl !== this.hass.panelUrl) {
-      const selectedEl = this.shadowRoot!.querySelector(".selected");
-      if (selectedEl) {
-        // @ts-ignore
-        selectedEl.scrollIntoViewIfNeeded();
-      }
-    }
   }
 
   private _calculateCounts = throttle(() => {
@@ -482,10 +470,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         <span class="item-text" slot="headline">${title}</span>
       </ha-md-list-item>
     `;
-  }
-
-  private _renderDivider() {
-    return html`<div class="divider"></div>`;
   }
 
   private _renderSpacer() {
@@ -798,8 +782,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         .panels-list {
           height: calc(
             100vh - var(--header-height) - var(--safe-area-inset-top, 0px) -
-              116px
-          ); /* 116px = two list items (112px) + divider (4px) */
+              104px
+          ); /* 104px = two bottommost list items w/o padding-top */
         }
 
         .panels-list {
@@ -833,7 +817,11 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         }
         ha-md-list.after-spacer {
           padding-top: 0;
+          padding-bottom: 0;
           min-height: fit-content;
+        }
+        ha-md-list.bottommost {
+          padding-top: 0;
         }
 
         ha-md-list-item {
@@ -896,17 +884,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         }
         :host([expanded]) ha-md-list-item .item-text {
           display: block;
-        }
-
-        .divider {
-          bottom: 112px; /* two list items (96px) + padding (16px) */
-          padding-bottom: 3px; /* makes a height = 4px */
-        }
-        .divider::before {
-          content: " ";
-          display: block;
-          height: 1px;
-          background-color: var(--divider-color);
         }
 
         .badge {
