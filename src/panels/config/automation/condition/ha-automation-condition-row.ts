@@ -190,7 +190,7 @@ export default class HaAutomationConditionRow extends LitElement {
         ? (this.condition as PlatformCondition).target
         : "device_id" in this.condition &&
             (this.condition as DeviceCondition).device_id
-          ? { device_id: [(this.condition as any).device_id] }
+          ? { device_id: [(this.condition as DeviceCondition).device_id] }
           : undefined;
 
     return html`
