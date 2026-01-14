@@ -160,7 +160,6 @@ class HaLogbookRenderer extends LitElement {
         ? brandsUrl({
             domain: domain!,
             type: "icon",
-            useFallback: true,
             darkOptimized: this.hass.themes?.darkMode,
           })
         : undefined;
