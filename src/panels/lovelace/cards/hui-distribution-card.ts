@@ -19,7 +19,11 @@ import type { HomeAssistant } from "../../../types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { processConfigEntities } from "../common/process-config-entities";
 import { findEntities } from "../common/find-entities";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { DistributionCardConfig, DistributionEntityConfig } from "./types";
 
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -145,6 +149,15 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
 
   public getCardSize(): number {
     return 3;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    return {
+      columns: 12,
+      rows: "auto",
+      min_columns: 3,
+      fixed_rows: true,
+    };
   }
 
   private _validateDeviceClasses = memoizeOne(
