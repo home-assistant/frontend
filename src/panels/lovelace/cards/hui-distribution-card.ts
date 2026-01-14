@@ -488,7 +488,7 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
       flex-direction: row;
       flex-wrap: wrap;
       gap: var(--ha-space-3);
-      margin: 0;
+      margin: var(--ha-space-3) 0 0 0;
       padding: 0;
       list-style: none;
     }
