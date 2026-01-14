@@ -302,13 +302,7 @@ export interface HomeAssistant {
     stateObj: HassEntity,
     attribute: string,
     value?: any
-  ): ValuePart[] | undefined;
-  formatEntityAttributeValuePart(
-    type: string,
-    stateObj: HassEntity,
-    attribute: string,
-    value?: any
-  ): string | undefined;
+  ): ValuePart[];
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,
