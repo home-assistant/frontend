@@ -56,6 +56,7 @@ import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
+import type { DeviceTrigger } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
@@ -196,6 +197,15 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     const yamlMode = this._yamlMode || !supported;
 
+    const target =
+      type === "platform" &&
+      "target" in
+        this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
+        ? (this.trigger as PlatformTrigger).target
+        : type === "device" && (this.trigger as DeviceTrigger).device_id
+          ? { device_id: (this.trigger as DeviceTrigger).device_id }
+          : undefined;
+
     return html`
       ${type === "list"
         ? html`<ha-svg-icon
@@ -210,11 +220,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ></ha-trigger-icon>`}
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
-        ${type === "platform" &&
-        "target" in
-          this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
-          ? this._renderTargets((this.trigger as PlatformTrigger).target)
-          : nothing}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
