@@ -30,6 +30,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private _themeSaveFailedNotified = false;
 
+    private _themePrefsUnavailableNotified = false;
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
@@ -95,6 +97,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this._applyTheme(mql.matches);
       }).catch(() => {
         this._themePrefsAvailable = false;
+        if (!this._themePrefsUnavailableNotified) {
+          this._themePrefsUnavailableNotified = true;
+          fireEvent(this, "hass-notification", {
+            message: this.hass!.localize(
+              "ui.notification_toast.theme_preferences_unavailable"
+            ),
+          });
+        }
       });
     }
 
