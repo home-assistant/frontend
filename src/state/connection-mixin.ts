@@ -219,12 +219,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               value != null ? value : (stateObj.attributes[attribute] ?? ""),
           },
         ],
-        formatEntityAttributeValuePart: (type, stateObj, attribute, value) =>
-          type === "value"
-            ? value != null
-              ? value
-              : (stateObj.attributes[attribute] ?? "")
-            : "",
         formatEntityName: (stateObj) => computeStateName(stateObj),
         ...getState(),
         ...this._pendingHass,
