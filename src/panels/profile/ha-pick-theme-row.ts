@@ -19,6 +19,7 @@ import {
   saveThemePreferences,
   subscribeThemePreferences,
 } from "../../data/theme";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, ThemeSettings } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { clearSelectedThemeState, getState } from "../../util/ha-pref-storage";
@@ -27,7 +28,7 @@ const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
 const HOME_ASSISTANT_THEME = "default";
 
 @customElement("ha-pick-theme-row")
-export class HaPickThemeRow extends LitElement {
+export class HaPickThemeRow extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -38,33 +39,14 @@ export class HaPickThemeRow extends LitElement {
 
   @state() private _migrating = false;
 
-  private _unsubThemePreferences?: ReturnType<typeof subscribeThemePreferences>;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this._subscribeThemePreferences();
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubThemePreferences) {
-      this._unsubThemePreferences.then((unsub) => unsub());
-      this._unsubThemePreferences = undefined;
-    }
-  }
-
-  private _subscribeThemePreferences() {
-    if (this._unsubThemePreferences || !this.hass) {
-      return;
-    }
+  protected hassSubscribe() {
     const unsubscribe = subscribeThemePreferences(this.hass, ({ value }) => {
       this._backendTheme = value;
     });
-    this._unsubThemePreferences = unsubscribe;
     unsubscribe.catch(() => {
       this._backendTheme = undefined;
-      this._unsubThemePreferences = undefined;
     });
+    return [unsubscribe];
   }
 
   protected render(): TemplateResult {
@@ -228,9 +210,6 @@ export class HaPickThemeRow extends LitElement {
   }
 
   public willUpdate(changedProperties: PropertyValues) {
-    if (changedProperties.has("hass")) {
-      this._subscribeThemePreferences();
-    }
     const oldHass = changedProperties.get("hass") as undefined | HomeAssistant;
     const themesChanged =
       changedProperties.has("hass") &&
