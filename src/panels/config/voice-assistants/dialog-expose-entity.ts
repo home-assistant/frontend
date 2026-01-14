@@ -20,6 +20,7 @@ import "../../../components/ha-list";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { haStyle } from "../../../resources/styles";
+import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
 import type { ExposeEntityDialogParams } from "./show-dialog-expose-entity";
@@ -33,6 +34,12 @@ class DialogExposeEntity extends LitElement {
   @state() private _filter?: string;
 
   @state() private _selected: string[] = [];
+
+  public willUpdate(): void {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+  }
 
   public async showDialog(params: ExposeEntityDialogParams): Promise<void> {
     this._params = params;
