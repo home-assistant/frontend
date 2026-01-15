@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import memoizeOne from "memoize-one";
 import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -115,6 +114,7 @@ class LandingPageNetwork extends LitElement {
       fireEvent(this, "dns-set");
     } catch (err: any) {
       // eslint-disable-next-line no-console
+      console.error(err);
       showAlertDialog(this, {
         title: this.localize("network_issue.failed"),
         warning: true,
