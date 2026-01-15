@@ -2145,7 +2145,8 @@ class DialogAddAutomationElement
           flex: 6;
         }
 
-        .content.column ha-automation-add-from-target {
+        .content.column ha-automation-add-from-target,
+        .content.column ha-automation-add-items {
           flex: none;
         }
         .content.column ha-automation-add-items {
