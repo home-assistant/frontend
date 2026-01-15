@@ -92,7 +92,8 @@ function buildMetadataInspirations(
 }
 
 export async function generateMetadataSuggestionTask(
-  hass: HomeAssistant,
+  hassStates: HomeAssistant["states"],
+  hassLanguage: HomeAssistant["language"]
   suggestionConfig: MetadataSuggestionConfig
 ): Promise<SuggestWithAIGenerateTask> {
   const { domain, config, includeDescription } = suggestionConfig;
