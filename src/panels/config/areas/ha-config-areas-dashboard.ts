@@ -31,12 +31,12 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   createAreaRegistryEntry,
   reorderAreaRegistryEntries,
   updateAreaRegistryEntry,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
 import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import {
   createFloorRegistryEntry,

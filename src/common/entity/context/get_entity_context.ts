@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type {
   EntityRegistryDisplayEntry,

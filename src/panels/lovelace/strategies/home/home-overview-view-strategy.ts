@@ -7,7 +7,7 @@ import {
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
-import type { AreaRegistryEntry } from "../../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {

@@ -62,7 +62,7 @@ import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import { createAreaRegistryEntry } from "../../../data/area_registry";
+import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
   createCategoryRegistryEntry,
@@ -403,12 +403,12 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         },
         voice_assistants: {
           title: localize(
-            "ui.panel.config.script.picker.headers.voice_assistants"
+            "ui.panel.config.voice_assistants.expose.headers.assistants"
           ),
-          type: "icon",
+          type: "flex",
           defaultHidden: true,
-          minWidth: "100px",
-          maxWidth: "100px",
+          minWidth: "160px",
+          maxWidth: "160px",
           template: (script) => {
             const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
               this._entityReg,

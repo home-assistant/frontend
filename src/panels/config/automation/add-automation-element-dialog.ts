@@ -57,11 +57,11 @@ import {
   ACTION_COLLECTIONS,
   ACTION_ICONS,
 } from "../../../data/action";
-import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
+import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -232,6 +232,8 @@ class DialogAddAutomationElement
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  private _closing = false;
+
   // #endregion variables
 
   // #region lifecycle
@@ -347,6 +349,8 @@ class DialogAddAutomationElement
       }
     }
 
+    this._closing = true;
+
     // if dialog is closed, but root level isn't active, clean up history state
     if (mainWindow.history.state?.dialogData) {
       this._open = false;
@@ -360,6 +364,7 @@ class DialogAddAutomationElement
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._open = true;
+    this._closing = false;
     this._params = undefined;
     this._selectedCollectionIndex = undefined;
     this._selectedGroup = undefined;
@@ -1899,7 +1904,10 @@ class DialogAddAutomationElement
   }
 
   private _handleClosed() {
-    this.closeDialog();
+    // if closing isn't already in progress, close the dialog
+    if (!this._closing) {
+      this.closeDialog();
+    }
   }
 
   // #region interaction

@@ -33,10 +33,7 @@ import {
   checkForEntityUpdates,
   filterUpdateEntitiesParameterized,
 } from "../../../data/update";
-import {
-  QuickBarMode,
-  showQuickBar,
-} from "../../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -375,7 +372,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     };
 
     showQuickBar(this, {
-      mode: QuickBarMode.Command,
       hint: this.hass.enableShortcuts
         ? this.hass.localize("ui.dialogs.quick-bar.key_c_tip", params)
         : undefined,

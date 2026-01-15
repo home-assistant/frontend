@@ -1298,7 +1298,10 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
-        "install_status": "Install status"
+        "install_status": "Install status",
+        "device_name": "Device name",
+        "area_name": "Area name",
+        "floor_name": "Floor name"
       },
       "multi-textfield": {
         "add_item": "Add {item}"
@@ -1335,6 +1338,8 @@
         "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
       "quick-bar": {
+        "commands_title": "Commands",
+        "navigate_title": "Navigate",
         "commands": {
           "reload": {
             "all": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::all%]",
@@ -1420,7 +1425,7 @@
         },
         "filter_placeholder": "Search entities",
         "filter_placeholder_devices": "Search devices",
-        "title": "Quick search",
+        "title": "Search Home Assistant",
         "key_c_tip": "[%key:ui::tips::key_c_tip%]",
         "nothing_found": "Nothing found!"
       },
@@ -2145,6 +2150,7 @@
           "title": "Searching",
           "on_any_page": "On any page",
           "on_pages_with_tables": "On pages with tables",
+          "search": "Search Home Assistant",
           "search_command": "search command",
           "search_entities": "search entities",
           "search_devices": "search devices",
@@ -2234,7 +2240,9 @@
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available.",
-      "reload": "Reload"
+      "reload": "Reload",
+      "theme_save_failed": "Unable to save theme settings to your user profile.",
+      "theme_preferences_unavailable": "Unable to load user profile theme settings."
     },
     "sidebar": {
       "external_app_configuration": "App settings",
@@ -3341,8 +3349,7 @@
               "type": "Type",
               "editable": "Editable",
               "category": "Category",
-              "area": "Area",
-              "voice_assistants": "Voice assistants"
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -6020,15 +6027,14 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
+          "tabs": {
+            "overview": "Overview",
+            "advertisements": "Advertisements",
+            "visualization": "Visualization",
+            "connections": "Connections"
+          },
           "settings_title": "Bluetooth adapters",
           "option_flow": "Configure Bluetooth options",
-          "advertisement_monitor": "Advertisement monitor",
-          "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
-          "connection_slot_allocations_monitor": "Connection slot allocations monitor",
-          "connection_slot_allocations_monitor_description": "The connection slot allocations monitor displays the (GATT) connection slot allocations for each adapter. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
-          "connection_monitor": "Connection monitor",
-          "visualization": "Visualization",
-          "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
           "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
@@ -6036,8 +6042,6 @@
           "no_connection_slots": "No connection slots",
           "no_scanner_state_available": "No scanner state available",
           "scanner_state_unknown": "State unknown",
-          "current_scanning_mode": "Current scanning mode",
-          "requested_scanning_mode": "Requested scanning mode",
           "scanning_mode_none": "none",
           "scanning_mode_active": "active",
           "scanning_mode_passive": "passive",
@@ -6062,7 +6066,6 @@
           "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
           "area": "Area",
-          "core": "Home Assistant",
           "scanners": "Scanners",
           "known_devices": "Known devices",
           "unknown_devices": "Unknown devices"
@@ -6903,7 +6906,7 @@
             "unknown": "Unknown"
           },
           "device_info": {
-            "device_info": "Device info",
+            "matter_info": "Matter info",
             "node_id": "Node ID",
             "network_type": "Network type",
             "node_type": "Device type",
@@ -7487,6 +7490,7 @@
           "search_entities": "Search entities",
           "assist": "Assist",
           "assist_tooltip": "Assist",
+          "search_home_assistant": "Search Home Assistant",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close",
@@ -8948,6 +8952,11 @@
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
           "dropdown_label": "Theme",
+          "migrate_header": "Migrate theme settings",
+          "migrate_description": "Save your theme selection to your Home Assistant user profile.",
+          "migrate_button": "Migrate",
+          "migrate_success": "Theme settings migrated.",
+          "migrate_failed": "Failed to migrate theme settings.",
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
