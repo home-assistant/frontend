@@ -443,20 +443,15 @@ class DialogAddAutomationElement
     ) {
       return undefined;
     }
-    const noteKey =
-      `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target_note` as LocalizeKeys;
-    const localized = this.hass.localize(noteKey, {
-      labs_link: "LABS_LINK_PLACEHOLDER",
-    });
-    const parts = localized.split("LABS_LINK_PLACEHOLDER");
-    if (parts.length > 1) {
-      const labsLabel =
-        this.hass.localize("ui.panel.config.labs.caption") || "Labs";
-      return html`${parts[0]}<a href="/config/labs" @click=${this._close}
-          >${labsLabel}</a
-        >${parts[1]}`;
-    }
-    return localized;
+
+    return this.hass.localize(
+      `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target_note`,
+      {
+        labs_link: html`<a href="/config/labs" @click=${this._close}
+          >${this.hass.localize("ui.panel.config.labs.caption")}</a
+        >`,
+      }
+    );
   }
 
   protected render() {
@@ -1720,9 +1715,9 @@ class DialogAddAutomationElement
 
   // #region interaction
 
-  private _close() {
+  private _close = () => {
     this._open = false;
-  }
+  };
 
   private _back() {
     mainWindow.history.back();
