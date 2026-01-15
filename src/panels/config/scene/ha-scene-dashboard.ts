@@ -1235,9 +1235,9 @@ ${rejected
         await saveScene(this.hass, scene.attributes.id!, newConfig);
         if (entityRegEntry) {
           await updateEntityRegistryEntry(this.hass, scene.entity_id, {
-            area_id: entityRegistryUpdate.area || undefined,
+            area_id: entityRegistryUpdate.area || null,
             labels: entityRegistryUpdate.labels,
-            categories: { scene: entityRegistryUpdate.category },
+            categories: { scene: entityRegistryUpdate.category || null },
           });
         }
       },

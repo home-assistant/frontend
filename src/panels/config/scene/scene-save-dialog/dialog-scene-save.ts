@@ -9,7 +9,7 @@ import "../../../../components/chips/ha-chip-set";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-domain-icon";
-import "../../../../components/ha-expansion-panel";
+
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-labels-picker";
 import "../../../../components/ha-suggest-with-ai-button";
@@ -62,7 +62,7 @@ class DialogSceneSave extends LitElement implements HassDialog {
     this._entryUpdates = params.entityRegistryUpdate || {
       area: params.entityRegistryEntry?.area_id || "",
       labels: params.entityRegistryEntry?.labels || [],
-      category: params.entityRegistryEntry?.categories[params.domain] || "",
+      category: params.entityRegistryEntry?.categories?.[params.domain] || "",
     };
 
     this._visibleOptionals = [
