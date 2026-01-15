@@ -226,7 +226,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                     .src=${brandsUrl({
                       domain,
                       type: "icon",
-                      useFallback: true,
                       darkOptimized: this.hass.themes?.darkMode,
                     })}
                     height="24"
