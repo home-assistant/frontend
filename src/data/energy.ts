@@ -143,6 +143,18 @@ export interface GridPowerSourceEnergyPreference {
   power_config?: PowerConfig;
 }
 
+/**
+ * Input type for saving grid power sources.
+ * Core requires EITHER stat_rate (legacy) OR power_config (new format).
+ * When reading from backend, stat_rate is always populated.
+ */
+export type GridPowerSourceInput = Omit<
+  GridPowerSourceEnergyPreference,
+  "stat_rate"
+> & {
+  stat_rate?: string;
+};
+
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 

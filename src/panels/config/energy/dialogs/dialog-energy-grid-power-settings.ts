@@ -9,7 +9,10 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
-import type { PowerConfig } from "../../../../data/energy";
+import type {
+  GridPowerSourceInput,
+  PowerConfig,
+} from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -312,8 +315,7 @@ export class DialogEnergyGridPowerSettings
 
   private async _save() {
     try {
-      const source = {
-        stat_rate: "", // will be overridden but needed to satisfy typescript
+      const source: GridPowerSourceInput = {
         power_config: { ...this._powerConfig },
       };
       await this._params!.saveCallback(source);
