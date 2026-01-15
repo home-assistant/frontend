@@ -59,10 +59,10 @@ class DialogCategoryDetail extends LitElement {
   }
 
   protected render() {
-    if (!this._open) {
+    if (!this._params) {
       return nothing;
     }
-    const entry = this._params!.entry;
+    const entry = this._params.entry;
     const nameInvalid = !this._isNameValid();
     return html`
       <ha-wa-dialog

@@ -47,10 +47,10 @@ class DialogAssignCategory extends LitElement {
   }
 
   protected render() {
-    if (!this._open) {
+    if (!this._params) {
       return nothing;
     }
-    const entry = this._params!.entityReg.categories[this._params!.scope];
+    const entry = this._params.entityReg.categories[this._params.scope];
     return html`
       <ha-wa-dialog
         .hass=${this.hass}
