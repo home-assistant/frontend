@@ -7,7 +7,7 @@ import {
   type CSSResultGroup,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import "./ha-markdown-element.ts";
+import "./ha-markdown-element";
 
 @customElement("ha-markdown")
 export class HaMarkdown extends LitElement {
