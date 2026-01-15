@@ -38,7 +38,7 @@ class DialogSceneSave extends LitElement implements HassDialog {
 
   @state() private _opened = false;
 
-  @state() private _error?: string;
+  @state() private _error = false;
 
   @state() private _visibleOptionals: string[] = [];
 
