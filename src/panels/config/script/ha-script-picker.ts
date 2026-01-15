@@ -127,7 +127,7 @@ type ScriptItem = ScriptEntity & {
   category: string | undefined;
   labels: LabelRegistryEntry[];
   assistants: string[];
-  assistants_sortable_key: string;
+  assistants_sortable_key: string | undefined;
 };
 
 @customElement("ha-script-picker")
