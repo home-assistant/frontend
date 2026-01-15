@@ -267,8 +267,7 @@ class DialogSceneSave extends LitElement implements HassDialog {
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const target = ev.target as any;
-    this._newName = target.value;
+    this._newName = (ev.target as any).target.value;
   }
 
   private _handleDiscard() {
@@ -461,7 +460,8 @@ ${dump(this._params.config)}
       haStyleDialog,
       css`
         ha-dialog {
-          --dialog-content-padding: 0 24px 24px 24px;
+          --dialog-content-padding: 0 var(--ha-space-6) var(--ha-space-6)
+            var(--ha-space-6);
         }
 
         @media all and (min-width: 500px) {
@@ -483,15 +483,15 @@ ${dump(this._params.config)}
         ha-labels-picker,
         ha-area-picker,
         ha-chip-set:has(> ha-assist-chip) {
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
         ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         ha-suggest-with-ai-button {
-          margin: 8px 16px;
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
       `,
     ];
