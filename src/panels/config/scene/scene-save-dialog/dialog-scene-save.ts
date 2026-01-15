@@ -28,10 +28,10 @@ import type {
   SceneSaveDialogParams,
 } from "./show-dialog-scene-save";
 import {
-  generateSceneSuggestionTask,
-  processSuggestion,
-  type SceneSuggestionResult,
-} from "./scene-ai-suggest";
+  generateMetadataSuggestionTask,
+  processMetadataSuggestion,
+  type MetadataSuggestionResult,
+} from "../../common/suggest-metadata-ai";
 
 @customElement("ha-dialog-scene-save")
 class DialogSceneSave extends LitElement {
@@ -268,17 +268,21 @@ class DialogSceneSave extends LitElement {
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateSceneSuggestionTask(
-      this.hass,
-      this._params.config,
-      this._params.domain
-    );
+    generateMetadataSuggestionTask(this.hass, {
+      domain: "scene",
+      config: this._params.config,
+      includeDescription: false,
+    });
 
   private async _handleSuggestion(
-    event: CustomEvent<GenDataTaskResult<SceneSuggestionResult>>
+    event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>
   ) {
     const result = event.detail;
-    const processed = await processSuggestion(this.hass, result);
+    const processed = await processMetadataSuggestion(
+      this.hass,
+      "scene",
+      result
+    );
 
     this._newName = processed.name;
 
