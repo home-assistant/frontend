@@ -26,8 +26,8 @@ export interface ProcessedMetadataSuggestionResult {
 }
 
 export interface MetadataSuggestionConfig {
-  /** The term to suggest metadata for (automation, script) */
-  term: "automation" | "script";
+  /** The domain to suggest metadata for (automation, script) */
+  domain: "automation" | "script";
   /** The configuration to suggest metadata for */
   config: any;
   /** Whether to include description field in the suggestion */
@@ -42,7 +42,7 @@ type Labels = Record<string, string>;
 
 const fetchCategories = (
   connection: HomeAssistant["connection"],
-  domain: string
+  domain: MetadataSuggestionConfig["domain"]
 ): Promise<Categories> =>
   fetchCategoryRegistry(connection, domain).then((cats) =>
     Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
@@ -65,9 +65,9 @@ const fetchLabels = (
 function buildMetadataInspirations(
   states: HomeAssistant["states"],
   entities: Record<string, EntityRegistryEntry>,
-  categories: Record<string, string>,
-  labels: Record<string, string>,
-  domain: string
+  categories: Categories,
+  labels: Labels,
+  domain: MetadataSuggestionConfig["domain"]
 ): string[] {
   const inspirations: string[] = [];
 
@@ -108,7 +108,7 @@ export async function generateMetadataSuggestionTask(
   language: HomeAssistant["language"],
   suggestionConfig: MetadataSuggestionConfig
 ): Promise<SuggestWithAIGenerateTask> {
-  const { term: domain, config, includeDescription } = suggestionConfig;
+  const { domain, config, includeDescription } = suggestionConfig;
 
   let categories: Categories = {};
   let entities: Entities = {};
@@ -213,14 +213,9 @@ ${dump(config)}
 
 export async function processMetadataSuggestion(
   connection: HomeAssistant["connection"],
-  domain: string,
+  domain: MetadataSuggestionConfig["domain"],
   result: GenDataTaskResult<MetadataSuggestionResult>
-): Promise<{
-  name: string;
-  description?: string;
-  categoryId?: string;
-  labelIds?: string[];
-}> {
+): Promise<ProcessedMetadataSuggestionResult> {
   let categories: Categories = {};
   let labels: Labels = {};
   try {
