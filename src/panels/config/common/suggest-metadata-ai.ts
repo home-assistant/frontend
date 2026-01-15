@@ -211,9 +211,7 @@ export async function processMetadataSuggestion(
   };
 
   // Add description if provided
-  if (result.data.description) {
-    processed.description = result.data.description;
-  }
+processed.description = result.data.description || undefined;
 
   // Convert category name to ID
   if (result.data.category) {
