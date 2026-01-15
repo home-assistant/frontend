@@ -1,5 +1,4 @@
 import { mdiPlus } from "@mdi/js";
-import { dump } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -21,18 +20,18 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../category/ha-category-picker";
 
-import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
-import { subscribeOne } from "../../../../common/util/subscribe-one";
 import type { GenDataTaskResult } from "../../../../data/ai_task";
-import { fetchCategoryRegistry } from "../../../../data/category_registry";
-import { subscribeEntityRegistry } from "../../../../data/entity/entity_registry";
-import { subscribeLabelRegistry } from "../../../../data/label/label_registry";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
   EntityRegistryUpdate,
   SceneSaveDialogParams,
 } from "./show-dialog-scene-save";
+import {
+  generateSceneSuggestionTask,
+  processSuggestion,
+  type SceneSuggestionResult,
+} from "./scene-ai-suggest";
 
 @customElement("ha-dialog-scene-save")
 class DialogSceneSave extends LitElement {
@@ -268,163 +267,38 @@ class DialogSceneSave extends LitElement {
     this.closeDialog();
   }
 
-  private _getSuggestData() {
-    return Promise.all([
-      subscribeOne(this.hass.connection, subscribeLabelRegistry).then((labs) =>
-        Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
-      ),
-      subscribeOne(this.hass.connection, subscribeEntityRegistry).then((ents) =>
-        Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
-      ),
-      fetchCategoryRegistry(this.hass.connection, "scene").then((cats) =>
-        Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
-      ),
-    ]);
-  }
-
-  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
-    const [labels, entities, categories] = await this._getSuggestData();
-    const inspirations: string[] = [];
-
-    const domain = this._params.domain;
-
-    for (const entity of Object.values(this.hass.states)) {
-      const entityEntry = entities[entity.entity_id];
-      if (
-        computeStateDomain(entity) !== domain ||
-        entity.attributes.restored ||
-        !entity.attributes.friendly_name ||
-        !entityEntry
-      ) {
-        continue;
-      }
-
-      let inspiration = `- ${entity.attributes.friendly_name}`;
-
-      const category = categories[entityEntry.categories.scene];
-      if (category) {
-        inspiration += ` (category: ${category})`;
-      }
-
-      if (entityEntry.labels.length) {
-        inspiration += ` (labels: ${entityEntry.labels
-          .map((label) => labels[label])
-          .join(", ")})`;
-      }
-
-      inspirations.push(inspiration);
-    }
-
-    return {
-      type: "data",
-      task: {
-        task_name: "frontend__scene__save",
-        instructions: `Suggest in language "${this.hass.language}" a name, category and labels for the following Home Assistant scene.
-
-The name should be relevant to the scene's purpose.
-${
-  inspirations.length
-    ? `The name should be in same style and sentence capitalization as existing scenes.
-Suggest a category and labels if relevant to the scene's purpose.
-Only suggest category and labels that are already used by existing scenes.`
-    : `The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.`
-}
-
-For inspiration, here are existing scenes:
-${inspirations.join("\n")}
-
-The scene configuration is as follows:
-
-${dump(this._params.config)}
-`,
-        structure: {
-          name: {
-            description: "The name of the scene",
-            required: true,
-            selector: {
-              text: {},
-            },
-          },
-          labels: {
-            description: "Labels for the scene",
-            required: false,
-            selector: {
-              text: {
-                multiple: true,
-              },
-            },
-          },
-          category: {
-            description: "The category of the scene",
-            required: false,
-            selector: {
-              select: {
-                options: Object.entries(categories).map(([id, name]) => ({
-                  value: id,
-                  label: name,
-                })),
-              },
-            },
-          },
-        },
-      },
-    };
-  };
+  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
+    generateSceneSuggestionTask(
+      this.hass,
+      this._params.config,
+      this._params.domain
+    );
 
   private async _handleSuggestion(
-    event: CustomEvent<
-      GenDataTaskResult<{
-        name: string;
-        category?: string;
-        labels?: string[];
-      }>
-    >
+    event: CustomEvent<GenDataTaskResult<SceneSuggestionResult>>
   ) {
     const result = event.detail;
-    const [labels, _entities, categories] = await this._getSuggestData();
+    const processed = await processSuggestion(this.hass, result);
 
-    this._newName = result.data.name;
-    if (result.data.category) {
-      // We get back category name, convert it to ID
-      const categoryId = Object.entries(categories).find(
-        ([, name]) => name === result.data.category
-      )?.[0];
-      if (categoryId) {
-        this._entryUpdates = {
-          ...this._entryUpdates,
-          category: categoryId,
-        };
-        if (!this._visibleOptionals.includes("category")) {
-          this._visibleOptionals = [...this._visibleOptionals, "category"];
-        }
+    this._newName = processed.name;
+
+    if (processed.categoryId) {
+      this._entryUpdates = {
+        ...this._entryUpdates,
+        category: processed.categoryId,
+      };
+      if (!this._visibleOptionals.includes("category")) {
+        this._visibleOptionals = [...this._visibleOptionals, "category"];
       }
     }
-    if (result.data.labels?.length) {
-      // We get back label names, convert them to IDs
-      const newLabels: Record<string, undefined | string> = Object.fromEntries(
-        result.data.labels.map((name) => [name, undefined])
-      );
-      let toFind = result.data.labels.length;
-      for (const [labelId, labelName] of Object.entries(labels)) {
-        if (labelName in newLabels && newLabels[labelName] === undefined) {
-          newLabels[labelName] = labelId;
-          toFind--;
-          if (toFind === 0) {
-            break;
-          }
-        }
-      }
-      const foundLabels = Object.values(newLabels).filter(
-        (labelId) => labelId !== undefined
-      );
-      if (foundLabels.length) {
-        this._entryUpdates = {
-          ...this._entryUpdates,
-          labels: foundLabels,
-        };
-        if (!this._visibleOptionals.includes("labels")) {
-          this._visibleOptionals = [...this._visibleOptionals, "labels"];
-        }
+
+    if (processed.labelIds?.length) {
+      this._entryUpdates = {
+        ...this._entryUpdates,
+        labels: processed.labelIds,
+      };
+      if (!this._visibleOptionals.includes("labels")) {
+        this._visibleOptionals = [...this._visibleOptionals, "labels"];
       }
     }
   }
