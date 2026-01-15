@@ -144,7 +144,7 @@ interface HelperItem {
   area?: string;
   label_entries: LabelRegistryEntry[];
   assistants: string[];
-  assistants_sortable_key: string;
+  assistants_sortable_key: string | undefined;
   disabled?: boolean;
 }
 
