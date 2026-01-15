@@ -7,7 +7,7 @@ import {
   type CSSResultGroup,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import "./ha-markdown-element";
+import "./ha-markdown-element.ts";
 
 @customElement("ha-markdown")
 export class HaMarkdown extends LitElement {
@@ -138,10 +138,10 @@ export class HaMarkdown extends LitElement {
       --markdown-table-padding-inline: 0;
       --markdown-table-padding-block: 0;
       th {
-        vertical-align: attr(align, center);
+        vertical-align: attr(valign, middle);
       }
       td {
-        vertical-align: attr(align, left);
+        vertical-align: attr(valign, middle);
       }
     }
     table {
