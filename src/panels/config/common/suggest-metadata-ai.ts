@@ -18,6 +18,13 @@ export interface MetadataSuggestionResult {
   labels?: string[];
 }
 
+export interface ProcessedMetadataSuggestionResult {
+  name: string;
+  description?: string;
+  categoryId?: string;
+  labelIds?: string[];
+}
+
 export interface MetadataSuggestionConfig {
   /** The term to suggest metadata for (automation, script) */
   term: "automation" | "script";
@@ -226,17 +233,10 @@ export async function processMetadataSuggestion(
     console.error("Error getting suggest metadata:", error);
   }
 
-  const processed: {
-    name: string;
-    description?: string;
-    categoryId?: string;
-    labelIds?: string[];
-  } = {
+  const processed: ProcessedMetadataSuggestionResult = {
     name: result.data.name,
+    description: result.data.description ?? undefined,
   };
-
-  // Add description if provided
-  processed.description = result.data.description || undefined;
 
   // Convert category name to ID
   if (result.data.category) {
