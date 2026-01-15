@@ -28,6 +28,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
@@ -1077,11 +1078,11 @@ export class HaSceneEditor extends PreventUnsavedMixin(
               );
 
         if (!scene) {
+          const scenesSetPromise = new Promise<void>((resolve) => {
+            this._scenesSet = resolve;
+          });
           try {
-            await new Promise<void>((resolve, reject) => {
-              setTimeout(reject, 3000);
-              this._scenesSet = resolve;
-            });
+            await promiseTimeout(3000, scenesSetPromise);
             scene = this.scenes.find(
               (entity: SceneEntity) => entity.attributes.id === id
             );
