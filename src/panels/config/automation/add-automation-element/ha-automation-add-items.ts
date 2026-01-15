@@ -227,7 +227,7 @@ export class HaAutomationAddItems extends LitElement {
     }
 
     .empty-note {
-      color: var(--ha-color-text-tertiary);
+      color: var(--ha-color-text-secondary);
       margin-top: var(--ha-space-2);
       text-align: center;
     }
