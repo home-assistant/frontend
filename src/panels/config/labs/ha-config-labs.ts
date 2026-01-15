@@ -203,7 +203,6 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
               src=${brandsUrl({
                 domain: preview_feature.domain,
                 type: "icon",
-                useFallback: true,
                 darkOptimized: this.hass.themes?.darkMode,
               })}
               crossorigin="anonymous"

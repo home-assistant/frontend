@@ -60,7 +60,6 @@ class HaDomainIntegrations extends LitElement {
                     src=${brandsUrl({
                       domain: flow.handler,
                       type: "icon",
-                      useFallback: true,
                       darkOptimized: this.hass.themes?.darkMode,
                     })}
                     crossorigin="anonymous"
@@ -106,7 +105,6 @@ class HaDomainIntegrations extends LitElement {
                   src=${brandsUrl({
                     domain,
                     type: "icon",
-                    useFallback: true,
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
                   crossorigin="anonymous"
@@ -170,7 +168,6 @@ class HaDomainIntegrations extends LitElement {
               src=${brandsUrl({
                 domain: this.domain,
                 type: "icon",
-                useFallback: true,
                 darkOptimized: this.hass.themes?.darkMode,
               })}
               crossorigin="anonymous"

@@ -436,6 +436,24 @@ class DialogAddAutomationElement
 
   // #region render
 
+  private _getEmptyNote(automationElementType: string) {
+    if (
+      automationElementType !== "trigger" &&
+      automationElementType !== "condition"
+    ) {
+      return undefined;
+    }
+
+    return this.hass.localize(
+      `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target_note`,
+      {
+        labs_link: html`<a href="/config/labs" @click=${this._close}
+          >${this.hass.localize("ui.panel.config.labs.caption")}</a
+        >`,
+      }
+    );
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -701,6 +719,7 @@ class DialogAddAutomationElement
                 .emptyLabel=${this.hass.localize(
                   `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
                 )}
+                .emptyNote=${this._getEmptyNote(automationElementType)}
                 .tooltipDescription=${this._tab === "targets"}
                 .target=${(this._tab === "targets" &&
                   this._selectedTarget &&
@@ -1696,9 +1715,9 @@ class DialogAddAutomationElement
 
   // #region interaction
 
-  private _close() {
+  private _close = () => {
     this._open = false;
-  }
+  };
 
   private _back() {
     mainWindow.history.back();

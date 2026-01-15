@@ -4162,6 +4162,7 @@
               "cut_to_clipboard": "Trigger cut to clipboard",
               "select": "Select a trigger",
               "no_items_for_target": "No triggers available for",
+              "no_items_for_target_note": "This is a {labs_link} feature. More triggers will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -4433,6 +4434,7 @@
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
               "no_items_for_target": "No conditions available for",
+              "no_items_for_target_note": "This is a {labs_link} feature. More conditions will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
