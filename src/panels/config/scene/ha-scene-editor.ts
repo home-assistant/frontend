@@ -34,7 +34,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
@@ -620,10 +620,13 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
   }
 
-  private async _handleDropdownSelect(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
-    const action = ev.detail.item.value;
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
     switch (action) {
       case "apply":
         activateScene(this.hass, this._scene!.entity_id);
