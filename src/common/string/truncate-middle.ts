@@ -27,39 +27,31 @@ export const truncateMiddle = (
   if (getTextWidth(ellipsis, font) >= maxWidth) {
     return text;
   }
-
-  let tailLength = Math.min(12, Math.max(6, Math.round(text.length * 0.25)));
-  tailLength = Math.min(tailLength, text.length - 1);
-  if (tailLength < 1) {
-    return text;
-  }
-
-  while (tailLength > 1) {
-    const width = getTextWidth(
-      `${text.slice(0, 1)}${ellipsis}${text.slice(-tailLength)}`,
-      font
-    );
-    if (width <= maxWidth) {
-      break;
-    }
-    tailLength--;
-  }
-
-  const tail = text.slice(-tailLength);
+  const maxContent = text.length - 1;
   let low = 1;
-  let high = text.length - tailLength;
-  let best = 1;
+  let high = maxContent;
+  let bestHead = 1;
+  let bestTail = 1;
 
   while (low <= high) {
-    const mid = Math.floor((low + high) / 2);
-    const candidate = `${text.slice(0, mid)}${ellipsis}${tail}`;
+    const total = Math.floor((low + high) / 2);
+    const headLen = Math.ceil(total / 2);
+    const tailLen = total - headLen;
+    if (tailLen < 1) {
+      low = total + 1;
+      continue;
+    }
+    const candidate = `${text.slice(0, headLen)}${ellipsis}${text.slice(
+      -tailLen
+    )}`;
     if (getTextWidth(candidate, font) <= maxWidth) {
-      best = mid;
-      low = mid + 1;
+      bestHead = headLen;
+      bestTail = tailLen;
+      low = total + 1;
     } else {
-      high = mid - 1;
+      high = total - 1;
     }
   }
 
-  return `${text.slice(0, best)}${ellipsis}${tail}`;
+  return `${text.slice(0, bestHead)}${ellipsis}${text.slice(-bestTail)}`;
 };
