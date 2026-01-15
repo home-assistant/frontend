@@ -199,8 +199,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @state() private _hiddenPanels?: string[];
 
-  @state() private _truncatedTitles = new Map<string, string>();
-
   private _mouseLeaveTimeout?: number;
 
   private _touchendTimeout?: number;
@@ -306,8 +304,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("_issuesCount") ||
       changedProps.has("_notifications") ||
       changedProps.has("_hiddenPanels") ||
-      changedProps.has("_panelOrder") ||
-      changedProps.has("_truncatedTitles")
+      changedProps.has("_panelOrder")
     ) {
       return true;
     }
@@ -488,10 +485,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <span
           class="item-text"
           slot="headline"
-          data-title-key=${`panel:${urlPath}`}
           data-full-title=${ifDefined(title)}
         >
-          ${this._truncatedTitles.get(`panel:${urlPath}`) ?? title}
+          ${title}
         </span>
       </ha-md-list-item>
     `;
@@ -531,10 +527,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <span
           class="item-text"
           slot="headline"
-          data-title-key="config"
           data-full-title=${this.hass.localize("panel.config")}
-          >${this._truncatedTitles.get("config") ??
-          this.hass.localize("panel.config")}</span
+          >${this.hass.localize("panel.config")}</span
         >
         ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
           ? html`
@@ -569,10 +563,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <span
           class="item-text"
           slot="headline"
-          data-title-key="notifications"
           data-full-title=${this.hass.localize("ui.notification_drawer.title")}
-          >${this._truncatedTitles.get("notifications") ??
-          this.hass.localize("ui.notification_drawer.title")}</span
+          >${this.hass.localize("ui.notification_drawer.title")}</span
         >
         ${this.alwaysExpand && notificationCount > 0
           ? html`<span class="badge" slot="end">${notificationCount}</span>`
@@ -603,13 +595,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           .user=${this.hass.user}
           .hass=${this.hass}
         ></ha-user-badge>
-        <span
-          class="item-text"
-          slot="headline"
-          data-title-key="user"
-          data-full-title=${userName}
-        >
-          ${this._truncatedTitles.get("user") ?? userName}
+        <span class="item-text" slot="headline" data-full-title=${userName}>
+          ${userName}
         </span>
       </ha-md-list-item>
     `;
@@ -630,13 +617,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <span
           class="item-text"
           slot="headline"
-          data-title-key="external-config"
           data-full-title=${this.hass.localize(
             "ui.sidebar.external_app_configuration"
           )}
         >
-          ${this._truncatedTitles.get("external-config") ??
-          this.hass.localize("ui.sidebar.external_app_configuration")}
+          ${this.hass.localize("ui.sidebar.external_app_configuration")}
         </span>
       </ha-md-list-item>
     `;
@@ -659,31 +644,23 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return;
     }
     const isExpanded = this.hasAttribute("expanded");
-    if (!isExpanded) {
-      if (this._truncatedTitles.size) {
-        this._truncatedTitles = new Map();
-      }
-      return;
-    }
-    const nextTruncated = new Map<string, string>();
     itemTexts.forEach((itemText) => {
-      const key = itemText.dataset.titleKey;
-      if (!key) {
-        return;
-      }
       const fullTitle =
         itemText.dataset.fullTitle ?? itemText.textContent ?? "";
+      itemText.dataset.fullTitle = fullTitle;
+      if (!isExpanded) {
+        itemText.textContent = fullTitle;
+        return;
+      }
+
+      itemText.textContent = fullTitle;
       const availableWidth = itemText.clientWidth;
-      if (!availableWidth) {
+      if (!availableWidth || itemText.scrollWidth <= availableWidth) {
         return;
       }
       const font = getComputedStyle(itemText).font;
-      const truncated = truncateMiddle(fullTitle, availableWidth, font);
-      if (truncated !== fullTitle) {
-        nextTruncated.set(key, truncated);
-      }
+      itemText.textContent = truncateMiddle(fullTitle, availableWidth, font);
     });
-    this._truncatedTitles = nextTruncated;
   }
 
   private _handleExternalAppConfiguration(ev: Event) {
