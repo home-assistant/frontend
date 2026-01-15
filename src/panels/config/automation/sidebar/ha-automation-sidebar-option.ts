@@ -52,7 +52,7 @@ export default class HaAutomationSidebarOption extends LitElement {
       .hass=${this.hass}
       .isWide=${this.isWide}
       .narrow=${this.narrow}
-      .handleDropdownSelect=${this._handleDropdownSelect}
+      @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
@@ -129,9 +129,7 @@ export default class HaAutomationSidebarOption extends LitElement {
     </ha-automation-sidebar-card>`;
   }
 
-  private _handleDropdownSelect = (
-    ev: CustomEvent<{ item: HaDropdownItem }>
-  ) => {
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
     const action = ev.detail?.item?.value;
 
     if (!action) {
@@ -149,7 +147,7 @@ export default class HaAutomationSidebarOption extends LitElement {
         this.config.delete();
         break;
     }
-  };
+  }
 
   static styles = [sidebarEditorStyles, overflowStyles];
 }
