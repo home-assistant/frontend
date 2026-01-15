@@ -46,7 +46,7 @@ class SupervisorAppInfoDashboard extends LitElement {
       css`
         .content {
           margin: auto;
-          padding: 8px;
+          padding: var(--ha-space-2);
           max-width: 1024px;
         }
       `,

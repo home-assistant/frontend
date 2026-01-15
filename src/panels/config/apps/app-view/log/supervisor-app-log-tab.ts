@@ -59,7 +59,7 @@ class SupervisorAppLogDashboard extends LitElement {
       css`
         .content {
           margin: auto;
-          padding: 8px;
+          padding: var(--ha-space-2);
         }
         .search {
           position: sticky;

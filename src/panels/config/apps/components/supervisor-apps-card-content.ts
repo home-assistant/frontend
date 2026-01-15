@@ -70,9 +70,9 @@ class SupervisorAppsCardContent extends LitElement {
     }
 
     ha-svg-icon {
-      margin-right: 24px;
-      margin-left: 8px;
-      margin-top: 12px;
+      margin-right: var(--ha-space-6);
+      margin-left: var(--ha-space-2);
+      margin-top: var(--ha-space-3);
       float: left;
       color: var(--secondary-text-color);
     }
@@ -106,8 +106,8 @@ class SupervisorAppsCardContent extends LitElement {
     .icon_image img {
       max-height: 40px;
       max-width: 40px;
-      margin-top: 4px;
-      margin-right: 16px;
+      margin-top: var(--ha-space-1);
+      margin-right: var(--ha-space-4);
       float: left;
     }
     .icon_image.stopped,
@@ -119,8 +119,8 @@ class SupervisorAppsCardContent extends LitElement {
       background-color: var(--warning-color);
       width: 12px;
       height: 12px;
-      top: 8px;
-      right: 8px;
+      top: var(--ha-space-2);
+      right: var(--ha-space-2);
       border-radius: var(--ha-border-radius-circle);
     }
     .topbar {

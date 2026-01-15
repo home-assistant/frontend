@@ -192,7 +192,7 @@ class HaConfigAppDashboard extends LitElement {
           color: var(--primary-text-color);
         }
         .content {
-          padding: 24px 0 32px;
+          padding: var(--ha-space-6) 0 var(--ha-space-8);
           display: flex;
           flex-direction: column;
           align-items: center;

@@ -200,8 +200,8 @@ class AppsRepositoriesDialog extends LitElement {
           margin-top: 4px;
         }
         ha-button {
-          margin-left: 8px;
-          margin-inline-start: 8px;
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
         }
         div.delete ha-icon-button {

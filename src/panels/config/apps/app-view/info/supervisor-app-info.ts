@@ -1312,8 +1312,8 @@ class SupervisorAppInfo extends LitElement {
           color: var(--secondary-text-color);
         }
         .addon-header {
-          padding-left: 8px;
-          padding-inline-start: 8px;
+          padding-left: var(--ha-space-2);
+          padding-inline-start: var(--ha-space-2);
           padding-inline-end: initial;
           font-size: var(--ha-font-size-2xl);
           color: var(--ha-card-header-color, var(--primary-text-color));

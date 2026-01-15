@@ -89,13 +89,13 @@ class SupervisorAppConfigDashboard extends LitElement {
       css`
         .content {
           margin: auto;
-          padding: 8px;
+          padding: var(--ha-space-2);
           max-width: 1024px;
         }
         supervisor-app-network,
         supervisor-app-audio,
         supervisor-app-config {
-          margin-bottom: 24px;
+          margin-bottom: var(--ha-space-6);
         }
       `,
     ];

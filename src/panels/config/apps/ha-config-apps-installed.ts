@@ -251,20 +251,20 @@ export class HaConfigAppsInstalled extends LitElement {
     }
 
     .content {
-      padding: 16px;
-      margin-bottom: 72px;
+      padding: var(--ha-space-4);
+      margin-bottom: var(--ha-space-18);
     }
 
     .card-group {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      grid-gap: 8px;
+      grid-gap: var(--ha-space-2);
     }
 
     .card-content {
       display: flex;
       justify-content: space-between;
-      padding: 16px;
+      padding: var(--ha-space-4);
     }
 
     button.link {
@@ -280,9 +280,9 @@ export class HaConfigAppsInstalled extends LitElement {
 
     ha-fab {
       position: fixed;
-      right: calc(16px + var(--safe-area-inset-right));
-      bottom: calc(16px + var(--safe-area-inset-bottom));
-      inset-inline-end: calc(16px + var(--safe-area-inset-right));
+      right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
+      bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
+      inset-inline-end: calc(var(--ha-space-4) + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
     }

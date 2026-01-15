@@ -118,7 +118,7 @@ class SupervisorAppAudio extends LitElement {
           width: 100%;
         }
         ha-select:last-child {
-          margin-top: 8px;
+          margin-top: var(--ha-space-2);
         }
       `,
     ];

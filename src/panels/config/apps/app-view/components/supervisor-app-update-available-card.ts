@@ -264,18 +264,18 @@ class SupervisorAppUpdateAvailableCard extends LitElement {
         }
 
         ha-markdown {
-          padding-bottom: 8px;
+          padding-bottom: var(--ha-space-2);
         }
 
         hr {
           border-color: var(--divider-color);
           border-bottom: none;
-          margin: 16px 0 0 0;
+          margin: var(--ha-space-4) 0 0 0;
         }
 
         ha-md-list {
           padding: 0;
-          margin-bottom: -16px;
+          margin-bottom: calc(-1 * var(--ha-space-4));
         }
 
         ha-md-list-item {

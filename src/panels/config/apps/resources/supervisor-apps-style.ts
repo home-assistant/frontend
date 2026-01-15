@@ -11,21 +11,21 @@ export const supervisorAppsStyle = css`
   }
   h1 {
     font-size: 2em;
-    margin-bottom: 8px;
+    margin-bottom: var(--ha-space-2);
     font-family: var(--ha-font-family-body);
     -webkit-font-smoothing: var(--ha-font-smoothing);
     -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
     font-size: var(--ha-font-size-2xl);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-condensed);
-    padding-left: 8px;
-    padding-inline-start: 8px;
+    padding-left: var(--ha-space-2);
+    padding-inline-start: var(--ha-space-2);
     padding-inline-end: initial;
   }
   .description {
-    margin-top: 4px;
-    padding-left: 8px;
-    padding-inline-start: 8px;
+    margin-top: var(--ha-space-1);
+    padding-left: var(--ha-space-2);
+    padding-inline-start: var(--ha-space-2);
     padding-inline-end: initial;
   }
   .card-group {
@@ -50,6 +50,6 @@ export const supervisorAppsStyle = css`
   }
   .error {
     color: var(--error-color);
-    margin-top: 16px;
+    margin-top: var(--ha-space-4);
   }
 `;
