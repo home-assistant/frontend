@@ -3,16 +3,13 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import type { GenDataTaskResult } from "../../../data/ai_task";
 import { fetchCategoryRegistry } from "../../../data/category_registry";
-import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import {
+  subscribeEntityRegistry,
+  type EntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import { subscribeLabelRegistry } from "../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../types";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
-
-interface SuggestData {
-  labels: Record<string, string>;
-  entities: Record<string, any>;
-  categories: Record<string, string>;
-}
 
 export interface MetadataSuggestionResult {
   name: string;
@@ -22,51 +19,58 @@ export interface MetadataSuggestionResult {
 }
 
 export interface MetadataSuggestionConfig {
-  /** The domain (automation, script) */
-  domain: "automation" | "script";
-  /** The configuration to analyze */
+  /** The term to suggest metadata for (automation, script) */
+  term: "automation" | "script";
+  /** The configuration to suggest metadata for */
   config: any;
-  /** Whether to include description field in suggestion */
+  /** Whether to include description field in the suggestion */
   includeDescription?: boolean;
-  /** Whether to include icon field in suggestion (scripts only) */
+  /** Whether to include icon field in the suggestion (scripts only) */
   includeIcon?: boolean;
 }
 
-async function getSuggestMetadata(
-  hass: HomeAssistant,
-  domain: string
-): Promise<SuggestData> {
-  const [labels, entities, categories] = await Promise.all([
-    subscribeOne(hass.connection, subscribeLabelRegistry).then((labs) =>
-      Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
-    ),
-    subscribeOne(hass.connection, subscribeEntityRegistry).then((ents) =>
-      Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
-    ),
-    fetchCategoryRegistry(hass.connection, domain).then((cats) =>
-      Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
-    ),
-  ]);
+type Categories = Record<string, string>;
+type Entities = Record<string, EntityRegistryEntry>;
+type Labels = Record<string, string>;
 
-  return { labels, entities, categories };
-}
+const fetchCategories = (
+  connection: HomeAssistant["connection"],
+  domain: string
+): Promise<Categories> =>
+  fetchCategoryRegistry(connection, domain).then((cats) =>
+    Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
+  );
+
+const fetchEntities = (
+  connection: HomeAssistant["connection"]
+): Promise<Entities> =>
+  subscribeOne(connection, subscribeEntityRegistry).then((ents) =>
+    Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
+  );
+
+const fetchLabels = (
+  connection: HomeAssistant["connection"]
+): Promise<Labels> =>
+  subscribeOne(connection, subscribeLabelRegistry).then((labs) =>
+    Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
+  );
 
 function buildMetadataInspirations(
-  hassStates: HomeAssistant["states"],
-  entities: Record<string, any>,
+  states: HomeAssistant["states"],
+  entities: Record<string, EntityRegistryEntry>,
   categories: Record<string, string>,
   labels: Record<string, string>,
   domain: string
 ): string[] {
   const inspirations: string[] = [];
 
-  for (const entity of Object.values(hass.states)) {
+  for (const entity of Object.values(states)) {
     const entityEntry = entities[entity.entity_id];
     if (
-	  !entityEntry ||
+      !entityEntry ||
       computeStateDomain(entity) !== domain ||
       entity.attributes.restored ||
-      !entity.attributes.friendly_name      
+      !entity.attributes.friendly_name
     ) {
       continue;
     }
@@ -92,29 +96,39 @@ function buildMetadataInspirations(
 }
 
 export async function generateMetadataSuggestionTask(
-  hassStates: HomeAssistant["states"],
-  hassLanguage: HomeAssistant["language"]
+  connection: HomeAssistant["connection"],
+  states: HomeAssistant["states"],
+  language: HomeAssistant["language"],
   suggestionConfig: MetadataSuggestionConfig
 ): Promise<SuggestWithAIGenerateTask> {
-  const { domain, config, includeDescription } = suggestionConfig;
-  const { labels, entities, categories } = await getSuggestMetadata(
-    hass,
-    domain
-  );
+  const { term: domain, config, includeDescription } = suggestionConfig;
+
+  let categories: Categories = {};
+  let entities: Entities = {};
+  let labels: Labels = {};
+  try {
+    [categories, entities, labels] = await Promise.all([
+      fetchCategories(connection, domain),
+      fetchEntities(connection),
+      fetchLabels(connection),
+    ]);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error getting suggest metadata:", error);
+  }
+
   const inspirations = buildMetadataInspirations(
-    hass,
+    states,
     entities,
     categories,
     labels,
     domain
   );
 
-  const term = domain === "script" ? "script" : domain;
-
   // Build the structure dynamically
   const structure: Record<string, any> = {
     name: {
-      description: `The name of the ${term}`,
+      description: `The name of the ${domain}`,
       required: true,
       selector: {
         text: {},
@@ -125,7 +139,7 @@ export async function generateMetadataSuggestionTask(
   // Add description field if requested
   if (includeDescription) {
     structure.description = {
-      description: `A short description of the ${term}`,
+      description: `A short description of the ${domain}`,
       required: false,
       selector: {
         text: {},
@@ -135,7 +149,7 @@ export async function generateMetadataSuggestionTask(
 
   // Add labels field
   structure.labels = {
-    description: `Labels for the ${term}`,
+    description: `Labels for the ${domain}`,
     required: false,
     selector: {
       text: {
@@ -146,7 +160,7 @@ export async function generateMetadataSuggestionTask(
 
   // Add category field
   structure.category = {
-    description: `The category of the ${term}`,
+    description: `The category of the ${domain}`,
     required: false,
     selector: {
       select: {
@@ -161,27 +175,27 @@ export async function generateMetadataSuggestionTask(
   return {
     type: "data",
     task: {
-      task_name: `frontend__${term}__save`,
-      instructions: `Suggest in language "${hass.language}" a name${includeDescription ? ", description" : ""}, category and labels for the following Home Assistant ${term}.
+      task_name: `frontend__${domain}__save`,
+      instructions: `Suggest in language "${language}" a name${includeDescription ? ", description" : ""}, category and labels for the following Home Assistant ${domain}.
 
-The name should be relevant to the ${term}'s purpose.
+The name should be relevant to the ${domain}'s purpose.
 ${
   inspirations.length
-    ? `The name should be in same style and sentence capitalization as existing ${term}s.
-Suggest a category and labels if relevant to the ${term}'s purpose.
-Only suggest category and labels that are already used by existing ${term}s.`
-    : `The name should be short, descriptive, sentence case, and written in the language ${hass.language}.`
+    ? `The name should be in same style and sentence capitalization as existing ${domain}s.
+Suggest a category and labels if relevant to the ${domain}'s purpose.
+Only suggest category and labels that are already used by existing ${domain}s.`
+    : `The name should be short, descriptive, sentence case, and written in the language ${language}.`
 }${
         includeDescription
           ? `
-If the ${term} contains 5+ steps, include a short description.`
+If the ${domain} contains 5+ steps, include a short description.`
           : ""
       }
 
-For inspiration, here are existing ${term}s:
+For inspiration, here are existing ${domain}s:
 ${inspirations.join("\n")}
 
-The ${term} configuration is as follows:
+The ${domain} configuration is as follows:
 
 ${dump(config)}
 `,
@@ -191,7 +205,7 @@ ${dump(config)}
 }
 
 export async function processMetadataSuggestion(
-  hass: HomeAssistant,
+  connection: HomeAssistant["connection"],
   domain: string,
   result: GenDataTaskResult<MetadataSuggestionResult>
 ): Promise<{
@@ -200,7 +214,17 @@ export async function processMetadataSuggestion(
   categoryId?: string;
   labelIds?: string[];
 }> {
-  const { labels, categories } = await getSuggestMetadata(hass, domain);
+  let categories: Categories = {};
+  let labels: Labels = {};
+  try {
+    [categories, labels] = await Promise.all([
+      fetchCategories(connection, domain),
+      fetchLabels(connection),
+    ]);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error getting suggest metadata:", error);
+  }
 
   const processed: {
     name: string;
@@ -212,7 +236,7 @@ export async function processMetadataSuggestion(
   };
 
   // Add description if provided
-processed.description = result.data.description || undefined;
+  processed.description = result.data.description || undefined;
 
   // Convert category name to ID
   if (result.data.category) {
