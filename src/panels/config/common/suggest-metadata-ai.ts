@@ -1,7 +1,7 @@
 import { dump } from "js-yaml";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { subscribeOne } from "../../../common/util/subscribe-one";
-import type { GenDataTaskResult } from "../../../data/ai_task";
+import type { AITaskStructure, GenDataTaskResult } from "../../../data/ai_task";
 import { fetchCategoryRegistry } from "../../../data/category_registry";
 import {
   subscribeEntityRegistry,
@@ -133,7 +133,7 @@ export async function generateMetadataSuggestionTask(
   );
 
   // Build the structure dynamically
-  const structure: Record<string, any> = {
+  const structure: AITaskStructure = {
     name: {
       description: `The name of the ${domain}`,
       required: true,
