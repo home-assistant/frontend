@@ -63,10 +63,10 @@ function buildMetadataInspirations(
   for (const entity of Object.values(hass.states)) {
     const entityEntry = entities[entity.entity_id];
     if (
+	  !entityEntry ||
       computeStateDomain(entity) !== domain ||
       entity.attributes.restored ||
-      !entity.attributes.friendly_name ||
-      !entityEntry
+      !entity.attributes.friendly_name      
     ) {
       continue;
     }
