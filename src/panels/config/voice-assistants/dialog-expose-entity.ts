@@ -161,8 +161,8 @@ class DialogExposeEntity extends LitElement {
 
       for (const entity of Object.values(this.hass.states)) {
         if (
-          !this._params!.filterAssistants.some(
-            (ass) => !exposedEntities[entity.entity_id]?.[ass]
+          this._params!.filterAssistants.every(
+            (ass) => exposedEntities[entity.entity_id]?.[ass]
           )
         ) {
           continue;
