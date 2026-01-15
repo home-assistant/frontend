@@ -52,7 +52,7 @@ async function getSuggestMetadata(
 }
 
 function buildMetadataInspirations(
-  hass: HomeAssistant,
+  hassStates: HomeAssistant["states"],
   entities: Record<string, any>,
   categories: Record<string, string>,
   labels: Record<string, string>,
