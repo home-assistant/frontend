@@ -90,6 +90,16 @@ export class HaDrawer extends DrawerBase {
         border-color: var(--divider-color, rgba(0, 0, 0, 0.12));
         inset-inline-start: 0 !important;
         inset-inline-end: initial !important;
+        transition-property: transform, width;
+        transition-duration:
+          var(--mdc-drawer-transition-duration, 0.2s),
+          var(--ha-animation-base-duration);
+        transition-timing-function:
+          var(
+            --mdc-drawer-transition-timing-function,
+            cubic-bezier(0.4, 0, 0.2, 1)
+          ),
+          ease;
       }
       .mdc-drawer.mdc-drawer--modal.mdc-drawer--open {
         z-index: 200;
@@ -103,6 +113,15 @@ export class HaDrawer extends DrawerBase {
         direction: var(--direction);
         width: 100%;
         box-sizing: border-box;
+        transition:
+          padding-left var(--ha-animation-base-duration) ease,
+          padding-inline-start var(--ha-animation-base-duration) ease;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mdc-drawer,
+        .mdc-drawer-app-content {
+          transition: none;
+        }
       }
     `,
   ];

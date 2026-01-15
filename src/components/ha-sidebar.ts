@@ -728,6 +728,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           );
           font-size: var(--ha-font-size-xl);
           align-items: center;
+          overflow: hidden;
+          width: calc(56px + var(--safe-area-inset-left, 0px));
           padding-left: calc(
             var(--ha-space-1) + var(--safe-area-inset-left, 0px)
           );
@@ -736,6 +738,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           );
           padding-inline-end: initial;
           padding-top: var(--safe-area-inset-top, 0px);
+          transition: width var(--ha-animation-base-duration) ease;
         }
         :host([expanded]) .menu {
           width: calc(256px + var(--safe-area-inset-left, 0px));
@@ -750,15 +753,28 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           margin-left: 3px;
           margin-inline-start: 3px;
           margin-inline-end: initial;
-          width: 100%;
-          display: none;
+          flex: 1;
+          min-width: 0;
+          max-width: 0;
+          opacity: 0;
+          transform: translateX(-4px);
+          transition:
+            max-width var(--ha-animation-base-duration) ease,
+            opacity var(--ha-animation-base-duration) ease,
+            transform var(--ha-animation-base-duration) ease;
         }
         :host([narrow]) .title {
           margin: 0;
           padding: 0 var(--ha-space-4);
         }
         :host([expanded]) .title {
-          display: initial;
+          max-width: 100%;
+          opacity: 1;
+          transform: none;
+          transition-delay: 0ms, 80ms, 80ms;
+        }
+        :host(:not([expanded])) .title {
+          margin: 0;
         }
         .hidden-panel {
           display: none;
@@ -800,6 +816,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--ha-space-3);
           --md-list-item-leading-icon-size: var(--ha-space-6);
+          transition: width var(--ha-animation-base-duration) ease;
         }
         :host([expanded]) ha-md-list-item {
           width: 248px;
@@ -840,12 +857,25 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-md-list-item .item-text {
-          display: none;
+          display: block;
+          max-width: 0;
+          opacity: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          transform: translateX(-4px);
           font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);
+          transition:
+            max-width var(--ha-animation-base-duration) ease,
+            opacity var(--ha-animation-base-duration) ease,
+            transform var(--ha-animation-base-duration) ease;
         }
         :host([expanded]) ha-md-list-item .item-text {
-          display: block;
+          max-width: 100%;
+          opacity: 1;
+          transform: none;
+          transition-delay: 0ms, 80ms, 80ms;
         }
 
         .divider {
@@ -913,7 +943,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           position: absolute;
           opacity: 0.9;
           border-radius: var(--ha-border-radius-sm);
-          white-space: nowrap;
+          max-width: 200px;
+          white-space: normal;
+          word-break: break-word;
           color: var(--sidebar-background-color);
           background-color: var(--sidebar-text-color);
           padding: var(--ha-space-1);
@@ -923,6 +955,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .menu ha-icon-button {
           -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .menu,
+          ha-md-list-item,
+          ha-md-list-item .item-text,
+          .title {
+            transition: none;
+          }
         }
       `,
     ];

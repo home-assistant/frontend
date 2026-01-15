@@ -160,6 +160,10 @@ class PanelDeveloperTools extends LitElement {
           border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
+          transition:
+            width var(--ha-animation-base-duration) ease,
+            padding-left var(--ha-animation-base-duration) ease,
+            padding-right var(--ha-animation-base-duration) ease;
         }
         :host([narrow]) .header {
           width: calc(
@@ -169,6 +173,11 @@ class PanelDeveloperTools extends LitElement {
               ) - var(--safe-area-inset-right, 0px)
           );
           padding-left: var(--safe-area-inset-left);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .header {
+            transition: none;
+          }
         }
 
         .toolbar {
