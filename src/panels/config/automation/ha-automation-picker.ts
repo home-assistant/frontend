@@ -132,7 +132,7 @@ type AutomationItem = AutomationEntity & {
   category: string | undefined;
   labels: LabelRegistryEntry[];
   assistants: string[];
-  assistants_sortable_key: string;
+  assistants_sortable_key: string | undefined;
 };
 
 @customElement("ha-automation-picker")
