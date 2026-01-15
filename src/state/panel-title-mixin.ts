@@ -4,7 +4,7 @@ import { configSections } from "../panels/config/ha-panel-config";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 
-export const setPageTitle = (title: string | undefined) => {
+const setPageTitle = (title: string | undefined) => {
   document.title = title ? `${title} – Home Assistant` : "Home Assistant";
 };
 

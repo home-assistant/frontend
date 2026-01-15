@@ -12,6 +12,7 @@ import {
 } from "@mdi/js";
 import type { HomeAssistant, PanelInfo } from "../types";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
+import type { LocalizeKeys } from "../common/translations/localize";
 
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = "lovelace";
@@ -98,8 +99,8 @@ export const getConfigSubpageTitle = (
           return localized;
         }
       }
-      
-       if (pageNav.name) {
+
+      if (pageNav.name) {
         return pageNav.name;
       }
     }
