@@ -25,6 +25,11 @@ import type { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
 import type { ExposeEntityDialogParams } from "./show-dialog-expose-entity";
 
+interface FilteredEntity {
+  entity: HassEntity;
+  nameList: (string | undefined)[];
+}
+
 @customElement("dialog-expose-entity")
 class DialogExposeEntity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -150,31 +155,20 @@ class DialogExposeEntity extends LitElement {
     (
       exposedEntities: Record<string, ExposeEntitySettings>,
       filter?: string
-    ) => {
+    ): FilteredEntity[] => {
       const lowerFilter = filter?.toLowerCase();
-      return Object.values(this.hass.states).filter((entity) => {
+      const result: FilteredEntity[] = [];
+
+      for (const entity of Object.values(this.hass.states)) {
         if (
           !this._params!.filterAssistants.some(
             (ass) => !exposedEntities[entity.entity_id]?.[ass]
           )
         ) {
-          return false;
+          continue;
         }
 
-        if (!lowerFilter) {
-          return true;
-        }
-
-        if (entity.entity_id.toLowerCase().includes(lowerFilter)) {
-          return true;
-        }
-
-        const entityName = computeStateName(entity);
-        if (entityName?.toLowerCase().includes(lowerFilter)) {
-          return true;
-        }
-
-        const [, deviceName, areaName] = computeEntityNameList(
+        const nameList = computeEntityNameList(
           entity,
           [{ type: "entity" }, { type: "device" }, { type: "area" }],
           this.hass.entities,
@@ -183,28 +177,42 @@ class DialogExposeEntity extends LitElement {
           this.hass.floors
         );
 
+        if (!lowerFilter) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        if (entity.entity_id.toLowerCase().includes(lowerFilter)) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        const entityName = computeStateName(entity);
+        if (entityName?.toLowerCase().includes(lowerFilter)) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        const [, deviceName, areaName] = nameList;
+
         if (deviceName?.toLowerCase().includes(lowerFilter)) {
-          return true;
+          result.push({ entity, nameList });
+          continue;
         }
 
         if (areaName?.toLowerCase().includes(lowerFilter)) {
-          return true;
+          result.push({ entity, nameList });
+          continue;
         }
+      }
 
-        return false;
-      });
+      return result;
     }
   );
 
-  private _renderItem = (entityState: HassEntity) => {
-    const [entityName, deviceName, areaName] = computeEntityNameList(
-      entityState,
-      [{ type: "entity" }, { type: "device" }, { type: "area" }],
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas,
-      this.hass.floors
-    );
+  private _renderItem = (item: FilteredEntity) => {
+    const { entity: entityState, nameList } = item;
+    const [entityName, deviceName, areaName] = nameList;
 
     const isRTL = computeRTL(this.hass);
     const primary = entityName || deviceName || entityState.entity_id;
