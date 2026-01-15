@@ -6,9 +6,9 @@ import type {
   CallbackDataParams,
   ECElementEvent,
 } from "echarts/types/src/util/types";
-import { fireEvent } from "../../common/dom/fire_event";
 import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { fireEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HomeAssistant } from "../../types";
 import type { ECOption } from "../../resources/echarts/echarts";
