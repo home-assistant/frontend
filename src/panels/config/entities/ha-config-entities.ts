@@ -146,7 +146,7 @@ export interface EntityRow extends StateEntity {
   domain: string;
   label_entries: LabelRegistryEntry[];
   assistants: string[];
-  assistants_sortable_key: string;
+  assistants_sortable_key: string | undefined;
   enabled: string;
   visible: string;
   available: string;
