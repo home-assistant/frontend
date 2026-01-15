@@ -132,7 +132,6 @@ export async function generateMetadataSuggestionTask(
     domain
   );
 
-  // Build the structure dynamically
   const structure: AITaskStructure = {
     name: {
       description: `The name of the ${domain}`,
@@ -141,40 +140,34 @@ export async function generateMetadataSuggestionTask(
         text: {},
       },
     },
-  };
-
-  // Add description field if requested
-  if (includeDescription) {
-    structure.description = {
-      description: `A short description of the ${domain}`,
+    ...(includeDescription && {
+      description: {
+        description: `A short description of the ${domain}`,
+        required: false,
+        selector: {
+          text: {},
+        },
+      },
+    }),
+    labels: {
+      description: `Labels for the ${domain}`,
       required: false,
       selector: {
-        text: {},
-      },
-    };
-  }
-
-  // Add labels field
-  structure.labels = {
-    description: `Labels for the ${domain}`,
-    required: false,
-    selector: {
-      text: {
-        multiple: true,
+        text: {
+          multiple: true,
+        },
       },
     },
-  };
-
-  // Add category field
-  structure.category = {
-    description: `The category of the ${domain}`,
-    required: false,
-    selector: {
-      select: {
-        options: Object.entries(categories).map(([id, name]) => ({
-          value: id,
-          label: name,
-        })),
+    category: {
+      description: `The category of the ${domain}`,
+      required: false,
+      selector: {
+        select: {
+          options: Object.entries(categories).map(([id, name]) => ({
+            value: id,
+            label: name,
+          })),
+        },
       },
     },
   };
