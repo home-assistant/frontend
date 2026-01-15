@@ -137,7 +137,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
             stateObj,
             this._config.attribute
           );
-          unit = parts.find((_part) => _part.type === "unit").value;
+          unit = parts.find((_part) => _part.type === "unit")?.value;
         }
       }
     }
