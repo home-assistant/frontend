@@ -8,7 +8,7 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, LitElement, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
@@ -28,7 +28,6 @@ import "../../../../components/ha-icon-overflow-menu";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-truncate-middle";
 import "../../../../components/ha-tooltip";
 import { saveFrontendSystemData } from "../../../../data/frontend";
 import type { LovelacePanelConfig } from "../../../../data/lovelace";
@@ -173,34 +172,28 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           flex: 2,
-          template: (dashboard) => html`
-            <div
-              style="display:flex; align-items:center; gap: var(--ha-space-2); min-width:0; width:100%; flex-wrap:nowrap;"
-            >
-              <ha-truncate-middle
-                style="flex:1 1 auto; min-width:0;"
-                .text=${dashboard.title}
-              ></ha-truncate-middle>
-              ${!narrow && dashboard.default
-                ? html`
-                    <ha-svg-icon
-                      class="default-icon"
-                      .id="default-icon-${dashboard.title}"
-                      style="flex-shrink:0;"
-                      .path=${mdiHomeCircleOutline}
-                    ></ha-svg-icon>
-                    <ha-tooltip
-                      .for="default-icon-${dashboard.title}"
-                      placement="right"
-                    >
-                      ${this.hass.localize(
-                        `ui.panel.config.lovelace.dashboards.default_dashboard`
-                      )}
-                    </ha-tooltip>
-                  `
-                : nothing}
-            </div>
-          `,
+          template: narrow
+            ? undefined
+            : (dashboard) => html`
+                ${dashboard.title}
+                ${dashboard.default
+                  ? html`
+                      <ha-svg-icon
+                        .id="default-icon-${dashboard.title}"
+                        style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
+                        .path=${mdiHomeCircleOutline}
+                      ></ha-svg-icon>
+                      <ha-tooltip
+                        .for="default-icon-${dashboard.title}"
+                        placement="right"
+                      >
+                        ${this.hass.localize(
+                          `ui.panel.config.lovelace.dashboards.default_dashboard`
+                        )}
+                      </ha-tooltip>
+                    `
+                  : nothing}
+              `,
         },
       };
 
@@ -441,26 +434,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
     super.firstUpdated(changedProps);
     this._getDashboards();
   }
-
-  static styles = css`
-    .title-cell {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-2);
-      min-width: 0;
-      width: 100%;
-      flex-wrap: nowrap;
-    }
-
-    ha-truncate-middle {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .default-icon {
-      flex-shrink: 0;
-    }
-  `;
 
   private async _getDashboards() {
     this._dashboards = await fetchDashboards(this.hass);
