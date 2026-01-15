@@ -70,9 +70,11 @@ export const getAssistantsTableColumnIcon = (
 
 export const getAssistantsSortableKey = (
   entityAssistants: string[]
-): string => {
+): string | undefined => {
   let result = 0;
-  if (!entityAssistants.length) return `z0`;
+  if (!entityAssistants.length) {
+    return undefined;
+  }
   const assistantsOrdered = [
     "conversation",
     "cloud.alexa",
@@ -88,5 +90,5 @@ export const getAssistantsSortableKey = (
   } else if (result === 4) {
     result = 3;
   }
-  return `z${result}`;
+  return `${result}`;
 };
