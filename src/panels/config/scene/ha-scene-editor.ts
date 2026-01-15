@@ -21,6 +21,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -64,7 +65,10 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
+import {
+  showSceneSaveDialog,
+  type EntityRegistryUpdate,
+} from "./scene-save-dialog/show-dialog-scene-save";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
@@ -114,6 +118,18 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
+    transformer: function (this: HaSceneEditor, value) {
+      return value.find(
+        ({ entity_id }) => entity_id === this._scene?.entity_id
+      );
+    },
+    watch: ["_scene"],
+  })
+  private _registryEntry?: EntityRegistryEntry;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
   @state() private _scene?: SceneEntity;
@@ -130,29 +146,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   @state() private _saving = false;
 
-  // undefined means not set in this session
-  // null means picked nothing.
-  @state() private _updatedAreaId?: string | null;
+  private _entityRegistryUpdate?: EntityRegistryUpdate;
 
   // Callback to be called when scene is set.
   private _scenesSet?: () => void;
-
-  private _getRegistryAreaId = memoizeOne(
-    (entries: EntityRegistryEntry[], entity_id: string) => {
-      const entry = entries.find((ent) => ent.entity_id === entity_id);
-      return entry ? entry.area_id : null;
-    }
-  );
-
-  private _getCategory = memoizeOne(
-    (entries: EntityRegistryEntry[], entity_id: string | undefined) => {
-      if (!entity_id) {
-        return undefined;
-      }
-      const entry = entries.find((ent) => ent.entity_id === entity_id);
-      return entry?.categories?.scene;
-    }
-  );
 
   private _getEntitiesDevices = memoizeOne(
     (
@@ -222,9 +219,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .header=${this._scene
-          ? computeStateName(this._scene)
-          : this.hass.localize("ui.panel.config.scene.editor.default_name")}
+        .header=${this._config?.name ||
+        this.hass.localize("ui.panel.config.scene.editor.default_name")}
       >
         <ha-dropdown
           slot="toolbar-icon"
@@ -261,7 +257,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
           <ha-dropdown-item value="category" .disabled=${!this.sceneId}>
             ${this.hass.localize(
-              `ui.panel.config.scene.picker.${this._getCategory(this._entityRegistryEntries, this._scene?.entity_id) ? "edit_category" : "assign_category"}`
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.scene ? "edit_category" : "assign_category"}`
             )}
             <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
           </ha-dropdown-item>
@@ -569,8 +565,12 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         ...initData?.config,
       };
       this._initEntities(this._config);
-      if (initData?.areaId) {
-        this._updatedAreaId = initData.areaId;
+      if (initData?.areaId !== undefined) {
+        this._entityRegistryUpdate = {
+          area: initData.areaId || "",
+          labels: [],
+          category: "",
+        };
       }
       this._dirty =
         initData !== undefined &&
@@ -641,7 +641,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         });
         break;
       case "category":
-        this._editCategory(this._scene!);
+        this._editCategory();
         break;
       case "rename":
         this._promptSceneRename();
@@ -1056,89 +1056,25 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
 
     const isNewScene = !this.sceneId;
-
     if (isNewScene) {
-      // Show dialog for new scenes
-      const entityRegEntry = this._scene
-        ? this._entityRegistryEntries.find(
-            (reg) => reg.entity_id === this._scene!.entity_id
-          )
-        : undefined;
-
-      showSceneSaveDialog(this, {
-        config: this._config!,
-        domain: "scene",
-        entityRegistryEntry: entityRegEntry,
-        entityRegistryUpdate:
-          this._updatedAreaId !== undefined
-            ? {
-                area: this._updatedAreaId || "",
-                labels: entityRegEntry?.labels || [],
-                category: entityRegEntry?.categories.scene || "",
-              }
-            : undefined,
-        updateConfig: async (newConfig, entityRegistryUpdate) => {
-          const id = "" + Date.now();
-          try {
-            this._saving = true;
-            await saveScene(this.hass, id, newConfig);
-
-            let scene = this.scenes.find(
-              (entity: SceneEntity) => entity.attributes.id === id
-            );
-
-            if (!scene) {
-              try {
-                await new Promise<void>((resolve, reject) => {
-                  setTimeout(reject, 3000);
-                  this._scenesSet = resolve;
-                });
-                scene = this.scenes.find(
-                  (entity: SceneEntity) => entity.attributes.id === id
-                );
-              } catch (_err) {
-                // We do nothing.
-              } finally {
-                this._scenesSet = undefined;
-              }
-            }
-
-            if (scene) {
-              await updateEntityRegistryEntry(this.hass, scene.entity_id, {
-                area_id: entityRegistryUpdate.area || undefined,
-                labels: entityRegistryUpdate.labels,
-                categories: { scene: entityRegistryUpdate.category },
-              });
-            }
-
-            this._dirty = false;
-            navigate(`/config/scene/edit/${id}`, { replace: true });
-          } catch (err: any) {
-            this._errors = err.body.message || err.message;
-            showToast(this, {
-              message: err.body.message || err.message,
-            });
-            throw err;
-          } finally {
-            this._saving = false;
-          }
-        },
-      });
-      return;
+      const saved = await this._promptSceneSave();
+      if (!saved) {
+        return;
+      }
     }
 
-    // Existing scene - save directly
-    const id = this.sceneId!;
+    const id = this.sceneId || String(Date.now());
     try {
       this._saving = true;
       await saveScene(this.hass, id, this._config!);
 
-      if (this._updatedAreaId !== undefined) {
+      if (this._entityRegistryUpdate !== undefined) {
         let scene =
-          this._scene ||
-          this.scenes.find(
-            (entity: SceneEntity) => entity.attributes.id === id
-          );
+          this._scene?.attributes.id === id
+            ? this._scene
+            : this.scenes.find(
+                (entity: SceneEntity) => entity.attributes.id === id
+              );
 
         if (!scene) {
           try {
@@ -1158,14 +1094,21 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
         if (scene) {
           await updateEntityRegistryEntry(this.hass, scene.entity_id, {
-            area_id: this._updatedAreaId,
+            area_id: this._entityRegistryUpdate.area || null,
+            labels: this._entityRegistryUpdate.labels || [],
+            categories: {
+              scene: this._entityRegistryUpdate.category || null,
+            },
           });
         }
 
-        this._updatedAreaId = undefined;
+        this._entityRegistryUpdate = undefined;
       }
 
       this._dirty = false;
+      if (isNewScene) {
+        navigate(`/config/scene/edit/${id}`, { replace: true });
+      }
     } catch (err: any) {
       this._errors = err.body.message || err.message;
       showToast(this, {
@@ -1183,26 +1126,12 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     };
   }
 
-  private get _sceneAreaIdWithUpdates(): string | undefined | null {
-    return this._updatedAreaId !== undefined
-      ? this._updatedAreaId
-      : this._sceneAreaIdCurrent;
-  }
-
   private get _sceneAreaIdCurrent(): string | undefined | null {
-    return this._scene
-      ? this._getRegistryAreaId(
-          this._entityRegistryEntries,
-          this._scene.entity_id
-        )
-      : undefined;
+    return this._registryEntry?.area_id || undefined;
   }
 
-  private _editCategory(scene: any) {
-    const entityReg = this._entityRegistryEntries.find(
-      (reg) => reg.entity_id === scene.entity_id
-    );
-    if (!entityReg) {
+  private _editCategory() {
+    if (!this._registryEntry) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.scene.picker.no_category_support"
@@ -1215,33 +1144,39 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
     showAssignCategoryDialog(this, {
       scope: "scene",
-      entityReg,
+      entityReg: this._registryEntry,
     });
   }
 
-  private async _promptSceneRename(): Promise<boolean> {
-    const entityRegEntry = this._scene
-      ? this._entityRegistryEntries.find(
-          (reg) => reg.entity_id === this._scene!.entity_id
-        )
-      : undefined;
-
+  private async _promptSceneSave(): Promise<boolean> {
     return new Promise((resolve) => {
       showSceneSaveDialog(this, {
         config: this._config!,
         domain: "scene",
-        entityRegistryEntry: entityRegEntry,
-        entityRegistryUpdate:
-          this._updatedAreaId !== undefined
-            ? {
-                area: this._updatedAreaId || "",
-                labels: entityRegEntry?.labels || [],
-                category: entityRegEntry?.categories.scene || "",
-              }
-            : undefined,
+        entityRegistryEntry: this._registryEntry,
+        entityRegistryUpdate: this._entityRegistryUpdate,
         updateConfig: async (newConfig, entityRegistryUpdate) => {
           this._config = newConfig;
-          this._updatedAreaId = entityRegistryUpdate.area || null;
+          this._entityRegistryUpdate = entityRegistryUpdate;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve(true);
+        },
+        onClose: () => resolve(false),
+      });
+    });
+  }
+
+  private async _promptSceneRename(): Promise<boolean> {
+    return new Promise((resolve) => {
+      showSceneSaveDialog(this, {
+        config: this._config!,
+        domain: "scene",
+        entityRegistryEntry: this._registryEntry,
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        updateConfig: async (newConfig, entityRegistryUpdate) => {
+          this._config = newConfig;
+          this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
