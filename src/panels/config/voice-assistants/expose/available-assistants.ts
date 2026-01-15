@@ -12,12 +12,11 @@ export const getAvailableAssistants = memoizeOne(
     }
 
     if (cloudStatus?.logged_in) {
-      if (cloudStatus.prefs.google_enabled) {
-        showAssistants.push("cloud.google_assistant");
-      }
-
       if (cloudStatus.prefs.alexa_enabled) {
         showAssistants.push("cloud.alexa");
+      }
+      if (cloudStatus.prefs.google_enabled) {
+        showAssistants.push("cloud.google_assistant");
       }
     }
 
