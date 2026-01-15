@@ -93,14 +93,13 @@ export const getConfigSubpageTitle = (
     const pageNav = sectionGroup.find((nav) => path.startsWith(nav.path));
     if (pageNav) {
       if (pageNav.translationKey) {
-        const localized = hass.localize(pageNav.translationKey as any);
+        const localized = hass.localize(pageNav.translationKey as LocalizeKeys);
         if (localized) {
           return localized;
         }
-        if (pageNav.name) {
-          return pageNav.name;
-        }
-      } else if (pageNav.name) {
+      }
+      
+       if (pageNav.name) {
         return pageNav.name;
       }
     }
