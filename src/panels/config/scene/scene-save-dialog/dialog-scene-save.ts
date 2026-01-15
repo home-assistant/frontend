@@ -267,7 +267,7 @@ class DialogSceneSave extends LitElement implements HassDialog {
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this._newName = (ev.target as any).target.value;
+    this._newName = (ev.target as HTMLInputElement).value;
   }
 
   private _handleDiscard() {
