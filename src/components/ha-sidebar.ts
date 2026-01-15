@@ -16,12 +16,10 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
-import { truncateMiddle } from "../common/string/truncate-middle";
 import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
 import { subscribeFrontendUserData } from "../data/frontend";
@@ -176,10 +174,6 @@ export const computePanels = memoizeOne(
 
 @customElement("ha-sidebar")
 class HaSidebar extends SubscribeMixin(LitElement) {
-  static override get observedAttributes() {
-    return [...super.observedAttributes, "expanded"];
-  }
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -206,10 +200,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _tooltipHideTimeout?: number;
 
   private _recentKeydownActiveUntil = 0;
-
-  private _resizeObserver?: ResizeObserver;
-
-  private _truncationUpdateTimeout?: number;
 
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
@@ -249,28 +239,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._resizeObserver?.disconnect();
     // clear timeouts
     clearTimeout(this._mouseLeaveTimeout);
     clearTimeout(this._tooltipHideTimeout);
     clearTimeout(this._touchendTimeout);
-    clearTimeout(this._truncationUpdateTimeout);
     // set undefined values
     this._mouseLeaveTimeout = undefined;
     this._tooltipHideTimeout = undefined;
     this._touchendTimeout = undefined;
-    this._truncationUpdateTimeout = undefined;
-  }
-
-  public override attributeChangedCallback(
-    name: string,
-    oldValue: string | null,
-    newValue: string | null
-  ) {
-    super.attributeChangedCallback(name, oldValue, newValue);
-    if (name === "expanded" && oldValue !== newValue) {
-      this._scheduleTruncationUpdate();
-    }
   }
 
   protected render() {
@@ -332,11 +308,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._subscribePersistentNotifications();
-    this._resizeObserver = new ResizeObserver(() =>
-      this._scheduleTruncationUpdate()
-    );
-    this._resizeObserver.observe(this);
-    this._scheduleTruncationUpdate();
   }
 
   private _subscribePersistentNotifications(): void {
@@ -355,15 +326,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
       toggleAttribute(this, "expanded", this.alwaysExpand);
-    }
-    if (
-      changedProps.has("hass") ||
-      changedProps.has("_panelOrder") ||
-      changedProps.has("_hiddenPanels") ||
-      changedProps.has("narrow") ||
-      changedProps.has("alwaysExpand")
-    ) {
-      this._scheduleTruncationUpdate();
     }
     if (!changedProps.has("hass")) {
       return;
@@ -482,13 +444,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ${iconPath
           ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
           : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
-        <span
-          class="item-text"
-          slot="headline"
-          data-full-title=${ifDefined(title)}
-        >
-          ${title}
-        </span>
+        <span class="item-text" slot="headline">${title}</span>
       </ha-md-list-item>
     `;
   }
@@ -524,10 +480,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
               </span>
             `
           : nothing}
-        <span
-          class="item-text"
-          slot="headline"
-          data-full-title=${this.hass.localize("panel.config")}
+        <span class="item-text" slot="headline"
           >${this.hass.localize("panel.config")}</span
         >
         ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
@@ -560,10 +513,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
               <span class="badge" slot="start"> ${notificationCount} </span>
             `
           : nothing}
-        <span
-          class="item-text"
-          slot="headline"
-          data-full-title=${this.hass.localize("ui.notification_drawer.title")}
+        <span class="item-text" slot="headline"
           >${this.hass.localize("ui.notification_drawer.title")}</span
         >
         ${this.alwaysExpand && notificationCount > 0
@@ -576,7 +526,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _renderUserItem(selectedPanel: string) {
     const isRTL = computeRTL(this.hass);
     const isSelected = selectedPanel === "profile";
-    const userName = this.hass.user ? this.hass.user.name : "";
 
     return html`
       <ha-md-list-item
@@ -595,8 +544,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           .user=${this.hass.user}
           .hass=${this.hass}
         ></ha-user-badge>
-        <span class="item-text" slot="headline" data-full-title=${userName}>
-          ${userName}
+        <span class="item-text" slot="headline">
+          ${this.hass.user ? this.hass.user.name : ""}
         </span>
       </ha-md-list-item>
     `;
@@ -614,53 +563,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @mouseleave=${this._itemMouseLeave}
       >
         <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
-        <span
-          class="item-text"
-          slot="headline"
-          data-full-title=${this.hass.localize(
-            "ui.sidebar.external_app_configuration"
-          )}
-        >
+        <span class="item-text" slot="headline">
           ${this.hass.localize("ui.sidebar.external_app_configuration")}
         </span>
       </ha-md-list-item>
     `;
-  }
-
-  private _scheduleTruncationUpdate() {
-    if (this._truncationUpdateTimeout) {
-      clearTimeout(this._truncationUpdateTimeout);
-    }
-    this._truncationUpdateTimeout = window.setTimeout(() => {
-      this._truncationUpdateTimeout = undefined;
-      this._updateItemTextTruncation();
-    }, 0);
-  }
-
-  private _updateItemTextTruncation() {
-    const itemTexts =
-      this.shadowRoot?.querySelectorAll<HTMLElement>(".item-text");
-    if (!itemTexts) {
-      return;
-    }
-    const isExpanded = this.hasAttribute("expanded");
-    itemTexts.forEach((itemText) => {
-      const fullTitle =
-        itemText.dataset.fullTitle ?? itemText.textContent ?? "";
-      itemText.dataset.fullTitle = fullTitle;
-      if (!isExpanded) {
-        itemText.textContent = fullTitle;
-        return;
-      }
-
-      itemText.textContent = fullTitle;
-      const availableWidth = itemText.clientWidth;
-      if (!availableWidth || itemText.scrollWidth <= availableWidth) {
-        return;
-      }
-      const font = getComputedStyle(itemText).font;
-      itemText.textContent = truncateMiddle(fullTitle, availableWidth, font);
-    });
   }
 
   private _handleExternalAppConfiguration(ev: Event) {
@@ -743,9 +650,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this._tooltipHideTimeout = undefined;
     }
     const itemText = item.querySelector(".item-text") as HTMLElement | null;
-    const fullTitle = itemText?.dataset.fullTitle || itemText?.innerText || "";
     if (this.hasAttribute("expanded") && itemText) {
-      const isTruncated = itemText.innerText !== fullTitle;
+      const isTruncated = itemText.scrollWidth > itemText.clientWidth;
       if (!isTruncated) {
         this._hideTooltip();
         return;
@@ -761,7 +667,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       (listbox?.offsetTop ?? 0) -
       (listbox?.scrollTop ?? 0);
 
-    tooltip.innerText = fullTitle;
+    tooltip.innerText = itemText?.innerText ?? "";
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
