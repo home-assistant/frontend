@@ -38,7 +38,7 @@ const ADD_NEW_ID = "___ADD_NEW___";
 export const renderLabelColorBadge = (color: string) =>
   html`<div
     style=${styleMap({
-      backgroundColor: _color ? computeCssColor(_color) : undefined,
+      backgroundColor: color ? computeCssColor(color) : undefined,
       borderRadius: "var(--ha-border-radius-md)",
       border: "1px solid var(--outline-color)",
       boxSizing: "border-box",
