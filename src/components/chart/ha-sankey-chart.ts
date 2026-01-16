@@ -2,9 +2,13 @@ import { customElement, property, state } from "lit/decorators";
 import { LitElement, html, css } from "lit";
 import type { EChartsType } from "echarts/core";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
-import type { CallbackDataParams } from "echarts/types/src/util/types";
+import type {
+  CallbackDataParams,
+  ECElementEvent,
+} from "echarts/types/src/util/types";
 import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { fireEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HomeAssistant } from "../../types";
 import type { ECOption } from "../../resources/echarts/echarts";
@@ -21,6 +25,7 @@ export interface Node {
   label?: string;
   color?: string;
   passThrough?: boolean;
+  entityId?: string;
 }
 export interface Link {
   source: string;
@@ -83,6 +88,7 @@ export class HaSankeyChart extends LitElement {
       .options=${options}
       height="100%"
       .extraComponents=${[SankeyChart]}
+      @chart-click=${this._handleChartClick}
     ></ha-chart-base>`;
   }
 
@@ -101,6 +107,22 @@ export class HaSankeyChart extends LitElement {
       return `${filterXSS(source?.label ?? data.source)} → ${filterXSS(target?.label ?? data.target)}<br>${value}`;
     }
     return null;
+  };
+
+  private _handleChartClick = (ev: CustomEvent<ECElementEvent>) => {
+    const detail = ev.detail;
+    // Only handle node clicks (not links)
+    if (detail.dataType !== "node") {
+      return;
+    }
+    const nodeId = (detail.data as Record<string, any>)?.id;
+    if (!nodeId) {
+      return;
+    }
+    const node = this.data.nodes.find((n) => n.id === nodeId);
+    if (node?.entityId) {
+      fireEvent(this, "node-click", { node });
+    }
   };
 
   private _createData = memoizeOne((data: SankeyChartData, width = 0) => {
@@ -293,5 +315,8 @@ export class HaSankeyChart extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-sankey-chart": HaSankeyChart;
+  }
+  interface HASSDomEvents {
+    "node-click": { node: Node };
   }
 }

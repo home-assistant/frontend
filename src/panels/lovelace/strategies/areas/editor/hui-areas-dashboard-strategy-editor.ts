@@ -13,11 +13,12 @@ import "../../../../../components/ha-entities-display-editor";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
+import type { DisplayItem } from "../../../../../components/ha-items-display-editor";
 import "../../../../../components/ha-svg-icon";
 import {
   updateAreaRegistryEntry,
   type AreaRegistryEntry,
-} from "../../../../../data/area_registry";
+} from "../../../../../data/area/area_registry";
 import {
   haCardSizeLarge,
   haCardSizeSmall,
@@ -33,7 +34,6 @@ import {
   AREA_STRATEGY_GROUPS,
   getAreaGroupedEntities,
 } from "../helpers/areas-strategy-helper";
-import type { DisplayItem } from "../../../../../components/ha-items-display-editor";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor

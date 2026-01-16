@@ -57,7 +57,6 @@ export class HaIntegrationListItem extends ListItemBase {
         src=${brandsUrl({
           domain: this.integration.domain,
           type: "icon",
-          useFallback: true,
           darkOptimized: this.hass.themes?.darkMode,
           brand: this.brand,
         })}

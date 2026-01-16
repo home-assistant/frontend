@@ -57,11 +57,11 @@ import {
   ACTION_COLLECTIONS,
   ACTION_ICONS,
 } from "../../../data/action";
-import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
+import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -232,6 +232,8 @@ class DialogAddAutomationElement
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  private _closing = false;
+
   // #endregion variables
 
   // #region lifecycle
@@ -347,6 +349,8 @@ class DialogAddAutomationElement
       }
     }
 
+    this._closing = true;
+
     // if dialog is closed, but root level isn't active, clean up history state
     if (mainWindow.history.state?.dialogData) {
       this._open = false;
@@ -360,6 +364,7 @@ class DialogAddAutomationElement
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._open = true;
+    this._closing = false;
     this._params = undefined;
     this._selectedCollectionIndex = undefined;
     this._selectedGroup = undefined;
@@ -430,6 +435,24 @@ class DialogAddAutomationElement
   // #endregion lifecycle
 
   // #region render
+
+  private _getEmptyNote(automationElementType: string) {
+    if (
+      automationElementType !== "trigger" &&
+      automationElementType !== "condition"
+    ) {
+      return undefined;
+    }
+
+    return this.hass.localize(
+      `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target_note`,
+      {
+        labs_link: html`<a href="/config/labs" @click=${this._close}
+          >${this.hass.localize("ui.panel.config.labs.caption")}</a
+        >`,
+      }
+    );
+  }
 
   protected render() {
     if (!this._params) {
@@ -696,6 +719,7 @@ class DialogAddAutomationElement
                 .emptyLabel=${this.hass.localize(
                   `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
                 )}
+                .emptyNote=${this._getEmptyNote(automationElementType)}
                 .tooltipDescription=${this._tab === "targets"}
                 .target=${(this._tab === "targets" &&
                   this._selectedTarget &&
@@ -1691,9 +1715,9 @@ class DialogAddAutomationElement
 
   // #region interaction
 
-  private _close() {
+  private _close = () => {
     this._open = false;
-  }
+  };
 
   private _back() {
     mainWindow.history.back();
@@ -1875,7 +1899,10 @@ class DialogAddAutomationElement
   }
 
   private _handleClosed() {
-    this.closeDialog();
+    // if closing isn't already in progress, close the dialog
+    if (!this._closing) {
+      this.closeDialog();
+    }
   }
 
   // #region interaction
