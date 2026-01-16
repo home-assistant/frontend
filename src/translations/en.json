@@ -8764,7 +8764,8 @@
             },
             "home": {
               "favorite_entities": "Favorite entities",
-              "add_favorite_entity": "Add favorite entity"
+              "add_favorite_entity": "Add favorite entity",
+              "reorder_areas_title": "Reorder areas"
             }
           },
           "view": {

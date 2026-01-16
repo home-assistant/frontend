@@ -112,16 +112,11 @@ export class HuiHomeDashboardStrategyEditor
       <div class="section-divider"></div>
 
       <div class="reorder-section">
-        <div class="section-header">
-          <h3>
-            ${this.hass.localize("ui.panel.home.editor.reorder_areas.title")}
-          </h3>
-          <p class="section-description">
-            ${this.hass.localize(
-              "ui.panel.home.editor.reorder_areas.description"
-            )}
-          </p>
-        </div>
+        <label>
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.strategy.home.reorder_areas_title"
+          )}
+        </label>
         ${this._hierarchy ? this._renderReorderUI() : nothing}
       </div>
     `;
@@ -486,17 +481,13 @@ export class HuiHomeDashboardStrategyEditor
       gap: var(--ha-space-4);
     }
 
-    .section-header h3 {
-      margin: 0 0 var(--ha-space-2) 0;
-      font-size: 16px;
-      font-weight: 500;
+    .reorder-section label {
+      display: block;
       color: var(--primary-text-color);
-    }
-
-    .section-description {
-      margin: 0 0 var(--ha-space-4) 0;
-      font-size: 14px;
-      color: var(--secondary-text-color);
+      font-size: var(--mdc-typography-body1-font-size, 1rem);
+      font-weight: var(--mdc-typography-body1-font-weight, 400);
+      line-height: var(--mdc-typography-body1-line-height, 1.5rem);
+      letter-spacing: var(--mdc-typography-body1-letter-spacing, 0.03125em);
     }
 
     .reorder-content {
@@ -515,6 +506,7 @@ export class HuiHomeDashboardStrategyEditor
       border: 1px solid var(--divider-color);
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       overflow: hidden;
+      background-color: var(--card-background-color);
     }
 
     .floor.unassigned {
@@ -525,14 +517,10 @@ export class HuiHomeDashboardStrategyEditor
       display: flex;
       align-items: center;
       padding: var(--ha-space-3) var(--ha-space-4);
-      background-color: var(--secondary-background-color);
+      background-color: var(--card-background-color);
       gap: var(--ha-space-3);
       cursor: pointer;
       user-select: none;
-    }
-
-    .floor-header:hover {
-      background-color: var(--state-hover-color);
     }
 
     .expand-icon {
