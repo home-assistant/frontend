@@ -244,7 +244,7 @@ export async function processMetadataSuggestion(
 
   const processed: MetadataSuggestionResult = {
     name: result.data.name,
-    description: result.data.description ?? undefined,
+    description: include.description ? result.data.description : undefined,
   };
 
   // Convert category name to ID
