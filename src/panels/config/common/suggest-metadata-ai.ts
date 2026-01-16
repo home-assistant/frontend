@@ -120,7 +120,7 @@ function buildMetadataInspirations(
 }
 
 /**
- * Generates an AI task for suggesting metadata (name, description, category, labels)
+ * Generates an AI task for suggesting metadata
  * for automations or scripts based on their configuration.
  *
  * @param connection - Home Assistant connection
@@ -245,7 +245,7 @@ ${dump(config)}
 }
 
 /**
- * Processes the result of an AI task for suggesting metadata (name, description, category, labels)
+ * Processes the result of an AI task for suggesting metadata
  * for automations or scripts based on their configuration.
  *
  * @param connection - Home Assistant connection
