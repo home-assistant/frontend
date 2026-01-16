@@ -68,6 +68,7 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
@@ -113,13 +114,20 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 type ScriptItem = ScriptEntity & {
   name: string;
   area: string | undefined;
+  last_triggered: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  assistants: string[];
+  assistants_sortable_key: string | undefined;
 };
 
 @customElement("ha-script-picker")
@@ -133,6 +141,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
 
@@ -207,6 +217,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
+
   private _scripts = memoizeOne(
     (
       scripts: ScriptEntity[],
@@ -231,6 +245,10 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.script;
         const labels = labelReg && entityRegEntry?.labels;
+        const assistants = getEntityVoiceAssistantsIds(
+          entityReg,
+          script.entity_id
+        );
         return {
           ...script,
           name: computeStateName(script),
@@ -244,6 +262,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
+          assistants,
+          assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -251,8 +271,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer<ScriptItem> => {
-      const columns: DataTableColumnContainer = {
+    (
+      localize: LocalizeFunc,
+      entitiesToCheck: any[]
+    ): DataTableColumnContainer<ScriptItem> => {
+      const columns: DataTableColumnContainer<ScriptItem> = {
         icon: {
           title: "",
           showNarrow: true,
@@ -401,31 +424,12 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             </ha-icon-overflow-menu>
           `,
         },
-        voice_assistants: {
-          title: localize(
-            "ui.panel.config.voice_assistants.expose.headers.assistants"
-          ),
-          type: "flex",
-          defaultHidden: true,
-          minWidth: "160px",
-          maxWidth: "160px",
-          template: (script) => {
-            const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
-              this._entityReg,
-              script.entity_id
-            );
-            return html` ${exposedToVoiceAssistantIds.length !== 0
-              ? exposedToVoiceAssistantIds.map(
-                  (vaId) =>
-                    html` <voice-assistants-expose-assistant-icon
-                      .assistant=${vaId}
-                      .hass=${this.hass}
-                    >
-                    </voice-assistants-expose-assistant-icon>`
-                )
-              : "—"}`;
-          },
-        },
+        assistants: getAssistantsTableColumn(
+          localize,
+          this.hass,
+          this._availableAssistants,
+          entitiesToCheck
+        ),
       };
       return columns;
     }
@@ -591,7 +595,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, scripts)}
         .data=${scripts}
         .empty=${!this.scripts.length}
         .activeFilters=${this._activeFilters}

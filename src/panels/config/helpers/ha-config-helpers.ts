@@ -64,6 +64,7 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry } from "../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -124,7 +125,11 @@ import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 interface HelperItem {
   id: string;
@@ -138,6 +143,8 @@ interface HelperItem {
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
+  assistants: string[];
+  assistants_sortable_key: string | undefined;
   disabled?: boolean;
 }
 
@@ -171,6 +178,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @storage({ key: "helpers-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -256,6 +265,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
+
   private _debouncedFetchEntitySources = debounce(
     () => this._fetchEntitySources(),
     500,
@@ -308,7 +321,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer<HelperItem> => ({
+    (
+      localize: LocalizeFunc,
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer<HelperItem> => ({
       icon: {
         title: "",
         label: localize("ui.panel.config.helpers.picker.headers.icon"),
@@ -485,32 +501,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           </ha-icon-overflow-menu>
         `,
       },
-      voice_assistants: {
-        title: localize(
-          "ui.panel.config.voice_assistants.expose.headers.assistants"
-        ),
-        type: "flex",
-        defaultHidden: true,
-        minWidth: "160px",
-        maxWidth: "160px",
-        template: (helper) => {
-          const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
-            this._entityReg,
-            helper.entity_id
-          );
-          return html` ${exposedToVoiceAssistantIds.length !== 0
-            ? exposedToVoiceAssistantIds.map(
-                (vaId) => html`
-                  <voice-assistants-expose-assistant-icon
-                    .assistant=${vaId}
-                    .hass=${this.hass}
-                  >
-                  </voice-assistants-expose-assistant-icon>
-                `
-              )
-            : "—"}`;
-        },
-      },
+      assistants: getAssistantsTableColumn(
+        localize,
+        this.hass,
+        this._availableAssistants,
+        entitiesToCheck
+      ),
     })
   );
 
@@ -610,6 +606,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             areaId && this.hass.areas?.[areaId]
               ? computeAreaName(this.hass.areas[areaId])
               : undefined;
+          const assistants = getEntityVoiceAssistantsIds(
+            entityReg,
+            item.entity_id
+          );
           return {
             ...item,
             localized_type:
@@ -625,6 +625,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
             area,
+            assistants,
+            assistants_sortable_key: getAssistantsSortableKey(assistants),
           };
         });
     }
@@ -748,7 +750,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, helpers)}
         .data=${helpers}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}

@@ -50,9 +50,14 @@ import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "./expose/expose-assistant-icon";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "./expose/assistants-table-column";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
 import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
+import { getAvailableAssistants } from "./expose/available-assistants";
 
 @customElement("ha-config-voice-assistants-expose")
 export class VoiceAssistantsExpose extends LitElement {
@@ -130,6 +135,10 @@ export class VoiceAssistantsExpose extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -144,7 +153,8 @@ export class VoiceAssistantsExpose extends LitElement {
           >
         | undefined,
       _language: string,
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      entitiesToCheck?: any[]
     ): DataTableColumnContainer => ({
       icon: {
         title: "",
@@ -192,35 +202,14 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         groupable: true,
       },
-      assistants: {
-        title: localize(
-          "ui.panel.config.voice_assistants.expose.headers.assistants"
-        ),
-        showNarrow: true,
-        sortable: true,
-        filterable: true,
-        minWidth: "160px",
-        maxWidth: "160px",
-        type: "flex",
-        template: (entry) =>
-          html`${availableAssistants.map((key) => {
-            const supported =
-              !supportedEntities?.[key] ||
-              supportedEntities[key].includes(entry.entity_id);
-            const manual = entry.manAssistants?.includes(key);
-            return entry.assistants.includes(key)
-              ? html`
-                  <voice-assistants-expose-assistant-icon
-                    .assistant=${key}
-                    .hass=${this.hass}
-                    .manual=${manual}
-                    .unsupported=${!supported}
-                  >
-                  </voice-assistants-expose-assistant-icon>
-                `
-              : html`<div style="width: 40px;"></div>`;
-          })}`,
-      },
+      assistants: getAssistantsTableColumn(
+        localize,
+        this.hass,
+        availableAssistants,
+        entitiesToCheck,
+        supportedEntities,
+        true
+      ),
       aliases: {
         title: localize(
           "ui.panel.config.voice_assistants.expose.headers.aliases"
@@ -270,32 +259,6 @@ export class VoiceAssistantsExpose extends LitElement {
     })
   );
 
-  private _availableAssistants = memoize(
-    (cloudStatus: CloudStatus | undefined) => {
-      const googleEnabled =
-        cloudStatus?.logged_in === true &&
-        cloudStatus.prefs.google_enabled === true;
-      const alexaEnabled =
-        cloudStatus?.logged_in === true &&
-        cloudStatus.prefs.alexa_enabled === true;
-
-      const showAssistants = [...Object.keys(voiceAssistants)];
-
-      if (!googleEnabled) {
-        showAssistants.splice(
-          showAssistants.indexOf("cloud.google_assistant"),
-          1
-        );
-      }
-
-      if (!alexaEnabled) {
-        showAssistants.splice(showAssistants.indexOf("cloud.alexa"), 1);
-      }
-
-      return showAssistants;
-    }
-  );
-
   private _filteredEntities = memoize(
     (
       localize: LocalizeFunc,
@@ -313,7 +276,7 @@ export class VoiceAssistantsExpose extends LitElement {
         cloudStatus?.logged_in === true &&
         cloudStatus.prefs.alexa_enabled === true;
 
-      const showAssistants = [...this._availableAssistants(cloudStatus)];
+      const showAssistants = [...this._availableAssistants];
 
       const alexaManual =
         alexaEnabled &&
@@ -370,7 +333,13 @@ export class VoiceAssistantsExpose extends LitElement {
           entry?.area_id ??
           (entry?.device_id ? devices[entry.device_id!]?.area_id : undefined);
         const area = areaId ? areas[areaId] : undefined;
-
+        const _assistants = Object.keys(
+          exposedEntities?.[entityState.entity_id]
+        ).filter(
+          (key) =>
+            showAssistants.includes(key) &&
+            exposedEntities?.[entityState.entity_id]?.[key]
+        );
         result[entityState.entity_id] = {
           entity_id: entityState.entity_id,
           entity: entityState,
@@ -381,13 +350,8 @@ export class VoiceAssistantsExpose extends LitElement {
             ),
           domain: domainToName(localize, computeDomain(entityState.entity_id)),
           area: area ? area.name : undefined,
-          assistants: Object.keys(
-            exposedEntities?.[entityState.entity_id]
-          ).filter(
-            (key) =>
-              showAssistants.includes(key) &&
-              exposedEntities?.[entityState.entity_id]?.[key]
-          ),
+          assistants: _assistants,
+          assistants_sortable_key: getAssistantsSortableKey(_assistants),
           aliases: entry?.aliases || [],
         };
       }
@@ -445,9 +409,11 @@ export class VoiceAssistantsExpose extends LitElement {
               aliases: entry?.aliases || [],
             };
           }
+          result[entityId].assistants_sortable_key = getAssistantsSortableKey(
+            result[entityId].assistants
+          );
         });
       }
-
       return Object.values(result);
     }
   );
@@ -547,10 +513,11 @@ export class VoiceAssistantsExpose extends LitElement {
         .tabs=${voiceAssistantTabs}
         .columns=${this._columns(
           this.narrow,
-          this._availableAssistants(this.cloudStatus),
+          this._availableAssistants,
           this._supportedEntities,
           this.hass.language,
-          this.hass.localize
+          this.hass.localize,
+          filteredEntities
         )}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
@@ -649,7 +616,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _addEntry() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : this._availableAssistants(this.cloudStatus);
+      : this._availableAssistants;
     showExposeEntityDialog(this, {
       filterAssistants: assistants,
       exposedEntities: this.exposedEntities!,
@@ -676,7 +643,7 @@ export class VoiceAssistantsExpose extends LitElement {
     const entityId = ev.currentTarget.closest(".mdc-data-table__row").rowId;
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : this._availableAssistants(this.cloudStatus);
+      : this._availableAssistants;
     exposeEntities(this.hass, assistants, [entityId], false).then(() =>
       fireEvent(this, "exposed-entities-changed")
     );
@@ -685,7 +652,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _unexposeSelected() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : this._availableAssistants(this.cloudStatus);
+      : this._availableAssistants;
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.unexpose_confirm_title"
@@ -718,7 +685,7 @@ export class VoiceAssistantsExpose extends LitElement {
   private _exposeSelected() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
-      : this._availableAssistants(this.cloudStatus);
+      : this._availableAssistants;
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.expose_confirm_title"

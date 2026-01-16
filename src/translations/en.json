@@ -2141,7 +2141,8 @@
         "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
         "enable_shortcuts_hint_user_profile": "user profile",
         "keys": {
-          "del": "Del"
+          "del": "Del",
+          "ctrl": "[%key:ui::panel::config::automation::editor::ctrl%]"
         },
         "shortcuts": {
           "double_click": "Double-click",
@@ -2152,7 +2153,7 @@
           "title": "Searching",
           "on_any_page": "On any page",
           "on_pages_with_tables": "On pages with tables",
-          "search": "Search Home Assistant",
+          "search": "Quick search",
           "search_command": "search command",
           "search_entities": "search entities",
           "search_devices": "search devices",
@@ -3992,8 +3993,7 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "bulk_action": "Action",
             "bulk_actions": {
@@ -5012,8 +5012,7 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5141,8 +5140,7 @@
               "category": "Category",
               "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5595,8 +5593,7 @@
               "domain": "Domain",
               "availability": "Availability",
               "visibility": "Visibility",
-              "enabled": "Enabled",
-              "voice_assistants": "Voice assistants"
+              "enabled": "Enabled"
             },
             "selected": "{number} selected",
             "enable_selected": {
