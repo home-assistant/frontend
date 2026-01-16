@@ -132,7 +132,7 @@ export async function generateMetadataSuggestionTask<T>(
   language: HomeAssistant["language"],
   domain: MetadataSuggestionDomain,
   config: T,
-  include: MetadataSuggestionInclude = SUGGESTION_INCLUDE_ALL
+  include = SUGGESTION_INCLUDE_ALL
 ): Promise<SuggestWithAIGenerateTask> {
   const [categories, entities, labels] = await Promise.all([
     include.categories
