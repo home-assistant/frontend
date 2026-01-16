@@ -28,7 +28,6 @@ import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon";
-import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
@@ -545,7 +544,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const icon = area.icon;
+    const icon = area.icon || undefined;
 
     const name = this._config.name || computeAreaName(area);
 
@@ -616,15 +615,14 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           .interactive=${Boolean(this._hasCardAction)}
           @action=${this._handleAction}
         >
-          <ha-tile-icon slot="icon">
+          <ha-tile-icon
+            slot="icon"
+            .icon=${icon}
+            .iconPath=${icon ? undefined : mdiTextureBox}
+          >
             ${displayType === "compact"
               ? this._renderAlertSensorBadge()
               : nothing}
-            ${icon
-              ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
-              : html`
-                  <ha-svg-icon slot="icon" .path=${mdiTextureBox}></ha-svg-icon>
-                `}
           </ha-tile-icon>
           <ha-tile-info
             slot="info"

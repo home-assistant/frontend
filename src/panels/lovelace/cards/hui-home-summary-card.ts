@@ -12,7 +12,6 @@ import {
 } from "../../../common/entity/entity_filter";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
@@ -288,9 +287,7 @@ export class HuiHomeSummaryCard
           }}
           @action=${this._handleAction}
         >
-          <ha-tile-icon slot="icon">
-            <ha-icon slot="icon" .icon=${icon}></ha-icon>
-          </ha-tile-icon>
+          <ha-tile-icon slot="icon" .icon=${icon}></ha-tile-icon>
           <ha-tile-info
             slot="info"
             .primary=${label}
