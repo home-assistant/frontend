@@ -37,9 +37,9 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "none",
 ];
 
-export const supportedActions = (_struct, _supported_actions: UiAction[]) =>
-  refine(_struct, _supported_actions.toString(), (value: any) =>
-    _supported_actions.includes(value.action)
+export const supportedActions = (struct: any, supported_actions: UiAction[]) =>
+  refine(struct, supported_actions.toString(), (value: any) =>
+    supported_actions.includes(value.action)
   );
 
 const NAVIGATE_SCHEMA = [
