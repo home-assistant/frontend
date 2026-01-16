@@ -85,10 +85,6 @@ function buildMetadataInspirations(
 ): string[] {
   const inspirations: string[] = [];
 
-  if (!entities) {
-    return inspirations;
-  }
-
   for (const entityId of Object.keys(entities)) {
     const entityEntry = entities[entityId];
     if (!entityEntry || computeDomain(entityId) !== domain) {
