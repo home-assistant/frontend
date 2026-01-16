@@ -1108,7 +1108,9 @@
           "deselect_all": "Deselect all",
           "select_all": "[%key:ui::components::subpage-data-table::select_all%]",
           "tip_media_storage": "[%key:ui::panel::config::tips::media_storage%]",
-          "tip_storage_panel": "storage"
+          "tip_storage_panel": "storage",
+          "invalid_filename": "Invalid filename",
+          "consecutive_dots_error": "The following {count, plural, one {file has} other {files have}} consecutive dots (..) in {count, plural, one {its} other {their}} {count, plural, one {name} other {names}}, which {count, plural, one {is} other {are}} not allowed: {files}"
         },
         "class": {
           "album": "Album",

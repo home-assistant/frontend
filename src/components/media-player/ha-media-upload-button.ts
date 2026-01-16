@@ -7,7 +7,7 @@ import {
   isLocalMediaSourceContentId,
   uploadLocalMedia,
 } from "../../data/media_source";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { showToast } from "../../util/toast";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-svg-icon";
@@ -68,23 +68,56 @@ class MediaUploadButton extends LitElement {
       async () => {
         fireEvent(this, "uploading");
         const files = input.files!;
+
+        // Validate filename before upload
+        const invalidFiles: string[] = [];
+        const validFiles: File[] = [];
+
+        for (const file of Array.from(files)) {
+          if (file.name.includes("..")) {
+            invalidFiles.push(file.name);
+          } else {
+            validFiles.push(file);
+          }
+        }
+
         document.body.removeChild(input);
+
+        // Show error for invalid filenames
+        if (invalidFiles.length > 0) {
+          showToast(this, {
+            message: this.hass.localize(
+              "ui.components.media-browser.file_management.consecutive_dots_error",
+              {
+                count: invalidFiles.length,
+                files: invalidFiles.join(", "),
+              }
+            ),
+            duration: 6000,
+          });
+          // If no valid files, return early
+          if (validFiles.length === 0) {
+            return;
+          }
+        }
+
         const target = this.currentItem!.media_content_id!;
 
-        for (let i = 0; i < files.length; i++) {
-          this._uploading = files.length - i;
+        for (let i = 0; i < validFiles.length; i++) {
+          this._uploading = validFiles.length - i;
 
           try {
             // eslint-disable-next-line no-await-in-loop
-            await uploadLocalMedia(this.hass, target, files[i]);
+            await uploadLocalMedia(this.hass, target, validFiles[i]);
           } catch (err: any) {
-            showAlertDialog(this, {
-              text: this.hass.localize(
+            showToast(this, {
+              message: this.hass.localize(
                 "ui.components.media-browser.file_management.upload_failed",
                 {
                   reason: err.message || err,
                 }
               ),
+              duration: 6000,
             });
             break;
           }
