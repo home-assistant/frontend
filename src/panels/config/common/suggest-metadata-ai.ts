@@ -119,6 +119,16 @@ function buildMetadataInspirations(
   return inspirations;
 }
 
+/**
+ * Generates an AI task for suggesting metadata (name, description, category, labels)
+ * for automations or scripts based on their configuration.
+ *
+ * @param connection - Home Assistant connection
+ * @param states - Current state objects
+ * @param language - User's language preference
+ * @param suggestionConfig - Configuration for the suggestion task
+ * @returns Promise resolving to the AI task structure
+ */
 export async function generateMetadataSuggestionTask<T>(
   connection: HomeAssistant["connection"],
   states: HomeAssistant["states"],
@@ -234,6 +244,16 @@ ${dump(config)}
   };
 }
 
+/**
+ * Processes the result of an AI task for suggesting metadata (name, description, category, labels)
+ * for automations or scripts based on their configuration.
+ *
+ * @param connection - Home Assistant connection
+ * @param domain - The domain of the ${domain}
+ * @param result - The result of the AI task
+ * @param include - The metadata fields to include in the suggestion
+ * @returns Promise resolving to the processed metadata suggestion
+ */
 export async function processMetadataSuggestion(
   connection: HomeAssistant["connection"],
   domain: MetadataSuggestionDomain,
@@ -278,7 +298,7 @@ export async function processMetadataSuggestion(
       }
     }
     const foundLabels = Object.values(newLabels).filter(
-      (labelId) => labelId !== undefined
+      (labelId): labelId is string => labelId !== undefined
     );
     if (foundLabels.length) {
       processed.labels = foundLabels;
