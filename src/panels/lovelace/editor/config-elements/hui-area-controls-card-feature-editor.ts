@@ -285,7 +285,8 @@ export class HuiAreaControlsCardFeatureEditor
                     <ha-chip-set>
                       ${repeat(
                         value,
-                        (item) => item,
+                        (item) =>
+                          typeof item === "string" ? item : item.entity_id,
                         (item, idx) => {
                           const label = this._getItemLabel(item);
                           return html`

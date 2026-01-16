@@ -135,10 +135,7 @@ class HuiAreaControlsCardFeature
   }
 
   private get _controls(): AreaControl[] {
-    return (
-      this._config?.controls ||
-      (AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[])
-    );
+    return this._config?.controls || [...AREA_CONTROL_DOMAINS];
   }
 
   private _normalizeControl(
@@ -185,8 +182,9 @@ class HuiAreaControlsCardFeature
       return;
     }
 
-    const control = (ev.currentTarget as any).control as AreaControl;
-    const normalized = this._normalizeControl(control);
+    const normalized = (ev.currentTarget as any).control as
+      | { type: "domain"; value: AreaControlDomain }
+      | { type: "entity"; value: string };
 
     if (normalized.type === "entity") {
       const entity = this.hass.states[normalized.value];
@@ -329,7 +327,7 @@ class HuiAreaControlsCardFeature
                 .title=${label}
                 aria-label=${label}
                 class=${active ? "active" : ""}
-                .control=${normalized.value}
+                .control=${normalized}
                 @click=${this._handleButtonTap}
               >
                 <ha-domain-icon
@@ -367,7 +365,7 @@ class HuiAreaControlsCardFeature
                 .title=${label}
                 aria-label=${label}
                 class=${active ? "active" : ""}
-                .control=${normalized.value}
+                .control=${normalized}
                 @click=${this._handleButtonTap}
               >
                 <ha-state-icon
