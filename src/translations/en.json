@@ -2151,7 +2151,7 @@
           "title": "Searching",
           "on_any_page": "On any page",
           "on_pages_with_tables": "On pages with tables",
-          "search": "Search Home Assistant",
+          "search": "Quick search",
           "search_command": "search command",
           "search_entities": "search entities",
           "search_devices": "search devices",
