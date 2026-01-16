@@ -177,20 +177,21 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         direction: "asc",
         flex: 2,
-        template: narrow
-          ? undefined
-          : (entry) => html`
-              ${entry.name}<br />
-              <div class="secondary">${entry.entity_id}</div>
-            `,
       },
-      // For search & narrow
+      area: {
+        title: localize("ui.panel.config.voice_assistants.expose.headers.area"),
+        sortable: true,
+        groupable: true,
+        filterable: true,
+        template: (entry) => entry.area || "—",
+      },
       entity_id: {
         title: localize(
           "ui.panel.config.voice_assistants.expose.headers.entity_id"
         ),
-        hidden: !narrow,
+        sortable: true,
         filterable: true,
+        defaultHidden: true,
       },
       domain: {
         title: localize(
@@ -786,8 +787,8 @@ export class VoiceAssistantsExpose extends LitElement {
         }
         .selected-txt {
           font-weight: var(--ha-font-weight-bold);
-          padding-left: 16px;
-          padding-inline-start: 16px;
+          padding-left: var(--ha-space-4);
+          padding-inline-start: var(--ha-space-4);
           direction: var(--direction);
         }
         .table-header .selected-txt {
@@ -797,8 +798,8 @@ export class VoiceAssistantsExpose extends LitElement {
           font-size: var(--ha-font-size-l);
         }
         .header-toolbar .header-btns {
-          margin-right: -12px;
-          margin-inline-end: -12px;
+          margin-right: calc(var(--ha-space-3) * -1);
+          margin-inline-end: calc(var(--ha-space-3) * -1);
           direction: var(--direction);
         }
         .header-btns {
@@ -806,17 +807,17 @@ export class VoiceAssistantsExpose extends LitElement {
         }
         .header-btns > ha-button,
         .header-btns > ha-icon-button {
-          margin: 8px;
+          margin: var(--ha-space-2);
         }
         ha-button-menu {
-          margin-left: 8px;
-          margin-inline-start: 8px;
+          margin-left: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);
-          padding-left: 8px;
-          padding-inline-start: 8px;
+          padding-left: var(--ha-space-2);
+          padding-inline-start: var(--ha-space-2);
           text-transform: uppercase;
           direction: var(--direction);
         }

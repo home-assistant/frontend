@@ -252,7 +252,6 @@ class HaConfigBackupSettings extends LitElement {
                       .src=${brandsUrl({
                         domain: "cloud",
                         type: "icon",
-                        useFallback: true,
                         darkOptimized: this.hass.themes?.darkMode,
                       })}
                       crossorigin="anonymous"

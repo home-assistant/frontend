@@ -18,7 +18,7 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import "../../../components/ha-wa-dialog";
-import { updateAreaRegistryEntry } from "../../../data/area_registry";
+import { updateAreaRegistryEntry } from "../../../data/area/area_registry";
 import type {
   FloorRegistryEntry,
   FloorRegistryEntryMutableParams,

@@ -51,7 +51,7 @@ import "../../components/ha-svg-icon";
 import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
 import "../../components/ha-tooltip";
-import { createAreaRegistryEntry } from "../../data/area_registry";
+import { createAreaRegistryEntry } from "../../data/area/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import type {
   LovelaceConfig,
@@ -72,10 +72,7 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
-import {
-  QuickBarMode,
-  showQuickBar,
-} from "../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
@@ -299,13 +296,11 @@ class HUIRoot extends LitElement {
       },
       {
         icon: mdiMagnify,
-        key: "ui.panel.lovelace.menu.search_entities",
+        key: "ui.panel.lovelace.menu.search_home_assistant",
         buttonAction: this._showQuickBar,
         overflowAction: this._handleShowQuickBar,
         visible: !this._editMode && !this.hass.kioskMode,
         overflow: this.narrow,
-        suffix:
-          this.hass.enableShortcuts && !isMobileClient ? "(E)" : undefined,
       },
       {
         icon: mdiCommentProcessingOutline,
@@ -912,7 +907,6 @@ class HUIRoot extends LitElement {
     };
 
     showQuickBar(this, {
-      mode: QuickBarMode.Entity,
       hint: this.hass.enableShortcuts
         ? this.hass.localize("ui.tips.key_e_tip", params)
         : undefined,

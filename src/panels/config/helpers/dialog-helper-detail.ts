@@ -227,7 +227,6 @@ export class DialogHelperDetail extends LitElement {
                   src=${brandsUrl({
                     domain,
                     type: "icon",
-                    useFallback: true,
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
                   crossorigin="anonymous"
