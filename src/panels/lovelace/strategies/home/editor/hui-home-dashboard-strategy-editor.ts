@@ -2,6 +2,7 @@ import {
   mdiChevronDown,
   mdiChevronRight,
   mdiDragHorizontalVariant,
+  mdiRestore,
   mdiTextureBox,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
@@ -143,12 +144,17 @@ export class HuiHomeDashboardStrategyEditor
             )}
           </div>
         </ha-sortable>
-        ${this._renderUnassignedAreas()}
-        <div class="reset-container">
-          <ha-button @click=${this._resetOrder} appearance="plain">
-            ${this.hass.localize("ui.panel.home.editor.reorder_areas.reset")}
-          </ha-button>
-        </div>
+        ${this._hierarchy.areas.length > 0
+          ? this._renderUnassignedAreas()
+          : nothing}
+      </div>
+      <div class="reset-container">
+        <ha-button size="small" appearance="filled" @click=${this._resetOrder}>
+          <ha-svg-icon slot="start" .path=${mdiRestore}></ha-svg-icon>
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.strategy.home.reset_order"
+          )}
+        </ha-button>
       </div>
     `;
   }
@@ -227,13 +233,13 @@ export class HuiHomeDashboardStrategyEditor
                   class="expand-icon"
                   .path=${isExpanded ? mdiChevronDown : mdiChevronRight}
                 ></ha-svg-icon>
-                <span class="floor-name">
-                  ${this.hass.localize(
-                    "ui.panel.home.editor.reorder_areas.other_areas"
-                  )}
-                </span>
               `
             : nothing}
+          <span class="floor-name">
+            ${this.hass.localize(
+              "ui.panel.home.editor.reorder_areas.other_areas"
+            )}
+          </span>
         </div>
         ${!hasFloors || isExpanded
           ? html`
@@ -575,7 +581,7 @@ export class HuiHomeDashboardStrategyEditor
 
     .reset-container {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
       padding-top: var(--ha-space-2);
     }
   `;
