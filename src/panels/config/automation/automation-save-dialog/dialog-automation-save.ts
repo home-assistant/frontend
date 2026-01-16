@@ -1,5 +1,4 @@
 import { mdiPlus } from "@mdi/js";
-import { dump } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -341,11 +340,8 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       this.hass.connection,
       this.hass.states,
       this.hass.language,
-      {
-        domain: this._params.domain,
-        config: this._params.config,
-        include: SUGGESTION_INCLUDE_ALL,
-      }
+      this._params!.domain,
+      this._params!.config
     );
 
   private async _handleSuggestion(
@@ -354,7 +350,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     const result = event.detail;
     const processed = await processMetadataSuggestion(
       this.hass.connection,
-      this._params.domain,
+      this._params!.domain,
       result,
       SUGGESTION_INCLUDE_ALL
     );

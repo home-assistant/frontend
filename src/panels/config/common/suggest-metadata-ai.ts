@@ -26,15 +26,6 @@ export interface MetadataSuggestionInclude {
   labels?: boolean;
 }
 
-export interface MetadataSuggestionConfig<T> {
-  /** The domain to suggest metadata for (automation, script) */
-  domain: MetadataSuggestionDomain;
-  /** The configuration to suggest metadata for */
-  config: T;
-  /** The metadata fields to include in the suggestion */
-  include: MetadataSuggestionInclude;
-}
-
 type Categories = Record<string, string>;
 type Entities = Record<string, EntityRegistryEntry>;
 type Labels = Record<string, string>;
@@ -46,7 +37,11 @@ export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
 } as const;
 
 const tryCatchEmptyObject = <T>(promise: Promise<T>): Promise<T> =>
-  promise.catch(() => ({}) as T);
+  promise.catch((err) => {
+    // eslint-disable-next-line no-console
+    console.error("Error fetching data for suggestion: ", err);
+    return {} as T;
+  });
 
 const fetchCategories = (
   connection: HomeAssistant["connection"],
@@ -126,17 +121,19 @@ function buildMetadataInspirations(
  * @param connection - Home Assistant connection
  * @param states - Current state objects
  * @param language - User's language preference
- * @param suggestionConfig - Configuration for the suggestion task
+ * @param domain - The domain to suggest metadata for (automation, script)
+ * @param config - The configuration to suggest metadata for
+ * @param include - The metadata fields to include in the suggestion
  * @returns Promise resolving to the AI task structure
  */
 export async function generateMetadataSuggestionTask<T>(
   connection: HomeAssistant["connection"],
   states: HomeAssistant["states"],
   language: HomeAssistant["language"],
-  suggestionConfig: MetadataSuggestionConfig<T>
+  domain: MetadataSuggestionDomain,
+  config: T,
+  include: MetadataSuggestionInclude = SUGGESTION_INCLUDE_ALL
 ): Promise<SuggestWithAIGenerateTask> {
-  const { domain, config, include } = suggestionConfig;
-
   const [categories, entities, labels] = await Promise.all([
     include.categories
       ? fetchCategories(connection, domain)
