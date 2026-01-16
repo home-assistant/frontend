@@ -109,7 +109,7 @@ function buildMetadataInspirations(
 
     if (labels && entityEntry.labels.length) {
       inspiration += ` (labels: ${entityEntry.labels
-        .map((label) => labels![label])
+        .map((label) => labels[label])
         .join(", ")})`;
     }
 
