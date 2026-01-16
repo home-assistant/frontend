@@ -335,22 +335,29 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     this.closeDialog();
   }
 
-  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask<AutomationConfig | ScriptConfig>(
+  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
+    if (!this._params) {
+      throw new Error("Dialog params not set");
+    }
+    return generateMetadataSuggestionTask<AutomationConfig | ScriptConfig>(
       this.hass.connection,
       this.hass.states,
       this.hass.language,
-      this._params!.domain,
-      this._params!.config
+      this._params.domain,
+      this._params.config
     );
+  };
 
   private async _handleSuggestion(
     event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>
   ) {
+    if (!this._params) {
+      throw new Error("Dialog params not set");
+    }
     const result = event.detail;
     const processed = await processMetadataSuggestion(
       this.hass.connection,
-      this._params!.domain,
+      this._params.domain,
       result,
       SUGGESTION_INCLUDE_ALL
     );
