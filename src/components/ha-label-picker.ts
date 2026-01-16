@@ -29,7 +29,7 @@ import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import {
   type PickerComboBoxItem,
-  DEFAULT_ROW_RENDERER_INTERNS,
+  DEFAULT_ROW_RENDERER_CONTENT,
 } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 
@@ -126,7 +126,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
   private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) =>
     html`<ha-combo-box-item type="button" compact>
-      ${DEFAULT_ROW_RENDERER_INTERNS(item)}
+      ${DEFAULT_ROW_RENDERER_CONTENT(item)}
       ${item.id !== ADD_NEW_ID
         ? html`<div slot="trailing-supporting-text">
             ${getLabelColorBadge((item as any).color)}
