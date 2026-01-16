@@ -21,6 +21,7 @@ declare global {
 }
 
 const mql = matchMedia("(prefers-color-scheme: dark)");
+const reducedMotionMql = matchMedia("(prefers-reduced-motion: reduce)");
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
@@ -48,6 +49,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         );
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
+      reducedMotionMql.addListener(() => this._applyTheme(mql.matches));
       if (!this._themeApplied && mql.matches) {
         applyThemesOnElement(
           document.documentElement,
@@ -144,6 +146,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         true
       );
 
+      this._applyAnimationDuration(themeSettings?.animationDuration);
+
       if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({
           themes: { ...this.hass.themes!, darkMode },
@@ -180,5 +184,28 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       this.hass!.auth.external?.fireMessage({ type: "theme-update" });
+    }
+
+    private _applyAnimationDuration(animationDuration?: number) {
+      if (reducedMotionMql.matches) {
+        document.documentElement.style.setProperty(
+          "--ha-animation-base-duration",
+          "0ms"
+        );
+        return;
+      }
+      if (
+        typeof animationDuration === "number" &&
+        !Number.isNaN(animationDuration)
+      ) {
+        document.documentElement.style.setProperty(
+          "--ha-animation-base-duration",
+          `${Math.max(0, animationDuration)}ms`
+        );
+        return;
+      }
+      document.documentElement.style.removeProperty(
+        "--ha-animation-base-duration"
+      );
     }
   };

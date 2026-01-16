@@ -8954,6 +8954,12 @@
           "migrate_button": "Migrate",
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
+          "animation_duration": {
+            "header": "Animation duration",
+            "description": "Set how long interface animations take.",
+            "label": "Duration (ms)",
+            "reduced_motion": "Reduced motion is on, so animation duration is locked to 0."
+          },
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",

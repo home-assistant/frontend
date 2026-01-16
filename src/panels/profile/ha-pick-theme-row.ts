@@ -26,18 +26,40 @@ import { clearSelectedThemeState } from "../../util/ha-pref-storage";
 
 const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
 const HOME_ASSISTANT_THEME = "default";
+const DEFAULT_ANIMATION_DURATION = 350;
 
 @customElement("ha-pick-theme-row")
 export class HaPickThemeRow extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() _themeNames: string[] = [];
 
   @state() private _userTheme?: ThemeSettings | null;
 
   @state() private _migrating = false;
+
+  @state() private _reducedMotion = false;
+
+  private _reducedMotionMql = matchMedia("(prefers-reduced-motion: reduce)");
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._reducedMotion = this._reducedMotionMql.matches;
+    this._reducedMotionMql.addEventListener(
+      "change",
+      this._reducedMotionChanged
+    );
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._reducedMotionMql.removeEventListener(
+      "change",
+      this._reducedMotionChanged
+    );
+  }
 
   protected hassSubscribe() {
     return [
@@ -62,6 +84,9 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
         : this.hass.themes.default_theme;
 
     const themeSettings = this.hass.selectedTheme;
+    const animationDurationValue = this._reducedMotion
+      ? 0
+      : themeSettings?.animationDuration ?? DEFAULT_ANIMATION_DURATION;
     const localTheme = this._getLocalTheme();
     const showMigration =
       this._userTheme !== undefined &&
@@ -207,6 +232,39 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
             </ha-settings-row>
           `
         : ""}
+      <ha-settings-row .narrow=${this.narrow}>
+        <span slot="heading">
+          ${this.hass.localize(
+            "ui.panel.profile.themes.animation_duration.header"
+          )}
+        </span>
+        <span slot="description">
+          ${this.hass.localize(
+            "ui.panel.profile.themes.animation_duration.description"
+          )}
+          ${this._reducedMotion
+            ? html`
+                <br />
+                ${this.hass.localize(
+                  "ui.panel.profile.themes.animation_duration.reduced_motion"
+                )}
+              `
+            : ""}
+        </span>
+        <ha-textfield
+          class="animation-duration"
+          type="number"
+          min="0"
+          max="3000"
+          step="50"
+          .disabled=${this._reducedMotion}
+          .label=${this.hass.localize(
+            "ui.panel.profile.themes.animation_duration.label"
+          )}
+          .value=${String(animationDurationValue)}
+          @change=${this._handleAnimationDurationChange}
+        ></ha-textfield>
+      </ha-settings-row>
     `;
   }
 
@@ -231,6 +289,31 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
 
     fireEvent(this, "settheme", { [target.name]: target.value });
   }
+
+  private _handleAnimationDurationChange(ev: CustomEvent) {
+    const target = ev.target as HTMLInputElement;
+    const value = target.value.trim();
+    if (!value) {
+      fireEvent(this, "settheme", { animationDuration: 0 });
+      target.value = "0";
+      return;
+    }
+    const duration = Number(value);
+    if (Number.isNaN(duration)) {
+      return;
+    }
+    const clampedDuration = Math.min(3000, Math.max(0, duration));
+    fireEvent(this, "settheme", {
+      animationDuration: clampedDuration,
+    });
+    if (String(clampedDuration) !== value) {
+      target.value = String(clampedDuration);
+    }
+  }
+
+  private _reducedMotionChanged = (ev: MediaQueryListEvent) => {
+    this._reducedMotion = ev.matches;
+  };
 
   private _resetColors() {
     fireEvent(this, "settheme", {
@@ -333,6 +416,16 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       min-width: 75px;
       flex-grow: 1;
       margin: 0 4px;
+    }
+    .animation-duration {
+      width: var(--ha-select-min-width, 200px);
+      flex: 0 0 var(--ha-select-min-width, 200px);
+      margin: 0;
+      --text-field-padding: 2px 0px 0px 16px;
+    }
+    :host([narrow]) .animation-duration {
+      width: 100%;
+      flex: 1 1 auto;
     }
   `;
 }
