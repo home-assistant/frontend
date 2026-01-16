@@ -649,7 +649,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   static styles = css`
     :host {
       --tile-color: var(--state-icon-color);
-      -webkit-tap-highlight-color: transparent;
     }
     ha-card:has(ha-tile-container[focused]) {
       --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
