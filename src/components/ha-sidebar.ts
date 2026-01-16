@@ -759,7 +759,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           min-width: 0;
           max-width: 0;
           opacity: 0;
-          transform: translateX(-4px);
+          transform: translateX(calc(-4px * var(--scale-direction)));
           transition:
             max-width var(--ha-animation-base-duration) ease,
             opacity var(--ha-animation-base-duration) ease,
@@ -865,7 +865,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          transform: translateX(-4px);
+          transform: translateX(calc(-4px * var(--scale-direction)));
           font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);
           transition:
