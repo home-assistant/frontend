@@ -1,4 +1,4 @@
-import { mdiClose, mdiPlus } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import { dump } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,6 +8,7 @@ import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
@@ -17,6 +18,7 @@ import type { SuggestWithAIGenerateTask } from "../../../../components/ha-sugges
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
+import "../../../../components/ha-wa-dialog";
 import "../../category/ha-category-picker";
 
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
@@ -38,7 +40,7 @@ import type {
 class DialogAutomationSave extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _error?: string;
 
@@ -46,7 +48,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
   @state() private _entryUpdates!: EntityRegistryUpdate;
 
-  private _params!: SaveDialogParams;
+  @state() private _params?: SaveDialogParams;
 
   @state() private _newName?: string;
 
@@ -55,7 +57,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   private _newDescription?: string;
 
   public showDialog(params: SaveDialogParams): void {
-    this._opened = true;
+    this._open = true;
     this._params = params;
     this._newIcon = "icon" in params.config ? params.config.icon : undefined;
     this._newName =
@@ -79,15 +81,16 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     ].filter(Boolean);
   }
 
-  public closeDialog() {
-    this._params.onClose();
-
-    if (this._opened) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
-    }
-    this._opened = false;
-    this._visibleOptionals = [];
+  public closeDialog(): boolean {
+    this._open = false;
     return true;
+  }
+
+  private _dialogClosed() {
+    this._params?.onClose();
+    this._visibleOptionals = [];
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected _renderOptionalChip(id: string, label: string) {
@@ -103,15 +106,15 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   protected _renderDiscard() {
-    if (!this._params.onDiscard) {
+    if (!this._params?.onDiscard) {
       return nothing;
     }
     return html`
       <ha-button
-        @click=${this._handleDiscard}
         slot="secondaryAction"
-        variant="danger"
         appearance="plain"
+        variant="danger"
+        @click=${this._handleDiscard}
       >
         ${this.hass.localize("ui.common.dont_save")}
       </ha-button>
@@ -119,13 +122,13 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   protected _renderInputs() {
-    if (this._params.hideInputs) {
+    if (!this._params || this._params.hideInputs) {
       return nothing;
     }
 
     return html`
       <ha-textfield
-        dialogInitialFocus
+        autofocus
         .value=${this._newName}
         .placeholder=${this.hass.localize(
           `ui.panel.config.${this._params.domain}.editor.default_name`
@@ -239,7 +242,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   protected render() {
-    if (!this._opened) {
+    if (!this._params) {
       return nothing;
     }
 
@@ -250,29 +253,20 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     );
 
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
-        @closed=${this.closeDialog}
-        .heading=${title}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+        header-title=${this._params.title || title}
       >
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title">${this._params.title || title}</span>
-          ${this._params.hideInputs
-            ? nothing
-            : html` <ha-suggest-with-ai-button
-                slot="actionItems"
-                .hass=${this.hass}
-                .generateTask=${this._generateTask}
-                @suggestion=${this._handleSuggestion}
-              ></ha-suggest-with-ai-button>`}
-        </ha-dialog-header>
+        ${this._params.hideInputs
+          ? nothing
+          : html` <ha-suggest-with-ai-button
+              slot="headerActionItems"
+              .hass=${this.hass}
+              .generateTask=${this._generateTask}
+              @suggestion=${this._handleSuggestion}
+            ></ha-suggest-with-ai-button>`}
         ${this._error
           ? html`<ha-alert alert-type="error"
               >${this.hass.localize(
@@ -283,21 +277,25 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         ${this._params.description
           ? html`<p>${this._params.description}</p>`
           : nothing}
-        ${this._renderInputs()} ${this._renderDiscard()}
-
-        <div slot="primaryAction">
-          <ha-button appearance="plain" @click=${this.closeDialog}>
+        ${this._renderInputs()}
+        <ha-dialog-footer slot="footer">
+          ${this._renderDiscard()}
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button @click=${this._save}>
+          <ha-button slot="primaryAction" @click=${this._save}>
             ${this.hass.localize(
               this._params.config.alias && !this._params.onDiscard
                 ? "ui.panel.config.automation.editor.rename"
                 : "ui.common.save"
             )}
           </ha-button>
-        </div>
-      </ha-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -331,7 +329,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private _handleDiscard() {
-    this._params.onDiscard?.();
+    this._params?.onDiscard?.();
     this.closeDialog();
   }
 
@@ -350,6 +348,10 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
+    if (!this._params) {
+      throw new Error("Dialog params not set");
+    }
+
     const [labels, entities, categories] = await this._getSuggestData();
     const inspirations: string[] = [];
 
@@ -514,6 +516,10 @@ ${dump(this._params.config)}
   }
 
   private async _save(): Promise<void> {
+    if (!this._params) {
+      return;
+    }
+
     if (!this._newName) {
       this._error = "Name is required";
       return;
@@ -548,15 +554,8 @@ ${dump(this._params.config)}
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0 24px 24px 24px;
-        }
-
-        @media all and (min-width: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: min(500px, 95vw);
-            --mdc-dialog-max-width: min(500px, 95vw);
-          }
         }
 
         ha-textfield,
