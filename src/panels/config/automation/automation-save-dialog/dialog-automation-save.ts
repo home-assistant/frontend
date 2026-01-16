@@ -31,10 +31,17 @@ import type {
   SaveDialogParams,
 } from "./show-dialog-automation-save";
 import {
+  type MetadataSuggestionConfig,
+  type MetadataSuggestionResult,
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
-  type MetadataSuggestionResult,
 } from "../../common/suggest-metadata-ai";
+
+const SUGGESTION_INCLUDE: MetadataSuggestionConfig["include"] = {
+  description: true,
+  categories: true,
+  labels: true,
+} as const;
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -334,20 +341,26 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask(this.hass, {
-      domain: this._params.domain,
-      config: this._params.config,
-      includeDescription: true,
-    });
+    generateMetadataSuggestionTask(
+      this.hass.connection,
+      this.hass.states,
+      this.hass.language,
+      {
+        domain: this._params.domain,
+        config: this._params.config,
+        include: SUGGESTION_INCLUDE,
+      }
+    );
 
   private async _handleSuggestion(
     event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>
   ) {
     const result = event.detail;
     const processed = await processMetadataSuggestion(
-      this.hass,
+      this.hass.connection,
       this._params.domain,
-      result
+      result,
+      SUGGESTION_INCLUDE
     );
 
     this._newName = processed.name;
@@ -359,20 +372,20 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       }
     }
 
-    if (processed.categoryId) {
+    if (processed.category) {
       this._entryUpdates = {
         ...this._entryUpdates,
-        category: processed.categoryId,
+        category: processed.category,
       };
       if (!this._visibleOptionals.includes("category")) {
         this._visibleOptionals = [...this._visibleOptionals, "category"];
       }
     }
 
-    if (processed.labelIds?.length) {
+    if (processed.labels?.length) {
       this._entryUpdates = {
         ...this._entryUpdates,
-        labels: processed.labelIds,
+        labels: processed.labels,
       };
       if (!this._visibleOptionals.includes("labels")) {
         this._visibleOptionals = [...this._visibleOptionals, "labels"];

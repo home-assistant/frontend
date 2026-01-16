@@ -11,6 +11,10 @@ import { subscribeLabelRegistry } from "../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../types";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
 
+// TODO: TEST
+// TODO: Self review
+// TODO: AI review
+
 export interface MetadataSuggestionResult {
   name: string;
   description?: string;
@@ -18,58 +22,67 @@ export interface MetadataSuggestionResult {
   labels?: string[];
 }
 
-export interface ProcessedMetadataSuggestionResult {
-  name: string;
-  description?: string;
-  categoryId?: string;
-  labelIds?: string[];
-}
-
 export interface MetadataSuggestionConfig {
   /** The domain to suggest metadata for (automation, script) */
   domain: "automation" | "script";
   /** The configuration to suggest metadata for */
   config: any;
-  /** Whether to include description field in the suggestion */
-  includeDescription?: boolean;
-  /** Whether to include icon field in the suggestion (scripts only) */
-  includeIcon?: boolean;
+
+  /** The metadata fields to include in the suggestion */
+  include: {
+    description?: boolean;
+    categories?: boolean;
+    labels?: boolean;
+  };
 }
 
 type Categories = Record<string, string>;
 type Entities = Record<string, EntityRegistryEntry>;
 type Labels = Record<string, string>;
 
+const tryCatchEmptyObject = <T>(promise: Promise<T>): Promise<T> =>
+  promise.catch(() => ({}) as T);
+
 const fetchCategories = (
   connection: HomeAssistant["connection"],
   domain: MetadataSuggestionConfig["domain"]
 ): Promise<Categories> =>
-  fetchCategoryRegistry(connection, domain).then((cats) =>
-    Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
+  tryCatchEmptyObject(
+    fetchCategoryRegistry(connection, domain).then((cats) =>
+      Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
+    )
   );
 
 const fetchEntities = (
   connection: HomeAssistant["connection"]
 ): Promise<Entities> =>
-  subscribeOne(connection, subscribeEntityRegistry).then((ents) =>
-    Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
+  tryCatchEmptyObject(
+    subscribeOne(connection, subscribeEntityRegistry).then((ents) =>
+      Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
+    )
   );
 
 const fetchLabels = (
   connection: HomeAssistant["connection"]
 ): Promise<Labels> =>
-  subscribeOne(connection, subscribeLabelRegistry).then((labs) =>
-    Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
+  tryCatchEmptyObject(
+    subscribeOne(connection, subscribeLabelRegistry).then((labs) =>
+      Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
+    )
   );
 
 function buildMetadataInspirations(
+  domain: MetadataSuggestionConfig["domain"],
   states: HomeAssistant["states"],
-  entities: Record<string, EntityRegistryEntry>,
-  categories: Categories,
-  labels: Labels,
-  domain: MetadataSuggestionConfig["domain"]
+  entities: Entities,
+  categories?: Categories,
+  labels?: Labels
 ): string[] {
   const inspirations: string[] = [];
+
+  if (!entities) {
+    return inspirations;
+  }
 
   for (const entity of Object.values(states)) {
     const entityEntry = entities[entity.entity_id];
@@ -85,14 +98,13 @@ function buildMetadataInspirations(
     let inspiration = `- ${entity.attributes.friendly_name}`;
 
     // Get the category for this domain
-    const category = categories[entityEntry.categories[domain]];
-    if (category) {
-      inspiration += ` (category: ${category})`;
+    if (categories && categories[entityEntry.categories[domain]]) {
+      inspiration += ` (category: ${categories[entityEntry.categories[domain]]})`;
     }
 
-    if (entityEntry.labels.length) {
+    if (labels && entityEntry.labels.length) {
       inspiration += ` (labels: ${entityEntry.labels
-        .map((label) => labels[label])
+        .map((label) => labels![label])
         .join(", ")})`;
     }
 
@@ -108,28 +120,22 @@ export async function generateMetadataSuggestionTask(
   language: HomeAssistant["language"],
   suggestionConfig: MetadataSuggestionConfig
 ): Promise<SuggestWithAIGenerateTask> {
-  const { domain, config, includeDescription } = suggestionConfig;
+  const { domain, config, include } = suggestionConfig;
 
-  let categories: Categories = {};
-  let entities: Entities = {};
-  let labels: Labels = {};
-  try {
-    [categories, entities, labels] = await Promise.all([
-      fetchCategories(connection, domain),
-      fetchEntities(connection),
-      fetchLabels(connection),
-    ]);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error getting suggest metadata:", error);
-  }
+  const [categories, entities, labels] = await Promise.all([
+    include.categories
+      ? fetchCategories(connection, domain)
+      : Promise.resolve(undefined),
+    fetchEntities(connection),
+    include.labels ? fetchLabels(connection) : Promise.resolve(undefined),
+  ]);
 
   const inspirations = buildMetadataInspirations(
+    domain,
     states,
     entities,
     categories,
-    labels,
-    domain
+    labels
   );
 
   const structure: AITaskStructure = {
@@ -140,7 +146,7 @@ export async function generateMetadataSuggestionTask(
         text: {},
       },
     },
-    ...(includeDescription && {
+    ...(include.description && {
       description: {
         description: `A short description of the ${domain}`,
         required: false,
@@ -149,44 +155,63 @@ export async function generateMetadataSuggestionTask(
         },
       },
     }),
-    labels: {
-      description: `Labels for the ${domain}`,
-      required: false,
-      selector: {
-        text: {
-          multiple: true,
+    ...(include.labels && {
+      labels: {
+        description: `Labels for the ${domain}`,
+        required: false,
+        selector: {
+          text: {
+            multiple: true,
+          },
         },
       },
-    },
-    category: {
-      description: `The category of the ${domain}`,
-      required: false,
-      selector: {
-        select: {
-          options: Object.entries(categories).map(([id, name]) => ({
-            value: id,
-            label: name,
-          })),
+    }),
+    ...(include.categories &&
+      categories && {
+        category: {
+          description: `The category of the ${domain}`,
+          required: false,
+          selector: {
+            select: {
+              options: Object.entries(categories).map(([id, name]) => ({
+                value: id,
+                label: name,
+              })),
+            },
+          },
         },
-      },
-    },
+      }),
   };
+
+  const categoryLabelText: string[] = [];
+  if (include.categories) {
+    categoryLabelText.push("category");
+  }
+  if (include.labels) {
+    categoryLabelText.push("labels");
+  }
+  const categoryLabelString =
+    categoryLabelText.length > 0 ? `, ${categoryLabelText.join(" and ")}` : "";
 
   return {
     type: "data",
     task: {
       task_name: `frontend__${domain}__save`,
-      instructions: `Suggest in language "${language}" a name${includeDescription ? ", description" : ""}, category and labels for the following Home Assistant ${domain}.
+      instructions: `Suggest in language "${language}" a name${include.description ? ", description" : ""}${categoryLabelString} for the following Home Assistant ${domain}.
 
 The name should be relevant to the ${domain}'s purpose.
 ${
   inspirations.length
-    ? `The name should be in same style and sentence capitalization as existing ${domain}s.
-Suggest a category and labels if relevant to the ${domain}'s purpose.
-Only suggest category and labels that are already used by existing ${domain}s.`
+    ? `The name should be in same style and sentence capitalization as existing ${domain}s.${
+        include.categories || include.labels
+          ? `
+Suggest ${categoryLabelText.join(" and ")} if relevant to the ${domain}'s purpose.
+Only suggest ${categoryLabelText.join(" and ")} that are already used by existing ${domain}s.`
+          : ""
+      }`
     : `The name should be short, descriptive, sentence case, and written in the language ${language}.`
 }${
-        includeDescription
+        include.description
           ? `
 If the ${domain} contains 5+ steps, include a short description.`
           : ""
@@ -207,37 +232,33 @@ ${dump(config)}
 export async function processMetadataSuggestion(
   connection: HomeAssistant["connection"],
   domain: MetadataSuggestionConfig["domain"],
-  result: GenDataTaskResult<MetadataSuggestionResult>
-): Promise<ProcessedMetadataSuggestionResult> {
-  let categories: Categories = {};
-  let labels: Labels = {};
-  try {
-    [categories, labels] = await Promise.all([
-      fetchCategories(connection, domain),
-      fetchLabels(connection),
-    ]);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error getting suggest metadata:", error);
-  }
+  result: GenDataTaskResult<MetadataSuggestionResult>,
+  include: MetadataSuggestionConfig["include"]
+): Promise<MetadataSuggestionResult> {
+  const [categories, labels] = await Promise.all([
+    include.categories
+      ? fetchCategories(connection, domain)
+      : Promise.resolve(undefined),
+    include.labels ? fetchLabels(connection) : Promise.resolve(undefined),
+  ]);
 
-  const processed: ProcessedMetadataSuggestionResult = {
+  const processed: MetadataSuggestionResult = {
     name: result.data.name,
     description: result.data.description ?? undefined,
   };
 
   // Convert category name to ID
-  if (result.data.category) {
+  if (include.categories && categories && result.data.category) {
     const categoryId = Object.entries(categories).find(
       ([, name]) => name === result.data.category
     )?.[0];
     if (categoryId) {
-      processed.categoryId = categoryId;
+      processed.category = categoryId;
     }
   }
 
   // Convert label names to IDs
-  if (result.data.labels?.length) {
+  if (include.labels && labels && result.data.labels?.length) {
     const newLabels: Record<string, undefined | string> = Object.fromEntries(
       result.data.labels.map((name) => [name, undefined])
     );
@@ -255,7 +276,7 @@ export async function processMetadataSuggestion(
       (labelId) => labelId !== undefined
     );
     if (foundLabels.length) {
-      processed.labelIds = foundLabels;
+      processed.labels = foundLabels;
     }
   }
 
