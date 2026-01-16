@@ -59,7 +59,7 @@ export interface PickerComboBoxItem {
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 const PADDING_ID = "___padding___";
 
-export const DEFAULT_ROW_RENDERER_INTERNS = (item) =>
+export const DEFAULT_ROW_RENDERER_CONTENT = (item: PickerComboBoxItem) =>
   html` ${item.icon
       ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
       : item.icon_path
