@@ -1376,11 +1376,6 @@ class HUIRoot extends LitElement {
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
           z-index: 4;
-          transition:
-            box-shadow 200ms linear,
-            width var(--ha-animation-base-duration) ease,
-            padding-left var(--ha-animation-base-duration) ease,
-            padding-right var(--ha-animation-base-duration) ease;
         }
         .narrow .header {
           width: calc(
@@ -1398,11 +1393,6 @@ class HUIRoot extends LitElement {
             0px 4px 5px 0px rgba(0, 0, 0, 0.14),
             0px 1px 10px 0px rgba(0, 0, 0, 0.12)
           );
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .header {
-            transition: box-shadow 200ms linear;
-          }
         }
         .edit-mode .header {
           background-color: var(--app-header-edit-background-color, #455a64);

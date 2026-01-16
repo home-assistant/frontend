@@ -472,8 +472,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         @mouseleave=${this._itemMouseLeave}
       >
         <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-        ${!this.alwaysExpand &&
-        (this._updatesCount > 0 || this._issuesCount > 0)
+        ${this._updatesCount > 0 || this._issuesCount > 0
           ? html`
               <span class="badge" slot="start">
                 ${this._updatesCount + this._issuesCount}
@@ -483,7 +482,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <span class="item-text" slot="headline"
           >${this.hass.localize("panel.config")}</span
         >
-        ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
+        ${this._updatesCount > 0 || this._issuesCount > 0
           ? html`
               <span class="badge" slot="end"
                 >${this._updatesCount + this._issuesCount}</span
@@ -508,7 +507,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         type="button"
       >
         <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
-        ${!this.alwaysExpand && notificationCount > 0
+        ${notificationCount > 0
           ? html`
               <span class="badge" slot="start"> ${notificationCount} </span>
             `
@@ -516,7 +515,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         <span class="item-text" slot="headline"
           >${this.hass.localize("ui.notification_drawer.title")}</span
         >
-        ${this.alwaysExpand && notificationCount > 0
+        ${notificationCount > 0
           ? html`<span class="badge" slot="end">${notificationCount}</span>`
           : nothing}
       </ha-md-list-item>
@@ -906,6 +905,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--accent-color);
           padding: 2px 6px;
           color: var(--text-accent-color, var(--text-primary-color));
+          transition:
+            opacity var(--ha-animation-base-duration) ease,
+            transform var(--ha-animation-base-duration) ease;
         }
 
         ha-svg-icon + .badge {
@@ -916,6 +918,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           font-size: 0.65em;
           line-height: var(--ha-line-height-expanded);
           padding: 0 var(--ha-space-1);
+        }
+        :host([expanded]) .badge[slot="start"],
+        :host(:not([expanded])) .badge[slot="end"] {
+          opacity: 0;
+          transform: scale(0.8);
+          pointer-events: none;
         }
 
         ha-md-list-item.user {

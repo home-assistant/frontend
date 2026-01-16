@@ -34,6 +34,20 @@ export const haStyle = css`
     margin-inline-end: initial;
   }
 
+  .header {
+    transition:
+      box-shadow 200ms linear,
+      width var(--ha-animation-base-duration) ease,
+      padding-left var(--ha-animation-base-duration) ease,
+      padding-right var(--ha-animation-base-duration) ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header {
+      transition: box-shadow 200ms linear;
+    }
+  }
+
   h1 {
     font-family: var(--ha-font-family-heading);
     -webkit-font-smoothing: var(--ha-font-smoothing);

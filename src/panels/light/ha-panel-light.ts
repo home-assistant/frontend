@@ -186,11 +186,6 @@ class PanelLight extends LitElement {
           );
           padding-top: var(--safe-area-inset-top);
           z-index: 4;
-          transition:
-            box-shadow 200ms linear,
-            width var(--ha-animation-base-duration) ease,
-            padding-left var(--ha-animation-base-duration) ease,
-            padding-right var(--ha-animation-base-duration) ease;
           display: flex;
           flex-direction: row;
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
@@ -214,11 +209,6 @@ class PanelLight extends LitElement {
             0px 4px 5px 0px rgba(0, 0, 0, 0.14),
             0px 1px 10px 0px rgba(0, 0, 0, 0.12)
           );
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .header {
-            transition: box-shadow 200ms linear;
-          }
         }
         .toolbar {
           height: var(--header-height);
