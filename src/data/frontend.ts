@@ -15,8 +15,24 @@ export interface CoreFrontendSystemData {
   default_panel?: string;
 }
 
+/**
+ * Defines the custom ordering of areas and floors for the home dashboard.
+ * This configuration is home dashboard-specific and does not affect
+ * the global area registry ordering used elsewhere in Home Assistant.
+ */
+export interface AreasFloorOrder {
+  /** Ordered array of floor IDs */
+  floors?: string[];
+  /** Map of floor ID to ordered array of area IDs for that floor */
+  areas?: Record<string, string[]>;
+  /** Ordered array of area IDs for areas without floor assignment */
+  unassigned?: string[];
+}
+
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
+  /** Custom ordering configuration for areas and floors in the home dashboard */
+  areas_order?: AreasFloorOrder;
 }
 
 declare global {
