@@ -112,7 +112,6 @@ export class HaTileContainer extends LitElement {
       position: relative;
       padding: 6px;
       margin: -6px;
-      pointer-events: auto;
     }
     ::slotted([slot="icon"]:focus) {
       outline: none;

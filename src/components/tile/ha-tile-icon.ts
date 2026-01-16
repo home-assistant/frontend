@@ -75,6 +75,10 @@ export class HaTileIcon extends LitElement {
       position: relative;
       user-select: none;
       transition: transform 180ms ease-in-out;
+      pointer-events: none;
+    }
+    :host([interactive]) {
+      pointer-events: auto;
     }
     :host([interactive]:active) {
       transform: scale(1.2);
