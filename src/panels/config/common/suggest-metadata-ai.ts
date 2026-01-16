@@ -52,7 +52,7 @@ const fetchCategories = (
   connection: HomeAssistant["connection"],
   domain: MetadataSuggestionDomain
 ): Promise<Categories> =>
-  tryCatchEmptyObject(
+  tryCatchEmptyObject<Categories>(
     fetchCategoryRegistry(connection, domain).then((cats) =>
       Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
     )
@@ -61,7 +61,7 @@ const fetchCategories = (
 const fetchEntities = (
   connection: HomeAssistant["connection"]
 ): Promise<Entities> =>
-  tryCatchEmptyObject(
+  tryCatchEmptyObject<Entities>(
     subscribeOne(connection, subscribeEntityRegistry).then((ents) =>
       Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
     )
@@ -70,7 +70,7 @@ const fetchEntities = (
 const fetchLabels = (
   connection: HomeAssistant["connection"]
 ): Promise<Labels> =>
-  tryCatchEmptyObject(
+  tryCatchEmptyObject<Labels>(
     subscribeOne(connection, subscribeLabelRegistry).then((labs) =>
       Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
     )
