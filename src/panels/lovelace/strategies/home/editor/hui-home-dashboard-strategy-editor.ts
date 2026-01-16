@@ -1,10 +1,4 @@
-import {
-  mdiChevronDown,
-  mdiChevronRight,
-  mdiDragHorizontalVariant,
-  mdiRestore,
-  mdiTextureBox,
-} from "@mdi/js";
+import { mdiDragHorizontalVariant, mdiRestore, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,6 +10,7 @@ import {
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entities-picker";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-floor-icon";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-md-list";
@@ -132,7 +127,7 @@ export class HuiHomeDashboardStrategyEditor
       <div class="reorder-content">
         <ha-sortable
           handle-selector=".floor-handle"
-          draggable-selector=".floor"
+          draggable-selector=".draggable"
           @item-moved=${this._floorMoved}
           invert-swap
         >
@@ -168,47 +163,42 @@ export class HuiHomeDashboardStrategyEditor
     const isExpanded = this._expandedFloors.has(floor.id);
 
     return html`
-      <div class="floor">
-        <div
-          class="floor-header"
-          .floorId=${floor.id}
-          @click=${this._handleFloorHeaderClick}
+      <ha-expansion-panel
+        outlined
+        left-chevron
+        .header=${floorEntry.name}
+        .expanded=${isExpanded}
+        @expanded-changed=${this._handleFloorExpansionChanged}
+        .floorId=${floor.id}
+        class="draggable"
+      >
+        <ha-floor-icon slot="leading-icon" .floor=${floorEntry}></ha-floor-icon>
+        <ha-svg-icon
+          class="floor-handle"
+          slot="icons"
+          .path=${mdiDragHorizontalVariant}
+          @click=${this._handleDragHandleClick}
+        ></ha-svg-icon>
+
+        <ha-sortable
+          handle-selector=".area-handle"
+          draggable-selector="ha-md-list-item"
+          @item-moved=${this._areaMoved}
+          @item-added=${this._areaAdded}
+          group="areas"
+          .floor=${floor.id}
         >
-          <ha-svg-icon
-            class="expand-icon"
-            .path=${isExpanded ? mdiChevronDown : mdiChevronRight}
-          ></ha-svg-icon>
-          <ha-floor-icon .floor=${floorEntry}></ha-floor-icon>
-          <span class="floor-name">${floorEntry.name}</span>
-          <ha-svg-icon
-            class="floor-handle"
-            .path=${mdiDragHorizontalVariant}
-            @click=${this._handleDragHandleClick}
-          ></ha-svg-icon>
-        </div>
-        ${isExpanded
-          ? html`
-              <ha-sortable
-                handle-selector=".area-handle"
-                draggable-selector="ha-md-list-item"
-                @item-moved=${this._areaMoved}
-                @item-added=${this._areaAdded}
-                group="areas"
-                .floor=${floor.id}
-              >
-                <ha-md-list>
-                  ${floor.areas.length > 0
-                    ? floor.areas.map((areaId) => this._renderArea(areaId))
-                    : html`<p class="empty">
-                        ${this.hass!.localize(
-                          "ui.panel.home.editor.reorder_areas.empty_floor"
-                        )}
-                      </p>`}
-                </ha-md-list>
-              </ha-sortable>
-            `
-          : nothing}
-      </div>
+          <ha-md-list>
+            ${floor.areas.length > 0
+              ? floor.areas.map((areaId) => this._renderArea(areaId))
+              : html`<p class="empty">
+                  ${this.hass!.localize(
+                    "ui.panel.home.editor.reorder_areas.empty_floor"
+                  )}
+                </p>`}
+          </ha-md-list>
+        </ha-sortable>
+      </ha-expansion-panel>
     `;
   }
 
@@ -218,54 +208,44 @@ export class HuiHomeDashboardStrategyEditor
     }
 
     const hasFloors = this._hierarchy.floors.length > 0;
-    const isExpanded = this._expandedFloors.has(UNASSIGNED_FLOOR);
+    const isExpanded = hasFloors
+      ? this._expandedFloors.has(UNASSIGNED_FLOOR)
+      : true;
 
     return html`
-      <div class="floor unassigned">
-        <div
-          class="floor-header"
-          .floorId=${UNASSIGNED_FLOOR}
-          @click=${this._handleFloorHeaderClick}
+      <ha-expansion-panel
+        outlined
+        .header=${this.hass.localize(
+          "ui.panel.home.editor.reorder_areas.other_areas"
+        )}
+        .expanded=${isExpanded}
+        .leftChevron=${hasFloors}
+        .noCollapse=${!hasFloors}
+        @expanded-changed=${this._handleFloorExpansionChanged}
+        .floorId=${UNASSIGNED_FLOOR}
+        class="unassigned"
+      >
+        <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
+
+        <ha-sortable
+          handle-selector=".area-handle"
+          draggable-selector="ha-md-list-item"
+          @item-moved=${this._areaMoved}
+          @item-added=${this._areaAdded}
+          group="areas"
+          .floor=${UNASSIGNED_FLOOR}
         >
-          ${hasFloors
-            ? html`
-                <ha-svg-icon
-                  class="expand-icon"
-                  .path=${isExpanded ? mdiChevronDown : mdiChevronRight}
-                ></ha-svg-icon>
-              `
-            : nothing}
-          <span class="floor-name">
-            ${this.hass.localize(
-              "ui.panel.home.editor.reorder_areas.other_areas"
-            )}
-          </span>
-        </div>
-        ${!hasFloors || isExpanded
-          ? html`
-              <ha-sortable
-                handle-selector=".area-handle"
-                draggable-selector="ha-md-list-item"
-                @item-moved=${this._areaMoved}
-                @item-added=${this._areaAdded}
-                group="areas"
-                .floor=${UNASSIGNED_FLOOR}
-              >
-                <ha-md-list>
-                  ${this._hierarchy.areas.length > 0
-                    ? this._hierarchy.areas.map((areaId) =>
-                        this._renderArea(areaId)
-                      )
-                    : html`<p class="empty">
-                        ${this.hass.localize(
-                          "ui.panel.home.editor.reorder_areas.empty_unassigned"
-                        )}
-                      </p>`}
-                </ha-md-list>
-              </ha-sortable>
-            `
-          : nothing}
-      </div>
+          <ha-md-list>
+            ${this._hierarchy.areas.length > 0
+              ? this._hierarchy.areas.map((areaId) => this._renderArea(areaId))
+              : html`<p class="empty">
+                  ${this.hass.localize(
+                    "ui.panel.home.editor.reorder_areas.empty_unassigned"
+                  )}
+                </p>`}
+          </ha-md-list>
+        </ha-sortable>
+      </ha-expansion-panel>
     `;
   }
 
@@ -293,18 +273,17 @@ export class HuiHomeDashboardStrategyEditor
     `;
   }
 
-  private _toggleFloor(floorId: string): void {
-    if (this._expandedFloors.has(floorId)) {
-      this._expandedFloors.delete(floorId);
-    } else {
+  private _handleFloorExpansionChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const floorId = (ev.currentTarget as any).floorId;
+    const expanded = ev.detail.expanded;
+
+    if (expanded) {
       this._expandedFloors.add(floorId);
+    } else {
+      this._expandedFloors.delete(floorId);
     }
     this.requestUpdate();
-  }
-
-  private _handleFloorHeaderClick(ev: Event): void {
-    const floorId = (ev.currentTarget as any).floorId;
-    this._toggleFloor(floorId);
   }
 
   private _handleDragHandleClick(ev: Event): void {
@@ -508,35 +487,8 @@ export class HuiHomeDashboardStrategyEditor
       gap: var(--ha-space-4);
     }
 
-    .floor {
-      border: 1px solid var(--divider-color);
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      overflow: hidden;
-      background-color: var(--card-background-color);
-    }
-
-    .floor.unassigned {
+    ha-expansion-panel.unassigned {
       margin-top: var(--ha-space-2);
-    }
-
-    .floor-header {
-      display: flex;
-      align-items: center;
-      padding: var(--ha-space-3) var(--ha-space-4);
-      background-color: var(--card-background-color);
-      gap: var(--ha-space-3);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .expand-icon {
-      color: var(--secondary-text-color);
-      transition: transform 0.2s;
-    }
-
-    .floor-name {
-      flex: 1;
-      font-weight: var(--ha-font-weight-medium);
     }
 
     .floor-handle {
