@@ -1,5 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
-
 import {
   mdiArrowCollapseDown,
   mdiCircle,
@@ -31,10 +29,10 @@ import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
 import type { HaAnsiToHtml } from "../../../components/ha-ansi-to-html";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
@@ -249,32 +247,35 @@ class ErrorLogCard extends LitElement {
                 : nothing}
               ${(this.allowSwitch && this.provider === "core") || hasBoots
                 ? html`
-                    <ha-button-menu @action=${this._handleOverflowAction}>
-                      <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
-                      </ha-icon-button>
+                    <ha-dropdown @wa-select=${this._handleOverflowAction}>
+                      <ha-icon-button
+                        slot="trigger"
+                        .path=${mdiDotsVertical}
+                        .label=${localize("ui.common.menu")}
+                      ></ha-icon-button>
                       ${this.allowSwitch && this.provider === "core"
-                        ? html`<ha-list-item graphic="icon">
+                        ? html`<ha-dropdown-item value="switch-log-view">
                             <ha-svg-icon
-                              slot="graphic"
+                              slot="icon"
                               .path=${mdiFolderTextOutline}
                             ></ha-svg-icon>
                             ${this.hass.localize(
                               "ui.panel.config.logs.show_condensed_logs"
                             )}
-                          </ha-list-item>`
+                          </ha-dropdown-item>`
                         : nothing}
                       ${hasBoots
-                        ? html`<ha-list-item graphic="icon">
+                        ? html`<ha-dropdown-item value="toggle-boots">
                             <ha-svg-icon
-                              slot="graphic"
+                              slot="icon"
                               .path=${mdiFormatListNumbered}
                             ></ha-svg-icon>
                             ${localize(
                               `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
                             )}
-                          </ha-list-item>`
+                          </ha-dropdown-item>`
                         : nothing}
-                    </ha-button-menu>
+                    </ha-dropdown>
                   `
                 : nothing}
             </div>
@@ -719,17 +720,14 @@ class ErrorLogCard extends LitElement {
     this._loadLogs();
   }
 
-  private _handleOverflowAction(ev: CustomEvent<ActionDetail>) {
-    let index = ev.detail.index;
-    if (this.provider === "core") {
-      index--;
-    }
-    switch (index) {
-      case -1:
+  private _handleOverflowAction(ev: CustomEvent<{ item: { value: string } }>) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "switch-log-view":
         // @ts-ignore
         fireEvent(this, "switch-log-view");
         break;
-      case 0:
+      case "toggle-boots":
         this._showBootsSelect = !this._showBootsSelect;
         break;
     }
