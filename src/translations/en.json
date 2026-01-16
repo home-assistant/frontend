@@ -2139,7 +2139,8 @@
         "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
         "enable_shortcuts_hint_user_profile": "user profile",
         "keys": {
-          "del": "Del"
+          "del": "Del",
+          "ctrl": "[%key:ui::panel::config::automation::editor::ctrl%]"
         },
         "shortcuts": {
           "double_click": "Double-click",

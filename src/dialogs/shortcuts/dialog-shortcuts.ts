@@ -196,7 +196,7 @@ class DialogShortcuts extends LitElement {
               >${shortcutKey === CTRL_CMD
                 ? isMac
                   ? "⌘"
-                  : this.hass.localize("ui.panel.config.automation.editor.ctrl")
+                  : this.hass.localize("ui.dialogs.shortcuts.keys.ctrl")
                 : typeof shortcutKey === "string"
                   ? shortcutKey
                   : this.hass.localize(
