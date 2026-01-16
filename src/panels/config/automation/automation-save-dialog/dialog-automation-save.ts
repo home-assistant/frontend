@@ -23,6 +23,8 @@ import "../../category/ha-category-picker";
 
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
 import type { GenDataTaskResult } from "../../../../data/ai_task";
+import type { AutomationConfig } from "../../../../data/automation";
+import type { ScriptConfig } from "../../../../data/script";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -335,7 +337,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask(
+    generateMetadataSuggestionTask<AutomationConfig | ScriptConfig>(
       this.hass.connection,
       this.hass.states,
       this.hass.language,

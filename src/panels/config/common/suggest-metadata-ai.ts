@@ -18,25 +18,28 @@ export interface MetadataSuggestionResult {
   labels?: string[];
 }
 
-export interface MetadataSuggestionConfig {
-  /** The domain to suggest metadata for (automation, script) */
-  domain: "automation" | "script";
-  /** The configuration to suggest metadata for */
-  config: any;
+export type MetadataSuggestionDomain = "automation" | "script";
 
+export interface MetadataSuggestionInclude {
+  description?: boolean;
+  categories?: boolean;
+  labels?: boolean;
+}
+
+export interface MetadataSuggestionConfig<T> {
+  /** The domain to suggest metadata for (automation, script) */
+  domain: MetadataSuggestionDomain;
+  /** The configuration to suggest metadata for */
+  config: T;
   /** The metadata fields to include in the suggestion */
-  include: {
-    description?: boolean;
-    categories?: boolean;
-    labels?: boolean;
-  };
+  include: MetadataSuggestionInclude;
 }
 
 type Categories = Record<string, string>;
 type Entities = Record<string, EntityRegistryEntry>;
 type Labels = Record<string, string>;
 
-export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionConfig["include"] = {
+export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
   description: true,
   categories: true,
   labels: true,
@@ -47,7 +50,7 @@ const tryCatchEmptyObject = <T>(promise: Promise<T>): Promise<T> =>
 
 const fetchCategories = (
   connection: HomeAssistant["connection"],
-  domain: MetadataSuggestionConfig["domain"]
+  domain: MetadataSuggestionDomain
 ): Promise<Categories> =>
   tryCatchEmptyObject(
     fetchCategoryRegistry(connection, domain).then((cats) =>
@@ -74,7 +77,7 @@ const fetchLabels = (
   );
 
 function buildMetadataInspirations(
-  domain: MetadataSuggestionConfig["domain"],
+  domain: MetadataSuggestionDomain,
   states: HomeAssistant["states"],
   entities: Entities,
   categories?: Categories,
@@ -120,11 +123,11 @@ function buildMetadataInspirations(
   return inspirations;
 }
 
-export async function generateMetadataSuggestionTask(
+export async function generateMetadataSuggestionTask<T>(
   connection: HomeAssistant["connection"],
   states: HomeAssistant["states"],
   language: HomeAssistant["language"],
-  suggestionConfig: MetadataSuggestionConfig
+  suggestionConfig: MetadataSuggestionConfig<T>
 ): Promise<SuggestWithAIGenerateTask> {
   const { domain, config, include } = suggestionConfig;
 
@@ -237,9 +240,9 @@ ${dump(config)}
 
 export async function processMetadataSuggestion(
   connection: HomeAssistant["connection"],
-  domain: MetadataSuggestionConfig["domain"],
+  domain: MetadataSuggestionDomain,
   result: GenDataTaskResult<MetadataSuggestionResult>,
-  include: MetadataSuggestionConfig["include"]
+  include: MetadataSuggestionInclude
 ): Promise<MetadataSuggestionResult> {
   const [categories, labels] = await Promise.all([
     include.categories
