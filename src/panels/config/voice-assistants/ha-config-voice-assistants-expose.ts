@@ -202,13 +202,6 @@ export class VoiceAssistantsExpose extends LitElement {
         filterable: true,
         groupable: true,
       },
-      area: {
-        title: localize("ui.panel.config.voice_assistants.expose.headers.area"),
-        sortable: true,
-        groupable: true,
-        filterable: true,
-        template: (entry) => entry.area || "—",
-      },
       assistants: getAssistantsTableColumn(
         localize,
         this.hass,
