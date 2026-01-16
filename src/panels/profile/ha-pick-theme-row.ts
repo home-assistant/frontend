@@ -31,7 +31,7 @@ const HOME_ASSISTANT_THEME = "default";
 export class HaPickThemeRow extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
   @state() _themeNames: string[] = [];
 
