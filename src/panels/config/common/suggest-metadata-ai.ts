@@ -36,6 +36,12 @@ type Categories = Record<string, string>;
 type Entities = Record<string, EntityRegistryEntry>;
 type Labels = Record<string, string>;
 
+export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionConfig["include"] = {
+  description: true,
+  categories: true,
+  labels: true,
+} as const;
+
 const tryCatchEmptyObject = <T>(promise: Promise<T>): Promise<T> =>
   promise.catch(() => ({}) as T);
 

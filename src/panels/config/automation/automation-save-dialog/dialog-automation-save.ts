@@ -31,17 +31,11 @@ import type {
   SaveDialogParams,
 } from "./show-dialog-automation-save";
 import {
-  type MetadataSuggestionConfig,
   type MetadataSuggestionResult,
+  SUGGESTION_INCLUDE_ALL,
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
-
-const SUGGESTION_INCLUDE: MetadataSuggestionConfig["include"] = {
-  description: true,
-  categories: true,
-  labels: true,
-} as const;
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -348,7 +342,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       {
         domain: this._params.domain,
         config: this._params.config,
-        include: SUGGESTION_INCLUDE,
+        include: SUGGESTION_INCLUDE_ALL,
       }
     );
 
@@ -360,7 +354,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       this.hass.connection,
       this._params.domain,
       result,
-      SUGGESTION_INCLUDE
+      SUGGESTION_INCLUDE_ALL
     );
 
     this._newName = processed.name;
