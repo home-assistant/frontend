@@ -2267,7 +2267,20 @@
           "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
           "save_failed": "Failed to save home page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
-          "areas_page": "areas page"
+          "areas_page": "areas page",
+          "reorder_areas": {
+            "title": "Reorder areas",
+            "title_with_floors": "Reorder floors and areas",
+            "description": "Customize the order of areas on your home dashboard. This order only affects the home dashboard.",
+            "button": "Reorder areas",
+            "reset": "Reset to default",
+            "empty_floor": "No areas on this floor",
+            "empty_unassigned": "No unassigned areas",
+            "other_areas": "Other areas",
+            "save_success": "Area order saved successfully",
+            "save_error": "Failed to save area order",
+            "reset_success": "Area order reset to default"
+          }
         }
       },
       "my": {
