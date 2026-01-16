@@ -72,7 +72,7 @@ export const DEFAULT_ROW_RENDERER_CONTENT = (item: PickerComboBoxItem) =>
 
 const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (item) =>
   html`<ha-combo-box-item type="button" compact>
-    ${DEFAULT_ROW_RENDERER_INTERNS(item)}
+    ${DEFAULT_ROW_RENDERER_CONTENT(item)}
   </ha-combo-box-item>`;
 
 export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
