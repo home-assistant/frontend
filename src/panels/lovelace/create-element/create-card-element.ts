@@ -73,6 +73,7 @@ const LAZY_LOAD_TYPES = {
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   error: () => import("../cards/hui-error-card"),
   "home-summary": () => import("../cards/hui-home-summary-card"),
+  "discovered-devices": () => import("../cards/hui-discovered-devices-card"),
   gauge: () => import("../cards/hui-gauge-card"),
   "history-graph": () => import("../cards/hui-history-graph-card"),
   "horizontal-stack": () => import("../cards/hui-horizontal-stack-card"),

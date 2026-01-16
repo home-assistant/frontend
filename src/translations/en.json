@@ -214,6 +214,11 @@
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
       },
+      "discovered-devices": {
+        "title": "Devices discovered",
+        "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
+        "no_devices": "No devices to add"
+      },
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
