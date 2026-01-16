@@ -1,6 +1,9 @@
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import type { ActionHandlerOptions } from "../../data/lovelace/action_handler";
+import { actionHandler } from "../../panels/lovelace/common/directives/action-handler-directive";
 import "../ha-icon";
 import "../ha-svg-icon";
 
@@ -17,21 +20,28 @@ import "../ha-svg-icon";
  *
  * @cssprop --ha-tile-icon-border-radius - The border radius of the tile icon. defaults to `var(--ha-border-radius-pill)`.
  *
- * @attr {boolean} interactive - Whether the icon is interactive (hover and focus styles).
  * @attr {string} image-url - The URL of the image to display instead of an icon.
  */
 @customElement("ha-tile-icon")
 export class HaTileIcon extends LitElement {
-  @property({ type: Boolean, reflect: true })
+  @property({ type: Boolean, reflect: true, attribute: "interactive" })
   public interactive = false;
 
   @property({ attribute: "image-url", type: String })
   public imageUrl?: string;
 
+  @property({ attribute: false })
+  public actionHandlerOptions?: ActionHandlerOptions;
+
   protected render(): TemplateResult {
     if (this.imageUrl) {
       return html`
-        <div class="container">
+        <div
+          class="container"
+          role=${ifDefined(this.interactive ? "button" : undefined)}
+          tabindex=${ifDefined(this.interactive ? "0" : undefined)}
+          .actionHandler=${actionHandler(this.actionHandlerOptions)}
+        >
           <img alt="" src=${this.imageUrl} />
         </div>
         <slot></slot>
@@ -39,7 +49,12 @@ export class HaTileIcon extends LitElement {
     }
 
     return html`
-      <div class="container ${this.interactive ? "background" : ""}">
+      <div
+        class="container ${this.interactive ? "background" : ""}"
+        role=${ifDefined(this.interactive ? "button" : undefined)}
+        tabindex=${ifDefined(this.interactive ? "0" : undefined)}
+        .actionHandler=${actionHandler(this.actionHandlerOptions)}
+      >
         <slot name="icon"></slot>
       </div>
       <slot></slot>
@@ -78,8 +93,15 @@ export class HaTileIcon extends LitElement {
       overflow: hidden;
       transition: box-shadow 180ms ease-in-out;
     }
-    :host([interactive]:focus-visible) .container {
+    .container:focus-visible {
       box-shadow: 0 0 0 2px var(--tile-icon-color);
+    }
+    .container:focus {
+      outline: none;
+    }
+    [role="button"] {
+      cursor: pointer;
+      pointer-events: auto;
     }
     .container.background::before {
       content: "";

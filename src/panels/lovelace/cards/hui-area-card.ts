@@ -9,8 +9,6 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -30,16 +28,15 @@ import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon";
-import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
+import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -548,8 +545,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const contentClasses = { vertical: Boolean(this._config.vertical) };
-
     const icon = area.icon;
 
     const name = this._config.name || computeAreaName(area);
@@ -559,9 +554,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const featurePosition = this._featurePosition(this._config);
     const features = this._displayedFeatures(this._config);
-
-    const containerOrientationClass =
-      featurePosition === "inline" ? "horizontal" : "";
 
     const displayType = this._config.display_type || "picture";
 
@@ -582,16 +574,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card style=${styleMap(style)}>
-        <div
-          class="background"
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler()}
-          role=${ifDefined(this._hasCardAction ? "button" : undefined)}
-          tabindex=${ifDefined(this._hasCardAction ? "0" : undefined)}
-          aria-labelledby="info"
-        >
-          <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
-        </div>
         ${displayType === "compact"
           ? nothing
           : html`
@@ -628,30 +610,31 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                 ${this._renderAlertSensors()}
               </div>
             `}
-        <div class="container ${containerOrientationClass}">
-          <div class="content ${classMap(contentClasses)}">
-            <ha-tile-icon>
-              ${displayType === "compact"
-                ? this._renderAlertSensorBadge()
-                : nothing}
-              ${icon
-                ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
-                : html`
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${mdiTextureBox}
-                    ></ha-svg-icon>
-                  `}
-            </ha-tile-icon>
-            <ha-tile-info
-              id="info"
-              .primary=${primary}
-              .secondary=${secondary}
-            ></ha-tile-info>
-          </div>
+        <ha-tile-container
+          .featurePosition=${featurePosition}
+          .vertical=${Boolean(this._config.vertical)}
+          .interactive=${Boolean(this._hasCardAction)}
+          @action=${this._handleAction}
+        >
+          <ha-tile-icon slot="icon">
+            ${displayType === "compact"
+              ? this._renderAlertSensorBadge()
+              : nothing}
+            ${icon
+              ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
+              : html`
+                  <ha-svg-icon slot="icon" .path=${mdiTextureBox}></ha-svg-icon>
+                `}
+          </ha-tile-icon>
+          <ha-tile-info
+            slot="info"
+            .primary=${primary}
+            .secondary=${secondary}
+          ></ha-tile-info>
           ${features.length > 0
             ? html`
                 <hui-card-features
+                  slot="features"
                   .hass=${this.hass}
                   .context=${this._featureContext}
                   .color=${this._config.color}
@@ -660,7 +643,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                 ></hui-card-features>
               `
             : nothing}
-        </div>
+        </ha-tile-container>
       </ha-card>
     `;
   }
@@ -670,7 +653,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       --tile-color: var(--state-icon-color);
       -webkit-tap-highlight-color: transparent;
     }
-    ha-card:has(.background:focus-visible) {
+    ha-card:has(ha-tile-container[focused]) {
       --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
       --shadow-focus: 0 0 0 1px var(--tile-color);
       border-color: var(--tile-color);
@@ -687,23 +670,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-    }
-    [role="button"] {
-      cursor: pointer;
-      pointer-events: auto;
-    }
-    [role="button"]:focus {
-      outline: none;
-    }
-    .background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      margin: calc(-1 * var(--ha-card-border-width, 1px));
-      overflow: hidden;
     }
     .header {
       flex: 1;
@@ -740,48 +706,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       background-color: var(--tile-color);
       opacity: 0.12;
     }
-    .container {
-      margin: calc(-1 * var(--ha-card-border-width, 1px));
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-    .header + .container {
+    .header + ha-tile-container {
       height: auto;
       flex: none;
     }
-    .container.horizontal {
-      flex-direction: row;
-    }
-
-    .content {
-      position: relative;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      padding: 10px;
-      flex: 1;
-      min-width: 0;
-      box-sizing: border-box;
-      pointer-events: none;
-      gap: 10px;
-    }
-
-    .vertical {
-      flex-direction: column;
-      text-align: center;
-      justify-content: center;
-    }
-    .vertical ha-tile-info {
-      width: 100%;
-      flex: none;
-    }
-
     ha-tile-icon {
       --tile-icon-color: var(--tile-color);
-      position: relative;
-      padding: 6px;
-      margin: -6px;
     }
     ha-tile-badge {
       position: absolute;
@@ -790,22 +720,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       inset-inline-end: 3px;
       inset-inline-start: initial;
     }
-    ha-tile-info {
-      position: relative;
-      min-width: 0;
-      transition: background-color 180ms ease-in-out;
-      box-sizing: border-box;
-    }
     hui-card-features {
       --feature-color: var(--tile-color);
-      padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
-    }
-    .container.horizontal hui-card-features {
-      width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
-      flex: none;
-      --feature-height: var(--ha-space-9);
-      padding: 0 var(--ha-space-3);
-      padding-inline-start: 0;
     }
     .alert-badge {
       --tile-badge-background-color: var(--orange-color);
