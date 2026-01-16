@@ -28,6 +28,10 @@ export const labelComboBoxKeys: FuseWeightedKey[] = [
   },
 ];
 
+export interface ColorComboBoxItem extends PickerComboBoxItem {
+  color: string | undefined;
+}
+
 export const getLabels = (
   hassStates: HomeAssistant["states"],
   hassAreas: HomeAssistant["areas"],
@@ -41,7 +45,7 @@ export const getLabels = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeLabels?: string[],
   idPrefix = ""
-): PickerComboBoxItem[] => {
+): ColorComboBoxItem[] => {
   if (!labels || labels.length === 0) {
     return [];
   }
@@ -194,7 +198,7 @@ export const getLabels = (
     );
   }
 
-  const items = outputLabels.map<PickerComboBoxItem>((label) => ({
+  const items = outputLabels.map<ColorComboBoxItem>((label) => ({
     id: `${idPrefix}${label.label_id}`,
     primary: label.name,
     secondary: label.description ?? "",
