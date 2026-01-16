@@ -116,6 +116,7 @@ class PanelHome extends LitElement {
       strategy: {
         type: "home",
         favorite_entities: this._config.favorite_entities,
+        areas_order: this._config.areas_order,
       },
     };
 

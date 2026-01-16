@@ -9,6 +9,7 @@ import {
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
+import type { AreasFloorOrder } from "../../../../data/frontend";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
@@ -27,11 +28,13 @@ import type {
 import type { Condition } from "../../common/validate-condition";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import { applyAreasOrder, applyFloorOrder } from "./helpers/home-order-helper";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
+  areas_order?: AreasFloorOrder;
 }
 
 const computeAreaCard = (
@@ -69,7 +72,12 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const areas = Object.values(hass.areas);
     const floors = Object.values(hass.floors);
 
-    const home = getAreasFloorHierarchy(floors, areas);
+    // Apply custom floor ordering if configured
+    const orderedFloors = applyFloorOrder(floors, config.areas_order?.floors);
+
+    // Build hierarchy with ordered floors, then apply area ordering
+    let home = getAreasFloorHierarchy(orderedFloors, areas);
+    home = applyAreasOrder(home, config.areas_order);
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 

@@ -1,6 +1,7 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import type { AreasFloorOrder } from "../../../../data/frontend";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -15,6 +16,7 @@ import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strate
 export interface HomeDashboardStrategyConfig {
   type: "home";
   favorite_entities?: string[];
+  areas_order?: AreasFloorOrder;
 }
 
 @customElement("home-dashboard-strategy")
@@ -89,6 +91,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
           strategy: {
             type: "home-overview",
             favorite_entities: config.favorite_entities,
+            areas_order: config.areas_order,
           } satisfies HomeOverviewViewStrategyConfig,
         },
         ...areaViews,
