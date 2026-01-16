@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import type { AITaskStructure, GenDataTaskResult } from "../../../data/ai_task";
 import { fetchCategoryRegistry } from "../../../data/category_registry";
@@ -10,10 +10,6 @@ import {
 import { subscribeLabelRegistry } from "../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../types";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
-
-// TODO: TEST
-// TODO: Self review
-// TODO: AI review
 
 export interface MetadataSuggestionResult {
   name: string;
@@ -84,11 +80,15 @@ function buildMetadataInspirations(
     return inspirations;
   }
 
-  for (const entity of Object.values(states)) {
-    const entityEntry = entities[entity.entity_id];
+  for (const entityId of Object.keys(entities)) {
+    const entityEntry = entities[entityId];
+    if (!entityEntry || computeDomain(entityId) !== domain) {
+      continue;
+    }
+
+    const entity = states[entityId];
     if (
-      !entityEntry ||
-      computeStateDomain(entity) !== domain ||
+      !entity ||
       entity.attributes.restored ||
       !entity.attributes.friendly_name
     ) {
