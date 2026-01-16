@@ -8,7 +8,7 @@ export const computeRouteTail = (route: Route) => {
         path: "",
       }
     : {
-        prefix: route.prefix + route.path.substr(0, dividerPos),
-        path: route.path.substr(dividerPos),
+        prefix: route.prefix + route.path. substring(0, dividerPos),
+        path: route.path. substring(dividerPos),
       };
 };
