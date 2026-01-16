@@ -132,7 +132,6 @@ export interface ThemeSettings {
   dark?: boolean;
   primaryColor?: string;
   accentColor?: string;
-  animationDuration?: number;
 }
 
 export interface PanelInfo<T = Record<string, any> | null> {
