@@ -182,6 +182,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   // including entities without unique id
   @state() private _exposedEntities?: Record<string, ExposeEntitySettings>;
 
+  private _hassLoaded = false;
+
   @state()
   @storage({
     storage: "sessionStorage",
@@ -1221,7 +1223,7 @@ ${
     );
   }
 
-  private _getExposedEntityVoiceAssistantAsOptions(entityId: string) {
+  private _getExposedEntityVoiceAssistantAsOptions(entityId: string): Options {
     return Object.assign(
       {},
       ...Object.keys(voiceAssistants).map((vaId) => ({
@@ -1243,6 +1245,11 @@ ${
       return;
     }
 
+    if (changedProps.has("hass") && !this._hassLoaded && this.hass) {
+      this._hassLoaded = true;
+      this._fetchExposedEntities();
+    }
+
     if (
       (changedProps.has("hass") &&
         (!oldHass || oldHass.states !== this.hass.states)) ||
@@ -1257,7 +1264,7 @@ ${
       const regEntityIds = new Set(
         this._entities.map((entity) => entity.entity_id)
       );
-      this._fetchExposedEntities();
+
       for (const entityId of Object.keys(this.hass.states)) {
         if (regEntityIds.has(entityId)) {
           continue;
