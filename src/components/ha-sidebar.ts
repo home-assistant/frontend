@@ -261,7 +261,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       ${this._renderHeader()}
       ${this._renderAllPanels(selectedPanel)}
       ${this._renderDivider()}
-      <ha-md-list>
+      <ha-md-list role="navigation" aria-label="User navigation">
         ${this._renderNotifications()}
         ${this._renderUserItem(selectedPanel)}
       </ha-md-list>
@@ -404,6 +404,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-md-list
+        role="navigation"
+        aria-label="Main navigation"
         class="ha-scrollbar"
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}

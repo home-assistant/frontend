@@ -1,5 +1,6 @@
 import { List } from "@material/web/list/internal/list";
 import { styles } from "@material/web/list/internal/list-styles";
+import type { PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
@@ -13,6 +14,16 @@ export class HaMdList extends List {
       }
     `,
   ];
+
+  protected override willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    // Override the default "list" role if a custom role attribute is provided
+    const roleAttr = this.getAttribute("role");
+    if (roleAttr) {
+      (this as any).internals.role = roleAttr;
+    }
+  }
 }
 
 declare global {

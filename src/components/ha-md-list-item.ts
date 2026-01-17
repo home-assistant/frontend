@@ -1,6 +1,6 @@
 import { ListItemEl } from "@material/web/list/internal/listitem/list-item";
 import { styles } from "@material/web/list/internal/listitem/list-item-styles";
-import { css, html, nothing, type TemplateResult } from "lit";
+import { css, html, nothing, type PropertyValues, type TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "./ha-ripple";
 
@@ -26,6 +26,26 @@ export const haMdListStyles = [
 @customElement("ha-md-list-item")
 export class HaMdListItem extends ListItemEl {
   static override styles = haMdListStyles;
+
+  protected override updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    // Fix accessibility: Remove list semantics for interactive elements
+    // so that native link/button roles are properly announced by screen readers
+    if (changedProps.has("type") || changedProps.has("href")) {
+      const itemElement = this.renderRoot.querySelector("#item");
+      if (itemElement) {
+        if (this.type === "link" || this.type === "button") {
+          // Use "none" role to remove list semantics and let the native
+          // <a> or <button> element provide proper accessibility
+          itemElement.setAttribute("role", "none");
+        } else {
+          // Keep listitem role for non-interactive text items
+          itemElement.setAttribute("role", "listitem");
+        }
+      }
+    }
+  }
 
   protected renderRipple(): TemplateResult | typeof nothing {
     if (this.type === "text") {
