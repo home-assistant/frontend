@@ -57,11 +57,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
       );
 
       // Only use cleaned order if it's not empty
-      if (
-        cleanedOrder.floors?.length ||
-        cleanedOrder.areas ||
-        cleanedOrder.unassigned?.length
-      ) {
+      if (cleanedOrder.floors?.length || cleanedOrder.areas) {
         config = { ...config, areas_order: cleanedOrder };
       } else {
         // All references were stale, remove the order config

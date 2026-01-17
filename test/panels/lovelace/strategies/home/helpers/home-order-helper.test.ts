@@ -138,21 +138,6 @@ describe("applyAreasOrder", () => {
     assert.deepEqual(result, hierarchy);
   });
 
-  it("should sort unassigned areas according to custom order", () => {
-    const hierarchy: AreasFloorHierarchy = {
-      floors: [],
-      areas: ["area_1", "area_2", "area_3"],
-    };
-
-    const customOrder: AreasFloorOrder = {
-      unassigned: ["area_3", "area_1", "area_2"],
-    };
-
-    const result = applyAreasOrder(hierarchy, customOrder);
-
-    assert.deepEqual(result.areas, ["area_3", "area_1", "area_2"]);
-  });
-
   it("should sort areas within floors according to custom order", () => {
     const hierarchy: AreasFloorHierarchy = {
       floors: [
@@ -246,7 +231,6 @@ describe("applyAreasOrder", () => {
       areas: {
         floor_1: ["area_2", "area_1"],
       },
-      unassigned: ["area_3"],
     };
 
     applyAreasOrder(hierarchy, customOrder);
@@ -274,14 +258,14 @@ describe("applyAreasOrder", () => {
         floor_1: ["area_3", "area_1", "area_2"],
         floor_2: ["area_5", "area_4"],
       },
-      unassigned: ["area_8", "area_6", "area_7"],
     };
 
     const result = applyAreasOrder(hierarchy, customOrder);
 
     assert.deepEqual(result.floors[0].areas, ["area_3", "area_1", "area_2"]);
     assert.deepEqual(result.floors[1].areas, ["area_5", "area_4"]);
-    assert.deepEqual(result.areas, ["area_8", "area_6", "area_7"]);
+    // Unassigned areas remain in original order (not sorted)
+    assert.deepEqual(result.areas, ["area_6", "area_7", "area_8"]);
   });
 
   it("should place areas not in custom order at the end", () => {
@@ -331,7 +315,6 @@ describe("buildAreasOrderFromHierarchy", () => {
       areas: {
         floor_1: ["area_1", "area_2"],
       },
-      unassigned: ["area_3"],
     });
   });
 
@@ -362,7 +345,6 @@ describe("buildAreasOrderFromHierarchy", () => {
       floor_2: ["area_4", "area_5"],
       floor_3: ["area_6"],
     });
-    assert.deepEqual(result.unassigned, ["area_7", "area_8"]);
   });
 
   it("should handle hierarchy with no floors", () => {
@@ -375,7 +357,6 @@ describe("buildAreasOrderFromHierarchy", () => {
 
     assert.deepEqual(result.floors, []);
     assert.deepEqual(result.areas, {});
-    assert.deepEqual(result.unassigned, ["area_1", "area_2"]);
   });
 
   it("should handle hierarchy with no unassigned areas", () => {
@@ -395,7 +376,6 @@ describe("buildAreasOrderFromHierarchy", () => {
     assert.deepEqual(result.areas, {
       floor_1: ["area_1", "area_2"],
     });
-    assert.deepEqual(result.unassigned, []);
   });
 
   it("should handle floor with empty areas array", () => {
@@ -415,7 +395,6 @@ describe("buildAreasOrderFromHierarchy", () => {
     assert.deepEqual(result.areas, {
       floor_1: [],
     });
-    assert.deepEqual(result.unassigned, []);
   });
 });
 
@@ -455,22 +434,6 @@ describe("cleanStaleAreasOrder", () => {
     assert.deepEqual(result.areas, {
       floor_1: ["area_1", "area_3"],
     });
-  });
-
-  it("should remove stale area IDs from unassigned areas", () => {
-    const areasOrder: AreasFloorOrder = {
-      unassigned: ["area_1", "area_2", "area_3", "area_4"],
-    };
-
-    const areas = [
-      createArea("area_1", "Area 1"),
-      createArea("area_3", "Area 3"),
-    ];
-    const floors: FloorRegistryEntry[] = [];
-
-    const result = cleanStaleAreasOrder(areasOrder, areas, floors);
-
-    assert.deepEqual(result.unassigned, ["area_1", "area_3"]);
   });
 
   it("should remove floor sections for deleted floors", () => {
@@ -529,7 +492,6 @@ describe("cleanStaleAreasOrder", () => {
       areas: {
         floor_deleted: ["area_deleted"],
       },
-      unassigned: ["area_deleted"],
     };
 
     const areas: AreaRegistryEntry[] = [];
@@ -539,7 +501,6 @@ describe("cleanStaleAreasOrder", () => {
 
     assert.deepEqual(result.floors, []);
     assert.strictEqual(result.areas, undefined);
-    assert.deepEqual(result.unassigned, []);
   });
 
   it("should handle configuration with no stale data", () => {
@@ -549,7 +510,6 @@ describe("cleanStaleAreasOrder", () => {
         floor_1: ["area_1", "area_2"],
         floor_2: ["area_3"],
       },
-      unassigned: ["area_4"],
     };
 
     const areas = [
@@ -579,7 +539,6 @@ describe("cleanStaleAreasOrder", () => {
     assert.deepEqual(result, {
       floors: undefined,
       areas: undefined,
-      unassigned: undefined,
     });
   });
 
@@ -590,7 +549,6 @@ describe("cleanStaleAreasOrder", () => {
         floor_1: ["area_1", "area_deleted", "area_2"],
         floor_deleted: ["area_3"],
       },
-      unassigned: ["area_4", "area_deleted2", "area_5"],
     };
 
     const areas = [
@@ -610,6 +568,5 @@ describe("cleanStaleAreasOrder", () => {
     assert.deepEqual(result.areas, {
       floor_1: ["area_1", "area_2"],
     });
-    assert.deepEqual(result.unassigned, ["area_4", "area_5"]);
   });
 });

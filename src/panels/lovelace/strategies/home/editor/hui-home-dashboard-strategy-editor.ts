@@ -26,8 +26,6 @@ import type { HomeAssistant } from "../../../../../types";
 import type { LovelaceStrategyEditor } from "../../types";
 import type { HomeDashboardStrategyConfig } from "../home-dashboard-strategy";
 
-const UNASSIGNED_FLOOR = "__unassigned__";
-
 @customElement("hui-home-dashboard-strategy-editor")
 export class HuiHomeDashboardStrategyEditor
   extends LitElement
@@ -138,9 +136,6 @@ export class HuiHomeDashboardStrategyEditor
             )}
           </div>
         </ha-sortable>
-        ${this._hierarchy.areas.length > 0
-          ? this._renderUnassignedAreas()
-          : nothing}
       </div>
       <div class="reset-container">
         <ha-button size="small" appearance="filled" @click=${this._resetOrder}>
@@ -191,51 +186,6 @@ export class HuiHomeDashboardStrategyEditor
               : html`<p class="empty">
                   ${this.hass!.localize(
                     "ui.panel.home.editor.reorder_areas.empty_floor"
-                  )}
-                </p>`}
-          </ha-md-list>
-        </ha-sortable>
-      </ha-expansion-panel>
-    `;
-  }
-
-  private _renderUnassignedAreas() {
-    if (!this._hierarchy || !this.hass) {
-      return nothing;
-    }
-
-    const hasFloors = this._hierarchy.floors.length > 0;
-    const isExpanded = hasFloors
-      ? this._expandedFloors.has(UNASSIGNED_FLOOR)
-      : true;
-
-    return html`
-      <ha-expansion-panel
-        outlined
-        .header=${this.hass.localize(
-          "ui.panel.home.editor.reorder_areas.other_areas"
-        )}
-        .expanded=${isExpanded}
-        .leftChevron=${hasFloors}
-        .noCollapse=${!hasFloors}
-        @expanded-changed=${this._handleFloorExpansionChanged}
-        .floorId=${UNASSIGNED_FLOOR}
-        class="unassigned"
-      >
-        <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
-
-        <ha-sortable
-          handle-selector=".area-handle"
-          draggable-selector="ha-md-list-item"
-          @item-moved=${this._areaMoved}
-          .floor=${UNASSIGNED_FLOOR}
-        >
-          <ha-md-list>
-            ${this._hierarchy.areas.length > 0
-              ? this._hierarchy.areas.map((areaId) => this._renderArea(areaId))
-              : html`<p class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.home.editor.reorder_areas.empty_unassigned"
                   )}
                 </p>`}
           </ha-md-list>
@@ -312,33 +262,20 @@ export class HuiHomeDashboardStrategyEditor
 
     const { floor } = ev.currentTarget as HTMLElement & { floor: string };
     const { oldIndex, newIndex } = ev.detail;
-    const floorId = floor === UNASSIGNED_FLOOR ? null : floor;
 
-    if (floorId === null) {
-      // Reorder unassigned areas
-      const newAreas = [...this._hierarchy.areas];
-      const [movedArea] = newAreas.splice(oldIndex, 1);
-      newAreas.splice(newIndex, 0, movedArea);
-
-      this._hierarchy = {
-        ...this._hierarchy,
-        areas: newAreas,
-      };
-    } else {
-      // Reorder areas within a floor
-      this._hierarchy = {
-        ...this._hierarchy,
-        floors: this._hierarchy.floors.map((f) => {
-          if (f.id === floorId) {
-            const newAreas = [...f.areas];
-            const [movedArea] = newAreas.splice(oldIndex, 1);
-            newAreas.splice(newIndex, 0, movedArea);
-            return { ...f, areas: newAreas };
-          }
-          return f;
-        }),
-      };
-    }
+    // Reorder areas within a floor
+    this._hierarchy = {
+      ...this._hierarchy,
+      floors: this._hierarchy.floors.map((f) => {
+        if (f.id === floor) {
+          const newAreas = [...f.areas];
+          const [movedArea] = newAreas.splice(oldIndex, 1);
+          newAreas.splice(newIndex, 0, movedArea);
+          return { ...f, areas: newAreas };
+        }
+        return f;
+      }),
+    };
 
     this._fireConfigChanged();
   }

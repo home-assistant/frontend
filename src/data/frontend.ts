@@ -25,8 +25,6 @@ export interface AreasFloorOrder {
   floors?: string[];
   /** Map of floor ID to ordered array of area IDs for that floor */
   areas?: Record<string, string[]>;
-  /** Ordered array of area IDs for areas without floor assignment */
-  unassigned?: string[];
 }
 
 export interface HomeFrontendSystemData {

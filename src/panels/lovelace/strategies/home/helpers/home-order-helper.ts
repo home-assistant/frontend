@@ -28,9 +28,7 @@ export const applyFloorOrder = (
 /**
  * Applies custom area ordering to a floor-area hierarchy.
  * If no custom order is provided, returns the hierarchy unchanged.
- * This function sorts:
- * - Areas within each floor according to the areas map
- * - Unassigned areas according to the unassigned array
+ * This function sorts areas within each floor according to the areas map.
  *
  * @param hierarchy - Floor-area hierarchy to apply ordering to
  * @param areasOrder - Optional custom ordering configuration
@@ -43,11 +41,6 @@ export const applyAreasOrder = (
   if (!areasOrder) {
     return hierarchy;
   }
-
-  // Sort unassigned areas if custom order is provided
-  const unassignedAreas = areasOrder.unassigned
-    ? sortByOrder(hierarchy.areas, areasOrder.unassigned)
-    : hierarchy.areas;
 
   // Sort areas within each floor if custom order is provided
   const floors = hierarchy.floors.map((floorData) => {
@@ -66,7 +59,7 @@ export const applyAreasOrder = (
 
   return {
     floors,
-    areas: unassignedAreas,
+    areas: hierarchy.areas,
   };
 };
 
@@ -96,7 +89,6 @@ export const buildAreasOrderFromHierarchy = (
 ): AreasFloorOrder => ({
   floors: hierarchy.floors.map((f) => f.id),
   areas: Object.fromEntries(hierarchy.floors.map((f) => [f.id, f.areas])),
-  unassigned: hierarchy.areas,
 });
 
 /**
@@ -134,14 +126,8 @@ export const cleanStaleAreasOrder = (
     }
   }
 
-  // Filter unassigned areas to only include existing areas
-  const cleanedUnassigned = areasOrder.unassigned?.filter((areaId) =>
-    validAreaIds.has(areaId)
-  );
-
   return {
     floors: cleanedFloors,
     areas: Object.keys(cleanedAreas).length > 0 ? cleanedAreas : undefined,
-    unassigned: cleanedUnassigned,
   };
 };

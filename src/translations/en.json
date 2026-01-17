@@ -2269,9 +2269,7 @@
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page",
           "reorder_areas": {
-            "empty_floor": "No areas on this floor",
-            "empty_unassigned": "No unassigned areas",
-            "other_areas": "Other areas"
+            "empty_floor": "No areas on this floor"
           }
         }
       },
