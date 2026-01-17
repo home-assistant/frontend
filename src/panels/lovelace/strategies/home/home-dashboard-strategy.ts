@@ -10,6 +10,7 @@ import {
   getSummaryLabel,
   HOME_SUMMARIES_ICONS,
 } from "./helpers/home-summaries";
+import { cleanStaleAreasOrder } from "./helpers/home-order-helper";
 import type { HomeAreaViewStrategyConfig } from "./home-area-view-strategy";
 import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strategy";
 
@@ -45,6 +46,27 @@ export class HomeDashboardStrategy extends ReactiveElement {
           },
         ],
       };
+    }
+
+    // Clean stale area/floor references from custom order config
+    if (config.areas_order) {
+      const cleanedOrder = cleanStaleAreasOrder(
+        config.areas_order,
+        Object.values(hass.areas),
+        Object.values(hass.floors)
+      );
+
+      // Only use cleaned order if it's not empty
+      if (
+        cleanedOrder.floors?.length ||
+        cleanedOrder.areas ||
+        cleanedOrder.unassigned?.length
+      ) {
+        config = { ...config, areas_order: cleanedOrder };
+      } else {
+        // All references were stale, remove the order config
+        config = { ...config, areas_order: undefined };
+      }
     }
 
     const areas = Object.values(hass.areas);
