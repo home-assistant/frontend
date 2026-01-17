@@ -83,6 +83,7 @@ import type {
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
+  EntityRegistryOptions,
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -1223,13 +1224,18 @@ ${
     );
   }
 
-  private _getExposedEntityVoiceAssistantAsOptions(entityId: string): Options {
-    return Object.assign(
-      {},
-      ...Object.keys(voiceAssistants).map((vaId) => ({
-        [vaId]: { should_expose: this._exposedEntities?.[entityId]?.[vaId] },
-      }))
-    );
+  private _getExposedEntitySettingsAsOptions(
+    entityId: string
+  ): EntityRegistryOptions {
+    const exposeSettings: ExposeEntitySettings | undefined =
+      this._exposedEntities?.[entityId];
+    const options: EntityRegistryOptions = {};
+    Object.keys(voiceAssistants).forEach((vaId) => {
+      options[vaId] = {
+        should_expose: exposeSettings?.[vaId],
+      };
+    });
+    return options;
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -1291,7 +1297,7 @@ ${
           selectable: false,
           entity_category: null,
           has_entity_name: false,
-          options: this._getExposedEntityVoiceAssistantAsOptions(entityId),
+          options: this._getExposedEntitySettingsAsOptions(entityId),
           labels: [],
           categories: {},
           created_at: 0,
