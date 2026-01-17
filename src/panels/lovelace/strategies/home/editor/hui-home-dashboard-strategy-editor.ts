@@ -17,7 +17,6 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-sortable";
 import "../../../../../components/ha-svg-icon";
-import type { AreaRegistryEntry } from "../../../../../data/area/area_registry";
 import {
   applyAreasOrder,
   applyFloorOrder,
@@ -184,8 +183,6 @@ export class HuiHomeDashboardStrategyEditor
           handle-selector=".area-handle"
           draggable-selector="ha-md-list-item"
           @item-moved=${this._areaMoved}
-          @item-added=${this._areaAdded}
-          group="areas"
           .floor=${floor.id}
         >
           <ha-md-list>
@@ -231,8 +228,6 @@ export class HuiHomeDashboardStrategyEditor
           handle-selector=".area-handle"
           draggable-selector="ha-md-list-item"
           @item-moved=${this._areaMoved}
-          @item-added=${this._areaAdded}
-          group="areas"
           .floor=${UNASSIGNED_FLOOR}
         >
           <ha-md-list>
@@ -344,47 +339,6 @@ export class HuiHomeDashboardStrategyEditor
         }),
       };
     }
-
-    this._fireConfigChanged();
-  }
-
-  private _areaAdded(ev: CustomEvent): void {
-    ev.stopPropagation();
-    if (!this._hierarchy) {
-      return;
-    }
-
-    const { floor } = ev.currentTarget as HTMLElement & { floor: string };
-    const { data: area, index } = ev.detail as {
-      data: AreaRegistryEntry;
-      index: number;
-    };
-
-    const newFloorId = floor === UNASSIGNED_FLOOR ? null : floor;
-
-    // Update hierarchy for display purposes only
-    const newUnassignedAreas = this._hierarchy.areas.filter(
-      (id) => id !== area.area_id
-    );
-    if (newFloorId === null) {
-      newUnassignedAreas.splice(index, 0, area.area_id);
-    }
-
-    this._hierarchy = {
-      ...this._hierarchy,
-      floors: this._hierarchy.floors.map((f) => {
-        if (f.id === newFloorId) {
-          const newAreas = [...f.areas];
-          newAreas.splice(index, 0, area.area_id);
-          return { ...f, areas: newAreas };
-        }
-        return {
-          ...f,
-          areas: f.areas.filter((id) => id !== area.area_id),
-        };
-      }),
-      areas: newUnassignedAreas,
-    };
 
     this._fireConfigChanged();
   }
