@@ -6,8 +6,10 @@ import "../../../components/ha-yaml-editor";
 import "../../../components/ha-textfield";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import { dump } from "js-yaml";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
 import type {
@@ -54,6 +56,12 @@ class HaPanelDevBlueprints extends LitElement {
 
   @state() private _sidebarConfig?: SidebarConfig;
 
+  private validBlueprints = memoizeOne(
+    (x: Record<BlueprintDomain, Blueprints>) => Object.values(x)
+      .flatMap((b) => Object.values(b))
+      .filter((b) => !("error" in b)) as Blueprint[]
+  );
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this.hass.loadFragmentTranslation("config");
@@ -64,55 +72,53 @@ class HaPanelDevBlueprints extends LitElement {
   }
 
   private async _getBlueprints() {
-    const [automation, script] = await Promise.all([
-      fetchBlueprints(this.hass, "automation"),
-      fetchBlueprints(this.hass, "script"),
-    ]);
-    this._blueprints = { automation, script };
+    try {
+      const [automation, script] = await Promise.all([
+        fetchBlueprints(this.hass, "automation"),
+        fetchBlueprints(this.hass, "script"),
+      ]);
+      this._blueprints = { automation, script };
+    } catch {
+      await showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.load_blueprints_error_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.load_blueprints_error_text"
+        ),
+      });
+    }
+  }
+
+  private _setSelectedBlueprint(blueprint: Blueprint, dirty: boolean) {
+    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+      this._selectedBlueprint = blueprint;
+    } else {
+      this._selectedBlueprint = {
+        ...this._selectedBlueprint,
+        ...blueprint,
+        metadata: {
+          ...this._selectedBlueprint.metadata,
+          input: blueprint.metadata.input,
+        },
+        blueprint: {
+          ...this._selectedBlueprint.metadata,
+          input: blueprint.metadata.input,
+        },
+      };
+    }
+
+    this._dirty = dirty;
   }
 
   private _onBlueprintContentChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
-
-    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
-      this._selectedBlueprint = ev.detail.value;
-    } else {
-      this._selectedBlueprint = {
-        ...this._selectedBlueprint,
-        ...ev.detail.value,
-        metadata: {
-          ...this._selectedBlueprint.metadata,
-          input: ev.detail.value.metadata.input,
-        },
-        blueprint: {
-          ...this._selectedBlueprint.metadata,
-          input: ev.detail.value.metadata.input,
-        },
-      };
-    }
-    this._dirty = true;
+    this._setSelectedBlueprint(ev.detail.value, true);
   }
 
   private _onBlueprintInit(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
-
-    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
-      this._selectedBlueprint = ev.detail.value;
-    } else {
-      this._selectedBlueprint = {
-        ...this._selectedBlueprint,
-        ...ev.detail.value,
-        metadata: {
-          ...this._selectedBlueprint.metadata,
-          input: ev.detail.value.metadata.input,
-        },
-        blueprint: {
-          ...this._selectedBlueprint.metadata,
-          input: ev.detail.value.metadata.input,
-        },
-      };
-    }
-    this._dirty = false;
+    this._setSelectedBlueprint(ev.detail.value, false);
   }
 
   private _onBlueprintMetadataChanged(
@@ -132,7 +138,7 @@ class HaPanelDevBlueprints extends LitElement {
         author: ev.detail.value.author,
         description: ev.detail.value.description,
         homeassistant: {
-          min_version: ev.detail.value.minimum_version,
+          min_version: ev.detail.value.min_version,
         },
       },
       blueprint: {
@@ -142,7 +148,7 @@ class HaPanelDevBlueprints extends LitElement {
         author: ev.detail.value.author,
         description: ev.detail.value.description,
         homeassistant: {
-          min_version: ev.detail.value.minimum_version,
+          min_version: ev.detail.value.min_version,
         },
       },
     };
@@ -199,6 +205,10 @@ class HaPanelDevBlueprints extends LitElement {
         text: this.hass.localize(
           "ui.panel.developer-tools.tabs.blueprints.editor.abandon_changes_text"
         ),
+        confirmText: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.abandon_changes_confirm_text"
+        ),
+        destructive: true,
       });
       if (!shouldContinue) {
         return;
@@ -284,22 +294,20 @@ class HaPanelDevBlueprints extends LitElement {
       return nothing;
     }
 
-    const blueprints = Object.values(this._blueprints)
-      .flatMap((b) => Object.values(b))
-      .filter((b) => !("error" in b)) as Blueprint[];
+    const validBlueprints = this.validBlueprints(this._blueprints);
     const blueprintMetadata =
       !this._selectedBlueprint || "error" in this._selectedBlueprint
         ? ({
             name: "",
             description: "",
-            minimum_version: "",
+            min_version: "",
             path: "",
             author: "",
           } as BlueprintMetaDataEditorSchema)
         : ({
             name: this._selectedBlueprint.metadata.name,
             description: this._selectedBlueprint.metadata.description,
-            minimum_version:
+            min_version:
               this._selectedBlueprint.metadata.homeassistant?.min_version,
             path: this._selectedBlueprintPath,
             author: this._selectedBlueprint.metadata.author,
@@ -343,7 +351,7 @@ class HaPanelDevBlueprints extends LitElement {
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                     .isWide=${!this.narrow}
-                    .blueprints=${blueprints}
+                    .blueprints=${validBlueprints}
                     .blueprintPath=${this._originalBlueprintPath}
                     .domain=${this._selectedBlueprint.blueprint?.domain ??
                     this._selectedBlueprint.metadata.domain ??

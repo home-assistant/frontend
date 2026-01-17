@@ -67,7 +67,7 @@ export interface BlueprintMetaDataEditorSchema {
   path: string;
   description: string;
   author: string;
-  minimum_version: string;
+  min_version: string;
 }
 
 export interface BlueprintMetaData {

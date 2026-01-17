@@ -6,6 +6,7 @@ import type { BlueprintInput } from "../../../../../data/blueprint";
 import "../../../../../components/ha-textarea";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-form/ha-form";
 import "@material/mwc-list/mwc-list-item";
 import "../../../../../components/ha-selector/ha-selector";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";

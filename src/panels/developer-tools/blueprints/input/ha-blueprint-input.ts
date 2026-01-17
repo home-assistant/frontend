@@ -167,9 +167,6 @@ export class HaBlueprintInput extends LitElement {
   }
 
   protected render() {
-    if (!Array.isArray(this.inputs)) {
-      return nothing;
-    }
     return html`
       <ha-sortable
         handle-selector=".handle"

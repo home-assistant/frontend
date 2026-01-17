@@ -4,6 +4,7 @@ import "../../../components/ha-yaml-editor";
 import "../../../components/ha-textfield";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../types";
 import "./ha-blueprint-editor";
 import type { BlueprintMetaDataEditorSchema } from "../../../data/blueprint";
@@ -30,7 +31,7 @@ const SCHEMA = [
     type: "string",
   },
   {
-    name: "minimum_version",
+    name: "min_version",
     type: "string",
   },
 ] as const;

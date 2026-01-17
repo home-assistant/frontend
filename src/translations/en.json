@@ -9522,6 +9522,8 @@
             "editor": {
               "save": "Save",
               "rename": "Rename",
+              "load_blueprints_error_title": "Error loading blueprints",
+              "load_blueprints_error_text": "There was a problem loading blueprints. Please try again.",
               "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
               "load_error_unknown": "Error loading blueprint ({err_no}).",
               "move_up": "Move up",
@@ -9537,6 +9539,7 @@
               "overwrite_existing_text": "Reimporting this blueprint will cause your changes to be lost. Are you sure?",
               "abandon_changes_title": "You have unsaved changes",
               "abandon_changes_text": "Picking a new blueprint will cause your changes to be lost.",
+              "abandon_changes_confirm_text": "Abandon changes",
               "actions": {
                 "delete": "Delete",
                 "duplicate": "Duplicate",
@@ -9581,7 +9584,7 @@
               "dialog": {
                 "add_description": "Add description",
                 "add_author": "Add author",
-                "add_minimum_version": "Add minimum version"
+                "add_min_version": "Add minimum version"
               },
               "name": {
                 "label": "Name"
@@ -9596,7 +9599,7 @@
                 "label": "Author",
                 "placeholder": "Linus Torvalds"
               },
-              "minimum_version": {
+              "min_version": {
                 "label": "Minimum version",
                 "placeholder": "2025.1.0"
               }

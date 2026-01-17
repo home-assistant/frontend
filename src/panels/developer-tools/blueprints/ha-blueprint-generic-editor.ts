@@ -158,11 +158,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    // The HASS object is a prerequisite to load blueprints
-    if (!this.hass) {
-      return;
-    }
-
     // If we already have a blueprint path and the path didn't change,
     // there's no need to update anything
     if (this._blueprintPath && !changedProps.has("blueprintPath")) {
