@@ -3,14 +3,7 @@ export interface DataTableFilter {
   items: Set<string> | undefined;
 }
 
-export type DataTableFilters = Record<
-  string,
-  DataTableFilter
-  // {
-  //   value: DataTableFiltersValue;
-  //   items: Set<string> | undefined;
-  // }
->;
+export type DataTableFilters = Record<string, DataTableFilter>;
 
 export type DataTableFiltersValue = string[] | { key: string[] } | undefined;
 
