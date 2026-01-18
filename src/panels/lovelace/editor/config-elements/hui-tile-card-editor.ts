@@ -48,6 +48,7 @@ const cardConfigStruct = assign(
     icon: optional(string()),
     color: optional(string()),
     show_entity_picture: optional(boolean()),
+    hide_icon: optional(boolean()),
     hide_state: optional(boolean()),
     state_content: optional(union([string(), array(string())])),
     vertical: optional(boolean()),

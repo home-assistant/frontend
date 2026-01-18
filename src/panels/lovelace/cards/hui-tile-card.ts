@@ -296,27 +296,32 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           }}
           @action=${this._handleAction}
         >
-          <ha-tile-icon
-            slot="icon"
-            @action=${this._handleIconAction}
-            .actionHandlerOptions=${{
-              hasHold: hasAction(this._config!.icon_hold_action),
-              hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
-            }}
-            .interactive=${this._hasIconAction}
-            .imageUrl=${imageUrl}
-            data-domain=${ifDefined(domain)}
-            data-state=${ifDefined(stateObj?.state)}
-            class=${classMap({ image: Boolean(imageUrl) })}
-          >
-            <ha-state-icon
-              slot="icon"
-              .icon=${this._config.icon}
-              .stateObj=${stateObj}
-              .hass=${this.hass}
-            ></ha-state-icon>
-            ${renderTileBadge(stateObj, this.hass)}
-          </ha-tile-icon>
+          ${this._config.hide_icon !== true
+            ? html`<ha-tile-icon
+                slot="icon"
+                @action=${this._handleIconAction}
+                .actionHandlerOptions=${{
+                  hasHold: hasAction(this._config!.icon_hold_action),
+                  hasDoubleClick: hasAction(
+                    this._config!.icon_double_tap_action
+                  ),
+                }}
+                .interactive=${this._hasIconAction}
+                .imageUrl=${imageUrl}
+                data-domain=${ifDefined(domain)}
+                data-state=${ifDefined(stateObj?.state)}
+                class=${classMap({ image: Boolean(imageUrl) })}
+              >
+                <ha-state-icon
+                  slot="icon"
+                  .icon=${this._config.icon}
+                  .stateObj=${stateObj}
+                  .hass=${this.hass}
+                ></ha-state-icon>
+                ${renderTileBadge(stateObj, this.hass)}
+              </ha-tile-icon>`
+            : nothing}
+
           <ha-tile-info slot="info">
             <span slot="primary" class="primary">${name}</span>
             ${stateDisplay
