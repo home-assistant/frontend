@@ -1012,7 +1012,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     );
     for (const [key, filter] of filters) {
       if (
-        // these 4 filters actually apply the selected options and return
+        // these 4 filters actually apply the selected options, and return
         // the list of automations that match these options
         isUsedRelatedItemsFilter(key, filter, "ha-filter-floor-areas") ||
         isUsedRelatedItemsFilter(key, filter, "ha-filter-devices") ||
