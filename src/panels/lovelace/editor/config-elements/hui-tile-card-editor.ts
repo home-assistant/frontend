@@ -89,7 +89,8 @@ export class HuiTileCardEditor
     (
       localize: LocalizeFunc,
       entityId: string | undefined,
-      hideState: boolean
+      hideState: boolean,
+      hideIcon: boolean
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
@@ -107,16 +108,32 @@ export class HuiTileCardEditor
               context: { entity: "entity" },
             },
             {
+              name: "hide_icon",
+              selector: {
+                boolean: {},
+              },
+            },
+            {
               name: "",
               type: "grid",
               schema: [
-                {
-                  name: "icon",
-                  selector: {
-                    icon: {},
-                  },
-                  context: { icon_entity: "entity" },
-                },
+                ...(!hideIcon
+                  ? ([
+                      {
+                        name: "icon",
+                        selector: {
+                          icon: {},
+                        },
+                        context: { icon_entity: "entity" },
+                      },
+                      {
+                        name: "show_entity_picture",
+                        selector: {
+                          boolean: {},
+                        },
+                      },
+                    ] as const satisfies readonly HaFormSchema[])
+                  : []),
                 {
                   name: "color",
                   selector: {
@@ -124,18 +141,6 @@ export class HuiTileCardEditor
                       default_color: "state",
                       include_state: true,
                     },
-                  },
-                },
-                {
-                  name: "show_entity_picture",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-                {
-                  name: "hide_icon",
-                  selector: {
-                    boolean: {},
                   },
                 },
                 {
@@ -197,16 +202,20 @@ export class HuiTileCardEditor
                 },
               },
             },
-            {
-              name: "icon_tap_action",
-              selector: {
-                ui_action: {
-                  default_action: entityId
-                    ? getEntityDefaultTileIconAction(entityId)
-                    : "more-info",
-                },
-              },
-            },
+            ...(!hideIcon
+              ? ([
+                  {
+                    name: "icon_tap_action",
+                    selector: {
+                      ui_action: {
+                        default_action: entityId
+                          ? getEntityDefaultTileIconAction(entityId)
+                          : "more-info",
+                      },
+                    },
+                  },
+                ] as const satisfies readonly HaFormSchema[])
+              : []),
             {
               name: "",
               type: "optional_actions",
@@ -214,9 +223,9 @@ export class HuiTileCardEditor
               schema: (
                 [
                   "hold_action",
-                  "icon_hold_action",
+                  ...(!hideIcon ? (["icon_hold_action"] as const) : []),
                   "double_tap_action",
-                  "icon_double_tap_action",
+                  ...(!hideIcon ? (["icon_double_tap_action"] as const) : []),
                 ] as const
               ).map((action) => ({
                 name: action,
@@ -277,7 +286,8 @@ export class HuiTileCardEditor
     const schema = this._schema(
       this.hass.localize,
       entityId,
-      this._config.hide_state ?? false
+      this._config.hide_state ?? false,
+      this._config.hide_icon ?? false
     );
 
     const vertical = this._config.vertical ?? false;
