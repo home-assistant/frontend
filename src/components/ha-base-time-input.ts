@@ -208,7 +208,8 @@ export class HaBaseTimeInput extends LitElement {
             ? html`<ha-textfield
                 id="sec"
                 type="number"
-                inputmode="numeric"
+                inputmode="decimal"
+                step="any"
                 .value=${this._formatValue(this.seconds)}
                 .label=${this.secLabel}
                 @change=${this._valueChanged}
