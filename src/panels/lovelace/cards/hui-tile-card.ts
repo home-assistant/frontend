@@ -1,3 +1,10 @@
+import {
+  mdiCommentProcessingOutline,
+  mdiInformationOutline,
+  mdiOpenInNew,
+  mdiRoomServiceOutline,
+  mdiToggleSwitchOutline,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,6 +19,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
@@ -47,6 +55,27 @@ export const getEntityDefaultTileIconAction = (entityId: string) => {
   return supportsIconAction ? "toggle" : "none";
 };
 
+// Mapping of tap actions to their indicator icons
+// Only actions in this map will show an indicator icon in the tile card
+const TAP_ACTION_INDICATOR_ICONS = {
+  navigate: "navigate", // Special value for ha-icon-next
+  url: mdiOpenInNew,
+  "more-info": mdiInformationOutline,
+  assist: mdiCommentProcessingOutline,
+  toggle: mdiToggleSwitchOutline,
+  "call-service": mdiRoomServiceOutline, // Legacy service call
+  "perform-action": mdiRoomServiceOutline, // Modern action (same as call-service)
+} as const;
+
+// Type for actions that support indicators
+type IndicatorSupportedAction = keyof typeof TAP_ACTION_INDICATOR_ICONS;
+
+// Helper to check if an action supports tap action indicators
+export const supportsTapActionIndicator = (
+  action?: string
+): action is IndicatorSupportedAction =>
+  action !== undefined && action in TAP_ACTION_INDICATOR_ICONS;
+
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -81,10 +110,15 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @state() private _featureContext: LovelaceCardFeatureContext = {};
 
+  private _hasTapActionConfigured = false;
+
   public setConfig(config: TileCardConfig): void {
     if (!config.entity) {
       throw new Error("Specify an entity");
     }
+
+    // Track if tap_action was explicitly configured by user
+    this._hasTapActionConfigured = config.tap_action !== undefined;
 
     this._config = {
       tap_action: {
@@ -221,6 +255,31 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private get _showTapActionIndicator(): boolean {
+    // Explicit config overrides everything
+    if (this._config?.show_tap_action_indicator !== undefined) {
+      return this._config.show_tap_action_indicator;
+    }
+
+    // Show indicator by default only if tap_action was explicitly configured by user
+    return this._hasTapActionConfigured;
+  }
+
+  private get _tapActionIndicatorIcon(): string | undefined {
+    if (!this._showTapActionIndicator) {
+      return undefined;
+    }
+
+    const action = this._config?.tap_action?.action;
+
+    // Use the centralized mapping - only supported actions have icons
+    if (action && supportsTapActionIndicator(action)) {
+      return TAP_ACTION_INDICATOR_ICONS[action];
+    }
+
+    return undefined;
+  }
+
   private _featurePosition = memoizeOne((config: TileCardConfig) => {
     if (config.vertical) {
       return "bottom";
@@ -335,6 +394,17 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                 ? html`<span slot="secondary">${stateDisplay}</span>`
                 : nothing}
             </ha-tile-info>
+            ${this._tapActionIndicatorIcon
+              ? html`
+                  <div class="action-indicator">
+                    ${this._tapActionIndicatorIcon === "navigate"
+                      ? html`<ha-icon-next></ha-icon-next>`
+                      : html`<ha-svg-icon
+                          .path=${this._tapActionIndicatorIcon}
+                        ></ha-svg-icon>`}
+                  </div>
+                `
+              : nothing}
           </div>
           ${features.length > 0
             ? html`
@@ -444,6 +514,25 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       min-width: 0;
       transition: background-color 180ms ease-in-out;
       box-sizing: border-box;
+    }
+    .action-indicator {
+      display: flex;
+      align-items: center;
+      margin-inline-start: auto;
+      color: var(--secondary-text-color);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .content.vertical .action-indicator {
+      position: absolute;
+      top: var(--ha-space-2);
+      right: var(--ha-space-2);
+      inset-inline-end: var(--ha-space-2);
+      inset-inline-start: initial;
+    }
+    ha-icon-next,
+    .action-indicator ha-svg-icon {
+      --mdc-icon-size: 20px;
     }
     hui-card-features {
       --feature-color: var(--tile-color);

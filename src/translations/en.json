@@ -8407,6 +8407,8 @@
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
+              "show_tap_action_indicator": "Show tap action indicator",
+              "show_tap_action_indicator_helper": "Display an icon indicating the tap action (e.g., chevron for navigation)",
               "show_entity_picture": "Show entity picture",
               "hide_state": "Hide state",
               "state_content": "State content",

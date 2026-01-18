@@ -30,7 +30,10 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
-import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
+import {
+  getEntityDefaultTileIconAction,
+  supportsTapActionIndicator,
+} from "../../cards/hui-tile-card";
 import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -57,6 +60,7 @@ const cardConfigStruct = assign(
     icon_tap_action: optional(actionConfigStruct),
     icon_hold_action: optional(actionConfigStruct),
     icon_double_tap_action: optional(actionConfigStruct),
+    show_tap_action_indicator: optional(boolean()),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
   })
@@ -88,7 +92,8 @@ export class HuiTileCardEditor
     (
       localize: LocalizeFunc,
       entityId: string | undefined,
-      hideState: boolean
+      hideState: boolean,
+      tapAction: string | undefined
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
@@ -190,6 +195,16 @@ export class HuiTileCardEditor
                 },
               },
             },
+            ...(tapAction && supportsTapActionIndicator(tapAction)
+              ? ([
+                  {
+                    name: "show_tap_action_indicator",
+                    selector: {
+                      boolean: {},
+                    },
+                  },
+                ] as const satisfies readonly HaFormSchema[])
+              : []),
             {
               name: "icon_tap_action",
               selector: {
@@ -266,11 +281,13 @@ export class HuiTileCardEditor
     }
 
     const entityId = this._config!.entity;
+    const tapAction = this._config!.tap_action?.action;
 
     const schema = this._schema(
       this.hass.localize,
       entityId,
-      this._config.hide_state ?? false
+      this._config.hide_state ?? false,
+      tapAction
     );
 
     const vertical = this._config.vertical ?? false;
@@ -285,6 +302,11 @@ export class HuiTileCardEditor
     // Default features position to bottom and force it to bottom in vertical mode
     if (!data.features_position || vertical) {
       data.features_position = "bottom";
+    }
+
+    // Set show_tap_action_indicator default: true if tap_action explicitly configured
+    if (data.show_tap_action_indicator === undefined && data.tap_action) {
+      data.show_tap_action_indicator = true;
     }
 
     const featureContext = this._featureContext(entityId);
@@ -359,6 +381,16 @@ export class HuiTileCardEditor
       delete config.content_layout;
     }
 
+    // Remove show_tap_action_indicator in two cases:
+    // 1. When tap_action is removed (no longer relevant)
+    // 2. When it's true and tap_action exists (matches default, to keep config clean)
+    if (
+      config.tap_action === undefined ||
+      config.show_tap_action_indicator !== false
+    ) {
+      delete config.show_tap_action_indicator;
+    }
+
     config = orderProperties(config, fieldOrder);
 
     fireEvent(this, "config-changed", { config });
@@ -420,6 +452,7 @@ export class HuiTileCardEditor
       case "icon_hold_action":
       case "icon_double_tap_action":
       case "show_entity_picture":
+      case "show_tap_action_indicator":
       case "hide_state":
       case "state_content":
       case "content_layout":
@@ -441,6 +474,7 @@ export class HuiTileCardEditor
   ) => {
     switch (schema.name) {
       case "color":
+      case "show_tap_action_indicator":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}_helper`
         );
