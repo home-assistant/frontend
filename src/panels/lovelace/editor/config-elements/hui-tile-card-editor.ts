@@ -366,6 +366,18 @@ export class HuiTileCardEditor
       delete config.state_content;
     }
 
+    // Clean up hide_icon when false (keep config clean)
+    if (!config.hide_icon) {
+      delete config.hide_icon;
+    }
+
+    // Clean up icon-related configs when icon is hidden
+    if (config.hide_icon) {
+      delete config.icon_tap_action;
+      delete config.icon_hold_action;
+      delete config.icon_double_tap_action;
+    }
+
     if (!config.state_content) {
       delete config.state_content;
     }
