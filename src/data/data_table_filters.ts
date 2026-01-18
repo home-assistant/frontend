@@ -1,9 +1,15 @@
+export interface DataTableFilter {
+  value: DataTableFiltersValue;
+  items: Set<string> | undefined;
+}
+
 export type DataTableFilters = Record<
   string,
-  {
-    value: DataTableFiltersValue;
-    items: Set<string> | undefined;
-  }
+  DataTableFilter
+  // {
+  //   value: DataTableFiltersValue;
+  //   items: Set<string> | undefined;
+  // }
 >;
 
 export type DataTableFiltersValue = string[] | { key: string[] } | undefined;
@@ -32,4 +38,29 @@ export const deserializeFilters = (value: DataTableFilters) => {
     };
   });
   return deserializedValue;
+};
+
+// returns true when this filter has *selected* options and the filter's name
+// equals the given filterName
+export const isUsedFilter = (
+  key: string,
+  filter: DataTableFilter,
+  filterName: string
+): number | false => {
+  const isUsed =
+    key === filterName && Array.isArray(filter.value) && filter.value.length;
+  return isUsed;
+};
+
+// returns true when this filter has *selected* options
+// which has resulted in a list of items that match these selected opions
+// (this list can be empty),
+// and the filter's name equals the given filterName
+export const isUsedRelatedItemsFilter = (
+  key: string,
+  filter: DataTableFilter,
+  filterName: string
+) => {
+  const isUsed = key === filterName && filter.items;
+  return isUsed;
 };
