@@ -113,12 +113,12 @@ export class HuiTileCardEditor
                 boolean: {},
               },
             },
-            {
-              name: "",
-              type: "grid",
-              schema: [
-                ...(!hideIcon
-                  ? ([
+            ...(!hideIcon
+              ? ([
+                  {
+                    name: "",
+                    type: "grid",
+                    schema: [
                       {
                         name: "icon",
                         selector: {
@@ -132,24 +132,24 @@ export class HuiTileCardEditor
                           boolean: {},
                         },
                       },
-                    ] as const satisfies readonly HaFormSchema[])
-                  : []),
-                {
-                  name: "color",
-                  selector: {
-                    ui_color: {
-                      default_color: "state",
-                      include_state: true,
-                    },
+                    ],
                   },
+                ] as const satisfies readonly HaFormSchema[])
+              : []),
+            {
+              name: "color",
+              selector: {
+                ui_color: {
+                  default_color: "state",
+                  include_state: true,
                 },
-                {
-                  name: "hide_state",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-              ],
+              },
+            },
+            {
+              name: "hide_state",
+              selector: {
+                boolean: {},
+              },
             },
             ...(!hideState
               ? ([
