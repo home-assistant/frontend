@@ -133,6 +133,12 @@ export class HuiTileCardEditor
                   },
                 },
                 {
+                  name: "hide_icon",
+                  selector: {
+                    boolean: {},
+                  },
+                },
+                {
                   name: "hide_state",
                   selector: {
                     boolean: {},
@@ -421,6 +427,7 @@ export class HuiTileCardEditor
       case "icon_hold_action":
       case "icon_double_tap_action":
       case "show_entity_picture":
+      case "hide_icon":
       case "hide_state":
       case "state_content":
       case "content_layout":

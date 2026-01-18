@@ -8696,6 +8696,7 @@
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
               "show_entity_picture": "Show entity picture",
+              "hide_icon": "Hide icon",
               "hide_state": "Hide state",
               "state_content": "State content",
               "features_position": "Features position",
