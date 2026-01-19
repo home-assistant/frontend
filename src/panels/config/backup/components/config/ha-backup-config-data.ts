@@ -335,12 +335,12 @@ class HaBackupConfigData extends LitElement {
                       ></ha-svg-icon>
                       <span slot="headline">
                         ${this.hass.localize(
-                          "ui.panel.config.backup.data.local_addons"
+                          "ui.panel.config.backup.data.local_apps"
                         )}
                       </span>
                       <span slot="supporting-text">
                         ${this.hass.localize(
-                          "ui.panel.config.backup.data.local_addons_description"
+                          "ui.panel.config.backup.data.local_apps_description"
                         )}
                       </span>
                       <ha-switch
@@ -361,12 +361,12 @@ class HaBackupConfigData extends LitElement {
                       ></ha-svg-icon>
                       <span slot="headline">
                         ${this.hass.localize(
-                          "ui.panel.config.backup.data.addons"
+                          "ui.panel.config.backup.data.apps"
                         )}
                       </span>
                       <span slot="supporting-text">
                         ${this.hass.localize(
-                          "ui.panel.config.backup.data.addons_description"
+                          "ui.panel.config.backup.data.apps_description"
                         )}
                       </span>
                       <ha-md-select
@@ -378,21 +378,21 @@ class HaBackupConfigData extends LitElement {
                         <ha-md-select-option value="all">
                           <div slot="headline">
                             ${this.hass.localize(
-                              "ui.panel.config.backup.data.addons_all"
+                              "ui.panel.config.backup.data.apps_all"
                             )}
                           </div>
                         </ha-md-select-option>
                         <ha-md-select-option value="none">
                           <div slot="headline">
                             ${this.hass.localize(
-                              "ui.panel.config.backup.data.addons_none"
+                              "ui.panel.config.backup.data.apps_none"
                             )}
                           </div>
                         </ha-md-select-option>
                         <ha-md-select-option value="custom">
                           <div slot="headline">
                             ${this.hass.localize(
-                              "ui.panel.config.backup.data.addons_custom"
+                              "ui.panel.config.backup.data.apps_custom"
                             )}
                           </div>
                         </ha-md-select-option>
@@ -511,7 +511,7 @@ class HaBackupConfigData extends LitElement {
             )}
             ${addonsNotAccurate
               ? html`<br /><br />${this.hass.localize(
-                    "ui.panel.config.backup.data.estimated_size_disclaimer_addons_custom"
+                    "ui.panel.config.backup.data.estimated_size_disclaimer_apps_custom"
                   )}`
               : nothing}
           </ha-tooltip>
