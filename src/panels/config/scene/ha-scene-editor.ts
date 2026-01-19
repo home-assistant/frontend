@@ -160,6 +160,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       return entry?.categories?.scene;
     }
   );
+  
 private _handleSuggestedMetadata(
   ev: CustomEvent<MetadataSuggestionResult>
 ) {
