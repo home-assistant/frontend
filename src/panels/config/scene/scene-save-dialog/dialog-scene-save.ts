@@ -89,8 +89,8 @@ class DialogSceneSave extends LitElement {
     this._open = false;
     this._error = false;
     this._params.onClose?.();
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._visibleOptionals = [];
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected _renderOptionalChip(id: string, label: string) {
@@ -179,7 +179,7 @@ class DialogSceneSave extends LitElement {
   }
 
   protected render() {
-    if (!this._open) {
+    if (!this._params) {
       return nothing;
     }
 
