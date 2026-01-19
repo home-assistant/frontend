@@ -1,4 +1,4 @@
-import type { ActionDetail } from "@material/mwc-list";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -24,10 +24,11 @@ import {
   type AreasFloorHierarchy,
 } from "../../../common/areas/areas-floor-hierarchy";
 import { formatListWithAnds } from "../../../common/string/format-list";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -195,44 +196,45 @@ export class HaConfigAreasDashboard extends LitElement {
                       ${floor.name}
                     </h2>
                     <div class="actions">
-                      <ha-button-menu
+                      <ha-dropdown
                         .floor=${floor}
-                        @action=${this._handleFloorAction}
+                        @wa-select=${this._handleFloorAction}
                       >
                         <ha-icon-button
                           slot="trigger"
                           .path=${mdiDotsVertical}
+                          .label=${this.hass.localize("ui.common.menu")}
                         ></ha-icon-button>
-                        <ha-list-item graphic="icon"
+                        <ha-dropdown-item value="reorder"
                           ><ha-svg-icon
                             .path=${mdiSort}
-                            slot="graphic"
+                            slot="icon"
                           ></ha-svg-icon
                           >${this.hass.localize(
                             "ui.panel.config.areas.picker.reorder"
-                          )}</ha-list-item
+                          )}</ha-dropdown-item
                         >
-                        <li divider role="separator"></li>
-                        <ha-list-item graphic="icon"
+                        <wa-divider></wa-divider>
+                        <ha-dropdown-item value="edit"
                           ><ha-svg-icon
                             .path=${mdiPencil}
-                            slot="graphic"
+                            slot="icon"
                           ></ha-svg-icon
                           >${this.hass.localize(
                             "ui.panel.config.areas.picker.floor.edit_floor"
-                          )}</ha-list-item
+                          )}</ha-dropdown-item
                         >
-                        <ha-list-item class="warning" graphic="icon"
+                        <ha-dropdown-item value="delete" class="warning"
                           ><ha-svg-icon
                             class="warning"
                             .path=${mdiDelete}
-                            slot="graphic"
+                            slot="icon"
                           ></ha-svg-icon
                           >${this.hass.localize(
                             "ui.panel.config.areas.picker.floor.delete_floor"
-                          )}</ha-list-item
+                          )}</ha-dropdown-item
                         >
-                      </ha-button-menu>
+                      </ha-dropdown>
                     </div>
                   </div>
                   <ha-sortable
@@ -272,23 +274,24 @@ export class HaConfigAreasDashboard extends LitElement {
                       )}
                     </h2>
                     <div class="actions">
-                      <ha-button-menu
-                        @action=${this._handleUnassignedAreasAction}
+                      <ha-dropdown
+                        @wa-select=${this._handleUnassignedAreasAction}
                       >
                         <ha-icon-button
                           slot="trigger"
                           .path=${mdiDotsVertical}
+                          .label=${this.hass.localize("ui.common.menu")}
                         ></ha-icon-button>
-                        <ha-list-item graphic="icon"
+                        <ha-dropdown-item value="reorder"
                           ><ha-svg-icon
                             .path=${mdiSort}
-                            slot="graphic"
+                            slot="icon"
                           ></ha-svg-icon
                           >${this.hass.localize(
                             "ui.panel.config.areas.picker.reorder"
-                          )}</ha-list-item
+                          )}</ha-dropdown-item
                         >
-                      </ha-button-menu>
+                      </ha-dropdown>
                     </div>
                   </div>
                   <ha-sortable
@@ -532,23 +535,27 @@ export class HaConfigAreasDashboard extends LitElement {
     }, time);
   }
 
-  private _handleFloorAction(ev: CustomEvent<ActionDetail>) {
+  private _handleFloorAction(ev: CustomEvent<{ item: { value: string } }>) {
     const floor = (ev.currentTarget as any).floor;
-    switch (ev.detail.index) {
-      case 0:
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "reorder":
         this._showReorderDialog();
         break;
-      case 1:
+      case "edit":
         this._editFloor(floor);
         break;
-      case 2:
+      case "delete":
         this._deleteFloor(floor);
         break;
     }
   }
 
-  private _handleUnassignedAreasAction(ev: CustomEvent<ActionDetail>) {
-    if (ev.detail.index === 0) {
+  private _handleUnassignedAreasAction(
+    ev: CustomEvent<{ item: { value: string } }>
+  ) {
+    const action = ev.detail.item.value;
+    if (action === "reorder") {
       this._showReorderDialog();
     }
   }
