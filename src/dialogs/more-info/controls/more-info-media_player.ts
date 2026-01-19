@@ -54,6 +54,18 @@ class MoreInfoMediaPlayer extends LitElement {
   @query("#position-slider")
   private _positionSlider?: HaSlider;
 
+  private _progressInterval?: number;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._syncProgressInterval();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._clearProgressInterval();
+  }
+
   protected firstUpdated(_changedProperties: PropertyValues) {
     if (this._positionSlider) {
       this._positionSlider.valueFormatter = (value: number) =>
@@ -261,10 +273,11 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const stateObj = this.stateObj;
     const controls = computeMediaControls(stateObj, true);
-    const coverUrl =
+    const coverUrlRaw =
       stateObj.attributes.entity_picture_local ||
       stateObj.attributes.entity_picture ||
       "";
+    const coverUrl = coverUrlRaw ? this.hass.hassUrl(coverUrlRaw) : "";
     const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
 
     const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
@@ -331,8 +344,12 @@ class MoreInfoMediaPlayer extends LitElement {
                 ?disabled=${!stateActive(stateObj) ||
                 !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
               >
-                <span slot="reference">${positionFormatted}</span>
-                <span slot="reference">${remainingFormatted}</span>
+                <span class="position-time" slot="reference"
+                  >${positionFormatted}</span
+                >
+                <span class="position-time" slot="reference"
+                  >${remainingFormatted}</span
+                >
               </ha-slider>
             </div>
           `
@@ -568,6 +585,10 @@ class MoreInfoMediaPlayer extends LitElement {
       color: var(--secondary-text-color);
     }
 
+    .position-time {
+      margin-top: var(--ha-space-2);
+    }
+
     .media-info-row {
       display: flex;
       flex-direction: column;
@@ -619,6 +640,44 @@ class MoreInfoMediaPlayer extends LitElement {
       this.hass!,
       this.stateObj!,
       (e.currentTarget as HTMLElement).getAttribute("action")!
+    );
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("stateObj")) {
+      this._syncProgressInterval();
+    }
+  }
+
+  private _syncProgressInterval(): void {
+    if (this._shouldUpdateProgress()) {
+      if (!this._progressInterval) {
+        this._progressInterval = window.setInterval(
+          () => this.requestUpdate(),
+          1000
+        );
+      }
+      return;
+    }
+    this._clearProgressInterval();
+  }
+
+  private _clearProgressInterval(): void {
+    if (this._progressInterval) {
+      clearInterval(this._progressInterval);
+      this._progressInterval = undefined;
+    }
+  }
+
+  private _shouldUpdateProgress(): boolean {
+    const stateObj = this.stateObj;
+    return (
+      !!stateObj &&
+      stateObj.state === "playing" &&
+      Number(stateObj.attributes.media_duration) > 0 &&
+      "media_position" in stateObj.attributes &&
+      "media_position_updated_at" in stateObj.attributes
     );
   }
 

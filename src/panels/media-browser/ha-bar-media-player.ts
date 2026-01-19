@@ -1,5 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiChevronDown,
   mdiMonitor,
@@ -50,6 +48,7 @@ import type { ResolvedMediaSource } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
+import type { HaSlider } from "../../components/ha-slider";
 import "../lovelace/components/hui-marquee";
 import {
   BrowserMediaPlayer,
@@ -70,7 +69,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @query("mwc-linear-progress") private _progressBar?: LinearProgress;
+  @query("ha-slider") private _progressBar?: HaSlider;
 
   @query("#CurrentProgress") private _currentProgress?: HTMLElement;
 
@@ -271,11 +270,42 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
               ${stateObj.attributes.media_duration === Infinity
                 ? nothing
                 : this.narrow
-                  ? html`<mwc-linear-progress></mwc-linear-progress>`
+                  ? html`<ha-slider
+                      class="progress-slider"
+                      min="0"
+                      max=${stateObj.attributes.media_duration || 0}
+                      step="1"
+                      .value=${getCurrentProgress(stateObj)}
+                      .withTooltip=${false}
+                      size="small"
+                      aria-label=${this.hass.localize(
+                        "ui.card.media_player.track_position"
+                      )}
+                      ?disabled=${isBrowser ||
+                      !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
+                      @change=${this._handleMediaSeekChanged}
+                    ></ha-slider>`
                   : html`
                       <div class="progress">
                         <div id="CurrentProgress"></div>
-                        <mwc-linear-progress wide></mwc-linear-progress>
+                        <ha-slider
+                          class="progress-slider"
+                          min="0"
+                          max=${stateObj.attributes.media_duration || 0}
+                          step="1"
+                          .value=${getCurrentProgress(stateObj)}
+                          .withTooltip=${false}
+                          size="small"
+                          aria-label=${this.hass.localize(
+                            "ui.card.media_player.track_position"
+                          )}
+                          ?disabled=${isBrowser ||
+                          !supportsFeature(
+                            stateObj,
+                            MediaPlayerEntityFeature.SEEK
+                          )}
+                          @change=${this._handleMediaSeekChanged}
+                        ></ha-slider>
                         <div>${mediaDuration}</div>
                       </div>
                     `}
@@ -489,19 +519,21 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   private _updateProgressBar(): void {
     const stateObj = this._stateObj;
 
-    if (!this._progressBar || !this._currentProgress || !stateObj) {
+    if (!this._progressBar || !stateObj) {
       return;
     }
 
     if (!stateObj.attributes.media_duration) {
-      this._progressBar.progress = 0;
-      this._currentProgress.innerHTML = "";
+      this._progressBar.value = 0;
+      if (this._currentProgress) {
+        this._currentProgress.innerHTML = "";
+      }
       return;
     }
 
     const currentProgress = getCurrentProgress(stateObj);
-    this._progressBar.progress =
-      currentProgress / stateObj.attributes.media_duration;
+    this._progressBar.max = stateObj.attributes.media_duration;
+    this._progressBar.value = currentProgress;
 
     if (this._currentProgress) {
       this._currentProgress.innerHTML = formatMediaTime(currentProgress);
@@ -524,6 +556,18 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     } else if (action === "media_play") {
       this._browserPlayer.play();
     }
+  }
+
+  private _handleMediaSeekChanged(e: Event): void {
+    if (this.entityId === BROWSER_PLAYER || !this._stateObj) {
+      return;
+    }
+
+    const newValue = (e.target as HaSlider).value;
+    this.hass.callService("media_player", "media_seek", {
+      entity_id: this._stateObj.entity_id,
+      seek_position: newValue,
+    });
   }
 
   private _marqueeMouseOver(): void {
@@ -570,10 +614,11 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       margin-left: var(--safe-area-inset-left);
     }
 
-    mwc-linear-progress {
+    ha-slider {
       width: 100%;
-      padding: 0 4px;
-      --mdc-theme-primary: var(--secondary-text-color);
+      min-width: 100%;
+      --ha-slider-thumb-color: var(--primary-color);
+      --ha-slider-indicator-color: var(--primary-color);
     }
 
     ha-button-menu ha-button[slot="trigger"] {
@@ -611,6 +656,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       justify-content: flex-end;
       align-items: center;
       padding: 16px;
+      gap: var(--ha-space-2);
     }
 
     .controls {
@@ -633,7 +679,15 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       align-items: center;
     }
 
-    mwc-linear-progress[wide] {
+    .progress > div:first-child {
+      margin-right: var(--ha-space-2);
+    }
+
+    .progress > div:last-child {
+      margin-left: var(--ha-space-2);
+    }
+
+    .progress ha-slider {
       margin: 0 4px;
     }
 
@@ -700,11 +754,11 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       justify-content: flex-end;
     }
 
-    :host([narrow]) mwc-linear-progress {
-      padding: 0;
+    :host([narrow]) ha-slider {
       position: absolute;
-      top: -4px;
+      top: -6px;
       left: 0;
+      right: 0;
     }
 
     ha-list-item[selected] {
