@@ -1,12 +1,11 @@
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-button-menu";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
@@ -40,16 +39,16 @@ class PanelDeveloperTools extends LitElement {
           <div class="main-title">
             ${this.hass.localize("panel.developer_tools")}
           </div>
-          <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+          <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item>
+            <ha-dropdown-item value="debug">
               ${this.hass.localize("ui.panel.developer-tools.tabs.debug.title")}
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
         <ha-tab-group @wa-tab-show=${this._handlePageSelected}>
           <ha-tab-group-tab slot="nav" panel="yaml" .active=${page === "yaml"}>
@@ -122,11 +121,12 @@ class PanelDeveloperTools extends LitElement {
     }
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        navigate(`/developer-tools/debug`);
-        break;
+  private async _handleMenuAction(
+    ev: CustomEvent<{ item: { value: string } }>
+  ) {
+    const action = ev.detail.item.value;
+    if (action === "debug") {
+      navigate(`/developer-tools/debug`);
     }
   }
 
