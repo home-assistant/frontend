@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { getGraphColorByIndex } from "../../../common/color/colors";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { MobileAwareMixin } from "../../../mixins/mobile-aware-mixin";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import "../../../components/chips/ha-assist-chip";
@@ -42,11 +43,13 @@ interface LegendItem {
   color: string;
   isHidden: boolean;
   isDisabled: boolean;
-  unit?: string;
 }
 
 @customElement("hui-distribution-card")
-export class HuiDistributionCard extends LitElement implements LovelaceCard {
+export class HuiDistributionCard
+  extends MobileAwareMixin(LitElement)
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-distribution-card-editor");
     return document.createElement("hui-distribution-card-editor");
@@ -204,90 +207,90 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _convertToSegments = memoizeOne(
-    (
-      entities: ProcessedEntity[],
-      hiddenEntities: string[],
-      hass: HomeAssistant
-    ): { segments: Segment[]; hiddenIndices: number[] } => {
-      const computedStyles = getComputedStyle(this);
-      const segments: Segment[] = [];
-      const hiddenIndices: number[] = [];
+  private _convertToSegments(): {
+    segments: Segment[];
+    hiddenIndices: number[];
+  } {
+    const computedStyles = getComputedStyle(this);
+    const segments: Segment[] = [];
+    const hiddenIndices: number[] = [];
 
-      // Map entities with their original index
-      const entitiesWithIndex = entities.map((entity, originalIndex) => ({
-        ...entity,
-        originalIndex,
-      }));
-
-      // Create segments for ALL entities (including hidden ones with positive values)
-      entitiesWithIndex.forEach((entity) => {
-        const stateObj = hass.states[entity.entity];
-        if (!stateObj) return;
-
-        const value = Number(stateObj.state);
-        if (value <= 0 || isNaN(value)) return;
-
-        const color = getGraphColorByIndex(
-          entity.originalIndex,
-          computedStyles
-        );
-        const name = computeLovelaceEntityName(hass, stateObj, entity.name);
-        const formattedValue = hass.formatEntityState(stateObj);
-
-        segments.push({
-          value: value,
-          color: color,
-          label: html`${name}
-            <span style="color: var(--secondary-text-color)"
-              >${formattedValue}</span
-            >`,
-          entityId: entity.entity,
-        });
-
-        // Track hidden indices
-        if (hiddenEntities.includes(entity.entity)) {
-          hiddenIndices.push(segments.length - 1);
-        }
-      });
-
+    // Access data from instance properties instead of parameters
+    if (!this._configEntities || !this.hass) {
       return { segments, hiddenIndices };
     }
-  );
 
-  private _computeLegendItems = memoizeOne(
-    (
-      entities: ProcessedEntity[],
-      hiddenEntities: string[],
-      hass: HomeAssistant
-    ): LegendItem[] => {
-      const computedStyles = getComputedStyle(this);
+    // Map entities with their original index
+    const entitiesWithIndex = this._configEntities.map(
+      (entity, originalIndex) => ({
+        ...entity,
+        originalIndex,
+      })
+    );
 
-      return entities.map((entity, index) => {
-        const stateObj = hass.states[entity.entity];
-        const value = stateObj ? Number(stateObj.state) : 0;
-        const isHidden = hiddenEntities.includes(entity.entity);
-        const isZeroOrNegative = !stateObj || value <= 0 || isNaN(value);
+    // Create segments for ALL entities (including hidden ones with positive values)
+    entitiesWithIndex.forEach((entity) => {
+      const stateObj = this.hass!.states[entity.entity];
+      if (!stateObj) return;
 
-        const name = stateObj
-          ? computeLovelaceEntityName(hass, stateObj, entity.name)
-          : entity.entity;
+      const value = Number(stateObj.state);
+      if (value <= 0 || isNaN(value)) return;
 
-        const formattedValue = stateObj ? hass.formatEntityState(stateObj) : "";
+      const color = getGraphColorByIndex(entity.originalIndex, computedStyles);
+      const name = computeLovelaceEntityName(this.hass!, stateObj, entity.name);
+      const formattedValue = this.hass!.formatEntityState(stateObj);
 
-        return {
-          entity: entity.entity,
-          name: name,
-          value: value,
-          formattedValue: formattedValue,
-          color: getGraphColorByIndex(index, computedStyles),
-          isHidden: isHidden,
-          isDisabled: isZeroOrNegative,
-          unit: stateObj?.attributes.unit_of_measurement,
-        };
+      segments.push({
+        value: value,
+        color: color,
+        label: html`${name}
+          <span style="color: var(--secondary-text-color)"
+            >${formattedValue}</span
+          >`,
+        entityId: entity.entity,
       });
+
+      // Track hidden indices
+      if (this._hiddenEntities.includes(entity.entity)) {
+        hiddenIndices.push(segments.length - 1);
+      }
+    });
+
+    return { segments, hiddenIndices };
+  }
+
+  private _computeLegendItems(): LegendItem[] {
+    if (!this._configEntities || !this.hass) {
+      return [];
     }
-  );
+
+    const computedStyles = getComputedStyle(this);
+
+    return this._configEntities.map((entity, index) => {
+      const stateObj = this.hass!.states[entity.entity];
+      const value = stateObj ? Number(stateObj.state) : 0;
+      const isHidden = this._hiddenEntities.includes(entity.entity);
+      const isZeroOrNegative = !stateObj || value <= 0 || isNaN(value);
+
+      const name = stateObj
+        ? computeLovelaceEntityName(this.hass!, stateObj, entity.name)
+        : entity.entity;
+
+      const formattedValue = stateObj
+        ? this.hass!.formatEntityState(stateObj)
+        : "";
+
+      return {
+        entity: entity.entity,
+        name: name,
+        value: value,
+        formattedValue: formattedValue,
+        color: getGraphColorByIndex(index, computedStyles),
+        isHidden: isHidden,
+        isDisabled: isZeroOrNegative,
+      };
+    });
+  }
 
   private _toggleEntity(entityId: string): void {
     if (this._hiddenEntities.includes(entityId)) {
@@ -319,6 +322,66 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
     this._expandLegend = !this._expandLegend;
   }
 
+  private _renderLegend(): TemplateResult {
+    const legendItems = this._computeLegendItems();
+    const overflowLimit = this._isMobileSize
+      ? LEGEND_OVERFLOW_LIMIT_MOBILE
+      : LEGEND_OVERFLOW_LIMIT;
+
+    return html`
+      <ul class="legend">
+        ${legendItems.map((item, index) => {
+          if (!this._expandLegend && index >= overflowLimit) {
+            return nothing;
+          }
+          return html`
+            <li
+              class=${classMap({
+                "legend-item": true,
+                hidden: item.isHidden,
+                disabled: item.isDisabled,
+              })}
+              data-entity=${item.entity}
+              data-disabled=${item.isDisabled}
+              @click=${this._handleLegendClick}
+            >
+              <div
+                class="bullet"
+                style=${styleMap({ backgroundColor: item.color })}
+              ></div>
+              <span class="label">${item.name}</span>
+              ${item.formattedValue
+                ? html`<span class="value">${item.formattedValue}</span>`
+                : nothing}
+            </li>
+          `;
+        })}
+        ${legendItems.length > overflowLimit
+          ? html`
+              <li>
+                <ha-assist-chip
+                  @click=${this._toggleExpandLegend}
+                  filled
+                  .label=${this._expandLegend
+                    ? this.hass!.localize(
+                        "ui.components.history_charts.collapse_legend"
+                      )
+                    : `${this.hass!.localize(
+                        "ui.components.history_charts.expand_legend"
+                      )} (${legendItems.length - overflowLimit})`}
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${this._expandLegend ? mdiChevronUp : mdiChevronDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+              </li>
+            `
+          : nothing}
+      </ul>
+    `;
+  }
+
   protected render(): TemplateResult | typeof nothing {
     if (!this._config || !this.hass) {
       return nothing;
@@ -334,7 +397,7 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
               <p>
                 ${this.hass.localize(
                   "ui.panel.lovelace.cards.distribution.add_entities"
-                ) || "Add entities to display in the stacked bar chart"}
+                )}
               </p>
             </div>
           </div>
@@ -370,16 +433,7 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const segmentData = this._convertToSegments(
-      this._configEntities,
-      this._hiddenEntities,
-      this.hass
-    );
-    const legendItems = this._computeLegendItems(
-      this._configEntities,
-      this._hiddenEntities,
-      this.hass
-    );
+    const segmentData = this._convertToSegments();
 
     return html`
       <ha-card .header=${this._config.title}>
@@ -389,7 +443,7 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
                 <div class="empty-state">
                   ${this.hass.localize(
                     "ui.panel.lovelace.cards.distribution.no_data"
-                  ) || "No data to display"}
+                  )}
                 </div>
               `
             : html`
@@ -404,71 +458,7 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
               `}
 
           <!-- Legend -->
-          <ul class="legend">
-            ${(() => {
-              const isMobile = window.matchMedia(
-                "all and (max-width: 450px), all and (max-height: 500px)"
-              ).matches;
-              const overflowLimit = isMobile
-                ? LEGEND_OVERFLOW_LIMIT_MOBILE
-                : LEGEND_OVERFLOW_LIMIT;
-
-              return html`
-                ${legendItems.map((item, index) => {
-                  if (!this._expandLegend && index >= overflowLimit) {
-                    return nothing;
-                  }
-                  return html`
-                    <li
-                      class=${classMap({
-                        "legend-item": true,
-                        hidden: item.isHidden,
-                        disabled: item.isDisabled,
-                      })}
-                      data-entity=${item.entity}
-                      data-disabled=${item.isDisabled}
-                      @click=${this._handleLegendClick}
-                    >
-                      <div
-                        class="bullet"
-                        style=${styleMap({ backgroundColor: item.color })}
-                      ></div>
-                      <span class="label">${item.name}</span>
-                      ${item.formattedValue
-                        ? html`<span class="value"
-                            >${item.formattedValue}</span
-                          >`
-                        : nothing}
-                    </li>
-                  `;
-                })}
-                ${legendItems.length > overflowLimit
-                  ? html`
-                      <li>
-                        <ha-assist-chip
-                          @click=${this._toggleExpandLegend}
-                          filled
-                          .label=${this._expandLegend
-                            ? this.hass.localize(
-                                "ui.components.history_charts.collapse_legend"
-                              )
-                            : `${this.hass.localize(
-                                "ui.components.history_charts.expand_legend"
-                              )} (${legendItems.length - overflowLimit})`}
-                        >
-                          <ha-svg-icon
-                            slot="trailing-icon"
-                            .path=${this._expandLegend
-                              ? mdiChevronUp
-                              : mdiChevronDown}
-                          ></ha-svg-icon>
-                        </ha-assist-chip>
-                      </li>
-                    `
-                  : nothing}
-              `;
-            })()}
-          </ul>
+          ${this._renderLegend()}
         </div>
       </ha-card>
     `;
@@ -477,6 +467,12 @@ export class HuiDistributionCard extends LitElement implements LovelaceCard {
   static styles = css`
     :host {
       display: block;
+    }
+
+    ha-alert {
+      display: block;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .card-content {
