@@ -268,9 +268,9 @@ class UpdateAvailableCard extends LitElement {
     ) {
       const version = this._version;
       return {
-        title: this.supervisor.localize("update_available.create_backup.addon"),
+        title: this.supervisor.localize("update_available.create_backup.app"),
         description: this.supervisor.localize(
-          "update_available.create_backup.addon_description",
+          "update_available.create_backup.app_description",
           { version: version }
         ),
       };

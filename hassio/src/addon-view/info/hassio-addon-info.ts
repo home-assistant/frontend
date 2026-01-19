@@ -271,7 +271,7 @@ class HassioAddonInfo extends LitElement {
                     id="stage"
                     .label=${capitalizeFirstLetter(
                       this.supervisor.localize(
-                        `addon.dashboard.capability.stages.${this.addon.stage}`
+                        `app.dashboard.capability.stages.${this.addon.stage}`
                       )
                     )}
                   >
@@ -361,7 +361,7 @@ class HassioAddonInfo extends LitElement {
                     id="hassio_api"
                     .label=${capitalizeFirstLetter(
                       this.supervisor.localize(
-                        `addon.dashboard.capability.role.${this.addon.hassio_role}`
+                        `app.dashboard.capability.role.${this.addon.hassio_role}`
                       ) || this.addon.hassio_role
                     )}
                   >
@@ -493,7 +493,7 @@ class HassioAddonInfo extends LitElement {
 
           <div class="description light-color">
             ${this.addon.description}.<br />
-            ${this.supervisor.localize("app.dashboard.visit_addon_page", {
+            ${this.supervisor.localize("app.dashboard.visit_app_page", {
               name: html`<a
                 href=${this.addon.url!}
                 target="_blank"
@@ -855,11 +855,13 @@ class HassioAddonInfo extends LitElement {
   private _showMoreInfo(ev): void {
     const id = ev.currentTarget.id as AddonCapability;
     showHassioMarkdownDialog(this, {
-      title: this.supervisor.localize(`app.dashboard.capability.${id}.title`),
+      title: this.supervisor.localize(
+        `app.dashboard.capability.${String(id)}.title`
+      ),
       content:
         id === "stage"
           ? this.supervisor.localize(
-              `addon.dashboard.capability.${id}.description`,
+              `app.dashboard.capability.${String(id)}.description`,
               {
                 icon_stable: `<ha-svg-icon path="${STAGE_ICON.stable}"></ha-svg-icon>`,
                 icon_experimental: `<ha-svg-icon path="${STAGE_ICON.experimental}"></ha-svg-icon>`,
@@ -867,7 +869,7 @@ class HassioAddonInfo extends LitElement {
               }
             )
           : this.supervisor.localize(
-              `addon.dashboard.capability.${id}.description`
+              `app.dashboard.capability.${String(id)}.description`
             ),
     });
   }

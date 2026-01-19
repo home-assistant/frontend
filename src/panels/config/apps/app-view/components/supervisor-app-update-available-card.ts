@@ -170,10 +170,10 @@ class SupervisorAppUpdateAvailableCard extends LitElement {
       const version = this.addon.version;
       return {
         title: this.hass.localize(
-          "ui.panel.config.apps.dashboard.update_available.create_backup.addon"
+          "ui.panel.config.apps.dashboard.update_available.create_backup.app"
         ),
         description: this.hass.localize(
-          "ui.panel.config.apps.dashboard.update_available.create_backup.addon_description",
+          "ui.panel.config.apps.dashboard.update_available.create_backup.app_description",
           { version: version }
         ),
       };

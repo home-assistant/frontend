@@ -33,7 +33,7 @@ class HassioAddons extends LitElement {
           suffix
           .filter=${this._filter}
           @value-changed=${this._handleSearchChange}
-          .label=${this.supervisor.localize("dashboard.search_addons")}
+          .label=${this.supervisor.localize("dashboard.search_apps")}
         >
         </search-input>
       </div>
@@ -47,7 +47,7 @@ class HassioAddons extends LitElement {
                 <ha-card outlined>
                   <div class="card-content">
                     <button class="link" @click=${this._openStore}>
-                      ${this.supervisor.localize("dashboard.no_addons")}
+                      ${this.supervisor.localize("dashboard.no_apps")}
                     </button>
                   </div>
                 </ha-card>
