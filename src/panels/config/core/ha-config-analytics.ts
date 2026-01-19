@@ -1,23 +1,23 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit"
-import { css, html, LitElement, nothing } from "lit"
-import { customElement, property, state } from "lit/decorators"
-import { isComponentLoaded } from "../../../common/config/is_component_loaded"
-import "../../../components/ha-alert"
-import "../../../components/ha-analytics"
-import "../../../components/ha-card"
-import "../../../components/ha-settings-row"
-import type { HaSwitch } from "../../../components/ha-switch"
-import type { Analytics } from "../../../data/analytics"
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/ha-alert";
+import "../../../components/ha-analytics";
+import "../../../components/ha-card";
+import "../../../components/ha-settings-row";
+import type { HaSwitch } from "../../../components/ha-switch";
+import type { Analytics } from "../../../data/analytics";
 import {
   getAnalyticsDetails,
   setAnalyticsPreferences,
-} from "../../../data/analytics"
-import type { LabPreviewFeature } from "../../../data/labs"
-import { subscribeLabFeature } from "../../../data/labs"
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin"
-import { haStyle } from "../../../resources/styles"
-import type { HomeAssistant } from "../../../types"
-import { documentationUrl } from "../../../util/documentation-url"
+} from "../../../data/analytics";
+import type { LabPreviewFeature } from "../../../data/labs";
+import { subscribeLabFeature } from "../../../data/labs";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-analytics")
 class ConfigAnalytics extends SubscribeMixin(LitElement) {
@@ -76,7 +76,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                   "ui.panel.config.analytics.preferences.snapshots.info"
                 )}
                 <a
-                  href="https://ohf.org/xyz"
+                  href="https://www.openhomefoundation.org/device-database-data-use-statement"
                   target="_blank"
                   rel="noreferrer"
                   >${this.hass.localize(
