@@ -83,7 +83,9 @@ class ZWaveJSConfigEntryPicker extends LitElement {
       domain: "zwave_js",
     });
     this._configEntries = entries
-      .filter((entry) => entry.disabled_by === null)
+      .filter(
+        (entry) => entry.disabled_by === null && entry.source !== "ignore"
+      )
       .sort((a, b) => caseInsensitiveStringCompare(a.title, b.title));
     if (this._configEntries.length === 1) {
       navigate(
