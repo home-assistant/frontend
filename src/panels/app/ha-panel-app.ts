@@ -192,6 +192,13 @@ class HaPanelApp extends LitElement {
     return undefined;
   }
 
+  private async _showErrorAndNavigateHome(title: string, text: string) {
+    await this.updateComplete;
+    await showAlertDialog(this, { title, text });
+    await nextRender();
+    navigate("/", { replace: true });
+  }
+
   private async _fetchData(addonSlug: string) {
     const createSessionPromise = createHassioSession(this.hass);
 
@@ -200,35 +207,26 @@ class HaPanelApp extends LitElement {
     try {
       addon = await fetchHassioAddonInfo(this.hass, addonSlug);
     } catch (err: any) {
-      await this.updateComplete;
-      await showAlertDialog(this, {
-        text: extractApiErrorMessage(err),
-        title: addonSlug,
-      });
-      await nextRender();
-      navigate("/", { replace: true });
+      await this._showErrorAndNavigateHome(
+        addonSlug,
+        extractApiErrorMessage(err)
+      );
       return;
     }
 
     if (!addon.version) {
-      await this.updateComplete;
-      await showAlertDialog(this, {
-        text: this.hass.localize("ui.panel.app.error_app_not_installed"),
-        title: addon.name,
-      });
-      await nextRender();
-      navigate("/", { replace: true });
+      await this._showErrorAndNavigateHome(
+        addon.name,
+        this.hass.localize("ui.panel.app.error_app_not_installed")
+      );
       return;
     }
 
     if (!addon.ingress_url) {
-      await this.updateComplete;
-      await showAlertDialog(this, {
-        text: this.hass.localize("ui.panel.app.error_app_no_ingress"),
-        title: addon.name,
-      });
-      await nextRender();
-      navigate("/", { replace: true });
+      await this._showErrorAndNavigateHome(
+        addon.name,
+        this.hass.localize("ui.panel.app.error_app_no_ingress")
+      );
       return;
     }
 
@@ -251,12 +249,10 @@ class HaPanelApp extends LitElement {
           this._fetchData(addonSlug);
           return;
         } catch (_err) {
-          await showAlertDialog(this, {
-            text: this.hass.localize("ui.panel.app.error_starting_app"),
-            title: addon.name,
-          });
-          await nextRender();
-          navigate("/", { replace: true });
+          await this._showErrorAndNavigateHome(
+            addon.name,
+            this.hass.localize("ui.panel.app.error_starting_app")
+          );
           return;
         }
       } else {
@@ -295,12 +291,10 @@ class HaPanelApp extends LitElement {
       if (this._sessionKeepAlive) {
         clearInterval(this._sessionKeepAlive);
       }
-      await showAlertDialog(this, {
-        text: this.hass.localize("ui.panel.app.error_creating_session"),
-        title: addon.name,
-      });
-      await nextRender();
-      navigate("/", { replace: true });
+      await this._showErrorAndNavigateHome(
+        addon.name,
+        this.hass.localize("ui.panel.app.error_creating_session")
+      );
       return;
     }
 
