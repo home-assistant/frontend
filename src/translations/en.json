@@ -5432,10 +5432,10 @@
             "icon": "Icon",
             "area": "Area",
             "dialog": {
-              "add_icon": "Add icon",
-              "add_area": "Add area",
-              "add_category": "Add category",
-              "add_labels": "Add labels"
+              "add_icon": "[%key:ui::panel::config::automation::editor::dialog::add_icon%]",
+              "add_area": "[%key:ui::panel::config::automation::editor::dialog::add_area%]",
+              "add_category": "[%key:ui::panel::config::automation::editor::dialog::add_category%]",
+              "add_labels": "[%key:ui::panel::config::automation::editor::dialog::add_labels%]"
             },
             "devices": {
               "header": "Devices",
