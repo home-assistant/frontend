@@ -226,7 +226,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       >
         <ha-dropdown
           slot="toolbar-icon"
-          @wa-select=${this._handleDropdownSelect}
+          @wa-select=${this._handleMenuAction}
+          activatable
         >
           <ha-icon-button
             slot="trigger"
@@ -242,7 +243,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item value="info" .disabled=${!this.sceneId}>
+          <ha-dropdown-item value="show-info" .disabled=${!this.sceneId}>
             ${this.hass.localize("ui.panel.config.scene.picker.show_info")}
             <ha-svg-icon
               slot="icon"
@@ -250,14 +251,14 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             ></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item value="settings" .disabled=${!this.sceneId}>
+          <ha-dropdown-item value="show-settings" .disabled=${!this.sceneId}>
             ${this.hass.localize(
               "ui.panel.config.automation.picker.show_settings"
             )}
             <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item value="category" .disabled=${!this.sceneId}>
+          <ha-dropdown-item value="edit-category" .disabled=${!this.sceneId}>
             ${this.hass.localize(
               `ui.panel.config.scene.picker.${this._registryEntry?.categories?.scene ? "edit_category" : "assign_category"}`
             )}
@@ -269,7 +270,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item value="toggle_yaml_mode">
+          <ha-dropdown-item value="toggle-yaml">
             ${this.hass.localize(
               `ui.panel.config.automation.editor.edit_${this._mode !== "yaml" ? "yaml" : "ui"}`
             )}
@@ -288,10 +289,15 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           <ha-dropdown-item
             value="delete"
             .disabled=${!this.sceneId}
-            .variant=${this.sceneId ? "danger" : "default"}
+            class=${classMap({ warning: Boolean(this.sceneId) })}
           >
             ${this.hass.localize("ui.panel.config.scene.picker.delete_scene")}
-            <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+            <ha-svg-icon
+              class=${classMap({ warning: Boolean(this.sceneId) })}
+              slot="icon"
+              .path=${mdiDelete}
+            >
+            </ha-svg-icon>
           </ha-dropdown-item>
         </ha-dropdown>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
@@ -622,33 +628,29 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
     const action = ev.detail?.item?.value;
-
-    if (!action) {
-      return;
-    }
 
     switch (action) {
       case "apply":
         activateScene(this.hass, this._scene!.entity_id);
         break;
-      case "info":
+      case "show-info":
         fireEvent(this, "hass-more-info", { entityId: this._scene!.entity_id });
         break;
-      case "settings":
+      case "show-settings":
         showMoreInfoDialog(this, {
           entityId: this._scene!.entity_id,
           view: "settings",
         });
         break;
-      case "category":
+      case "edit-category":
         this._editCategory();
         break;
       case "rename":
         this._promptSceneRename();
         break;
-      case "toggle_yaml_mode":
+      case "toggle-yaml":
         if (this._mode === "yaml") {
           this._initEntities(this._config!);
           this._exitYamlMode();
