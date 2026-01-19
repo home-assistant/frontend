@@ -7031,6 +7031,9 @@
             "automatic_description_none": "No automatic backup yet.",
             "manual": "Create manual backup before enabling",
             "manual_description": "Includes Home Assistant settings and history."
+          },
+          "analytics_snapshots": {
+            "not_available": "This preview feature requires a newer version of Home Assistant and is not available in your current backend."
           }
         },
         "network": {

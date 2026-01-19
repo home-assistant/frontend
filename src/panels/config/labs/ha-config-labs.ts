@@ -5,31 +5,31 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
-import { domainToName } from "../../../data/integration";
-import {
-  labsUpdatePreviewFeature,
-  subscribeLabFeatures,
-} from "../../../data/labs";
-import type { LabPreviewFeature } from "../../../data/labs";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { brandsUrl } from "../../../util/brands-url";
-import { showToast } from "../../../util/toast";
-import { documentationUrl } from "../../../util/documentation-url";
-import { haStyle } from "../../../resources/styles";
-import { showLabsPreviewFeatureEnableDialog } from "./show-dialog-labs-preview-feature-enable";
-import {
-  showLabsProgressDialog,
-  closeLabsProgressDialog,
-} from "./show-dialog-labs-progress";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import "../../../components/ha-switch";
+import { domainToName } from "../../../data/integration";
+import type { LabPreviewFeature } from "../../../data/labs";
+import {
+  labsUpdatePreviewFeature,
+  subscribeLabFeatures,
+} from "../../../data/labs";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
+import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
+import { showLabsPreviewFeatureEnableDialog } from "./show-dialog-labs-preview-feature-enable";
+import {
+  closeLabsProgressDialog,
+  showLabsProgressDialog,
+} from "./show-dialog-labs-progress";
 
 @customElement("ha-config-labs")
 class HaConfigLabs extends SubscribeMixin(LitElement) {
@@ -41,24 +41,43 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
   @state() private _highlightedPreviewFeature?: string;
 
+  @state() private _hasAnalyticsSnapshotsBackend = false;
+
   private _sortedPreviewFeatures = memoizeOne(
-    (localize: LocalizeFunc, features: LabPreviewFeature[]) =>
-      // Sort by localized integration name alphabetically
-      [...features].sort((a, b) =>
-        domainToName(localize, a.domain).localeCompare(
+    (localize: LocalizeFunc, features: LabPreviewFeature[]) => {
+      const featuresToSort = [...features];
+
+      return featuresToSort.sort((a, b) => {
+        const aIsAnalyticsSnapshots =
+          a.domain === "analytics" && a.preview_feature === "snapshots";
+        const bIsAnalyticsSnapshots =
+          b.domain === "analytics" && b.preview_feature === "snapshots";
+        const aIsAutomation = a.domain === "automation";
+        const bIsAutomation = b.domain === "automation";
+
+        if (aIsAutomation && bIsAnalyticsSnapshots) return -1;
+        if (aIsAnalyticsSnapshots && bIsAutomation) return 1;
+
+        return domainToName(localize, a.domain).localeCompare(
           domainToName(localize, b.domain)
-        )
-      )
+        );
+      });
+    }
   );
 
   public hassSubscribe() {
     return [
       subscribeLabFeatures(this.hass.connection, (features) => {
-        // Load title translations for integrations with preview features
+        // Load title and preview_features translations for integrations with preview features
         const domains = [...new Set(features.map((f) => f.domain))];
         this.hass.loadBackendTranslation("title", domains);
+        this.hass.loadBackendTranslation("preview_features", domains);
 
         this._preview_features = features;
+
+        this._hasAnalyticsSnapshotsBackend = features.some(
+          (f) => f.domain === "analytics" && f.preview_feature === "snapshots"
+        );
       }),
     ];
   }
@@ -165,6 +184,8 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   private _renderPreviewFeature(
     preview_feature: LabPreviewFeature
   ): TemplateResult {
+    const previewFeatureId = `${preview_feature.domain}.${preview_feature.preview_feature}`;
+
     const featureName = this.hass.localize(
       `component.${preview_feature.domain}.preview_features.${preview_feature.preview_feature}.name`
     );
@@ -182,7 +203,6 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       ? `${integrationName} • ${this.hass.localize("ui.panel.config.labs.custom_integration")}`
       : integrationName;
 
-    const previewFeatureId = `${preview_feature.domain}.${preview_feature.preview_feature}`;
     const isHighlighted = this._highlightedPreviewFeature === previewFeatureId;
 
     // Build description with learn more link if available
@@ -282,6 +302,20 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       preview_feature: LabPreviewFeature;
     };
     const preview_feature = buttonEl.preview_feature;
+
+    if (
+      preview_feature.domain === "analytics" &&
+      preview_feature.preview_feature === "snapshots" &&
+      !this._hasAnalyticsSnapshotsBackend
+    ) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.labs.analytics_snapshots.not_available"
+        ),
+      });
+      return;
+    }
+
     const enabled = !preview_feature.enabled;
     const previewFeatureId = `${preview_feature.domain}.${preview_feature.preview_feature}`;
 

@@ -2,27 +2,32 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/ha-alert";
 import "../../../components/ha-analytics";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
+import type { HaSwitch } from "../../../components/ha-switch";
 import type { Analytics } from "../../../data/analytics";
 import {
   getAnalyticsDetails,
   setAnalyticsPreferences,
 } from "../../../data/analytics";
+import type { LabPreviewFeature } from "../../../data/labs";
+import { subscribeLabFeature } from "../../../data/labs";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-alert";
 
 @customElement("ha-config-analytics")
-class ConfigAnalytics extends LitElement {
+class ConfigAnalytics extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _analyticsDetails?: Analytics;
 
   @state() private _error?: string;
+
+  @state() private _snapshotsLabEnabled = false;
 
   protected render(): TemplateResult {
     const error = this._error
@@ -56,7 +61,8 @@ class ConfigAnalytics extends LitElement {
           ></ha-analytics>
         </div>
       </ha-card>
-      ${this._analyticsDetails &&
+      ${this._snapshotsLabEnabled &&
+      this._analyticsDetails &&
       "snapshots" in this._analyticsDetails.preferences
         ? html`<ha-card
             outlined
@@ -109,6 +115,19 @@ class ConfigAnalytics extends LitElement {
           </ha-card>`
         : nothing}
     `;
+  }
+
+  public hassSubscribe() {
+    return [
+      subscribeLabFeature(
+        this.hass.connection,
+        "analytics",
+        "snapshots",
+        (feature: LabPreviewFeature) => {
+          this._snapshotsLabEnabled = feature.enabled;
+        }
+      ),
+    ];
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
