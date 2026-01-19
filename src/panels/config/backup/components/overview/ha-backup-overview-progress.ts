@@ -27,14 +27,14 @@ export class HaBackupOverviewProgress extends LitElement {
           return "";
         }
         return this.hass.localize(
-          `ui.panel.config.backup.overview.progress.description.create_backup.${this.manager.stage}`
+          `ui.panel.config.backup.overview.progress.description.create_backup.${createStage}`
         );
       case "restore_backup":
         if (!this.manager.stage) {
           return "";
         }
         return this.hass.localize(
-          `ui.panel.config.backup.overview.progress.description.restore_backup.${this.manager.stage}`
+          `ui.panel.config.backup.overview.progress.description.restore_backup.${restoreStage}`
         );
 
       case "receive_backup":
