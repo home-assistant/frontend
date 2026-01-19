@@ -650,6 +650,15 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface DistributionEntityConfig extends EntityConfig {}
+
+export interface DistributionCardConfig extends LovelaceCardConfig {
+  type: "distribution";
+  title?: string;
+  entities: (string | DistributionEntityConfig)[];
+  theme?: string;
+}
+
 export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {
   hide_empty?: boolean;
   vertical?: boolean;

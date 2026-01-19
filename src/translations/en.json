@@ -7714,6 +7714,13 @@
               "compare_previous_period": "Compare previous period"
             }
           },
+          "distribution": {
+            "no_entities": "No entities specified",
+            "domain_mismatch": "All entities must be from the same domain. Found: {domains}",
+            "device_class_mismatch": "All entities must have the same device class. Found: {classes}",
+            "no_data": "No data to display. All entities are hidden or have zero values.",
+            "add_entities": "Add entities to display in the distribution chart"
+          },
           "heading": {
             "default_heading": "Kitchen"
           }
@@ -8369,6 +8376,10 @@
               "name": "Horizontal stack",
               "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
+            },
+            "distribution": {
+              "name": "Distribution",
+              "description": "The Distribution card displays multiple numerical entities as a proportional chart with an interactive legend."
             },
             "humidifier": {
               "name": "Humidifier",
