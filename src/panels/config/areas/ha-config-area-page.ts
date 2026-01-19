@@ -16,12 +16,13 @@ import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-tooltip";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
@@ -226,32 +227,24 @@ class HaConfigAreaPage extends LitElement {
             ></ha-icon>`
           : nothing}${area.name}`}
       >
-        <ha-button-menu slot="toolbar-icon">
+        <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item
-            graphic="icon"
-            .entry=${area}
-            @click=${this._showSettings}
-          >
+          <ha-dropdown-item value="edit" .data=${area}>
+            <ha-svg-icon slot="icon" .path=${mdiPencil}> </ha-svg-icon>
             ${this.hass.localize("ui.panel.config.areas.edit_settings")}
-            <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
-          </ha-list-item>
+          </ha-dropdown-item>
 
-          <ha-list-item
-            class="warning"
-            graphic="icon"
-            @click=${this._deleteConfirm}
-          >
-            ${this.hass.localize("ui.panel.config.areas.editor.delete")}
-            <ha-svg-icon class="warning" slot="graphic" .path=${mdiDelete}>
+          <ha-dropdown-item value="delete">
+            <ha-svg-icon class="warning" slot="icon" .path=${mdiDelete}>
             </ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            ${this.hass.localize("ui.panel.config.areas.editor.delete")}
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <div class="container">
           <div class="column">
@@ -611,6 +604,19 @@ class HaConfigAreaPage extends LitElement {
 
   private async _findRelated() {
     this._related = await findRelated(this.hass, "area", this.areaId);
+  }
+
+  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+    const entry = (ev.detail?.item as any)?.data as AreaRegistryEntry;
+    switch (action) {
+      case "edit":
+        this._openDialog(entry);
+        break;
+      case "delete":
+        this._deleteConfirm();
+        break;
+    }
   }
 
   private _showSettings(ev: MouseEvent) {
