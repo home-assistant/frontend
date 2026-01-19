@@ -119,8 +119,14 @@ export class HuiAreaControlsCardFeatureEditor
             typeof item === "string" ? item === id : item.entity_id === id
           );
 
-        const matchesSearch = (search: string, ...values: string[]): boolean =>
-          values.some((v) => v.toLowerCase().includes(search.toLowerCase()));
+        const matchesSearch = (
+          search: string,
+          ...values: string[]
+        ): boolean => {
+          const searchTerms = search.toLowerCase().split(" ");
+          const searchableText = values.join(" ").toLowerCase();
+          return searchTerms.every((term) => searchableText.includes(term));
+        };
 
         const controlEntities = getAreaControlEntities(
           AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[],
@@ -130,17 +136,10 @@ export class HuiAreaControlsCardFeatureEditor
         );
 
         const items: (AreaControlPickerItem | string)[] = [];
+        const domainItems: AreaControlPickerItem[] = [];
+        const entityItems: AreaControlPickerItem[] = [];
 
         if (!section || section === "domain") {
-          if (!section) {
-            // Add domains section header
-            items.push(
-              localize(
-                "ui.panel.lovelace.editor.features.types.area-controls.sections.domain"
-              )
-            );
-          }
-
           const supportedControls = (
             Object.keys(controlEntities) as (keyof typeof controlEntities)[]
           ).filter((control) => controlEntities[control].length > 0);
@@ -160,7 +159,7 @@ export class HuiAreaControlsCardFeatureEditor
                   : button.filter.device_class
                 : undefined;
 
-              items.push({
+              domainItems.push({
                 type: "domain",
                 id: control,
                 primary: label,
@@ -172,15 +171,6 @@ export class HuiAreaControlsCardFeatureEditor
         }
 
         if (!section || section === "entity") {
-          if (!section) {
-            // Add entities section header
-            items.push(
-              localize(
-                "ui.panel.lovelace.editor.features.types.area-controls.sections.entity"
-              )
-            );
-          }
-
           const allEntityIds = Object.values(controlEntities).flat();
           const uniqueEntityIds = Array.from(new Set(allEntityIds));
 
@@ -220,7 +210,7 @@ export class HuiAreaControlsCardFeatureEditor
                 friendlyName
               )
             ) {
-              items.push({
+              entityItems.push({
                 type: "entity",
                 id: entityId,
                 primary,
@@ -229,6 +219,28 @@ export class HuiAreaControlsCardFeatureEditor
               });
             }
           });
+        }
+
+        // Only add section headers if there are items in that section
+        if (!section) {
+          if (domainItems.length > 0) {
+            items.push(
+              localize(
+                "ui.panel.lovelace.editor.features.types.area-controls.sections.domain"
+              )
+            );
+            items.push(...domainItems);
+          }
+          if (entityItems.length > 0) {
+            items.push(
+              localize(
+                "ui.panel.lovelace.editor.features.types.area-controls.sections.entity"
+              )
+            );
+            items.push(...entityItems);
+          }
+        } else {
+          items.push(...domainItems, ...entityItems);
         }
 
         return items;
@@ -346,44 +358,33 @@ export class HuiAreaControlsCardFeatureEditor
     `;
   }
 
-  private _rowRenderer = (item: AreaControlPickerItem) => {
-    if (item.type === "entity" && item.stateObj) {
-      // Render entity with icon and context (like ha-quick-bar)
-      return html`
-        <ha-combo-box-item type="button" compact>
-          <ha-state-icon
+  private _rowRenderer = (item: AreaControlPickerItem) => html`
+    <ha-combo-box-item type="button" compact>
+      ${item.type === "entity" && item.stateObj
+        ? html`<ha-state-icon
             slot="start"
             .hass=${this.hass}
             .stateObj=${item.stateObj}
-          ></ha-state-icon>
-          <span slot="headline">${item.primary}</span>
-          ${item.secondary
-            ? html`<span slot="supporting-text">${item.secondary}</span>`
-            : nothing}
-          <span slot="supporting-text" class="code">
-            ${item.stateObj.entity_id}
-          </span>
-        </ha-combo-box-item>
-      `;
-    }
-
-    // Render domain control with icon
-    return html`
-      <ha-combo-box-item type="button" compact>
-        ${item.domain
-          ? html`
-              <ha-domain-icon
-                slot="start"
-                .hass=${this.hass}
-                .domain=${item.domain}
-                .deviceClass=${item.deviceClass}
-              ></ha-domain-icon>
-            `
+          ></ha-state-icon>`
+        : item.domain
+          ? html`<ha-domain-icon
+              slot="start"
+              .hass=${this.hass}
+              .domain=${item.domain}
+              .deviceClass=${item.deviceClass}
+            ></ha-domain-icon>`
           : nothing}
-        <span slot="headline">${item.primary}</span>
-      </ha-combo-box-item>
-    `;
-  };
+      <span slot="headline">${item.primary}</span>
+      ${item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing}
+      ${item.type === "entity" && item.stateObj
+        ? html`<span slot="supporting-text" class="code">
+            ${item.stateObj.entity_id}
+          </span>`
+        : nothing}
+    </ha-combo-box-item>
+  `;
 
   private _getItemLabel(item: AreaControl): string {
     if (!this.hass) {

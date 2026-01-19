@@ -5,6 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import {
   computeGroupEntitiesState,
@@ -38,6 +39,14 @@ interface AreaControlsButton {
     domain: string;
     device_class?: string;
   };
+}
+
+type NormalizedControl =
+  | { type: "domain"; value: AreaControlDomain }
+  | { type: "entity"; value: string };
+
+interface ControlButtonElement extends HTMLElement {
+  control: NormalizedControl;
 }
 
 const coverButton = (deviceClass: string) => ({
@@ -138,11 +147,7 @@ class HuiAreaControlsCardFeature
     return this._config?.controls || [...AREA_CONTROL_DOMAINS];
   }
 
-  private _normalizeControl(
-    control: AreaControl
-  ):
-    | { type: "domain"; value: AreaControlDomain }
-    | { type: "entity"; value: string } {
+  private _normalizeControl(control: AreaControl): NormalizedControl {
     // Handle explicit entity format
     if (typeof control === "object" && "entity_id" in control) {
       return { type: "entity", value: control.entity_id };
@@ -182,9 +187,7 @@ class HuiAreaControlsCardFeature
       return;
     }
 
-    const normalized = (ev.currentTarget as any).control as
-      | { type: "domain"; value: AreaControlDomain }
-      | { type: "entity"; value: string };
+    const normalized = (ev.currentTarget as ControlButtonElement).control;
 
     if (normalized.type === "entity") {
       const entity = this.hass.states[normalized.value];
@@ -199,10 +202,7 @@ class HuiAreaControlsCardFeature
       return;
     }
 
-    const domainControls = this._controls
-      .map((c) => this._normalizeControl(c))
-      .filter((n) => n.type === "domain")
-      .map((n) => n.value as AreaControlDomain);
+    const domainControls = this._domainControls(this._controls);
 
     const controlEntities = this._controlEntities(
       domainControls,
@@ -220,6 +220,16 @@ class HuiAreaControlsCardFeature
     forwardHaptic(this, "light");
     toggleGroupEntities(this.hass, entities);
   }
+
+  private _domainControls = memoizeOne((controls: AreaControl[]) =>
+    controls
+      .map((c) => this._normalizeControl(c))
+      .filter(
+        (n): n is { type: "domain"; value: AreaControlDomain } =>
+          n.type === "domain"
+      )
+      .map((n) => n.value)
+  );
 
   private _controlEntities = memoizeOne(
     (
@@ -249,12 +259,7 @@ class HuiAreaControlsCardFeature
     );
 
     // Get domain controls for entity lookup
-    const domainControls = normalizedControls
-      .filter(
-        (n): n is { type: "domain"; value: AreaControlDomain } =>
-          n.type === "domain"
-      )
-      .map((n) => n.value);
+    const domainControls = this._domainControls(this._controls);
 
     const controlEntities = this._controlEntities(
       domainControls,
@@ -288,6 +293,13 @@ class HuiAreaControlsCardFeature
         })}
       >
         ${displayControls.map((normalized) => {
+          let active: boolean;
+          let label: string;
+          let domain: string;
+          let deviceClass: string | undefined;
+          let entityState: string;
+          let entity: HassEntity | undefined;
+
           if (normalized.type === "domain") {
             const button = AREA_CONTROLS_BUTTONS[normalized.value];
             const controlEntityIds = controlEntities[normalized.value];
@@ -301,81 +313,59 @@ class HuiAreaControlsCardFeature
 
             const groupState = computeGroupEntitiesState(entities);
 
-            const active = entities[0]
-              ? stateActive(entities[0], groupState)
-              : false;
-
-            const label = this.hass!.localize(
-              `ui.card_features.area_controls.${normalized.value}.${active ? "off" : "on"}` as any
+            active = entities[0] ? stateActive(entities[0], groupState) : false;
+            label = this.hass!.localize(
+              `ui.card_features.area_controls.${normalized.value}.${active ? "off" : "on"}`
             );
-
-            const domain = button.filter.domain;
-            const deviceClass = button.filter.device_class
+            domain = button.filter.domain;
+            deviceClass = button.filter.device_class
               ? ensureArray(button.filter.device_class)[0]
               : undefined;
-
-            const activeColor = computeCssVariable(
-              domainColorProperties(domain, deviceClass, groupState, true)
-            );
-
-            return html`
-              <ha-control-button
-                style=${styleMap({
-                  "--active-color": activeColor,
-                })}
-                .title=${label}
-                aria-label=${label}
-                class=${active ? "active" : ""}
-                .control=${normalized}
-                @click=${this._handleButtonTap}
-              >
-                <ha-domain-icon
-                  .hass=${this.hass}
-                  .domain=${domain}
-                  .deviceClass=${deviceClass}
-                  .state=${groupState}
-                ></ha-domain-icon>
-              </ha-control-button>
-            `;
-          }
-
-          if (normalized.type === "entity") {
-            const entity = this.hass!.states[normalized.value];
+            entityState = groupState;
+          } else if (normalized.type === "entity") {
+            entity = this.hass!.states[normalized.value];
             if (!entity) {
               return nothing;
             }
 
-            const active = stateActive(entity);
-
-            const label = this.hass!.localize(
-              `ui.card.common.turn_${active ? "off" : "on"}` as any
+            active = stateActive(entity);
+            label = this.hass!.localize(
+              `ui.card.common.turn_${active ? "off" : "on"}`
             );
-
-            const domain = entity.entity_id.split(".")[0];
-            const activeColor = computeCssVariable(
-              domainColorProperties(domain, undefined, entity.state, true)
-            );
-
-            return html`
-              <ha-control-button
-                style=${styleMap({
-                  "--active-color": activeColor,
-                })}
-                .title=${label}
-                aria-label=${label}
-                class=${active ? "active" : ""}
-                .control=${normalized}
-                @click=${this._handleButtonTap}
-              >
-                <ha-state-icon
-                  .hass=${this.hass}
-                  .stateObj=${entity}
-                ></ha-state-icon>
-              </ha-control-button>
-            `;
+            domain = computeDomain(entity.entity_id);
+            entityState = entity.state;
+          } else {
+            return nothing;
           }
 
-          return nothing;
+          const activeColor = computeCssVariable(
+            domainColorProperties(domain, deviceClass, entityState, true)
+          );
+
+          return html`
+            <ha-control-button
+              style=${styleMap({
+                "--active-color": activeColor,
+              })}
+              .title=${label}
+              aria-label=${label}
+              class=${active ? "active" : ""}
+              .control=${normalized}
+              @click=${this._handleButtonTap}
+            >
+              ${normalized.type === "domain"
+                ? html`<ha-domain-icon
+                    .hass=${this.hass}
+                    .domain=${domain}
+                    .deviceClass=${deviceClass}
+                    .state=${entityState}
+                  ></ha-domain-icon>`
+                : html`<ha-state-icon
+                    .hass=${this.hass}
+                    .stateObj=${entity}
+                  ></ha-state-icon>`}
+            </ha-control-button>
+          `;
         })}
       </ha-control-button-group>
     `;
