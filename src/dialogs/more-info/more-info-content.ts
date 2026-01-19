@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { computeEntityEntryName } from "../../common/entity/compute_entity_name";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
 import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
@@ -106,7 +106,7 @@ class MoreInfoContent extends LitElement {
           return null;
         }
         const entityName = entry
-          ? computeEntityEntryName(entry, hass.devices)
+          ? computeEntityName(stateObj, hass.entities, hass.devices)
           : undefined;
         const { area } = getEntityContext(
           stateObj,
