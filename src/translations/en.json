@@ -1,5 +1,6 @@
 {
   "panel": {
+    "apps": "Apps",
     "energy": "Energy",
     "calendar": "Calendar",
     "config": "Settings",
@@ -2260,6 +2261,17 @@
       "reset_confirmation": "Are you sure you want to reset the sidebar to its default configuration? This will restore the original order and visibility of all panels."
     },
     "panel": {
+      "app": {
+        "error_app_not_installed": "The app is not installed. Please install it first.",
+        "error_app_no_ingress": "This app does not support ingress.",
+        "error_app_not_running": "The app is not running. Do you want to start it now?",
+        "start_app": "Start app",
+        "app_starting": "The app is starting, this can take some time...",
+        "error_starting_app": "Error starting the app",
+        "error_creating_session": "Unable to create an ingress session",
+        "error_app_not_ready": "The app seems to not be ready, it might still be starting. Do you want to try again?",
+        "retry": "Retry"
+      },
       "home": {
         "editor": {
           "title": "Edit home page",
@@ -2304,7 +2316,7 @@
             "secondary": "Generate backups of your Home Assistant configuration"
           },
           "supervisor": {
-            "main": "Add-ons",
+            "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
           },
           "dashboards": {
@@ -2462,6 +2474,253 @@
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
+        },
+        "apps": {
+          "caption": "Apps",
+          "description": "Install and manage apps",
+          "error_loading": "Error loading apps",
+          "state": {
+            "update_available": "Update available",
+            "installed": "Installed",
+            "not_installed": "Not installed",
+            "not_available": "Not available"
+          },
+          "installed": {
+            "search": "Search apps",
+            "no_apps": "You don't have any apps installed yet. Click here to browse available apps.",
+            "add_app": "Install app",
+            "app_stopped": "App is stopped",
+            "app_update_available": "Update available",
+            "app_running": "App is running"
+          },
+          "store": {
+            "title": "App store",
+            "check_updates": "Check for updates",
+            "repositories": "Repositories",
+            "registries": "Registries",
+            "missing_apps": "Looking for apps? Enable advanced mode.",
+            "no_results_found": "No results found in {repository}"
+          },
+          "dialog": {
+            "repositories": {
+              "title": "Manage app repositories",
+              "add": "Add",
+              "remove": "Remove",
+              "used": "In use by installed apps",
+              "no_repositories": "You don't have any app repositories configured"
+            },
+            "registries": {
+              "title_add": "Add registry",
+              "title_manage": "Manage registries",
+              "add_registry": "Add",
+              "add_new_registry": "Add new registry",
+              "username": "Username",
+              "remove": "Remove registry",
+              "no_registries": "You don't have any registries configured",
+              "failed_to_add": "Failed to add registry",
+              "failed_to_remove": "Failed to remove registry",
+              "registry": "Registry",
+              "password": "Password"
+            }
+          },
+          "panel": {
+            "info": "Info",
+            "documentation": "Documentation",
+            "configuration": "Configuration",
+            "log": "Log"
+          },
+          "dashboard": {
+            "cpu_usage": "CPU usage",
+            "ram_usage": "RAM usage",
+            "app_running": "App is running",
+            "app_stopped": "App is stopped",
+            "current_version": "Current version: {version}",
+            "changelog": "Changelog",
+            "hostname": "Hostname",
+            "visit_addon_page": "Visit {name} page for more details.",
+            "start": "Start",
+            "stop": "Stop",
+            "restart": "Restart",
+            "rebuild": "Rebuild",
+            "uninstall": "Uninstall",
+            "install": "Install",
+            "open_web_ui": "Open Web UI",
+            "failed_to_save": "Failed to save: {error}",
+            "failed_to_reset": "Failed to reset: {error}",
+            "failed_to_restart": "Failed to restart {name}",
+            "protection_mode": {
+              "title": "Protection mode disabled!",
+              "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which is more risky for your system if the app is compromised. Only disable protection mode if you know what you are doing.",
+              "enable": "Enable"
+            },
+            "system_managed": {
+              "title": "System managed",
+              "description": "This app is managed by the system. Settings are automatically configured and changes may be overwritten.",
+              "take_control": "Take control",
+              "badge": "System managed"
+            },
+            "option": {
+              "boot": {
+                "title": "Start on boot",
+                "description": "Automatically start this app when Home Assistant starts."
+              },
+              "watchdog": {
+                "title": "Watchdog",
+                "description": "Automatically restart this app when it crashes."
+              },
+              "auto_update": {
+                "title": "Auto update",
+                "description": "Automatically update this app when a new version is available."
+              },
+              "ingress_panel": {
+                "title": "Show in sidebar",
+                "description": "Show a shortcut to this app in the sidebar."
+              },
+              "protected": {
+                "title": "Protection mode",
+                "description": "Prevent the app from getting full access to the system."
+              }
+            },
+            "capability": {
+              "stages": {
+                "experimental": "Experimental",
+                "deprecated": "Deprecated"
+              },
+              "label": {
+                "rating": "Rating",
+                "host": "Host",
+                "hardware": "Hardware access",
+                "core": "Home Assistant",
+                "docker": "Docker",
+                "host_pid": "Host PID",
+                "apparmor": "AppArmor",
+                "auth": "Auth API",
+                "ingress": "Ingress",
+                "signed": "Signed"
+              },
+              "role": {
+                "manager": "manager",
+                "default": "default",
+                "homeassistant": "homeassistant",
+                "backup": "backup",
+                "admin": "admin"
+              },
+              "stage": {
+                "title": "App stage",
+                "description": "This app has a specific stage classification."
+              },
+              "rating": {
+                "title": "Security rating",
+                "description": "This shows the security rating of the app. Higher is better."
+              },
+              "host_network": {
+                "title": "Host network",
+                "description": "This app uses the host network stack."
+              },
+              "full_access": {
+                "title": "Full hardware access",
+                "description": "This app has full access to the hardware."
+              },
+              "homeassistant_api": {
+                "title": "Home Assistant API",
+                "description": "This app has access to the Home Assistant API."
+              },
+              "hassio_api": {
+                "title": "Supervisor API",
+                "description": "This app has access to the Supervisor API."
+              },
+              "docker_api": {
+                "title": "Docker API",
+                "description": "This app has access to the Docker API."
+              },
+              "host_pid": {
+                "title": "Host PID namespace",
+                "description": "This app has access to the host PID namespace."
+              },
+              "apparmor": {
+                "title": "AppArmor",
+                "description": "This shows the AppArmor status of the app."
+              },
+              "auth_api": {
+                "title": "Auth API",
+                "description": "This app has access to the Auth API."
+              },
+              "ingress": {
+                "title": "Ingress",
+                "description": "This app supports ingress for secure access."
+              },
+              "signed": {
+                "title": "Signed",
+                "description": "This app is cryptographically signed."
+              }
+            },
+            "action_error": {
+              "install": "Failed to install app",
+              "start": "Failed to start app",
+              "stop": "Failed to stop app",
+              "restart": "Failed to restart app",
+              "rebuild": "Failed to rebuild app",
+              "uninstall": "Failed to uninstall app",
+              "get_changelog": "Failed to get changelog",
+              "start_invalid_config": "Invalid configuration",
+              "go_to_config": "Go to configuration",
+              "validate_config": "Failed to validate app configuration"
+            },
+            "uninstall_dialog": {
+              "title": "Uninstall {name}?",
+              "remove_data": "Also remove app data",
+              "uninstall": "Uninstall"
+            },
+            "restart_dialog": {
+              "title": "Restart {name}?",
+              "text": "The app needs to be restarted for the changes to take effect.",
+              "restart": "Restart"
+            },
+            "update_available": {
+              "update_name": "Update {name}",
+              "no_update": "{name} is up to date.",
+              "description": "{name} {newest_version} is available. You are running {version}.",
+              "updating": "Updating {name} to {version}...",
+              "create_backup": {
+                "addon": "Create backup before updating",
+                "addon_description": "Creates a backup of {version} before updating.",
+                "generic": "Create backup"
+              }
+            }
+          },
+          "configuration": {
+            "no_configuration": "This app has no configuration options.",
+            "options": {
+              "header": "Options",
+              "edit_in_ui": "Edit in UI",
+              "edit_in_yaml": "Edit in YAML",
+              "invalid_yaml": "Invalid YAML",
+              "show_unused_optional": "Show unused optional configuration options"
+            },
+            "network": {
+              "header": "Network",
+              "introduction": "Configure the network ports that this app uses.",
+              "show_disabled": "Show disabled ports",
+              "reset_defaults": "Reset to defaults"
+            },
+            "audio": {
+              "header": "Audio",
+              "input": "Audio input",
+              "output": "Audio output",
+              "default": "Default",
+              "failed_to_load_hardware": "Failed to fetch audio hardware",
+              "failed_to_save": "Failed to set audio device"
+            },
+            "confirm": {
+              "reset_options": {
+                "title": "Reset options?",
+                "text": "Are you sure you want to reset all options to their default values?"
+              }
+            }
+          },
+          "documentation": {
+            "get_documentation": "Failed to get documentation: {error}"
+          }
         },
         "category": {
           "caption": "Categories",

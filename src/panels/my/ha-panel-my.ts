@@ -324,6 +324,27 @@ export const getMyRedirects = (): Redirects => ({
     // Moved from Supervisor panel in 2022.5
     redirect: "/config/info",
   },
+  supervisor_store: {
+    redirect: "/config/apps/available",
+  },
+  supervisor_addons: {
+    redirect: "/config/apps",
+  },
+  supervisor_addon: {
+    redirect: "/config/app",
+    params: {
+      addon: "string",
+    },
+    optional_params: {
+      repository_url: "url",
+    },
+  },
+  supervisor_add_addon_repository: {
+    redirect: "/config/apps/available",
+    params: {
+      repository_url: "url",
+    },
+  },
   hacs_repository: {
     component: "hacs",
     redirect: "/hacs/_my_redirect/hacs_repository",
@@ -502,13 +523,27 @@ class HaPanelMy extends LitElement {
   }
 
   private _createRedirectUrl(): string {
-    const params = this._createRedirectParams();
-    return `${this._redirect!.redirect}${params}`;
+    const params = extractSearchParamsObject();
+
+    // Special case for supervisor_addon: use path-based URL
+    if (params.addon && this._redirect!.redirect === "/config/app") {
+      const addon = params.addon;
+      delete params.addon;
+      const optionalParams = this._createOptionalParams(params);
+      return `/config/app/${addon}/info${optionalParams}`;
+    }
+
+    const resultParams = this._createRedirectParams();
+    return `${this._redirect!.redirect}${resultParams}`;
   }
 
   private _createRedirectParams(): string {
     const params = extractSearchParamsObject();
-    if (!this._redirect!.params && !Object.keys(params).length) {
+    if (
+      !this._redirect!.params &&
+      !this._redirect!.optional_params &&
+      !Object.keys(params).length
+    ) {
       return "";
     }
     const resultParams = {};
@@ -521,7 +556,37 @@ class HaPanelMy extends LitElement {
       }
       resultParams[key] = params[key];
     }
-    return `?${createSearchParam(resultParams)}`;
+    for (const [key, type] of Object.entries(
+      this._redirect!.optional_params || {}
+    )) {
+      if (params[key]) {
+        if (!this._checkParamType(type, params[key])) {
+          throw Error();
+        }
+        resultParams[key] = params[key];
+      }
+    }
+    return Object.keys(resultParams).length
+      ? `?${createSearchParam(resultParams)}`
+      : "";
+  }
+
+  private _createOptionalParams(params: Record<string, string>): string {
+    if (!this._redirect!.optional_params) {
+      return "";
+    }
+    const resultParams = {};
+    for (const [key, type] of Object.entries(this._redirect!.optional_params)) {
+      if (params[key]) {
+        if (!this._checkParamType(type, params[key])) {
+          throw Error();
+        }
+        resultParams[key] = params[key];
+      }
+    }
+    return Object.keys(resultParams).length
+      ? `?${createSearchParam(resultParams)}`
+      : "";
   }
 
   private _checkParamType(type: ParamType, value: string) {
