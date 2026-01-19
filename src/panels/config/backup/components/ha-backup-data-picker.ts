@@ -122,7 +122,7 @@ export class HaBackupDataPicker extends LitElement {
         return localize(`ui.panel.${this.translationKeyPanel}.data_picker.ssl`);
       case "addons/local":
         return localize(
-          `ui.panel.${this.translationKeyPanel}.data_picker.local_addons`
+          `ui.panel.${this.translationKeyPanel}.data_picker.local_apps`
         );
     }
     return capitalizeFirstLetter(folder);
@@ -294,7 +294,7 @@ export class HaBackupDataPicker extends LitElement {
                 <ha-backup-formfield-label
                   slot="label"
                   .label=${localize(
-                    `ui.panel.${this.translationKeyPanel}.data_picker.addons`
+                    `ui.panel.${this.translationKeyPanel}.data_picker.apps`
                   )}
                   .iconPath=${mdiPuzzle}
                 >

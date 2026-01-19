@@ -338,14 +338,14 @@ export const computeBackupAgentName = (
 export const computeBackupSize = (backup: BackupContent) =>
   Math.max(...Object.values(backup.agents).map((agent) => agent.size));
 
-export type BackupType = "automatic" | "manual" | "addon_update";
+export type BackupType = "automatic" | "manual" | "app_update";
 
-const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "addon_update", "manual"];
+const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "app_update", "manual"];
 
 export const getBackupTypes = memoize((isHassio: boolean) =>
   isHassio
     ? BACKUP_TYPE_ORDER
-    : BACKUP_TYPE_ORDER.filter((type) => type !== "addon_update")
+    : BACKUP_TYPE_ORDER.filter((type) => type !== "app_update")
 );
 
 export const computeBackupType = (
@@ -356,7 +356,7 @@ export const computeBackupType = (
     return "automatic";
   }
   if (isHassio && backup.extra_metadata?.["supervisor.addon_update"] != null) {
-    return "addon_update";
+    return "app_update";
   }
   return "manual";
 };
