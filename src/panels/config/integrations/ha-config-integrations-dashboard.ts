@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
@@ -18,9 +17,9 @@ import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -408,24 +407,32 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           ${!this._showDisabled && this.narrow && disabledConfigEntries.length
             ? html`<span class="badge">${disabledConfigEntries.length}</span>`
             : ""}
-          <ha-button-menu multi @action=${this._handleMenuAction}>
+          <ha-dropdown multi @wa-select=${this._handleMenuAction}>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiFilterVariant}
             >
             </ha-icon-button>
-            <ha-check-list-item left .selected=${this._showIgnored}>
+            <ha-dropdown-item
+              type="checkbox"
+              .checked=${this._showIgnored}
+              value="show-ignored"
+            >
               ${this.hass.localize(
                 "ui.panel.config.integrations.ignore.show_ignored"
               )}
-            </ha-check-list-item>
-            <ha-check-list-item left .selected=${this._showDisabled}>
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              type="checkbox"
+              .checked=${this._showDisabled}
+              value="show-disabled"
+            >
               ${this.hass.localize(
                 "ui.panel.config.integrations.disable.show_disabled"
               )}
-            </ha-check-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
         ${this.narrow
           ? html`
@@ -768,12 +775,13 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     });
   }
 
-  private _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleMenuAction(ev: CustomEvent<{ item: { value: string } }>) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "show-ignored":
         this._showIgnored = !this._showIgnored;
         break;
-      case 1:
+      case "show-disabled":
         this._toggleShowDisabled();
         break;
     }
@@ -979,7 +987,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         :host([narrow]) hass-tabs-subpage {
           --main-title-margin: 0;
         }
-        ha-button-menu {
+        ha-dropdown {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
@@ -1077,7 +1085,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           margin-inline-start: 16px;
           margin-inline-end: initial;
         }
-        ha-button-menu {
+        ha-dropdown ha-icon-button {
           color: var(--primary-text-color);
         }
       `,
