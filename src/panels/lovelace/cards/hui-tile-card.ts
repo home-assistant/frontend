@@ -28,6 +28,7 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import { tileCardStyle } from "./tile/tile-card-style";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -338,73 +339,58 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static styles = css`
-    :host {
-      --tile-color: var(--state-inactive-color);
-    }
-    ha-card:has(ha-tile-container[focused]) {
-      --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-      --shadow-focus: 0 0 0 1px var(--tile-color);
-      border-color: var(--tile-color);
-      box-shadow: var(--shadow-default), var(--shadow-focus);
-    }
-    ha-card {
-      --ha-ripple-color: var(--tile-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
-      height: 100%;
-      transition:
-        box-shadow 180ms ease-in-out,
-        border-color 180ms ease-in-out;
-    }
-    ha-card.active {
-      --tile-color: var(--state-icon-color);
-    }
-    ha-tile-icon {
-      --tile-icon-color: var(--tile-color);
-    }
-    ha-tile-badge {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      inset-inline-end: 3px;
-      inset-inline-start: initial;
-    }
-    hui-card-features {
-      --feature-color: var(--tile-color);
-    }
-
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
-    ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
-    ha-tile-icon[data-domain="lock"][data-state="jammed"] {
-      animation: pulse 1s infinite;
-    }
-
-    /* Make sure we display the whole image */
-    ha-tile-icon.image[data-domain="update"] {
-      --tile-icon-border-radius: var(--ha-border-radius-square);
-    }
-    /* Make sure we display the almost the whole image but it often use text */
-    ha-tile-icon.image[data-domain="media_player"] {
-      --tile-icon-border-radius: min(
-        var(--ha-tile-icon-border-radius, var(--ha-border-radius-sm)),
-        var(--ha-border-radius-sm)
-      );
-    }
-
-    @keyframes pulse {
-      0% {
-        opacity: 1;
+  static styles = [
+    tileCardStyle,
+    css`
+      :host {
+        --tile-color: var(--state-inactive-color);
       }
-      50% {
-        opacity: 0;
+      ha-card.active {
+        --tile-color: var(--state-icon-color);
       }
-      100% {
-        opacity: 1;
+      ha-tile-badge {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        inset-inline-end: 3px;
+        inset-inline-start: initial;
       }
-    }
-  `;
+      hui-card-features {
+        --feature-color: var(--tile-color);
+      }
+
+      ha-tile-icon[data-domain="alarm_control_panel"][data-state="pending"],
+      ha-tile-icon[data-domain="alarm_control_panel"][data-state="arming"],
+      ha-tile-icon[data-domain="alarm_control_panel"][data-state="triggered"],
+      ha-tile-icon[data-domain="lock"][data-state="jammed"] {
+        animation: pulse 1s infinite;
+      }
+
+      /* Make sure we display the whole image */
+      ha-tile-icon.image[data-domain="update"] {
+        --tile-icon-border-radius: var(--ha-border-radius-square);
+      }
+      /* Make sure we display the almost the whole image but it often use text */
+      ha-tile-icon.image[data-domain="media_player"] {
+        --tile-icon-border-radius: min(
+          var(--ha-tile-icon-border-radius, var(--ha-border-radius-sm)),
+          var(--ha-border-radius-sm)
+        );
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+    `,
+  ];
 }
 
 declare global {

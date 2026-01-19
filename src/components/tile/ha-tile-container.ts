@@ -60,6 +60,9 @@ export class HaTileContainer extends LitElement {
   static styles = css`
     :host {
       -webkit-tap-highlight-color: transparent;
+      --ha-ripple-color: var(--tile-color);
+      --ha-ripple-hover-opacity: 0.04;
+      --ha-ripple-pressed-opacity: 0.12;
       height: 100%;
       width: 100%;
       display: flex;

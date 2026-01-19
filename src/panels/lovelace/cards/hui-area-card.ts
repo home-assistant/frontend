@@ -41,6 +41,7 @@ import type {
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
+import { tileCardStyle } from "./tile/tile-card-style";
 import type { AreaCardConfig } from "./types";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
@@ -646,108 +647,95 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static styles = css`
-    :host {
-      --tile-color: var(--state-icon-color);
-    }
-    ha-card:has(ha-tile-container[focused]) {
-      --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-      --shadow-focus: 0 0 0 1px var(--tile-color);
-      border-color: var(--tile-color);
-      box-shadow: var(--shadow-default), var(--shadow-focus);
-    }
-    ha-card {
-      --ha-ripple-color: var(--tile-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
-      height: 100%;
-      transition:
-        box-shadow 180ms ease-in-out,
-        border-color 180ms ease-in-out;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .header {
-      flex: 1;
-      overflow: hidden;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      border-end-end-radius: 0;
-      border-end-start-radius: 0;
-      pointer-events: none;
-    }
-    .picture {
-      height: 100%;
-      width: 100%;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-    .picture hui-image {
-      height: 100%;
-    }
-    .picture .icon-container {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      --mdc-icon-size: var(--ha-space-12);
-      color: var(--tile-color);
-    }
-    .picture .icon-container::before {
-      position: absolute;
-      content: "";
-      width: 100%;
-      height: 100%;
-      background-color: var(--tile-color);
-      opacity: 0.12;
-    }
-    .header + ha-tile-container {
-      height: auto;
-      flex: none;
-    }
-    ha-tile-icon {
-      --tile-icon-color: var(--tile-color);
-    }
-    ha-tile-badge {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      inset-inline-end: 3px;
-      inset-inline-start: initial;
-    }
-    hui-card-features {
-      --feature-color: var(--tile-color);
-    }
-    .alert-badge {
-      --tile-badge-background-color: var(--orange-color);
-    }
-    .alerts {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      flex-direction: row;
-      gap: var(--ha-space-2);
-      padding: var(--ha-space-2);
-      pointer-events: none;
-      z-index: 1;
-    }
-    .alert {
-      background-color: var(--orange-color);
-      border-radius: var(--ha-border-radius-lg);
-      width: var(--ha-space-6);
-      height: var(--ha-space-6);
-      padding: 2px;
-      box-sizing: border-box;
-      --mdc-icon-size: var(--ha-space-4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
-  `;
+  static styles = [
+    tileCardStyle,
+    css`
+      :host {
+        --tile-color: var(--state-icon-color);
+      }
+      ha-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .header {
+        flex: 1;
+        overflow: hidden;
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+        border-end-end-radius: 0;
+        border-end-start-radius: 0;
+        pointer-events: none;
+      }
+      .picture {
+        height: 100%;
+        width: 100%;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+      .picture hui-image {
+        height: 100%;
+      }
+      .picture .icon-container {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        --mdc-icon-size: var(--ha-space-12);
+        color: var(--tile-color);
+      }
+      .picture .icon-container::before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: var(--tile-color);
+        opacity: 0.12;
+      }
+      .header + ha-tile-container {
+        height: auto;
+        flex: none;
+      }
+      ha-tile-badge {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        inset-inline-end: 3px;
+        inset-inline-start: initial;
+      }
+      hui-card-features {
+        --feature-color: var(--tile-color);
+      }
+      .alert-badge {
+        --tile-badge-background-color: var(--orange-color);
+      }
+      .alerts {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        gap: var(--ha-space-2);
+        padding: var(--ha-space-2);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .alert {
+        background-color: var(--orange-color);
+        border-radius: var(--ha-border-radius-lg);
+        width: var(--ha-space-6);
+        height: var(--ha-space-6);
+        padding: 2px;
+        box-sizing: border-box;
+        --mdc-icon-size: var(--ha-space-4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+    `,
+  ];
 }
 
 declare global {

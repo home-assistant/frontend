@@ -34,6 +34,7 @@ import {
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
 
 const COLORS: Record<HomeSummary, string> = {
@@ -298,29 +299,14 @@ export class HuiHomeSummaryCard
     `;
   }
 
-  static styles = css`
-    :host {
-      --tile-color: var(--state-inactive-color);
-    }
-    ha-card:has(ha-tile-container[focused]) {
-      --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-      --shadow-focus: 0 0 0 1px var(--tile-color);
-      border-color: var(--tile-color);
-      box-shadow: var(--shadow-default), var(--shadow-focus);
-    }
-    ha-card {
-      --ha-ripple-color: var(--tile-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
-      height: 100%;
-      transition:
-        box-shadow 180ms ease-in-out,
-        border-color 180ms ease-in-out;
-    }
-    ha-tile-icon {
-      --tile-icon-color: var(--tile-color);
-    }
-  `;
+  static styles = [
+    tileCardStyle,
+    css`
+      :host {
+        --tile-color: var(--state-inactive-color);
+      }
+    `,
+  ];
 }
 
 declare global {
