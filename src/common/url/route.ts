@@ -1,4 +1,4 @@
-import type { Route } from "../types";
+import type { Route } from "../../types";
 
 export const computeRouteTail = (route: Route) => {
   const dividerPos = route.path.indexOf("/", 1);
@@ -8,7 +8,7 @@ export const computeRouteTail = (route: Route) => {
         path: "",
       }
     : {
-        prefix: route.prefix + route.path. substring(0, dividerPos),
-        path: route.path. substring(dividerPos),
+        prefix: route.prefix + route.path.substring(0, dividerPos),
+        path: route.path.substring(dividerPos),
       };
 };

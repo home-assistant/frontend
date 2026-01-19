@@ -3,8 +3,8 @@ import { ReactiveElement } from "lit";
 import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
+import { computeRouteTail } from "../common/url/route";
 import type { Route } from "../types";
-import { computeRouteTail } from "../data/route";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {

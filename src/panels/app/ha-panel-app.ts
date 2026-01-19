@@ -23,8 +23,8 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/hass-loading-screen";
+import { computeRouteTail } from "../../common/url/route";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
-import { computeRouteTail } from "../../data/route";
 
 interface AppPanelConfig {
   addon?: string;
