@@ -1,12 +1,3 @@
-import {
-  mdiFinance,
-  mdiFireCircle,
-  mdiHeatWave,
-  mdiLeaf,
-  mdiLightningBolt,
-  mdiPower,
-  mdiRocketLaunch,
-} from "@mdi/js";
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
@@ -57,17 +48,3 @@ export const compareWaterHeaterOperationMode = (
 ) =>
   waterHeaterOperationModeOrdering[mode1] -
   waterHeaterOperationModeOrdering[mode2];
-
-export const WATER_HEATER_OPERATION_MODE_ICONS: Record<OperationMode, string> =
-  {
-    eco: mdiLeaf,
-    electric: mdiLightningBolt,
-    performance: mdiRocketLaunch,
-    high_demand: mdiFinance,
-    heat_pump: mdiHeatWave,
-    gas: mdiFireCircle,
-    off: mdiPower,
-  };
-
-export const computeOperationModeIcon = (mode: OperationMode) =>
-  WATER_HEATER_OPERATION_MODE_ICONS[mode];
