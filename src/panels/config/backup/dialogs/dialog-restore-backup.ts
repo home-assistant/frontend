@@ -328,11 +328,8 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         "ui.panel.config.backup.dialogs.restore.progress.restoring"
       );
     }
-    const stage = this._stage
-      .replace("addons", "apps")
-      .replace("addon_", "app_");
     return this.hass.localize(
-      `ui.panel.config.backup.overview.progress.description.restore_backup.${stage}`
+      `ui.panel.config.backup.overview.progress.description.restore_backup.${this._stage}`
     );
   }
 

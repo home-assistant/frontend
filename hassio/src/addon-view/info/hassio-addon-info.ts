@@ -855,13 +855,11 @@ class HassioAddonInfo extends LitElement {
   private _showMoreInfo(ev): void {
     const id = ev.currentTarget.id as AddonCapability;
     showHassioMarkdownDialog(this, {
-      title: this.supervisor.localize(
-        `app.dashboard.capability.${String(id)}.title`
-      ),
+      title: this.supervisor.localize(`app.dashboard.capability.${id}.title`),
       content:
         id === "stage"
           ? this.supervisor.localize(
-              `app.dashboard.capability.${String(id)}.description`,
+              `app.dashboard.capability.${id}.description`,
               {
                 icon_stable: `<ha-svg-icon path="${STAGE_ICON.stable}"></ha-svg-icon>`,
                 icon_experimental: `<ha-svg-icon path="${STAGE_ICON.experimental}"></ha-svg-icon>`,
@@ -869,7 +867,7 @@ class HassioAddonInfo extends LitElement {
               }
             )
           : this.supervisor.localize(
-              `app.dashboard.capability.${String(id)}.description`
+              `app.dashboard.capability.${id}.description`
             ),
     });
   }

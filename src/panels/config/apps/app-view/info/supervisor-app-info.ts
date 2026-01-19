@@ -840,10 +840,10 @@ class SupervisorAppInfo extends LitElement {
     const id = ev.currentTarget.id as AddonCapability;
     showAlertDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.apps.dashboard.capability.${String(id)}.title`
+        `ui.panel.config.apps.dashboard.capability.${id}.title`
       ),
       text: this.hass.localize(
-        `ui.panel.config.apps.dashboard.capability.${String(id)}.description`
+        `ui.panel.config.apps.dashboard.capability.${id}.description`
       ),
     });
   }

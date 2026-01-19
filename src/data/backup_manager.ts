@@ -7,9 +7,9 @@ export type BackupManagerState =
   | "restore_backup";
 
 export type CreateBackupStage =
-  | "addon_repositories"
-  | "addons"
-  | "await_addon_restarts"
+  | "app_repositories"
+  | "apps"
+  | "await_app_restarts"
   | "docker_config"
   | "finishing_file"
   | "folders"
@@ -23,16 +23,16 @@ export type ReceiveBackupStage = "receive_file" | "upload_to_agents";
 export type ReceiveBackupState = "completed" | "failed" | "in_progress";
 
 export type RestoreBackupStage =
-  | "addon_repositories"
-  | "addons"
-  | "await_addon_restarts"
+  | "app_repositories"
+  | "apps"
+  | "await_app_restarts"
   | "await_home_assistant_restart"
   | "check_home_assistant"
   | "docker_config"
   | "download_from_agent"
   | "folders"
   | "home_assistant"
-  | "remove_delta_addons";
+  | "remove_delta_apps";
 
 export type RestoreBackupState = "completed" | "failed" | "in_progress";
 
