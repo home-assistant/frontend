@@ -71,6 +71,7 @@ import {
   showSceneSaveDialog,
   type EntityRegistryUpdate,
 } from "./scene-save-dialog/show-dialog-scene-save";
+import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
@@ -150,8 +151,11 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   private _entityRegistryUpdate?: EntityRegistryUpdate;
 
-  // Callback to be called when scene is set.
-  private _scenesSet?: () => void;
+  private _newSceneId?: string;
+
+  private _entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
 
   private _getEntitiesDevices = memoizeOne(
     (
@@ -549,6 +553,25 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     </div>`;
   }
 
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (
+      this._entityRegCreated &&
+      this._newSceneId &&
+      changedProps.has("_entityRegistryEntries")
+    ) {
+      const scene = this._entityRegistryEntries.find(
+        (entity: EntityRegistryEntry) =>
+          entity.platform === "scene" && entity.unique_id === this._newSceneId
+      );
+      if (scene) {
+        this._entityRegCreated(scene);
+        this._entityRegCreated = undefined;
+      }
+    }
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -608,9 +631,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           this._devices = [...this._devices, entity.device_id];
         }
       }
-    }
-    if (this._scenesSet && changedProps.has("scenes")) {
-      this._scenesSet();
     }
 
     if (changedProps.has("hass")) {
@@ -1068,36 +1088,53 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
 
     const id = this.sceneId || String(Date.now());
+
+    let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
+    if (this._entityRegistryUpdate !== undefined && !this.sceneId) {
+      this._newSceneId = id;
+      entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
+        this._entityRegCreated = resolve;
+      });
+    }
+
     try {
       this._saving = true;
       await saveScene(this.hass, id, this._config!);
 
       if (this._entityRegistryUpdate !== undefined) {
-        let scene =
-          this._scene?.attributes.id === id
-            ? this._scene
-            : this.scenes.find(
-                (entity: SceneEntity) => entity.attributes.id === id
-              );
+        let entityId = this._scene?.entity_id;
 
-        if (!scene) {
-          const scenesSetPromise = new Promise<void>((resolve) => {
-            this._scenesSet = resolve;
-          });
+        // wait for scene to appear in entity registry when creating a new scene
+        if (entityRegPromise) {
           try {
-            await promiseTimeout(3000, scenesSetPromise);
-            scene = this.scenes.find(
-              (entity: SceneEntity) => entity.attributes.id === id
-            );
-          } catch (_err) {
-            // We do nothing.
-          } finally {
-            this._scenesSet = undefined;
+            const scene = await promiseTimeout(5000, entityRegPromise);
+            entityId = scene.entity_id;
+          } catch (e) {
+            if (e instanceof Error && e.name === "TimeoutError") {
+              // Show the dialog and give user a chance to wait for the registry
+              // to respond.
+              await showAutomationSaveTimeoutDialog(this, {
+                savedPromise: entityRegPromise,
+                type: "scene",
+              });
+              try {
+                // We already gave the user a chance to wait once, so if they skipped
+                // the dialog and it's still not there just immediately timeout.
+                const scene = await promiseTimeout(0, entityRegPromise);
+                entityId = scene.entity_id;
+              } catch (e2) {
+                if (!(e2 instanceof Error && e2.name === "TimeoutError")) {
+                  throw e2;
+                }
+              }
+            } else {
+              throw e;
+            }
           }
         }
 
-        if (scene) {
-          await updateEntityRegistryEntry(this.hass, scene.entity_id, {
+        if (entityId) {
+          await updateEntityRegistryEntry(this.hass, entityId, {
             area_id: this._entityRegistryUpdate.area || null,
             labels: this._entityRegistryUpdate.labels || [],
             categories: {
@@ -1105,8 +1142,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             },
           });
         }
-
-        this._entityRegistryUpdate = undefined;
       }
 
       this._dirty = false;
