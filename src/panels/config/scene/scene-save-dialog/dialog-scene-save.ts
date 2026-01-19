@@ -61,6 +61,7 @@ class DialogSceneSave extends LitElement {
   public showDialog(params: SceneSaveDialogParams): void {
     this._open = true;
     this._params = params;
+    this._error = false;
     this._newIcon = params.config.icon;
     this._newName =
       params.config.name ||
@@ -81,10 +82,12 @@ class DialogSceneSave extends LitElement {
 
   public closeDialog() {
     this._open = false;
+    this._error = false;
   }
 
   private _dialogClosed() {
     this._open = false;
+    this._error = false;
     this._params.onClose?.();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._visibleOptionals = [];
@@ -267,6 +270,9 @@ class DialogSceneSave extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     this._newName = (ev.target as HTMLInputElement).value;
+    if (this._error && this._newName.trim()) {
+      this._error = false;
+    }
   }
 
   private _handleDiscard() {
@@ -296,6 +302,9 @@ class DialogSceneSave extends LitElement {
     );
 
     this._newName = processed.name;
+    if (this._error && this._newName.trim()) {
+      this._error = false;
+    }
 
     if (processed.category) {
       this._entryUpdates = {
