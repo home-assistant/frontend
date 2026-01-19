@@ -650,6 +650,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
     const action = ev.detail?.item?.value;
+    if (!action) {
+      return;
+    }
 
     switch (action) {
       case "apply":
@@ -1093,7 +1096,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     const id = this.sceneId || String(Date.now());
 
     this._saving = true;
-    this._errors = undefined;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
     if (this._entityRegistryUpdate !== undefined && !this.sceneId) {
@@ -1105,6 +1107,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
     try {
       await saveScene(this.hass, id, this._config!);
+      this._errors = undefined;
 
       if (this._entityRegistryUpdate !== undefined) {
         let entityId = this._scene?.entity_id;
