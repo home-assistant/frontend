@@ -51,6 +51,7 @@ import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
+import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-md-divider";
@@ -63,6 +64,7 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry } from "../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -122,8 +124,12 @@ import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 interface HelperItem {
   id: string;
@@ -137,6 +143,8 @@ interface HelperItem {
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
+  assistants: string[];
+  assistants_sortable_key: string | undefined;
   disabled?: boolean;
 }
 
@@ -170,6 +178,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @storage({ key: "helpers-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -207,7 +217,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _stateItems: HassEntity[] = [];
+  @state() private _helperEntities: HassEntity[] = [];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -224,6 +234,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @state() private _helperManifests?: Record<string, IntegrationManifest>;
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @storage({
     storage: "sessionStorage",
@@ -247,11 +259,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @state() private _filteredStateItems?: string[] | null;
+  @state() private _filteredHelperEntityIds?: string[] | null;
 
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
+
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
 
   private _debouncedFetchEntitySources = debounce(
     () => this._fetchEntitySources(),
@@ -305,7 +321,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer<HelperItem> => ({
+    (
+      localize: LocalizeFunc,
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer<HelperItem> => ({
       icon: {
         title: "",
         label: localize("ui.panel.config.helpers.picker.headers.icon"),
@@ -482,32 +501,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           </ha-icon-overflow-menu>
         `,
       },
-      voice_assistants: {
-        title: localize(
-          "ui.panel.config.helpers.picker.headers.voice_assistants"
-        ),
-        type: "icon",
-        defaultHidden: true,
-        minWidth: "100px",
-        maxWidth: "100px",
-        template: (helper) => {
-          const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
-            this._entityReg,
-            helper.entity_id
-          );
-          return html` ${exposedToVoiceAssistantKeys.length !== 0
-            ? exposedToVoiceAssistantKeys.map(
-                (vaKey) => html`
-                  <voice-assistants-expose-assistant-icon
-                    .assistant=${vaKey}
-                    .hass=${this.hass}
-                  >
-                  </voice-assistants-expose-assistant-icon>
-                `
-              )
-            : "—"}`;
-        },
-      },
+      assistants: getAssistantsTableColumn(
+        localize,
+        this.hass,
+        this._availableAssistants,
+        entitiesToCheck
+      ),
     })
   );
 
@@ -607,6 +606,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             areaId && this.hass.areas?.[areaId]
               ? computeAreaName(this.hass.areas[areaId])
               : undefined;
+          const assistants = getEntityVoiceAssistantsIds(
+            entityReg,
+            item.entity_id
+          );
           return {
             ...item,
             localized_type:
@@ -622,6 +625,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
             area,
+            assistants,
+            assistants_sortable_key: getAssistantsSortableKey(assistants),
           };
         });
     }
@@ -638,7 +643,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     if (
       !this.hass ||
-      this._stateItems === undefined ||
+      this._helperEntities === undefined ||
       this._entityEntries === undefined ||
       this._configEntries === undefined
     ) {
@@ -713,14 +718,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
     const helpers = this._getItems(
       this.hass.localize,
-      this._stateItems,
+      this._helperEntities,
       this._disabledEntityEntries || [],
       this._entityEntries,
       this._configEntries,
       this._entityReg,
       this._categories,
       this._labels,
-      this._filteredStateItems
+      this._filteredHelperEntityIds
     );
     return html`
       <hass-tabs-subpage-data-table
@@ -745,7 +750,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, helpers)}
         .data=${helpers}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
@@ -807,6 +812,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-categories>
+        <ha-filter-voice-assistants
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-voice-assistants"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-voice-assistants"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-voice-assistants>
 
         ${!this.narrow
           ? html`<ha-md-button-menu slot="selection-bar">
@@ -969,7 +983,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         filter.length
       ) {
         const labelItems = new Set<string>();
-        this._stateItems
+        this._helperEntities
           .filter((stateItem) =>
             entityRegistryByEntityId(this._entityReg)[
               stateItem.entity_id
@@ -988,14 +1002,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(labelItems)
             : new Set([...items].filter((x) => labelItems!.has(x)));
-      }
-      if (
+      } else if (
         key === "ha-filter-categories" &&
         Array.isArray(filter) &&
         filter.length
       ) {
         const categoryItems = new Set<string>();
-        this._stateItems
+        this._helperEntities
           .filter(
             (stateItem) =>
               filter[0] ===
@@ -1015,10 +1028,85 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(categoryItems)
             : new Set([...items].filter((x) => categoryItems!.has(x)));
+      } else if (
+        key === "ha-filter-voice-assistants" &&
+        Array.isArray(filter) &&
+        filter.length
+      ) {
+        const assistItems = new Set<string>();
+        this._helperEntities
+          .filter((stateItem) =>
+            getEntityVoiceAssistantsIds(
+              this._entityReg,
+              stateItem.entity_id
+            ).some((va) => (filter as string[]).includes(va))
+          )
+          .forEach((stateItem) => assistItems.add(stateItem.entity_id));
+        (this._disabledEntityEntries || [])
+          .filter((entry) =>
+            getEntityVoiceAssistantsIds(this._entityReg, entry.entity_id).some(
+              (va) => (filter as string[]).includes(va)
+            )
+          )
+          .forEach((entry) => assistItems.add(entry.entity_id));
+        if (!items) {
+          items = assistItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(assistItems)
+            : new Set([...items].filter((x) => assistItems!.has(x)));
       }
     }
+    this._filteredHelperEntityIds = items ? [...items] : undefined;
+  }
 
-    this._filteredStateItems = items ? [...items] : undefined;
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("location-changed", this._locationChanged);
+    window.addEventListener("popstate", this._popState);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("location-changed", this._locationChanged);
+    window.removeEventListener("popstate", this._popState);
+  }
+
+  private _locationChanged = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
+    }
+  };
+
+  private _popState = () => {
+    if (window.location.search.substring(1) !== this._searchParms.toString()) {
+      this._searchParms = new URLSearchParams(window.location.search);
+      this._setFiltersFromUrl();
+    }
+  };
+
+  private _setFiltersFromUrl() {
+    const device = this._searchParms.get("device");
+    const label = this._searchParms.get("label");
+    const category = this._searchParms.get("category");
+    const voiceAssistant = this._searchParms.get("voice_assistant");
+
+    if (!category && !label && !device) {
+      return;
+    }
+
+    this._filter = history.state?.filter || "";
+
+    this._filters = {
+      "ha-filter-devices": device ? [device] : [],
+      "ha-filter-labels": label ? [label] : [],
+      "ha-filter-categories": category ? [category] : [],
+      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
+    };
   }
 
   private _clearFilter() {
@@ -1121,7 +1209,7 @@ ${rejected
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-
+    this._setFiltersFromUrl();
     this._fetchEntitySources();
 
     if (isComponentLoaded(this.hass, "diagnostics")) {
@@ -1234,6 +1322,10 @@ ${rejected
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
+
     if (!this._entityEntries || !this._configEntries) {
       return;
     }
@@ -1253,7 +1345,7 @@ ${rejected
     }
 
     let changed =
-      !this._stateItems ||
+      !this._helperEntities ||
       changedProps.has("_entityEntries") ||
       changedProps.has("_configEntries") ||
       changedProps.has("_entitySource");
@@ -1268,17 +1360,17 @@ ${rejected
 
     const entityIds = Object.keys(this._entitySource);
 
-    const newStates = Object.values(this.hass!.states).filter(
+    const newHelpers = Object.values(this.hass!.states).filter(
       (entity) =>
         entityIds.includes(entity.entity_id) ||
         isHelperDomain(computeStateDomain(entity))
     );
 
     if (
-      this._stateItems.length !== newStates.length ||
-      !this._stateItems.every((val, idx) => newStates[idx] === val)
+      this._helperEntities.length !== newHelpers.length ||
+      !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
     ) {
-      this._stateItems = newStates;
+      this._helperEntities = newHelpers;
     }
   }
 

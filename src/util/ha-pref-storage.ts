@@ -56,3 +56,11 @@ export function getState(): Partial<StoredHomeAssistant> {
 export function clearState() {
   window.localStorage.clear();
 }
+
+export function clearSelectedThemeState() {
+  try {
+    window.localStorage.removeItem("selectedTheme");
+  } catch (_err: any) {
+    // Ignore storage errors (private mode, full storage).
+  }
+}

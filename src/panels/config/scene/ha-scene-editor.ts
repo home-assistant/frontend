@@ -1,6 +1,6 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -32,13 +32,13 @@ import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import { fullEntitiesContext } from "../../../data/context";
@@ -227,9 +227,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           ? computeStateName(this._scene)
           : this.hass.localize("ui.panel.config.scene.editor.default_name")}
       >
-        <ha-button-menu
+        <ha-dropdown
           slot="toolbar-icon"
-          @action=${this._handleMenuAction}
+          @wa-select=${this._handleMenuAction}
           activatable
         >
           <ha-icon-button
@@ -238,67 +238,64 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item
-            graphic="icon"
+          <ha-dropdown-item
+            value="apply"
             .disabled=${!this.sceneId || this._mode === "live"}
           >
             ${this.hass.localize("ui.panel.config.scene.picker.apply")}
-            <ha-svg-icon slot="graphic" .path=${mdiPlay}></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon" .disabled=${!this.sceneId}>
+            <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="show-info" .disabled=${!this.sceneId}>
             ${this.hass.localize("ui.panel.config.scene.picker.show_info")}
             <ha-svg-icon
-              slot="graphic"
+              slot="icon"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon" .disabled=${!this.sceneId}>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="show-settings" .disabled=${!this.sceneId}>
             ${this.hass.localize(
               "ui.panel.config.automation.picker.show_settings"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item graphic="icon" .disabled=${!this.sceneId}>
+          <ha-dropdown-item value="edit-category" .disabled=${!this.sceneId}>
             ${this.hass.localize(
               `ui.panel.config.scene.picker.${this._getCategory(this._entityRegistryEntries, this._scene?.entity_id) ? "edit_category" : "assign_category"}`
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiTag}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="toggle-yaml">
             ${this.hass.localize(
               `ui.panel.config.automation.editor.edit_${this._mode !== "yaml" ? "yaml" : "ui"}`
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <li divider role="separator"></li>
+          <wa-divider></wa-divider>
 
-          <ha-list-item .disabled=${!this.sceneId} graphic="icon">
+          <ha-dropdown-item value="duplicate" .disabled=${!this.sceneId}>
             ${this.hass.localize(
               "ui.panel.config.scene.picker.duplicate_scene"
             )}
-            <ha-svg-icon
-              slot="graphic"
-              .path=${mdiContentDuplicate}
-            ></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiContentDuplicate}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item
+          <ha-dropdown-item
+            value="delete"
             .disabled=${!this.sceneId}
             class=${classMap({ warning: Boolean(this.sceneId) })}
-            graphic="icon"
           >
             ${this.hass.localize("ui.panel.config.scene.picker.delete_scene")}
             <ha-svg-icon
               class=${classMap({ warning: Boolean(this.sceneId) })}
-              slot="graphic"
+              slot="icon"
               .path=${mdiDelete}
             >
             </ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         ${this._mode === "yaml" ? this._renderYamlMode() : this._renderUiMode()}
         <ha-fab
@@ -652,24 +649,27 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(
+    ev: CustomEvent<{ item: { value: string } }>
+  ) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "apply":
         activateScene(this.hass, this._scene!.entity_id);
         break;
-      case 1:
+      case "show-info":
         fireEvent(this, "hass-more-info", { entityId: this._scene!.entity_id });
         break;
-      case 2:
+      case "show-settings":
         showMoreInfoDialog(this, {
           entityId: this._scene!.entity_id,
           view: "settings",
         });
         break;
-      case 3:
+      case "edit-category":
         this._editCategory(this._scene!);
         break;
-      case 4:
+      case "toggle-yaml":
         if (this._mode === "yaml") {
           this._initEntities(this._config!);
           this._exitYamlMode();
@@ -677,10 +677,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           this._enterYamlMode();
         }
         break;
-      case 5:
+      case "duplicate":
         this._duplicate();
         break;
-      case 6:
+      case "delete":
         this._deleteTapped();
         break;
     }
@@ -1288,9 +1288,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           display: flex;
           justify-content: center;
           align-items: center;
-        }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
         }
         ha-list-item.entity {
           padding-right: 28px;

@@ -175,24 +175,31 @@ export class HaConfigLovelaceDashboards extends LitElement {
           template: narrow
             ? undefined
             : (dashboard) => html`
-                ${dashboard.title}
-                ${dashboard.default
-                  ? html`
-                      <ha-svg-icon
-                        .id="default-icon-${dashboard.title}"
-                        style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
-                        .path=${mdiHomeCircleOutline}
-                      ></ha-svg-icon>
-                      <ha-tooltip
-                        .for="default-icon-${dashboard.title}"
-                        placement="right"
-                      >
-                        ${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.default_dashboard`
-                        )}
-                      </ha-tooltip>
-                    `
-                  : nothing}
+                <span
+                  style="display:flex; align-items:center; gap: var(--ha-space-2); min-width:0; width:100%;"
+                >
+                  <span
+                    style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"
+                    >${dashboard.title}</span
+                  >
+                  ${dashboard.default
+                    ? html`
+                        <ha-svg-icon
+                          .id="default-icon-${dashboard.title}"
+                          style="flex-shrink:0;"
+                          .path=${mdiHomeCircleOutline}
+                        ></ha-svg-icon>
+                        <ha-tooltip
+                          .for="default-icon-${dashboard.title}"
+                          placement="right"
+                        >
+                          ${this.hass.localize(
+                            `ui.panel.config.lovelace.dashboards.default_dashboard`
+                          )}
+                        </ha-tooltip>
+                      `
+                    : nothing}
+                </span>
               `,
         },
       };

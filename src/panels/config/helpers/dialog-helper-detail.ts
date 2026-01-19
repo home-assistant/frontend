@@ -227,7 +227,6 @@ export class DialogHelperDetail extends LitElement {
                   src=${brandsUrl({
                     domain,
                     type: "icon",
-                    useFallback: true,
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
                   crossorigin="anonymous"
@@ -260,8 +259,6 @@ export class DialogHelperDetail extends LitElement {
         open
         @closed=${this.closeDialog}
         class=${classMap({ "button-left": !this._domain })}
-        scrimClickAction
-        escapeKeyAction
         .hideActions=${!this._domain}
         .heading=${createCloseHeading(
           this.hass,

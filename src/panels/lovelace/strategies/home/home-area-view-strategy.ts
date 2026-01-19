@@ -11,7 +11,10 @@ import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingCardConfig } from "../../cards/types";
+import type {
+  EmptyStateCardConfig,
+  HeadingCardConfig,
+} from "../../cards/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
   getSummaryLabel,
@@ -352,6 +355,26 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           ...automations.map(computeTileCard),
         ],
       });
+    }
+
+    // No sections, show empty state
+    if (sections.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:sofa-outline",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.areas.empty_state_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.areas.empty_state_content"
+            ),
+          } as EmptyStateCardConfig,
+        ],
+      };
     }
 
     // Allow between 2 and 3 columns (the max should be set to define the width of the header)

@@ -793,7 +793,6 @@ export class HaMediaPlayerBrowse extends LitElement {
       thumbnailUrl = brandsUrl({
         domain: extractDomainFromBrandUrl(thumbnailUrl),
         type: "icon",
-        useFallback: true,
         darkOptimized: this.hass.themes?.darkMode,
       });
     }

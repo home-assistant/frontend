@@ -57,6 +57,7 @@ import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
+import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu";
@@ -66,7 +67,7 @@ import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import { createAreaRegistryEntry } from "../../../data/area_registry";
+import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
 import {
   deleteAutomation,
@@ -81,6 +82,7 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
@@ -115,16 +117,22 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 type AutomationItem = AutomationEntity & {
   name: string;
   area: string | undefined;
-  last_triggered?: string | undefined;
+  last_triggered: string | undefined;
   formatted_state: string;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  assistants: string[];
+  assistants_sortable_key: string | undefined;
 };
 
 @customElement("ha-automation-picker")
@@ -136,6 +144,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
@@ -212,6 +222,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
+
   private _automations = memoizeOne(
     (
       automations: AutomationEntity[],
@@ -236,6 +250,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.automation;
         const labels = labelReg && entityRegEntry?.labels;
+        const assistants = getEntityVoiceAssistantsIds(
+          entityReg,
+          automation.entity_id
+        );
         return {
           ...automation,
           name: computeStateName(automation),
@@ -250,6 +268,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
+          assistants,
+          assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -260,8 +280,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     (
       narrow: boolean,
       localize: LocalizeFunc,
-      locale: HomeAssistant["locale"]
-    ): DataTableColumnContainer => {
+      locale: HomeAssistant["locale"],
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer<AutomationItem> => {
       const columns: DataTableColumnContainer<AutomationItem> = {
         icon: {
           title: "",
@@ -378,31 +399,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           `,
         },
-        voice_assistants: {
-          title: localize(
-            "ui.panel.config.automation.picker.headers.voice_assistants"
-          ),
-          type: "icon",
-          defaultHidden: true,
-          minWidth: "100px",
-          maxWidth: "100px",
-          template: (automation) => {
-            const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
-              this._entityReg,
-              automation.entity_id
-            );
-            return html` ${exposedToVoiceAssistantKeys.length !== 0
-              ? exposedToVoiceAssistantKeys.map(
-                  (vaKey) =>
-                    html` <voice-assistants-expose-assistant-icon
-                      .assistant=${vaKey}
-                      .hass=${this.hass}
-                    >
-                    </voice-assistants-expose-assistant-icon>`
-                )
-              : "—"}`;
-          },
-        },
+        assistants: getAssistantsTableColumn(
+          localize,
+          this.hass,
+          this._availableAssistants,
+          entitiesToCheck
+        ),
       };
       return columns;
     }
@@ -581,7 +583,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         .columns=${this._columns(
           this.narrow,
           this.hass.localize,
-          this.hass.locale
+          this.hass.locale,
+          automations
         )}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
@@ -660,6 +663,15 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-categories>
+        <ha-filter-voice-assistants
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-voice-assistants"]?.value}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-voice-assistants"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-voice-assistants>
         <ha-filter-blueprints
           .hass=${this.hass}
           .type=${"automation"}
@@ -1030,8 +1042,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(categoryItems)
             : new Set([...items].filter((x) => categoryItems!.has(x)));
-      }
-      if (
+      } else if (
         key === "ha-filter-labels" &&
         Array.isArray(filter.value) &&
         filter.value.length
@@ -1053,6 +1064,29 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ? // @ts-ignore
               items.intersection(labelItems)
             : new Set([...items].filter((x) => labelItems!.has(x)));
+      } else if (
+        key === "ha-filter-voice-assistants" &&
+        Array.isArray(filter.value) &&
+        filter.value.length
+      ) {
+        const assistItems = new Set<string>();
+        this.automations
+          .filter((automation) =>
+            getEntityVoiceAssistantsIds(
+              this._entityReg,
+              automation.entity_id
+            ).some((va) => (filter.value as string[]).includes(va))
+          )
+          .forEach((automation) => assistItems.add(automation.entity_id));
+        if (!items) {
+          items = assistItems;
+          continue;
+        }
+        items =
+          "intersection" in items
+            ? // @ts-ignore
+              items.intersection(assistItems)
+            : new Set([...items].filter((x) => assistItems!.has(x)));
       }
     }
     this._filteredAutomations = items ? [...items] : undefined;
