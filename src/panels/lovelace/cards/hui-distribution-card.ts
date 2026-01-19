@@ -127,7 +127,7 @@ export class HuiDistributionCard
 
   @state() private _configEntities?: ProcessedEntity[];
 
-  @state() private _hiddenEntities: string[] = [];
+  @state() private _hiddenEntities = new Set<string>();
 
   @state() private _expandLegend = false;
 
@@ -183,23 +183,17 @@ export class HuiDistributionCard
 
       // If more than one domain, entities are incompatible
       if (domains.size > 1) {
-        return (
-          this.hass?.localize(
-            "ui.panel.lovelace.cards.distribution.domain_mismatch",
-            { domains: Array.from(domains).join(", ") }
-          ) ||
-          `All entities must be from the same domain. Found: ${Array.from(domains).join(", ")}`
+        return hass.localize(
+          "ui.panel.lovelace.cards.distribution.domain_mismatch",
+          { domains: Array.from(domains).join(", ") }
         );
       }
 
       // If more than one device_class, entities are incompatible
       if (deviceClasses.size > 1) {
-        return (
-          this.hass?.localize(
-            "ui.panel.lovelace.cards.distribution.device_class_mismatch",
-            { classes: Array.from(deviceClasses).join(", ") }
-          ) ||
-          `All entities must have the same device class. Found: ${Array.from(deviceClasses).join(", ")}`
+        return hass.localize(
+          "ui.panel.lovelace.cards.distribution.device_class_mismatch",
+          { classes: Array.from(deviceClasses).join(", ") }
         );
       }
 
@@ -251,7 +245,7 @@ export class HuiDistributionCard
       });
 
       // Track hidden indices
-      if (this._hiddenEntities.includes(entity.entity)) {
+      if (this._hiddenEntities.has(entity.entity)) {
         hiddenIndices.push(segments.length - 1);
       }
     });
@@ -269,7 +263,7 @@ export class HuiDistributionCard
     return this._configEntities.map((entity, index) => {
       const stateObj = this.hass!.states[entity.entity];
       const value = stateObj ? Number(stateObj.state) : 0;
-      const isHidden = this._hiddenEntities.includes(entity.entity);
+      const isHidden = this._hiddenEntities.has(entity.entity);
       const isZeroOrNegative = !stateObj || value <= 0 || isNaN(value);
 
       const name = stateObj
@@ -293,13 +287,15 @@ export class HuiDistributionCard
   }
 
   private _toggleEntity(entityId: string): void {
-    if (this._hiddenEntities.includes(entityId)) {
+    const newHidden = new Set(this._hiddenEntities);
+    if (newHidden.has(entityId)) {
       // Show: remove from hidden list
-      this._hiddenEntities = this._hiddenEntities.filter((e) => e !== entityId);
+      newHidden.delete(entityId);
     } else {
       // Hide: add to hidden list
-      this._hiddenEntities = [...this._hiddenEntities, entityId];
+      newHidden.add(entityId);
     }
+    this._hiddenEntities = newHidden;
   }
 
   private _handleSegmentClick(ev: CustomEvent): void {
@@ -315,6 +311,13 @@ export class HuiDistributionCard
     const disabled = target.dataset.disabled === "true";
     if (entityId && !disabled) {
       this._toggleEntity(entityId);
+    }
+  }
+
+  private _handleLegendKeydown(ev: KeyboardEvent): void {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleLegendClick(ev);
     }
   }
 
@@ -343,7 +346,17 @@ export class HuiDistributionCard
               })}
               data-entity=${item.entity}
               data-disabled=${item.isDisabled}
+              role="button"
+              aria-pressed=${!item.isHidden}
+              aria-disabled=${item.isDisabled}
+              aria-label=${item.isDisabled
+                ? `${item.name} (unavailable)`
+                : item.isHidden
+                  ? `Show ${item.name}`
+                  : `Hide ${item.name}`}
+              tabindex=${item.isDisabled ? -1 : 0}
               @click=${this._handleLegendClick}
+              @keydown=${this._handleLegendKeydown}
             >
               <div
                 class="bullet"
@@ -500,6 +513,12 @@ export class HuiDistributionCard
     }
 
     .legend-item:hover {
+      opacity: 0.8;
+    }
+
+    .legend-item:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
       opacity: 0.8;
     }
 
