@@ -559,15 +559,21 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     if (
       this._entityRegCreated &&
       this._newSceneId &&
-      changedProps.has("_entityRegistryEntries")
+      (changedProps.has("scenes") || changedProps.has("_entityRegistryEntries"))
     ) {
-      const scene = this._entityRegistryEntries.find(
-        (entity: EntityRegistryEntry) =>
-          entity.platform === "scene" && entity.unique_id === this._newSceneId
+      const scene = this.scenes.find(
+        (entity: SceneEntity) => entity.attributes.id === this._newSceneId
       );
       if (scene) {
-        this._entityRegCreated(scene);
-        this._entityRegCreated = undefined;
+        // Scene appeared in state machine, now look for registry entry
+        const registryEntry = this._entityRegistryEntries.find(
+          (reg) => reg.entity_id === scene.entity_id
+        );
+        if (registryEntry) {
+          // We have both the scene and its registry entry, resolve
+          this._entityRegCreated(registryEntry);
+          this._entityRegCreated = undefined;
+        }
       }
     }
   }
