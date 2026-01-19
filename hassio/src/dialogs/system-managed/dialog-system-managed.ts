@@ -89,14 +89,12 @@ class HassioSystemManagedDialog extends LitElement {
               ? html`<img src=${addonImage} alt=${this._addon.name} />`
               : html`<ha-svg-icon .path=${mdiPuzzle}></ha-svg-icon>`}
           </div>
-          ${this._supervisor.localize("addon.system_managed.title")}.<br />
-          ${this._supervisor.localize("addon.system_managed.description")}
+          ${this._supervisor.localize("app.system_managed.title")}.<br />
+          ${this._supervisor.localize("app.system_managed.description")}
           ${this._configEntry
             ? html`
                 <h3>
-                  ${this._supervisor.localize(
-                    "addon.system_managed.managed_by"
-                  )}:
+                  ${this._supervisor.localize("app.system_managed.managed_by")}:
                 </h3>
                 <ha-md-list>
                   <ha-md-list-item

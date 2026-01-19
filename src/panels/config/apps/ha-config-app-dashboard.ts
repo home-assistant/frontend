@@ -175,7 +175,7 @@ class HaConfigAppDashboard extends LitElement {
       // Navigate back to installed apps after uninstall
       window.history.back();
     } else {
-      // Reload addon info
+      // Reload app info
       await this._loadAddon();
     }
   }

@@ -170,7 +170,7 @@ class HaBackupConfigData extends LitElement {
         data.addons_mode === "all" ||
         (data.addons_mode === "custom" && data.addons.length > 0)
       ) {
-        // It would be better if we could receive individual addon sizes in the WS request instead
+        // It would be better if we could receive individual app sizes in the WS request instead
         totalBytes +=
           (segments.addons_data ?? 0) + (segments.addons_config ?? 0);
       }

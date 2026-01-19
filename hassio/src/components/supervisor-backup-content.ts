@@ -216,7 +216,7 @@ export class SupervisorBackupContent extends LitElement {
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
-                      .label=${this.supervisor?.localize("backup.addons")}
+                      .label=${this.supervisor?.localize("backup.apps")}
                       .iconPath=${mdiPuzzle}
                     >
                     </supervisor-formfield-label>`}

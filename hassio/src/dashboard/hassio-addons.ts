@@ -39,7 +39,7 @@ class HassioAddons extends LitElement {
       </div>
       <div class="content">
         ${!atLeastVersion(this.hass.config.version, 2021, 12)
-          ? html`<h1>${this.supervisor.localize("dashboard.addons")}</h1>`
+          ? html`<h1>${this.supervisor.localize("dashboard.apps")}</h1>`
           : ""}
         <div class="card-group">
           ${!this.supervisor.addon.addons.length
@@ -67,14 +67,12 @@ class HassioAddons extends LitElement {
                           ? mdiArrowUpBoldCircle
                           : mdiPuzzle}
                         .iconTitle=${addon.state !== "started"
-                          ? this.supervisor.localize("dashboard.addon_stopped")
+                          ? this.supervisor.localize("dashboard.app_stopped")
                           : addon.update_available!
                             ? this.supervisor.localize(
-                                "dashboard.addon_new_version"
+                                "dashboard.app_new_version"
                               )
-                            : this.supervisor.localize(
-                                "dashboard.addon_running"
-                              )}
+                            : this.supervisor.localize("dashboard.app_running")}
                         .iconClass=${addon.update_available
                           ? addon.state === "started"
                             ? "update"

@@ -785,7 +785,7 @@ class SupervisorAppInfo extends LitElement {
         "state" in this.addon &&
         this.addon.state === "startup"
       ) {
-        // Addon is starting up, wait for it to start
+        // App is starting up, wait for it to start
         this._scheduleDataUpdate();
       }
     }

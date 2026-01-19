@@ -150,7 +150,7 @@ class MoreInfoUpdate extends LitElement {
       };
     }
 
-    // Addon backup
+    // App backup
     if (updateType === "addon") {
       const version = this.stateObj.attributes.installed_version;
       return {

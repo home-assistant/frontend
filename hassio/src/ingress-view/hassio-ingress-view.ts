@@ -114,14 +114,14 @@ class HassioIngressView extends LitElement {
         }
         if (!addonInfo.version) {
           await showAlertDialog(this, {
-            text: this.supervisor.localize("my.error_addon_not_installed"),
+            text: this.supervisor.localize("my.error_app_not_installed"),
             title: addonInfo.name,
           });
           await nextRender();
           navigate(`/hassio/addon/${addonInfo.slug}/info`, { replace: true });
         } else if (!addonInfo.ingress) {
           await showAlertDialog(this, {
-            text: this.supervisor.localize("my.error_addon_no_ingress"),
+            text: this.supervisor.localize("my.error_app_no_ingress"),
             title: addonInfo.name,
           });
           await nextRender();
@@ -162,7 +162,7 @@ class HassioIngressView extends LitElement {
       await this.updateComplete;
       await showAlertDialog(this, {
         text:
-          this.supervisor.localize("ingress.error_addon_info") ||
+          this.supervisor.localize("ingress.error_app_info") ||
           "Unable to fetch add-on info to start Ingress",
         title: "Supervisor",
       });
@@ -175,7 +175,7 @@ class HassioIngressView extends LitElement {
       await this.updateComplete;
       await showAlertDialog(this, {
         text:
-          this.supervisor.localize("ingress.error_addon_not_installed") ||
+          this.supervisor.localize("ingress.error_app_not_installed") ||
           "The add-on is not installed. Please install it first",
         title: addon.name,
       });
@@ -188,7 +188,7 @@ class HassioIngressView extends LitElement {
       await this.updateComplete;
       await showAlertDialog(this, {
         text:
-          this.supervisor.localize("ingress.error_addon_not_supported") ||
+          this.supervisor.localize("ingress.error_app_not_supported") ||
           "This add-on does not support Ingress",
         title: addon.name,
       });
@@ -201,17 +201,17 @@ class HassioIngressView extends LitElement {
       await this.updateComplete;
       const confirm = await showConfirmationDialog(this, {
         text:
-          this.supervisor.localize("ingress.error_addon_not_running") ||
+          this.supervisor.localize("ingress.error_app_not_running") ||
           "The add-on is not running. Do you want to start it now?",
         title: addon.name,
         confirmText:
-          this.supervisor.localize("ingress.start_addon") || "Start add-on",
+          this.supervisor.localize("ingress.start_app") || "Start add-on",
         dismissText: this.supervisor.localize("common.no") || "No",
       });
       if (confirm) {
         try {
           this._loadingMessage =
-            this.supervisor.localize("ingress.addon_starting") ||
+            this.supervisor.localize("ingress.app_starting") ||
             "The add-on is starting, this can take some time...";
           await startHassioAddon(this.hass, addonSlug);
           fireEvent(this, "supervisor-collection-refresh", {
@@ -222,7 +222,7 @@ class HassioIngressView extends LitElement {
         } catch (_err) {
           await showAlertDialog(this, {
             text:
-              this.supervisor.localize("ingress.error_starting_addon") ||
+              this.supervisor.localize("ingress.error_starting_app") ||
               "Error starting the add-on",
             title: addon.name,
           });
@@ -238,9 +238,9 @@ class HassioIngressView extends LitElement {
     }
 
     if (addon.state === "startup") {
-      // Addon is starting up, wait for it to start
+      // App is starting up, wait for it to start
       this._loadingMessage =
-        this.supervisor.localize("ingress.addon_starting") ||
+        this.supervisor.localize("ingress.app_starting") ||
         "The add-on is starting, this can take some time...";
 
       this._fetchDataTimeout = window.setTimeout(() => {
@@ -301,7 +301,7 @@ class HassioIngressView extends LitElement {
       await this.updateComplete;
       showConfirmationDialog(this, {
         text:
-          this.supervisor.localize("ingress.error_addon_not_ready") ||
+          this.supervisor.localize("ingress.error_app_not_ready") ||
           "The add-on seems to not be ready, it might still be starting. Do you want to try again?",
         title: this._addon.name,
         confirmText: this.supervisor.localize("ingress.retry") || "Retry",

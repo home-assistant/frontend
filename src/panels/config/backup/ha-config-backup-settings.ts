@@ -96,12 +96,12 @@ class HaConfigBackupSettings extends LitElement {
       !this._config?.create_backup.include_all_addons &&
       this._config?.create_backup.include_addons?.length
     ) {
-      // Wait for the addons to be loaded before scrolling because the height can change and location section is below addons.
+      // Wait for the apps to be loaded before scrolling because the height can change and location section is below apps.
       this.addEventListener("backup-addons-fetched", async () => {
         await nextRender();
         this._scrolltoHash();
       });
-      // Clear hash to cancel the scroll after 500ms if addons doesn't load
+      // Clear hash to cancel the scroll after 500ms if apps doesn't load
       setTimeout(() => {
         this._clearHash();
       }, 500);
