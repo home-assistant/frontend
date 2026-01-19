@@ -2,7 +2,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/ha-alert";
 import "../../../components/ha-analytics";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
