@@ -1,35 +1,35 @@
-import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import { extractSearchParam } from "../../../common/url/search-params";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-markdown";
-import "../../../components/ha-switch";
-import { domainToName } from "../../../data/integration";
-import type { LabPreviewFeature } from "../../../data/labs";
+import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js"
+import type { PropertyValues, TemplateResult } from "lit"
+import { LitElement, css, html, nothing } from "lit"
+import { customElement, property, state } from "lit/decorators"
+import memoizeOne from "memoize-one"
+import type { LocalizeFunc } from "../../../common/translations/localize"
+import { extractSearchParam } from "../../../common/url/search-params"
+import "../../../components/ha-alert"
+import "../../../components/ha-button"
+import "../../../components/ha-card"
+import "../../../components/ha-icon-button"
+import "../../../components/ha-markdown"
+import "../../../components/ha-switch"
+import { domainToName } from "../../../data/integration"
+import type { LabPreviewFeature } from "../../../data/labs"
 import {
   labsUpdatePreviewFeature,
   subscribeLabFeatures,
-} from "../../../data/labs";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-subpage";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
-import { documentationUrl } from "../../../util/documentation-url";
-import { showToast } from "../../../util/toast";
-import { showLabsPreviewFeatureEnableDialog } from "./show-dialog-labs-preview-feature-enable";
+} from "../../../data/labs"
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box"
+import "../../../layouts/hass-subpage"
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin"
+import { haStyle } from "../../../resources/styles"
+import type { HomeAssistant } from "../../../types"
+import { brandsUrl } from "../../../util/brands-url"
+import { documentationUrl } from "../../../util/documentation-url"
+import { showToast } from "../../../util/toast"
+import { showLabsPreviewFeatureEnableDialog } from "./show-dialog-labs-preview-feature-enable"
 import {
   closeLabsProgressDialog,
   showLabsProgressDialog,
-} from "./show-dialog-labs-progress";
+} from "./show-dialog-labs-progress"
 
 @customElement("ha-config-labs")
 class HaConfigLabs extends SubscribeMixin(LitElement) {
@@ -41,23 +41,16 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
   @state() private _highlightedPreviewFeature?: string;
 
-  @state() private _hasAnalyticsSnapshotsBackend = false;
-
   private _sortedPreviewFeatures = memoizeOne(
     (localize: LocalizeFunc, features: LabPreviewFeature[]) => {
       const featuresToSort = [...features];
 
       return featuresToSort.sort((a, b) => {
-        const aIsAnalyticsSnapshots =
-          a.domain === "analytics" && a.preview_feature === "snapshots";
-        const bIsAnalyticsSnapshots =
-          b.domain === "analytics" && b.preview_feature === "snapshots";
-        const aIsAutomation = a.domain === "automation";
-        const bIsAutomation = b.domain === "automation";
-
-        if (aIsAutomation && bIsAnalyticsSnapshots) return -1;
-        if (aIsAnalyticsSnapshots && bIsAutomation) return 1;
-
+        // Place frontend.winter_mode at the bottom
+        if (a.domain === "frontend" && a.preview_feature === "winter_mode") return 1;
+        if (b.domain === "frontend" && b.preview_feature === "winter_mode") return -1;
+        
+        // Sort everything else alphabetically
         return domainToName(localize, a.domain).localeCompare(
           domainToName(localize, b.domain)
         );
@@ -74,10 +67,6 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         this.hass.loadBackendTranslation("preview_features", domains);
 
         this._preview_features = features;
-
-        this._hasAnalyticsSnapshotsBackend = features.some(
-          (f) => f.domain === "analytics" && f.preview_feature === "snapshots"
-        );
       }),
     ];
   }
@@ -302,19 +291,6 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       preview_feature: LabPreviewFeature;
     };
     const preview_feature = buttonEl.preview_feature;
-
-    if (
-      preview_feature.domain === "analytics" &&
-      preview_feature.preview_feature === "snapshots" &&
-      !this._hasAnalyticsSnapshotsBackend
-    ) {
-      showToast(this, {
-        message: this.hass.localize(
-          "ui.panel.config.labs.analytics_snapshots.not_available"
-        ),
-      });
-      return;
-    }
 
     const enabled = !preview_feature.enabled;
     const previewFeatureId = `${preview_feature.domain}.${preview_feature.preview_feature}`;
