@@ -1,6 +1,11 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
-import { showMetadataSuggestionDialog } from "../helpers/suggest-metadata-ai";
+
+import {
+  SUGGESTION_INCLUDE_ALL,
+  type MetadataSuggestionResult,
+} from "../common/suggest-metadata-ai";
+
 
 import {
   mdiCog,
@@ -155,6 +160,25 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       return entry?.categories?.scene;
     }
   );
+private _handleSuggestedMetadata(
+  ev: CustomEvent<MetadataSuggestionResult>
+) {
+  const { name } = ev.detail;
+
+  if (!this._config || !name) {
+    return;
+  }
+
+  this._dirty = true;
+
+  this._config = {
+    ...this._config,
+    name,
+  };
+}
+
+
+
 
   private _getEntitiesDevices = memoizeOne(
     (
@@ -228,20 +252,20 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         .header=${this._scene
           ? computeStateName(this._scene)
           : this.hass.localize("ui.panel.config.scene.editor.default_name")}
-          <ha-icon-button
-  slot="toolbar-icon"
-  .label=${this.hass.localize("ui.common.suggest")}
-  @click=${this._suggestMetadata}
->
-  <ha-svg-icon .path=${mdiLightbulb}></ha-svg-icon>
-</ha-icon-button>
       >
 
-<ha-button
-  @click=${this._suggestMetadata}
->
-  Suggest
-</ha-button>
+
+
+
+          <ha-suggest-with-ai-button
+  slot="toolbar-icon"
+  .hass=${this.hass}
+  .domain=${"scene"}
+  .config=${this._config}
+  .include=${{ }}
+  @suggested=${this._handleSuggestedMetadata}
+></ha-suggest-with-ai-button>
+ 
 
         <ha-button-menu
 
@@ -339,14 +363,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       @editor-save=${this._saveScene}
       .showErrors=${false}
       disable-fullscreen
-    ></ha-yaml-editor>`; 
+    ></ha-yaml-editor>`;
   }
-  private _suggestMetadata() {
-  showMetadataSuggestionDialog(this, {
-    domain: "scene",
-  });
-}
-
 
   private _renderUiMode() {
     const { devices, entities } = this._getEntitiesDevices(
