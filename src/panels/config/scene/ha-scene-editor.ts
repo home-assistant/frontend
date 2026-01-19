@@ -971,7 +971,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   }
 
   private async _delete(): Promise<void> {
-    await deleteScene(this.hass, this.sceneId!);
+    if (!this.sceneId) {
+      return;
+    }
+    await deleteScene(this.hass, this.sceneId);
     if (this._mode === "live") {
       applyScene(this.hass, this._storedStates);
     }
@@ -1089,6 +1092,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
     const id = this.sceneId || String(Date.now());
 
+    this._saving = true;
+    this._errors = undefined;
+
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
     if (this._entityRegistryUpdate !== undefined && !this.sceneId) {
       this._newSceneId = id;
@@ -1098,7 +1104,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
 
     try {
-      this._saving = true;
       await saveScene(this.hass, id, this._config!);
 
       if (this._entityRegistryUpdate !== undefined) {
@@ -1149,9 +1154,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         navigate(`/config/scene/edit/${id}`, { replace: true });
       }
     } catch (err: any) {
-      this._errors = err.body.message || err.message;
+      this._errors = err.body?.message || err.message || err.body;
       showToast(this, {
-        message: err.body.message || err.message,
+        message: err.body?.message || err.message || err.body,
       });
       throw err;
     } finally {
