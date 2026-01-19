@@ -1,4 +1,5 @@
 import { consume } from "@lit/context";
+import { showMetadataSuggestionDialog } from "../helpers/suggest-metadata-ai";
 
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
@@ -183,6 +184,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             entities: deviceEntities,
           });
         });
+        
       }
 
       const outputEntities: string[] = [];
@@ -226,7 +228,20 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         .header=${this._scene
           ? computeStateName(this._scene)
           : this.hass.localize("ui.panel.config.scene.editor.default_name")}
+          <ha-icon-button
+  slot="toolbar-icon"
+  .label=${this.hass.localize("ui.common.suggest")}
+  @click=${this._suggestMetadata}
+>
+  <ha-svg-icon .path=${mdiLightbulb}></ha-svg-icon>
+</ha-icon-button>
       >
+<ha-button
+  @click=${this._suggestMetadata}
+>
+  Suggest
+</ha-button>
+
         <ha-button-menu
           slot="toolbar-icon"
           @action=${this._handleMenuAction}
@@ -323,8 +338,14 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       @editor-save=${this._saveScene}
       .showErrors=${false}
       disable-fullscreen
-    ></ha-yaml-editor>`;
+    ></ha-yaml-editor>`; 
   }
+  private _suggestMetadata() {
+  showMetadataSuggestionDialog(this, {
+    domain: "scene",
+  });
+}
+
 
   private _renderUiMode() {
     const { devices, entities } = this._getEntitiesDevices(
