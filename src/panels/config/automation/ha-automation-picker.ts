@@ -1012,25 +1012,21 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     );
     for (const [key, filter] of filters) {
       if (
-        // these 4 filters actually apply any selected options, and return
-        // the list of automations that match these options
+        // these 4 filters actually apply any selected options, and expose
+        // the list of automations that match these options as filter.items
         isRelatedItemsFilterUsed(key, filter, [
           "ha-filter-floor-areas",
           "ha-filter-devices",
           "ha-filter-entities",
           "ha-filter-blueprints",
         ])
-        // isRelatedItemsFilterUsed(key, filter, "ha-filter-devices") ||
-        // isRelatedItemsFilterUsed(key, filter, "ha-filter-entities") ||
-        // isRelatedItemsFilterUsed(key, filter, "ha-filter-blueprints")
       ) {
-        if (filter.items) {
-          filteredEntityIds = filteredEntityIds.filter((entityId) =>
-            filter.items!.has(entityId)
-          );
-        }
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          filter.items!.has(entityId)
+        );
 
-        // the filters below only return the selected options;
+        // the filters below only expose the selected options (as filter.value);
+        // category filter only allows a single selected option
         // applying the filter must be done here
       } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
         filteredEntityIds = filteredEntityIds.filter(
