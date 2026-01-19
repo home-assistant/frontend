@@ -1161,6 +1161,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       throw err;
     } finally {
       this._saving = false;
+      this._entityRegCreated = undefined;
+      this._newSceneId = undefined;
     }
   }
 
