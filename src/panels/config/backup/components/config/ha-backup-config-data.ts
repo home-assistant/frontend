@@ -405,7 +405,11 @@ class HaBackupConfigData extends LitElement {
       </ha-md-list>
       ${isHassio && this._showAddons && this._addons.length
         ? html`
-            <ha-expansion-panel .header=${"Add-ons"} outlined expanded>
+            <ha-expansion-panel
+              .header=${this.hass.localize("ui.panel.config.backup.data.apps")}
+              outlined
+              expanded
+            >
               <ha-backup-addons-picker
                 .hass=${this.hass}
                 .value=${data.addons}
