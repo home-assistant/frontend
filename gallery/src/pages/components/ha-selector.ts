@@ -11,7 +11,7 @@ import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
-import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
+import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";

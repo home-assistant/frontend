@@ -5,8 +5,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
 import { AssistantSetupStyles } from "../styles";
+import "../../../components/voice-assistant-brand-icon";
 
 @customElement("cloud-step-intro")
 export class CloudStepIntro extends LitElement {
@@ -62,26 +62,16 @@ export class CloudStepIntro extends LitElement {
           </div>
           <div class="feature">
             <div class="logos">
-              <img
-                alt="Google Assistant"
-                src=${brandsUrl({
-                  domain: "google_assistant",
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-              />
-              <img
-                alt="Amazon Alexa"
-                src=${brandsUrl({
-                  domain: "alexa",
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-              />
+              <voice-assistant-brand-icon
+                .voiceAssistantId=${"cloud.google_assistant"}
+                .hass=${this.hass}
+              >
+              </voice-assistant-brand-icon>
+              <voice-assistant-brand-icon
+                .voiceAssistantId=${"cloud.alexa"}
+                .hass=${this.hass}
+              >
+              </voice-assistant-brand-icon>
             </div>
             <h2>
               ${this.hass.localize(

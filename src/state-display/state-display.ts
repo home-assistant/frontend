@@ -103,6 +103,15 @@ class StateDisplay extends LitElement {
       return html`${this.name}`;
     }
 
+    if (
+      content === "device_name" ||
+      content === "area_name" ||
+      content === "floor_name"
+    ) {
+      const type = content.replace("_name", "") as "device" | "area" | "floor";
+      return this.hass.formatEntityName(stateObj, { type }) || undefined;
+    }
+
     let relativeDateTime: string | Date | undefined;
 
     // Check last-changed for backwards compatibility

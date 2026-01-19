@@ -75,7 +75,6 @@ class HaConfigRepairs extends LitElement {
                 src=${brandsUrl({
                   domain: issue.issue_domain || issue.domain,
                   type: "icon",
-                  useFallback: true,
                   darkOptimized: this.hass.themes?.darkMode,
                 })}
                 .title=${domainName}
