@@ -8976,6 +8976,10 @@
                 "label": "Area controls",
                 "customize_controls": "Customize controls",
                 "controls": "Controls",
+                "sections": {
+                  "domain": "Domains",
+                  "entity": "Entities"
+                },
                 "controls_options": {
                   "light": "Lights",
                   "fan": "Fans",
