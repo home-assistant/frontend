@@ -17,6 +17,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { formatDurationDigital } from "../../../common/datetime/format_duration";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import {
+  startMediaProgressInterval,
+  stopMediaProgressInterval,
+} from "../../../common/util/media-progress";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -652,22 +656,17 @@ class MoreInfoMediaPlayer extends LitElement {
 
   private _syncProgressInterval(): void {
     if (this._shouldUpdateProgress()) {
-      if (!this._progressInterval) {
-        this._progressInterval = window.setInterval(
-          () => this.requestUpdate(),
-          1000
-        );
-      }
+      this._progressInterval = startMediaProgressInterval(
+        this._progressInterval,
+        () => this.requestUpdate()
+      );
       return;
     }
     this._clearProgressInterval();
   }
 
   private _clearProgressInterval(): void {
-    if (this._progressInterval) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
-    }
+    this._progressInterval = stopMediaProgressInterval(this._progressInterval);
   }
 
   private _shouldUpdateProgress(): boolean {

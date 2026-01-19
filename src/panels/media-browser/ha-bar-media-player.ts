@@ -18,6 +18,10 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
+import {
+  startMediaProgressInterval,
+  stopMediaProgressInterval,
+} from "../../common/util/media-progress";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-domain-icon";
@@ -93,23 +97,20 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     if (
-      !this._progressInterval &&
       this._showProgressBar &&
-      stateObj.state === "playing"
+      stateObj.state === "playing" &&
+      !this._progressInterval
     ) {
-      this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(),
-        1000
+      this._progressInterval = startMediaProgressInterval(
+        this._progressInterval,
+        () => this._updateProgressBar()
       );
     }
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (this._progressInterval) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
-    }
+    this._progressInterval = stopMediaProgressInterval(this._progressInterval);
     this._tearDownBrowserPlayer();
   }
 
@@ -451,21 +452,18 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
     this._updateProgressBar();
 
-    if (
-      !this._progressInterval &&
-      this._showProgressBar &&
-      stateObj?.state === "playing"
-    ) {
-      this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(),
-        1000
+    if (this._showProgressBar && stateObj?.state === "playing") {
+      this._progressInterval = startMediaProgressInterval(
+        this._progressInterval,
+        () => this._updateProgressBar()
       );
     } else if (
       this._progressInterval &&
       (!this._showProgressBar || stateObj?.state !== "playing")
     ) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
+      this._progressInterval = stopMediaProgressInterval(
+        this._progressInterval
+      );
     }
   }
 
