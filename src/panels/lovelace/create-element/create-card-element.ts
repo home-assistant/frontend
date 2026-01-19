@@ -77,6 +77,7 @@ const LAZY_LOAD_TYPES = {
   gauge: () => import("../cards/hui-gauge-card"),
   "history-graph": () => import("../cards/hui-history-graph-card"),
   "horizontal-stack": () => import("../cards/hui-horizontal-stack-card"),
+  distribution: () => import("../cards/hui-distribution-card"),
   humidifier: () => import("../cards/hui-humidifier-card"),
   iframe: () => import("../cards/hui-iframe-card"),
   logbook: () => import("../cards/hui-logbook-card"),
