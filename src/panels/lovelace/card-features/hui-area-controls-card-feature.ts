@@ -213,8 +213,7 @@ class HuiAreaControlsCardFeature
       this.hass.areas
     );
 
-    const entitiesIds = controlEntities[normalized.value];
-    const entities = entitiesIds
+    const entities = controlEntities[normalized.value]
       .map((entityId) => this.hass!.states[entityId] as HassEntity | undefined)
       .filter((v): v is HassEntity => Boolean(v));
 
