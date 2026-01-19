@@ -1,10 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 
-import {
-  SUGGESTION_INCLUDE_ALL,
-  type MetadataSuggestionResult,
-} from "../common/suggest-metadata-ai";
+
 
 
 import {
@@ -26,6 +23,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import {
+  type MetadataSuggestionResult,
+} from "../common/suggest-metadata-ai";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
