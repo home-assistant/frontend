@@ -28,10 +28,17 @@ import type {
   SceneSaveDialogParams,
 } from "./show-dialog-scene-save";
 import {
+  type MetadataSuggestionInclude,
+  type MetadataSuggestionResult,
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
-  type MetadataSuggestionResult,
 } from "../../common/suggest-metadata-ai";
+
+const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
+  description: false,
+  categories: true,
+  labels: true,
+};
 
 @customElement("ha-dialog-scene-save")
 class DialogSceneSave extends LitElement {
@@ -268,38 +275,42 @@ class DialogSceneSave extends LitElement {
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask(this.hass, {
-      domain: "scene",
-      config: this._params.config,
-      includeDescription: false,
-    });
+    generateMetadataSuggestionTask(
+      this.hass.connection,
+      this.hass.states,
+      this.hass.language,
+      "scene",
+      this._params.config,
+      SUGGESTION_CONFIG
+    );
 
   private async _handleSuggestion(
     event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>
   ) {
     const result = event.detail;
     const processed = await processMetadataSuggestion(
-      this.hass,
+      this.hass.connection,
       "scene",
-      result
+      result,
+      SUGGESTION_CONFIG
     );
 
     this._newName = processed.name;
 
-    if (processed.categoryId) {
+    if (processed.category) {
       this._entryUpdates = {
         ...this._entryUpdates,
-        category: processed.categoryId,
+        category: processed.category,
       };
       if (!this._visibleOptionals.includes("category")) {
         this._visibleOptionals = [...this._visibleOptionals, "category"];
       }
     }
 
-    if (processed.labelIds?.length) {
+    if (processed.labels?.length) {
       this._entryUpdates = {
         ...this._entryUpdates,
-        labels: processed.labelIds,
+        labels: processed.labels,
       };
       if (!this._visibleOptionals.includes("labels")) {
         this._visibleOptionals = [...this._visibleOptionals, "labels"];
