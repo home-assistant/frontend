@@ -3,12 +3,17 @@ import { mdiDragHorizontalVariant } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import Fuse from "fuse.js";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import {
+  multiTermSortedSearch,
+  type FuseWeightedKey,
+} from "../../../../resources/fuseMultiTerm";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-form/ha-form";
@@ -96,6 +101,41 @@ export class HuiAreaControlsCardFeatureEditor
     }
   );
 
+  private _domainSearchKeys: FuseWeightedKey[] = [
+    {
+      name: "primary",
+      weight: 10,
+    },
+  ];
+
+  private _entitySearchKeys: FuseWeightedKey[] = [
+    {
+      name: "primary",
+      weight: 10,
+    },
+    {
+      name: "secondary",
+      weight: 5,
+    },
+    {
+      name: "id",
+      weight: 3,
+    },
+  ];
+
+  private _createFuseIndex = (
+    items: AreaControlPickerItem[],
+    keys: FuseWeightedKey[]
+  ) => Fuse.createIndex(keys, items);
+
+  private _domainFuseIndex = memoizeOne((items: AreaControlPickerItem[]) =>
+    this._createFuseIndex(items, this._domainSearchKeys)
+  );
+
+  private _entityFuseIndex = memoizeOne((items: AreaControlPickerItem[]) =>
+    this._createFuseIndex(items, this._entitySearchKeys)
+  );
+
   private _getItems = memoizeOne(
     (
       areaId: string,
@@ -119,15 +159,6 @@ export class HuiAreaControlsCardFeatureEditor
             typeof item === "string" ? item === id : item.entity_id === id
           );
 
-        const matchesSearch = (
-          search: string,
-          ...values: string[]
-        ): boolean => {
-          const searchTerms = search.toLowerCase().split(" ");
-          const searchableText = values.join(" ").toLowerCase();
-          return searchTerms.every((term) => searchableText.includes(term));
-        };
-
         const controlEntities = getAreaControlEntities(
           AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[],
           areaId,
@@ -136,8 +167,8 @@ export class HuiAreaControlsCardFeatureEditor
         );
 
         const items: (AreaControlPickerItem | string)[] = [];
-        const domainItems: AreaControlPickerItem[] = [];
-        const entityItems: AreaControlPickerItem[] = [];
+        let domainItems: AreaControlPickerItem[] = [];
+        let entityItems: AreaControlPickerItem[] = [];
 
         if (!section || section === "domain") {
           const supportedControls = (
@@ -151,23 +182,32 @@ export class HuiAreaControlsCardFeatureEditor
             const label = localize(
               `ui.panel.lovelace.editor.features.types.area-controls.controls_options.${control}`
             );
-            if (!searchString || matchesSearch(searchString, label)) {
-              const button = AREA_CONTROLS_BUTTONS[control];
-              const deviceClass = button.filter.device_class
-                ? Array.isArray(button.filter.device_class)
-                  ? button.filter.device_class[0]
-                  : button.filter.device_class
-                : undefined;
+            const button = AREA_CONTROLS_BUTTONS[control];
+            const deviceClass = button.filter.device_class
+              ? Array.isArray(button.filter.device_class)
+                ? button.filter.device_class[0]
+                : button.filter.device_class
+              : undefined;
 
-              domainItems.push({
-                type: "domain",
-                id: control,
-                primary: label,
-                domain: button.filter.domain,
-                deviceClass,
-              });
-            }
+            domainItems.push({
+              type: "domain",
+              id: control,
+              primary: label,
+              domain: button.filter.domain,
+              deviceClass,
+            });
           });
+
+          if (searchString) {
+            const fuseIndex = this._domainFuseIndex(domainItems);
+            domainItems = multiTermSortedSearch(
+              domainItems,
+              searchString,
+              this._domainSearchKeys,
+              (item) => item.id,
+              fuseIndex
+            );
+          }
         }
 
         if (!section || section === "entity") {
@@ -185,7 +225,6 @@ export class HuiAreaControlsCardFeatureEditor
               return;
             }
 
-            const friendlyName = computeStateName(stateObj);
             const [entityName, deviceName, areaName] = computeEntityNameList(
               stateObj,
               [{ type: "entity" }, { type: "device" }, { type: "area" }],
@@ -200,25 +239,25 @@ export class HuiAreaControlsCardFeatureEditor
               .filter(Boolean)
               .join(isRTL ? " ◂ " : " ▸ ");
 
-            if (
-              !searchString ||
-              matchesSearch(
-                searchString,
-                primary,
-                secondary,
-                entityId,
-                friendlyName
-              )
-            ) {
-              entityItems.push({
-                type: "entity",
-                id: entityId,
-                primary,
-                secondary,
-                stateObj,
-              });
-            }
+            entityItems.push({
+              type: "entity",
+              id: entityId,
+              primary,
+              secondary,
+              stateObj,
+            });
           });
+
+          if (searchString) {
+            const fuseIndex = this._entityFuseIndex(entityItems);
+            entityItems = multiTermSortedSearch(
+              entityItems,
+              searchString,
+              this._entitySearchKeys,
+              (item) => item.id,
+              fuseIndex
+            );
+          }
         }
 
         // Only add section headers if there are items in that section
