@@ -35,6 +35,13 @@ export class HuiButtonHeadingBadge
     return document.createElement("hui-button-heading-badge-editor");
   }
 
+  public static getStubConfig(): ButtonHeadingBadgeConfig {
+    return {
+      type: "button",
+      icon: "mdi:gesture-tap-button",
+    };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ButtonHeadingBadgeConfig;
