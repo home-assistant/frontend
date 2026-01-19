@@ -1211,9 +1211,15 @@ ${
   }
 
   private _fetchExposedEntities = async () => {
-    this._exposedEntities = (
-      await listExposedEntities(this.hass)
-    ).exposed_entities;
+    try {
+      this._exposedEntities = (
+        await listExposedEntities(this.hass)
+      ).exposed_entities;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch exposed entities", err);
+      this._exposedEntities = {};
+    }
   };
 
   // local variant of data/expose/getExposedEntityVoiceAssistantIds
@@ -1260,6 +1266,7 @@ ${
       (changedProps.has("hass") &&
         (!oldHass || oldHass.states !== this.hass.states)) ||
       changedProps.has("_entities") ||
+      changedProps.has("_entitySources") ||
       changedProps.has("_entitySources")
     ) {
       // represent all entities without unique id
