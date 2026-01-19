@@ -48,12 +48,13 @@ export const isUsedFilter = (
 // returns true when this filter has *selected* options
 // which has resulted in a list of items that match these selected opions
 // (this list can be empty),
-// and the filter's name equals the given filterName
+// and the filter's name equals (one of) the given filterName(s)
 export const isUsedRelatedItemsFilter = (
   key: string,
   filter: DataTableFilter,
-  filterName: string
+  filterName: string | string[]
 ) => {
-  const isUsed = key === filterName && filter.items;
+  const isUsed =
+    (key === filterName || filterName.includes(key)) && filter.items;
   return isUsed;
 };

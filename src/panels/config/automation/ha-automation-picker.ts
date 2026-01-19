@@ -88,8 +88,8 @@ import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
   serializeFilters,
-  isUsedFilter,
-  isUsedRelatedItemsFilter,
+  isUsedFilter as isFilterUsed,
+  isUsedRelatedItemsFilter as isRelatedItemsFilterUsed,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
@@ -1012,12 +1012,17 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     );
     for (const [key, filter] of filters) {
       if (
-        // these 4 filters actually apply the selected options, and return
+        // these 4 filters actually apply any selected options, and return
         // the list of automations that match these options
-        isUsedRelatedItemsFilter(key, filter, "ha-filter-floor-areas") ||
-        isUsedRelatedItemsFilter(key, filter, "ha-filter-devices") ||
-        isUsedRelatedItemsFilter(key, filter, "ha-filter-entities") ||
-        isUsedRelatedItemsFilter(key, filter, "ha-filter-blueprints")
+        isRelatedItemsFilterUsed(key, filter, [
+          "ha-filter-floor-areas",
+          "ha-filter-devices",
+          "ha-filter-entities",
+          "ha-filter-blueprints",
+        ])
+        // isRelatedItemsFilterUsed(key, filter, "ha-filter-devices") ||
+        // isRelatedItemsFilterUsed(key, filter, "ha-filter-entities") ||
+        // isRelatedItemsFilterUsed(key, filter, "ha-filter-blueprints")
       ) {
         if (filter.items) {
           filteredEntityIds = filteredEntityIds.filter((entityId) =>
@@ -1027,20 +1032,20 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
         // the filters below only return the selected options;
         // applying the filter must be done here
-      } else if (isUsedFilter(key, filter, "ha-filter-categories")) {
+      } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
         filteredEntityIds = filteredEntityIds.filter(
           (entityId) =>
             filter.value![0] ===
             this._entityReg.find((reg) => reg.entity_id === entityId)
               ?.categories.automation
         );
-      } else if (isUsedFilter(key, filter, "ha-filter-labels")) {
+      } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
           this._entityReg
             .find((reg) => reg.entity_id === entityId)
             ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
         );
-      } else if (isUsedFilter(key, filter, "ha-filter-voice-assistants")) {
+      } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
           getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
             (filter.value as string[]).includes(va)
