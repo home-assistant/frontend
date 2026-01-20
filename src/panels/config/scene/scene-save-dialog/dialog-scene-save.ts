@@ -36,7 +36,7 @@ import {
 import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
 import type { SceneConfig } from "../../../../data/scene";
 
-const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
+const SUGGESTION_INCLUDE: MetadataSuggestionInclude = {
   name: true,
   categories: true,
   labels: true,
@@ -293,7 +293,7 @@ class DialogSceneSave extends LitElement {
         this.hass.states,
         "scene"
       ),
-      SUGGESTION_CONFIG
+      SUGGESTION_INCLUDE
     );
 
   private async _handleSuggestion(
@@ -304,7 +304,7 @@ class DialogSceneSave extends LitElement {
       this.hass.connection,
       "scene",
       result,
-      SUGGESTION_CONFIG
+      SUGGESTION_INCLUDE
     );
 
     if (processed.name) {
