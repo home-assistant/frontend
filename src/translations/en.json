@@ -1335,7 +1335,10 @@
         "error": "Fail!"
       },
       "navigation-picker": {
-        "add_custom_path": "Add custom path"
+        "add_custom_path": "Add custom path",
+        "dashboards": "[%key:ui::panel::config::dashboard::dashboards::main%]",
+        "views": "Views",
+        "other_routes": "Other routes"
       }
     },
     "dialogs": {
