@@ -22,7 +22,13 @@ export const getLegacyDefaultPanelUrlPath = (): string | null => {
   return defaultPanel ? JSON.parse(defaultPanel) : null;
 };
 
+export const getDeviceDefaultPanelUrlPath = (): string | null => {
+  const defaultPanel = window.localStorage.getItem("devicePanel");
+  return defaultPanel ? JSON.parse(defaultPanel) : null;
+}
+
 export const getDefaultPanelUrlPath = (hass: HomeAssistant): string =>
+  getDeviceDefaultPanelUrlPath() ||
   hass.userData?.default_panel ||
   hass.systemData?.default_panel ||
   getLegacyDefaultPanelUrlPath() ||

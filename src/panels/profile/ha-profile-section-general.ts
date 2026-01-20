@@ -20,7 +20,8 @@ import "./ha-enable-shortcuts-row";
 import "./ha-entity-id-picker-row";
 import "./ha-force-narrow-row";
 import { profileSections } from "./ha-panel-profile";
-import "./ha-pick-dashboard-row";
+import "./ha-pick-user-dashboard-row";
+import "./ha-pick-device-dashboard-row";
 import "./ha-pick-date-format-row";
 import "./ha-pick-first-weekday-row";
 import "./ha-pick-language-row";
@@ -158,10 +159,14 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-theme-row>
-            <ha-pick-dashboard-row
+            <ha-pick-user-dashboard-row
               .narrow=${this.narrow}
               .hass=${this.hass}
-            ></ha-pick-dashboard-row>
+            ></ha-pick-user-dashboard-row>
+            <ha-pick-device-dashboard-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-device-dashboard-row>
             <ha-settings-row .narrow=${this.narrow}>
               <span slot="heading">
                 ${this.hass.localize(

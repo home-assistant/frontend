@@ -9261,9 +9261,17 @@
           "reset": "Reset",
           "use_default": "Use default theme"
         },
-        "dashboard": {
-          "header": "Dashboard",
-          "description": "Pick a default dashboard to show.",
+        "user-dashboard": {
+          "header": "Dashboard (User)",
+          "description": "Pick a default dashboard for this user.",
+          "dropdown_label": "Dashboard",
+          "lovelace": "Overview",
+          "home": "Home",
+          "system": "Auto (use system settings)"
+        },
+        "device-dashboard": {
+          "header": "Dashboard (Device)",
+          "description": "Pick a default dashboard for this device.",
           "dropdown_label": "Dashboard",
           "lovelace": "Overview",
           "home": "Home",
