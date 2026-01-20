@@ -140,31 +140,30 @@ class MoreInfoContent extends LitElement {
       stateContent.push("area_name");
     }
 
-    const cards = entityInfos
-      .map(({ entityId }) => {
-        const features: LovelaceCardFeatureConfig[] = [];
-        const context = { entity_id: entityId };
-        if (supportsCoverPositionCardFeature(hass, context)) {
-          features.push({
-            type: "cover-position",
-          });
-        } else if (supportsLightBrightnessCardFeature(hass, context)) {
-          features.push({
-            type: "light-brightness",
-          });
-        }
+    const cards = entityInfos.map(({ entityId }) => {
+      const features: LovelaceCardFeatureConfig[] = [];
+      const context = { entity_id: entityId };
+      if (supportsCoverPositionCardFeature(hass, context)) {
+        features.push({
+          type: "cover-position",
+        });
+      } else if (supportsLightBrightnessCardFeature(hass, context)) {
+        features.push({
+          type: "light-brightness",
+        });
+      }
 
-        return {
-          type: "tile",
-          entity: entityId,
-          name,
-          state_content: stateContent,
-          features_position: "inline",
-          features,
-          grid_options: { columns: 12 },
-        } as TileCardConfig;
-      })
-      .filter(Boolean) as TileCardConfig[];
+      return {
+        type: "tile",
+        entity: entityId,
+        name,
+        state_content: stateContent,
+        features_position: "inline",
+        features,
+        grid_options: { columns: 12 },
+      } as TileCardConfig;
+    });
+
     return {
       type: "grid",
       cards,
