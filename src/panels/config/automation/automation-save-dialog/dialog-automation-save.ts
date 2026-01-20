@@ -33,7 +33,6 @@ import type {
 } from "./show-dialog-automation-save";
 import {
   type MetadataSuggestionResult,
-  SUGGESTION_INCLUDE_ALL,
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
@@ -349,8 +348,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         this.hass.connection,
         this.hass.states,
         this._params.domain
-      ),
-      SUGGESTION_INCLUDE_ALL
+      )
     );
   };
 

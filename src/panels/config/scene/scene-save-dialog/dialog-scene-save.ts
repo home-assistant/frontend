@@ -38,7 +38,6 @@ import type { SceneConfig } from "../../../../data/scene";
 
 const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
   name: true,
-  description: false,
   categories: true,
   labels: true,
 };

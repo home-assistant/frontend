@@ -30,7 +30,7 @@ export interface MetadataSuggestionInclude {
   floor?: boolean;
 }
 
-export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
+export const SUGGESTION_INCLUDE_DEFAULT: MetadataSuggestionInclude = {
   name: true,
   description: true,
   categories: true,
@@ -60,7 +60,7 @@ export async function generateMetadataSuggestionTask<T>(
   domain: MetadataSuggestionDomain,
   config: T,
   inspirations: string[] = [],
-  include = SUGGESTION_INCLUDE_ALL
+  include = SUGGESTION_INCLUDE_DEFAULT
 ): Promise<SuggestWithAIGenerateTask> {
   const [categories, floors] = await Promise.all([
     include.categories
@@ -210,7 +210,7 @@ export async function processMetadataSuggestion(
   connection: HomeAssistant["connection"],
   domain: MetadataSuggestionDomain,
   result: GenDataTaskResult<MetadataSuggestionResult>,
-  include = SUGGESTION_INCLUDE_ALL
+  include = SUGGESTION_INCLUDE_DEFAULT
 ): Promise<MetadataSuggestionResult> {
   const [categories, labels, floors] = await Promise.all([
     include.categories
