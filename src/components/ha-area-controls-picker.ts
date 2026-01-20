@@ -51,10 +51,10 @@ export class HaAreaControlsPicker extends LitElement {
 
   @property({ attribute: "area-id" }) public areaId!: string;
 
-  @property({ type: Array, attribute: "exclude-entities" })
-  public excludeEntities?: string[];
-
   @property() public value?: string;
+
+  @property({ type: Array, attribute: "exclude-values" })
+  public excludeValues?: string[];
 
   @property() public label?: string;
 
@@ -106,8 +106,8 @@ export class HaAreaControlsPicker extends LitElement {
   private _getItems = memoizeOne(
     (
       areaId: string,
-      excludeEntities: string[] | undefined,
       currentValue: string | undefined,
+      excludeValues: string[] | undefined,
       localize: LocalizeFunc,
       _entities: HomeAssistant["entities"],
       _devices: HomeAssistant["devices"],
@@ -121,12 +121,14 @@ export class HaAreaControlsPicker extends LitElement {
           return [];
         }
 
-        const isSelected = (id: string): boolean => currentValue === id;
+        const isSelected = (id: string): boolean =>
+          currentValue === id ||
+          (excludeValues !== undefined && excludeValues.includes(id));
 
         const controlEntities = getAreaControlEntities(
           AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[],
           areaId,
-          excludeEntities,
+          excludeValues,
           this.hass
         );
 
@@ -295,8 +297,8 @@ export class HaAreaControlsPicker extends LitElement {
         .addButtonLabel=${this.addButtonLabel}
         .getItems=${this._getItems(
           this.areaId,
-          this.excludeEntities,
           this.value,
+          this.excludeValues,
           this.hass.localize,
           this.hass.entities,
           this.hass.devices,

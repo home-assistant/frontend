@@ -109,6 +109,13 @@ export class HuiAreaControlsCardFeatureEditor
     };
 
     const value = this._config.controls || [];
+    const selectedValues = value.map((control) =>
+      typeof control === "string" ? control : control.entity_id
+    );
+    const excludeValues = [
+      ...(this.context.exclude_entities || []),
+      ...selectedValues,
+    ];
 
     return html`
       <ha-form
@@ -157,7 +164,7 @@ export class HuiAreaControlsCardFeatureEditor
             <ha-area-controls-picker
               .hass=${this.hass}
               .areaId=${this.context.area_id}
-              .excludeEntities=${this.context.exclude_entities}
+              .excludeValues=${excludeValues}
               .value=${""}
               .addButtonLabel=${this.hass.localize(
                 "ui.panel.lovelace.editor.features.types.area-controls.controls"
