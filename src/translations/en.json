@@ -1337,6 +1337,7 @@
       "navigation-picker": {
         "add_custom_path": "Add custom path",
         "dashboards": "[%key:ui::panel::config::dashboard::dashboards::main%]",
+        "related": "Related",
         "views": "Views",
         "other_routes": "Other routes"
       }

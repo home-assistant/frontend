@@ -1,5 +1,6 @@
 import Fuse from "fuse.js";
-import { html, LitElement, nothing } from "lit";
+import { mdiDevices, mdiTextureBox } from "@mdi/js";
+import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -7,9 +8,11 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { titleCase } from "../common/string/title-case";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { getPanelIcon, getPanelTitle } from "../data/panel";
+import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { multiTermSortedSearch } from "../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ActionRelatedContext } from "../panels/lovelace/components/hui-action-editor";
 import "./ha-generic-picker";
 import "./ha-icon";
 import {
@@ -17,7 +20,7 @@ import {
   type PickerComboBoxItem,
 } from "./ha-picker-combo-box";
 
-type NavigationGroup = "dashboards" | "views" | "other_routes";
+type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
 
 interface NavigationItem extends PickerComboBoxItem {
   group: NavigationGroup;
@@ -39,6 +42,8 @@ export class HaNavigationPicker extends LitElement {
 
   @state() private _loading = true;
 
+  @property({ attribute: false }) public context?: ActionRelatedContext;
+
   protected firstUpdated() {
     this._loadNavigationItems();
   }
@@ -46,12 +51,40 @@ export class HaNavigationPicker extends LitElement {
   private _navigationItems: NavigationItem[] = [];
 
   private _navigationGroups: Record<NavigationGroup, NavigationItem[]> = {
+    related: [],
     dashboards: [],
     views: [],
     other_routes: [],
   };
 
   protected render() {
+    const sections = [
+      ...(this._navigationGroups.related.length
+        ? [
+            {
+              id: "related",
+              label: this.hass.localize(
+                "ui.components.navigation-picker.related"
+              ),
+            },
+          ]
+        : []),
+      {
+        id: "dashboards",
+        label: this.hass.localize("ui.components.navigation-picker.dashboards"),
+      },
+      {
+        id: "views",
+        label: this.hass.localize("ui.components.navigation-picker.views"),
+      },
+      {
+        id: "other_routes",
+        label: this.hass.localize(
+          "ui.components.navigation-picker.other_routes"
+        ),
+      },
+    ];
+
     return html`
       <ha-generic-picker
         .hass=${this.hass}
@@ -63,24 +96,7 @@ export class HaNavigationPicker extends LitElement {
         .required=${this.required}
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
-        .sections=${[
-          {
-            id: "dashboards",
-            label: this.hass.localize(
-              "ui.components.navigation-picker.dashboards"
-            ),
-          },
-          {
-            id: "views",
-            label: this.hass.localize("ui.components.navigation-picker.views"),
-          },
-          {
-            id: "other_routes",
-            label: this.hass.localize(
-              "ui.components.navigation-picker.other_routes"
-            ),
-          },
-        ]}
+        .sections=${sections}
         .customValueLabel=${this.hass.localize(
           "ui.components.navigation-picker.add_custom_path"
         )}
@@ -104,6 +120,9 @@ export class HaNavigationPicker extends LitElement {
   };
 
   private _fuseIndexes = {
+    related: memoizeOne((items: NavigationItem[]) =>
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+    ),
     dashboards: memoizeOne((items: NavigationItem[]) =>
       Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
     ),
@@ -137,6 +156,7 @@ export class HaNavigationPicker extends LitElement {
 
     const items: (NavigationItem | string)[] = [];
 
+    const related = getGroupItems("related");
     const dashboards = getGroupItems("dashboards");
     const views = getGroupItems("views");
     const otherRoutes = getGroupItems("other_routes");
@@ -153,6 +173,7 @@ export class HaNavigationPicker extends LitElement {
       items.push(...groupItems);
     };
 
+    addGroup("related", related);
     addGroup("dashboards", dashboards);
     addGroup("views", views);
     addGroup("other_routes", otherRoutes);
@@ -194,6 +215,7 @@ export class HaNavigationPicker extends LitElement {
 
     const panelViewConfig = new Map(viewConfigs);
 
+    const related = this._navigationGroups.related;
     const dashboards: NavigationItem[] = [];
     const views: NavigationItem[] = [];
     const otherRoutes: NavigationItem[] = [];
@@ -248,14 +270,110 @@ export class HaNavigationPicker extends LitElement {
     }
 
     this._navigationGroups = {
+      related,
       dashboards,
       views,
       other_routes: otherRoutes,
     };
 
-    this._navigationItems = [...dashboards, ...views, ...otherRoutes];
+    this._navigationItems = [
+      ...related,
+      ...dashboards,
+      ...views,
+      ...otherRoutes,
+    ];
 
     this._loading = false;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("context")) {
+      this._loadRelatedItems();
+    }
+  }
+
+  private async _loadRelatedItems() {
+    const relatedEntityId = this.context?.entity_id;
+    const relatedAreaId = this.context?.area_id;
+
+    if (!this.hass || (!relatedEntityId && !relatedAreaId)) {
+      this._navigationGroups = {
+        ...this._navigationGroups,
+        related: [],
+      };
+      this._navigationItems = [
+        ...this._navigationGroups.dashboards,
+        ...this._navigationGroups.views,
+        ...this._navigationGroups.other_routes,
+      ];
+      return;
+    }
+
+    let relatedResult: RelatedResult | undefined;
+    if (relatedEntityId) {
+      relatedResult = await findRelated(this.hass, "entity", relatedEntityId);
+    } else if (relatedAreaId) {
+      relatedResult = await findRelated(this.hass, "area", relatedAreaId);
+    }
+
+    const relatedDeviceIds = new Set<string>();
+    const relatedAreaIds = new Set<string>();
+
+    relatedResult?.device?.forEach((deviceId) =>
+      relatedDeviceIds.add(deviceId)
+    );
+    relatedResult?.area?.forEach((areaId) => relatedAreaIds.add(areaId));
+
+    const relatedItems: NavigationItem[] = [];
+    for (const deviceId of relatedDeviceIds) {
+      const device = this.hass.devices[deviceId];
+      const primary = device?.name_by_user || device?.name || deviceId;
+      const path = `/config/devices/device/${deviceId}`;
+      relatedItems.push({
+        id: path,
+        primary,
+        secondary: path,
+        icon: mdiDevices,
+        sorting_label: [
+          primary.startsWith("/") ? `zzz${primary}` : primary,
+          path,
+        ]
+          .filter(Boolean)
+          .join("_"),
+        group: "related",
+      });
+    }
+
+    for (const areaId of relatedAreaIds) {
+      const area = this.hass.areas[areaId];
+      const primary = area?.name || areaId;
+      const path = `/config/areas/area/${areaId}`;
+      relatedItems.push({
+        id: path,
+        primary,
+        secondary: path,
+        icon: area?.icon || mdiTextureBox,
+        sorting_label: [
+          primary.startsWith("/") ? `zzz${primary}` : primary,
+          path,
+        ]
+          .filter(Boolean)
+          .join("_"),
+        group: "related",
+      });
+    }
+
+    this._navigationGroups = {
+      ...this._navigationGroups,
+      related: relatedItems,
+    };
+
+    this._navigationItems = [
+      ...relatedItems,
+      ...this._navigationGroups.dashboards,
+      ...this._navigationGroups.views,
+      ...this._navigationGroups.other_routes,
+    ];
   }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {

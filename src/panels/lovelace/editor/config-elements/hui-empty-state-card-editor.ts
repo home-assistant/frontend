@@ -21,6 +21,7 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import type { EmptyStateCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
@@ -146,6 +147,7 @@ export class HuiEmptyStateCardEditor
                   required: true,
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
           },
         },

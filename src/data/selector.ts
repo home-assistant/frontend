@@ -332,7 +332,10 @@ export interface MediaSelectorValue {
 }
 
 export interface NavigationSelector {
-  navigation: {} | null;
+  navigation: {
+    entity_id?: string;
+    area_id?: string;
+  } | null;
 }
 
 export interface NumberSelector {

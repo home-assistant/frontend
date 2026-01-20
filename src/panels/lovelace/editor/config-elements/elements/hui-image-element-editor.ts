@@ -18,6 +18,7 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import type { ImageElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
+import { ACTION_RELATED_CONTEXT } from "../../../components/hui-action-editor";
 import { actionConfigStruct } from "../../structs/action-struct";
 
 const imageElementConfigStruct = object({
@@ -69,6 +70,7 @@ export class HuiImageElementEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "hold_action",
@@ -77,6 +79,7 @@ export class HuiImageElementEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -90,6 +93,7 @@ export class HuiImageElementEditor
                       default_action: "none",
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 },
               ],
             },
