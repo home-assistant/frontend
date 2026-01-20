@@ -1159,7 +1159,7 @@ class HassioAddonInfo extends LitElement {
       button.actionError();
       button.progress = false;
       showAlertDialog(this, {
-        title: "Failed to validate addon configuration",
+        title: "Failed to validate app configuration",
         text: extractApiErrorMessage(err),
       });
       return;

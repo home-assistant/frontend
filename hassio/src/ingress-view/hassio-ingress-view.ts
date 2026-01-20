@@ -163,7 +163,7 @@ class HassioIngressView extends LitElement {
       await showAlertDialog(this, {
         text:
           this.supervisor.localize("ingress.error_app_info") ||
-          "Unable to fetch add-on info to start Ingress",
+          "Unable to fetch app info to start Ingress",
         title: "Supervisor",
       });
       await nextRender();
@@ -176,7 +176,7 @@ class HassioIngressView extends LitElement {
       await showAlertDialog(this, {
         text:
           this.supervisor.localize("ingress.error_app_not_installed") ||
-          "The add-on is not installed. Please install it first",
+          "The app is not installed. Please install it first",
         title: addon.name,
       });
       await nextRender();
@@ -189,7 +189,7 @@ class HassioIngressView extends LitElement {
       await showAlertDialog(this, {
         text:
           this.supervisor.localize("ingress.error_app_not_supported") ||
-          "This add-on does not support Ingress",
+          "This app does not support Ingress",
         title: addon.name,
       });
       await nextRender();
@@ -202,17 +202,17 @@ class HassioIngressView extends LitElement {
       const confirm = await showConfirmationDialog(this, {
         text:
           this.supervisor.localize("ingress.error_app_not_running") ||
-          "The add-on is not running. Do you want to start it now?",
+          "The app is not running. Do you want to start it now?",
         title: addon.name,
         confirmText:
-          this.supervisor.localize("ingress.start_app") || "Start add-on",
+          this.supervisor.localize("ingress.start_app") || "Start app",
         dismissText: this.supervisor.localize("common.no") || "No",
       });
       if (confirm) {
         try {
           this._loadingMessage =
             this.supervisor.localize("ingress.app_starting") ||
-            "The add-on is starting, this can take some time...";
+            "The app is starting, this can take some time...";
           await startHassioAddon(this.hass, addonSlug);
           fireEvent(this, "supervisor-collection-refresh", {
             collection: "addon",
@@ -223,7 +223,7 @@ class HassioIngressView extends LitElement {
           await showAlertDialog(this, {
             text:
               this.supervisor.localize("ingress.error_starting_app") ||
-              "Error starting the add-on",
+              "Error starting the app",
             title: addon.name,
           });
           await nextRender();
@@ -241,7 +241,7 @@ class HassioIngressView extends LitElement {
       // App is starting up, wait for it to start
       this._loadingMessage =
         this.supervisor.localize("ingress.app_starting") ||
-        "The add-on is starting, this can take some time...";
+        "The app is starting, this can take some time...";
 
       this._fetchDataTimeout = window.setTimeout(() => {
         this._fetchData(addonSlug);
@@ -302,7 +302,7 @@ class HassioIngressView extends LitElement {
       showConfirmationDialog(this, {
         text:
           this.supervisor.localize("ingress.error_app_not_ready") ||
-          "The add-on seems to not be ready, it might still be starting. Do you want to try again?",
+          "The app seems to not be ready, it might still be starting. Do you want to try again?",
         title: this._addon.name,
         confirmText: this.supervisor.localize("ingress.retry") || "Retry",
         dismissText: this.supervisor.localize("common.no") || "No",
