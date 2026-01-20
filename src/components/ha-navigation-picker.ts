@@ -103,25 +103,43 @@ export class HaNavigationPicker extends LitElement {
     `;
   };
 
-  private _getGroupItems(group: NavigationGroup, searchTerm: string) {
-    let items = [...this._navigationGroups[group]].sort(
-      this._sortBySortingLabel
-    );
-
-    if (searchTerm) {
-      items = this._filterGroup(group, items, searchTerm);
-    }
-
-    return items;
-  }
+  private _fuseIndexes = {
+    dashboards: memoizeOne((items: NavigationItem[]) =>
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+    ),
+    views: memoizeOne((items: NavigationItem[]) =>
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+    ),
+    other_routes: memoizeOne((items: NavigationItem[]) =>
+      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
+    ),
+  };
 
   private _getItems = (searchString?: string, section?: string) => {
-    const searchTerm = (searchString || "").trim();
+    const getGroupItems = (group: NavigationGroup) => {
+      let items = [...this._navigationGroups[group]].sort(
+        this._sortBySortingLabel
+      );
+
+      if (searchString) {
+        const fuseIndex = this._fuseIndexes[group](items);
+        items = multiTermSortedSearch(
+          items,
+          searchString,
+          DEFAULT_SEARCH_KEYS,
+          (item) => item.id,
+          fuseIndex
+        );
+      }
+
+      return items;
+    };
+
     const items: (NavigationItem | string)[] = [];
 
-    const dashboards = this._getGroupItems("dashboards", searchTerm);
-    const views = this._getGroupItems("views", searchTerm);
-    const otherRoutes = this._getGroupItems("other_routes", searchTerm);
+    const dashboards = getGroupItems("dashboards");
+    const views = getGroupItems("views");
+    const otherRoutes = getGroupItems("other_routes");
 
     const addGroup = (group: NavigationGroup, groupItems: NavigationItem[]) => {
       if (section && section !== group) {
@@ -141,34 +159,6 @@ export class HaNavigationPicker extends LitElement {
 
     return items;
   };
-
-  private _fuseIndexes = {
-    dashboards: memoizeOne((items: NavigationItem[]) =>
-      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
-    ),
-    views: memoizeOne((items: NavigationItem[]) =>
-      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
-    ),
-    other_routes: memoizeOne((items: NavigationItem[]) =>
-      Fuse.createIndex(DEFAULT_SEARCH_KEYS, items)
-    ),
-  };
-
-  private _filterGroup(
-    group: NavigationGroup,
-    items: NavigationItem[],
-    searchTerm: string
-  ) {
-    const fuseIndex = this._fuseIndexes[group](items);
-
-    return multiTermSortedSearch(
-      items,
-      searchTerm,
-      DEFAULT_SEARCH_KEYS,
-      (item) => item.id,
-      fuseIndex
-    );
-  }
 
   private _sortBySortingLabel = (
     itemA: PickerComboBoxItem,
