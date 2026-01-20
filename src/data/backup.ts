@@ -120,6 +120,7 @@ export interface BackupContent {
   failed_folders?: string[];
   extra_metadata?: {
     "supervisor.addon_update"?: string;
+    "supervisor.app_update"?: string;
   };
   with_automatic_settings: boolean;
 }
@@ -355,7 +356,11 @@ export const computeBackupType = (
   if (backup.with_automatic_settings) {
     return "automatic";
   }
-  if (isHassio && backup.extra_metadata?.["supervisor.addon_update"] != null) {
+  if (
+    isHassio &&
+    (backup.extra_metadata?.["supervisor.addon_update"] != null ||
+      backup.extra_metadata?.["supervisor.app_update"] != null)
+  ) {
     return "app_update";
   }
   return "manual";

@@ -3159,6 +3159,9 @@
               },
               "description": {
                 "create_backup": {
+                  "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::app_repositories%]",
+                  "addons": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::apps%]",
+                  "await_addon_restarts": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::await_app_restarts%]",
                   "app_repositories": "Backing up app repositories",
                   "apps": "Backing up apps",
                   "await_app_restarts": "Waiting for apps to restart",
@@ -3169,6 +3172,9 @@
                   "upload_to_agents": "Uploading to locations"
                 },
                 "restore_backup": {
+                  "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::app_repositories%]",
+                  "addons": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::apps%]",
+                  "await_addon_restarts": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::await_app_restarts%]",
                   "app_repositories": "Restoring app repositories",
                   "apps": "Restoring apps",
                   "await_app_restarts": "Waiting for apps to restart",
@@ -3178,6 +3184,7 @@
                   "download_from_agent": "Downloading from location",
                   "folders": "Restoring folders",
                   "home_assistant": "Restoring Home Assistant",
+                  "remove_delta_addons": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::remove_delta_apps%]",
                   "remove_delta_apps": "Removing delta apps"
                 },
                 "receive_backup": {
