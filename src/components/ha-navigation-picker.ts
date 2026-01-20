@@ -7,6 +7,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { titleCase } from "../common/string/title-case";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { getPanelIcon, getPanelTitle } from "../data/panel";
+import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { multiTermSortedSearch } from "../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
@@ -127,7 +128,9 @@ export class HaNavigationPicker extends LitElement {
         return;
       }
       if (!section && groupItems.length) {
-        items.push(this.hass.localize(`ui.components.navigation-picker.${group}`));
+        items.push(
+          this.hass.localize(`ui.components.navigation-picker.${group}`)
+        );
       }
       items.push(...groupItems);
     };
@@ -209,6 +212,9 @@ export class HaNavigationPicker extends LitElement {
       const path = `/${panel.url_path}`;
       const panelTitle = getPanelTitle(this.hass, panel);
       const primary = panelTitle || path;
+      const isDashboardPanel =
+        panel.component_name === "lovelace" ||
+        PANEL_DASHBOARDS.includes(panel.id);
       const panelItem: NavigationItem = {
         id: path,
         primary,
@@ -220,11 +226,10 @@ export class HaNavigationPicker extends LitElement {
         ]
           .filter(Boolean)
           .join("_"),
-        group:
-          panel.component_name === "lovelace" ? "dashboards" : "other_routes",
+        group: isDashboardPanel ? "dashboards" : "other_routes",
       };
 
-      if (panel.component_name === "lovelace") {
+      if (isDashboardPanel) {
         dashboards.push(panelItem);
       } else {
         otherRoutes.push(panelItem);
