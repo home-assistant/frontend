@@ -5971,6 +5971,7 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
+          "discovered_devices": "{count, plural,\n one {# discovered device}\n other {# discovered devices}\n}",
           "disabled": "Disabled",
           "available_integrations": "Available integrations",
           "new_flow": "Set up another instance of {integration}",

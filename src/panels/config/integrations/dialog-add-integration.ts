@@ -22,7 +22,10 @@ import "../../../components/ha-list";
 import "../../../components/ha-spinner";
 import "../../../components/search-input";
 import { getConfigEntries } from "../../../data/config_entries";
-import { fetchConfigFlowInProgress } from "../../../data/config_flow";
+import {
+  DISCOVERY_SOURCES,
+  fetchConfigFlowInProgress,
+} from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
   domainToName,
@@ -65,6 +68,7 @@ export interface IntegrationListItem {
   overwrites_built_in?: boolean;
   is_add?: boolean;
   single_config_entry?: boolean;
+  is_discovered?: boolean;
 }
 
 @customElement("dialog-add-integration")
@@ -84,6 +88,8 @@ class AddIntegrationDialog extends LitElement {
   @state() private _prevPickedBrand?: string;
 
   @state() private _flowsInProgress?: DataEntryFlowProgress[];
+
+  @state() private _showDiscovered = false;
 
   @state() private _open = false;
 
@@ -108,6 +114,13 @@ class AddIntegrationDialog extends LitElement {
         this._fetchFlowsInProgress(Object.keys(brand.integrations));
       }
     }
+
+    if (params?.showDiscovered) {
+      await loadPromise;
+      // Show all discovered flows directly
+      this._showDiscovered = true;
+    }
+
     // Only open the dialog if no domain is provided
     this._open = true;
     this._pickedBrand = params?.brand;
@@ -124,6 +137,7 @@ class AddIntegrationDialog extends LitElement {
     this._pickedBrand = undefined;
     this._prevPickedBrand = undefined;
     this._flowsInProgress = undefined;
+    this._showDiscovered = false;
     this._filter = undefined;
     this._width = undefined;
     this._height = undefined;
@@ -165,8 +179,26 @@ class AddIntegrationDialog extends LitElement {
       h: Integrations,
       components: HassConfig["components"],
       localize: LocalizeFunc,
+      discoveredFlowsCount: number,
       filter?: string
     ): IntegrationListItem[] => {
+      // Create a single discovered devices row if there are any discovered flows
+      const discoveredRows: IntegrationListItem[] =
+        discoveredFlowsCount > 0
+          ? [
+              {
+                name: localize(
+                  "ui.panel.config.integrations.discovered_devices",
+                  { count: discoveredFlowsCount }
+                ),
+                domain: "_discovered",
+                config_flow: true,
+                is_built_in: true,
+                is_discovered: true,
+              },
+            ]
+          : [];
+
       const addDeviceRows: IntegrationListItem[] = PROTOCOL_INTEGRATIONS.filter(
         (domain) => components.includes(domain)
       )
@@ -289,6 +321,7 @@ class AddIntegrationDialog extends LitElement {
         ];
       }
       return [
+        ...discoveredRows,
         ...addDeviceRows,
         ...integrations.sort((a, b) =>
           caseInsensitiveStringCompare(
@@ -307,6 +340,7 @@ class AddIntegrationDialog extends LitElement {
       this._helpers!,
       this.hass.config.components,
       this.hass.localize,
+      this._flowsInProgress?.length ?? 0,
       this._filter
     );
   }
@@ -333,13 +367,18 @@ class AddIntegrationDialog extends LitElement {
         this.hass.localize("ui.panel.config.integrations.new")
       )}
     >
-      ${this._pickedBrand && (!this._integrations || pickedIntegration)
+      ${(this._pickedBrand && (!this._integrations || pickedIntegration)) ||
+      this._showDiscovered
         ? html`<div slot="heading">
               <ha-icon-button-prev
                 @click=${this._prevClicked}
               ></ha-icon-button-prev>
               <h2 class="mdc-dialog__title">
-                ${this._calculateBrandHeading(pickedIntegration)}
+                ${this._showDiscovered
+                  ? this.hass.localize(
+                      "ui.panel.config.integrations.confirm_add_discovered"
+                    )
+                  : this._calculateBrandHeading(pickedIntegration)}
               </h2>
             </div>
             ${this._renderIntegration(pickedIntegration)}`
@@ -496,7 +535,24 @@ class AddIntegrationDialog extends LitElement {
   };
 
   private async _load() {
-    const descriptions = await getIntegrationDescriptions(this.hass);
+    const [descriptions, flowsInProgress] = await Promise.all([
+      getIntegrationDescriptions(this.hass),
+      fetchConfigFlowInProgress(this.hass.connection),
+    ]);
+
+    // Filter discovered flows
+    this._flowsInProgress = flowsInProgress.filter((flow) =>
+      DISCOVERY_SOURCES.includes(flow.context.source)
+    );
+
+    // Load translations for discovered flow handlers
+    if (this._flowsInProgress.length) {
+      const discoveredHandlers = [
+        ...new Set(this._flowsInProgress.map((flow) => flow.handler)),
+      ];
+      await this.hass.loadBackendTranslation("title", discoveredHandlers, true);
+    }
+
     for (const integration in descriptions.custom.integration) {
       if (
         !Object.prototype.hasOwnProperty.call(
@@ -555,6 +611,12 @@ class AddIntegrationDialog extends LitElement {
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
     if (integration.supported_by) {
       this._supportedBy(integration);
+      return;
+    }
+
+    if (integration.is_discovered) {
+      // Show all discovered flows
+      this._showDiscovered = true;
       return;
     }
 
@@ -702,6 +764,12 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _prevClicked() {
+    if (this._showDiscovered) {
+      this._showDiscovered = false;
+      // Don't reset _flowsInProgress here - we need to keep the discovered flows
+      // for the count displayed in the main list
+      return;
+    }
     this._pickedBrand = this._prevPickedBrand;
     if (!this._prevPickedBrand) {
       this._flowsInProgress = undefined;

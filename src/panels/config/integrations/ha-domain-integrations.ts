@@ -49,6 +49,7 @@ class HaDomainIntegrations extends LitElement {
               (flow) =>
                 html`<ha-list-item
                   graphic="medium"
+                  twoLine
                   .flow=${flow}
                   @request-selected=${this._flowInProgressPicked}
                   hasMeta
@@ -67,6 +68,9 @@ class HaDomainIntegrations extends LitElement {
                   />
                   <span
                     >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
+                  >
+                  <span slot="secondary"
+                    >${domainToName(this.hass.localize, flow.handler)}</span
                   >
                   <ha-icon-next slot="meta"></ha-icon-next>
                 </ha-list-item>`
