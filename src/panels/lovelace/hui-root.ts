@@ -960,9 +960,9 @@ class HUIRoot extends LitElement {
     });
   };
 
-  private _handleRawEditor(): void {
+  private _handleRawEditor = () => {
     this.lovelace!.enableFullEditMode();
-  }
+  };
 
   private _handleManageDashboards(): void {
     navigate("/config/lovelace/dashboards");
@@ -972,9 +972,9 @@ class HUIRoot extends LitElement {
     navigate("/config/lovelace/resources");
   }
 
-  private _handleUnusedEntities(): void {
+  private _handleUnusedEntities = () => {
     navigate(`${this.route?.prefix}/hass-unused-entities`);
-  }
+  };
 
   private _showVoiceCommandDialog = () => {
     showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
