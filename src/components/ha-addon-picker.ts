@@ -57,13 +57,13 @@ class HaAddonPicker extends LitElement {
   }
 
   protected firstUpdated() {
-    this._getAddons();
+    this._getApps();
   }
 
   protected render() {
     const label =
       this.label === undefined && this.hass
-        ? this.hass.localize("ui.components.addon-picker.addon")
+        ? this.hass.localize("ui.components.app-picker.app")
         : this.label;
 
     if (this._error) {
@@ -92,7 +92,7 @@ class HaAddonPicker extends LitElement {
     `;
   }
 
-  private async _getAddons() {
+  private async _getApps() {
     try {
       if (isComponentLoaded(this.hass, "hassio")) {
         const addonsInfo = await fetchHassioAddonsInfo(this.hass);
@@ -113,12 +113,12 @@ class HaAddonPicker extends LitElement {
           }));
       } else {
         this._error = this.hass.localize(
-          "ui.components.addon-picker.error.no_supervisor"
+          "ui.components.app-picker.error.no_supervisor"
         );
       }
     } catch (_err: any) {
       this._error = this.hass.localize(
-        "ui.components.addon-picker.error.fetch_addons"
+        "ui.components.app-picker.error.fetch_apps"
       );
     }
   }

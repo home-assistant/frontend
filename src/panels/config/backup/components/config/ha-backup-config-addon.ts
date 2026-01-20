@@ -62,7 +62,7 @@ class HaBackupConfigAddon extends LitElement {
           </span>
           <span slot="supporting-text">
             ${this.hass.localize(
-              `ui.panel.config.backup.settings.addon_update_backup.retention_description`
+              `ui.panel.config.backup.settings.app_update_backup.retention_description`
             )}
           </span>
           <ha-md-textfield

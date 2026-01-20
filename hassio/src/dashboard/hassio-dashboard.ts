@@ -39,7 +39,7 @@ class HassioDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
-        .header=${this.supervisor.localize("panel.addons")}
+        .header=${this.supervisor.localize("panel.apps")}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -81,7 +81,7 @@ class HassioDashboard extends LitElement {
         <span slot="header">
           ${this.supervisor.localize(
             atLeastVersion(this.hass.config.version, 2021, 12)
-              ? "panel.addons"
+              ? "panel.apps"
               : "panel.dashboard"
           )}
         </span>

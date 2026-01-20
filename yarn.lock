@@ -9182,7 +9182,7 @@ __metadata:
     qrcode: "npm:1.5.4"
     roboto-fontface: "npm:0.10.0"
     rrule: "npm:2.8.1"
-    rspack-manifest-plugin: "npm:5.2.0"
+    rspack-manifest-plugin: "npm:5.2.1"
     serve: "npm:14.2.5"
     sinon: "npm:21.0.1"
     sortablejs: "patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch"
@@ -12554,17 +12554,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rspack-manifest-plugin@npm:5.2.0":
-  version: 5.2.0
-  resolution: "rspack-manifest-plugin@npm:5.2.0"
+"rspack-manifest-plugin@npm:5.2.1":
+  version: 5.2.1
+  resolution: "rspack-manifest-plugin@npm:5.2.1"
   dependencies:
     "@rspack/lite-tapable": "npm:^1.0.1"
   peerDependencies:
-    "@rspack/core": 0.x || 1.x
+    "@rspack/core": ^1.0.0 || ^2.0.0-0
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
-  checksum: 10/661774e2f3d41db615b2fb2d14800c85524b33f3fd0b67e4161ca775f9ccbba3ecc8db21cd6e1f878e65a13cd6d718c6d66ad55614137cecb615cfd8d8f1cac9
+  checksum: 10/fe0ddf92a881e45859f8dc4991823e3773292cfbd087db0d83d5856785069b1774139116fe0ca0adc02bdca8f7392165a990b104bc0298f4e1824c9d73672b05
   languageName: node
   linkType: hard
 

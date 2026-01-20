@@ -2,7 +2,7 @@ import {
   mdiCogs,
   mdiFileDocument,
   mdiInformationVariant,
-  mdiMathLog,
+  mdiTextBoxOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -110,7 +110,7 @@ class HaConfigAppDashboard extends LitElement {
         {
           translationKey: "ui.panel.config.apps.panel.log",
           path: `/config/app/${this._addon.slug}/logs`,
-          iconPath: mdiMathLog,
+          iconPath: mdiTextBoxOutline,
         }
       );
     }
@@ -175,7 +175,7 @@ class HaConfigAppDashboard extends LitElement {
       // Navigate back to installed apps after uninstall
       window.history.back();
     } else {
-      // Reload addon info
+      // Reload app info
       await this._loadAddon();
     }
   }

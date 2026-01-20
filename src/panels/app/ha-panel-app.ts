@@ -155,7 +155,7 @@ class HaPanelApp extends LitElement {
 
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
-      // Reset state when switching addons
+      // Reset state when switching apps
       if (this._enabledKioskMode) {
         fireEvent(window, "hass-kiosk-mode", { enable: false });
         this._enabledKioskMode = false;
@@ -174,7 +174,7 @@ class HaPanelApp extends LitElement {
     route?: Route,
     panel?: PanelInfo<AppPanelConfig>
   ): string | undefined {
-    // First check panel config (for dedicated add-on panels)
+    // First check panel config (for dedicated app panels)
     if (panel?.config?.addon) {
       return panel.config.addon;
     }
@@ -263,7 +263,7 @@ class HaPanelApp extends LitElement {
     }
 
     if (addon.state === "startup") {
-      // Addon is starting up, wait for it to start
+      // App is starting up, wait for it to start
       this._loadingMessage = this.hass.localize("ui.panel.app.app_starting");
 
       this._fetchDataTimeout = window.setTimeout(() => {

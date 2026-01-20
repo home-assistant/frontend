@@ -6,7 +6,6 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import {
   computeGroupEntitiesState,
   toggleGroupEntities,
@@ -19,6 +18,11 @@ import "../../../components/ha-domain-icon";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
+import {
+  AREA_CONTROLS_BUTTONS,
+  getAreaControlEntities,
+  MAX_DEFAULT_AREA_CONTROLS,
+} from "../../../data/area/area_controls";
 import { forwardHaptic } from "../../../data/haptics";
 import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
@@ -34,13 +38,6 @@ import {
   type LovelaceCardFeaturePosition,
 } from "./types";
 
-interface AreaControlsButton {
-  filter: {
-    domain: string;
-    device_class?: string;
-  };
-}
-
 type NormalizedControl =
   | { type: "domain"; value: AreaControlDomain }
   | { type: "entity"; value: string };
@@ -49,44 +46,6 @@ interface ControlButtonElement extends HTMLElement {
   control: NormalizedControl;
 }
 
-const coverButton = (deviceClass: string) => ({
-  filter: {
-    domain: "cover",
-    device_class: deviceClass,
-  },
-});
-
-export const AREA_CONTROLS_BUTTONS: Record<
-  AreaControlDomain,
-  AreaControlsButton
-> = {
-  light: {
-    filter: {
-      domain: "light",
-    },
-  },
-  fan: {
-    filter: {
-      domain: "fan",
-    },
-  },
-  switch: {
-    filter: {
-      domain: "switch",
-    },
-  },
-  "cover-blind": coverButton("blind"),
-  "cover-curtain": coverButton("curtain"),
-  "cover-damper": coverButton("damper"),
-  "cover-awning": coverButton("awning"),
-  "cover-door": coverButton("door"),
-  "cover-garage": coverButton("garage"),
-  "cover-gate": coverButton("gate"),
-  "cover-shade": coverButton("shade"),
-  "cover-shutter": coverButton("shutter"),
-  "cover-window": coverButton("window"),
-};
-
 export const supportsAreaControlsCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -94,31 +53,6 @@ export const supportsAreaControlsCardFeature = (
   const area = context.area_id ? hass.areas[context.area_id] : undefined;
   return !!area;
 };
-
-export const getAreaControlEntities = (
-  controls: AreaControlDomain[],
-  areaId: string,
-  excludeEntities: string[] | undefined,
-  hass: HomeAssistant
-): Record<AreaControlDomain, string[]> =>
-  controls.reduce(
-    (acc, control) => {
-      const controlButton = AREA_CONTROLS_BUTTONS[control];
-      const filter = generateEntityFilter(hass, {
-        area: areaId,
-        entity_category: "none",
-        ...controlButton.filter,
-      });
-
-      acc[control] = Object.keys(hass.entities).filter(
-        (entityId) => filter(entityId) && !excludeEntities?.includes(entityId)
-      );
-      return acc;
-    },
-    {} as Record<AreaControlDomain, string[]>
-  );
-
-export const MAX_DEFAULT_AREA_CONTROLS = 4;
 
 @customElement("hui-area-controls-card-feature")
 class HuiAreaControlsCardFeature

@@ -484,7 +484,7 @@ class SupervisorAppInfo extends LitElement {
           <div class="description light-color">
             ${this.addon.description}.<br />
             ${this.hass.localize(
-              "ui.panel.config.apps.dashboard.visit_addon_page",
+              "ui.panel.config.apps.dashboard.visit_app_page",
               {
                 name: html`<a
                   href=${this.addon.url!}
@@ -785,7 +785,7 @@ class SupervisorAppInfo extends LitElement {
         "state" in this.addon &&
         this.addon.state === "startup"
       ) {
-        // Addon is starting up, wait for it to start
+        // App is starting up, wait for it to start
         this._scheduleDataUpdate();
       }
     }
