@@ -18,7 +18,11 @@ export interface MetadataSuggestionResult {
   labels?: string[];
 }
 
-export type MetadataSuggestionDomain = "automation" | "script" | "scene";
+export type MetadataSuggestionDomain =
+  | "automation"
+  | "script"
+  | "scene"
+  | "area";
 
 export interface MetadataSuggestionInclude {
   description?: boolean;

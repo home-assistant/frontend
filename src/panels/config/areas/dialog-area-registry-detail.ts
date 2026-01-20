@@ -16,8 +16,11 @@ import "../../../components/ha-labels-picker";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-suggest-with-ai-button";
+import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
 import "../../../components/ha-textfield";
 import "../../../components/ha-wa-dialog";
+import type { GenDataTaskResult } from "../../../data/ai_task";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
@@ -32,6 +35,12 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import {
+  type MetadataSuggestionInclude,
+  type MetadataSuggestionResult,
+  generateMetadataSuggestionTask,
+  processMetadataSuggestion,
+} from "../common/suggest-metadata-ai";
 import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
 const cropOptions: CropOptions = {
@@ -43,6 +52,12 @@ const cropOptions: CropOptions = {
 const SENSOR_DOMAINS = ["sensor"];
 const TEMPERATURE_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_TEMPERATURE];
 const HUMIDITY_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_HUMIDITY];
+
+const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
+  description: false,
+  categories: false,
+  labels: true,
+};
 
 @customElement("dialog-area-registry-detail")
 class DialogAreaDetail
@@ -242,6 +257,44 @@ class DialogAreaDetail
     `;
   }
 
+  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
+    generateMetadataSuggestionTask(
+      this.hass.connection,
+      this.hass.states,
+      this.hass.language,
+      "area",
+      {
+        name: this._name,
+        aliases: this._aliases,
+        labels: this._labels,
+        floor_id: this._floor,
+        temperature_entity_id: this._temperatureEntity,
+        humidity_entity_id: this._humidityEntity,
+      },
+      SUGGESTION_CONFIG
+    );
+
+  private async _handleSuggestion(
+    event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>
+  ) {
+    const result = event.detail;
+    const processed = await processMetadataSuggestion(
+      this.hass.connection,
+      "area",
+      result,
+      SUGGESTION_CONFIG
+    );
+
+    this._name = processed.name;
+    if (this._error && this._name.trim()) {
+      this._error = undefined;
+    }
+
+    if (processed.labels?.length) {
+      this._labels = processed.labels;
+    }
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -259,6 +312,12 @@ class DialogAreaDetail
           : this.hass.localize("ui.panel.config.areas.editor.create_area")}
         @closed=${this._dialogClosed}
       >
+        <ha-suggest-with-ai-button
+          slot="headerActionItems"
+          .hass=${this.hass}
+          .generateTask=${this._generateTask}
+          @suggestion=${this._handleSuggestion}
+        ></ha-suggest-with-ai-button>
         <div>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -430,6 +489,9 @@ class DialogAreaDetail
         }
         .description {
           margin: 0 0 16px 0;
+        }
+        ha-suggest-with-ai-button {
+          margin: 8px 16px;
         }
       `,
     ];
