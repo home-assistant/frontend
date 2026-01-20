@@ -1806,7 +1806,7 @@
           "title": "Reboot system",
           "description": "Restarts the system running Home Assistant and all apps.",
           "confirm_title": "Reboot system?",
-          "confirm_description": "This will reboot the complete system which includes Home Assistant and all the apps.",
+          "confirm_description": "This will reboot the complete system which includes Home Assistant and all apps.",
           "confirm_action": "Reboot",
           "action_toast": "Rebooting system",
           "confirm_action_backup": "Wait and reboot",
