@@ -58,8 +58,12 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
 }
 
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
-  content: string;
+  content_only?: boolean;
+  icon?: string;
   title?: string;
+  content?: string;
+  action_button_text?: string;
+  tap_action?: ActionConfig;
 }
 
 export interface EntityCardConfig extends LovelaceCardConfig {
@@ -70,6 +74,9 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   unit?: string;
   theme?: string;
   state_color?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -483,6 +490,10 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   alt_text?: string;
 }
 
+// Symbol for preview click callback - preserved through spreads, not serialized
+// This allows the editor to attach a callback that only exists on the edited card's config
+export const PREVIEW_CLICK_CALLBACK = Symbol("previewClickCallback");
+
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string | MediaSelectorValue;
@@ -497,6 +508,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   theme?: string;
   dark_mode_image?: string | MediaSelectorValue;
   dark_mode_filter?: string;
+  [PREVIEW_CLICK_CALLBACK]?: (x: number, y: number) => void;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
@@ -635,6 +647,23 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
 
 export interface HomeSummaryCard extends LovelaceCardConfig {
   summary: HomeSummary;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface DistributionEntityConfig extends EntityConfig {}
+
+export interface DistributionCardConfig extends LovelaceCardConfig {
+  type: "distribution";
+  title?: string;
+  entities: (string | DistributionEntityConfig)[];
+  theme?: string;
+}
+
+export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {
+  hide_empty?: boolean;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

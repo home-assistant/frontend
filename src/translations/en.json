@@ -1,5 +1,6 @@
 {
   "panel": {
+    "apps": "Apps",
     "energy": "Energy",
     "calendar": "Calendar",
     "config": "Settings",
@@ -213,6 +214,11 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
+      },
+      "discovered-devices": {
+        "title": "Devices discovered",
+        "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
+        "no_devices": "No devices to add"
       },
       "media_player": {
         "source": "Source",
@@ -1298,7 +1304,10 @@
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "remaining_time": "Remaining time",
-        "install_status": "Install status"
+        "install_status": "Install status",
+        "device_name": "Device name",
+        "area_name": "Area name",
+        "floor_name": "Floor name"
       },
       "multi-textfield": {
         "add_item": "Add {item}"
@@ -1335,6 +1344,8 @@
         "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
       "quick-bar": {
+        "commands_title": "Commands",
+        "navigate_title": "Navigate",
         "commands": {
           "reload": {
             "all": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::all%]",
@@ -1420,7 +1431,7 @@
         },
         "filter_placeholder": "Search entities",
         "filter_placeholder_devices": "Search devices",
-        "title": "Quick search",
+        "title": "Search Home Assistant",
         "key_c_tip": "[%key:ui::tips::key_c_tip%]",
         "nothing_found": "Nothing found!"
       },
@@ -2135,7 +2146,8 @@
         "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
         "enable_shortcuts_hint_user_profile": "user profile",
         "keys": {
-          "del": "Del"
+          "del": "Del",
+          "ctrl": "[%key:ui::panel::config::automation::editor::ctrl%]"
         },
         "shortcuts": {
           "double_click": "Double-click",
@@ -2146,6 +2158,7 @@
           "title": "Searching",
           "on_any_page": "On any page",
           "on_pages_with_tables": "On pages with tables",
+          "search": "Quick search",
           "search_command": "search command",
           "search_entities": "search entities",
           "search_devices": "search devices",
@@ -2235,7 +2248,9 @@
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available.",
-      "reload": "Reload"
+      "reload": "Reload",
+      "theme_save_failed": "Unable to save theme settings to your user profile.",
+      "theme_preferences_unavailable": "Unable to load user profile theme settings."
     },
     "sidebar": {
       "external_app_configuration": "App settings",
@@ -2247,6 +2262,17 @@
       "reset_confirmation": "Are you sure you want to reset the sidebar to its default configuration? This will restore the original order and visibility of all panels."
     },
     "panel": {
+      "app": {
+        "error_app_not_installed": "The app is not installed. Please install it first.",
+        "error_app_no_ingress": "This app does not support ingress.",
+        "error_app_not_running": "The app is not running. Do you want to start it now?",
+        "start_app": "Start app",
+        "app_starting": "The app is starting, this can take some time...",
+        "error_starting_app": "Error starting the app",
+        "error_creating_session": "Unable to create an ingress session",
+        "error_app_not_ready": "The app seems to not be ready, it might still be starting. Do you want to try again?",
+        "retry": "Retry"
+      },
       "home": {
         "editor": {
           "title": "Edit home page",
@@ -2291,7 +2317,7 @@
             "secondary": "Generate backups of your Home Assistant configuration"
           },
           "supervisor": {
-            "main": "Add-ons",
+            "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
           },
           "dashboards": {
@@ -2384,6 +2410,7 @@
           "updates_refreshed": "State of {count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
           "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
+          "title_not_installable": "{count} not installable {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "more_updates": "Show all updates",
           "show": "show",
@@ -2448,6 +2475,253 @@
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
+        },
+        "apps": {
+          "caption": "Apps",
+          "description": "Install and manage apps",
+          "error_loading": "Error loading apps",
+          "state": {
+            "update_available": "Update available",
+            "installed": "Installed",
+            "not_installed": "Not installed",
+            "not_available": "Not available"
+          },
+          "installed": {
+            "search": "Search apps",
+            "no_apps": "You don't have any apps installed yet. Click here to browse available apps.",
+            "add_app": "Install app",
+            "app_stopped": "App is stopped",
+            "app_update_available": "Update available",
+            "app_running": "App is running"
+          },
+          "store": {
+            "title": "App store",
+            "check_updates": "Check for updates",
+            "repositories": "Repositories",
+            "registries": "Registries",
+            "missing_apps": "Looking for apps? Enable advanced mode.",
+            "no_results_found": "No results found in {repository}"
+          },
+          "dialog": {
+            "repositories": {
+              "title": "Manage app repositories",
+              "add": "Add",
+              "remove": "Remove",
+              "used": "In use by installed apps",
+              "no_repositories": "You don't have any app repositories configured"
+            },
+            "registries": {
+              "title_add": "Add registry",
+              "title_manage": "Manage registries",
+              "add_registry": "Add",
+              "add_new_registry": "Add new registry",
+              "username": "Username",
+              "remove": "Remove registry",
+              "no_registries": "You don't have any registries configured",
+              "failed_to_add": "Failed to add registry",
+              "failed_to_remove": "Failed to remove registry",
+              "registry": "Registry",
+              "password": "Password"
+            }
+          },
+          "panel": {
+            "info": "Info",
+            "documentation": "Documentation",
+            "configuration": "Configuration",
+            "log": "Log"
+          },
+          "dashboard": {
+            "cpu_usage": "CPU usage",
+            "ram_usage": "RAM usage",
+            "app_running": "App is running",
+            "app_stopped": "App is stopped",
+            "current_version": "Current version: {version}",
+            "changelog": "Changelog",
+            "hostname": "Hostname",
+            "visit_addon_page": "Visit {name} page for more details.",
+            "start": "Start",
+            "stop": "Stop",
+            "restart": "Restart",
+            "rebuild": "Rebuild",
+            "uninstall": "Uninstall",
+            "install": "Install",
+            "open_web_ui": "Open Web UI",
+            "failed_to_save": "Failed to save: {error}",
+            "failed_to_reset": "Failed to reset: {error}",
+            "failed_to_restart": "Failed to restart {name}",
+            "protection_mode": {
+              "title": "Protection mode disabled!",
+              "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which is more risky for your system if the app is compromised. Only disable protection mode if you know what you are doing.",
+              "enable": "Enable"
+            },
+            "system_managed": {
+              "title": "System managed",
+              "description": "This app is managed by the system. Settings are automatically configured and changes may be overwritten.",
+              "take_control": "Take control",
+              "badge": "System managed"
+            },
+            "option": {
+              "boot": {
+                "title": "Start on boot",
+                "description": "Automatically start this app when Home Assistant starts."
+              },
+              "watchdog": {
+                "title": "Watchdog",
+                "description": "Automatically restart this app when it crashes."
+              },
+              "auto_update": {
+                "title": "Auto update",
+                "description": "Automatically update this app when a new version is available."
+              },
+              "ingress_panel": {
+                "title": "Show in sidebar",
+                "description": "Show a shortcut to this app in the sidebar."
+              },
+              "protected": {
+                "title": "Protection mode",
+                "description": "Prevent the app from getting full access to the system."
+              }
+            },
+            "capability": {
+              "stages": {
+                "experimental": "Experimental",
+                "deprecated": "Deprecated"
+              },
+              "label": {
+                "rating": "Rating",
+                "host": "Host",
+                "hardware": "Hardware access",
+                "core": "Home Assistant",
+                "docker": "Docker",
+                "host_pid": "Host PID",
+                "apparmor": "AppArmor",
+                "auth": "Auth API",
+                "ingress": "Ingress",
+                "signed": "Signed"
+              },
+              "role": {
+                "manager": "manager",
+                "default": "default",
+                "homeassistant": "homeassistant",
+                "backup": "backup",
+                "admin": "admin"
+              },
+              "stage": {
+                "title": "App stage",
+                "description": "This app has a specific stage classification."
+              },
+              "rating": {
+                "title": "Security rating",
+                "description": "This shows the security rating of the app. Higher is better."
+              },
+              "host_network": {
+                "title": "Host network",
+                "description": "This app uses the host network stack."
+              },
+              "full_access": {
+                "title": "Full hardware access",
+                "description": "This app has full access to the hardware."
+              },
+              "homeassistant_api": {
+                "title": "Home Assistant API",
+                "description": "This app has access to the Home Assistant API."
+              },
+              "hassio_api": {
+                "title": "Supervisor API",
+                "description": "This app has access to the Supervisor API."
+              },
+              "docker_api": {
+                "title": "Docker API",
+                "description": "This app has access to the Docker API."
+              },
+              "host_pid": {
+                "title": "Host PID namespace",
+                "description": "This app has access to the host PID namespace."
+              },
+              "apparmor": {
+                "title": "AppArmor",
+                "description": "This shows the AppArmor status of the app."
+              },
+              "auth_api": {
+                "title": "Auth API",
+                "description": "This app has access to the Auth API."
+              },
+              "ingress": {
+                "title": "Ingress",
+                "description": "This app supports ingress for secure access."
+              },
+              "signed": {
+                "title": "Signed",
+                "description": "This app is cryptographically signed."
+              }
+            },
+            "action_error": {
+              "install": "Failed to install app",
+              "start": "Failed to start app",
+              "stop": "Failed to stop app",
+              "restart": "Failed to restart app",
+              "rebuild": "Failed to rebuild app",
+              "uninstall": "Failed to uninstall app",
+              "get_changelog": "Failed to get changelog",
+              "start_invalid_config": "Invalid configuration",
+              "go_to_config": "Go to configuration",
+              "validate_config": "Failed to validate app configuration"
+            },
+            "uninstall_dialog": {
+              "title": "Uninstall {name}?",
+              "remove_data": "Also remove app data",
+              "uninstall": "Uninstall"
+            },
+            "restart_dialog": {
+              "title": "Restart {name}?",
+              "text": "The app needs to be restarted for the changes to take effect.",
+              "restart": "Restart"
+            },
+            "update_available": {
+              "update_name": "Update {name}",
+              "no_update": "{name} is up to date.",
+              "description": "{name} {newest_version} is available. You are running {version}.",
+              "updating": "Updating {name} to {version}...",
+              "create_backup": {
+                "addon": "Create backup before updating",
+                "addon_description": "Creates a backup of {version} before updating.",
+                "generic": "Create backup"
+              }
+            }
+          },
+          "configuration": {
+            "no_configuration": "This app has no configuration options.",
+            "options": {
+              "header": "Options",
+              "edit_in_ui": "Edit in UI",
+              "edit_in_yaml": "Edit in YAML",
+              "invalid_yaml": "Invalid YAML",
+              "show_unused_optional": "Show unused optional configuration options"
+            },
+            "network": {
+              "header": "Network",
+              "introduction": "Configure the network ports that this app uses.",
+              "show_disabled": "Show disabled ports",
+              "reset_defaults": "Reset to defaults"
+            },
+            "audio": {
+              "header": "Audio",
+              "input": "Audio input",
+              "output": "Audio output",
+              "default": "Default",
+              "failed_to_load_hardware": "Failed to fetch audio hardware",
+              "failed_to_save": "Failed to set audio device"
+            },
+            "confirm": {
+              "reset_options": {
+                "title": "Reset options?",
+                "text": "Are you sure you want to reset all options to their default values?"
+              }
+            }
+          },
+          "documentation": {
+            "get_documentation": "Failed to get documentation: {error}"
+          }
         },
         "category": {
           "caption": "Categories",
@@ -3341,8 +3615,7 @@
               "type": "Type",
               "editable": "Editable",
               "category": "Category",
-              "area": "Area",
-              "voice_assistants": "Voice assistants"
+              "area": "Area"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -3983,8 +4256,7 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "bulk_action": "Action",
             "bulk_actions": {
@@ -4086,8 +4358,10 @@
             "switch_ui_yaml_error": "There are currently YAML errors in the automation, and it cannot be parsed. Switching to UI mode may cause pending changes to be lost. Press cancel to correct any errors before proceeding to prevent loss of pending changes, or continue if you are sure.",
             "type_automation": "automation",
             "type_script": "script",
+            "type_scene": "scene",
             "type_automation_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::automation%]",
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
+            "type_scene_plural": "scenes",
             "new_automation_setup_failed_title": "New {type} setup timed out",
             "new_automation_setup_failed_text": "Your new {type} was saved, but waiting for it to set up has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
             "new_automation_setup_keep_waiting": "You may continue to wait for a response from the server, in case it is just taking an unusually long time to process this {type}.",
@@ -4155,6 +4429,7 @@
               "cut_to_clipboard": "Trigger cut to clipboard",
               "select": "Select a trigger",
               "no_items_for_target": "No triggers available for",
+              "no_items_for_target_note": "This is a {labs_link} feature. More triggers will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -4426,6 +4701,7 @@
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
               "no_items_for_target": "No conditions available for",
+              "no_items_for_target_note": "This is a {labs_link} feature. More conditions will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -5001,8 +5277,7 @@
               "state": "State",
               "category": "Category",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5130,8 +5405,7 @@
               "category": "Category",
               "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
               "area": "Area",
-              "icon": "Icon",
-              "voice_assistants": "Voice assistants"
+              "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
             "assign_category": "[%key:ui::panel::config::automation::picker::assign_category%]",
@@ -5153,11 +5427,19 @@
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
             "save": "Save",
+            "rename": "Rename",
+            "missing_name": "Name is required",
             "unsaved_confirm_title": "Leave editor?",
             "unsaved_confirm_text": "Unsaved changes will be lost.",
             "name": "Name",
             "icon": "Icon",
             "area": "Area",
+            "dialog": {
+              "add_icon": "[%key:ui::panel::config::automation::editor::dialog::add_icon%]",
+              "add_area": "[%key:ui::panel::config::automation::editor::dialog::add_area%]",
+              "add_category": "[%key:ui::panel::config::automation::editor::dialog::add_category%]",
+              "add_labels": "[%key:ui::panel::config::automation::editor::dialog::add_labels%]"
+            },
             "devices": {
               "header": "Devices",
               "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",
@@ -5584,8 +5866,7 @@
               "domain": "Domain",
               "availability": "Availability",
               "visibility": "Visibility",
-              "enabled": "Enabled",
-              "voice_assistants": "Voice assistants"
+              "enabled": "Enabled"
             },
             "selected": "{number} selected",
             "enable_selected": {
@@ -6018,15 +6299,14 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
+          "tabs": {
+            "overview": "Overview",
+            "advertisements": "Advertisements",
+            "visualization": "Visualization",
+            "connections": "Connections"
+          },
           "settings_title": "Bluetooth adapters",
           "option_flow": "Configure Bluetooth options",
-          "advertisement_monitor": "Advertisement monitor",
-          "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
-          "connection_slot_allocations_monitor": "Connection slot allocations monitor",
-          "connection_slot_allocations_monitor_description": "The connection slot allocations monitor displays the (GATT) connection slot allocations for each adapter. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
-          "connection_monitor": "Connection monitor",
-          "visualization": "Visualization",
-          "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
           "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
@@ -6034,8 +6314,6 @@
           "no_connection_slots": "No connection slots",
           "no_scanner_state_available": "No scanner state available",
           "scanner_state_unknown": "State unknown",
-          "current_scanning_mode": "Current scanning mode",
-          "requested_scanning_mode": "Requested scanning mode",
           "scanning_mode_none": "none",
           "scanning_mode_active": "active",
           "scanning_mode_passive": "passive",
@@ -6060,7 +6338,6 @@
           "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
           "area": "Area",
-          "core": "Home Assistant",
           "scanners": "Scanners",
           "known_devices": "Known devices",
           "unknown_devices": "Unknown devices"
@@ -6845,9 +7122,15 @@
         },
         "matter": {
           "panel": {
-            "thread_panel": "Visit Thread Panel",
-            "experimental_note": "Matter is still in the early phase of development, it is not meant to be used in production. This panel is for development only.",
-            "add_devices": "You can add Matter devices by commissioning them if they are not set up yet, or share them from another controller and enter the sharing code.",
+            "thread_panel": "Visit Thread panel",
+            "add_device": "Add device",
+            "status_title": "status",
+            "status_online": "online",
+            "status_offline": "offline",
+            "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+            "developer_tools_title": "Developer tools",
+            "developer_tools_description": "Advanced commissioning options for development",
+            "developer_tools_info": "These options are intended for developers and advanced users. In most cases, use the \"Add device\" button in the bottom right corner instead.",
             "mobile_app_commisioning": "Commission device with mobile app",
             "commission_device": "Commission device",
             "add_shared_device": "Add shared device",
@@ -6895,7 +7178,7 @@
             "unknown": "Unknown"
           },
           "device_info": {
-            "device_info": "Device info",
+            "matter_info": "Matter info",
             "node_id": "Node ID",
             "network_type": "Network type",
             "node_type": "Device type",
@@ -7227,10 +7510,14 @@
       "lovelace": {
         "strategy": {
           "original-states": {
-            "helpers": "[%key:ui::panel::config::helpers::caption%]"
+            "helpers": "[%key:ui::panel::config::helpers::caption%]",
+            "empty_state_title": "Welcome Home",
+            "empty_state_content": "This page allows you to control your devices, however it looks like you have no devices set up yet.",
+            "empty_state_action": "Go to the integrations page"
           },
           "areas": {
-            "no_entities": "No entities in this area.",
+            "empty_state_title": "No devices",
+            "empty_state_content": "There are no devices assigned to this area yet. Assign devices to this area to see them here.",
             "sensors": "Sensors",
             "sensors_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
             "edit_the_area": "edit the area",
@@ -7301,11 +7588,6 @@
             "no_navigation_path": "No navigation path specified",
             "no_url": "No URL to open specified",
             "no_action": "No action to run specified"
-          },
-          "empty_state": {
-            "title": "Welcome Home",
-            "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
-            "go_to_integrations_page": "Go to the integrations page."
           },
           "entities": {
             "never_triggered": "Never triggered"
@@ -7443,6 +7725,13 @@
               "compare_previous_period": "Compare previous period"
             }
           },
+          "distribution": {
+            "no_entities": "No entities specified",
+            "domain_mismatch": "All entities must be from the same domain. Found: {domains}",
+            "device_class_mismatch": "All entities must have the same device class. Found: {classes}",
+            "no_data": "No data to display. All entities are hidden or have zero values.",
+            "add_entities": "Add entities to display in the distribution chart"
+          },
           "heading": {
             "default_heading": "Kitchen"
           }
@@ -7480,6 +7769,7 @@
           "search_entities": "Search entities",
           "assist": "Assist",
           "assist_tooltip": "Assist",
+          "search_home_assistant": "Search Home Assistant",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close",
@@ -7978,6 +8268,17 @@
               "name": "Entity",
               "description": "The Entity card gives you a quick overview of your entity's state."
             },
+            "empty_state": {
+              "name": "Empty state",
+              "description": "The Empty state card displays a centered message with an optional icon and action button.",
+              "style": "Style",
+              "style_options": {
+                "card": "Card",
+                "content-only": "Content only"
+              },
+              "content": "Content",
+              "action_text": "Action button text"
+            },
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks.",
@@ -8086,6 +8387,10 @@
               "name": "Horizontal stack",
               "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
+            },
+            "distribution": {
+              "name": "Distribution",
+              "description": "The Distribution card displays multiple numerical entities as a proportional chart with an interactive legend."
             },
             "humidifier": {
               "name": "Humidifier",
@@ -8310,6 +8615,7 @@
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",
+              "position_hint": "Click on the image preview to position this element",
               "element_types": {
                 "state-badge": "State badge",
                 "state-icon": "State icon",
@@ -8681,6 +8987,10 @@
                 "label": "Area controls",
                 "customize_controls": "Customize controls",
                 "controls": "Controls",
+                "sections": {
+                  "domain": "Domains",
+                  "entity": "Entities"
+                },
                 "controls_options": {
                   "light": "Lights",
                   "fan": "Fans",
@@ -8929,6 +9239,11 @@
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
           "dropdown_label": "Theme",
+          "migrate_header": "Migrate theme settings",
+          "migrate_description": "Save your theme selection to your Home Assistant user profile.",
+          "migrate_button": "Migrate",
+          "migrate_success": "Theme settings migrated.",
+          "migrate_failed": "Failed to migrate theme settings.",
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",

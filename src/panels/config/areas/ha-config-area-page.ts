@@ -23,11 +23,11 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-tooltip";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   deleteAreaRegistryEntry,
   updateAreaRegistryEntry,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";

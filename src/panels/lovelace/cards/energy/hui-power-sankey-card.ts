@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
   formatPowerShort,
@@ -326,6 +327,7 @@ class HuiPowerSankeyCard
         color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
         parent: effectiveParent,
+        entityId: device.stat_rate,
       };
       if (node.parent) {
         parentLinks[node.id] = node.parent;
@@ -461,6 +463,7 @@ class HuiPowerSankeyCard
                 .data=${{ nodes, links }}
                 .vertical=${vertical}
                 .valueFormatter=${this._valueFormatter}
+                @node-click=${this._handleNodeClick}
               ></ha-sankey-chart>`
             : html`${this.hass.localize(
                 "ui.panel.lovelace.cards.energy.no_data"
@@ -474,6 +477,13 @@ class HuiPowerSankeyCard
     `<div style="direction:ltr; display: inline;">
       ${formatPowerShort(this.hass, value)}
     </div>`;
+
+  private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
+    const { node } = ev.detail;
+    if (node.entityId) {
+      fireEvent(this, "hass-more-info", { entityId: node.entityId });
+    }
+  }
 
   /**
    * Compute real-time power data from current entity states.

@@ -902,7 +902,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private _openIngress(): void {
-    navigate(`/hassio/ingress/${this.addon.slug}`);
+    navigate(`/app/${this.addon.slug}`);
   }
 
   private get _computeShowIngressUI(): boolean {

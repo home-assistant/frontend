@@ -6,7 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
   stateColorBrightness,
@@ -24,6 +24,10 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity/entity";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
@@ -138,9 +142,20 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        @click=${this._handleClick}
-        tabindex="0"
-        class=${classMap({ "with-fixed-footer": fixedFooter })}
+        tabindex=${ifDefined(
+          !this._config.tap_action || hasAction(this._config.tap_action)
+            ? "0"
+            : undefined
+        )}
+        class=${classMap({
+          "with-fixed-footer": fixedFooter,
+          action: hasAnyAction(this._config),
+        })}
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config.hold_action),
+          hasDoubleClick: hasAction(this._config.double_tap_action),
+        })}
       >
         <div class="header">
           <div class="name" .title=${name}>${name}</div>
@@ -196,7 +211,16 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               `
             : ""}
         </div>
-        <div class="footer">${this._footerElement}</div>
+        <div
+          class="footer"
+          @touchcancel=${stopPropagation}
+          @touchend=${stopPropagation}
+          @keydown=${stopPropagation}
+          @click=${stopPropagation}
+          @action=${stopPropagation}
+        >
+          ${this._footerElement}
+        </div>
       </ha-card>
     `;
   }
@@ -249,8 +273,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handleClick(): void {
-    fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   public getGridOptions(): LovelaceGridOptions {
@@ -271,8 +295,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          cursor: pointer;
           outline: none;
+        }
+
+        ha-card.action {
+          cursor: pointer;
+        }
+        .footer {
+          cursor: initial;
         }
 
         .header {

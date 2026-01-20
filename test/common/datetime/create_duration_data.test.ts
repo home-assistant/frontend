@@ -27,6 +27,12 @@ describe("createDurationData", () => {
     expect(createDurationData(3600)).toEqual({ seconds: 3600 });
   });
 
+  it("should parse decimal seconds correctly", () => {
+    expect(createDurationData(0.5)).toEqual({ seconds: 0.5 });
+    expect(createDurationData(0.2)).toEqual({ seconds: 0.2 });
+    expect(createDurationData(1.25)).toEqual({ seconds: 1.25 });
+  });
+
   it("should parse object duration without days correctly", () => {
     expect(createDurationData({ hours: 1, minutes: 30 })).toEqual({
       hours: 1,

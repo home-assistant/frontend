@@ -205,6 +205,7 @@ const createRspackConfig = ({
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
         "lit/directives/until$": "lit/directives/until.js",
+        "lit/directives/ref$": "lit/directives/ref.js",
         "lit/directives/class-map$": "lit/directives/class-map.js",
         "lit/directives/style-map$": "lit/directives/style-map.js",
         "lit/directives/if-defined$": "lit/directives/if-defined.js",
@@ -213,7 +214,9 @@ const createRspackConfig = ({
         "lit/directives/join$": "lit/directives/join.js",
         "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/directives/live$": "lit/directives/live.js",
-        "lit/directives/keyed$": "lit/directives/keyed.js",
+        "lit/directives/keyed$": latestBuild
+          ? "lit/directives/keyed.js"
+          : path.resolve(__dirname, "../src/common/lit/keyed-es5.ts"),
         "lit/polyfill-support$": "lit/polyfill-support.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",

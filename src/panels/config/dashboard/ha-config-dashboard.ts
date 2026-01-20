@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiCloudLock,
   mdiDotsVertical,
@@ -13,11 +12,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/chips/ha-assist-chip";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
@@ -31,12 +30,9 @@ import {
 import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
-  filterUpdateEntitiesWithInstall,
+  filterUpdateEntitiesParameterized,
 } from "../../../data/update";
-import {
-  QuickBarMode,
-  showQuickBar,
-} from "../../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -206,7 +202,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     const { updates: canInstallUpdates, total: totalUpdates } =
-      this._filterUpdateEntitiesWithInstall(
+      this._filterUpdateEntitiesParameterized(
         this.hass.states,
         this.hass.entities
       );
@@ -229,25 +225,25 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           .path=${mdiMagnify}
           @click=${this._showQuickBar}
         ></ha-icon-button>
-        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="check-updates">
             ${this.hass.localize("ui.panel.config.updates.check_updates")}
-            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="restart">
             ${this.hass.localize(
               "ui.panel.config.system_dashboard.restart_homeassistant"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiPower}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <ha-config-section
           .narrow=${this.narrow}
@@ -291,6 +287,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                         .narrow=${this.narrow}
                         .total=${totalUpdates}
                         .updateEntities=${canInstallUpdates}
+                        .isInstallable=${true}
                       ></ha-config-updates>
                       ${totalUpdates > canInstallUpdates.length
                         ? html`
@@ -348,14 +345,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     showShortcutsDialog(this);
   }
 
-  private _filterUpdateEntitiesWithInstall = memoizeOne(
+  private _filterUpdateEntitiesParameterized = memoizeOne(
     (
       entities: HomeAssistant["states"],
       entityRegistry: HomeAssistant["entities"]
     ): { updates: UpdateEntity[]; total: number } => {
-      const updates = filterUpdateEntitiesWithInstall(entities).filter(
-        (entity) => !entityRegistry[entity.entity_id]?.hidden
-      );
+      const updates = filterUpdateEntitiesParameterized(
+        entities,
+        false,
+        false
+      ).filter((entity) => !entityRegistry[entity.entity_id]?.hidden);
 
       return {
         updates: updates.slice(0, updates.length === 3 ? updates.length : 2),
@@ -372,19 +371,21 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     };
 
     showQuickBar(this, {
-      mode: QuickBarMode.Command,
       hint: this.hass.enableShortcuts
         ? this.hass.localize("ui.dialogs.quick-bar.key_c_tip", params)
         : undefined,
     });
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(
+    ev: CustomEvent<{ item: { value: string } }>
+  ) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "check-updates":
         checkForEntityUpdates(this, this.hass);
         break;
-      case 1:
+      case "restart":
         showRestartDialog(this);
         break;
     }

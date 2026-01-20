@@ -7,7 +7,7 @@ import {
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
-import type { AreaRegistryEntry } from "../../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
@@ -19,6 +19,7 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
+  DiscoveredDevicesCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   TileCardConfig,
@@ -239,6 +240,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
+      // Discovered devices card - only visible to admins, hides when empty
+      {
+        type: "discovered-devices",
+        hide_empty: true,
+      } satisfies DiscoveredDevicesCardConfig,
       hasLights &&
         ({
           type: "home-summary",

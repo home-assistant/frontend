@@ -64,6 +64,7 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
+import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-divider";
@@ -71,6 +72,7 @@ import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
@@ -115,8 +117,12 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistantsKeys } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -139,6 +145,8 @@ export interface EntityRow extends StateEntity {
   localized_platform: string;
   domain: string;
   label_entries: LabelRegistryEntry[];
+  assistants: string[];
+  assistants_sortable_key: string | undefined;
   enabled: string;
   visible: string;
   available: string;
@@ -153,6 +161,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @state() private _stateEntities: StateEntity[] = [];
 
@@ -224,6 +234,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
+
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
@@ -289,7 +303,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   ]);
 
   private _columns = memoize(
-    (localize: LocalizeFunc): DataTableColumnContainer<EntityRow> => ({
+    (
+      localize: LocalizeFunc,
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer<EntityRow> => ({
       icon: {
         title: "",
         label: localize("ui.panel.config.entities.picker.headers.state_icon"),
@@ -495,31 +512,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         template: (entry) =>
           entry.label_entries.map((lbl) => lbl.name).join(" "),
       },
-      voice_assistants: {
-        title: localize(
-          "ui.panel.config.entities.picker.headers.voice_assistants"
-        ),
-        type: "icon",
-        defaultHidden: true,
-        minWidth: "100px",
-        maxWidth: "100px",
-        template: (entry) => {
-          const exposedToVoiceAssistantKeys = getEntityVoiceAssistantsKeys(
-            this._entities,
-            entry.entity_id
-          );
-          return html` ${exposedToVoiceAssistantKeys.length !== 0
-            ? exposedToVoiceAssistantKeys.map(
-                (vaKey) =>
-                  html` <voice-assistants-expose-assistant-icon
-                    .assistant=${vaKey}
-                    .hass=${this.hass}
-                  >
-                  </voice-assistants-expose-assistant-icon>`
-              )
-            : "—"}`;
-        },
-      },
+      assistants: getAssistantsTableColumn(
+        localize,
+        this.hass,
+        this._availableAssistants,
+        entitiesToCheck
+      ),
     })
   );
 
@@ -664,6 +662,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           filteredEntities = filteredEntities.filter((entity) =>
             entity.labels.some((lbl) => (filter as string[]).includes(lbl))
           );
+        } else if (
+          key === "ha-filter-voice-assistants" &&
+          Array.isArray(filter) &&
+          filter.length
+        ) {
+          filteredEntities = filteredEntities.filter((entity) =>
+            getEntityVoiceAssistantsIds(this._entities, entity.entity_id).some(
+              (va) => (filter as string[]).includes(va)
+            )
+          );
         }
       });
 
@@ -718,12 +726,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
-
         const deviceFullName = deviceName
           ? duplicatedDevicesNames.has(deviceName) && areaName
             ? `${deviceName} (${areaName})`
             : deviceName
           : undefined;
+        const assistants = getEntityVoiceAssistantsIds(
+          entities as EntityRegistryEntry[],
+          entry.entity_id
+        );
 
         result.push({
           ...entry,
@@ -736,6 +747,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           restored,
           localized_platform: domainToName(localize, entry.platform),
           domain: domainToName(localize, computeDomain(entry.entity_id)),
+          assistants,
+          assistants_sortable_key: getAssistantsSortableKey(assistants),
           status: restored
             ? localize("ui.panel.config.entities.picker.status.not_provided")
             : unavailable
@@ -849,7 +862,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         .route=${this.route}
         .tabs=${configSections.devices}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, filteredEntities)}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.entities.picker.search",
@@ -1103,6 +1116,15 @@ ${
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
+        <ha-filter-voice-assistants
+          .hass=${this.hass}
+          .value=${this._filters["ha-filter-voice-assistants"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-voice-assistants"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-voice-assistants>
         ${
           includeAddDeviceFab
             ? html`<ha-fab
@@ -1155,6 +1177,7 @@ ${
     const subEntry = this._searchParms.get("sub_entry");
     const device = this._searchParms.get("device");
     const label = this._searchParms.get("label");
+    const voiceAssistant = this._searchParms.get("voice_assistant");
 
     if (!domain && !configEntry && !label && !device) {
       return;
@@ -1167,6 +1190,7 @@ ${
       "ha-filter-integrations": domain ? [domain] : [],
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
+      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
       config_entry: configEntry ? [configEntry] : [],
       sub_entry: subEntry ? [subEntry] : [],
     };
