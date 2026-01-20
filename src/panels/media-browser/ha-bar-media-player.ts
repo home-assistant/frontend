@@ -77,6 +77,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   @query("#CurrentProgress") private _currentProgress?: HTMLElement;
 
+  @query(".volume-slider") private _volumeSlider?: HaSlider;
+
   @state() private _marqueeActive = false;
 
   @state() private _newMediaExpected = false;
@@ -86,6 +88,22 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   private _progressInterval?: number;
 
   private _browserPlayerVolume = 0.8;
+
+  private _volumeStep = 2;
+
+  private _volumeTouchStartX = 0;
+
+  private _volumeTouchStartY = 0;
+
+  private _volumeTouchStartValue = 0;
+
+  private _volumeTouchDragging = false;
+
+  private _volumeTouchScrolling = false;
+
+  private _debouncedVolumeSet = debounce((value: number) => {
+    this._setVolume(value);
+  }, 100);
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -330,15 +348,25 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                   slot="trigger"
                   .path=${mdiVolumeHigh}
                 ></ha-icon-button>
-                <ha-slider
-                  labeled
-                  min="0"
-                  max="100"
-                  step="1"
-                  .value=${stateObj.attributes.volume_level! * 100}
-                  @change=${this._handleVolumeChange}
+                <div
+                  class="volume-slider-container"
+                  @touchstart=${this._handleVolumeTouchStart}
+                  @touchmove=${this._handleVolumeTouchMove}
+                  @touchend=${this._handleVolumeTouchEnd}
+                  @touchcancel=${this._handleVolumeTouchCancel}
                 >
-                </ha-slider>
+                  <ha-slider
+                    class="volume-slider"
+                    labeled
+                    min="0"
+                    max="100"
+                    .step=${this._volumeStep}
+                    .value=${stateObj.attributes.volume_level! * 100}
+                    @input=${this._handleVolumeInput}
+                    @change=${this._handleVolumeChange}
+                  >
+                  </ha-slider>
+                </div>
               </ha-button-menu>
             `
           : ""
@@ -585,15 +613,121 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     fireEvent(this, "player-picked", { entityId });
   }
 
-  private async _handleVolumeChange(ev) {
+  private _handleVolumeInput(ev: Event) {
     ev.stopPropagation();
-    const value = Number(ev.target.value) / 100;
+    const value = Number((ev.target as HaSlider).value);
+    this._debouncedVolumeSet(value);
+  }
+
+  private async _handleVolumeChange(ev: Event) {
+    ev.stopPropagation();
+    const value = Number((ev.target as HaSlider).value);
+    this._setVolume(value);
+  }
+
+  private _setVolume(value: number) {
+    const volume = value / 100;
     if (this._browserPlayer) {
-      this._browserPlayerVolume = value;
-      this._browserPlayer.setVolume(value);
-    } else {
-      await setMediaPlayerVolume(this.hass, this.entityId, value);
+      this._browserPlayerVolume = volume;
+      this._browserPlayer.setVolume(volume);
+      return;
     }
+    setMediaPlayerVolume(this.hass, this.entityId, volume);
+  }
+
+  private _getVolumeFromTouch(clientX: number): number {
+    if (!this._volumeSlider) {
+      return 0;
+    }
+    const rect = this._volumeSlider.getBoundingClientRect();
+    const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+    const percentage = (x / rect.width) * 100;
+    return this._roundVolumeValue(percentage);
+  }
+
+  private _roundVolumeValue(value: number): number {
+    return Math.min(
+      Math.max(Math.round(value / this._volumeStep) * this._volumeStep, 0),
+      100
+    );
+  }
+
+  private _updateVolumeSlider(value: number) {
+    if (this._volumeSlider) {
+      this._volumeSlider.value = value;
+    }
+  }
+
+  private _handleVolumeTouchStart(ev: TouchEvent) {
+    ev.stopPropagation();
+    const touch = ev.touches[0];
+    this._volumeTouchStartX = touch.clientX;
+    this._volumeTouchStartY = touch.clientY;
+    this._volumeTouchStartValue = this._volumeSlider
+      ? Number(this._volumeSlider.value)
+      : 0;
+    this._volumeTouchDragging = false;
+    this._volumeTouchScrolling = false;
+  }
+
+  private _handleVolumeTouchMove(ev: TouchEvent) {
+    if (this._volumeTouchScrolling) {
+      return;
+    }
+    const touch = ev.touches[0];
+    const deltaX = touch.clientX - this._volumeTouchStartX;
+    const deltaY = touch.clientY - this._volumeTouchStartY;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+
+    if (!this._volumeTouchDragging) {
+      if (absDeltaY > 10 && absDeltaY > absDeltaX * 2) {
+        this._volumeTouchScrolling = true;
+        return;
+      }
+      if (absDeltaX > 8) {
+        this._volumeTouchDragging = true;
+      }
+    }
+
+    if (this._volumeTouchDragging) {
+      ev.preventDefault();
+      const newValue = this._getVolumeFromTouch(touch.clientX);
+      this._updateVolumeSlider(newValue);
+    }
+  }
+
+  private _handleVolumeTouchEnd(ev: TouchEvent) {
+    if (this._volumeTouchScrolling) {
+      this._volumeTouchScrolling = false;
+      return;
+    }
+
+    const touch = ev.changedTouches[0];
+    if (!this._volumeTouchDragging) {
+      const tapValue = this._getVolumeFromTouch(touch.clientX);
+      const delta =
+        tapValue > this._volumeTouchStartValue
+          ? this._volumeStep
+          : -this._volumeStep;
+      const newValue = this._roundVolumeValue(
+        this._volumeTouchStartValue + delta
+      );
+      this._updateVolumeSlider(newValue);
+      this._setVolume(newValue);
+    } else {
+      const finalValue = this._getVolumeFromTouch(touch.clientX);
+      this._updateVolumeSlider(finalValue);
+      this._setVolume(finalValue);
+    }
+
+    this._volumeTouchDragging = false;
+  }
+
+  private _handleVolumeTouchCancel() {
+    this._volumeTouchDragging = false;
+    this._volumeTouchScrolling = false;
+    this._updateVolumeSlider(this._volumeTouchStartValue);
   }
 
   static styles = css`
@@ -687,6 +821,16 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
     .progress ha-slider {
       margin: 0 4px;
+    }
+
+    .volume-slider-container {
+      width: 100%;
+    }
+
+    @media (pointer: coarse) {
+      .volume-slider {
+        pointer-events: none;
+      }
     }
 
     .media-info {
