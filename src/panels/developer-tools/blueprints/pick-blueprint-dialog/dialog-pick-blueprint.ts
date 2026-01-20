@@ -8,13 +8,12 @@ import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { Blueprint, BlueprintDomain } from "../../../../data/blueprint";
 
-import "@material/mwc-list/mwc-list";
 import "../../../../components/ha-md-divider";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-icon-next";
+import "../../../../components/ha-md-list";
+import "../../../../components/ha-md-list-item";
 import type { PickBlueprintDialogParams } from "./show-dialog-pick-blueprint";
-import "@material/mwc-list/mwc-list-item";
 
 @customElement("ha-dialog-pick-blueprint")
 class HaDialogPickBlueprint extends LitElement implements HassDialog {
@@ -67,7 +66,7 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
 
     if (!this._pickType) {
       return html`
-        <mwc-list
+        <ha-md-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel=${this.hass.localize(
@@ -76,29 +75,24 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
           rootTabbable
           dialogInitialFocus
         >
-          <ha-list-item
-            hasmeta
-            graphic="icon"
-            @request-selected=${this._setPickType("automation")}
+          <ha-md-list-item
+            type="button"
+            @click=${this._setPickType("automation")}
           >
-            <ha-svg-icon slot="graphic" .path=${mdiRobot}></ha-svg-icon>
+            <ha-svg-icon slot="start" .path=${mdiRobot}></ha-svg-icon>
             ${this.hass.localize(
               `ui.panel.developer-tools.tabs.blueprints.dialog_pick.automation`
             )}
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>
-          <ha-list-item
-            hasmeta
-            graphic="icon"
-            @request-selected=${this._setPickType("script")}
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiScript}></ha-svg-icon>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-md-list-item>
+          <ha-md-list-item type="button" @click=${this._setPickType("script")}>
+            <ha-svg-icon slot="start" .path=${mdiScript}></ha-svg-icon>
             ${this.hass.localize(
               `ui.panel.developer-tools.tabs.blueprints.dialog_pick.script`
             )}
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>
-        </mwc-list>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-md-list-item>
+        </ha-md-list>
       `;
     }
 
@@ -109,7 +103,7 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
       Blueprint,
     ][];
     return html`
-      <mwc-list
+      <ha-md-list
         innerRole="listbox"
         itemRoles="option"
         innerAriaLabel=${this.hass.localize(
@@ -118,38 +112,27 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
         rootTabbable
         dialogInitialFocus
       >
-        <ha-list-item
-          hasmeta
-          twoline
-          graphic="icon"
-          @request-selected=${this._pickNew(this._pickType)}
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiPencilOutline}></ha-svg-icon>
+        <ha-md-list-item type="button" @click=${this._pickNew(this._pickType)}>
+          <ha-svg-icon slot="start" .path=${mdiPencilOutline}></ha-svg-icon>
           ${this.hass.localize(
             `ui.panel.developer-tools.tabs.blueprints.dialog_pick.create_empty_${this._pickType}`
           )}
-          <span slot="secondary">
+          <span slot="supporting-text">
             ${this.hass.localize(
               `ui.panel.developer-tools.tabs.blueprints.dialog_pick.create_empty_${this._pickType}_description`
             )}
           </span>
-          <ha-icon-next slot="meta"></ha-icon-next>
-        </ha-list-item>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-md-list-item>
         ${blueprints.map(
           ([id, blueprint]) => html`
-            <mwc-list-item
-              graphic="icon"
-              @request-selected=${this._pickBlueprint(id)}
-            >
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPencilOutline}
-              ></ha-svg-icon>
+            <ha-md-list-item type="button" @click=${this._pickBlueprint(id)}>
+              <ha-svg-icon slot="start" .path=${mdiPencilOutline}></ha-svg-icon>
               ${blueprint.metadata.name}
-            </mwc-list-item>
+            </ha-md-list-item>
           `
         )}
-      </mwc-list>
+      </ha-md-list>
     `;
   }
 

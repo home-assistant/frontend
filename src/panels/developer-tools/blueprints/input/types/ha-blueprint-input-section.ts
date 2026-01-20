@@ -5,7 +5,6 @@ import type { BlueprintInputSection } from "../../../../../data/blueprint";
 import "../../../../../components/ha-textarea";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-select";
-import "@material/mwc-list/mwc-list-item";
 import "../../../../../components/ha-selector/ha-selector";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
