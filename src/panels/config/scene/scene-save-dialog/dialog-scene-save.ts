@@ -35,6 +35,7 @@ import {
 } from "../../common/suggest-metadata-ai";
 
 const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
+  name: true,
   description: false,
   categories: true,
   labels: true,
@@ -301,9 +302,11 @@ class DialogSceneSave extends LitElement {
       SUGGESTION_CONFIG
     );
 
-    this._newName = processed.name;
-    if (this._error && this._newName.trim()) {
-      this._error = false;
+    if (processed.name) {
+      this._newName = processed.name;
+      if (this._error && this._newName.trim()) {
+        this._error = false;
+      }
     }
 
     if (processed.category) {

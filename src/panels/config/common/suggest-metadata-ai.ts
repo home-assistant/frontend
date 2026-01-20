@@ -12,7 +12,7 @@ import type { HomeAssistant } from "../../../types";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
 
 export interface MetadataSuggestionResult {
-  name: string;
+  name?: string;
   description?: string;
   category?: string;
   labels?: string[];
@@ -25,6 +25,7 @@ export type MetadataSuggestionDomain =
   | "area";
 
 export interface MetadataSuggestionInclude {
+  name: boolean;
   description?: boolean;
   categories?: boolean;
   labels?: boolean;
@@ -35,6 +36,7 @@ type Entities = Record<string, EntityRegistryEntry>;
 type Labels = Record<string, string>;
 
 export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
+  name: true,
   description: true,
   categories: true,
   labels: true,
@@ -154,13 +156,15 @@ export async function generateMetadataSuggestionTask<T>(
   );
 
   const structure: AITaskStructure = {
-    name: {
-      description: `The name of the ${domain}`,
-      required: true,
-      selector: {
-        text: {},
+    ...(include.name && {
+      name: {
+        description: `The name of the ${domain}`,
+        required: true,
+        selector: {
+          text: {},
+        },
       },
-    },
+    }),
     ...(include.description && {
       description: {
         description: `A short description of the ${domain}`,
@@ -198,6 +202,13 @@ export async function generateMetadataSuggestionTask<T>(
       }),
   };
 
+  const requestedParts = [
+    include.name ? "a name" : null,
+    include.description ? "a description" : null,
+    include.categories ? "a category" : null,
+    include.labels ? "labels" : null,
+  ].filter((entry): entry is string => entry !== null);
+
   const categoryLabelText: string[] = [];
   if (include.categories) {
     categoryLabelText.push("category");
@@ -205,40 +216,51 @@ export async function generateMetadataSuggestionTask<T>(
   if (include.labels) {
     categoryLabelText.push("labels");
   }
-  const categoryLabelString =
-    categoryLabelText.length > 0 ? `, ${categoryLabelText.join(" and ")}` : "";
+
+  const requestedPartsText = requestedParts.length
+    ? requestedParts.join(", ").replace(/, ([^,]*)$/, ", and $1")
+    : "suggestions";
 
   return {
     type: "data",
     task: {
       task_name: `frontend__${domain}__save`,
-      instructions: `Suggest in language "${language}" a name${include.description ? ", description" : ""}${categoryLabelString} for the following Home Assistant ${domain}.
-
-The name should be relevant to the ${domain}'s purpose.
-${
-  inspirations.length
-    ? `The name should be in same style and sentence capitalization as existing ${domain}s.${
-        include.categories || include.labels
-          ? `
-Suggest ${categoryLabelText.join(" and ")} if relevant to the ${domain}'s purpose.
-Only suggest ${categoryLabelText.join(" and ")} that are already used by existing ${domain}s.`
-          : ""
-      }`
-    : `The name should be short, descriptive, sentence case, and written in the language ${language}.`
-}${
-        include.description
-          ? `
-If the ${domain} contains 5+ steps, include a short description.`
-          : ""
-      }
-
-For inspiration, here are existing ${domain}s:
-${inspirations.join("\n")}
-
-The ${domain} configuration is as follows:
-
-${dump(config)}
-`,
+      instructions: [
+        `Suggest in language "${language}" ${requestedPartsText} for the following Home Assistant ${domain}.`,
+        "",
+        include.name
+          ? `The name should be relevant to the ${domain}'s purpose.`
+          : `The suggestions should be relevant to the ${domain}'s purpose.`,
+        ...(inspirations.length
+          ? [
+              ...(include.name
+                ? [
+                    `The name should be in same style and sentence capitalization as existing ${domain}s.`,
+                  ]
+                : []),
+              ...(include.categories || include.labels
+                ? [
+                    `Suggest ${categoryLabelText.join(" and ")} if relevant to the ${domain}'s purpose.`,
+                    `Only suggest ${categoryLabelText.join(" and ")} that are already used by existing ${domain}s.`,
+                  ]
+                : []),
+            ]
+          : include.name
+            ? [
+                `The name should be short, descriptive, sentence case, and written in the language ${language}.`,
+              ]
+            : []),
+        ...(include.description
+          ? [`If the ${domain} contains 5+ steps, include a short description.`]
+          : []),
+        "",
+        `For inspiration, here are existing ${domain}s:`,
+        inspirations.join("\n"),
+        "",
+        `The ${domain} configuration is as follows:`,
+        "",
+        `${dump(config)}`,
+      ].join("\n"),
       structure,
     },
   };
@@ -268,7 +290,7 @@ export async function processMetadataSuggestion(
   ]);
 
   const processed: MetadataSuggestionResult = {
-    name: result.data.name,
+    name: include.name ? result.data.name : undefined,
     description: include.description ? result.data.description : undefined,
   };
 

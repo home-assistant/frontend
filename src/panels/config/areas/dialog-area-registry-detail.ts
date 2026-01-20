@@ -54,6 +54,7 @@ const TEMPERATURE_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_TEMPERATURE];
 const HUMIDITY_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_HUMIDITY];
 
 const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
+  name: false,
   description: false,
   categories: false,
   labels: true,
@@ -285,11 +286,8 @@ class DialogAreaDetail
       SUGGESTION_CONFIG
     );
 
-    if (!this._params?.entry) {
+    if (processed.name) {
       this._name = processed.name;
-      if (this._error && this._name.trim()) {
-        this._error = undefined;
-      }
     }
 
     if (processed.labels?.length) {

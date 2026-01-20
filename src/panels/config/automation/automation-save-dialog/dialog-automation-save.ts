@@ -360,7 +360,9 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       result
     );
 
-    this._newName = processed.name;
+    if (processed.name) {
+      this._newName = processed.name;
+    }
 
     if (processed.description) {
       this._newDescription = processed.description;
