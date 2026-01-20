@@ -23,10 +23,10 @@ import {
   stopMediaProgressInterval,
 } from "../../common/util/media-progress";
 import "../../components/ha-button";
-import "../../components/ha-button-menu";
 import "../../components/ha-domain-icon";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-list-item";
 import "../../components/ha-slider";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
@@ -343,7 +343,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
           ? html`
-              <ha-button-menu y="0" x="76">
+              <ha-dropdown class="volume-menu" placement="top" .distance=${8}>
                 <ha-icon-button
                   slot="trigger"
                   .path=${mdiVolumeHigh}
@@ -367,12 +367,17 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                   >
                   </ha-slider>
                 </div>
-              </ha-button-menu>
+              </ha-dropdown>
             `
           : ""
       }
 
-          <ha-button-menu>
+          <ha-dropdown
+            class="player-menu"
+            placement="top-end"
+            .distance=${8}
+            @wa-select=${this._handlePlayerSelect}
+          >
             ${
               this.narrow
                 ? html`
@@ -401,26 +406,24 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     </ha-button>
                   `
             }
-            <ha-list-item
-              .player=${BROWSER_PLAYER}
-              ?selected=${isBrowser}
-              @click=${this._selectPlayer}
+            <ha-dropdown-item
+              class=${isBrowser ? "selected" : ""}
+              .value=${BROWSER_PLAYER}
             >
               ${this.hass.localize("ui.components.media-browser.web-browser")}
-            </ha-list-item>
+            </ha-dropdown-item>
             ${this._mediaPlayerEntities.map(
               (source) => html`
-                <ha-list-item
-                  ?selected=${source.entity_id === this.entityId}
+                <ha-dropdown-item
+                  class=${source.entity_id === this.entityId ? "selected" : ""}
                   .disabled=${source.state === UNAVAILABLE}
-                  .player=${source.entity_id}
-                  @click=${this._selectPlayer}
+                  .value=${source.entity_id}
                 >
                   ${computeStateName(source)}
-                </ha-list-item>
+                </ha-dropdown-item>
               `
             )}
-          </ha-button-menu>
+          </ha-dropdown>
         </div>
       </div>
 
@@ -608,8 +611,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _selectPlayer(ev: CustomEvent): void {
-    const entityId = (ev.currentTarget as any).player;
+  private _handlePlayerSelect(ev: CustomEvent): void {
+    const entityId = (ev.detail.item as any).value;
     fireEvent(this, "player-picked", { entityId });
   }
 
@@ -823,6 +826,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       margin: 0 4px;
     }
 
+    ha-dropdown.volume-menu::part(menu) {
+      width: 220px;
+      max-width: 220px;
+      overflow: visible;
+      padding: 15px 10px;
+    }
+
     .volume-slider-container {
       width: 100%;
     }
@@ -903,7 +913,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       right: 0;
     }
 
-    ha-list-item[selected] {
+    ha-dropdown-item.selected {
       font-weight: var(--ha-font-weight-bold);
     }
   `;
