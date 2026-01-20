@@ -55,14 +55,6 @@ const SENSOR_DOMAINS = ["sensor"];
 const TEMPERATURE_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_TEMPERATURE];
 const HUMIDITY_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_HUMIDITY];
 
-const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
-  name: false,
-  description: false,
-  categories: false,
-  labels: true,
-  floor: true,
-};
-
 @customElement("dialog-area-registry-detail")
 class DialogAreaDetail
   extends LitElement
@@ -93,6 +85,12 @@ class DialogAreaDetail
   @state() private _submitting?: boolean;
 
   @state() private _open = false;
+
+  @state() private _suggestionInclude: MetadataSuggestionInclude = {
+    name: true,
+    labels: true,
+    floor: true,
+  };
 
   public async showDialog(
     params: AreaRegistryDetailDialogParams
@@ -261,8 +259,13 @@ class DialogAreaDetail
     `;
   }
 
-  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask<{
+  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
+    this._suggestionInclude = {
+      ...this._suggestionInclude,
+      name: this._name.trim() === "",
+    };
+
+    return generateMetadataSuggestionTask<{
       name: string;
       aliases: string[];
       labels: string[];
@@ -292,8 +295,9 @@ class DialogAreaDetail
           : null,
       },
       await buildAreaMetadataInspirations(this.hass.connection),
-      SUGGESTION_CONFIG
+      this._suggestionInclude
     );
+  };
 
   private async _handleSuggestion(
     event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>
@@ -303,7 +307,7 @@ class DialogAreaDetail
       this.hass.connection,
       "area",
       result,
-      SUGGESTION_CONFIG
+      this._suggestionInclude
     );
 
     if (processed.name) {
