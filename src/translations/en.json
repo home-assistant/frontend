@@ -9520,8 +9520,6 @@
               "create_empty_script_description": "Start with an empty script blueprint from scratch"
             },
             "editor": {
-              "save": "Save",
-              "rename": "Rename",
               "load_blueprints_error_title": "Error loading blueprints",
               "load_blueprints_error_text": "There was a problem loading blueprints. Please try again.",
               "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
@@ -9530,8 +9528,6 @@
               "move_down": "Move down",
               "edit_ui": "UI editor",
               "edit_yaml": "YAML editor",
-              "missing_path": "Cannot save blueprint without a path",
-              "missing_name": "Cannot save blueprint without a name",
               "metadata": "Metadata",
               "error": "There is a problem with the selected blueprint.",
               "none_selected": "Please pick a blueprint to edit it.",
@@ -9581,11 +9577,6 @@
                   }
                 }
               },
-              "dialog": {
-                "add_description": "Add description",
-                "add_author": "Add author",
-                "add_min_version": "Add minimum version"
-              },
               "name": {
                 "label": "Name"
               },
@@ -9596,12 +9587,10 @@
                 "label": "Description"
               },
               "author": {
-                "label": "Author",
-                "placeholder": "Linus Torvalds"
+                "label": "Author"
               },
               "min_version": {
-                "label": "Minimum version",
-                "placeholder": "2025.1.0"
+                "label": "Minimum version"
               }
             }
           }
