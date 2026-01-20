@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiClose,
   mdiDotsVertical,
@@ -12,11 +11,12 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-yaml-editor";
@@ -165,38 +165,33 @@ export class HuiDialogEditSection
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${heading}</span>
-          <ha-button-menu
+          <ha-dropdown
             slot="actionItems"
-            fixed
-            corner="BOTTOM_END"
-            menu-corner="END"
+            placement="bottom-end"
             @closed=${stopPropagation}
-            @action=${this._handleAction}
+            @wa-select=${this._handleAction}
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass!.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item graphic="icon">
+            <ha-dropdown-item value="toggle-yaml">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
               ${this.hass.localize(
                 `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="move-to-view">
               <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
+                slot="icon"
+                .path=${mdiFileMoveOutline}
               ></ha-svg-icon>
-            </ha-list-item>
-            <ha-list-item graphic="icon">
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_view.move_to_view"
               )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiFileMoveOutline}
-              ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
           ${!this._yamlMode
             ? html`
                 <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
@@ -246,14 +241,13 @@ export class HuiDialogEditSection
     this._currTab = newTab;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    ev.stopPropagation();
-    ev.preventDefault();
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "toggle-yaml":
         this._yamlMode = !this._yamlMode;
         break;
-      case 1:
+      case "move-to-view":
         this._openSelectView();
         break;
     }

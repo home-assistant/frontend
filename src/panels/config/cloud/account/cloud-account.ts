@@ -6,9 +6,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
 import type {
   CloudStatusLoggedIn,
@@ -53,26 +56,26 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
-        <ha-button-menu slot="toolbar-icon" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="reset">
             ${this.hass.localize(
               "ui.panel.config.cloud.account.reset_cloud_data"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDeleteForever}></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon">
+            <ha-svg-icon slot="icon" .path=${mdiDeleteForever}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="download">
             ${this.hass.localize(
               "ui.panel.config.cloud.account.download_support_package"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <div class="content">
           <ha-config-section .isWide=${this.isWide}>
             <span slot="header">Home Assistant Cloud</span>
@@ -297,13 +300,15 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
     fireEvent(this, "ha-refresh-cloud-status");
   }
 
-  private _handleMenuAction(ev) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "reset":
         this._deleteCloudData();
         break;
-      case 1:
+      case "download":
         this._downloadSupportPackage();
+        break;
     }
   }
 
