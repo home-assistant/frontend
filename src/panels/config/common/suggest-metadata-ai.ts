@@ -8,6 +8,7 @@ import {
   type EntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import { subscribeLabelRegistry } from "../../../data/label/label_registry";
+import { subscribeFloorRegistry } from "../../../data/ws-floor_registry";
 import type { HomeAssistant } from "../../../types";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
 
@@ -16,6 +17,7 @@ export interface MetadataSuggestionResult {
   description?: string;
   category?: string;
   labels?: string[];
+  floor?: string;
 }
 
 export type MetadataSuggestionDomain =
@@ -29,11 +31,13 @@ export interface MetadataSuggestionInclude {
   description?: boolean;
   categories?: boolean;
   labels?: boolean;
+  floor?: boolean;
 }
 
 type Categories = Record<string, string>;
 type Entities = Record<string, EntityRegistryEntry>;
 type Labels = Record<string, string>;
+type Floors = Record<string, string>;
 
 export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
   name: true,
@@ -74,6 +78,15 @@ const fetchLabels = (
   tryCatchEmptyObject<Labels>(
     subscribeOne(connection, subscribeLabelRegistry).then((labs) =>
       Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
+    )
+  );
+
+const fetchFloors = (
+  connection: HomeAssistant["connection"]
+): Promise<Floors> =>
+  tryCatchEmptyObject<Floors>(
+    subscribeOne(connection, subscribeFloorRegistry).then((floors) =>
+      Object.fromEntries(floors.map((floor) => [floor.floor_id, floor.name]))
     )
   );
 
@@ -139,12 +152,13 @@ export async function generateMetadataSuggestionTask<T>(
   config: T,
   include = SUGGESTION_INCLUDE_ALL
 ): Promise<SuggestWithAIGenerateTask> {
-  const [categories, entities, labels] = await Promise.all([
+  const [categories, entities, labels, floors] = await Promise.all([
     include.categories
       ? fetchCategories(connection, domain)
       : Promise.resolve(undefined),
     fetchEntities(connection),
     include.labels ? fetchLabels(connection) : Promise.resolve(undefined),
+    include.floor ? fetchFloors(connection) : Promise.resolve(undefined),
   ]);
 
   const inspirations = buildMetadataInspirations(
@@ -200,6 +214,21 @@ export async function generateMetadataSuggestionTask<T>(
           },
         },
       }),
+    ...(include.floor &&
+      floors && {
+        floor: {
+          description: `The floor of the ${domain}`,
+          required: false,
+          selector: {
+            select: {
+              options: Object.entries(floors).map(([id, name]) => ({
+                value: id,
+                label: name,
+              })),
+            },
+          },
+        },
+      }),
   };
 
   const requestedParts = [
@@ -207,6 +236,7 @@ export async function generateMetadataSuggestionTask<T>(
     include.description ? "a description" : null,
     include.categories ? "a category" : null,
     include.labels ? "labels" : null,
+    include.floor ? "a floor" : null,
   ].filter((entry): entry is string => entry !== null);
 
   const categoryLabelText: string[] = [];
@@ -253,6 +283,14 @@ export async function generateMetadataSuggestionTask<T>(
         ...(include.description
           ? [`If the ${domain} contains 5+ steps, include a short description.`]
           : []),
+        ...(include.floor
+          ? [
+              "Only suggest a floor that already exists in Home Assistant.",
+              ...(floors
+                ? [`Existing floors: ${Object.values(floors).join(", ")}`]
+                : []),
+            ]
+          : []),
         "",
         `For inspiration, here are existing ${domain}s:`,
         inspirations.join("\n"),
@@ -282,11 +320,12 @@ export async function processMetadataSuggestion(
   result: GenDataTaskResult<MetadataSuggestionResult>,
   include = SUGGESTION_INCLUDE_ALL
 ): Promise<MetadataSuggestionResult> {
-  const [categories, labels] = await Promise.all([
+  const [categories, labels, floors] = await Promise.all([
     include.categories
       ? fetchCategories(connection, domain)
       : Promise.resolve(undefined),
     include.labels ? fetchLabels(connection) : Promise.resolve(undefined),
+    include.floor ? fetchFloors(connection) : Promise.resolve(undefined),
   ]);
 
   const processed: MetadataSuggestionResult = {
@@ -324,6 +363,18 @@ export async function processMetadataSuggestion(
     );
     if (foundLabels.length) {
       processed.labels = foundLabels;
+    }
+  }
+
+  if (include.floor && floors && result.data.floor) {
+    const floorId =
+      result.data.floor in floors
+        ? result.data.floor
+        : Object.entries(floors).find(
+            ([, name]) => name === result.data.floor
+          )?.[0];
+    if (floorId) {
+      processed.floor = floorId;
     }
   }
 

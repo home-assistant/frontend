@@ -59,6 +59,7 @@ const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
   description: false,
   categories: false,
   labels: true,
+  floor: true,
 };
 
 @customElement("dialog-area-registry-detail")
@@ -310,6 +311,10 @@ class DialogAreaDetail
 
     if (processed.labels?.length) {
       this._labels = processed.labels;
+    }
+
+    if (processed.floor) {
+      this._floor = processed.floor;
     }
   }
 
