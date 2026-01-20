@@ -284,11 +284,11 @@ class DialogAreaDetail
         floor: this._floor ? this.hass.floors?.[this._floor]?.name : null,
         temperature_entity: this._temperatureEntity
           ? (this.hass.states[this._temperatureEntity]?.attributes
-              .friendly_name ?? null)
+              ?.friendly_name ?? null)
           : null,
         humidity_entity: this._humidityEntity
-          ? (this.hass.states[this._humidityEntity]?.attributes.friendly_name ??
-            null)
+          ? (this.hass.states[this._humidityEntity]?.attributes
+              ?.friendly_name ?? null)
           : null,
       },
       SUGGESTION_CONFIG
