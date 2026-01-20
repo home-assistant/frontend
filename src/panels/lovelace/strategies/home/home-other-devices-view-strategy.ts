@@ -17,12 +17,13 @@ import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOtherDevicesViewStrategyConfig {
   type: "home-other-devices";
+  home_panel?: boolean;
 }
 
 @customElement("home-other-devices-view-strategy")
 export class HomeOtherDevicesViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeOtherDevicesViewStrategyConfig,
+    config: HomeOtherDevicesViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const allEntities = Object.keys(hass.states);
@@ -132,6 +133,24 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
                   action: "more-info",
                 },
               })),
+              ...(config.home_panel && device && hass.user?.is_admin
+                ? [
+                    {
+                      type: "button",
+                      icon: "mdi:home-plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.other_devices.assign_area"
+                      ),
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "assign_area",
+                          device_id: device.id,
+                        },
+                      },
+                    },
+                  ]
+                : []),
             ],
           } satisfies HeadingCardConfig,
           ...entities.map((e) => ({

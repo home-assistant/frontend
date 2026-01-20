@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
+import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   fetchFrontendSystemData,
   saveFrontendSystemData,
@@ -14,6 +15,7 @@ import { showToast } from "../../util/toast";
 import "../lovelace/hui-root";
 import { expandLovelaceConfigStrategies } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
+import { showDeviceRegistryDetailDialog } from "../config/devices/device-registry-detail/show-dialog-device-registry-detail";
 import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 
 @customElement("ha-panel-home")
@@ -95,6 +97,29 @@ class PanelHome extends LitElement {
     this._setLovelace();
   };
 
+  private _handleLLCustomEvent = (ev: Event) => {
+    const detail = (ev as CustomEvent).detail;
+    if (detail.home_panel) {
+      const { type, device_id } = detail.home_panel;
+      if (type === "assign_area") {
+        this._showAssignAreaDialog(device_id);
+      }
+    }
+  };
+
+  private _showAssignAreaDialog(deviceId: string) {
+    const device = this.hass.devices[deviceId];
+    if (!device) {
+      return;
+    }
+    showDeviceRegistryDetailDialog(this, {
+      device,
+      updateEntry: async (updates) => {
+        await updateDeviceRegistryEntry(this.hass, deviceId, updates);
+      },
+    });
+  }
+
   protected render() {
     if (!this._lovelace) {
       return nothing;
@@ -107,6 +132,7 @@ class PanelHome extends LitElement {
         .lovelace=${this._lovelace}
         .route=${this.route}
         .panel=${this.panel}
+        @ll-custom=${this._handleLLCustomEvent}
       ></hui-root>
     `;
   }
@@ -116,6 +142,7 @@ class PanelHome extends LitElement {
       strategy: {
         type: "home",
         favorite_entities: this._config.favorite_entities,
+        home_panel: true,
       },
     };
 

@@ -7582,7 +7582,8 @@
           },
           "other_devices": {
             "helpers": "Helpers",
-            "entities": "Entities"
+            "entities": "Entities",
+            "assign_area": "Assign area"
           }
         },
         "cards": {
