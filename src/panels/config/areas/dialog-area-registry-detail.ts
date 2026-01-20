@@ -30,6 +30,7 @@ import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
 } from "../../../data/sensor";
+import { fetchLabelRegistry } from "../../../data/label/label_registry";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
@@ -267,10 +268,18 @@ class DialogAreaDetail
       {
         name: this._name,
         aliases: this._aliases,
-        labels: this._labels,
-        floor_id: this._floor,
-        temperature_entity_id: this._temperatureEntity,
-        humidity_entity_id: this._humidityEntity,
+        labels: this._labels.length
+          ? (await fetchLabelRegistry(this.hass.connection))
+              .filter((label) => this._labels.includes(label.label_id))
+              .map((label) => label.name)
+          : [],
+        floor: this._floor ? this.hass.floors?.[this._floor]?.name : null,
+        temperature_entity: this._temperatureEntity
+          ? this.hass.states[this._temperatureEntity]?.attributes.friendly_name
+          : null,
+        humidity_entity: this._humidityEntity
+          ? this.hass.states[this._humidityEntity]?.attributes.friendly_name
+          : null,
       },
       SUGGESTION_CONFIG
     );
