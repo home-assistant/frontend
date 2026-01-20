@@ -198,7 +198,7 @@ class HassioAddonDashboard extends LitElement {
               title: this.supervisor.localize("my.add_app_repository_title"),
               text: this.supervisor.localize(
                 "my.add_app_repository_description",
-                { addon: requestedAddon, repository: requestedAddonRepository }
+                { app: requestedAddon, repository: requestedAddonRepository }
               ),
               confirmText: this.supervisor.localize("common.add"),
               dismissText: this.supervisor.localize("common.cancel"),

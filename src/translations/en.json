@@ -1424,7 +1424,7 @@
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
             "app_dashboard": "App dashboard",
             "app_store": "App store",
-            "app_info": "{addon} info",
+            "app_info": "{app} info",
             "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
             "labs": "[%key:ui::panel::config::labs::caption%]"
           }
@@ -4203,7 +4203,7 @@
                 "creating_pipeline": "Creating assistant"
               },
               "errors": {
-                "failed_create_entry": "Failed to create entry for {addon}",
+                "failed_create_entry": "Failed to create entry for {app}",
                 "could_not_find_entities": "Could not find local TTS and STT entities"
               }
             },
@@ -10393,7 +10393,7 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "add_app_repository_title": "Missing app repository",
-      "add_app_repository_description": "The app ''{addon}'' is a part of the app repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
+      "add_app_repository_description": "The app ''{app}'' is a part of the app repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
       "error": "[%key:ui::panel::my::error%]",
       "error_app_not_found": "App not found",
       "error_repository_not_found": "The required repository for this app was not found",
