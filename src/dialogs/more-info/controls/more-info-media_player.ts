@@ -21,6 +21,7 @@ import {
   startMediaProgressInterval,
   stopMediaProgressInterval,
 } from "../../../common/util/media-progress";
+import { VolumeSliderController } from "../../../common/util/volume-slider";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -66,19 +67,16 @@ class MoreInfoMediaPlayer extends LitElement {
 
   private _volumeStep = 2;
 
-  private _volumeTouchStartX = 0;
-
-  private _volumeTouchStartY = 0;
-
-  private _volumeTouchStartValue = 0;
-
-  private _volumeTouchDragging = false;
-
-  private _volumeTouchScrolling = false;
-
   private _debouncedVolumeSet = debounce((value: number) => {
     this._setVolume(value);
   }, 100);
+
+  private _volumeController = new VolumeSliderController({
+    getSlider: () => this._volumeSlider,
+    step: this._volumeStep,
+    onSetVolume: (value) => this._setVolume(value),
+    onSetVolumeDebounced: (value) => this._debouncedVolumeSet(value),
+  });
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -170,11 +168,11 @@ class MoreInfoMediaPlayer extends LitElement {
                     : nothing}
                   <div
                     class="volume-slider-container"
-                    @touchstart=${this._handleVolumeTouchStart}
-                    @touchmove=${this._handleVolumeTouchMove}
-                    @touchend=${this._handleVolumeTouchEnd}
-                    @touchcancel=${this._handleVolumeTouchCancel}
-                    @wheel=${this._handleVolumeWheel}
+                    @touchstart=${this._volumeController.handleTouchStart}
+                    @touchmove=${this._volumeController.handleTouchMove}
+                    @touchend=${this._volumeController.handleTouchEnd}
+                    @touchcancel=${this._volumeController.handleTouchCancel}
+                    @wheel=${this._volumeController.handleWheel}
                   >
                     <ha-slider
                       class="volume-slider"
@@ -183,8 +181,8 @@ class MoreInfoMediaPlayer extends LitElement {
                       .value=${Number(this.stateObj.attributes.volume_level) *
                       100}
                       .step=${this._volumeStep}
-                      @input=${this._handleVolumeInput}
-                      @change=${this._selectedValueChanged}
+                      @input=${this._volumeController.handleInput}
+                      @change=${this._volumeController.handleChange}
                     ></ha-slider>
                   </div>
                 `
@@ -721,146 +719,11 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleVolumeInput(e: Event): void {
-    e.stopPropagation();
-    const value = Number((e.target as HaSlider).value);
-    this._debouncedVolumeSet(value);
-  }
-
-  private _selectedValueChanged(e: Event): void {
-    e.stopPropagation();
-    const value = Number((e.target as HaSlider).value);
-    this._setVolume(value);
-  }
-
   private _setVolume(value: number) {
     this.hass!.callService("media_player", "volume_set", {
       entity_id: this.stateObj!.entity_id,
       volume_level: value / 100,
     });
-  }
-
-  private _getVolumeFromTouch(clientX: number): number {
-    if (!this._volumeSlider) {
-      return 0;
-    }
-    const rect = this._volumeSlider.getBoundingClientRect();
-    const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-    const percentage = (x / rect.width) * 100;
-    return this._roundVolumeValue(percentage);
-  }
-
-  private _roundVolumeValue(value: number): number {
-    return Math.min(
-      Math.max(Math.round(value / this._volumeStep) * this._volumeStep, 0),
-      100
-    );
-  }
-
-  private _updateVolumeSlider(value: number) {
-    if (this._volumeSlider) {
-      this._volumeSlider.value = value;
-    }
-  }
-
-  private _handleVolumeTouchStart(ev: TouchEvent) {
-    ev.stopPropagation();
-    const touch = ev.touches[0];
-    this._volumeTouchStartX = touch.clientX;
-    this._volumeTouchStartY = touch.clientY;
-    this._volumeTouchStartValue = this._volumeSlider
-      ? Number(this._volumeSlider.value)
-      : 0;
-    this._volumeTouchDragging = false;
-    this._volumeTouchScrolling = false;
-    this._showVolumeTooltip();
-  }
-
-  private _handleVolumeTouchMove(ev: TouchEvent) {
-    if (this._volumeTouchScrolling) {
-      return;
-    }
-    const touch = ev.touches[0];
-    const deltaX = touch.clientX - this._volumeTouchStartX;
-    const deltaY = touch.clientY - this._volumeTouchStartY;
-    const absDeltaX = Math.abs(deltaX);
-    const absDeltaY = Math.abs(deltaY);
-
-    if (!this._volumeTouchDragging) {
-      if (absDeltaY > 10 && absDeltaY > absDeltaX * 2) {
-        this._volumeTouchScrolling = true;
-        return;
-      }
-      if (absDeltaX > 8) {
-        this._volumeTouchDragging = true;
-      }
-    }
-
-    if (this._volumeTouchDragging) {
-      ev.preventDefault();
-      const newValue = this._getVolumeFromTouch(touch.clientX);
-      this._updateVolumeSlider(newValue);
-    }
-  }
-
-  private _handleVolumeTouchEnd(ev: TouchEvent) {
-    if (this._volumeTouchScrolling) {
-      this._volumeTouchScrolling = false;
-      this._hideVolumeTooltip();
-      return;
-    }
-
-    const touch = ev.changedTouches[0];
-    if (!this._volumeTouchDragging) {
-      const tapValue = this._getVolumeFromTouch(touch.clientX);
-      const delta =
-        tapValue > this._volumeTouchStartValue
-          ? this._volumeStep
-          : -this._volumeStep;
-      const newValue = this._roundVolumeValue(
-        this._volumeTouchStartValue + delta
-      );
-      this._updateVolumeSlider(newValue);
-      this._setVolume(newValue);
-    } else {
-      const finalValue = this._getVolumeFromTouch(touch.clientX);
-      this._updateVolumeSlider(finalValue);
-      this._setVolume(finalValue);
-    }
-
-    this._volumeTouchDragging = false;
-    this._hideVolumeTooltip();
-  }
-
-  private _handleVolumeTouchCancel() {
-    this._volumeTouchDragging = false;
-    this._volumeTouchScrolling = false;
-    this._updateVolumeSlider(this._volumeTouchStartValue);
-    this._hideVolumeTooltip();
-  }
-
-  private _handleVolumeWheel(ev: WheelEvent) {
-    ev.preventDefault();
-    ev.stopPropagation();
-    const direction = ev.deltaY > 0 ? -1 : 1;
-    const currentValue = this._volumeSlider
-      ? Number(this._volumeSlider.value)
-      : 0;
-    const newValue = this._roundVolumeValue(
-      currentValue + direction * this._volumeStep
-    );
-    this._updateVolumeSlider(newValue);
-    this._setVolume(newValue);
-  }
-
-  private _showVolumeTooltip() {
-    const slider = this._volumeSlider as any;
-    slider?.showTooltip?.();
-  }
-
-  private _hideVolumeTooltip() {
-    const slider = this._volumeSlider as any;
-    slider?.hideTooltip?.();
   }
 
   private _handleSourceClick(e: Event) {
