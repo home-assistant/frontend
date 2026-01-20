@@ -1,23 +1,13 @@
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { subscribeOne } from "../../../common/util/subscribe-one";
-import { subscribeFloorRegistry } from "../../../data/ws-floor_registry";
-import { getFloorAreaLookup } from "../../../data/floor_registry";
-import { subscribeAreaRegistry } from "../../../data/area/area_registry";
 import type { HomeAssistant } from "../../../types";
 import type { MetadataSuggestionDomain } from "./suggest-metadata-ai";
 import {
+  fetchAreas,
   fetchCategories,
   fetchEntities,
+  fetchFloors,
   fetchLabels,
 } from "./suggest-metadata-helpers";
-
-const safeFetch = async <T>(promise: Promise<T>, fallback: T): Promise<T> => {
-  try {
-    return await promise;
-  } catch (_err) {
-    return fallback;
-  }
-};
 
 export const buildEntityMetadataInspirations = async (
   connection: HomeAssistant["connection"],
@@ -65,29 +55,28 @@ export const buildEntityMetadataInspirations = async (
   }, []);
 };
 
-export const buildFloorMetadataInspirations = async (
+export const buildAreaMetadataInspirations = async (
   connection: HomeAssistant["connection"]
 ): Promise<string[]> => {
-  const [floors, areas] = await Promise.all([
-    safeFetch(subscribeOne(connection, subscribeFloorRegistry), []),
-    safeFetch(subscribeOne(connection, subscribeAreaRegistry), []),
+  const [labels, floors, areas] = await Promise.all([
+    fetchLabels(connection),
+    fetchFloors(connection),
+    fetchAreas(connection),
   ]);
 
-  if (!floors.length || !areas.length) {
-    return [];
-  }
-
-  const floorAreaLookup = getFloorAreaLookup(areas);
-
-  return floors.reduce<string[]>((inspirations, floor) => {
-    const floorAreas = floorAreaLookup[floor.floor_id] || [];
-    const areaNames = floorAreas.map((area) => area.name).filter(Boolean);
-    if (!areaNames.length) {
+  return Object.values(areas).reduce<string[]>((inspirations, area) => {
+    if (!area.floor_id) {
       return inspirations;
     }
 
-    const floorName = floor.name || floor.floor_id;
-    inspirations.push(`- ${floorName} (areas: ${areaNames.join(", ")})`);
+    const floorName = floors[area.floor_id]?.name;
+    const labelNames = area.labels
+      .map((labelId) => labels[labelId])
+      .filter(Boolean);
+
+    inspirations.push(
+      `- ${area.name} (${floorName ? `floor: ${floorName}` : "no floor"}${labelNames.length ? `, labels: ${labelNames.join(", ")}` : ""})`
+    );
     return inspirations;
   }, []);
 };

@@ -42,7 +42,7 @@ import {
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../common/suggest-metadata-ai";
-import { buildFloorMetadataInspirations } from "../common/suggest-metadata-inspirations";
+import { buildAreaMetadataInspirations } from "../common/suggest-metadata-inspirations";
 import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
 const cropOptions: CropOptions = {
@@ -261,12 +261,8 @@ class DialogAreaDetail
     `;
   }
 
-  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
-    const inspirations = await buildFloorMetadataInspirations(
-      this.hass.connection
-    );
-
-    return generateMetadataSuggestionTask<{
+  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
+    generateMetadataSuggestionTask<{
       name: string;
       aliases: string[];
       labels: string[];
@@ -295,10 +291,9 @@ class DialogAreaDetail
               ?.friendly_name ?? null)
           : null,
       },
-      inspirations,
+      await buildAreaMetadataInspirations(this.hass.connection),
       SUGGESTION_CONFIG
     );
-  };
 
   private async _handleSuggestion(
     event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>

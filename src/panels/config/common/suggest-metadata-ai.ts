@@ -115,9 +115,9 @@ export async function generateMetadataSuggestionTask<T>(
           required: false,
           selector: {
             select: {
-              options: Object.entries(floors).map(([id, name]) => ({
-                value: id,
-                label: name,
+              options: Object.values(floors).map((floor) => ({
+                value: floor.floor_id,
+                label: floor.name,
               })),
             },
           },
@@ -139,6 +139,9 @@ export async function generateMetadataSuggestionTask<T>(
   }
   if (include.labels) {
     categoryLabelText.push("labels");
+  }
+  if (include.floor) {
+    categoryLabelText.push("floor");
   }
 
   const requestedPartsText = requestedParts.length
@@ -162,7 +165,7 @@ export async function generateMetadataSuggestionTask<T>(
                     `The name should be in same style and sentence capitalization as existing ${domain}s.`,
                   ]
                 : []),
-              ...(include.categories || include.labels
+              ...(include.categories || include.labels || include.floor
                 ? [
                     `Suggest ${categoryLabelText.join(" and ")} if relevant to the ${domain}'s purpose.`,
                     `Only suggest ${categoryLabelText.join(" and ")} that are already used by existing ${domain}s.`,
@@ -176,14 +179,6 @@ export async function generateMetadataSuggestionTask<T>(
             : []),
         ...(include.description
           ? [`If the ${domain} contains 5+ steps, include a short description.`]
-          : []),
-        ...(include.floor
-          ? [
-              "Only suggest a floor that already exists in Home Assistant.",
-              ...(floors
-                ? [`Existing floors: ${Object.values(floors).join(", ")}`]
-                : []),
-            ]
           : []),
         "",
         `For inspiration, here are existing ${domain}s:`,
@@ -265,7 +260,7 @@ export async function processMetadataSuggestion(
       result.data.floor in floors
         ? result.data.floor
         : Object.entries(floors).find(
-            ([, name]) => name === result.data.floor
+            ([, floor]) => floor.name === result.data.floor
           )?.[0];
     if (floorId) {
       processed.floor = floorId;
