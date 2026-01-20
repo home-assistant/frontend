@@ -2,7 +2,7 @@ import {
   mdiCogs,
   mdiFileDocument,
   mdiInformationVariant,
-  mdiMathLog,
+  mdiTextBoxOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -89,7 +89,7 @@ class HassioAddonDashboard extends LitElement {
 
     const addonTabs: PageNavigation[] = [
       {
-        translationKey: "addon.panel.info",
+        translationKey: "app.panel.info",
         path: `/hassio/addon/${this.addon.slug}/info`,
         iconPath: mdiInformationVariant,
       },
@@ -97,7 +97,7 @@ class HassioAddonDashboard extends LitElement {
 
     if (this.addon.documentation) {
       addonTabs.push({
-        translationKey: "addon.panel.documentation",
+        translationKey: "app.panel.documentation",
         path: `/hassio/addon/${this.addon.slug}/documentation`,
         iconPath: mdiFileDocument,
       });
@@ -106,14 +106,14 @@ class HassioAddonDashboard extends LitElement {
     if (this.addon.version) {
       addonTabs.push(
         {
-          translationKey: "addon.panel.configuration",
+          translationKey: "app.panel.configuration",
           path: `/hassio/addon/${this.addon.slug}/config`,
           iconPath: mdiCogs,
         },
         {
-          translationKey: "addon.panel.log",
+          translationKey: "app.panel.log",
           path: `/hassio/addon/${this.addon.slug}/logs`,
-          iconPath: mdiMathLog,
+          iconPath: mdiTextBoxOutline,
         }
       );
     }
@@ -195,10 +195,10 @@ class HassioAddonDashboard extends LitElement {
         ) {
           if (
             !(await showConfirmationDialog(this, {
-              title: this.supervisor.localize("my.add_addon_repository_title"),
+              title: this.supervisor.localize("my.add_app_repository_title"),
               text: this.supervisor.localize(
-                "my.add_addon_repository_description",
-                { addon: requestedAddon, repository: requestedAddonRepository }
+                "my.add_app_repository_description",
+                { app: requestedAddon, repository: requestedAddonRepository }
               ),
               confirmText: this.supervisor.localize("common.add"),
               dismissText: this.supervisor.localize("common.cancel"),
@@ -224,7 +224,7 @@ class HassioAddonDashboard extends LitElement {
           (addon) => addon.slug === requestedAddon
         );
         if (!validAddon) {
-          this._error = this.supervisor.localize("my.error_addon_not_found");
+          this._error = this.supervisor.localize("my.error_app_not_found");
         } else {
           navigate(`/hassio/addon/${requestedAddon}`, { replace: true });
         }

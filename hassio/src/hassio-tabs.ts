@@ -14,7 +14,7 @@ export const supervisorTabs = (hass: HomeAssistant): PageNavigation[] =>
     : [
         {
           translationKey: atLeastVersion(hass.config.version, 2021, 12)
-            ? "panel.addons"
+            ? "panel.apps"
             : "panel.dashboard",
           path: `/hassio/dashboard`,
           iconPath: atLeastVersion(hass.config.version, 2021, 12)

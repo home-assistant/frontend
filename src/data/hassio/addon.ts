@@ -8,7 +8,7 @@ import type { HassioResponse } from "./common";
 import { extractApiErrorMessage, hassioApiResultExtractor } from "./common";
 
 export type AddonCapability = Exclude<
-  keyof TranslationDict["supervisor"]["addon"]["dashboard"]["capability"],
+  keyof TranslationDict["supervisor"]["app"]["dashboard"]["capability"],
   "label" | "role" | "stages"
 >;
 export type AddonStage = "stable" | "experimental" | "deprecated";
@@ -402,8 +402,8 @@ export const fetchAddonInfo = (
   supervisorApiCall(
     hass,
     !supervisor.addon?.addons.find((addon) => addon.slug === addonSlug)
-      ? `/store/addons/${addonSlug}` // Use /store/addons when add-on is not installed
-      : `/addons/${addonSlug}/info` // Use /addons when add-on is installed
+      ? `/store/addons/${addonSlug}` // Use /store/addons when app is not installed
+      : `/addons/${addonSlug}/info` // Use /addons when app is installed
   );
 
 export const rebuildLocalAddon = async (

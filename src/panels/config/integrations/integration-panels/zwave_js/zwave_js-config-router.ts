@@ -1,4 +1,4 @@
-import { mdiServerNetwork, mdiMathLog, mdiNetwork } from "@mdi/js";
+import { mdiNetwork, mdiServerNetwork, mdiTextBoxOutline } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
@@ -14,7 +14,7 @@ export const configTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.zwave_js.navigation.logs",
     path: `/config/zwave_js/logs`,
-    iconPath: mdiMathLog,
+    iconPath: mdiTextBoxOutline,
   },
   {
     translationKey: "ui.panel.config.zwave_js.navigation.visualization",

@@ -80,7 +80,7 @@ class HaConfigBackupSettings extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._supervisorUpdateConfigError = this.hass.localize(
-        "ui.panel.config.backup.settings.addon_update_backup.error_load",
+        "ui.panel.config.backup.settings.app_update_backup.error_load",
         {
           error: err?.message || err,
         }
@@ -96,12 +96,12 @@ class HaConfigBackupSettings extends LitElement {
       !this._config?.create_backup.include_all_addons &&
       this._config?.create_backup.include_addons?.length
     ) {
-      // Wait for the addons to be loaded before scrolling because the height can change and location section is below addons.
+      // Wait for the apps to be loaded before scrolling because the height can change and location section is below apps.
       this.addEventListener("backup-addons-fetched", async () => {
         await nextRender();
         this._scrolltoHash();
       });
-      // Clear hash to cancel the scroll after 500ms if addons doesn't load
+      // Clear hash to cancel the scroll after 500ms if apps doesn't load
       setTimeout(() => {
         this._clearHash();
       }, 500);
@@ -320,18 +320,18 @@ class HaConfigBackupSettings extends LitElement {
             ? html`<ha-card>
                 <div class="card-header">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.settings.addon_update_backup.title"
+                    "ui.panel.config.backup.settings.app_update_backup.title"
                   )}
                 </div>
                 <div class="card-content">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.backup.settings.addon_update_backup.description"
+                      "ui.panel.config.backup.settings.app_update_backup.description"
                     )}
                   </p>
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.backup.settings.addon_update_backup.local_only"
+                      "ui.panel.config.backup.settings.app_update_backup.local_only"
                     )}
                   </p>
                   ${this._supervisorUpdateConfigError
@@ -473,7 +473,7 @@ class HaConfigBackupSettings extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._supervisorUpdateConfigError = this.hass.localize(
-        "ui.panel.config.backup.settings.addon_update_backup.error_save",
+        "ui.panel.config.backup.settings.app_update_backup.error_save",
         {
           error: err?.message || err?.toString(),
         }
