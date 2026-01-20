@@ -73,7 +73,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @query("ha-slider") private _progressBar?: HaSlider;
+  @query(".progress-slider") private _progressBar?: HaSlider;
 
   @query("#CurrentProgress") private _currentProgress?: HTMLElement;
 
@@ -84,6 +84,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   @state() private _newMediaExpected = false;
 
   @state() private _browserPlayer?: BrowserMediaPlayer;
+
+  private _volumeValue = 0;
 
   private _progressInterval?: number;
 
@@ -100,6 +102,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   private _volumeTouchDragging = false;
 
   private _volumeTouchScrolling = false;
+
+  private _volumeDragging = false;
 
   private _debouncedVolumeSet = debounce((value: number) => {
     this._setVolume(value);
@@ -192,7 +196,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const stateObj = this._stateObj;
 
     if (!stateObj) {
-      return this._renderChoosePlayer(stateObj);
+      return this._renderChoosePlayer(stateObj, this._volumeValue);
     }
 
     const controls: ControlButton[] | undefined = !this.narrow
@@ -232,7 +236,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     const mediaArt =
       stateObj.attributes.entity_picture_local ||
       stateObj.attributes.entity_picture;
-
     return html`
       <div
         class=${classMap({
@@ -330,11 +333,14 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     `}
             `}
       </div>
-      ${this._renderChoosePlayer(stateObj)}
+      ${this._renderChoosePlayer(stateObj, this._volumeValue)}
     `;
   }
 
-  private _renderChoosePlayer(stateObj: MediaPlayerEntity | undefined) {
+  private _renderChoosePlayer(
+    stateObj: MediaPlayerEntity | undefined,
+    volumeValue: number
+  ) {
     const isBrowser = this.entityId === BROWSER_PLAYER;
     return html`
     <div class="choose-player ${isBrowser ? "browser" : ""}">
@@ -361,7 +367,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     min="0"
                     max="100"
                     .step=${this._volumeStep}
-                    .value=${stateObj.attributes.volume_level! * 100}
+                    .value=${volumeValue}
                     @input=${this._handleVolumeInput}
                     @change=${this._handleVolumeChange}
                   >
@@ -463,6 +469,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     ) {
       this._newMediaExpected = false;
     }
+    if (changedProps.has("hass")) {
+      this._updateVolumeValueFromState(this._stateObj);
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -481,7 +490,12 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
     const stateObj = this._stateObj;
 
+    if (this.entityId === BROWSER_PLAYER) {
+      this._updateVolumeValueFromState(stateObj);
+    }
+
     this._updateProgressBar();
+    this._syncVolumeSlider();
 
     if (this._showProgressBar && stateObj?.state === "playing") {
       this._progressInterval = startMediaProgressInterval(
@@ -569,6 +583,28 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
   }
 
+  private _updateVolumeValueFromState(stateObj?: MediaPlayerEntity): void {
+    if (!stateObj) {
+      return;
+    }
+    const volumeLevel = stateObj.attributes.volume_level;
+    if (typeof volumeLevel !== "number" || !Number.isFinite(volumeLevel)) {
+      return;
+    }
+    this._volumeValue = Math.round(volumeLevel * 100);
+  }
+
+  private _syncVolumeSlider(): void {
+    if (
+      !this._volumeSlider ||
+      this._volumeTouchDragging ||
+      this._volumeDragging
+    ) {
+      return;
+    }
+    this._volumeSlider.value = this._volumeValue;
+  }
+
   private _handleControlClick(e: MouseEvent): void {
     const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
 
@@ -619,12 +655,16 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   private _handleVolumeInput(ev: Event) {
     ev.stopPropagation();
     const value = Number((ev.target as HaSlider).value);
+    this._volumeDragging = true;
+    this._volumeValue = value;
     this._debouncedVolumeSet(value);
   }
 
   private async _handleVolumeChange(ev: Event) {
     ev.stopPropagation();
     const value = Number((ev.target as HaSlider).value);
+    this._volumeDragging = false;
+    this._volumeValue = value;
     this._setVolume(value);
   }
 
@@ -659,6 +699,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     if (this._volumeSlider) {
       this._volumeSlider.value = value;
     }
+    this._volumeValue = value;
   }
 
   private _handleVolumeTouchStart(ev: TouchEvent) {
@@ -727,12 +768,14 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     this._volumeTouchDragging = false;
+    this._volumeDragging = false;
     this._hideVolumeTooltip();
   }
 
   private _handleVolumeTouchCancel() {
     this._volumeTouchDragging = false;
     this._volumeTouchScrolling = false;
+    this._volumeDragging = false;
     this._updateVolumeSlider(this._volumeTouchStartValue);
     this._hideVolumeTooltip();
   }
@@ -844,7 +887,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       width: 220px;
       max-width: 220px;
       overflow: visible;
-      padding: 15px 10px;
+      padding: 15px 15px;
     }
 
     .volume-slider-container {
