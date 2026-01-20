@@ -37,6 +37,12 @@ export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
   labels: true,
 } as const;
 
+// Always English to format lists in the prompt
+const PROMPT_LIST_FORMAT = new Intl.ListFormat("en", {
+  style: "long",
+  type: "conjunction",
+});
+
 /**
  * Generates an AI task for suggesting metadata based on their configuration.
  *
@@ -133,19 +139,16 @@ export async function generateMetadataSuggestionTask<T>(
     include.floor ? "a floor" : null,
   ].filter((entry): entry is string => entry !== null);
 
-  const categoryLabelText: string[] = [];
-  if (include.categories) {
-    categoryLabelText.push("category");
-  }
-  if (include.labels) {
-    categoryLabelText.push("labels");
-  }
-  if (include.floor) {
-    categoryLabelText.push("floor");
-  }
+  const categoryLabels: string[] = [
+    include.categories ? "category" : null,
+    include.labels ? "labels" : null,
+    include.floor ? "floor" : null,
+  ].filter((entry): entry is string => entry !== null);
+
+  const categoryLabelsText = PROMPT_LIST_FORMAT.format(categoryLabels);
 
   const requestedPartsText = requestedParts.length
-    ? requestedParts.join(", ").replace(/, ([^,]*)$/, ", and $1")
+    ? PROMPT_LIST_FORMAT.format(requestedParts)
     : "suggestions";
 
   return {
@@ -167,8 +170,8 @@ export async function generateMetadataSuggestionTask<T>(
                 : []),
               ...(include.categories || include.labels || include.floor
                 ? [
-                    `Suggest ${categoryLabelText.join(" and ")} if relevant to the ${domain}'s purpose.`,
-                    `Only suggest ${categoryLabelText.join(" and ")} that are already used by existing ${domain}s.`,
+                    `Suggest ${categoryLabelsText} if relevant to the ${domain}'s purpose.`,
+                    `Only suggest ${categoryLabelsText} that are already used by existing ${domain}s.`,
                   ]
                 : []),
             ]
