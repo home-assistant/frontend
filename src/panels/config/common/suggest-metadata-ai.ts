@@ -115,13 +115,12 @@ function buildMetadataInspirations(
 }
 
 /**
- * Generates an AI task for suggesting metadata
- * for automations or scripts based on their configuration.
+ * Generates an AI task for suggesting metadata based on their configuration.
  *
  * @param connection - Home Assistant connection
  * @param states - Current state objects
  * @param language - User's language preference
- * @param domain - The domain to suggest metadata for (automation, script)
+ * @param domain - The domain to suggest metadata for
  * @param config - The configuration to suggest metadata for
  * @param include - The metadata fields to include in the suggestion
  * @returns Promise resolving to the AI task structure
@@ -243,7 +242,7 @@ ${dump(config)}
 
 /**
  * Processes the result of an AI task for suggesting metadata
- * for automations or scripts based on their configuration.
+ * based on their configuration.
  *
  * @param connection - Home Assistant connection
  * @param domain - The domain of the ${domain}
