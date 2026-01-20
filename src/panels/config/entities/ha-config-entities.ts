@@ -183,8 +183,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   // including entities without unique id
   @state() private _exposedEntities?: Record<string, ExposeEntitySettings>;
 
-  private _hassLoaded = false;
-
   @state()
   @storage({
     storage: "sessionStorage",
@@ -1169,6 +1167,7 @@ ${
 
   protected firstUpdated() {
     this._setFiltersFromUrl();
+    this._fetchExposedEntities();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
@@ -1257,17 +1256,12 @@ ${
       return;
     }
 
-    if (changedProps.has("hass") && !this._hassLoaded && this.hass) {
-      this._hassLoaded = true;
-      this._fetchExposedEntities();
-    }
-
     if (
       (changedProps.has("hass") &&
         (!oldHass || oldHass.states !== this.hass.states)) ||
       changedProps.has("_entities") ||
       changedProps.has("_entitySources") ||
-      changedProps.has("_entitySources")
+      changedProps.has("_exposedEntities")
     ) {
       // represent all entities without unique id
       // (entities present in this.hass.states but not in fullEntitiesContext)
