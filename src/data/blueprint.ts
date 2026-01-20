@@ -242,3 +242,24 @@ export function isValidBlueprint(
 ): blueprint is Blueprint {
   return !("error" in blueprint);
 }
+
+export const DefaultAutomationBlueprint: AutomationBlueprint = {
+  metadata: {
+    name: "",
+    domain: "automation",
+    input: {},
+  },
+  triggers: [],
+  conditions: [],
+  actions: [],
+};
+
+export const DefaultScriptBlueprint: ScriptBlueprint = {
+  metadata: {
+    name: "",
+    domain: "script",
+    input: {},
+  },
+  alias: "",
+  sequence: [],
+};

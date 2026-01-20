@@ -6,27 +6,17 @@ import type {
   Blueprint,
   BlueprintDomain,
 } from "../../../data/blueprint";
+import { DefaultAutomationBlueprint } from "../../../data/blueprint";
 import "../../config/automation/manual-automation-editor";
 
 @customElement("ha-blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
   @state() protected _blueprint: AutomationBlueprint | undefined;
 
-  public static defaultConfig: Blueprint = {
-    metadata: {
-      name: "",
-      domain: "automation",
-      input: {},
-    },
-    triggers: [],
-    conditions: [],
-    actions: [],
-  };
-
   protected _domain: BlueprintDomain = "automation";
 
   protected getDefaultBlueprint(): Blueprint {
-    return HaBlueprintAutomationEditor.defaultConfig;
+    return DefaultAutomationBlueprint;
   }
 
   protected normalizeBlueprint(config: Partial<Blueprint>): Blueprint {

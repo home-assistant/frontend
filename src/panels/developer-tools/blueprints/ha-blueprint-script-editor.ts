@@ -6,26 +6,17 @@ import type {
   BlueprintDomain,
   ScriptBlueprint,
 } from "../../../data/blueprint";
+import { DefaultScriptBlueprint } from "../../../data/blueprint";
 import "../../config/script/manual-script-editor";
 
 @customElement("ha-blueprint-script-editor")
 export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
   @state() protected _blueprint: ScriptBlueprint | undefined;
 
-  public static defaultConfig: Blueprint = {
-    metadata: {
-      name: "",
-      domain: "script",
-      input: {},
-    },
-    alias: "",
-    sequence: [],
-  };
-
   protected _domain: BlueprintDomain = "script";
 
   protected getDefaultBlueprint(): Blueprint {
-    return HaBlueprintScriptEditor.defaultConfig;
+    return DefaultScriptBlueprint;
   }
 
   public normalizeBlueprint(config: Partial<Blueprint>): Blueprint {
