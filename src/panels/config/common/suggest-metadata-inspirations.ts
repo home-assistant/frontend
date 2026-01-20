@@ -14,7 +14,7 @@ export const buildEntityMetadataInspirations = async (
   states: HomeAssistant["states"],
   domain: MetadataSuggestionDomain
 ): Promise<string[]> => {
-  const [categoryMap, entities, labelMap] = await Promise.all([
+  const [categories, entities, labels] = await Promise.all([
     fetchCategories(connection, domain),
     fetchEntities(connection),
     fetchLabels(connection),
@@ -37,13 +37,13 @@ export const buildEntityMetadataInspirations = async (
     let inspiration = `- ${entity.attributes.friendly_name}`;
 
     const category = entry.categories[domain];
-    if (category && categoryMap[category]) {
-      inspiration += ` (category: ${categoryMap[category]})`;
+    if (category && categories[category]) {
+      inspiration += ` (category: ${categories[category]})`;
     }
 
     if (entry.labels.length) {
       const labelNames = entry.labels
-        .map((labelId) => labelMap[labelId])
+        .map((labelId) => labels[labelId])
         .filter(Boolean);
       if (labelNames.length) {
         inspiration += ` (labels: ${labelNames.join(", ")})`;
