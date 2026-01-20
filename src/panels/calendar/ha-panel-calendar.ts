@@ -18,6 +18,7 @@ import "../../components/ha-list";
 import "../../components/ha-list-item";
 import type { HaListItem } from "../../components/ha-list-item";
 import "../../components/ha-menu-button";
+import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
@@ -113,6 +114,24 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    if (!this._entityRegistry) {
+      return html`
+        <ha-two-pane-top-app-bar-fixed .narrow=${this.narrow}>
+          <ha-menu-button
+            slot="navigationIcon"
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-menu-button>
+          <div slot="title">
+            ${this.hass.localize("ui.components.calendar.my_calendars")}
+          </div>
+          <div class="loading">
+            <ha-spinner></ha-spinner>
+          </div>
+        </ha-two-pane-top-app-bar-fixed>
+      `;
+    }
+
     const calendarItems = this._calendars.map(
       (selCal) => html`
         <ha-check-list-item
@@ -338,6 +357,13 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         :host([mobile]) ha-button-menu {
           --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
             var(--mdc-shape-medium);
+        }
+        .loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: var(--ha-space-8);
+          min-height: 400px;
         }
       `,
     ];

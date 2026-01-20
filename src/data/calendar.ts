@@ -145,7 +145,6 @@ export const getCalendars = (
   entityRegistry?: EntityRegistryEntry[]
 ): Calendar[] => {
   const computedStyles = getComputedStyle(element);
-  // Create a map for quick lookup of entity options by entity_id
   const entityOptionsMap = new Map(
     entityRegistry?.map((entry) => [entry.entity_id, entry.options]) ?? []
   );
@@ -159,7 +158,6 @@ export const getCalendars = (
     .sort()
     .map((eid, idx) => {
       const stateObj = hass.states[eid];
-      // Use color from entity registry options if available, otherwise fall back to index-based color
       const entityColor = entityOptionsMap.get(eid)?.calendar?.color;
       const backgroundColor = entityColor
         ? computeCssColor(entityColor)
