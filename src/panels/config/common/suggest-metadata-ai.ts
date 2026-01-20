@@ -258,7 +258,7 @@ export async function processMetadataSuggestion(
   connection: HomeAssistant["connection"],
   domain: MetadataSuggestionDomain,
   result: GenDataTaskResult<MetadataSuggestionResult>,
-  include: MetadataSuggestionInclude
+  include = SUGGESTION_INCLUDE_ALL
 ): Promise<MetadataSuggestionResult> {
   const [categories, labels] = await Promise.all([
     include.categories
