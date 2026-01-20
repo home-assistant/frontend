@@ -6,6 +6,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { titleCase } from "../common/string/title-case";
+import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { getPanelIcon, getPanelTitle } from "../data/panel";
 import { findRelated, type RelatedResult } from "../data/search";
@@ -14,6 +15,7 @@ import { multiTermSortedSearch } from "../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { ActionRelatedContext } from "../panels/lovelace/components/hui-action-editor";
 import "./ha-generic-picker";
+import "./ha-domain-icon";
 import "./ha-icon";
 import {
   DEFAULT_SEARCH_KEYS,
@@ -24,6 +26,7 @@ type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
 
 interface NavigationItem extends PickerComboBoxItem {
   group: NavigationGroup;
+  domain?: string;
 }
 
 @customElement("ha-navigation-picker")
@@ -49,6 +52,8 @@ export class HaNavigationPicker extends LitElement {
   }
 
   private _navigationItems: NavigationItem[] = [];
+
+  private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   private _navigationGroups: Record<NavigationGroup, NavigationItem[]> = {
     related: [],
@@ -96,6 +101,7 @@ export class HaNavigationPicker extends LitElement {
         .required=${this.required}
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
+        .rowRenderer=${this._rowRenderer}
         .sections=${sections}
         .customValueLabel=${this.hass.localize(
           "ui.components.navigation-picker.add_custom_path"
@@ -109,15 +115,55 @@ export class HaNavigationPicker extends LitElement {
   private _valueRenderer = (itemId: string) => {
     const item = this._navigationItems.find((navItem) => navItem.id === itemId);
     return html`
-      ${item?.icon
-        ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-        : nothing}
+      ${item?.domain
+        ? html`
+            <ha-domain-icon
+              slot="start"
+              .hass=${this.hass}
+              .domain=${item.domain}
+              brand-fallback
+            ></ha-domain-icon>
+          `
+        : item?.icon
+          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+          : item?.icon_path
+            ? html`<ha-svg-icon
+                slot="start"
+                .path=${item.icon_path}
+              ></ha-svg-icon>`
+            : nothing}
       <span slot="headline">${item?.primary || itemId}</span>
       ${item?.primary
         ? html`<span slot="supporting-text">${itemId}</span>`
         : nothing}
     `;
   };
+
+  private _rowRenderer = (item: NavigationItem) => html`
+    <ha-combo-box-item type="button" compact>
+      ${item.domain
+        ? html`
+            <ha-domain-icon
+              slot="start"
+              .hass=${this.hass}
+              .domain=${item.domain}
+              brand-fallback
+            ></ha-domain-icon>
+          `
+        : item.icon
+          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+          : item.icon_path
+            ? html`<ha-svg-icon
+                slot="start"
+                .path=${item.icon_path}
+              ></ha-svg-icon>`
+            : nothing}
+      <span slot="headline">${item.primary}</span>
+      ${item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing}
+    </ha-combo-box-item>
+  `;
 
   private _fuseIndexes = {
     related: memoizeOne((items: NavigationItem[]) =>
@@ -192,6 +238,7 @@ export class HaNavigationPicker extends LitElement {
     );
 
   private async _loadNavigationItems() {
+    await this._loadConfigEntries();
     const panels = Object.entries(this.hass!.panels).map(([id, panel]) => ({
       id,
       ...panel,
@@ -329,6 +376,9 @@ export class HaNavigationPicker extends LitElement {
       const device = this.hass.devices[deviceId];
       const primary = device?.name_by_user || device?.name || deviceId;
       const path = `/config/devices/device/${deviceId}`;
+      const domain = device?.primary_config_entry
+        ? this._configEntryLookup[device.primary_config_entry]?.domain
+        : undefined;
       relatedItems.push({
         id: path,
         primary,
@@ -341,6 +391,7 @@ export class HaNavigationPicker extends LitElement {
           .filter(Boolean)
           .join("_"),
         group: "related",
+        domain,
       });
     }
 
@@ -374,6 +425,22 @@ export class HaNavigationPicker extends LitElement {
       ...this._navigationGroups.views,
       ...this._navigationGroups.other_routes,
     ];
+  }
+
+  private async _loadConfigEntries() {
+    if (Object.keys(this._configEntryLookup).length) {
+      return;
+    }
+
+    try {
+      const configEntries = await getConfigEntries(this.hass);
+      this._configEntryLookup = Object.fromEntries(
+        configEntries.map((entry) => [entry.entry_id, entry])
+      );
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching config entries for navigation picker", err);
+    }
   }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
