@@ -285,9 +285,11 @@ class DialogAreaDetail
       SUGGESTION_CONFIG
     );
 
-    this._name = processed.name;
-    if (this._error && this._name.trim()) {
-      this._error = undefined;
+    if (!this._params?.entry) {
+      this._name = processed.name;
+      if (this._error && this._name.trim()) {
+        this._error = undefined;
+      }
     }
 
     if (processed.labels?.length) {
