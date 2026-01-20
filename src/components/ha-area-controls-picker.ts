@@ -14,7 +14,7 @@ import {
   AREA_CONTROLS_BUTTONS,
   getAreaControlEntities,
   type AreaControlDomain,
-} from "../data/area_controls";
+} from "../data/area/area_controls";
 import type { HomeAssistant } from "../types";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-combo-box-item";

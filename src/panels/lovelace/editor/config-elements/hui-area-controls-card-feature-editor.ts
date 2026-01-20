@@ -18,7 +18,7 @@ import type { HomeAssistant } from "../../../../types";
 import {
   getAreaControlEntities,
   MAX_DEFAULT_AREA_CONTROLS,
-} from "../../../../data/area_controls";
+} from "../../../../data/area/area_controls";
 import {
   AREA_CONTROL_DOMAINS,
   type AreaControl,

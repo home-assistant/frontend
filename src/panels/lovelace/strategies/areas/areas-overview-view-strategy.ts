@@ -1,7 +1,7 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
-import { getAreaControlEntities } from "../../../../data/area_controls";
+import { getAreaControlEntities } from "../../../../data/area/area_controls";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";

@@ -1,5 +1,5 @@
-import { generateEntityFilter } from "../common/entity/entity_filter";
-import type { HomeAssistant } from "../types";
+import { generateEntityFilter } from "../../common/entity/entity_filter";
+import type { HomeAssistant } from "../../types";
 
 export type AreaControlDomain =
   | "light"

@@ -22,7 +22,7 @@ import {
   AREA_CONTROLS_BUTTONS,
   getAreaControlEntities,
   MAX_DEFAULT_AREA_CONTROLS,
-} from "../../../data/area_controls";
+} from "../../../data/area/area_controls";
 import { forwardHaptic } from "../../../data/haptics";
 import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
