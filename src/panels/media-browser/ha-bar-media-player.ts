@@ -671,6 +671,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       : 0;
     this._volumeTouchDragging = false;
     this._volumeTouchScrolling = false;
+    this._showVolumeTooltip();
   }
 
   private _handleVolumeTouchMove(ev: TouchEvent) {
@@ -703,6 +704,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   private _handleVolumeTouchEnd(ev: TouchEvent) {
     if (this._volumeTouchScrolling) {
       this._volumeTouchScrolling = false;
+      this._hideVolumeTooltip();
       return;
     }
 
@@ -725,12 +727,24 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     this._volumeTouchDragging = false;
+    this._hideVolumeTooltip();
   }
 
   private _handleVolumeTouchCancel() {
     this._volumeTouchDragging = false;
     this._volumeTouchScrolling = false;
     this._updateVolumeSlider(this._volumeTouchStartValue);
+    this._hideVolumeTooltip();
+  }
+
+  private _showVolumeTooltip() {
+    const slider = this._volumeSlider as any;
+    slider?.showTooltip?.();
+  }
+
+  private _hideVolumeTooltip() {
+    const slider = this._volumeSlider as any;
+    slider?.hideTooltip?.();
   }
 
   static styles = css`
