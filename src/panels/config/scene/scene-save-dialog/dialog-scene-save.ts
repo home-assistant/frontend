@@ -33,6 +33,8 @@ import {
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
+import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
+import type { SceneConfig } from "../../../../data/scene";
 
 const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
   name: true,
@@ -282,12 +284,16 @@ class DialogSceneSave extends LitElement {
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask(
+    generateMetadataSuggestionTask<SceneConfig>(
       this.hass.connection,
-      this.hass.states,
       this.hass.language,
       "scene",
       this._params.config,
+      await buildEntityMetadataInspirations(
+        this.hass.connection,
+        this.hass.states,
+        "scene"
+      ),
       SUGGESTION_CONFIG
     );
 

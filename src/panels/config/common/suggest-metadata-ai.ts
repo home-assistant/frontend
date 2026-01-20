@@ -1,16 +1,12 @@
 import { dump } from "js-yaml";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { subscribeOne } from "../../../common/util/subscribe-one";
 import type { AITaskStructure, GenDataTaskResult } from "../../../data/ai_task";
-import { fetchCategoryRegistry } from "../../../data/category_registry";
-import {
-  subscribeEntityRegistry,
-  type EntityRegistryEntry,
-} from "../../../data/entity/entity_registry";
-import { subscribeLabelRegistry } from "../../../data/label/label_registry";
-import { subscribeFloorRegistry } from "../../../data/ws-floor_registry";
 import type { HomeAssistant } from "../../../types";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
+import {
+  fetchCategories,
+  fetchFloors,
+  fetchLabels,
+} from "./suggest-metadata-helpers";
 
 export interface MetadataSuggestionResult {
   name?: string;
@@ -34,11 +30,6 @@ export interface MetadataSuggestionInclude {
   floor?: boolean;
 }
 
-type Categories = Record<string, string>;
-type Entities = Record<string, EntityRegistryEntry>;
-type Labels = Record<string, string>;
-type Floors = Record<string, string>;
-
 export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
   name: true,
   description: true,
@@ -46,128 +37,31 @@ export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
   labels: true,
 } as const;
 
-const tryCatchEmptyObject = <T>(promise: Promise<T>): Promise<T> =>
-  promise.catch((err) => {
-    // eslint-disable-next-line no-console
-    console.error("Error fetching data for suggestion: ", err);
-    return {} as T;
-  });
-
-const fetchCategories = (
-  connection: HomeAssistant["connection"],
-  domain: MetadataSuggestionDomain
-): Promise<Categories> =>
-  tryCatchEmptyObject<Categories>(
-    fetchCategoryRegistry(connection, domain).then((cats) =>
-      Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
-    )
-  );
-
-const fetchEntities = (
-  connection: HomeAssistant["connection"]
-): Promise<Entities> =>
-  tryCatchEmptyObject<Entities>(
-    subscribeOne(connection, subscribeEntityRegistry).then((ents) =>
-      Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
-    )
-  );
-
-const fetchLabels = (
-  connection: HomeAssistant["connection"]
-): Promise<Labels> =>
-  tryCatchEmptyObject<Labels>(
-    subscribeOne(connection, subscribeLabelRegistry).then((labs) =>
-      Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
-    )
-  );
-
-const fetchFloors = (
-  connection: HomeAssistant["connection"]
-): Promise<Floors> =>
-  tryCatchEmptyObject<Floors>(
-    subscribeOne(connection, subscribeFloorRegistry).then((floors) =>
-      Object.fromEntries(floors.map((floor) => [floor.floor_id, floor.name]))
-    )
-  );
-
-function buildMetadataInspirations(
-  domain: MetadataSuggestionDomain,
-  states: HomeAssistant["states"],
-  entities: Entities,
-  categories?: Categories,
-  labels?: Labels
-): string[] {
-  const inspirations: string[] = [];
-
-  for (const entityId of Object.keys(entities)) {
-    const entityEntry = entities[entityId];
-    if (!entityEntry || computeDomain(entityId) !== domain) {
-      continue;
-    }
-
-    const entity = states[entityId];
-    if (
-      !entity ||
-      entity.attributes.restored ||
-      !entity.attributes.friendly_name
-    ) {
-      continue;
-    }
-
-    let inspiration = `- ${entity.attributes.friendly_name}`;
-
-    // Get the category for this domain
-    if (categories && categories[entityEntry.categories[domain]]) {
-      inspiration += ` (category: ${categories[entityEntry.categories[domain]]})`;
-    }
-
-    if (labels && entityEntry.labels.length) {
-      inspiration += ` (labels: ${entityEntry.labels
-        .map((label) => labels[label])
-        .join(", ")})`;
-    }
-
-    inspirations.push(inspiration);
-  }
-
-  return inspirations;
-}
-
 /**
  * Generates an AI task for suggesting metadata based on their configuration.
  *
  * @param connection - Home Assistant connection
- * @param states - Current state objects
  * @param language - User's language preference
  * @param domain - The domain to suggest metadata for
  * @param config - The configuration to suggest metadata for
+ * @param inspirations - Existing entries to use as inspiration
  * @param include - The metadata fields to include in the suggestion
  * @returns Promise resolving to the AI task structure
  */
 export async function generateMetadataSuggestionTask<T>(
   connection: HomeAssistant["connection"],
-  states: HomeAssistant["states"],
   language: HomeAssistant["language"],
   domain: MetadataSuggestionDomain,
   config: T,
+  inspirations: string[] = [],
   include = SUGGESTION_INCLUDE_ALL
 ): Promise<SuggestWithAIGenerateTask> {
-  const [categories, entities, labels, floors] = await Promise.all([
+  const [categories, floors] = await Promise.all([
     include.categories
       ? fetchCategories(connection, domain)
       : Promise.resolve(undefined),
-    fetchEntities(connection),
-    include.labels ? fetchLabels(connection) : Promise.resolve(undefined),
     include.floor ? fetchFloors(connection) : Promise.resolve(undefined),
   ]);
-
-  const inspirations = buildMetadataInspirations(
-    domain,
-    states,
-    entities,
-    categories,
-    labels
-  );
 
   const structure: AITaskStructure = {
     ...(include.name && {
