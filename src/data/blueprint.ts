@@ -36,9 +36,7 @@ import {
   mdiTimer,
   mdiToggleSwitch,
 } from "@mdi/js";
-import type { Schema } from "js-yaml";
 import yaml from "js-yaml";
-import { createContext } from "@lit/context";
 import type { HomeAssistant } from "../types";
 import type { AutomationClipboard, ManualAutomationConfig } from "./automation";
 import type { ManualScriptConfig } from "./script";
@@ -255,5 +253,3 @@ export const INPUT_ICONS = {
 
 const inputTag = new yaml.Type("!input", { kind: "scalar" });
 export const BlueprintYamlSchema = yaml.DEFAULT_SCHEMA.extend([inputTag]);
-
-export const yamlSchemaContext = createContext<Schema>(Symbol("yaml-schema"));

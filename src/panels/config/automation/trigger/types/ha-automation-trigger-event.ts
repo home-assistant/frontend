@@ -1,8 +1,5 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { consume } from "@lit/context";
-import type { Schema } from "js-yaml";
-import { DEFAULT_SCHEMA } from "js-yaml";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-yaml-editor";
@@ -11,7 +8,6 @@ import type { EventTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
-import { yamlSchemaContext } from "../../../../../data/blueprint";
 
 @customElement("ha-automation-trigger-event")
 export class HaEventTrigger extends LitElement implements TriggerElement {
@@ -20,9 +16,6 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public trigger!: EventTrigger;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @consume({ context: yamlSchemaContext })
-  private _yamlSchema?: Schema;
 
   public static get defaultConfig(): EventTrigger {
     return { trigger: "event", event_type: "" };
@@ -48,7 +41,6 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         .name=${"event_data"}
         .readOnly=${this.disabled}
         .defaultValue=${event_data}
-        .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
       <br />
