@@ -260,7 +260,14 @@ class DialogAreaDetail
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask(
+    generateMetadataSuggestionTask<{
+      name: string;
+      aliases: string[];
+      labels: string[];
+      floor: string | null;
+      temperature_entity: string | null;
+      humidity_entity: string | null;
+    }>(
       this.hass.connection,
       this.hass.states,
       this.hass.language,
@@ -275,10 +282,12 @@ class DialogAreaDetail
           : [],
         floor: this._floor ? this.hass.floors?.[this._floor]?.name : null,
         temperature_entity: this._temperatureEntity
-          ? this.hass.states[this._temperatureEntity]?.attributes.friendly_name
+          ? (this.hass.states[this._temperatureEntity]?.attributes
+              .friendly_name ?? null)
           : null,
         humidity_entity: this._humidityEntity
-          ? this.hass.states[this._humidityEntity]?.attributes.friendly_name
+          ? (this.hass.states[this._humidityEntity]?.attributes.friendly_name ??
+            null)
           : null,
       },
       SUGGESTION_CONFIG
