@@ -174,6 +174,7 @@ class MoreInfoMediaPlayer extends LitElement {
                     @touchmove=${this._handleVolumeTouchMove}
                     @touchend=${this._handleVolumeTouchEnd}
                     @touchcancel=${this._handleVolumeTouchCancel}
+                    @wheel=${this._handleVolumeWheel}
                   >
                     <ha-slider
                       class="volume-slider"
@@ -836,6 +837,20 @@ class MoreInfoMediaPlayer extends LitElement {
     this._volumeTouchScrolling = false;
     this._updateVolumeSlider(this._volumeTouchStartValue);
     this._hideVolumeTooltip();
+  }
+
+  private _handleVolumeWheel(ev: WheelEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    const direction = ev.deltaY > 0 ? -1 : 1;
+    const currentValue = this._volumeSlider
+      ? Number(this._volumeSlider.value)
+      : 0;
+    const newValue = this._roundVolumeValue(
+      currentValue + direction * this._volumeStep
+    );
+    this._updateVolumeSlider(newValue);
+    this._setVolume(newValue);
   }
 
   private _showVolumeTooltip() {
