@@ -510,16 +510,16 @@ class DialogAreaDetail
         ha-picture-upload,
         ha-expansion-panel {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .content {
-          padding: 12px;
+          padding: var(--ha-space-3);
         }
         .description {
-          margin: 0 0 16px 0;
+          margin: 0 0 var(--ha-space-4) 0;
         }
         ha-suggest-with-ai-button {
-          margin: 8px 16px;
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
       `,
     ];

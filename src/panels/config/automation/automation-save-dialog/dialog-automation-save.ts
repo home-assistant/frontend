@@ -437,7 +437,8 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       haStyleDialog,
       css`
         ha-wa-dialog {
-          --dialog-content-padding: 0 24px 24px 24px;
+          --dialog-content-padding: 0 var(--ha-space-6) var(--ha-space-6)
+            var(--ha-space-6);
         }
 
         ha-textfield,
@@ -453,15 +454,15 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         ha-labels-picker,
         ha-area-picker,
         ha-chip-set:has(> ha-assist-chip) {
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
         ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         ha-suggest-with-ai-button {
-          margin: 8px 16px;
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
       `,
     ];
