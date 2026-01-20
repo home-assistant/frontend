@@ -22,6 +22,7 @@ import type {
 import {
   saveBlueprint,
   fetchBlueprints,
+  isValidBlueprint,
   BlueprintYamlSchema,
 } from "../../../data/blueprint";
 import "./ha-blueprint-editor";
@@ -57,9 +58,10 @@ class HaPanelDevBlueprints extends LitElement {
   @state() private _sidebarConfig?: SidebarConfig;
 
   private validBlueprints = memoizeOne(
-    (x: Record<BlueprintDomain, Blueprints>) => Object.values(x)
-      .flatMap((b) => Object.values(b))
-      .filter((b) => !("error" in b)) as Blueprint[]
+    (x: Record<BlueprintDomain, Blueprints>) =>
+      Object.values(x)
+        .flatMap((b) => Object.values(b))
+        .filter((b) => isValidBlueprint(b))
   );
 
   protected firstUpdated(changedProps) {
@@ -91,7 +93,10 @@ class HaPanelDevBlueprints extends LitElement {
   }
 
   private _setSelectedBlueprint(blueprint: Blueprint, dirty: boolean) {
-    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+    if (
+      !this._selectedBlueprint ||
+      !isValidBlueprint(this._selectedBlueprint)
+    ) {
       this._selectedBlueprint = blueprint;
     } else {
       this._selectedBlueprint = {
@@ -125,7 +130,10 @@ class HaPanelDevBlueprints extends LitElement {
     ev: CustomEvent<{ value: BlueprintMetaDataEditorSchema }>
   ) {
     ev.stopPropagation();
-    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+    if (
+      !this._selectedBlueprint ||
+      !isValidBlueprint(this._selectedBlueprint)
+    ) {
       return;
     }
 
@@ -228,7 +236,10 @@ class HaPanelDevBlueprints extends LitElement {
       return;
     }
 
-    if (!this._selectedBlueprint || "error" in this._selectedBlueprint) {
+    if (
+      !this._selectedBlueprint ||
+      !isValidBlueprint(this._selectedBlueprint)
+    ) {
       await showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.developer-tools.tabs.blueprints.editor.error"
@@ -296,7 +307,7 @@ class HaPanelDevBlueprints extends LitElement {
 
     const validBlueprints = this.validBlueprints(this._blueprints);
     const blueprintMetadata =
-      !this._selectedBlueprint || "error" in this._selectedBlueprint
+      !this._selectedBlueprint || !isValidBlueprint(this._selectedBlueprint)
         ? ({
             name: "",
             description: "",
@@ -333,7 +344,7 @@ class HaPanelDevBlueprints extends LitElement {
                   "ui.panel.developer-tools.tabs.blueprints.editor.none_selected"
                 )}
               `
-            : "error" in this._selectedBlueprint
+            : !isValidBlueprint(this._selectedBlueprint)
               ? html`
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.blueprints.editor.error"

@@ -41,8 +41,6 @@ import type { HomeAssistant } from "../types";
 import type { AutomationClipboard, ManualAutomationConfig } from "./automation";
 import type { ManualScriptConfig } from "./script";
 import type { Selector } from "./selector";
-import { createSearchParam } from "../common/url/search-params";
-import { navigate } from "../common/navigate";
 
 export type BlueprintDomain = "automation" | "script";
 
@@ -183,21 +181,6 @@ export const substituteBlueprint = <
 
 let initialBlueprintEditorData: Partial<Blueprint> | undefined;
 
-export const showBlueprintEditor = (
-  domain: BlueprintDomain,
-  data?: Partial<Blueprint>,
-  expanded?: boolean
-) => {
-  initialBlueprintEditorData = data;
-
-  const params: Record<string, string> = {};
-  if (expanded) {
-    params.expanded = "1";
-  }
-
-  navigate(`/config/blueprint/edit/${domain}/new?${createSearchParam(params)}`);
-};
-
 export const getBlueprintEditorInitData = () => {
   const data = initialBlueprintEditorData;
   initialBlueprintEditorData = undefined;
@@ -253,3 +236,9 @@ export const INPUT_ICONS = {
 
 const inputTag = new yaml.Type("!input", { kind: "scalar" });
 export const BlueprintYamlSchema = yaml.DEFAULT_SCHEMA.extend([inputTag]);
+
+export function isValidBlueprint(
+  blueprint: BlueprintOrError
+): blueprint is Blueprint {
+  return !("error" in blueprint);
+}

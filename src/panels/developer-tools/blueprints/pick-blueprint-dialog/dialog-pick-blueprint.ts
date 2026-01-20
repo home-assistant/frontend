@@ -7,6 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { Blueprint, BlueprintDomain } from "../../../../data/blueprint";
+import { isValidBlueprint } from "../../../../data/blueprint";
 
 import "../../../../components/ha-md-divider";
 import "../../../../components/ha-textfield";
@@ -98,7 +99,7 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
 
     const blueprints = Object.entries(
       this._parameters.blueprints[this._pickType]
-    ).filter(([_, blueprint]) => !("error" in blueprint)) as [
+    ).filter(([_, blueprint]) => isValidBlueprint(blueprint)) as [
       string,
       Blueprint,
     ][];
