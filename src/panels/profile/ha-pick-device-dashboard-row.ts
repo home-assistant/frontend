@@ -122,8 +122,9 @@ class HaPickDeviceDashboardRow extends LitElement {
       return;
     }
     const urlPath = value === USE_SYSTEM_VALUE ? undefined : value;
-    if (urlPath === this.hass.userData?.default_panel) {
-      return;
+    const currentPanel = JSON.parse(localStorage.getItem("devicePanel") || "null");
+    if (urlPath === currentPanel) {
+        return;
     }
     localStorage.setItem("devicePanel", JSON.stringify(urlPath));
   }
