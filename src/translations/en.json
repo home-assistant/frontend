@@ -9524,6 +9524,8 @@
               "load_blueprints_error_text": "There was a problem loading blueprints. Please try again.",
               "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
               "load_error_unknown": "Error loading blueprint ({err_no}).",
+              "save_error_title": "Error saving blueprint",
+              "save_error_text": "There was a problem saving the blueprint. Please make sure there are no errors and try again.",
               "move_up": "Move up",
               "move_down": "Move down",
               "edit_ui": "UI editor",

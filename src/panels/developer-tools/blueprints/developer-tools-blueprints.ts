@@ -263,17 +263,28 @@ class HaPanelDevBlueprints extends LitElement {
       }
     }
 
-    await saveBlueprint(
-      this.hass,
-      this._selectedBlueprintDomain,
-      this._selectedBlueprintPath,
-      dump(this._selectedBlueprint),
-      this._selectedBlueprint.metadata.source_url,
-      true
-    );
-    this._originalBlueprint = this._selectedBlueprint;
-    this._originalBlueprintPath = this._selectedBlueprintPath;
-    this._dirty = false;
+    try {
+      await saveBlueprint(
+        this.hass,
+        this._selectedBlueprintDomain,
+        this._selectedBlueprintPath,
+        dump(this._selectedBlueprint),
+        this._selectedBlueprint.metadata.source_url,
+        true
+      );
+      this._originalBlueprint = this._selectedBlueprint;
+      this._originalBlueprintPath = this._selectedBlueprintPath;
+      this._dirty = false;
+    } catch {
+      await showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.save_error_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.save_error_text"
+        ),
+      });
+    }
   }
 
   private _resetBlueprint(e: Event) {
