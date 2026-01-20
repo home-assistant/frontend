@@ -39,6 +39,9 @@ class HaDomainIntegrations extends LitElement {
   @property({ attribute: false })
   public flowsInProgress?: DataEntryFlowProgress[];
 
+  @property({ attribute: false })
+  public navigateToResult = false;
+
   protected render() {
     return html`<ha-list>
       ${this.flowsInProgress?.length
@@ -283,7 +286,7 @@ class HaDomainIntegrations extends LitElement {
       {
         startFlowHandler: domain,
         showAdvanced: this.hass.userData?.showAdvanced,
-        navigateToResult: true,
+        navigateToResult: this.navigateToResult,
         manifest: await fetchIntegrationManifest(this.hass, domain),
       }
     );
@@ -300,7 +303,7 @@ class HaDomainIntegrations extends LitElement {
       root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
       {
         continueFlowId: flow.flow_id,
-        navigateToResult: true,
+        navigateToResult: this.navigateToResult,
         showAdvanced: this.hass.userData?.showAdvanced,
         manifest: await fetchIntegrationManifest(this.hass, flow.handler),
       }

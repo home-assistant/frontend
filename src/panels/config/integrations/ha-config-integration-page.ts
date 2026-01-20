@@ -870,6 +870,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     }
     showAddIntegrationDialog(this, {
       domain: this.domain,
+      navigateToResult: true,
     });
   }
 

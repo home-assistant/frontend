@@ -892,7 +892,7 @@ class HUIRoot extends LitElement {
 
   private _addDevice = async () => {
     await this.hass.loadFragmentTranslation("config");
-    showAddIntegrationDialog(this);
+    showAddIntegrationDialog(this, { navigateToResult: true });
   };
 
   private _handleCreateAutomation(): void {
