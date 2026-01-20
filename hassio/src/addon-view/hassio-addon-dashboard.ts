@@ -2,7 +2,7 @@ import {
   mdiCogs,
   mdiFileDocument,
   mdiInformationVariant,
-  mdiMathLog,
+  mdiTextBoxOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -113,7 +113,7 @@ class HassioAddonDashboard extends LitElement {
         {
           translationKey: "addon.panel.log",
           path: `/hassio/addon/${this.addon.slug}/logs`,
-          iconPath: mdiMathLog,
+          iconPath: mdiTextBoxOutline,
         }
       );
     }
