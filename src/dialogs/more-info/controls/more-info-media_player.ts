@@ -14,7 +14,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { formatDurationDigital } from "../../../common/datetime/format_duration";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import {
@@ -42,6 +41,7 @@ import {
   cleanupMediaTitle,
   computeMediaControls,
   computeMediaDescription,
+  formatMediaTime,
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
@@ -78,14 +78,7 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _formatDuration(duration: number) {
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-    const seconds = Math.floor(duration % 60);
-    return formatDurationDigital(this.hass.locale, {
-      hours,
-      minutes,
-      seconds,
-    })!;
+    return formatMediaTime(duration);
   }
 
   protected _renderVolumeControl() {
@@ -286,9 +279,8 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
     const duration = Math.max(stateObj.attributes.media_duration || 0, 0);
-    const remaining = Math.max(duration - position, 0);
-    const remainingFormatted = this._formatDuration(remaining);
     const positionFormatted = this._formatDuration(position);
+    const durationFormatted = this._formatDuration(duration);
     const primaryTitle = cleanupMediaTitle(stateObj.attributes.media_title);
     const secondaryTitle = computeMediaDescription(stateObj);
     const turnOn = controls?.find((c) => c.action === "turn_on");
@@ -352,7 +344,7 @@ class MoreInfoMediaPlayer extends LitElement {
                   >${positionFormatted}</span
                 >
                 <span class="position-time" slot="reference"
-                  >${remainingFormatted}</span
+                  >${durationFormatted}</span
                 >
               </ha-slider>
             </div>
