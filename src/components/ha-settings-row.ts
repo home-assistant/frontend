@@ -26,6 +26,7 @@ export class HaSettingsRow extends LitElement {
           <slot name="heading"></slot>
           <div class="secondary"><slot name="description"></slot></div>
         </div>
+        <slot name="suffix"></slot>
       </div>
       <div class="content"><slot></slot></div>
     `;
@@ -113,6 +114,10 @@ export class HaSettingsRow extends LitElement {
     :host([narrow]) .prefix-wrap {
       display: flex;
       align-items: center;
+    }
+    ::slotted([slot="suffix"]) {
+      margin-inline-start: auto;
+      flex-shrink: 0;
     }
     :host([slim]),
     :host([slim]) .content,

@@ -31,13 +31,13 @@ import {
 } from "../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
-import "./ha-checkbox";
 import "./ha-icon-button";
 import "./ha-markdown";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-service-section-icon";
 import "./ha-settings-row";
+import "./ha-switch";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 
@@ -448,11 +448,6 @@ export class HaServiceControl extends LitElement {
       shouldRenderServiceDataYaml &&
       serviceData?.fields.find((field) => field.key === "entity_id");
 
-    const hasOptional = Boolean(
-      !shouldRenderServiceDataYaml &&
-      serviceData?.flatFields.some((field) => showOptionalToggle(field))
-    );
-
     const targetEntities = this._getTargetedEntities(
       serviceData?.target,
       this._value
@@ -516,9 +511,6 @@ export class HaServiceControl extends LitElement {
         `}
     ${serviceData && "target" in serviceData
       ? html`<ha-settings-row .narrow=${this.narrow}>
-          ${hasOptional
-            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-            : ""}
           <span slot="heading"
             >${this.hass.localize("ui.components.service-control.target")}</span
           >
@@ -565,7 +557,6 @@ export class HaServiceControl extends LitElement {
           if (!dataField.fields) {
             return this._renderField(
               dataField,
-              hasOptional,
               domain,
               serviceName,
               targetEntities
@@ -602,7 +593,6 @@ export class HaServiceControl extends LitElement {
                 ${Object.entries(dataField.fields).map(([key, field]) =>
                   this._renderField(
                     { key, ...field },
-                    hasOptional,
                     domain,
                     serviceName,
                     targetEntities
@@ -638,7 +628,6 @@ export class HaServiceControl extends LitElement {
 
   private _renderField = (
     dataField: ExtHassService["fields"][number],
-    hasOptional: boolean,
     domain: string | undefined,
     serviceName: string | undefined,
     targetEntities: string[] | null
@@ -674,24 +663,21 @@ export class HaServiceControl extends LitElement {
         ? this.hass.services[domain][serviceName].description_placeholders
         : undefined;
 
+    const isEnabled =
+      !showOptional ||
+      this._checkedKeys.has(dataField.key) ||
+      (this._value?.data && this._value.data[dataField.key] !== undefined);
+
     return dataField.selector &&
       (!dataField.advanced ||
         this.showAdvanced ||
         (this._value?.data && this._value.data[dataField.key] !== undefined))
-      ? html`<ha-settings-row .narrow=${this.narrow}>
-          ${!showOptional
-            ? hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : ""
-            : html`<ha-checkbox
-                .key=${dataField.key}
-                .checked=${this._checkedKeys.has(dataField.key) ||
-                (this._value?.data &&
-                  this._value.data[dataField.key] !== undefined)}
-                .disabled=${this.disabled}
-                @change=${this._checkboxChanged}
-                slot="prefix"
-              ></ha-checkbox>`}
+      ? html`<ha-settings-row
+          .narrow=${this.narrow}
+          class=${showOptional ? "clickable" : ""}
+          .key=${showOptional ? dataField.key : undefined}
+          @click=${showOptional ? this._rowClicked : nothing}
+        >
           <span slot="heading"
             >${this.hass.localize(
               `component.${domain}.services.${serviceName}.fields.${dataField.key}.name`,
@@ -710,24 +696,32 @@ export class HaServiceControl extends LitElement {
               ) || dataField?.description}
             ></ha-markdown>
           </span>
-          <ha-selector
-            .context=${this._selectorContext(targetEntities)}
-            .disabled=${this.disabled ||
-            (showOptional &&
-              !this._checkedKeys.has(dataField.key) &&
-              (!this._value?.data ||
-                this._value.data[dataField.key] === undefined))}
-            .hass=${this.hass}
-            .selector=${selector}
-            .key=${dataField.key}
-            @value-changed=${this._serviceDataChanged}
-            .value=${this._value?.data
-              ? this._value.data[dataField.key]
-              : undefined}
-            .placeholder=${dataField.default}
-            .localizeValue=${this._localizeValueCallback}
-            .required=${dataField.required}
-          ></ha-selector>
+          ${showOptional
+            ? html`<ha-switch
+                slot="suffix"
+                .key=${dataField.key}
+                .checked=${isEnabled}
+                .disabled=${this.disabled}
+                @change=${this._switchChanged}
+                @click=${this._switchClicked}
+              ></ha-switch>`
+            : nothing}
+          ${isEnabled
+            ? html`<ha-selector
+                .context=${this._selectorContext(targetEntities)}
+                .disabled=${this.disabled}
+                .hass=${this.hass}
+                .selector=${selector}
+                .key=${dataField.key}
+                @value-changed=${this._serviceDataChanged}
+                .value=${this._value?.data
+                  ? this._value.data[dataField.key]
+                  : undefined}
+                .placeholder=${dataField.default}
+                .localizeValue=${this._localizeValueCallback}
+                .required=${dataField.required}
+              ></ha-selector>`
+            : nothing}
         </ha-settings-row>`
       : "";
   };
@@ -745,9 +739,32 @@ export class HaServiceControl extends LitElement {
     );
   };
 
-  private _checkboxChanged(ev) {
-    const checked = ev.currentTarget.checked;
-    const key = ev.currentTarget.key;
+  private _switchClicked(ev: Event) {
+    ev.stopPropagation();
+  }
+
+  private _rowClicked(ev: Event) {
+    if (this.disabled) {
+      return;
+    }
+    // Don't toggle if clicking on the selector content
+    const target = ev.target as HTMLElement;
+    if (target.closest("ha-selector")) {
+      return;
+    }
+    const key = (ev.currentTarget as any).key;
+    const isEnabled =
+      this._checkedKeys.has(key) ||
+      (this._value?.data && this._value.data[key] !== undefined);
+    // Simulate a switch change event
+    this._switchChanged({
+      target: { checked: !isEnabled, key },
+    } as any);
+  }
+
+  private _switchChanged(ev) {
+    const checked = ev.target.checked;
+    const key = ev.target.key;
     let data;
 
     if (checked) {
@@ -977,11 +994,13 @@ export class HaServiceControl extends LitElement {
     }
     ha-settings-row {
       --settings-row-content-width: 100%;
-      --settings-row-prefix-display: contents;
       border-top: var(
         --service-control-items-border-top,
         1px solid var(--divider-color)
       );
+    }
+    ha-settings-row.clickable {
+      cursor: pointer;
     }
     ha-service-picker,
     ha-entity-picker,
@@ -998,14 +1017,6 @@ export class HaServiceControl extends LitElement {
     }
     :host([hide-picker]) p {
       padding-top: 0;
-    }
-    .checkbox-spacer {
-      width: 32px;
-    }
-    ha-checkbox {
-      margin-left: -16px;
-      margin-inline-start: -16px;
-      margin-inline-end: initial;
     }
     .help-icon {
       color: var(--secondary-text-color);
