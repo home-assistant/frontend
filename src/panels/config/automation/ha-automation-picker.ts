@@ -88,8 +88,8 @@ import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
   serializeFilters,
-  isUsedFilter as isFilterUsed,
-  isUsedRelatedItemsFilter as isRelatedItemsFilterUsed,
+  isFilterUsed,
+  isRelatedItemsFilterUsed,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
@@ -1026,9 +1026,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
 
         // the filters below only expose the selected options (as filter.value);
-        // category filter only allows a single selected option
         // applying the filter must be done here
       } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
+        // category filter only allows a single selected option
         filteredEntityIds = filteredEntityIds.filter(
           (entityId) =>
             filter.value![0] ===
