@@ -44,7 +44,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
-import { getLabelColorBadge } from "../../../components/ha-label-picker";
+import { renderLabelColorBadge } from "../../../components/ha-label-picker";
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -110,7 +110,7 @@ export class HaConfigLabels extends LitElement {
         showNarrow: true,
         label: localize("ui.panel.config.labels.headers.color"),
         type: "icon",
-        template: (label) => getLabelColorBadge(label.color),
+        template: (label) => renderLabelColorBadge(label.color),
       },
       name: {
         title: localize("ui.panel.config.labels.headers.name"),
