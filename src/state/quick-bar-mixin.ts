@@ -11,7 +11,7 @@ import type {
   QuickBarSection,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { showQuickBar } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import type { ItemType } from "../data/search";
+import { findRelated, type RelatedResult } from "../data/search";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { Redirects } from "../panels/my/ha-panel-my";
@@ -33,8 +33,45 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
     private _quickBarContext?: QuickBarContextItem;
 
+    private _quickBarContextRelated?: RelatedResult;
+
+    private _fetchRelatedMemoized = memoizeOne(
+      (itemType: QuickBarContextItem["itemType"], itemId: string) =>
+        findRelated(this.hass!, itemType, itemId)
+    );
+
     private _clearQuickBarContext = () => {
       this._quickBarContext = undefined;
+      this._quickBarContextRelated = undefined;
+    };
+
+    private _contextMatches = (context?: QuickBarContextItem) =>
+      context?.itemType === this._quickBarContext?.itemType &&
+      context?.itemId === this._quickBarContext?.itemId;
+
+    private _prefetchQuickBarContext = async (
+      context?: QuickBarContextItem
+    ) => {
+      this._quickBarContextRelated = undefined;
+
+      if (!context) {
+        return;
+      }
+
+      try {
+        const related = await this._fetchRelatedMemoized(
+          context.itemType,
+          context.itemId
+        );
+
+        if (this._contextMatches(context)) {
+          this._quickBarContextRelated = related;
+        }
+      } catch {
+        if (this._contextMatches(context)) {
+          this._quickBarContextRelated = undefined;
+        }
+      }
     };
 
     protected firstUpdated(changedProps: PropertyValues) {
@@ -50,6 +87,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           ev.detail && "itemType" in ev.detail && "itemId" in ev.detail
             ? ev.detail
             : undefined;
+        this._prefetchQuickBarContext(this._quickBarContext);
       });
 
       mainWindow.addEventListener(
@@ -148,6 +186,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       showQuickBar(this, {
         mode,
         contextItem: this._quickBarContext,
+        related: this._quickBarContextRelated,
       });
     }
 
