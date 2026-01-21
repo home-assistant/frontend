@@ -51,7 +51,9 @@ class HaPickDeviceDashboardRow extends LitElement {
                 naturalMenuWidth
               >
                 <ha-list-item .value=${USE_SYSTEM_VALUE}>
-                  ${this.hass.localize("ui.panel.profile.device-dashboard.system")}
+                  ${this.hass.localize(
+                    "ui.panel.profile.device-dashboard.system"
+                  )}
                 </ha-list-item>
                 <ha-divider></ha-divider>
                 <ha-list-item value="lovelace" graphic="icon">
@@ -59,7 +61,9 @@ class HaPickDeviceDashboardRow extends LitElement {
                     slot="graphic"
                     .path=${mdiViewDashboard}
                   ></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.profile.device-dashboard.lovelace")}
+                  ${this.hass.localize(
+                    "ui.panel.profile.device-dashboard.lovelace"
+                  )}
                 </ha-list-item>
                 ${PANEL_DASHBOARDS.map((panel) => {
                   const panelInfo = this.hass.panels[panel] as
@@ -122,9 +126,11 @@ class HaPickDeviceDashboardRow extends LitElement {
       return;
     }
     const urlPath = value === USE_SYSTEM_VALUE ? undefined : value;
-    const currentPanel = JSON.parse(localStorage.getItem("devicePanel") || "null");
+    const currentPanel = JSON.parse(
+      localStorage.getItem("devicePanel") || "null"
+    );
     if (urlPath === currentPanel) {
-        return;
+      return;
     }
     localStorage.setItem("devicePanel", JSON.stringify(urlPath));
   }

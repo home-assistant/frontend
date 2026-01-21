@@ -52,7 +52,9 @@ class HaPickUserDashboardRow extends LitElement {
                 naturalMenuWidth
               >
                 <ha-list-item .value=${USE_SYSTEM_VALUE}>
-                  ${this.hass.localize("ui.panel.profile.user-dashboard.system")}
+                  ${this.hass.localize(
+                    "ui.panel.profile.user-dashboard.system"
+                  )}
                 </ha-list-item>
                 <ha-divider></ha-divider>
                 <ha-list-item value="lovelace" graphic="icon">
@@ -60,7 +62,9 @@ class HaPickUserDashboardRow extends LitElement {
                     slot="graphic"
                     .path=${mdiViewDashboard}
                   ></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.profile.user-dashboard.lovelace")}
+                  ${this.hass.localize(
+                    "ui.panel.profile.user-dashboard.lovelace"
+                  )}
                 </ha-list-item>
                 ${PANEL_DASHBOARDS.map((panel) => {
                   const panelInfo = this.hass.panels[panel] as
