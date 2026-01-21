@@ -351,8 +351,6 @@ export const darkColorStyles = css`
     --primary-text-color: #e1e1e1;
     --secondary-text-color: #9b9b9b;
     --disabled-text-color: #6f6f6f;
-    --app-header-text-color: #e1e1e1;
-    --app-header-background-color: #101e24;
     --switch-unchecked-button-color: #999999;
     --switch-unchecked-track-color: #9b9b9b;
     --divider-color: rgba(225, 225, 225, 0.12);
