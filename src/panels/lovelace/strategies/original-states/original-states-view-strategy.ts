@@ -71,6 +71,7 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:home-assistant",
+            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.original-states.empty_state_title"
@@ -80,13 +81,19 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
             ),
             ...(hass.user?.is_admin
               ? {
-                  action_button_text: hass.localize(
-                    "ui.panel.lovelace.strategy.original-states.empty_state_action"
-                  ),
-                  tap_action: {
-                    action: "navigate",
-                    navigation_path: "/config/integrations/dashboard",
-                  },
+                  buttons: [
+                    {
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.original-states.empty_state_action"
+                      ),
+                      appearance: "filled",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/config/integrations/dashboard",
+                      },
+                    },
+                  ],
                 }
               : {}),
           } as EmptyStateCardConfig,
