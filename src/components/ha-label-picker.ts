@@ -129,7 +129,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       ${DEFAULT_ROW_RENDERER_CONTENT(item)}
       ${item.id !== ADD_NEW_ID
         ? html`<div slot="trailing-supporting-text">
-            ${getLabelColorBadge((item as any).color)}
+            ${renderLabelColorBadge((item as any).color)}
           </div>`
         : nothing}
     </ha-combo-box-item>`;
