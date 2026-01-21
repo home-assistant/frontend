@@ -124,7 +124,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) =>
+  private _rowRenderer: RenderItemFunction<ColorComboBoxItem> = (item) =>
     html`<ha-combo-box-item type="button" compact>
       ${DEFAULT_ROW_RENDERER_CONTENT(item)}
       ${item.id !== ADD_NEW_ID
