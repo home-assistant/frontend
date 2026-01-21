@@ -14,7 +14,11 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
-import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
+import {
+  getLabels,
+  labelComboBoxKeys,
+  type ColorComboBoxItem,
+} from "../data/label/label_picker";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
