@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { titleCase } from "../common/string/title-case";
-import { floorDefaultIconPath } from "./ha-floor-icon";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { getPanelIcon, getPanelTitle } from "../data/panel";
@@ -26,9 +25,8 @@ import {
 type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
 
 const RELATED_SORT_PREFIX = {
-  floor: "0_floor",
-  area: "1_area",
-  device: "2_device",
+  area: "0_area",
+  device: "1_device",
 } as const;
 
 interface NavigationItem extends PickerComboBoxItem {
@@ -388,22 +386,9 @@ export class HaNavigationPicker extends LitElement {
 
     const relatedDeviceIds = new Set(relatedResult?.device ?? []);
     const relatedAreaIds = new Set(relatedResult?.area ?? []);
-    const relatedFloorIds = new Set(relatedResult?.floor ?? []);
-
-    const addFloorForArea = (areaId?: string | null) => {
-      if (!areaId) {
-        return;
-      }
-      const floorId = this.hass.areas[areaId]?.floor_id;
-      if (floorId) {
-        relatedFloorIds.add(floorId);
-      }
-    };
-
-    relatedAreaIds.forEach(addFloorForArea);
-    relatedDeviceIds.forEach((deviceId) => {
-      addFloorForArea(this.hass.devices[deviceId]?.area_id);
-    });
+    if (context.area_id) {
+      relatedAreaIds.add(context.area_id);
+    }
 
     const createSortingLabel = (
       prefix: string,
@@ -415,29 +400,6 @@ export class HaNavigationPicker extends LitElement {
         .join("_");
 
     const relatedItems: NavigationItem[] = [];
-    for (const floorId of relatedFloorIds) {
-      const floor = this.hass.floors[floorId];
-      const primary = floor?.name ?? floorId;
-      const path = `/config/areas?historyBack=1&floor_id=${floorId}`;
-      relatedItems.push({
-        id: path,
-        primary,
-        secondary: path,
-        icon: floor?.icon ?? undefined,
-        icon_path: floor?.icon
-          ? undefined
-          : floor
-            ? (floorDefaultIconPath(floor) ?? undefined)
-            : undefined,
-        sorting_label: createSortingLabel(
-          RELATED_SORT_PREFIX.floor,
-          primary,
-          path
-        ),
-        group: "related",
-      });
-    }
-
     for (const deviceId of relatedDeviceIds) {
       const device = this.hass.devices[deviceId];
       const primary = device?.name_by_user ?? device?.name ?? deviceId;
