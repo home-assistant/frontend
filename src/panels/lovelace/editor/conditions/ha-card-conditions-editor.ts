@@ -3,11 +3,12 @@ import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
-import "../../../../components/ha-list-item";
-import type { HaSelect } from "../../../../components/ha-select";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
@@ -27,7 +28,6 @@ import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
-import { storage } from "../../../../common/decorators/storage";
 
 const UI_CONDITION = [
   "location",
@@ -40,8 +40,6 @@ const UI_CONDITION = [
   "not",
   "or",
 ] as const satisfies readonly Condition["condition"][];
-
-export const PASTE_VALUE = "__paste__" as const;
 
 @customElement("ha-card-conditions-editor")
 export class HaCardConditionsEditor extends LitElement {
@@ -107,11 +105,7 @@ export class HaCardConditionsEditor extends LitElement {
           `
         )}
         <div>
-          <ha-button-menu
-            @action=${this._addCondition}
-            fixed
-            @closed=${stopPropagation}
-          >
+          <ha-dropdown @wa-select=${this._addCondition}>
             <ha-button slot="trigger" appearance="filled">
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -120,59 +114,57 @@ export class HaCardConditionsEditor extends LitElement {
             </ha-button>
             ${this._clipboard
               ? html`
-                  <ha-list-item .value=${PASTE_VALUE} graphic="icon">
+                  <ha-dropdown-item value="paste">
                     ${this.hass.localize(
                       "ui.panel.lovelace.editor.edit_card.paste_condition"
                     )}
                     <ha-svg-icon
-                      slot="graphic"
+                      slot="icon"
                       .path=${mdiContentPaste}
                     ></ha-svg-icon>
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `
               : nothing}
             ${UI_CONDITION.map(
               (condition) => html`
-                <ha-list-item .value=${condition} graphic="icon">
+                <ha-dropdown-item .value=${condition}>
                   ${this.hass!.localize(
                     `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
                   ) || condition}
                   <ha-svg-icon
-                    slot="graphic"
+                    slot="icon"
                     .path=${ICON_CONDITION[condition]}
                   ></ha-svg-icon>
-                </ha-list-item>
+                </ha-dropdown-item>
               `
             )}
-          </ha-button-menu>
+          </ha-dropdown>
         </div>
       </div>
     `;
   }
 
-  private _addCondition(ev: CustomEvent): void {
+  private _addCondition(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const condition = ev.detail.item.value as "paste" | Condition["condition"];
     const conditions = [...this.conditions];
 
-    const item = (ev.currentTarget as HaSelect).items[ev.detail.index];
-
-    if (item.value === PASTE_VALUE && this._clipboard) {
-      const condition = deepClone(this._clipboard);
-      conditions.push(condition);
-      fireEvent(this, "value-changed", { value: conditions });
+    if (!condition || (condition === "paste" && !this._clipboard)) {
       return;
     }
 
-    const condition = item.value as Condition["condition"];
+    if (condition === "paste") {
+      const newCondition = deepClone(this._clipboard);
+      conditions.push(newCondition);
+    } else {
+      const elClass = customElements.get(`ha-card-condition-${condition}`) as
+        | LovelaceConditionEditorConstructor
+        | undefined;
 
-    const elClass = customElements.get(`ha-card-condition-${condition}`) as
-      | LovelaceConditionEditorConstructor
-      | undefined;
+      conditions.push(
+        elClass?.defaultConfig ? { ...elClass.defaultConfig } : { condition }
+      );
+    }
 
-    conditions.push(
-      elClass?.defaultConfig
-        ? { ...elClass.defaultConfig }
-        : { condition: condition }
-    );
     this._focusLastConditionOnChange = true;
     fireEvent(this, "value-changed", { value: conditions });
   }
@@ -210,8 +202,9 @@ export class HaCardConditionsEditor extends LitElement {
           margin-top: 12px;
           scroll-margin-top: 48px;
         }
-        ha-button-menu {
-          margin-top: 12px;
+        ha-dropdown {
+          display: inline-block;
+          margin-top: var(--ha-space-3);
         }
       `,
     ];
