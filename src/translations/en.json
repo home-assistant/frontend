@@ -8480,7 +8480,7 @@
                 "title": "Title",
                 "subtitle": "Subtitle"
               },
-              "entities": "Entities",
+              "badges": "Badges",
               "entity_config": {
                 "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
                 "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
@@ -8494,6 +8494,12 @@
                   "icon": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::icon%]",
                   "state": "[%key:ui::panel::lovelace::editor::badge::entity::displayed_elements_options::state%]"
                 }
+              },
+              "button_config": {
+                "text": "Text",
+                "color": "Color",
+                "visibility": "Visibility",
+                "visibility_explanation": "The button will be shown when ALL conditions below are fulfilled. If no conditions are set, the button will always be shown."
               },
               "default_heading": "Kitchen"
             },
@@ -8772,6 +8778,11 @@
             "remove": "Remove entity",
             "form-label": "Edit entity"
           },
+          "badges": {
+            "name": "Badges",
+            "edit": "Edit badge",
+            "remove": "Remove badge"
+          },
           "features": {
             "name": "Features",
             "not_compatible": "Not compatible",
@@ -9023,6 +9034,19 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
+              }
+            }
+          },
+          "heading-badges": {
+            "add": "Add badge",
+            "no_entity": "No entity selected",
+            "entity_not_found": "Entity not found",
+            "types": {
+              "entity": {
+                "label": "Entity"
+              },
+              "button": {
+                "label": "Button"
               }
             }
           },
