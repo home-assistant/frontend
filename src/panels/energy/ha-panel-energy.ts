@@ -142,7 +142,7 @@ class PanelEnergy extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass && oldHass.localize !== this.hass.localize) {
+    if (this._lovelace && oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
     }
   }
