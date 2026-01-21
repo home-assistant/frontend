@@ -4,6 +4,18 @@ import type { PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent } from "../common/dom/fire_event";
+
+declare global {
+  interface HASSDomEvents {
+    "hass-sidebar-transition": { active: boolean };
+  }
+  interface HTMLElementEventMap {
+    "hass-sidebar-transition": HASSDomEvent<
+      HASSDomEvents["hass-sidebar-transition"]
+    >;
+  }
+}
 
 const blockingElements = (document as any).$blockingElements;
 
@@ -14,6 +26,24 @@ export class HaDrawer extends DrawerBase {
   private _mc?: HammerManager;
 
   private _rtlStyle?: HTMLElement;
+
+  private _sidebarTransitionActive = false;
+
+  private _handleDrawerTransitionStart = (ev: TransitionEvent) => {
+    if (ev.propertyName !== "width" || this._sidebarTransitionActive) {
+      return;
+    }
+    this._sidebarTransitionActive = true;
+    fireEvent(window, "hass-sidebar-transition", { active: true });
+  };
+
+  private _handleDrawerTransitionEnd = (ev: TransitionEvent) => {
+    if (ev.propertyName !== "width" || !this._sidebarTransitionActive) {
+      return;
+    }
+    this._sidebarTransitionActive = false;
+    fireEvent(window, "hass-sidebar-transition", { active: false });
+  };
 
   protected createAdapter() {
     return {
@@ -61,6 +91,38 @@ export class HaDrawer extends DrawerBase {
       this._mc.destroy();
       this._mc = undefined;
     }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.mdcRoot?.addEventListener(
+      "transitionstart",
+      this._handleDrawerTransitionStart
+    );
+    this.mdcRoot?.addEventListener(
+      "transitionend",
+      this._handleDrawerTransitionEnd
+    );
+    this.mdcRoot?.addEventListener(
+      "transitioncancel",
+      this._handleDrawerTransitionEnd
+    );
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.mdcRoot?.removeEventListener(
+      "transitionstart",
+      this._handleDrawerTransitionStart
+    );
+    this.mdcRoot?.removeEventListener(
+      "transitionend",
+      this._handleDrawerTransitionEnd
+    );
+    this.mdcRoot?.removeEventListener(
+      "transitioncancel",
+      this._handleDrawerTransitionEnd
+    );
   }
 
   private async _setupSwipe() {

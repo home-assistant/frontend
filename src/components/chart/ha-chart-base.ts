@@ -19,6 +19,7 @@ import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { themesContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
@@ -92,10 +93,16 @@ export class HaChartBase extends LitElement {
 
   private _resizeAnimationDuration?: number;
 
+  private _deferResize = false;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
       if (this.chart) {
+        if (this._deferResize) {
+          this._shouldResizeChart = true;
+          return;
+        }
         if (!this.chart.getZr().animation.isFinished()) {
           this._shouldResizeChart = true;
         } else {
@@ -181,6 +188,22 @@ export class HaChartBase extends LitElement {
         () => window.removeEventListener("keyup", handleKeyUp)
       );
     }
+
+    const handleSidebarTransition = (
+      ev: HASSDomEvent<HASSDomEvents["hass-sidebar-transition"]>
+    ) => {
+      this._deferResize = Boolean(ev.detail?.active);
+      if (!this._deferResize) {
+        this._resizeChartIfNeeded();
+      }
+    };
+    window.addEventListener("hass-sidebar-transition", handleSidebarTransition);
+    this._listeners.push(() =>
+      window.removeEventListener(
+        "hass-sidebar-transition",
+        handleSidebarTransition
+      )
+    );
   }
 
   protected firstUpdated() {
@@ -988,18 +1011,25 @@ export class HaChartBase extends LitElement {
   }
 
   private _handleChartRenderFinished = () => {
-    if (this._shouldResizeChart) {
-      this.chart?.resize({
-        animation:
-          this._reducedMotion ||
-          typeof this._resizeAnimationDuration !== "number"
-            ? undefined
-            : { duration: this._resizeAnimationDuration },
-      });
-      this._shouldResizeChart = false;
-      this._resizeAnimationDuration = undefined;
-    }
+    this._resizeChartIfNeeded();
   };
+
+  private _resizeChartIfNeeded() {
+    if (!this.chart || !this._shouldResizeChart) {
+      return;
+    }
+    if (!this.chart.getZr().animation.isFinished()) {
+      return;
+    }
+    this.chart.resize({
+      animation:
+        this._reducedMotion || typeof this._resizeAnimationDuration !== "number"
+          ? undefined
+          : { duration: this._resizeAnimationDuration },
+    });
+    this._shouldResizeChart = false;
+    this._resizeAnimationDuration = undefined;
+  }
 
   private _compareCustomLegendOptions(
     oldOptions: ECOption | undefined,
