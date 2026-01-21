@@ -94,12 +94,11 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        const isInitialLoad = this._entityRegistry === undefined;
         this._entityRegistry = entities;
         // Refresh calendars when entity registry updates (includes color changes)
         this._calendars = getCalendars(this.hass, this, this._entityRegistry);
-        // Fetch events on initial load (after entity registry is available)
-        if (isInitialLoad && this._start && this._end) {
+        // Refetch events if view dates are available (handles both initial load and color updates)
+        if (this._start && this._end) {
           this._fetchEvents(
             this._start,
             this._end,

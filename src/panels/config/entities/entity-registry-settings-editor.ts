@@ -1118,13 +1118,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
       (params.options as AlarmControlPanelEntityOptions).default_code =
         this._defaultCode;
     }
-    if (
-      domain === "calendar" &&
-      this.entry.options?.[domain]?.color !== this._calendarColor
-    ) {
-      params.options_domain = domain;
-      params.options = this.entry.options?.[domain] || {};
-      (params.options as CalendarEntityOptions).color = this._calendarColor;
+    if (domain === "calendar") {
+      const currentColor = this.entry.options?.calendar?.color ?? null;
+      const newColor = this._calendarColor ?? null;
+      if (currentColor !== newColor) {
+        params.options_domain = domain;
+        params.options = this.entry.options?.calendar || {};
+        (params.options as CalendarEntityOptions).color = this._calendarColor;
+      }
     }
     if (
       domain === "weather" &&

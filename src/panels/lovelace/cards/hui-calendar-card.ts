@@ -72,8 +72,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @state() private _entityRegistry?: EntityRegistryEntry[];
 
-  @state() private _entityRegistryLoaded = false;
-
   @state() private _eventsLoaded = false;
 
   private _startDate?: Date;
@@ -103,34 +101,20 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
-    if (changedProps.has("_config")) {
-      this._eventsLoaded = false;
-    } else if (changedProps.has("_entityRegistry") && !this._calendars.length) {
-      this._eventsLoaded = false;
-    }
-
     // Don't build calendars until entity registry is loaded
-    if (!this._entityRegistryLoaded) {
+    if (!this._entityRegistry) {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const colorChanged =
-      changedProps.has("hass") &&
-      oldHass?.entities &&
-      this.hass?.entities &&
-      this._config?.entities &&
-      this._config.entities.some(
-        (entityId) =>
-          oldHass.entities[entityId]?.icon_color !==
-          this.hass!.entities[entityId]?.icon_color
-      );
+    // Reset loading state when config changes or entity registry updates
+    if (changedProps.has("_config") || changedProps.has("_entityRegistry")) {
+      this._eventsLoaded = false;
+    }
 
     if (
       !this.hasUpdated ||
       (changedProps.has("_config") && this._config?.entities) ||
-      changedProps.has("_entityRegistry") ||
-      colorChanged
+      changedProps.has("_entityRegistry")
     ) {
       const computedStyles = getComputedStyle(this);
       const entityOptionsMap = new Map(
@@ -191,7 +175,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       this.hass.connection!,
       (entities) => {
         this._entityRegistry = entities;
-        this._entityRegistryLoaded = true;
       }
     );
   }
@@ -208,7 +191,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const loading = !this._entityRegistryLoaded || !this._eventsLoaded;
+    const loading = !this._entityRegistry || !this._eventsLoaded;
 
     const views: FullCalendarView[] = [
       "dayGridMonth",
@@ -263,10 +246,13 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       this._fetchCalendarEvents();
     }
 
-    if (this._entityRegistryLoaded && !this._calendars.length) {
-      if (!this._eventsLoaded) {
-        this._eventsLoaded = true;
-      }
+    // If no calendars configured, mark events as loaded to hide spinner
+    if (
+      this._entityRegistry &&
+      !this._calendars.length &&
+      !this._eventsLoaded
+    ) {
+      this._eventsLoaded = true;
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -304,12 +290,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       this._calendars
     );
     this._events = result.events;
+    // Wait for component update and one animation frame for FullCalendar to render
     this.updateComplete.then(() => {
-      // Wait for the update to reflect the events change, then wait a frame for FullCalendar to render
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          this._eventsLoaded = true;
-        });
+        this._eventsLoaded = true;
       });
     });
 
