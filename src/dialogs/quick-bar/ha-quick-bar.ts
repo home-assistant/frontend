@@ -53,7 +53,11 @@ import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
-import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
+import type {
+  QuickBarContextItem,
+  QuickBarParams,
+  QuickBarSection,
+} from "./show-dialog-quick-bar";
 
 const SEPARATOR = "________";
 
@@ -72,6 +76,8 @@ export class QuickBar extends LitElement {
   @state() private _opened = false;
 
   @state() private _relatedResult?: RelatedResult;
+
+  @state() private _contextItem?: QuickBarContextItem;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
@@ -95,9 +101,11 @@ export class QuickBar extends LitElement {
     this._selectedSection = params.mode;
     this._hint = params.hint;
 
+    this._contextItem = params.contextItem;
     this._relatedResult = params.related;
 
     if (!params.contextItem) {
+      this._contextItem = undefined;
       this._relatedResult = undefined;
     }
 
@@ -387,6 +395,7 @@ export class QuickBar extends LitElement {
     this._selectedSection = section as QuickBarSection | undefined;
     return this._getItemsMemoized(
       this._configEntryLookup,
+      this._contextItem,
       this._relatedResult,
       searchString,
       this._selectedSection
@@ -396,12 +405,13 @@ export class QuickBar extends LitElement {
   private _getItemsMemoized = memoizeOne(
     (
       configEntryLookup: Record<string, ConfigEntry>,
+      contextItem: QuickBarContextItem | undefined,
       relatedResult: RelatedResult | undefined,
       filter?: string,
       section?: QuickBarSection
     ) => {
       const items: (string | PickerComboBoxItem)[] = [];
-      const relatedIdSets = this._getRelatedIdSets(relatedResult);
+      const relatedIdSets = this._getRelatedIdSets(contextItem, relatedResult);
 
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
@@ -555,11 +565,29 @@ export class QuickBar extends LitElement {
     }
   );
 
-  private _getRelatedIdSets = memoizeOne((related?: RelatedResult) => ({
-    entities: new Set(related?.entity || []),
-    devices: new Set(related?.device || []),
-    areas: new Set(related?.area || []),
-  }));
+  private _getRelatedIdSets = memoizeOne(
+    (contextItem?: QuickBarContextItem, related?: RelatedResult) => {
+      const entities = new Set(related?.entity || []);
+      const devices = new Set(related?.device || []);
+      const areas = new Set(related?.area || []);
+
+      if (contextItem) {
+        switch (contextItem.itemType) {
+          case "entity":
+            entities.add(contextItem.itemId);
+            break;
+          case "device":
+            devices.add(contextItem.itemId);
+            break;
+          case "area":
+            areas.add(contextItem.itemId);
+            break;
+        }
+      }
+
+      return { entities, devices, areas };
+    }
+  );
 
   private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
     getEntities(
