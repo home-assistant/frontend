@@ -28,7 +28,7 @@ export const labelComboBoxKeys: FuseWeightedKey[] = [
   },
 ];
 
-export interface ColorComboBoxItem extends PickerComboBoxItem {
+export interface LabelComboBoxItem extends PickerComboBoxItem {
   color: string | undefined;
 }
 
@@ -45,7 +45,7 @@ export const getLabels = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   excludeLabels?: string[],
   idPrefix = ""
-): ColorComboBoxItem[] => {
+): LabelComboBoxItem[] => {
   if (!labels || labels.length === 0) {
     return [];
   }
@@ -198,7 +198,7 @@ export const getLabels = (
     );
   }
 
-  const items = outputLabels.map<ColorComboBoxItem>((label) => ({
+  const items = outputLabels.map<LabelComboBoxItem>((label) => ({
     id: `${idPrefix}${label.label_id}`,
     primary: label.name,
     secondary: label.description ?? "",
