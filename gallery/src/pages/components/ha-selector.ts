@@ -239,7 +239,7 @@ const SCHEMAS: {
         selector: { config_entry: {} },
       },
       duration: { name: "Duration", selector: { duration: {} } },
-      addon: { name: "Addon", selector: { addon: {} } },
+      addon: { name: "App", selector: { addon: {} } },
       number_box: {
         name: "Number Box",
         selector: {

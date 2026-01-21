@@ -16,7 +16,6 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
@@ -26,14 +25,18 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-spinner";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-list-item";
+import "../../../components/ha-md-menu";
+import type { HaMdMenu } from "../../../components/ha-md-menu";
+import "../../../components/ha-md-menu-item";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type {
   BackupAgent,
@@ -71,9 +74,6 @@ import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup"
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { downloadBackup } from "./helper/download_backup";
-import type { HaMdMenu } from "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu-item";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -401,22 +401,22 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         )}
       >
         <div slot="toolbar-icon">
-          <ha-button-menu>
+          <ha-dropdown
+            @wa-select=${this._handleDropdownSelect}
+            placement="bottom-end"
+          >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item
-              graphic="icon"
-              @request-selected=${this._uploadBackup}
-            >
-              <ha-svg-icon slot="graphic" .path=${mdiUpload}></ha-svg-icon>
+            <ha-dropdown-item value="upload_backup">
+              <ha-svg-icon slot="icon" .path=${mdiUpload}></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.backup.backups.menu.upload_backup"
               )}
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
 
         <div slot="selection-bar">
@@ -447,7 +447,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         <ha-filter-states
           .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
-          .value=${this._filters["ha-filter-states"]}
+          .value="${this._filters["ha-filter-states"]}q"
           .states=${this._states(this.hass.localize, isHassio)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -519,13 +519,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     return !this.config?.automatic_backups_configured;
   }
 
-  private async _uploadBackup(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _uploadBackup = async () => {
     await showUploadBackupDialog(this, {});
-  }
+  };
 
   private async _newBackup(): Promise<void> {
     const config = this.config!;
@@ -633,6 +629,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     }
     fireEvent(this, "ha-refresh-backup-info");
     this._dataTable.clearSelection();
+  }
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item.value;
+
+    if (action === "upload_backup") {
+      this._uploadBackup();
+    }
   }
 
   static get styles(): CSSResultGroup {

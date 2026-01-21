@@ -33,13 +33,13 @@ class HassioAddons extends LitElement {
           suffix
           .filter=${this._filter}
           @value-changed=${this._handleSearchChange}
-          .label=${this.supervisor.localize("dashboard.search_addons")}
+          .label=${this.supervisor.localize("dashboard.search_apps")}
         >
         </search-input>
       </div>
       <div class="content">
         ${!atLeastVersion(this.hass.config.version, 2021, 12)
-          ? html`<h1>${this.supervisor.localize("dashboard.addons")}</h1>`
+          ? html`<h1>${this.supervisor.localize("dashboard.apps")}</h1>`
           : ""}
         <div class="card-group">
           ${!this.supervisor.addon.addons.length
@@ -47,7 +47,7 @@ class HassioAddons extends LitElement {
                 <ha-card outlined>
                   <div class="card-content">
                     <button class="link" @click=${this._openStore}>
-                      ${this.supervisor.localize("dashboard.no_addons")}
+                      ${this.supervisor.localize("dashboard.no_apps")}
                     </button>
                   </div>
                 </ha-card>
@@ -67,14 +67,12 @@ class HassioAddons extends LitElement {
                           ? mdiArrowUpBoldCircle
                           : mdiPuzzle}
                         .iconTitle=${addon.state !== "started"
-                          ? this.supervisor.localize("dashboard.addon_stopped")
+                          ? this.supervisor.localize("dashboard.app_stopped")
                           : addon.update_available!
                             ? this.supervisor.localize(
-                                "dashboard.addon_new_version"
+                                "dashboard.app_new_version"
                               )
-                            : this.supervisor.localize(
-                                "dashboard.addon_running"
-                              )}
+                            : this.supervisor.localize("dashboard.app_running")}
                         .iconClass=${addon.update_available
                           ? addon.state === "started"
                             ? "update"

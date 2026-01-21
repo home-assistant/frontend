@@ -1085,6 +1085,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     }
     showAddIntegrationDialog(this, {
       domain: this._searchParms.get("domain") || undefined,
+      navigateToResult: true,
     });
   }
 
