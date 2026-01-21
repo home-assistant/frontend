@@ -66,6 +66,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         // Load title and preview_features translations for integrations with preview features
         const domains = [...new Set(features.map((f) => f.domain))];
         this.hass.loadBackendTranslation("title", domains);
+        this.hass.loadBackendTranslation("preview_features", domains);
 
         this._preview_features = features;
       }),
@@ -175,7 +176,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
     preview_feature: LabPreviewFeature
   ): TemplateResult {
     const previewFeatureId = `${preview_feature.domain}.${preview_feature.preview_feature}`;
-    
+
     const featureName = this.hass.localize(
       `component.${preview_feature.domain}.preview_features.${preview_feature.preview_feature}.name`
     );
@@ -192,7 +193,6 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
     const integrationNameWithCustomLabel = !preview_feature.is_built_in
       ? `${integrationName} • ${this.hass.localize("ui.panel.config.labs.custom_integration")}`
       : integrationName;
-
 
     const isHighlighted = this._highlightedPreviewFeature === previewFeatureId;
 
