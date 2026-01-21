@@ -189,10 +189,11 @@ export class HaChartBase extends LitElement {
       );
     }
 
-    const handleSidebarTransition = (
-      ev: HASSDomEvent<HASSDomEvents["hass-sidebar-transition"]>
-    ) => {
-      this._deferResize = Boolean(ev.detail?.active);
+    const handleSidebarTransition: EventListener = (ev) => {
+      const event = ev as HASSDomEvent<
+        HASSDomEvents["hass-sidebar-transition"]
+      >;
+      this._deferResize = Boolean(event.detail?.active);
       if (!this._deferResize) {
         this._resizeChartIfNeeded();
       }
