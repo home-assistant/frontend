@@ -72,6 +72,7 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
+import type { QuickBarContextItem } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
@@ -841,6 +842,34 @@ class HUIRoot extends LitElement {
     fireEvent(this, "config-refresh");
   }
 
+  private _setQuickBarContext(viewConfig?: LovelaceViewConfig) {
+    if (!this.lovelace || !isStrategyDashboard(this.lovelace.rawConfig)) {
+      return;
+    }
+
+    if (this.lovelace.rawConfig.strategy.type !== "home") {
+      return;
+    }
+
+    let contextItem: QuickBarContextItem = {
+      itemType: "entity",
+      itemId: "zone.home",
+    };
+
+    const viewPath = viewConfig?.path;
+    if (viewPath?.startsWith("areas-")) {
+      const areaId = viewPath.slice("areas-".length);
+      if (areaId) {
+        contextItem = {
+          itemType: "area",
+          itemId: areaId,
+        };
+      }
+    }
+
+    fireEvent(this, "hass-quick-bar-context", contextItem);
+  }
+
   private _handleReloadResources(): void {
     this.hass.callService("lovelace", "reload_resources");
     showConfirmationDialog(this, {
@@ -1212,6 +1241,8 @@ class HUIRoot extends LitElement {
       this.lovelace!.setEditMode(true);
       return;
     }
+
+    this._setQuickBarContext(viewConfig);
 
     if (!force && this._viewCache![viewIndex]) {
       view = this._viewCache![viewIndex];

@@ -11,7 +11,7 @@ import type {
   QuickBarSection,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { showQuickBar } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { findRelated, type RelatedResult } from "../data/search";
+import { findRelated, type ItemType, type RelatedResult } from "../data/search";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { Redirects } from "../panels/my/ha-panel-my";
@@ -36,7 +36,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _quickBarContextRelated?: RelatedResult;
 
     private _fetchRelatedMemoized = memoizeOne(
-      (itemType: QuickBarContextItem["itemType"], itemId: string) =>
+      (itemType: ItemType, itemId: string) =>
         findRelated(this.hass!, itemType, itemId)
     );
 
@@ -54,7 +54,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     ) => {
       this._quickBarContextRelated = undefined;
 
-      if (!context) {
+      if (!context || context.itemType === "domain") {
         return;
       }
 

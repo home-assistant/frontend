@@ -8,8 +8,10 @@ export type QuickBarSection =
   | "navigate"
   | "command";
 
+export type QuickBarContextItemType = ItemType | "domain";
+
 export interface QuickBarContextItem {
-  itemType: ItemType;
+  itemType: QuickBarContextItemType;
   itemId: string;
 }
 

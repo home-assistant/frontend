@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
@@ -573,6 +574,11 @@ export class QuickBar extends LitElement {
 
       if (contextItem) {
         switch (contextItem.itemType) {
+          case "domain":
+            this._getDomainEntities(contextItem.itemId).forEach((entityId) =>
+              entities.add(entityId)
+            );
+            break;
           case "entity":
             entities.add(contextItem.itemId);
             break;
@@ -588,6 +594,79 @@ export class QuickBar extends LitElement {
       return { entities, devices, areas };
     }
   );
+
+  private _getDomainEntities(domain: string): string[] {
+    const states = Object.values(this.hass.states);
+    if (domain === "energy") {
+      return states
+        .filter((stateObj) => {
+          if (computeDomain(stateObj.entity_id) !== "sensor") {
+            return false;
+          }
+          const deviceClass = stateObj.attributes.device_class;
+          return (
+            typeof deviceClass === "string" &&
+            ["energy", "power", "gas", "water"].includes(deviceClass)
+          );
+        })
+        .map((stateObj) => stateObj.entity_id);
+    }
+
+    if (domain === "security") {
+      const coverClasses = new Set(["door", "garage", "gate"]);
+      const binarySensorClasses = new Set([
+        "lock",
+        "door",
+        "window",
+        "garage_door",
+        "opening",
+        "carbon_monoxide",
+        "gas",
+        "moisture",
+        "safety",
+        "smoke",
+      ]);
+
+      return states
+        .filter((stateObj) => {
+          const stateDomain = computeDomain(stateObj.entity_id);
+          if (
+            stateDomain === "camera" ||
+            stateDomain === "alarm_control_panel" ||
+            stateDomain === "lock"
+          ) {
+            return true;
+          }
+
+          const deviceClass = stateObj.attributes.device_class;
+          if (stateDomain === "cover") {
+            return (
+              typeof deviceClass === "string" && coverClasses.has(deviceClass)
+            );
+          }
+
+          if (stateDomain === "binary_sensor") {
+            if (typeof deviceClass !== "string") {
+              return false;
+            }
+            if (binarySensorClasses.has(deviceClass)) {
+              return true;
+            }
+            return (
+              deviceClass === "tamper" &&
+              stateObj.attributes.entity_category === "diagnostic"
+            );
+          }
+
+          return false;
+        })
+        .map((stateObj) => stateObj.entity_id);
+    }
+
+    return states
+      .filter((stateObj) => computeDomain(stateObj.entity_id) === domain)
+      .map((stateObj) => stateObj.entity_id);
+  }
 
   private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
     getEntities(

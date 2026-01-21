@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import { goBack } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -45,6 +46,8 @@ class PanelSecurity extends LitElement {
       return;
     }
 
+    this._setQuickBarContext();
+
     const oldHass = changedProps.get("hass") as this["hass"];
     if (oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
@@ -76,6 +79,7 @@ class PanelSecurity extends LitElement {
 
   private async _setup() {
     await this.hass.loadFragmentTranslation("lovelace");
+    this._setQuickBarContext();
     this._setLovelace();
   }
 
@@ -161,6 +165,13 @@ class PanelSecurity extends LitElement {
       setEditMode: () => undefined,
       showToast: () => undefined,
     };
+  }
+
+  private _setQuickBarContext() {
+    fireEvent(this, "hass-quick-bar-context", {
+      itemType: "domain",
+      itemId: "security",
+    });
   }
 
   static get styles(): CSSResultGroup {

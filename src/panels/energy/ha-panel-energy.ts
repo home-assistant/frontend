@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
@@ -133,6 +134,7 @@ class PanelEnergy extends LitElement {
     // Initial setup
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
+      this._setQuickBarContext();
       this._loadConfig();
       return;
     }
@@ -140,6 +142,8 @@ class PanelEnergy extends LitElement {
     if (!changedProps.has("hass")) {
       return;
     }
+
+    this._setQuickBarContext();
 
     const oldHass = changedProps.get("hass") as this["hass"];
     if (oldHass && oldHass.localize !== this.hass.localize) {
@@ -205,6 +209,13 @@ class PanelEnergy extends LitElement {
       setEditMode: () => this._navigateConfig(),
       showToast: () => undefined,
     };
+  }
+
+  private _setQuickBarContext() {
+    fireEvent(this, "hass-quick-bar-context", {
+      itemType: "domain",
+      itemId: "energy",
+    });
   }
 
   protected render() {
