@@ -7582,7 +7582,10 @@
           },
           "other_devices": {
             "helpers": "Helpers",
-            "entities": "Entities"
+            "entities": "Entities",
+            "assign_area": "Assign area",
+            "empty_state_title": "All devices are organized",
+            "empty_state_content": "There are no unassigned devices left. All devices are organized into areas."
           }
         },
         "cards": {
