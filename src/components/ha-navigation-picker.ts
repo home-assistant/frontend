@@ -347,101 +347,98 @@ export class HaNavigationPicker extends LitElement {
   }
 
   private async _loadRelatedItems() {
-    const relatedEntityId = this.context?.entity_id;
-    const relatedAreaId = this.context?.area_id;
-
-    if (!this.hass || (!relatedEntityId && !relatedAreaId)) {
+    const updateRelatedItems = (relatedItems: NavigationItem[]) => {
       this._navigationGroups = {
         ...this._navigationGroups,
-        related: [],
+        related: relatedItems,
       };
       this._navigationItems = [
+        ...relatedItems,
         ...this._navigationGroups.dashboards,
         ...this._navigationGroups.views,
         ...this._navigationGroups.other_routes,
       ];
+    };
+
+    if (!this.hass || (!this.context?.entity_id && !this.context?.area_id)) {
+      updateRelatedItems([]);
       return;
     }
 
-    let relatedResult: RelatedResult | undefined;
-    if (relatedEntityId) {
-      relatedResult = await findRelated(this.hass, "entity", relatedEntityId);
-    } else if (relatedAreaId) {
-      relatedResult = await findRelated(this.hass, "area", relatedAreaId);
-    }
+    const relatedResult: RelatedResult | undefined = this.context?.entity_id
+      ? await findRelated(this.hass, "entity", this.context.entity_id)
+      : await findRelated(this.hass, "area", this.context!.area_id!);
 
-    const relatedDeviceIds = new Set<string>();
-    const relatedAreaIds = new Set<string>();
-    const relatedFloorIds = new Set<string>();
+    const relatedDeviceIds = new Set(relatedResult?.device ?? []);
+    const relatedAreaIds = new Set(relatedResult?.area ?? []);
+    const relatedFloorIds = new Set(relatedResult?.floor ?? []);
 
-    relatedResult?.device?.forEach((deviceId) =>
-      relatedDeviceIds.add(deviceId)
-    );
-    relatedResult?.area?.forEach((areaId) => relatedAreaIds.add(areaId));
-    relatedResult?.floor?.forEach((floorId) => relatedFloorIds.add(floorId));
-
-    const addFloorForArea = (areaId: string) => {
-      const area = this.hass.areas[areaId];
-      if (area?.floor_id) {
-        relatedFloorIds.add(area.floor_id);
+    const addFloorForArea = (areaId?: string | null) => {
+      if (!areaId) {
+        return;
+      }
+      const floorId = this.hass.areas[areaId]?.floor_id;
+      if (floorId) {
+        relatedFloorIds.add(floorId);
       }
     };
 
     relatedAreaIds.forEach(addFloorForArea);
     relatedDeviceIds.forEach((deviceId) => {
-      const device = this.hass.devices[deviceId];
-      if (device?.area_id) {
-        addFloorForArea(device.area_id);
-      }
+      addFloorForArea(this.hass.devices[deviceId]?.area_id);
     });
+
+    const createSortingLabel = (
+      prefix: string,
+      primary: string,
+      path: string
+    ) =>
+      [prefix, primary.startsWith("/") ? `zzz${primary}` : primary, path]
+        .filter(Boolean)
+        .join("_");
 
     const relatedItems: NavigationItem[] = [];
     for (const floorId of relatedFloorIds) {
       const floor = this.hass.floors[floorId];
       const primary = floor?.name ?? floorId;
       const path = `/config/areas?historyBack=1&floor_id=${floorId}`;
-      const icon = floor?.icon ?? undefined;
       relatedItems.push({
         id: path,
         primary,
         secondary: path,
-        icon,
-        icon_path: icon
+        icon: floor?.icon ?? undefined,
+        icon_path: floor?.icon
           ? undefined
           : floor
-            ? floorDefaultIconPath(floor)
+            ? (floorDefaultIconPath(floor) ?? undefined)
             : undefined,
-        sorting_label: [
+        sorting_label: createSortingLabel(
           RELATED_SORT_PREFIX.floor,
-          primary.startsWith("/") ? `zzz${primary}` : primary,
-          path,
-        ]
-          .filter(Boolean)
-          .join("_"),
+          primary,
+          path
+        ),
         group: "related",
       });
     }
+
     for (const deviceId of relatedDeviceIds) {
       const device = this.hass.devices[deviceId];
       const primary = device?.name_by_user ?? device?.name ?? deviceId;
       const path = `/config/devices/device/${deviceId}`;
-      const domain = device?.primary_config_entry
-        ? this._configEntryLookup[device.primary_config_entry]?.domain
-        : undefined;
       relatedItems.push({
         id: path,
         primary,
         secondary: path,
         icon: mdiDevices,
-        sorting_label: [
+        sorting_label: createSortingLabel(
           RELATED_SORT_PREFIX.device,
-          primary.startsWith("/") ? `zzz${primary}` : primary,
-          path,
-        ]
-          .filter(Boolean)
-          .join("_"),
+          primary,
+          path
+        ),
         group: "related",
-        domain,
+        domain: device?.primary_config_entry
+          ? this._configEntryLookup[device.primary_config_entry]?.domain
+          : undefined,
       });
     }
 
@@ -454,28 +451,16 @@ export class HaNavigationPicker extends LitElement {
         primary,
         secondary: path,
         icon: area?.icon ?? mdiTextureBox,
-        sorting_label: [
+        sorting_label: createSortingLabel(
           RELATED_SORT_PREFIX.area,
-          primary.startsWith("/") ? `zzz${primary}` : primary,
-          path,
-        ]
-          .filter(Boolean)
-          .join("_"),
+          primary,
+          path
+        ),
         group: "related",
       });
     }
 
-    this._navigationGroups = {
-      ...this._navigationGroups,
-      related: relatedItems,
-    };
-
-    this._navigationItems = [
-      ...relatedItems,
-      ...this._navigationGroups.dashboards,
-      ...this._navigationGroups.views,
-      ...this._navigationGroups.other_routes,
-    ];
+    updateRelatedItems(relatedItems);
   }
 
   private async _loadConfigEntries() {
