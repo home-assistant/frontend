@@ -12,7 +12,10 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import { isHelperDomain } from "../../../config/helpers/const";
-import type { HeadingCardConfig } from "../../cards/types";
+import type {
+  EmptyStateCardConfig,
+  HeadingCardConfig,
+} from "../../cards/types";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOtherDevicesViewStrategyConfig {
@@ -203,6 +206,26 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           })),
         ],
       });
+    }
+
+    // No sections, show empty state
+    if (sections.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:check-all",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.other_devices.empty_state_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.other_devices.empty_state_content"
+            ),
+          } as EmptyStateCardConfig,
+        ],
+      };
     }
 
     // Take the full width if there is only one section to avoid narrow header on desktop
