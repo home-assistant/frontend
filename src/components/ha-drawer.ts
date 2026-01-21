@@ -93,8 +93,8 @@ export class HaDrawer extends DrawerBase {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
+  protected firstUpdated() {
+    super.firstUpdated();
     this.mdcRoot?.addEventListener(
       "transitionstart",
       this._handleDrawerTransitionStart
