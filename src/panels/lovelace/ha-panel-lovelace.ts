@@ -391,7 +391,7 @@ export class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      navigate("/home");
+      navigate("/home", { replace: true });
       return;
     } finally {
       this._loading = false;
