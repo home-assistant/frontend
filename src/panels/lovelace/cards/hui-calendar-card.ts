@@ -109,6 +109,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    // Reset loading state when config changes or entity registry updates
+    if (changedProps.has("_config") || changedProps.has("_entityRegistry")) {
+      this._eventsLoaded = false;
+    }
+
     if (
       !this.hasUpdated ||
       (changedProps.has("_config") && this._config?.entities) ||
