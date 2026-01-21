@@ -47,7 +47,7 @@ import {
   type ActionCommandComboBoxItem,
   type NavigationComboBoxItem,
 } from "../../data/quick_bar";
-import { findRelated, type RelatedResult } from "../../data/search";
+import type { RelatedResult } from "../../data/search";
 import {
   multiTermSortedSearch,
   type FuseWeightedKey,
@@ -104,20 +104,9 @@ export class QuickBar extends LitElement {
     this._selectedSection = params.mode;
     this._showHint = params.showHint ?? false;
 
-    // Fetch related items if context is provided
-    if (params.contextItem) {
-      try {
-        this._relatedResult = await findRelated(
-          this.hass,
-          params.contextItem.itemType,
-          params.contextItem.itemId
-        );
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching related items for quick bar", err);
-        this._relatedResult = undefined;
-      }
-    } else {
+    this._relatedResult = params.related;
+
+    if (!params.contextItem) {
       this._relatedResult = undefined;
     }
 
