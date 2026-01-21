@@ -142,8 +142,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
             ? "0"
             : undefined
         )}
-        @action=${ifDefined(safeHandleAction)}
-        .actionHandler=${ifDefined(safeActionHandler)}
+        @action=${safeHandleAction}
+        .actionHandler=${safeActionHandler}
       >
         <ha-markdown
           cache
