@@ -1,5 +1,6 @@
 {
   "panel": {
+    "apps": "Apps",
     "energy": "Energy",
     "calendar": "Calendar",
     "config": "Settings",
@@ -213,6 +214,11 @@
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
+      },
+      "discovered-devices": {
+        "title": "Devices discovered",
+        "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
+        "no_devices": "No devices to add"
       },
       "media_player": {
         "source": "Source",
@@ -870,11 +876,11 @@
         "learn_more": "Learn more about statistics",
         "unknown": "Unknown statistic selected"
       },
-      "addon-picker": {
-        "addon": "Add-on",
+      "app-picker": {
+        "app": "App",
         "error": {
-          "no_supervisor": "Add-ons are not supported on your installation.",
-          "fetch_addons": "There was an error loading add-ons."
+          "no_supervisor": "Apps are not supported on your installation.",
+          "fetch_apps": "There was an error loading apps."
         }
       },
       "mount-picker": {
@@ -1416,9 +1422,9 @@
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
             "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]",
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
-            "addon_dashboard": "Add-on dashboard",
-            "addon_store": "Add-on store",
-            "addon_info": "{addon} info",
+            "app_dashboard": "App dashboard",
+            "app_store": "App store",
+            "app_info": "{app} info",
             "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
             "labs": "[%key:ui::panel::config::labs::caption%]"
           }
@@ -1507,8 +1513,8 @@
             "automatic_description_none": "No automatic backup yet.",
             "manual": "Create manual backup before update",
             "manual_description": "Includes Home Assistant settings and history.",
-            "addon": "Keep backup of the last version",
-            "addon_description": "For easily restoring to version {version}",
+            "app": "Keep backup of the last version",
+            "app_description": "For easily restoring to version {version}",
             "generic": "Create backup"
           }
         },
@@ -1798,9 +1804,9 @@
         },
         "reboot": {
           "title": "Reboot system",
-          "description": "Restarts the system running Home Assistant and all add-ons.",
+          "description": "Restarts the system running Home Assistant and all apps.",
           "confirm_title": "Reboot system?",
-          "confirm_description": "This will reboot the complete system which includes Home Assistant and all the add-ons.",
+          "confirm_description": "This will reboot the complete system which includes Home Assistant and all apps.",
           "confirm_action": "Reboot",
           "action_toast": "Rebooting system",
           "confirm_action_backup": "Wait and reboot",
@@ -1808,9 +1814,9 @@
         },
         "shutdown": {
           "title": "Shut down system",
-          "description": "Shuts down the system running Home Assistant and all add-ons.",
+          "description": "Shuts down the system running Home Assistant and all apps.",
           "confirm_title": "Shut down system?",
-          "confirm_description": "This will shut down the complete system which includes Home Assistant and all add-ons.",
+          "confirm_description": "This will shut down the complete system which includes Home Assistant and all apps.",
           "confirm_action": "Shut down",
           "confirm_action_backup": "Wait and shut down",
           "action_toast": "Shutting down system",
@@ -2255,6 +2261,17 @@
       "reset_confirmation": "Are you sure you want to reset the sidebar to its default configuration? This will restore the original order and visibility of all panels."
     },
     "panel": {
+      "app": {
+        "error_app_not_installed": "The app is not installed. Please install it first.",
+        "error_app_no_ingress": "This app does not support ingress.",
+        "error_app_not_running": "The app is not running. Do you want to start it now?",
+        "start_app": "Start app",
+        "app_starting": "The app is starting, this can take some time...",
+        "error_starting_app": "Error starting the app",
+        "error_creating_session": "Unable to create an ingress session",
+        "error_app_not_ready": "The app seems to not be ready, it might still be starting. Do you want to try again?",
+        "retry": "Retry"
+      },
       "home": {
         "editor": {
           "title": "Edit home page",
@@ -2299,7 +2316,7 @@
             "secondary": "Generate backups of your Home Assistant configuration"
           },
           "supervisor": {
-            "main": "Add-ons",
+            "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
           },
           "dashboards": {
@@ -2381,7 +2398,7 @@
         },
         "updates": {
           "caption": "Updates",
-          "description": "Manage updates of Home Assistant, add-ons, and devices",
+          "description": "Manage updates of Home Assistant, apps, and devices",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -2457,6 +2474,253 @@
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
+        },
+        "apps": {
+          "caption": "Apps",
+          "description": "Install and manage apps",
+          "error_loading": "Error loading apps",
+          "state": {
+            "update_available": "Update available",
+            "installed": "Installed",
+            "not_installed": "Not installed",
+            "not_available": "Not available"
+          },
+          "installed": {
+            "search": "Search apps",
+            "no_apps": "You don't have any apps installed yet. Click here to browse available apps.",
+            "add_app": "Install app",
+            "app_stopped": "App is stopped",
+            "app_update_available": "Update available",
+            "app_running": "App is running"
+          },
+          "store": {
+            "title": "App store",
+            "check_updates": "Check for updates",
+            "repositories": "Repositories",
+            "registries": "Registries",
+            "missing_apps": "Looking for apps? Enable advanced mode.",
+            "no_results_found": "No results found in {repository}"
+          },
+          "dialog": {
+            "repositories": {
+              "title": "Manage app repositories",
+              "add": "Add",
+              "remove": "Remove",
+              "used": "In use by installed apps",
+              "no_repositories": "You don't have any app repositories configured"
+            },
+            "registries": {
+              "title_add": "Add registry",
+              "title_manage": "Manage registries",
+              "add_registry": "Add",
+              "add_new_registry": "Add new registry",
+              "username": "Username",
+              "remove": "Remove registry",
+              "no_registries": "You don't have any registries configured",
+              "failed_to_add": "Failed to add registry",
+              "failed_to_remove": "Failed to remove registry",
+              "registry": "Registry",
+              "password": "Password"
+            }
+          },
+          "panel": {
+            "info": "Info",
+            "documentation": "Documentation",
+            "configuration": "Configuration",
+            "log": "Log"
+          },
+          "dashboard": {
+            "cpu_usage": "CPU usage",
+            "ram_usage": "RAM usage",
+            "app_running": "App is running",
+            "app_stopped": "App is stopped",
+            "current_version": "Current version: {version}",
+            "changelog": "Changelog",
+            "hostname": "Hostname",
+            "visit_app_page": "Visit {name} page for more details.",
+            "start": "Start",
+            "stop": "Stop",
+            "restart": "Restart",
+            "rebuild": "Rebuild",
+            "uninstall": "Uninstall",
+            "install": "Install",
+            "open_web_ui": "Open Web UI",
+            "failed_to_save": "Failed to save: {error}",
+            "failed_to_reset": "Failed to reset: {error}",
+            "failed_to_restart": "Failed to restart {name}",
+            "protection_mode": {
+              "title": "Protection mode disabled!",
+              "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which is more risky for your system if the app is compromised. Only disable protection mode if you know what you are doing.",
+              "enable": "Enable"
+            },
+            "system_managed": {
+              "title": "System managed",
+              "description": "This app is managed by the system. Settings are automatically configured and changes may be overwritten.",
+              "take_control": "Take control",
+              "badge": "System managed"
+            },
+            "option": {
+              "boot": {
+                "title": "Start on boot",
+                "description": "Automatically start this app when Home Assistant starts."
+              },
+              "watchdog": {
+                "title": "Watchdog",
+                "description": "Automatically restart this app when it crashes."
+              },
+              "auto_update": {
+                "title": "Auto update",
+                "description": "Automatically update this app when a new version is available."
+              },
+              "ingress_panel": {
+                "title": "Show in sidebar",
+                "description": "Show a shortcut to this app in the sidebar."
+              },
+              "protected": {
+                "title": "Protection mode",
+                "description": "Prevent the app from getting full access to the system."
+              }
+            },
+            "capability": {
+              "stages": {
+                "experimental": "Experimental",
+                "deprecated": "Deprecated"
+              },
+              "label": {
+                "rating": "Rating",
+                "host": "Host",
+                "hardware": "Hardware access",
+                "core": "Home Assistant",
+                "docker": "Docker",
+                "host_pid": "Host PID",
+                "apparmor": "AppArmor",
+                "auth": "Auth API",
+                "ingress": "Ingress",
+                "signed": "Signed"
+              },
+              "role": {
+                "manager": "manager",
+                "default": "default",
+                "homeassistant": "homeassistant",
+                "backup": "backup",
+                "admin": "admin"
+              },
+              "stage": {
+                "title": "App stage",
+                "description": "This app has a specific stage classification."
+              },
+              "rating": {
+                "title": "Security rating",
+                "description": "This shows the security rating of the app. Higher is better."
+              },
+              "host_network": {
+                "title": "Host network",
+                "description": "This app uses the host network stack."
+              },
+              "full_access": {
+                "title": "Full hardware access",
+                "description": "This app has full access to the hardware."
+              },
+              "homeassistant_api": {
+                "title": "Home Assistant API",
+                "description": "This app has access to the Home Assistant API."
+              },
+              "hassio_api": {
+                "title": "Supervisor API",
+                "description": "This app has access to the Supervisor API."
+              },
+              "docker_api": {
+                "title": "Docker API",
+                "description": "This app has access to the Docker API."
+              },
+              "host_pid": {
+                "title": "Host PID namespace",
+                "description": "This app has access to the host PID namespace."
+              },
+              "apparmor": {
+                "title": "AppArmor",
+                "description": "This shows the AppArmor status of the app."
+              },
+              "auth_api": {
+                "title": "Auth API",
+                "description": "This app has access to the Auth API."
+              },
+              "ingress": {
+                "title": "Ingress",
+                "description": "This app supports ingress for secure access."
+              },
+              "signed": {
+                "title": "Signed",
+                "description": "This app is cryptographically signed."
+              }
+            },
+            "action_error": {
+              "install": "Failed to install app",
+              "start": "Failed to start app",
+              "stop": "Failed to stop app",
+              "restart": "Failed to restart app",
+              "rebuild": "Failed to rebuild app",
+              "uninstall": "Failed to uninstall app",
+              "get_changelog": "Failed to get changelog",
+              "start_invalid_config": "Invalid configuration",
+              "go_to_config": "Go to configuration",
+              "validate_config": "Failed to validate app configuration"
+            },
+            "uninstall_dialog": {
+              "title": "Uninstall {name}?",
+              "remove_data": "Also remove app data",
+              "uninstall": "Uninstall"
+            },
+            "restart_dialog": {
+              "title": "Restart {name}?",
+              "text": "The app needs to be restarted for the changes to take effect.",
+              "restart": "Restart"
+            },
+            "update_available": {
+              "update_name": "Update {name}",
+              "no_update": "{name} is up to date.",
+              "description": "{name} {newest_version} is available. You are running {version}.",
+              "updating": "Updating {name} to {version}...",
+              "create_backup": {
+                "app": "Create backup before updating",
+                "app_description": "Creates a backup of {version} before updating.",
+                "generic": "Create backup"
+              }
+            }
+          },
+          "configuration": {
+            "no_configuration": "This app has no configuration options.",
+            "options": {
+              "header": "Options",
+              "edit_in_ui": "Edit in UI",
+              "edit_in_yaml": "Edit in YAML",
+              "invalid_yaml": "Invalid YAML",
+              "show_unused_optional": "Show unused optional configuration options"
+            },
+            "network": {
+              "header": "Network",
+              "introduction": "Configure the network ports that this app uses.",
+              "show_disabled": "Show disabled ports",
+              "reset_defaults": "Reset to defaults"
+            },
+            "audio": {
+              "header": "Audio",
+              "input": "Audio input",
+              "output": "Audio output",
+              "default": "Default",
+              "failed_to_load_hardware": "Failed to fetch audio hardware",
+              "failed_to_save": "Failed to set audio device"
+            },
+            "confirm": {
+              "reset_options": {
+                "title": "Reset options?",
+                "text": "Are you sure you want to reset all options to their default values?"
+              }
+            }
+          },
+          "documentation": {
+            "get_documentation": "Failed to get documentation: {error}"
+          }
         },
         "category": {
           "caption": "Categories",
@@ -2584,7 +2848,7 @@
           "type": {
             "manual": "Manual",
             "automatic": "Automatic",
-            "addon_update": "Add-on update"
+            "app_update": "App update"
           },
           "locations": "Locations",
           "create": {
@@ -2786,17 +3050,17 @@
             "media": "Media",
             "media_description": "For example, camera recordings.",
             "share_folder": "Share folder",
-            "share_folder_description": "Folder that is often used by add-ons for advanced or older configurations.",
-            "local_addons": "Local add-ons folder",
-            "local_addons_description": "Folder that contains the data of your local add-ons.",
-            "addons": "Add-ons",
-            "addons_description": "Select what add-ons you want to include.",
-            "addons_all": "All",
-            "addons_none": "None",
-            "addons_custom": "Custom",
+            "share_folder_description": "Folder that is often used by apps for advanced or older configurations.",
+            "local_apps": "Local apps folder",
+            "local_apps_description": "Folder that contains the data of your local apps.",
+            "apps": "Apps",
+            "apps_description": "Select what apps you want to include.",
+            "apps_all": "All",
+            "apps_none": "None",
+            "apps_custom": "Custom",
             "estimated_size": "Estimated backup size",
             "estimated_size_disclaimer": "This is an approximation based on storage usage and compression. The actual backup size will vary.",
-            "estimated_size_disclaimer_addons_custom": "This estimate includes all add-ons, and not individual add-on sizes.",
+            "estimated_size_disclaimer_apps_custom": "This estimate includes all apps, and not individual app sizes.",
             "estimated_size_loading": "Loading size estimate..."
           },
           "data_picker": {
@@ -2804,8 +3068,8 @@
             "settings_and_history": "Settings and history",
             "media": "Media",
             "share_folder": "Share folder",
-            "local_addons": "Local add-ons folder",
-            "addons": "Add-ons",
+            "local_apps": "Local apps folder",
+            "apps": "Apps",
             "ssl": "SSL certificates"
           },
           "schedule": {
@@ -2895,9 +3159,12 @@
               },
               "description": {
                 "create_backup": {
-                  "addon_repositories": "Backing up add-on repositories",
-                  "addons": "Backing up add-ons",
-                  "await_addon_restarts": "Waiting for add-ons to restart",
+                  "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::app_repositories%]",
+                  "addons": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::apps%]",
+                  "await_addon_restarts": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::await_app_restarts%]",
+                  "app_repositories": "Backing up app repositories",
+                  "apps": "Backing up apps",
+                  "await_app_restarts": "Waiting for apps to restart",
                   "docker_config": "Backing up Docker configuration",
                   "finishing_file": "Finishing backup file",
                   "folders": "Backing up folders",
@@ -2905,16 +3172,20 @@
                   "upload_to_agents": "Uploading to locations"
                 },
                 "restore_backup": {
-                  "addon_repositories": "Restoring add-on repositories",
-                  "addons": "Restoring add-ons",
-                  "await_addon_restarts": "Waiting for add-ons to restart",
+                  "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::app_repositories%]",
+                  "addons": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::apps%]",
+                  "await_addon_restarts": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::await_app_restarts%]",
+                  "app_repositories": "Restoring app repositories",
+                  "apps": "Restoring apps",
+                  "await_app_restarts": "Waiting for apps to restart",
                   "await_home_assistant_restart": "Waiting for Home Assistant to restart",
                   "check_home_assistant": "Checking Home Assistant",
                   "docker_config": "Restoring Docker configuration",
                   "download_from_agent": "Downloading from location",
                   "folders": "Restoring folders",
                   "home_assistant": "Restoring Home Assistant",
-                  "remove_delta_addons": "Removing delta add-ons"
+                  "remove_delta_addons": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::remove_delta_apps%]",
+                  "remove_delta_apps": "Removing delta apps"
                 },
                 "receive_backup": {
                   "receive_file": "Receiving file",
@@ -2931,12 +3202,12 @@
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
-              "last_backup_failed_addons_description": "The last automatic backup created {relative_time} was not able to backup all add-ons.",
+              "last_backup_failed_apps_description": "The last automatic backup created {relative_time} was not able to backup all apps.",
               "last_backup_failed_folders_description": "The last automatic backup created {relative_time} was not able to backup all folders.",
-              "last_backup_failed_addons_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and folders.",
-              "last_backup_failed_locations_addons_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and wasn't stored in all locations.",
+              "last_backup_failed_apps_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all apps and folders.",
+              "last_backup_failed_locations_apps_description": "The last automatic backup created {relative_time} wasn't able to backup all apps and wasn't stored in all locations.",
               "last_backup_failed_locations_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all folders and wasn't stored in all locations.",
-              "last_backup_failed_locations_addons_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and folders and wasn't stored in all locations.",
+              "last_backup_failed_locations_apps_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all apps and folders and wasn't stored in all locations.",
               "last_successful_backup_description": "Last successful automatic backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
               "no_backup_heading": "No automatic backup available",
               "no_backup_description": "You have no automatic backups yet.",
@@ -2948,7 +3219,7 @@
               "title": "My backups",
               "automatic": "{count} automatic {count, plural,\n one {backup}\n other {backups}\n}",
               "manual": "{count} manual {count, plural,\n one {backup}\n other {backups}\n}",
-              "addon_update": "{count} add-on update {count, plural,\n one {backup}\n other {backups}\n}",
+              "app_update": "{count} app update {count, plural,\n one {backup}\n other {backups}\n}",
               "total_size": "{size} in total",
               "show_all": "Show all backups"
             },
@@ -2971,10 +3242,10 @@
               "data": "Home Assistant data that is included",
               "data_settings_history": "Settings and history",
               "data_settings_only": "Settings only",
-              "addons": "Add-ons that are included",
-              "addons_all": "All add-ons",
-              "addons_many": "{count} {count, plural,\n one {add-on}\n other {add-ons}\n}",
-              "addons_none": "No add-ons",
+              "apps": "Apps that are included",
+              "apps_all": "All apps",
+              "apps_many": "{count} {count, plural,\n one {app}\n other {apps}\n}",
+              "apps_none": "No apps",
               "locations": "Locations where backup is stored to",
               "locations_one": "Store in {name}",
               "locations_many": "Store in {count} off-site {count, plural,\n one {location}\n other {locations}\n}",
@@ -3035,9 +3306,9 @@
               "title": "Encryption key",
               "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download it as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
             },
-            "addon_update_backup": {
-              "title": "Add-on update backups",
-              "description": "Creates a backup of your add-on and its data. That way you can keep around the previous version of the add-on, so you can always roll back to it if needed.",
+            "app_update_backup": {
+              "title": "App update backups",
+              "description": "Creates a backup of your app and its data. That way you can keep around the previous version of the app, so you can always roll back to it if needed.",
               "local_only": "This backup is only saved on this system.",
               "retention_description": "Prevent your system from filling up with old versions.",
               "error_load": "Error loading Supervisor update config: {error}",
@@ -3056,7 +3327,7 @@
               "error": {
                 "title": "This backup was not created successfully. Some data is missing.",
                 "failed_locations": "Failed locations",
-                "failed_addons": "Failed add-ons",
+                "failed_apps": "Failed apps",
                 "failed_folders": "Failed folders"
               }
             },
@@ -3918,11 +4189,11 @@
               }
             },
             "local": {
-              "title": "Installing add-ons",
+              "title": "Installing apps",
               "secondary": "We are preparing your system for local voice processing.",
-              "failed_title": "Failed to install add-ons",
-              "failed_secondary": "We were unable to install the add-ons for speech-to-text and text-to-speech automatically for you. Read the documentation to learn how to install them.",
-              "not_supported_title": "Installation of add-ons is not supported on your system",
+              "failed_title": "Failed to install apps",
+              "failed_secondary": "We were unable to install the apps for speech-to-text and text-to-speech automatically for you. Read the documentation to learn how to install them.",
+              "not_supported_title": "Installation of apps is not supported on your system",
               "not_supported_secondary": "Your system is not supported to automatically install a local TTS and STT provider. Learn how to set up local TTS and STT providers in the documentation.",
               "full_local_pipeline": "Full local assistant",
               "focused_local_pipeline": "Focused local assistant",
@@ -3939,7 +4210,7 @@
                 "creating_pipeline": "Creating assistant"
               },
               "errors": {
-                "failed_create_entry": "Failed to create entry for {addon}",
+                "failed_create_entry": "Failed to create entry for {app}",
                 "could_not_find_entities": "Could not find local TTS and STT entities"
               }
             },
@@ -4093,8 +4364,10 @@
             "switch_ui_yaml_error": "There are currently YAML errors in the automation, and it cannot be parsed. Switching to UI mode may cause pending changes to be lost. Press cancel to correct any errors before proceeding to prevent loss of pending changes, or continue if you are sure.",
             "type_automation": "automation",
             "type_script": "script",
+            "type_scene": "scene",
             "type_automation_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::automation%]",
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
+            "type_scene_plural": "scenes",
             "new_automation_setup_failed_title": "New {type} setup timed out",
             "new_automation_setup_failed_text": "Your new {type} was saved, but waiting for it to set up has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
             "new_automation_setup_keep_waiting": "You may continue to wait for a response from the server, in case it is just taking an unusually long time to process this {type}.",
@@ -5160,11 +5433,19 @@
             "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
             "load_error_unknown": "Error loading scene ({err_no}).",
             "save": "Save",
+            "rename": "Rename",
+            "missing_name": "Name is required",
             "unsaved_confirm_title": "Leave editor?",
             "unsaved_confirm_text": "Unsaved changes will be lost.",
             "name": "Name",
             "icon": "Icon",
             "area": "Area",
+            "dialog": {
+              "add_icon": "[%key:ui::panel::config::automation::editor::dialog::add_icon%]",
+              "add_area": "[%key:ui::panel::config::automation::editor::dialog::add_area%]",
+              "add_category": "[%key:ui::panel::config::automation::editor::dialog::add_category%]",
+              "add_labels": "[%key:ui::panel::config::automation::editor::dialog::add_labels%]"
+            },
             "devices": {
               "header": "Devices",
               "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",
@@ -5697,6 +5978,7 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
+          "discovered_devices": "{count, plural,\n one {# discovered device}\n other {# discovered devices}\n}",
           "disabled": "Disabled",
           "available_integrations": "Available integrations",
           "new_flow": "Set up another instance of {integration}",
@@ -6157,7 +6439,7 @@
             "network_settings_title": "Network settings",
             "change_channel": "Change channel",
             "channel_dialog": {
-              "title": "Multiprotocol add-on in use",
+              "title": "Multiprotocol app in use",
               "text": "Zigbee and Thread share the same adapter and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
             }
           },
@@ -7114,8 +7396,8 @@
             "used": "Used space",
             "free": "Free space",
             "system": "System",
-            "addons_data": "Add-on data",
-            "addons_config": "Add-on configuration",
+            "apps_data": "App data",
+            "apps_config": "App configuration",
             "media": "Media",
             "share": "Share",
             "backup": "Backups",
@@ -7449,6 +7731,13 @@
               "compare_previous_year": "Compare previous year",
               "compare_previous_period": "Compare previous period"
             }
+          },
+          "distribution": {
+            "no_entities": "No entities specified",
+            "domain_mismatch": "All entities must be from the same domain. Found: {domains}",
+            "device_class_mismatch": "All entities must have the same device class. Found: {classes}",
+            "no_data": "No data to display. All entities are hidden or have zero values.",
+            "add_entities": "Add entities to display in the distribution chart"
           },
           "heading": {
             "default_heading": "Kitchen"
@@ -8106,6 +8395,10 @@
               "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
               "description": "The Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
+            "distribution": {
+              "name": "Distribution",
+              "description": "The Distribution card displays multiple numerical entities as a proportional chart with an interactive legend."
+            },
             "humidifier": {
               "name": "Humidifier",
               "description": "The Humidifier card gives control of a humidifier entity for humidifying or dehumidifying, allowing you to set its mode and desired humidity.",
@@ -8701,6 +8994,10 @@
                 "label": "Area controls",
                 "customize_controls": "Customize controls",
                 "controls": "Controls",
+                "sections": {
+                  "domain": "Domains",
+                  "entity": "Entities"
+                },
                 "controls_options": {
                   "light": "Lights",
                   "fan": "Fans",
@@ -9621,7 +9918,7 @@
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "details": {
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
-            "addons_unsupported": "Your installation method doesn’t support add-ons. If you want to restore these, you have to install Home Assistant OS",
+            "apps_unsupported": "Your installation method doesn’t support apps. If you want to restore these, you have to install Home Assistant OS",
             "summary": {
               "created": "[%key:ui::panel::config::backup::details::summary::created%]",
               "content": "Content"
@@ -9643,8 +9940,8 @@
             "settings_and_history": "[%key:ui::panel::config::backup::data_picker::settings_and_history%]",
             "media": "[%key:ui::panel::config::backup::data_picker::media%]",
             "share_folder": "[%key:ui::panel::config::backup::data_picker::share_folder%]",
-            "local_addons": "[%key:ui::panel::config::backup::data_picker::local_addons%]",
-            "addons": "[%key:ui::panel::config::backup::data_picker::addons%]",
+            "local_apps": "[%key:ui::panel::config::backup::data_picker::local_apps%]",
+            "apps": "[%key:ui::panel::config::backup::data_picker::apps%]",
             "ssl": "[%key:ui::panel::config::backup::data_picker::ssl%]"
           },
           "restore_no_home_assistant": "[%key:supervisor::backup::restore_no_home_assistant%]",
@@ -9663,7 +9960,7 @@
           "name": "[%key:supervisor::backup::name%]",
           "select_type": "[%key:supervisor::backup::select_type%]",
           "folders": "[%key:supervisor::backup::folders%]",
-          "addons": "[%key:supervisor::backup::addons%]",
+          "apps": "[%key:supervisor::backup::apps%]",
           "password_protection": "[%key:supervisor::backup::password_protection%]",
           "password": "[%key:supervisor::backup::password%]",
           "confirm_password": "[%key:supervisor::backup::confirm_password%]",
@@ -9842,13 +10139,13 @@
     }
   },
   "supervisor": {
-    "addon": {
-      "failed_to_reset": "Failed to reset add-on configuration, {error}",
-      "failed_to_save": "Failed to save add-on configuration, {error}",
+    "app": {
+      "failed_to_reset": "Failed to reset app configuration, {error}",
+      "failed_to_save": "Failed to save app configuration, {error}",
       "state": {
-        "installed": "Add-on is installed",
-        "not_installed": "Add-on is not installed",
-        "not_available": "Add-on is not available on your system"
+        "installed": "App is installed",
+        "not_installed": "App is not installed",
+        "not_available": "App is not available on your system"
       },
       "panel": {
         "configuration": "Configuration",
@@ -9857,7 +10154,7 @@
         "log": "Log"
       },
       "configuration": {
-        "no_configuration": "This add-on has no configuration.",
+        "no_configuration": "This app has no configuration.",
         "audio": {
           "header": "Audio",
           "default": "Default",
@@ -9876,19 +10173,19 @@
           "disabled": "Disabled",
           "header": "Network",
           "show_disabled": "Show disabled ports",
-          "introduction": "Change the ports on your host that are exposed by the add-on"
+          "introduction": "Change the ports on your host that are exposed by the app"
         }
       },
       "dashboard": {
         "changelog": "Changelog",
         "current_version": "Current version: {version}",
-        "cpu_usage": "Add-on CPU usage",
-        "ram_usage": "Add-on RAM usage",
+        "cpu_usage": "App CPU usage",
+        "ram_usage": "App RAM usage",
         "hostname": "Hostname",
         "new_update_available": "{name} {version} is available",
-        "not_available_arch": "This add-on is not compatible with the processor of your device or the operating system you have installed on your device.",
-        "not_available_version": "You are running Home Assistant {core_version_installed}, to update to this version of the add-on you need at least version {core_version_needed} of Home Assistant",
-        "visit_addon_page": "Visit the {name} page for more details.",
+        "not_available_arch": "This app is not compatible with the processor of your device or the operating system you have installed on your device.",
+        "not_available_version": "You are running Home Assistant {core_version_installed}, to update to this version of the app you need at least version {core_version_needed} of Home Assistant",
+        "visit_app_page": "Visit the {name} page for more details.",
         "restart": "Restart",
         "start": "Start",
         "stop": "Stop",
@@ -9898,57 +10195,57 @@
         "open_web_ui": "Open web UI",
         "protection_mode": {
           "title": "Protection mode is disabled!",
-          "content": "Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.",
+          "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this app.",
           "enable": "[%key:ui::common::enable%]"
         },
         "capability": {
           "stage": {
-            "title": "Add-on stage",
-            "description": "Add-ons can have one of three stages:\n\n{icon_stable} **Stable**: These are add-ons ready to be used in production.\n\n{icon_experimental} **Experimental**: These may contain bugs, and may be unfinished.\n\n{icon_deprecated} **Deprecated**: These add-ons will no longer receive any updates."
+            "title": "App stage",
+            "description": "Apps can have one of three stages:\n\n{icon_stable} **Stable**: These are apps ready to be used in production.\n\n{icon_experimental} **Experimental**: These may contain bugs, and may be unfinished.\n\n{icon_deprecated} **Deprecated**: These apps will no longer receive any updates."
           },
           "rating": {
-            "title": "Add-on security rating",
-            "description": "Home Assistant provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 8. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 8 is the highest score (considered the most secure and lowest risk)."
+            "title": "App security rating",
+            "description": "Home Assistant provides a security rating to each of the apps, which indicates the risks involved when using this app. The more access an app requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 8. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 8 is the highest score (considered the most secure and lowest risk)."
           },
           "host_network": {
             "title": "Host network",
-            "description": "Add-ons usually run in their own isolated network layer, which prevents them from accessing the network of the host operating system. In some cases, this network isolation can limit add-ons in providing their services and therefore, the isolation can be lifted by the add-on author, giving the add-on full access to the network capabilities of the host machine. This gives the add-on more networking capabilities but lowers the security, hence, the security rating of the add-on will be lowered when this option is used by the add-on."
+            "description": "Apps usually run in their own isolated network layer, which prevents them from accessing the network of the host operating system. In some cases, this network isolation can limit apps in providing their services and therefore, the isolation can be lifted by the app author, giving the app full access to the network capabilities of the host machine. This gives the app more networking capabilities but lowers the security, hence, the security rating of the app will be lowered when this option is used by the app."
           },
           "homeassistant_api": {
             "title": "Home Assistant API access",
-            "description": "This add-on is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the add-on as well, which enables an add-on to interact with Home Assistant without the need for additional authentication tokens."
+            "description": "This app is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the app as well, which enables an app to interact with Home Assistant without the need for additional authentication tokens."
           },
           "full_access": {
             "title": "Full hardware access",
-            "description": "This add-on is given full access to the hardware of your system, by request of the add-on author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on."
+            "description": "This app is given full access to the hardware of your system, by request of the app author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the app security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the app manually. Only disable the protection mode if you know, need AND trust the source of this app."
           },
           "hassio_api": {
             "title": "Supervisor API access",
-            "description": "The add-on was given access to the Supervisor API, by request of the add-on author. By default, the add-on can access general version information of your system. When the add-on requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Home Assistant system. This permission is indicated by this badge and will impact the security score of the add-on negatively."
+            "description": "The app was given access to the Supervisor API, by request of the app author. By default, the app can access general version information of your system. When the app requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Home Assistant system. This permission is indicated by this badge and will impact the security score of the app negatively."
           },
           "docker_api": {
             "title": "Full Docker access",
-            "description": "The add-on author has requested the add-on to have management access to the Docker instance running on your system. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on."
+            "description": "The app author has requested the app to have management access to the Docker instance running on your system. This mode gives the app full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the app security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the app manually. Only disable the protection mode if you know, need AND trust the source of this app."
           },
           "host_pid": {
             "title": "Host processes namespace",
-            "description": "Usually, the processes run by the add-on are isolated from all other system processes. The add-on author has requested the add-on to have access to the system processes running on the host system instance, and allow the add-on to spawn processes on the host system as well. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on."
+            "description": "Usually, the processes run by the app are isolated from all other system processes. The app author has requested the app to have access to the system processes running on the host system instance, and allow the app to spawn processes on the host system as well. This mode gives the app full access and control to your entire Home Assistant system, which adds security risks and could damage your system when misused. Therefore, this feature impacts the app security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the app manually. Only disable the protection mode if you know, need AND trust the source of this app."
           },
           "apparmor": {
             "title": "AppArmor",
-            "description": "AppArmor ('Application Armor') is a Linux kernel security module that restricts add-on capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nAdd-on authors can provide their security profiles, optimized for the add-on, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the add-on."
+            "description": "AppArmor ('Application Armor') is a Linux kernel security module that restricts app capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nApp authors can provide their security profiles, optimized for the app, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the app."
           },
           "auth_api": {
             "title": "Home Assistant authentication",
-            "description": "An add-on can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log in to applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability."
+            "description": "An app can authenticate users against Home Assistant, allowing apps to give users the possibility to log in to applications running inside apps, using their Home Assistant username/password. This badge indicates if the app author requests this capability."
           },
           "ingress": {
             "title": "Ingress",
-            "description": "This add-on is using Ingress to embed its interface securely into Home Assistant."
+            "description": "This app is using Ingress to embed its interface securely into Home Assistant."
           },
           "signed": {
             "title": "Signed",
-            "description": "This add-on signed and verified with Codenotary Community Attestation Service (CAS)."
+            "description": "This app signed and verified with Codenotary Community Attestation Service (CAS)."
           },
           "label": {
             "core": "Core",
@@ -9978,48 +10275,48 @@
         "option": {
           "boot": {
             "title": "Start on boot",
-            "description": "Make the add-on start during a system boot"
+            "description": "Make the app start during a system boot"
           },
           "watchdog": {
             "title": "Watchdog",
-            "description": "This will restart the add-on if it crashes"
+            "description": "This will restart the app if it crashes"
           },
           "auto_update": {
             "title": "Automatically update",
-            "description": "Automatically update the add-on when a new version is available"
+            "description": "Automatically update the app when a new version is available"
           },
           "ingress_panel": {
             "title": "Add to sidebar",
-            "description": "Allows users to show or hide the add-on"
+            "description": "Allows users to show or hide the app"
           },
           "protected": {
             "title": "Protection mode",
-            "description": "Blocks elevated system access from the add-on"
+            "description": "Blocks elevated system access from the app"
           }
         },
         "action_error": {
-          "uninstall": "Failed to uninstall add-on",
-          "install": "Failed to install add-on",
-          "stop": "Failed to stop add-on",
-          "rebuild": "Failed to rebuild add-on",
-          "restart": "Failed to restart add-on",
-          "start": "Failed to start add-on",
+          "uninstall": "Failed to uninstall app",
+          "install": "Failed to install app",
+          "stop": "Failed to stop app",
+          "rebuild": "Failed to rebuild app",
+          "restart": "Failed to restart app",
+          "start": "Failed to start app",
           "go_to_config": "Edit config",
           "start_invalid_config": "Go to configuration",
-          "validate_config": "Failed to validate add-on configuration",
-          "get_changelog": "Failed to get add-on changelog"
+          "validate_config": "Failed to validate app configuration",
+          "get_changelog": "Failed to get app changelog"
         }
       },
       "documentation": {
-        "get_documentation": "Failed to get add-on documentation, {error}"
+        "get_documentation": "Failed to get app documentation, {error}"
       },
       "logs": {
-        "get_logs": "Failed to get add-on logs, {error}"
+        "get_logs": "Failed to get app logs, {error}"
       },
       "system_managed": {
         "badge": "System-managed",
-        "title": "This add-on is managed by Home Assistant",
-        "description": "Manually modifying this configuration may cause the add-on or integration to stop working properly.",
+        "title": "This app is managed by Home Assistant",
+        "description": "Manually modifying this configuration may cause the app or integration to stop working properly.",
         "managed_by": "Managed by",
         "take_control": "Take control"
       }
@@ -10063,8 +10360,8 @@
       "updating": "Updating {name} to version {version}",
       "no_update": "No update available for {name}",
       "create_backup": {
-        "addon": "[%key:ui::dialogs::more_info_control::update::create_backup::addon%]",
-        "addon_description": "[%key:ui::dialogs::more_info_control::update::create_backup::addon_description%]",
+        "app": "[%key:ui::dialogs::more_info_control::update::create_backup::app%]",
+        "app_description": "[%key:ui::dialogs::more_info_control::update::create_backup::app_description%]",
         "generic": "[%key:ui::dialogs::more_info_control::update::create_backup::generic%]"
       }
     },
@@ -10079,48 +10376,48 @@
       }
     },
     "dashboard": {
-      "addon_new_version": "New version available",
-      "addon_running": "Add-on is running",
-      "addon_stopped": "Add-on is stopped",
-      "addons": "Installed add-ons",
-      "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
-      "search_addons": "Search add-ons"
+      "app_new_version": "New version available",
+      "app_running": "App is running",
+      "app_stopped": "App is stopped",
+      "apps": "Installed apps",
+      "no_apps": "You don't have any apps installed yet. Head over to the app store to get started!",
+      "search_apps": "Search apps"
     },
     "store": {
-      "missing_addons": "Missing add-ons? Enable advanced mode in your user profile page",
+      "missing_apps": "Missing apps? Enable advanced mode in your user profile page",
       "no_results_found": "No results found in {repository}.",
       "registries": "Registries",
       "repositories": "Repositories",
       "check_updates": "Check for updates"
     },
     "panel": {
-      "addons": "Add-ons",
+      "apps": "Apps",
       "dashboard": "Dashboard",
       "backups": "Backups",
-      "store": "Add-on store",
+      "store": "App store",
       "system": "System"
     },
     "my": {
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
-      "add_addon_repository_title": "Missing add-on repository",
-      "add_addon_repository_description": "The add-on ''{addon}'' is a part of the add-on repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
+      "add_app_repository_title": "Missing app repository",
+      "add_app_repository_description": "The app ''{app}'' is a part of the app repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
       "error": "[%key:ui::panel::my::error%]",
-      "error_addon_not_found": "Add-on not found",
-      "error_repository_not_found": "The required repository for this add-on was not found",
-      "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
-      "error_addon_no_ingress": "The requested add-on does not support Ingress"
+      "error_app_not_found": "App not found",
+      "error_repository_not_found": "The required repository for this app was not found",
+      "error_app_not_installed": "The requested app is not installed. Please install it first",
+      "error_app_no_ingress": "The requested app does not support Ingress"
     },
     "ingress": {
-      "error_addon_info": "Unable to fetch add-on info to start Ingress",
-      "error_addon_not_installed": "The add-on is not installed. Please install it first",
-      "error_addon_not_supported": "This add-on does not support Ingress",
-      "error_addon_not_running": "The add-on is not running. Do you want to start it now?",
-      "start_addon": "Start add-on",
-      "addon_starting": "The add-on is starting, this can take some time...",
-      "error_starting_addon": "Error starting the add-on",
+      "error_app_info": "Unable to fetch app info to start Ingress",
+      "error_app_not_installed": "The app is not installed. Please install it first",
+      "error_app_not_supported": "This app does not support Ingress",
+      "error_app_not_running": "The app is not running. Do you want to start it now?",
+      "start_app": "Start app",
+      "app_starting": "The app is starting, this can take some time...",
+      "error_starting_app": "Error starting the app",
       "error_creating_session": "Unable to create an Ingress session",
-      "error_addon_not_ready": "The add-on seems to not be ready, it might still be starting. Do you want to try again?",
+      "error_app_not_ready": "The app seems to not be ready, it might still be starting. Do you want to try again?",
       "retry": "Retry"
     },
     "system": {
@@ -10234,7 +10531,7 @@
       "select_type": "Select what to restore",
       "full_backup": "Full backup",
       "partial_backup": "Partial backup",
-      "addons": "Add-ons",
+      "apps": "Apps",
       "folders": "Folders",
       "size": "Size",
       "password": "Backup encryption key",
@@ -10298,20 +10595,20 @@
         "failed_to_remove": "Failed to remove registry"
       },
       "repositories": {
-        "title": "Manage add-on repositories",
+        "title": "Manage app repositories",
         "add": "Add",
         "remove": "Remove",
-        "used": "Repository is in use for installed add-ons and can't be removed.",
+        "used": "Repository is in use for installed apps and can't be removed.",
         "no_repositories": "No repositories"
       },
-      "restart_addon": {
+      "restart_app": {
         "title": "Restart {name}?",
-        "text": "To use the new saved configuration this add-on must be restarted.",
+        "text": "To use the new saved configuration this app must be restarted.",
         "restart": "Restart"
       },
-      "uninstall_addon": {
+      "uninstall_app": {
         "title": "Uninstall {name}?",
-        "remove_data": "Also permanently delete this add-on's data",
+        "remove_data": "Also permanently delete this app's data",
         "uninstall": "Uninstall"
       },
       "hardware": {

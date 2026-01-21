@@ -129,7 +129,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
       this.backup.addons.length > 0
         ? html`<ha-alert class="supervisor-warning">
             ${this.localize(
-              "ui.panel.page-onboarding.restore.details.addons_unsupported"
+              "ui.panel.page-onboarding.restore.details.apps_unsupported"
             )}
             <ha-button
               slot="action"

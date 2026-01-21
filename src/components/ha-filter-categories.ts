@@ -1,4 +1,4 @@
-import type { ActionDetail, SelectedDetail } from "@material/mwc-list";
+import type { SelectedDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -25,7 +25,8 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showCategoryRegistryDetailDialog } from "../panels/config/category/show-dialog-category-registry-detail";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import "./ha-button-menu";
+import "./ha-dropdown";
+import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-list";
@@ -114,37 +115,36 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                             slot="graphic"
                           ></ha-svg-icon>`}
                       ${category.name}
-                      <ha-button-menu
+                      <ha-dropdown
                         @click=${stopPropagation}
-                        @action=${this._handleAction}
+                        @wa-select=${this._handleAction}
                         slot="meta"
-                        fixed
                         .categoryId=${category.category_id}
                       >
                         <ha-icon-button
                           .path=${mdiDotsVertical}
                           slot="trigger"
+                          .label=${this.hass.localize("ui.common.menu")}
                         ></ha-icon-button>
-                        <ha-list-item graphic="icon"
-                          ><ha-svg-icon
+                        <ha-dropdown-item value="edit">
+                          <ha-svg-icon
+                            slot="icon"
                             .path=${mdiPencil}
-                            slot="graphic"
-                          ></ha-svg-icon
-                          >${this.hass.localize(
+                          ></ha-svg-icon>
+                          ${this.hass.localize(
                             "ui.panel.config.category.editor.edit"
-                          )}</ha-list-item
-                        >
-                        <ha-list-item graphic="icon" class="warning"
-                          ><ha-svg-icon
-                            class="warning"
+                          )}
+                        </ha-dropdown-item>
+                        <ha-dropdown-item value="delete" variant="danger">
+                          <ha-svg-icon
+                            slot="icon"
                             .path=${mdiDelete}
-                            slot="graphic"
-                          ></ha-svg-icon
-                          >${this.hass.localize(
+                          ></ha-svg-icon>
+                          ${this.hass.localize(
                             "ui.panel.config.category.editor.delete"
-                          )}</ha-list-item
-                        >
-                      </ha-button-menu>
+                          )}
+                        </ha-dropdown-item>
+                      </ha-dropdown>
                     </ha-list-item>`
                 )}
               </ha-list>
@@ -174,13 +174,14 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
+  private _handleAction(ev: CustomEvent<{ item: { value: string } }>) {
     const categoryId = (ev.currentTarget as any).categoryId;
-    switch (ev.detail.index) {
-      case 0:
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "edit":
         this._editCategory(categoryId);
         break;
-      case 1:
+      case "delete":
         this._deleteCategory(categoryId);
         break;
     }
@@ -315,6 +316,9 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
           --mdc-list-item-meta-size: auto;
           --mdc-list-side-padding-right: 4px;
           --mdc-icon-button-size: 36px;
+        }
+        ha-dropdown-item {
+          font-size: var(--ha-font-size-m);
         }
         .warning {
           color: var(--error-color);

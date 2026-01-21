@@ -1,4 +1,3 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiAccount,
   mdiCodeBraces,
@@ -28,7 +27,6 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -40,12 +38,13 @@ import {
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
-import "../../components/ha-button-menu";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/ha-tab-group";
@@ -298,7 +297,7 @@ class HUIRoot extends LitElement {
         icon: mdiMagnify,
         key: "ui.panel.lovelace.menu.search_home_assistant",
         buttonAction: this._showQuickBar,
-        overflowAction: this._handleShowQuickBar,
+        overflowAction: this._showQuickBar,
         visible: !this._editMode && !this.hass.kioskMode,
         overflow: this.narrow,
       },
@@ -306,7 +305,7 @@ class HUIRoot extends LitElement {
         icon: mdiCommentProcessingOutline,
         key: "ui.panel.lovelace.menu.assist_tooltip",
         buttonAction: this._showVoiceCommandDialog,
-        overflowAction: this._handleShowVoiceCommandDialog,
+        overflowAction: this._showVoiceCommandDialog,
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
@@ -340,7 +339,7 @@ class HUIRoot extends LitElement {
       {
         icon: mdiPencil,
         key: "ui.panel.lovelace.menu.configure_ui",
-        overflowAction: this._handleEnableEditMode,
+        overflowAction: this._enableEditMode,
         buttonAction: this._enableEditMode,
         visible:
           !this._editMode &&
@@ -359,12 +358,7 @@ class HUIRoot extends LitElement {
           icon: extraItem.icon,
           key: extraItem.labelKey,
           buttonAction: extraItem.action,
-          overflowAction: (ev: CustomEvent<RequestSelectedDetail>) => {
-            if (!shouldHandleRequestSelectedEvent(ev)) {
-              return;
-            }
-            extraItem.action();
-          },
+          overflowAction: extraItem.action,
           visible: true,
           overflow: this.narrow,
         });
@@ -382,10 +376,10 @@ class HUIRoot extends LitElement {
       const label = [this.hass!.localize(item.key), item.suffix].join(" ");
       const button = item.subItems
         ? html`
-            <ha-button-menu
+            <ha-dropdown
               slot="actionItems"
-              corner="BOTTOM_END"
-              menu-corner="END"
+              @wa-select=${this._handleSubItemSelect}
+              placement="bottom-end"
             >
               <ha-icon-button
                 .id="button-${index}"
@@ -398,20 +392,14 @@ class HUIRoot extends LitElement {
                 .filter((subItem) => subItem.visible)
                 .map(
                   (subItem) => html`
-                    <ha-list-item
-                      graphic="icon"
-                      .key=${subItem.key}
-                      @request-selected=${subItem.overflowAction}
-                    >
+                    <ha-dropdown-item .value=${subItem.key} .data=${subItem}>
+                      <ha-svg-icon slot="icon" .path=${subItem.icon}>
+                      </ha-svg-icon>
                       ${this.hass!.localize(subItem.key)}
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${subItem.icon}
-                      ></ha-svg-icon>
-                    </ha-list-item>
+                    </ha-dropdown-item>
                   `
                 )}
-            </ha-button-menu>
+            </ha-dropdown>
           `
         : html`
             <ha-icon-button
@@ -428,35 +416,11 @@ class HUIRoot extends LitElement {
     });
 
     if (overflowItems.length && !overflowCanPromote) {
-      const listItems: TemplateResult[] = [];
-      overflowItems.forEach((i) => {
-        const title = [this.hass!.localize(i.key), i.suffix].join(" ");
-        const action = i.subItems
-          ? (e) => {
-              if (!shouldHandleRequestSelectedEvent(e)) {
-                return;
-              }
-              showListItemsDialog(this, {
-                title: title,
-                mode: this.narrow ? "bottom-sheet" : "dialog",
-                items: i.subItems!.map((si) => ({
-                  iconPath: si.icon,
-                  label: this.hass!.localize(si.key),
-                  action: si.action,
-                })),
-              });
-            }
-          : i.overflowAction;
-
-        listItems.push(
-          html`<ha-list-item graphic="icon" @request-selected=${action}>
-            ${title}
-            <ha-svg-icon slot="graphic" .path=${i.icon}></ha-svg-icon>
-          </ha-list-item>`
-        );
-      });
       result.push(html`
-        <ha-button-menu slot="actionItems">
+        <ha-dropdown
+          slot="actionItems"
+          @wa-select=${this._handleOverflowItemSelect}
+        >
           <ha-icon-button
             slot="trigger"
             id="dashboardmenu"
@@ -464,8 +428,14 @@ class HUIRoot extends LitElement {
             .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
             hide-title
           ></ha-icon-button>
-          ${listItems}
-        </ha-button-menu>
+          ${overflowItems.map((i) => {
+            const title = [this.hass!.localize(i.key), i.suffix].join(" ");
+            return html`<ha-dropdown-item .value=${i.key} .data=${i}>
+              <ha-svg-icon slot="icon" .path=${i.icon}></ha-svg-icon>
+              ${title}
+            </ha-dropdown-item>`;
+          })}
+        </ha-dropdown>
       `);
     }
     return html`${result}`;
@@ -867,17 +837,11 @@ class HUIRoot extends LitElement {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
   }
 
-  private _handleRefresh(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleRefresh(): void {
     fireEvent(this, "config-refresh");
   }
 
-  private _handleReloadResources(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleReloadResources(): void {
     this.hass.callService("lovelace", "reload_resources");
     showConfirmationDialog(this, {
       title: this.hass!.localize(
@@ -892,14 +856,7 @@ class HUIRoot extends LitElement {
     });
   }
 
-  private _handleShowQuickBar(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-    this._showQuickBar();
-  }
-
-  private _showQuickBar(): void {
+  private _showQuickBar = () => {
     const params = {
       keyboard_shortcut: html`<a href="#" @click=${this._openShortcutDialog}
         >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
@@ -911,7 +868,7 @@ class HUIRoot extends LitElement {
         ? this.hass.localize("ui.tips.key_e_tip", params)
         : undefined,
     });
-  }
+  };
 
   private _goBack(): void {
     const views = this.lovelace?.config.views ?? [];
@@ -929,24 +886,16 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _handleAddDevice(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleAddDevice(): void {
     this._addDevice();
   }
 
   private _addDevice = async () => {
     await this.hass.loadFragmentTranslation("config");
-    showAddIntegrationDialog(this);
+    showAddIntegrationDialog(this, { navigateToResult: true });
   };
 
-  private _handleCreateAutomation(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleCreateAutomation(): void {
     this._createAutomation();
   }
 
@@ -955,10 +904,7 @@ class HUIRoot extends LitElement {
     showNewAutomationDialog(this, { mode: "automation" });
   };
 
-  private _handleCreateArea(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleCreateArea(): void {
     this._createArea();
   }
 
@@ -987,10 +933,7 @@ class HUIRoot extends LitElement {
     });
   };
 
-  private _handleAddPerson(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleAddPerson(): void {
     this._addPerson();
   }
 
@@ -1017,61 +960,31 @@ class HUIRoot extends LitElement {
     });
   };
 
-  private _handleRawEditor(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleRawEditor = () => {
     this.lovelace!.enableFullEditMode();
-  }
+  };
 
-  private _handleManageDashboards(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleManageDashboards(): void {
     navigate("/config/lovelace/dashboards");
   }
 
-  private _handleManageResources(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleManageResources(): void {
     navigate("/config/lovelace/resources");
   }
 
-  private _handleUnusedEntities(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _handleUnusedEntities = () => {
     navigate(`${this.route?.prefix}/hass-unused-entities`);
-  }
+  };
 
-  private _handleShowVoiceCommandDialog(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-    this._showVoiceCommandDialog();
-  }
-
-  private _showVoiceCommandDialog(): void {
+  private _showVoiceCommandDialog = () => {
     showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
-  }
+  };
 
   private _showMoreInfoDialog(entityId: string): void {
     showMoreInfoDialog(this, { entityId });
   }
 
-  private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-    this._enableEditMode();
-  }
-
-  private async _enableEditMode() {
+  private _enableEditMode = async () => {
     if (this._yamlMode) {
       showAlertDialog(this, {
         text: this.hass!.localize("ui.panel.lovelace.editor.yaml_unsupported"),
@@ -1137,7 +1050,7 @@ class HUIRoot extends LitElement {
       return;
     }
     this.lovelace!.setEditMode(true);
-  }
+  };
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
@@ -1348,6 +1261,33 @@ class HUIRoot extends LitElement {
 
   private _redo() {
     this._undoRedoController.redo();
+  }
+
+  private _handleSubItemSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const subItem = (ev.detail?.item as any)?.data as SubActionItem;
+    if (subItem?.action) {
+      subItem.action();
+    } else if (subItem?.overflowAction) {
+      subItem.overflowAction();
+    }
+  }
+
+  private _handleOverflowItemSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const item = (ev.detail?.item as any)?.data as ActionItem;
+    if (item?.subItems) {
+      const title = [this.hass!.localize(item.key), item.suffix].join(" ");
+      showListItemsDialog(this, {
+        title: title,
+        mode: this.narrow ? "bottom-sheet" : "dialog",
+        items: item.subItems!.map((si) => ({
+          iconPath: si.icon,
+          label: this.hass!.localize(si.key),
+          action: si.action,
+        })),
+      });
+    } else if (item?.overflowAction) {
+      item.overflowAction();
+    }
   }
 
   static get styles(): CSSResultGroup {

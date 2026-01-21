@@ -44,7 +44,7 @@ class HassioAddonAudio extends LitElement {
     return html`
       <ha-card
         outlined
-        .header=${this.supervisor.localize("addon.configuration.audio.header")}
+        .header=${this.supervisor.localize("app.configuration.audio.header")}
       >
         <div class="card-content">
           ${this._error
@@ -52,9 +52,7 @@ class HassioAddonAudio extends LitElement {
             : nothing}
           ${this._inputDevices &&
           html`<ha-select
-            .label=${this.supervisor.localize(
-              "addon.configuration.audio.input"
-            )}
+            .label=${this.supervisor.localize("app.configuration.audio.input")}
             @selected=${this._setInputDevice}
             @closed=${stopPropagation}
             fixedMenuPosition
@@ -72,9 +70,7 @@ class HassioAddonAudio extends LitElement {
           </ha-select>`}
           ${this._outputDevices &&
           html`<ha-select
-            .label=${this.supervisor.localize(
-              "addon.configuration.audio.output"
-            )}
+            .label=${this.supervisor.localize("app.configuration.audio.output")}
             @selected=${this._setOutputDevice}
             @closed=${stopPropagation}
             fixedMenuPosition
@@ -153,7 +149,7 @@ class HassioAddonAudio extends LitElement {
 
     const noDevice: HassioHardwareAudioDevice = {
       device: "default",
-      name: this.supervisor.localize("addon.configuration.audio.default"),
+      name: this.supervisor.localize("app.configuration.audio.default"),
     };
 
     try {

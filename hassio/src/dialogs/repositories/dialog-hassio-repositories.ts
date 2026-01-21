@@ -64,9 +64,9 @@ class HassioRepositoriesDialog extends LitElement {
     repos
       .filter(
         (repo) =>
-          repo.slug !== "core" && // The core add-ons repository
-          repo.slug !== "local" && // Locally managed add-ons
-          repo.slug !== "a0d7b954" && // Home Assistant Community Add-ons
+          repo.slug !== "core" && // The core apps repository
+          repo.slug !== "local" && // Locally managed apps
+          repo.slug !== "a0d7b954" && // Home Assistant Community Apps
           repo.slug !== "5c53de3b" && // The ESPHome repository
           repo.slug !== "d5369777" // Music Assistant repository
       )

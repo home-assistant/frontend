@@ -83,7 +83,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
       );
     } catch (err: any) {
       this._error = this.supervisor.localize(
-        "addon.documentation.get_documentation",
+        "app.documentation.get_documentation",
         { error: extractApiErrorMessage(err) }
       );
     }

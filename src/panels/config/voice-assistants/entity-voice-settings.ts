@@ -37,9 +37,9 @@ import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
+import "../../../components/voice-assistant-brand-icon";
 
 @customElement("entity-voice-settings")
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
@@ -213,17 +213,12 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
             return html`
               <ha-settings-row .threeLine=${!supported && manualConfig}>
-                <img
-                  alt=""
-                  src=${brandsUrl({
-                    domain: voiceAssistants[key].domain,
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
+                <voice-assistant-brand-icon
                   slot="prefix"
-                />
+                  .voiceAssistantId=${key}
+                  .hass=${this.hass}
+                >
+                </voice-assistant-brand-icon>
                 <span slot="heading">${voiceAssistants[key].name}</span>
                 ${!supported
                   ? html`<div slot="description" class="unsupported">

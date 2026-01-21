@@ -120,7 +120,7 @@ export class HassioAddonStore extends LitElement {
           ? html`
               <div class="advanced">
                 <a href="/profile" target="_top">
-                  ${this.supervisor.localize("store.missing_addons")}
+                  ${this.supervisor.localize("store.missing_apps")}
                 </a>
               </div>
             `

@@ -81,7 +81,7 @@ class HassioAddonConfigDashboard extends LitElement {
                   `
                 : nothing}
             `
-          : this.supervisor.localize("addon.configuration.no_configuration")}
+          : this.supervisor.localize("app.configuration.no_configuration")}
       </div>
     `;
   }
