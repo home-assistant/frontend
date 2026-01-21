@@ -6,6 +6,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { titleCase } from "../common/string/title-case";
+import { floorDefaultIconPath } from "./ha-floor-icon";
 import { getConfigEntries, type ConfigEntry } from "../data/config_entries";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { getPanelIcon, getPanelTitle } from "../data/panel";
@@ -23,6 +24,12 @@ import {
 } from "./ha-picker-combo-box";
 
 type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
+
+const RELATED_SORT_PREFIX = {
+  floor: "0_floor",
+  area: "1_area",
+  device: "2_device",
+} as const;
 
 interface NavigationItem extends PickerComboBoxItem {
   group: NavigationGroup;
@@ -365,16 +372,58 @@ export class HaNavigationPicker extends LitElement {
 
     const relatedDeviceIds = new Set<string>();
     const relatedAreaIds = new Set<string>();
+    const relatedFloorIds = new Set<string>();
 
     relatedResult?.device?.forEach((deviceId) =>
       relatedDeviceIds.add(deviceId)
     );
     relatedResult?.area?.forEach((areaId) => relatedAreaIds.add(areaId));
+    relatedResult?.floor?.forEach((floorId) => relatedFloorIds.add(floorId));
+
+    const addFloorForArea = (areaId: string) => {
+      const area = this.hass.areas[areaId];
+      if (area?.floor_id) {
+        relatedFloorIds.add(area.floor_id);
+      }
+    };
+
+    relatedAreaIds.forEach(addFloorForArea);
+    relatedDeviceIds.forEach((deviceId) => {
+      const device = this.hass.devices[deviceId];
+      if (device?.area_id) {
+        addFloorForArea(device.area_id);
+      }
+    });
 
     const relatedItems: NavigationItem[] = [];
+    for (const floorId of relatedFloorIds) {
+      const floor = this.hass.floors[floorId];
+      const primary = floor?.name ?? floorId;
+      const path = `/config/areas?historyBack=1&floor_id=${floorId}`;
+      const icon = floor?.icon ?? undefined;
+      relatedItems.push({
+        id: path,
+        primary,
+        secondary: path,
+        icon,
+        icon_path: icon
+          ? undefined
+          : floor
+            ? floorDefaultIconPath(floor)
+            : undefined,
+        sorting_label: [
+          RELATED_SORT_PREFIX.floor,
+          primary.startsWith("/") ? `zzz${primary}` : primary,
+          path,
+        ]
+          .filter(Boolean)
+          .join("_"),
+        group: "related",
+      });
+    }
     for (const deviceId of relatedDeviceIds) {
       const device = this.hass.devices[deviceId];
-      const primary = device?.name_by_user || device?.name || deviceId;
+      const primary = device?.name_by_user ?? device?.name ?? deviceId;
       const path = `/config/devices/device/${deviceId}`;
       const domain = device?.primary_config_entry
         ? this._configEntryLookup[device.primary_config_entry]?.domain
@@ -385,6 +434,7 @@ export class HaNavigationPicker extends LitElement {
         secondary: path,
         icon: mdiDevices,
         sorting_label: [
+          RELATED_SORT_PREFIX.device,
           primary.startsWith("/") ? `zzz${primary}` : primary,
           path,
         ]
@@ -397,14 +447,15 @@ export class HaNavigationPicker extends LitElement {
 
     for (const areaId of relatedAreaIds) {
       const area = this.hass.areas[areaId];
-      const primary = area?.name || areaId;
+      const primary = area?.name ?? areaId;
       const path = `/config/areas/area/${areaId}`;
       relatedItems.push({
         id: path,
         primary,
         secondary: path,
-        icon: area?.icon || mdiTextureBox,
+        icon: area?.icon ?? mdiTextureBox,
         sorting_label: [
+          RELATED_SORT_PREFIX.area,
           primary.startsWith("/") ? `zzz${primary}` : primary,
           path,
         ]

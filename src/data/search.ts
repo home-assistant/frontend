@@ -7,6 +7,7 @@ export interface RelatedResult {
   config_entry?: string[];
   device?: string[];
   entity?: string[];
+  floor?: string[];
   group?: string[];
   integration?: string[];
   scene?: string[];
