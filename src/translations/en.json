@@ -7523,10 +7523,6 @@
             "empty_state_action": "Go to the integrations page"
           },
           "areas": {
-            "empty_state_title": "This is a blank canvas",
-            "empty_state_content": "Add your smart lights, switches, or sensors to this area to get started.",
-            "empty_state_add_device": "Add new device",
-            "empty_state_assign_device": "Assign existing device",
             "sensors": "Sensors",
             "sensors_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
             "edit_the_area": "edit the area",
@@ -7560,7 +7556,10 @@
             "automations": "Automations",
             "for_you": "For you",
             "home": "Home",
-            "favorites": "Favorites"
+            "favorites": "Favorites",
+            "welcome_title": "No devices here yet",
+            "welcome_content": "Add lights, switches, sensors, or other smart home devices to get started.",
+            "welcome_add_device": "Add new device"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",
@@ -7582,12 +7581,18 @@
             "media_players": "Media players",
             "other_media_players": "Other media players"
           },
-          "other_devices": {
+          "home-other-devices": {
             "helpers": "Helpers",
             "entities": "Entities",
             "assign_area": "Assign area",
-            "empty_state_title": "All devices are organized",
-            "empty_state_content": "There are no unassigned devices left. All devices are organized into areas."
+            "all_organized_title": "All devices are organized",
+            "all_organized_content": "There are no unassigned devices left. All devices are organized into areas."
+          },
+          "home-area": {
+            "no_devices_title": "This is a blank canvas",
+            "no_devices_content": "Add your smart lights, switches, or sensors to this area to get started.",
+            "no_devices_add_device": "Add new device",
+            "no_devices_assign_device": "Assign existing device"
           }
         },
         "cards": {

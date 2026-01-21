@@ -368,17 +368,17 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             icon_color: "primary",
             content_only: true,
             title: hass.localize(
-              "ui.panel.lovelace.strategy.areas.empty_state_title"
+              "ui.panel.lovelace.strategy.home-area.no_devices_title"
             ),
             content: hass.localize(
-              "ui.panel.lovelace.strategy.areas.empty_state_content"
+              "ui.panel.lovelace.strategy.home-area.no_devices_content"
             ),
             ...(hass.user?.is_admin
               ? {
                   buttons: [
                     {
                       text: hass.localize(
-                        "ui.panel.lovelace.strategy.areas.empty_state_add_device"
+                        "ui.panel.lovelace.strategy.home-area.no_devices_add_device"
                       ),
                       appearance: "filled",
                       variant: "brand",
@@ -391,7 +391,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                     },
                     {
                       text: hass.localize(
-                        "ui.panel.lovelace.strategy.areas.empty_state_assign_device"
+                        "ui.panel.lovelace.strategy.home-area.no_devices_assign_device"
                       ),
                       appearance: "plain",
                       variant: "brand",

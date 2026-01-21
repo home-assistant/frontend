@@ -20,6 +20,7 @@ import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
+  EmptyStateCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   TileCardConfig,
@@ -340,6 +341,46 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             cards: [summaryHeadingCard, ...sidebarSummaryCards],
           }
         : undefined;
+
+    // No sections, show empty state
+    if (floorsSections.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:home-assistant",
+            icon_color: "primary",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.home.welcome_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.home.welcome_content"
+            ),
+            ...(hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home.welcome_add_device"
+                      ),
+                      appearance: "filled",
+                      variant: "brand",
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "add_integration",
+                        },
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          } as EmptyStateCardConfig,
+        ],
+      };
+    }
 
     const sections = (
       [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
