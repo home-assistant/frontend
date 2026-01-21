@@ -73,6 +73,8 @@ import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
+  isFilterUsed,
+  isRelatedItemsFilterUsed,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { isUnavailableState } from "../../../data/entity/entity";
@@ -148,7 +150,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  @state() private _filteredScenes?: string[] | null;
+  @state() private _filteredSceneEntityIds?: string[] | null;
 
   @state()
   @storage({
@@ -588,7 +590,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       this.hass.areas,
       this._categories,
       this._labels,
-      this._filteredScenes
+      this._filteredSceneEntityIds
     );
 
     return html`
@@ -902,89 +904,46 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _applyFilters() {
     const filters = Object.entries(this._filters);
-    let items: Set<string> | undefined;
+    let filteredEntityIds = this.scenes.map((scene) => scene.entity_id);
     for (const [key, filter] of filters) {
-      if (filter.items) {
-        if (!items) {
-          items = filter.items;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(filter.items)
-            : new Set([...items].filter((x) => filter.items!.has(x)));
-      }
       if (
-        key === "ha-filter-categories" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
+        // these 4 filters actually apply any selected options, and expose
+        // the list of automations that match these options as filter.items
+        isRelatedItemsFilterUsed(key, filter, [
+          "ha-filter-floor-areas",
+          "ha-filter-devices",
+          "ha-filter-entities",
+        ])
       ) {
-        const categoryItems = new Set<string>();
-        this.scenes
-          .filter(
-            (scene) =>
-              filter.value![0] ===
-              this._entityReg.find((reg) => reg.entity_id === scene.entity_id)
-                ?.categories.scene
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          filter.items!.has(entityId)
+        );
+
+        // the filters below only expose the selected options (as filter.value);
+        // applying the filter must be done here
+      } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
+        // category filter only allows a single selected option
+        filteredEntityIds = filteredEntityIds.filter(
+          (entityId) =>
+            filter.value![0] ===
+            this._entityReg.find((reg) => reg.entity_id === entityId)
+              ?.categories.scene
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          this._entityReg
+            .find((reg) => reg.entity_id === entityId)
+            ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
+            (filter.value as string[]).includes(va)
           )
-          .forEach((scene) => categoryItems.add(scene.entity_id));
-        if (!items) {
-          items = categoryItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(categoryItems)
-            : new Set([...items].filter((x) => categoryItems!.has(x)));
-      } else if (
-        key === "ha-filter-labels" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const labelItems = new Set<string>();
-        this.scenes
-          .filter((scene) =>
-            this._entityReg
-              .find((reg) => reg.entity_id === scene.entity_id)
-              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
-          )
-          .forEach((scene) => labelItems.add(scene.entity_id));
-        if (!items) {
-          items = labelItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(labelItems)
-            : new Set([...items].filter((x) => labelItems!.has(x)));
-      } else if (
-        key === "ha-filter-voice-assistants" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const assistItems = new Set<string>();
-        this.scenes
-          .filter((scene) =>
-            getEntityVoiceAssistantsIds(this._entityReg, scene.entity_id).some(
-              (va) => (filter.value as string[]).includes(va)
-            )
-          )
-          .forEach((scene) => assistItems.add(scene.entity_id));
-        if (!items) {
-          items = assistItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(assistItems)
-            : new Set([...items].filter((x) => assistItems!.has(x)));
+        );
       }
     }
-    this._filteredScenes = items ? [...items] : undefined;
+    this._filteredSceneEntityIds = filteredEntityIds;
   }
 
   private _clearFilter() {

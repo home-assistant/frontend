@@ -73,6 +73,8 @@ import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
+  isFilterUsed,
+  isRelatedItemsFilterUsed,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -152,7 +154,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  @state() private _filteredScripts?: string[] | null;
+  @state() private _filteredEntityIds?: string[] | null;
 
   @state()
   @storage({
@@ -561,7 +563,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       this.hass.areas,
       this._categories,
       this._labels,
-      this._filteredScripts
+      this._filteredEntityIds
     );
     return html`
       <hass-tabs-subpage-data-table
@@ -897,89 +899,47 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   private _applyFilters() {
     const filters = Object.entries(this._filters);
-    let items: Set<string> | undefined;
+    let filteredEntityIds = this.scripts.map((script) => script.entity_id);
     for (const [key, filter] of filters) {
-      if (filter.items) {
-        if (!items) {
-          items = filter.items;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(filter.items)
-            : new Set([...items].filter((x) => filter.items!.has(x)));
-      }
       if (
-        key === "ha-filter-categories" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
+        // these 4 filters actually apply any selected options, and expose
+        // the list of automations that match these options as filter.items
+        isRelatedItemsFilterUsed(key, filter, [
+          "ha-filter-floor-areas",
+          "ha-filter-devices",
+          "ha-filter-entities",
+          "ha-filter-blueprints",
+        ])
       ) {
-        const categoryItems = new Set<string>();
-        this.scripts
-          .filter(
-            (script) =>
-              filter.value![0] ===
-              this._entityReg.find((reg) => reg.entity_id === script.entity_id)
-                ?.categories.script
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          filter.items!.has(entityId)
+        );
+
+        // the filters below only expose the selected options (as filter.value);
+        // applying the filter must be done here
+      } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
+        // category filter only allows a single selected option
+        filteredEntityIds = filteredEntityIds.filter(
+          (entityId) =>
+            filter.value![0] ===
+            this._entityReg.find((reg) => reg.entity_id === entityId)
+              ?.categories.script
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          this._entityReg
+            .find((reg) => reg.entity_id === entityId)
+            ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
+            (filter.value as string[]).includes(va)
           )
-          .forEach((script) => categoryItems.add(script.entity_id));
-        if (!items) {
-          items = categoryItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(categoryItems)
-            : new Set([...items].filter((x) => categoryItems!.has(x)));
-      } else if (
-        key === "ha-filter-labels" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const labelItems = new Set<string>();
-        this.scripts
-          .filter((script) =>
-            this._entityReg
-              .find((reg) => reg.entity_id === script.entity_id)
-              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
-          )
-          .forEach((script) => labelItems.add(script.entity_id));
-        if (!items) {
-          items = labelItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(labelItems)
-            : new Set([...items].filter((x) => labelItems!.has(x)));
-      } else if (
-        key === "ha-filter-voice-assistants" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const assistItems = new Set<string>();
-        this.scripts
-          .filter((script) =>
-            getEntityVoiceAssistantsIds(this._entityReg, script.entity_id).some(
-              (va) => (filter.value as string[]).includes(va)
-            )
-          )
-          .forEach((script) => assistItems.add(script.entity_id));
-        if (!items) {
-          items = assistItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(assistItems)
-            : new Set([...items].filter((x) => assistItems!.has(x)));
+        );
       }
     }
-    this._filteredScripts = items ? [...items] : undefined;
+    this._filteredEntityIds = filteredEntityIds;
   }
 
   protected updated(changedProps: PropertyValues) {
