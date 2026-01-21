@@ -54,6 +54,7 @@ export interface PickerComboBoxItem {
   sorting_label?: string;
   icon_path?: string;
   icon?: string;
+  isRelated?: boolean;
 }
 
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";

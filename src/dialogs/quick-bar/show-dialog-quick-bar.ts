@@ -1,4 +1,5 @@
 import { fireEvent } from "../../common/dom/fire_event";
+import type { ItemType } from "../../data/search";
 
 export type QuickBarSection =
   | "entity"
@@ -11,6 +12,7 @@ export interface QuickBarParams {
   entityFilter?: string;
   mode?: QuickBarSection;
   hint?: string;
+  contextItem?: { itemType: ItemType; itemId: string };
 }
 
 export const loadQuickBar = () => import("./ha-quick-bar");

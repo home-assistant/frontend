@@ -10,6 +10,7 @@ import type {
   QuickBarSection,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { showQuickBar } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import type { ItemType } from "../data/search";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { Redirects } from "../panels/my/ha-panel-my";
@@ -23,11 +24,20 @@ declare global {
     "hass-quick-bar": QuickBarParams;
     "hass-quick-bar-trigger": KeyboardEvent;
     "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
+    "hass-quick-bar-context":
+      | { itemType: ItemType; itemId: string }
+      | undefined;
   }
 }
 
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
+    private _quickBarContext?: { itemType: ItemType; itemId: string };
+
+    private _clearQuickBarContext = () => {
+      this._quickBarContext = undefined;
+    };
+
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
 
@@ -35,6 +45,19 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         this._updateHass({ enableShortcuts: ev.detail });
         storeState(this.hass!);
       });
+
+      this.addEventListener("hass-quick-bar-context", (ev) => {
+        this._quickBarContext =
+          ev.detail && "itemType" in ev.detail && "itemId" in ev.detail
+            ? ev.detail
+            : undefined;
+      });
+
+      mainWindow.addEventListener(
+        "location-changed",
+        this._clearQuickBarContext
+      );
+      mainWindow.addEventListener("popstate", this._clearQuickBarContext);
 
       mainWindow.addEventListener("hass-quick-bar-trigger", (ev) => {
         switch (ev.detail.key) {
@@ -59,6 +82,15 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       });
 
       this._registerShortcut();
+    }
+
+    public disconnectedCallback() {
+      super.disconnectedCallback();
+      mainWindow.removeEventListener(
+        "location-changed",
+        this._clearQuickBarContext
+      );
+      mainWindow.removeEventListener("popstate", this._clearQuickBarContext);
     }
 
     private _registerShortcut() {
@@ -114,7 +146,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
       e.preventDefault();
 
-      showQuickBar(this, { mode });
+      showQuickBar(this, {
+        mode,
+        contextItem: this._quickBarContext,
+      });
     }
 
     private _showShortcutDialog(e: KeyboardEvent) {
