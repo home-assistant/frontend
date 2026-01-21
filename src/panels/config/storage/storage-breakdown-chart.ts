@@ -242,7 +242,7 @@ export class StorageBreakdownChart extends LitElement {
     }
 
     .chart-container {
-      transition: height var(--ha-animation-base-duration) ease;
+      transition: height var(--ha-animation-duration-slow) ease;
       overflow: hidden;
     }
 
@@ -264,7 +264,7 @@ export class StorageBreakdownChart extends LitElement {
 
     ha-segmented-bar,
     ha-sunburst-chart {
-      animation: fade-in var(--ha-animation-base-duration) ease;
+      animation: fade-in var(--ha-animation-duration-slow) ease;
     }
 
     @keyframes fade-in {

@@ -289,9 +289,9 @@ export class TopAppBarBaseBase extends BaseElement {
         padding-top: var(--safe-area-inset-top);
         padding-right: var(--safe-area-inset-right);
         transition:
-          width var(--ha-animation-base-duration) ease,
-          padding-left var(--ha-animation-base-duration) ease,
-          padding-right var(--ha-animation-base-duration) ease;
+          width var(--ha-animation-duration-normal) ease,
+          padding-left var(--ha-animation-duration-normal) ease,
+          padding-right var(--ha-animation-duration-normal) ease;
       }
       :host([narrow]) .mdc-top-app-bar {
         padding-left: var(--safe-area-inset-left);

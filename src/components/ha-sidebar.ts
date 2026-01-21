@@ -740,7 +740,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           );
           padding-inline-end: initial;
           padding-top: var(--safe-area-inset-top, 0px);
-          transition: width var(--ha-animation-base-duration) ease;
+          transition: width var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) .menu {
           width: calc(256px + var(--safe-area-inset-left, 0px));
@@ -759,11 +759,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           min-width: 0;
           max-width: 0;
           opacity: 0;
-          transform: translateX(calc(-4px * var(--scale-direction)));
           transition:
-            max-width var(--ha-animation-base-duration) ease,
-            opacity var(--ha-animation-base-duration) ease,
-            transform var(--ha-animation-base-duration) ease;
+            max-width var(--ha-animation-duration-normal) ease,
+            opacity var(--ha-animation-duration-normal) ease;
         }
         :host([narrow]) .title {
           margin: 0;
@@ -772,11 +770,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         :host([expanded]) .title {
           max-width: 100%;
           opacity: 1;
-          transform: none;
-          transition-delay: 0ms, 80ms, 80ms;
-        }
-        :host(:not([expanded])) .title {
-          margin: 0;
+          transition-delay: 0ms, 80ms;
         }
         .hidden-panel {
           display: none;
@@ -818,7 +812,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--ha-space-3);
           --md-list-item-leading-icon-size: var(--ha-space-6);
-          transition: width var(--ha-animation-base-duration) ease;
+          transition: width var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) ha-md-list-item {
           width: 248px;
@@ -865,19 +859,16 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          transform: translateX(calc(-4px * var(--scale-direction)));
           font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);
           transition:
-            max-width var(--ha-animation-base-duration) ease,
-            opacity var(--ha-animation-base-duration) ease,
-            transform var(--ha-animation-base-duration) ease;
+            max-width var(--ha-animation-duration-normal) ease,
+            opacity var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) ha-md-list-item .item-text {
           max-width: 100%;
           opacity: 1;
-          transform: none;
-          transition-delay: 0ms, 80ms, 80ms;
+          transition-delay: 0ms, 80ms;
           display: block;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -906,8 +897,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           padding: 2px 6px;
           color: var(--text-accent-color, var(--text-primary-color));
           transition:
-            opacity var(--ha-animation-base-duration) ease,
-            transform var(--ha-animation-base-duration) ease;
+            opacity var(--ha-animation-duration-normal) ease,
+            transform var(--ha-animation-duration-normal) ease;
         }
 
         ha-svg-icon + .badge {

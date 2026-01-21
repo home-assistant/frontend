@@ -155,7 +155,7 @@ export class HaDrawer extends DrawerBase {
         transition-property: transform, width;
         transition-duration:
           var(--mdc-drawer-transition-duration, 0.2s),
-          var(--ha-animation-base-duration);
+          var(--ha-animation-duration-normal);
         transition-timing-function:
           var(
             --mdc-drawer-transition-timing-function,
@@ -176,8 +176,8 @@ export class HaDrawer extends DrawerBase {
         width: 100%;
         box-sizing: border-box;
         transition:
-          padding-left var(--ha-animation-base-duration) ease,
-          padding-inline-start var(--ha-animation-base-duration) ease;
+          padding-left var(--ha-animation-duration-normal) ease,
+          padding-inline-start var(--ha-animation-duration-normal) ease;
       }
       @media (prefers-reduced-motion: reduce) {
         .mdc-drawer,

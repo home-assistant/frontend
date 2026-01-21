@@ -18,7 +18,7 @@ export const removeLaunchScreen = () => {
     launchScreenElement.classList.add("removing");
 
     const durationFromCss = getComputedStyle(document.documentElement)
-      .getPropertyValue("--ha-animation-base-duration")
+      .getPropertyValue("--ha-animation-duration-slow")
       .trim();
 
     setTimeout(() => {
