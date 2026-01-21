@@ -143,20 +143,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
-    const domain = computeDomain(this._entityId);
-    const itemType: ItemType = SearchableDomains.has(domain)
-      ? (domain as ItemType)
-      : "entity";
-    fireEvent(this, "hass-quick-bar-context", {
-      itemType,
-      itemId: this._entityId,
-    });
-
     this._data = params.data;
     this._currView = params.view || DEFAULT_VIEW;
     this._initialView = params.view || DEFAULT_VIEW;
     this._childView = undefined;
     this.large = false;
+    this._setQuickBarContext();
     this._loadEntityRegistryEntry();
   }
 
@@ -172,6 +164,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     } catch (_e) {
       this._entry = null;
     }
+
+    this._setQuickBarContext();
   }
 
   public closeDialog() {
@@ -222,6 +216,53 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _shouldShowAddEntityTo(): boolean {
     return !!this.hass.auth.external?.config.hasEntityAddTo;
+  }
+
+  private _setQuickBarContext(): void {
+    if (!this._entityId) {
+      return;
+    }
+
+    const stateObj = this.hass.states[this._entityId] as HassEntity | undefined;
+    const context = stateObj
+      ? getEntityContext(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        )
+      : this._entry
+        ? getEntityEntryContext(
+            this._entry,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          )
+        : undefined;
+
+    const domain = computeDomain(this._entityId);
+    let itemType: ItemType = SearchableDomains.has(domain)
+      ? (domain as ItemType)
+      : "entity";
+    let itemId = this._entityId;
+
+    if (context?.device) {
+      itemType = "device";
+      itemId = context.device.id;
+    } else if (context?.area) {
+      itemType = "area";
+      itemId = context.area.area_id;
+    } else if (context?.floor) {
+      itemType = "floor";
+      itemId = context.floor.floor_id;
+    }
+
+    fireEvent(this, "hass-quick-bar-context", {
+      itemType,
+      itemId,
+    });
   }
 
   private _getDeviceId(): string | null {
