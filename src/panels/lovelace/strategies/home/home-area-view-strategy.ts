@@ -27,6 +27,7 @@ import {
 export interface HomeAreaViewStrategyConfig {
   type: "home-area";
   area?: string;
+  home_panel?: boolean;
 }
 
 @customElement("home-area-view-strategy")
@@ -373,7 +374,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             content: hass.localize(
               "ui.panel.lovelace.strategy.home-area.no_devices_content"
             ),
-            ...(hass.user?.is_admin
+            ...(config.home_panel && hass.user?.is_admin
               ? {
                   buttons: [
                     {

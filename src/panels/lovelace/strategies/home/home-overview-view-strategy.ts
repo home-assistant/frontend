@@ -33,6 +33,7 @@ import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
+  home_panel?: boolean;
 }
 
 const computeAreaCard = (
@@ -358,7 +359,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             content: hass.localize(
               "ui.panel.lovelace.strategy.home.welcome_content"
             ),
-            ...(hass.user?.is_admin
+            ...(config.home_panel && hass.user?.is_admin
               ? {
                   buttons: [
                     {
