@@ -67,6 +67,12 @@ export class HaNavigationPicker extends LitElement {
     other_routes: [],
   };
 
+  private _getRelatedItems = memoizeOne(
+    async (_cacheKey: string, context: ActionRelatedContext) =>
+      this._fetchRelatedItems(context),
+    (newArgs, lastArgs) => newArgs[0] === lastArgs[0]
+  );
+
   protected render() {
     const sections = [
       ...(this._navigationGroups.related.length
@@ -368,20 +374,25 @@ export class HaNavigationPicker extends LitElement {
       this.context?.entity_id === context?.entity_id &&
       this.context?.area_id === context?.area_id;
 
+    const items = await this._getRelatedItems(
+      `${context.entity_id ?? ""}|${context.area_id ?? ""}`,
+      context
+    );
+    if (contextMatches()) {
+      updateRelatedItems(items);
+    }
+  }
+
+  private async _fetchRelatedItems(
+    context: ActionRelatedContext
+  ): Promise<NavigationItem[]> {
     let relatedResult: RelatedResult | undefined;
     try {
       relatedResult = context.entity_id
         ? await findRelated(this.hass, "entity", context.entity_id)
         : await findRelated(this.hass, "area", context.area_id!);
     } catch (_err) {
-      if (contextMatches()) {
-        updateRelatedItems([]);
-      }
-      return;
-    }
-
-    if (!contextMatches()) {
-      return;
+      return [];
     }
 
     const relatedDeviceIds = new Set(relatedResult?.device ?? []);
@@ -439,7 +450,7 @@ export class HaNavigationPicker extends LitElement {
       });
     }
 
-    updateRelatedItems(relatedItems);
+    return relatedItems;
   }
 
   private async _loadConfigEntries() {
