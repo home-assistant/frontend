@@ -10,6 +10,7 @@ import {
   mdiEye,
   mdiInformationOutline,
   mdiMotionPlayOutline,
+  mdiPencil,
   mdiPlay,
   mdiPlaylistEdit,
   mdiTag,
@@ -20,27 +21,27 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
-import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-picker";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-textfield";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -66,6 +67,11 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import {
+  showSceneSaveDialog,
+  type EntityRegistryUpdate,
+} from "./scene-save-dialog/show-dialog-scene-save";
+import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
@@ -115,6 +121,18 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
+    transformer: function (this: HaSceneEditor, value) {
+      return value.find(
+        ({ entity_id }) => entity_id === this._scene?.entity_id
+      );
+    },
+    watch: ["_scene"],
+  })
+  private _registryEntry?: EntityRegistryEntry;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
   @state() private _scene?: SceneEntity;
@@ -131,29 +149,13 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   @state() private _saving = false;
 
-  // undefined means not set in this session
-  // null means picked nothing.
-  @state() private _updatedAreaId?: string | null;
+  private _entityRegistryUpdate?: EntityRegistryUpdate;
 
-  // Callback to be called when scene is set.
-  private _scenesSet?: () => void;
+  private _newSceneId?: string;
 
-  private _getRegistryAreaId = memoizeOne(
-    (entries: EntityRegistryEntry[], entity_id: string) => {
-      const entry = entries.find((ent) => ent.entity_id === entity_id);
-      return entry ? entry.area_id : null;
-    }
-  );
-
-  private _getCategory = memoizeOne(
-    (entries: EntityRegistryEntry[], entity_id: string | undefined) => {
-      if (!entity_id) {
-        return undefined;
-      }
-      const entry = entries.find((ent) => ent.entity_id === entity_id);
-      return entry?.categories?.scene;
-    }
-  );
+  private _entityRegCreated?: (
+    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
+  ) => void;
 
   private _getEntitiesDevices = memoizeOne(
     (
@@ -223,9 +225,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .header=${this._scene
-          ? computeStateName(this._scene)
-          : this.hass.localize("ui.panel.config.scene.editor.default_name")}
+        .header=${this._config?.name ||
+        this.hass.localize("ui.panel.config.scene.editor.default_name")}
       >
         <ha-dropdown
           slot="toolbar-icon"
@@ -245,6 +246,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
             ${this.hass.localize("ui.panel.config.scene.picker.apply")}
             <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
           </ha-dropdown-item>
+
           <ha-dropdown-item value="show-info" .disabled=${!this.sceneId}>
             ${this.hass.localize("ui.panel.config.scene.picker.show_info")}
             <ha-svg-icon
@@ -252,6 +254,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
           </ha-dropdown-item>
+
           <ha-dropdown-item value="show-settings" .disabled=${!this.sceneId}>
             ${this.hass.localize(
               "ui.panel.config.automation.picker.show_settings"
@@ -261,9 +264,14 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
           <ha-dropdown-item value="edit-category" .disabled=${!this.sceneId}>
             ${this.hass.localize(
-              `ui.panel.config.scene.picker.${this._getCategory(this._entityRegistryEntries, this._scene?.entity_id) ? "edit_category" : "assign_category"}`
+              `ui.panel.config.scene.picker.${this._registryEntry?.categories?.scene ? "edit_category" : "assign_category"}`
             )}
             <ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item value="rename" .disabled=${!this.sceneId}>
+            ${this.hass.localize("ui.panel.config.scene.editor.rename")}
+            <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
           </ha-dropdown-item>
 
           <ha-dropdown-item value="toggle-yaml">
@@ -304,7 +312,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           extended
           .disabled=${this._saving}
           @click=${this._saveScene}
-          class=${classMap({ dirty: this._dirty, saving: this._saving })}
+          class=${classMap({
+            dirty: this._dirty || !this.sceneId,
+            saving: this._saving,
+          })}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
@@ -371,38 +382,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                   )}
                 </ha-button>
               </ha-alert>
-              <ha-card outlined>
-                <div class="card-content">
-                  <ha-textfield
-                    .value=${this._config.name}
-                    .name=${"name"}
-                    @change=${this._valueChanged}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.scene.editor.name"
-                    )}
-                  ></ha-textfield>
-                  <ha-icon-picker
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.scene.editor.icon"
-                    )}
-                    .name=${"icon"}
-                    .value=${this._config.icon}
-                    @value-changed=${this._valueChanged}
-                  >
-                  </ha-icon-picker>
-                  <ha-area-picker
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.scene.editor.area"
-                    )}
-                    .name=${"area"}
-                    .value=${this._sceneAreaIdWithUpdates || ""}
-                    @value-changed=${this._areaChanged}
-                  >
-                  </ha-area-picker>
-                </div>
-              </ha-card>
             </div>
 
             <ha-config-section vertical .isWide=${this.isWide}>
@@ -574,6 +553,31 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     </div>`;
   }
 
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (
+      this._entityRegCreated &&
+      this._newSceneId &&
+      (changedProps.has("scenes") || changedProps.has("_entityRegistryEntries"))
+    ) {
+      const scene = this.scenes.find(
+        (entity: SceneEntity) => entity.attributes.id === this._newSceneId
+      );
+      if (scene) {
+        // Scene appeared in state machine, now look for registry entry
+        const registryEntry = this._entityRegistryEntries.find(
+          (reg) => reg.entity_id === scene.entity_id
+        );
+        if (registryEntry) {
+          // We have both the scene and its registry entry, resolve
+          this._entityRegCreated(registryEntry);
+          this._entityRegCreated = undefined;
+        }
+      }
+    }
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
@@ -598,8 +602,12 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         ...initData?.config,
       };
       this._initEntities(this._config);
-      if (initData?.areaId) {
-        this._updatedAreaId = initData.areaId;
+      if (initData?.areaId !== undefined) {
+        this._entityRegistryUpdate = {
+          area: initData.areaId || "",
+          labels: [],
+          category: "",
+        };
       }
       this._dirty =
         initData !== undefined &&
@@ -630,9 +638,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         }
       }
     }
-    if (this._scenesSet && changedProps.has("scenes")) {
-      this._scenesSet();
-    }
 
     if (changedProps.has("hass")) {
       if (this._scene) {
@@ -649,10 +654,12 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
   }
 
-  private async _handleMenuAction(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
-    const action = ev.detail.item.value;
+  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+    if (!action) {
+      return;
+    }
+
     switch (action) {
       case "apply":
         activateScene(this.hass, this._scene!.entity_id);
@@ -667,7 +674,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         });
         break;
       case "edit-category":
-        this._editCategory(this._scene!);
+        this._editCategory();
+        break;
+      case "rename":
+        this._promptSceneRename();
         break;
       case "toggle-yaml":
         if (this._mode === "yaml") {
@@ -930,44 +940,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     this._dirty = true;
   }
 
-  private _valueChanged(ev: Event) {
-    ev.stopPropagation();
-    const target = ev.target as any;
-    const name = target.name;
-    if (!name) {
-      return;
-    }
-    let newVal = (ev as CustomEvent).detail?.value ?? target.value;
-    if (target.type === "number") {
-      newVal = Number(newVal);
-    }
-    if ((this._config![name] || "") === newVal) {
-      return;
-    }
-    if (!newVal) {
-      delete this._config![name];
-      this._config = { ...this._config! };
-    } else {
-      this._config = { ...this._config!, [name]: newVal };
-    }
-    this._dirty = true;
-  }
-
-  private _areaChanged(ev: CustomEvent) {
-    const newValue = ev.detail.value === "" ? null : ev.detail.value;
-
-    if (newValue === (this._sceneAreaIdWithUpdates || "")) {
-      return;
-    }
-
-    if (newValue === this._sceneAreaIdCurrent) {
-      this._updatedAreaId = undefined;
-    } else {
-      this._updatedAreaId = newValue;
-      this._dirty = true;
-    }
-  }
-
   private _stateChanged(event: HassEvent) {
     if (
       event.context.id !== this._activateContextId &&
@@ -1008,7 +980,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   }
 
   private async _delete(): Promise<void> {
-    await deleteScene(this.hass, this.sceneId!);
+    if (!this.sceneId) {
+      return;
+    }
+    await deleteScene(this.hass, this.sceneId);
     if (this._mode === "live") {
       applyScene(this.hass, this._storedStates);
     }
@@ -1112,59 +1087,91 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       return;
     }
 
-    const id = !this.sceneId ? "" + Date.now() : this.sceneId!;
     if (this._mode === "live") {
       this._generateConfigFromLive();
     }
+
+    const isNewScene = !this.sceneId;
+    if (isNewScene) {
+      const saved = await this._promptSceneSave();
+      if (!saved) {
+        return;
+      }
+    }
+
+    const id = this.sceneId || String(Date.now());
+
+    this._saving = true;
+
+    let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
+    if (this._entityRegistryUpdate !== undefined && !this.sceneId) {
+      this._newSceneId = id;
+      entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
+        this._entityRegCreated = resolve;
+      });
+    }
+
     try {
-      this._saving = true;
       await saveScene(this.hass, id, this._config!);
+      this._errors = undefined;
 
-      if (this._updatedAreaId !== undefined) {
-        let scene =
-          this._scene ||
-          this.scenes.find(
-            (entity: SceneEntity) => entity.attributes.id === id
-          );
+      if (this._entityRegistryUpdate !== undefined) {
+        let entityId = this._scene?.entity_id;
 
-        if (!scene) {
+        // wait for scene to appear in entity registry when creating a new scene
+        if (entityRegPromise) {
           try {
-            await new Promise<void>((resolve, reject) => {
-              setTimeout(reject, 3000);
-              this._scenesSet = resolve;
-            });
-            scene = this.scenes.find(
-              (entity: SceneEntity) => entity.attributes.id === id
-            );
-          } catch (_err) {
-            // We do nothing.
-          } finally {
-            this._scenesSet = undefined;
+            const scene = await promiseTimeout(5000, entityRegPromise);
+            entityId = scene.entity_id;
+          } catch (e) {
+            if (e instanceof Error && e.name === "TimeoutError") {
+              // Show the dialog and give user a chance to wait for the registry
+              // to respond.
+              await showAutomationSaveTimeoutDialog(this, {
+                savedPromise: entityRegPromise,
+                type: "scene",
+              });
+              try {
+                // We already gave the user a chance to wait once, so if they skipped
+                // the dialog and it's still not there just immediately timeout.
+                const scene = await promiseTimeout(0, entityRegPromise);
+                entityId = scene.entity_id;
+              } catch (e2) {
+                if (!(e2 instanceof Error && e2.name === "TimeoutError")) {
+                  throw e2;
+                }
+              }
+            } else {
+              throw e;
+            }
           }
         }
 
-        if (scene) {
-          await updateEntityRegistryEntry(this.hass, scene.entity_id, {
-            area_id: this._updatedAreaId,
+        if (entityId) {
+          await updateEntityRegistryEntry(this.hass, entityId, {
+            area_id: this._entityRegistryUpdate.area || null,
+            labels: this._entityRegistryUpdate.labels || [],
+            categories: {
+              scene: this._entityRegistryUpdate.category || null,
+            },
           });
         }
-
-        this._updatedAreaId = undefined;
       }
 
       this._dirty = false;
-
-      if (!this.sceneId) {
+      if (isNewScene) {
         navigate(`/config/scene/edit/${id}`, { replace: true });
       }
     } catch (err: any) {
-      this._errors = err.body.message || err.message;
+      this._errors = err.body?.message || err.message || err.body;
       showToast(this, {
-        message: err.body.message || err.message,
+        message: err.body?.message || err.message || err.body,
       });
       throw err;
     } finally {
       this._saving = false;
+      this._entityRegCreated = undefined;
+      this._newSceneId = undefined;
     }
   }
 
@@ -1174,26 +1181,12 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     };
   }
 
-  private get _sceneAreaIdWithUpdates(): string | undefined | null {
-    return this._updatedAreaId !== undefined
-      ? this._updatedAreaId
-      : this._sceneAreaIdCurrent;
-  }
-
   private get _sceneAreaIdCurrent(): string | undefined | null {
-    return this._scene
-      ? this._getRegistryAreaId(
-          this._entityRegistryEntries,
-          this._scene.entity_id
-        )
-      : undefined;
+    return this._registryEntry?.area_id || undefined;
   }
 
-  private _editCategory(scene: any) {
-    const entityReg = this._entityRegistryEntries.find(
-      (reg) => reg.entity_id === scene.entity_id
-    );
-    if (!entityReg) {
+  private _editCategory() {
+    if (!this._registryEntry) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.scene.picker.no_category_support"
@@ -1206,7 +1199,45 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
     showAssignCategoryDialog(this, {
       scope: "scene",
-      entityReg,
+      entityReg: this._registryEntry,
+    });
+  }
+
+  private async _promptSceneSave(): Promise<boolean> {
+    return new Promise((resolve) => {
+      showSceneSaveDialog(this, {
+        config: this._config!,
+        domain: "scene",
+        entityRegistryEntry: this._registryEntry,
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        updateConfig: async (newConfig, entityRegistryUpdate) => {
+          this._config = newConfig;
+          this._entityRegistryUpdate = entityRegistryUpdate;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve(true);
+        },
+        onClose: () => resolve(false),
+      });
+    });
+  }
+
+  private async _promptSceneRename(): Promise<boolean> {
+    return new Promise((resolve) => {
+      showSceneSaveDialog(this, {
+        config: this._config!,
+        domain: "scene",
+        entityRegistryEntry: this._registryEntry,
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        updateConfig: async (newConfig, entityRegistryUpdate) => {
+          this._config = newConfig;
+          this._entityRegistryUpdate = entityRegistryUpdate;
+          this._dirty = true;
+          this.requestUpdate();
+          resolve(true);
+        },
+        onClose: () => resolve(false),
+      });
     });
   }
 
@@ -1275,14 +1306,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         ha-fab.saving {
           opacity: var(--light-disabled-opacity);
         }
-        ha-icon-picker,
-        ha-area-picker,
         ha-entity-picker {
           display: block;
           margin-top: 8px;
-        }
-        ha-textfield {
-          display: block;
         }
         div[slot="meta"] {
           display: flex;

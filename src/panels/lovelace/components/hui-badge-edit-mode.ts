@@ -1,4 +1,4 @@
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -14,9 +14,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -120,48 +121,46 @@ export class HuiBadgeEditMode extends LitElement {
           <div class="edit-overlay"></div>
           <ha-svg-icon class="edit" .path=${mdiPencil}> </ha-svg-icon>
         </div>
-        <ha-button-menu
+        <ha-dropdown
           class="more"
-          corner="BOTTOM_END"
-          menu-corner="END"
-          .path=${[this.path!]}
-          @action=${this._handleAction}
+          placement="bottom-end"
+          @wa-select=${this._handleAction}
           @opened=${this._handleOpened}
           @closed=${this._handleClosed}
         >
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
-          <ha-list-item graphic="icon">
-            <ha-svg-icon slot="graphic" .path=${mdiPencil}></ha-svg-icon>
+          <ha-dropdown-item value="edit">
+            <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.edit")}
-          </ha-list-item>
-          <ha-list-item graphic="icon">
+          </ha-dropdown-item>
+          <ha-dropdown-item value="duplicate">
             <ha-svg-icon
-              slot="graphic"
+              slot="icon"
               .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.lovelace.editor.edit_card.duplicate"
             )}
-          </ha-list-item>
-          <ha-list-item graphic="icon">
-            <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="copy">
+            <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
-          </ha-list-item>
-          <ha-list-item graphic="icon">
-            <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="cut">
+            <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
-          </ha-list-item>
-          <li divider role="separator"></li>
-          <ha-list-item graphic="icon" class="warning">
+          </ha-dropdown-item>
+          <wa-divider></wa-divider>
+          <ha-dropdown-item value="delete" class="warning">
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon
               class="warning"
-              slot="graphic"
+              slot="icon"
               .path=${mdiDelete}
             ></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
       </div>
     `;
   }
@@ -186,21 +185,22 @@ export class HuiBadgeEditMode extends LitElement {
     this._editBadge();
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "edit":
         this._editBadge();
         break;
-      case 1:
+      case "duplicate":
         this._duplicateBadge();
         break;
-      case 2:
+      case "copy":
         this._copyBadge();
         break;
-      case 3:
+      case "cut":
         this._cutBadge();
         break;
-      case 4:
+      case "delete":
         this._deleteBadge();
         break;
     }
@@ -297,7 +297,7 @@ export class HuiBadgeEditMode extends LitElement {
           background: var(--secondary-background-color);
           --mdc-icon-size: 16px;
         }
-        .more {
+        .more ha-icon-button {
           position: absolute;
           right: -8px;
           top: -8px;

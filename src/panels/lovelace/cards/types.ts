@@ -74,6 +74,9 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   unit?: string;
   theme?: string;
   state_color?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -648,6 +651,15 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+}
+
+export interface DistributionEntityConfig extends EntityConfig {}
+
+export interface DistributionCardConfig extends LovelaceCardConfig {
+  type: "distribution";
+  title?: string;
+  entities: (string | DistributionEntityConfig)[];
+  theme?: string;
 }
 
 export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {

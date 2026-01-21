@@ -9182,13 +9182,13 @@ __metadata:
     qrcode: "npm:1.5.4"
     roboto-fontface: "npm:0.10.0"
     rrule: "npm:2.8.1"
-    rspack-manifest-plugin: "npm:5.2.0"
+    rspack-manifest-plugin: "npm:5.2.1"
     serve: "npm:14.2.5"
     sinon: "npm:21.0.1"
     sortablejs: "patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch"
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
-    tar: "npm:7.5.2"
+    tar: "npm:7.5.3"
     terser-webpack-plugin: "npm:5.3.16"
     tinykeys: "npm:3.0.0"
     ts-lit-plugin: "npm:2.0.2"
@@ -12554,17 +12554,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rspack-manifest-plugin@npm:5.2.0":
-  version: 5.2.0
-  resolution: "rspack-manifest-plugin@npm:5.2.0"
+"rspack-manifest-plugin@npm:5.2.1":
+  version: 5.2.1
+  resolution: "rspack-manifest-plugin@npm:5.2.1"
   dependencies:
     "@rspack/lite-tapable": "npm:^1.0.1"
   peerDependencies:
-    "@rspack/core": 0.x || 1.x
+    "@rspack/core": ^1.0.0 || ^2.0.0-0
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
-  checksum: 10/661774e2f3d41db615b2fb2d14800c85524b33f3fd0b67e4161ca775f9ccbba3ecc8db21cd6e1f878e65a13cd6d718c6d66ad55614137cecb615cfd8d8f1cac9
+  checksum: 10/fe0ddf92a881e45859f8dc4991823e3773292cfbd087db0d83d5856785069b1774139116fe0ca0adc02bdca8f7392165a990b104bc0298f4e1824c9d73672b05
   languageName: node
   linkType: hard
 
@@ -13592,16 +13592,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:7.5.2, tar@npm:^7.5.2":
-  version: 7.5.2
-  resolution: "tar@npm:7.5.2"
+"tar@npm:7.5.3, tar@npm:^7.5.2":
+  version: 7.5.3
+  resolution: "tar@npm:7.5.3"
   dependencies:
     "@isaacs/fs-minipass": "npm:^4.0.0"
     chownr: "npm:^3.0.0"
     minipass: "npm:^7.1.2"
     minizlib: "npm:^3.1.0"
     yallist: "npm:^5.0.0"
-  checksum: 10/dbad9c9a07863cd1bdf8801d563b3280aa7dd0f4a6cead779ff7516d148dc80b4c04639ba732d47f91f04002f57e8c3c6573a717d649daecaac74ce71daa7ad3
+  checksum: 10/106b85ef799eb9c2a5d91278b14cdd9486551a5d889a7d88f719513dd7e04b7bd77417df27d3fcb43ef54dda5acc15730e627259164ce245dd968d86fd6ee517
   languageName: node
   linkType: hard
 

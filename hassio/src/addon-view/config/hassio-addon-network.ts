@@ -56,14 +56,12 @@ class HassioAddonNetwork extends LitElement {
     return html`
       <ha-card
         outlined
-        .header=${this.supervisor.localize(
-          "addon.configuration.network.header"
-        )}
+        .header=${this.supervisor.localize("app.configuration.network.header")}
       >
         <div class="card-content">
           <p>
             ${this.supervisor.localize(
-              "addon.configuration.network.introduction"
+              "app.configuration.network.introduction"
             )}
           </p>
           ${this._error
@@ -87,7 +85,7 @@ class HassioAddonNetwork extends LitElement {
           ? html`<ha-formfield
               class="show-optional"
               .label=${this.supervisor.localize(
-                "addon.configuration.network.show_disabled"
+                "app.configuration.network.show_disabled"
               )}
             >
               <ha-switch
@@ -187,7 +185,7 @@ class HassioAddonNetwork extends LitElement {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err: any) {
-      this._error = this.supervisor.localize("addon.failed_to_reset", {
+      this._error = this.supervisor.localize("app.failed_to_reset", {
         error: extractApiErrorMessage(err),
       });
       button.actionError();
@@ -229,7 +227,7 @@ class HassioAddonNetwork extends LitElement {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err: any) {
-      this._error = this.supervisor.localize("addon.failed_to_save", {
+      this._error = this.supervisor.localize("app.failed_to_save", {
         error: extractApiErrorMessage(err),
       });
       button.actionError();

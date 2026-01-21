@@ -4,12 +4,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-form/ha-form";
-import "../../../components/ha-list-item";
 import type {
   AssistPipeline,
   AssistPipelineMutableParams,
@@ -152,22 +152,20 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           this._params.hideWakeWord ||
           !this._hasWakeWorkEntities(this.hass.states)
             ? nothing
-            : html`<ha-button-menu
+            : html`<ha-dropdown
                 slot="actionItems"
-                @action=${this._handleShowWakeWord}
-                @closed=${stopPropagation}
-                menu-corner="END"
-                corner="BOTTOM_END"
+                @wa-select=${this._handleDropdownSelect}
+                placement="bottom-end"
               >
                 <ha-icon-button
                   .path=${mdiDotsVertical}
                   slot="trigger"
                 ></ha-icon-button>
-                <ha-list-item>
+                <ha-dropdown-item value="show_wake_word">
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_streaming_wake_word"
                   )}
-                </ha-list-item></ha-button-menu
+                </ha-dropdown-item></ha-dropdown
               >`}
         </ha-dialog-header>
         <div class="content">
@@ -243,8 +241,12 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     `;
   }
 
-  private _handleShowWakeWord() {
-    this._hideWakeWord = false;
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (action === "show_wake_word") {
+      this._hideWakeWord = false;
+    }
   }
 
   private _valueChanged(ev: CustomEvent) {
