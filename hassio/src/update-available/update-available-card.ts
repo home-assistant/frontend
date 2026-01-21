@@ -261,16 +261,16 @@ class UpdateAvailableCard extends LitElement {
   private _computeCreateBackupTexts():
     | { title: string; description?: string }
     | undefined {
-    // Addon backup
+    // App backup
     if (
       this._updateType === "addon" &&
       atLeastVersion(this.hass.config.version, 2025, 2, 0)
     ) {
       const version = this._version;
       return {
-        title: this.supervisor.localize("update_available.create_backup.addon"),
+        title: this.supervisor.localize("update_available.create_backup.app"),
         description: this.supervisor.localize(
-          "update_available.create_backup.addon_description",
+          "update_available.create_backup.app_description",
           { version: version }
         ),
       };
@@ -363,11 +363,11 @@ class UpdateAvailableCard extends LitElement {
         )
       ) {
         this._error = this.supervisor.localize(
-          "addon.dashboard.not_available_arch"
+          "app.dashboard.not_available_arch"
         );
       } else {
         this._error = this.supervisor.localize(
-          "addon.dashboard.not_available_version",
+          "app.dashboard.not_available_version",
           {
             core_version_installed: this.supervisor.core.version,
             core_version_needed: addonStoreInfo.homeassistant,

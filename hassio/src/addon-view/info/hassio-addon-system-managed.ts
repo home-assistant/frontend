@@ -19,14 +19,14 @@ class HassioAddonSystemManaged extends LitElement {
     return html`
       <ha-alert
         alert-type="warning"
-        .title=${this.supervisor.localize("addon.system_managed.title")}
+        .title=${this.supervisor.localize("app.system_managed.title")}
         .narrow=${this.narrow}
       >
-        ${this.supervisor.localize("addon.system_managed.description")}
+        ${this.supervisor.localize("app.system_managed.description")}
         ${!this.hideButton
           ? html`
               <ha-button slot="action" @click=${this._takeControl}>
-                ${this.supervisor.localize("addon.system_managed.take_control")}
+                ${this.supervisor.localize("app.system_managed.take_control")}
               </ha-button>
             `
           : nothing}

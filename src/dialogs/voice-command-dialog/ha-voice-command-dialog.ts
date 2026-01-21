@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiChevronDown,
   mdiClose,
@@ -13,11 +14,13 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-alert";
 import "../../components/ha-assist-chat";
 import "../../components/ha-button";
-import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-list-item";
+import "../../components/ha-icon-next";
 import "../../components/ha-spinner";
 import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
@@ -104,57 +107,56 @@ export class HaVoiceCommandDialog extends LitElement {
           ></ha-icon-button>
           <div slot="title">
             ${this.hass.localize("ui.dialogs.voice_command.title")}
-            <ha-button-menu
+            <ha-dropdown
               @opened=${this._loadPipelines}
               @closed=${stopPropagation}
-              activatable
-              fixed
+              @wa-select=${this._selectPipeline}
             >
               <ha-button
                 slot="trigger"
                 appearance="plain"
                 variant="neutral"
                 size="small"
+                .loading=${!this._pipelines}
               >
                 ${this._pipeline?.name}
                 <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               </ha-button>
               ${!this._pipelines
-                ? html`<div class="pipelines-loading">
-                    <ha-spinner size="small"></ha-spinner>
-                  </div>`
+                ? nothing
                 : this._pipelines?.map(
                     (pipeline) =>
-                      html`<ha-list-item
+                      html`<ha-dropdown-item
                         ?selected=${pipeline.id === this._pipelineId ||
                         (!this._pipelineId &&
                           pipeline.id === this._preferredPipeline)}
-                        .pipeline=${pipeline.id}
-                        @click=${this._selectPipeline}
-                        .hasMeta=${pipeline.id === this._preferredPipeline}
+                        .value=${pipeline.id}
                       >
                         ${pipeline.name}${pipeline.id ===
                         this._preferredPipeline
                           ? html`
                               <ha-svg-icon
-                                slot="meta"
+                                slot="details"
                                 .path=${mdiStar}
                               ></ha-svg-icon>
                             `
                           : nothing}
-                      </ha-list-item>`
+                      </ha-dropdown-item>`
                   )}
               ${this.hass.user?.is_admin
-                ? html`<li divider role="separator"></li>
+                ? html`<wa-divider></wa-divider>
                     <a href="/config/voice-assistants/assistants"
-                      ><ha-list-item
+                      ><ha-dropdown-item
                         >${this.hass.localize(
                           "ui.dialogs.voice_command.manage_assistants"
-                        )}</ha-list-item
-                      ></a
-                    >`
+                        )}
+
+                        <ha-icon-next
+                          slot="details"
+                        ></ha-icon-next></ha-dropdown-item
+                    ></a>`
                 : nothing}
-            </ha-button-menu>
+            </ha-dropdown>
           </div>
           <a
             href=${documentationUrl(this.hass, "/docs/assist/")}
@@ -213,9 +215,12 @@ export class HaVoiceCommandDialog extends LitElement {
     this._preferredPipeline = preferred_pipeline || undefined;
   }
 
-  private async _selectPipeline(ev: CustomEvent) {
-    this._pipelineId = (ev.currentTarget as any).pipeline;
-    await this.updateComplete;
+  private async _selectPipeline(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const pipelineId = ev.detail?.item?.value;
+    if (pipelineId) {
+      this._pipelineId = pipelineId;
+      await this.updateComplete;
+    }
   }
 
   private async _getPipeline() {
@@ -260,46 +265,44 @@ export class HaVoiceCommandDialog extends LitElement {
           flex-direction: column;
           margin: -4px 0;
         }
-        ha-button-menu {
+        ha-dropdown {
+          display: flex;
           --mdc-theme-on-primary: var(--text-primary-color);
           --mdc-theme-primary: var(--primary-color);
-          margin-top: -8px;
+          margin-top: -4px;
           margin-bottom: 0;
           margin-right: 0;
           margin-inline-end: 0;
-          margin-left: -8px;
-          margin-inline-start: -8px;
+          margin-left: -9px;
+          margin-inline-start: -9px;
         }
-        ha-button-menu ha-button {
+        ha-dropdown ha-button {
           --ha-button-height: 20px;
         }
-        ha-button-menu ha-button::part(base) {
+        ha-dropdown ha-button::part(base) {
           margin-left: 5px;
           padding: 0;
         }
         @media (prefers-color-scheme: dark) {
-          ha-button-menu ha-button {
+          ha-dropdown ha-button {
             --ha-button-theme-lighter-color: rgba(255, 255, 255, 0.1);
           }
         }
-        ha-button-menu ha-button ha-svg-icon {
+        ha-dropdown ha-button ha-svg-icon {
           height: 28px;
           margin-left: 4px;
           margin-inline-start: 4px;
           margin-inline-end: initial;
           direction: var(--direction);
         }
-        ha-list-item {
-          --mdc-list-item-meta-size: 16px;
-        }
-        ha-list-item ha-svg-icon {
+        ha-dropdown-item ha-svg-icon {
           margin-left: 4px;
           margin-inline-start: 4px;
           margin-inline-end: initial;
           direction: var(--direction);
           display: block;
         }
-        ha-button-menu a {
+        ha-dropdown a {
           text-decoration: none;
         }
 

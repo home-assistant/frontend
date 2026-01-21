@@ -219,7 +219,7 @@ class HassioAddonConfig extends LitElement {
       <ha-card outlined>
         <div class="header">
           <h2>
-            ${this.supervisor.localize("addon.configuration.options.header")}
+            ${this.supervisor.localize("app.configuration.options.header")}
           </h2>
           <div class="card-menu">
             <ha-button-menu @action=${this._handleAction}>
@@ -231,10 +231,10 @@ class HassioAddonConfig extends LitElement {
               <ha-list-item .disabled=${!this._canShowSchema || this.disabled}>
                 ${this._yamlMode
                   ? this.supervisor.localize(
-                      "addon.configuration.options.edit_in_ui"
+                      "app.configuration.options.edit_in_ui"
                     )
                   : this.supervisor.localize(
-                      "addon.configuration.options.edit_in_yaml"
+                      "app.configuration.options.edit_in_yaml"
                     )}
               </ha-list-item>
               <ha-list-item
@@ -279,7 +279,7 @@ class HassioAddonConfig extends LitElement {
             : html`
                 <ha-alert alert-type="error">
                   ${this.supervisor.localize(
-                    "addon.configuration.options.invalid_yaml"
+                    "app.configuration.options.invalid_yaml"
                   )}
                 </ha-alert>
               `}
@@ -288,7 +288,7 @@ class HassioAddonConfig extends LitElement {
           ? html`<ha-formfield
               class="show-additional"
               .label=${this.supervisor.localize(
-                "addon.configuration.options.show_unused_optional"
+                "app.configuration.options.show_unused_optional"
               )}
             >
               <ha-switch
@@ -397,7 +397,7 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err: any) {
-      this._error = this.supervisor.localize("addon.failed_to_reset", {
+      this._error = this.supervisor.localize("app.failed_to_reset", {
         error: extractApiErrorMessage(err),
       });
     }
@@ -440,7 +440,7 @@ class HassioAddonConfig extends LitElement {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err: any) {
-      this._error = this.supervisor.localize("addon.failed_to_save", {
+      this._error = this.supervisor.localize("app.failed_to_save", {
         error: extractApiErrorMessage(err),
       });
       eventdata.success = false;

@@ -533,13 +533,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     .appearance=${canAddDevice ? "filled" : "accent"}
                     @click=${this._addIntegration}
                   >
-                    ${this._manifest?.integration_type
+                    ${this.hass.localize(
+                      `component.${this.domain}.config.initiate_flow.user`
+                    ) ||
+                    (this._manifest?.integration_type
                       ? this.hass.localize(
                           `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
                         )
                       : this.hass.localize(
                           `ui.panel.config.integrations.integration_page.add_entry`
-                        )}
+                        ))}
                   </ha-button>`
                 : nothing}
               ${Array.from(supportedSubentryTypes).map(
@@ -870,6 +873,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     }
     showAddIntegrationDialog(this, {
       domain: this.domain,
+      navigateToResult: true,
     });
   }
 

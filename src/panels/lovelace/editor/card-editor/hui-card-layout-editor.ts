@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
@@ -6,13 +5,12 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
@@ -94,14 +92,10 @@ export class HuiCardLayoutEditor extends LitElement {
             "ui.panel.lovelace.editor.edit_card.layout.explanation"
           )}
         </p>
-        <ha-button-menu
+        <ha-dropdown
           slot="icons"
-          @action=${this._handleAction}
-          @click=${preventDefault}
-          @closed=${stopPropagation}
-          fixed
-          .corner=${"BOTTOM_END"}
-          menu-corner="END"
+          @wa-select=${this._handleAction}
+          placement="bottom-end"
         >
           <ha-icon-button
             slot="trigger"
@@ -110,13 +104,13 @@ export class HuiCardLayoutEditor extends LitElement {
           >
           </ha-icon-button>
 
-          <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
+          <ha-dropdown-item value="toggle_yaml" .disabled=${!this._uiAvailable}>
             ${this.hass.localize(
               `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiPlaylistEdit}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
       </div>
       ${this._yamlMode
         ? html`
@@ -244,11 +238,11 @@ export class HuiCardLayoutEditor extends LitElement {
     }
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._yamlMode = !this._yamlMode;
-        break;
+  private async _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail.item.value;
+
+    if (action === "toggle_yaml") {
+      this._yamlMode = !this._yamlMode;
     }
   }
 
@@ -331,7 +325,7 @@ export class HuiCardLayoutEditor extends LitElement {
         margin: 0;
         color: var(--secondary-text-color);
       }
-      .header ha-button-menu {
+      .header ha-dropdown {
         --mdc-theme-text-primary-on-background: var(--primary-text-color);
         margin-top: -8px;
       }

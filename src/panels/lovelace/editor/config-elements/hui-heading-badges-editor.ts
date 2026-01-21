@@ -1,21 +1,33 @@
-import "@material/mwc-menu/mwc-menu-surface";
-import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
-import "../../../../components/entity/ha-entity-picker";
-import type { HaEntityPicker } from "../../../../components/entity/ha-entity-picker";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-button";
+import "../../../../components/ha-button-menu";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
+import { getHeadingBadgeElementClass } from "../../create-element/create-heading-badge-element";
 import type {
+  ButtonHeadingBadgeConfig,
   EntityHeadingBadgeConfig,
   LovelaceHeadingBadgeConfig,
 } from "../../heading-badges/types";
+import { nextRender } from "../../../../common/util/render-status";
+
+const UI_BADGE_TYPES = ["entity", "button"] as const;
 
 declare global {
   interface HASSDomEvents {
@@ -41,8 +53,12 @@ export class HuiHeadingBadgesEditor extends LitElement {
     return this._badgesKeys.get(badge)!;
   }
 
-  private _createValueChangedHandler(index: number) {
-    return (ev: CustomEvent) => this._valueChanged(ev, index);
+  private _getBadgeTypeLabel(type: string): string {
+    return (
+      this.hass.localize(
+        `ui.panel.lovelace.editor.heading-badges.types.${type}.label`
+      ) || type
+    );
   }
 
   protected render() {
@@ -51,120 +67,186 @@ export class HuiHeadingBadgesEditor extends LitElement {
     }
 
     return html`
-      ${this.badges
+      ${this.badges?.length
         ? html`
             <ha-sortable
               handle-selector=".handle"
               @item-moved=${this._badgeMoved}
             >
-              <div class="entities">
+              <div class="badges">
                 ${repeat(
-                  this.badges,
+                  this.badges.filter(Boolean),
                   (badge) => this._getKey(badge),
-                  (badge, index) => {
-                    const type = badge.type ?? "entity";
-                    const isEntityBadge =
-                      type === "entity" && "entity" in badge;
-                    const entityBadge = isEntityBadge
-                      ? (badge as EntityHeadingBadgeConfig)
-                      : undefined;
-                    return html`
-                      <div class="badge">
-                        <div class="handle">
-                          <ha-svg-icon
-                            .path=${mdiDragHorizontalVariant}
-                          ></ha-svg-icon>
-                        </div>
-                        ${isEntityBadge && entityBadge
-                          ? html`
-                              <ha-entity-picker
-                                hide-clear-icon
-                                .hass=${this.hass}
-                                .value=${entityBadge.entity ?? ""}
-                                @value-changed=${this._createValueChangedHandler(
-                                  index
-                                )}
-                              ></ha-entity-picker>
-                            `
-                          : html`
-                              <div class="badge-content">
-                                <span>${type}</span>
-                              </div>
-                            `}
-                        <ha-icon-button
-                          .label=${this.hass!.localize(
-                            `ui.panel.lovelace.editor.entities.edit`
-                          )}
-                          .path=${mdiPencil}
-                          class="edit-icon"
-                          .index=${index}
-                          @click=${this._editBadge}
-                        ></ha-icon-button>
-                        <ha-icon-button
-                          .label=${this.hass!.localize(
-                            `ui.panel.lovelace.editor.entities.remove`
-                          )}
-                          .path=${mdiDelete}
-                          class="remove-icon"
-                          .index=${index}
-                          @click=${this._removeEntity}
-                        ></ha-icon-button>
-                      </div>
-                    `;
-                  }
+                  (badge, index) => this._renderBadgeItem(badge, index)
                 )}
               </div>
             </ha-sortable>
           `
         : nothing}
-      <div class="add-container">
-        <ha-entity-picker
-          .hass=${this.hass}
-          id="input"
-          .placeholder=${this.hass.localize(
-            "ui.components.entity.entity-picker.choose_entity"
-          )}
-          .searchLabel=${this.hass.localize(
-            "ui.components.entity.entity-picker.choose_entity"
-          )}
-          @value-changed=${this._entityPicked}
-          .value=${undefined}
-          @click=${preventDefault}
-          add-button
-        ></ha-entity-picker>
+      <ha-button-menu
+        fixed
+        @action=${this._addBadge}
+        @closed=${stopPropagation}
+      >
+        <ha-button slot="trigger" appearance="filled" size="small">
+          <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+          ${this.hass.localize(`ui.panel.lovelace.editor.heading-badges.add`)}
+        </ha-button>
+        ${UI_BADGE_TYPES.map(
+          (type) => html`
+            <ha-list-item .value=${type}>
+              ${this._getBadgeTypeLabel(type)}
+            </ha-list-item>
+          `
+        )}
+      </ha-button-menu>
+    `;
+  }
+
+  private _renderBadgeItem(badge: LovelaceHeadingBadgeConfig, index: number) {
+    const type = badge.type ?? "entity";
+    const entityBadge = badge as EntityHeadingBadgeConfig;
+    const isWarning =
+      type === "entity" &&
+      (!entityBadge.entity || !this.hass.states[entityBadge.entity]);
+
+    return html`
+      <div class=${classMap({ badge: true, warning: isWarning })}>
+        <div class="handle">
+          <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
+        </div>
+        ${type === "entity"
+          ? this._renderEntityBadge(entityBadge)
+          : type === "button"
+            ? this._renderButtonBadge(badge as ButtonHeadingBadgeConfig)
+            : this._renderUnknownBadge(type)}
+        <ha-icon-button
+          .label=${this.hass.localize(`ui.panel.lovelace.editor.badges.edit`)}
+          .path=${mdiPencil}
+          class="edit-icon"
+          .index=${index}
+          @click=${this._editBadge}
+        ></ha-icon-button>
+        <ha-icon-button
+          .label=${this.hass.localize(`ui.panel.lovelace.editor.badges.remove`)}
+          .path=${mdiDelete}
+          class="remove-icon"
+          .index=${index}
+          @click=${this._removeBadge}
+        ></ha-icon-button>
       </div>
     `;
   }
 
-  private _entityPicked(ev: CustomEvent): void {
-    ev.stopPropagation();
-    if (!ev.detail.value) {
-      return;
+  private _renderEntityBadge(badge: EntityHeadingBadgeConfig) {
+    const entityId = badge.entity;
+    const stateObj = entityId ? this.hass.states[entityId] : undefined;
+
+    if (!entityId) {
+      return html`
+        <div class="badge-content">
+          <div>
+            <span>${this._getBadgeTypeLabel("entity")}</span>
+            <span class="secondary"
+              >${this.hass.localize(
+                "ui.panel.lovelace.editor.heading-badges.no_entity"
+              )}</span
+            >
+          </div>
+        </div>
+      `;
     }
-    const newEntity: LovelaceHeadingBadgeConfig = {
-      type: "entity",
-      entity: ev.detail.value,
-    };
-    const newBadges = [...(this.badges || []), newEntity];
-    (ev.target as HaEntityPicker).value = undefined;
-    fireEvent(this, "heading-badges-changed", { badges: newBadges });
+
+    if (!stateObj) {
+      return html`
+        <div class="badge-content">
+          <div>
+            <span>${entityId}</span>
+            <span class="secondary"
+              >${this.hass.localize(
+                "ui.panel.lovelace.editor.heading-badges.entity_not_found"
+              )}</span
+            >
+          </div>
+        </div>
+      `;
+    }
+
+    const [entityName, deviceName, areaName] = computeEntityNameList(
+      stateObj,
+      [{ type: "entity" }, { type: "device" }, { type: "area" }],
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
+
+    const isRTL = computeRTL(this.hass);
+
+    const primary = entityName || deviceName || entityId;
+    const secondary = [entityName ? deviceName : undefined, areaName]
+      .filter(Boolean)
+      .join(isRTL ? " ◂ " : " ▸ ");
+
+    return html`
+      <div class="badge-content">
+        <div>
+          <span>${primary}</span>
+          ${secondary
+            ? html`<span class="secondary">${secondary}</span>`
+            : nothing}
+        </div>
+      </div>
+    `;
   }
 
-  private _valueChanged(ev: CustomEvent, index: number): void {
-    ev.stopPropagation();
-    const value = ev.detail.value;
-    const newBadges = [...(this.badges || [])];
+  private _renderButtonBadge(badge: ButtonHeadingBadgeConfig) {
+    return html`
+      <div class="badge-content">
+        <div>
+          <span>${this._getBadgeTypeLabel("button")}</span>
+          ${badge.text
+            ? html`<span class="secondary">${badge.text}</span>`
+            : nothing}
+        </div>
+      </div>
+    `;
+  }
 
-    if (!value) {
-      newBadges.splice(index, 1);
+  private _renderUnknownBadge(type: string) {
+    return html`
+      <div class="badge-content">
+        <div>
+          <span>${type}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  private async _addBadge(ev: CustomEvent): Promise<void> {
+    const index = ev.detail.index as number;
+
+    if (index == null) return;
+
+    const type = UI_BADGE_TYPES[index];
+    if (!type) return;
+
+    const elClass = await getHeadingBadgeElementClass(type);
+
+    let newBadge: LovelaceHeadingBadgeConfig;
+    if (elClass && elClass.getStubConfig) {
+      newBadge = elClass.getStubConfig(this.hass);
     } else {
-      newBadges[index] = {
-        ...newBadges[index],
-        entity: value,
-      };
+      newBadge = { type } as LovelaceHeadingBadgeConfig;
     }
 
+    const newBadges = [...(this.badges || []), newBadge];
+
     fireEvent(this, "heading-badges-changed", { badges: newBadges });
+
+    await nextRender();
+    // Open the editor for the new badge
+    fireEvent(this, "edit-heading-badge", { index: newBadges.length - 1 });
   }
 
   private _badgeMoved(ev: CustomEvent): void {
@@ -177,7 +259,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     fireEvent(this, "heading-badges-changed", { badges: newBadges });
   }
 
-  private _removeEntity(ev: CustomEvent): void {
+  private _removeBadge(ev: CustomEvent): void {
     const index = (ev.currentTarget as any).index;
     const newBadges = [...(this.badges || [])];
 
@@ -198,11 +280,12 @@ export class HuiHeadingBadgesEditor extends LitElement {
       display: flex !important;
       flex-direction: column;
     }
-    ha-button {
+
+    ha-button-menu {
       margin-top: var(--ha-space-2);
     }
 
-    .entities {
+    .badges {
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-2);
@@ -212,6 +295,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
       display: flex;
       align-items: center;
     }
+
     .badge .handle {
       cursor: move; /* fallback if grab cursor is unsupported */
       cursor: grab;
@@ -220,13 +304,14 @@ export class HuiHeadingBadgesEditor extends LitElement {
       padding-inline-start: initial;
       direction: var(--direction);
     }
+
     .badge .handle > * {
       pointer-events: none;
     }
 
     .badge-content {
-      height: 60px;
-      font-size: var(--ha-font-size-l);
+      height: var(--ha-space-12);
+      font-size: var(--ha-font-size-m);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -238,15 +323,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
       flex-direction: column;
     }
 
-    .badge ha-entity-picker {
-      flex-grow: 1;
-      min-width: 0;
-      margin-top: 0;
-    }
-
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: 36px;
+      --mdc-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 
@@ -255,23 +334,18 @@ export class HuiHeadingBadgesEditor extends LitElement {
       color: var(--secondary-text-color);
     }
 
+    .badge.warning {
+      background-color: var(--ha-color-fill-warning-quiet-resting);
+      border-radius: var(--ha-border-radius-sm);
+      overflow: hidden;
+    }
+
+    .badge.warning .secondary {
+      color: var(--ha-color-on-warning-normal);
+    }
+
     li[divider] {
       border-bottom-color: var(--divider-color);
-    }
-
-    .add-container {
-      position: relative;
-      width: 100%;
-      margin-top: var(--ha-space-2);
-    }
-
-    mwc-menu-surface {
-      --mdc-menu-min-width: 100%;
-    }
-
-    ha-entity-picker {
-      display: block;
-      width: 100%;
     }
   `;
 }

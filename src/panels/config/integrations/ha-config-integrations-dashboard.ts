@@ -772,6 +772,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   private _createFlow() {
     showAddIntegrationDialog(this, {
       initialFilter: this._filter,
+      navigateToResult: true,
     });
   }
 
@@ -833,6 +834,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     if (brand) {
       showAddIntegrationDialog(this, {
         brand,
+        navigateToResult: true,
       });
       return;
     }
@@ -886,6 +888,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       ) {
         showAddIntegrationDialog(this, {
           domain,
+          navigateToResult: true,
         });
       }
       return;
