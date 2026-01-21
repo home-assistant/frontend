@@ -365,6 +365,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:sofa-outline",
+            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.areas.empty_state_title"
@@ -372,6 +373,36 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             content: hass.localize(
               "ui.panel.lovelace.strategy.areas.empty_state_content"
             ),
+            ...(hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.areas.empty_state_add_device"
+                      ),
+                      appearance: "filled",
+                      variant: "brand",
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "add_integration",
+                        },
+                      },
+                    },
+                    {
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.areas.empty_state_assign_device"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/home/other-devices",
+                      },
+                    },
+                  ],
+                }
+              : {}),
           } as EmptyStateCardConfig,
         ],
       };

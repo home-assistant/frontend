@@ -7523,8 +7523,10 @@
             "empty_state_action": "Go to the integrations page"
           },
           "areas": {
-            "empty_state_title": "No devices",
-            "empty_state_content": "There are no devices assigned to this area yet. Assign devices to this area to see them here.",
+            "empty_state_title": "This is a blank canvas",
+            "empty_state_content": "Add your smart lights, switches, or sensors to this area to get started.",
+            "empty_state_add_device": "Add new device",
+            "empty_state_assign_device": "Assign existing device",
             "sensors": "Sensors",
             "sensors_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
             "edit_the_area": "edit the area",
@@ -8282,14 +8284,14 @@
             },
             "empty_state": {
               "name": "Empty state",
-              "description": "The Empty state card displays a centered message with an optional icon and action button.",
+              "description": "The Empty state card displays a centered message with an optional icon and action buttons.",
               "style": "Style",
               "style_options": {
                 "card": "Card",
                 "content-only": "Content only"
               },
               "content": "Content",
-              "action_text": "Action button text"
+              "buttons": "Buttons"
             },
             "button": {
               "name": "Button",

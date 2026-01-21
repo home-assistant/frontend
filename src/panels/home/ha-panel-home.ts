@@ -15,12 +15,13 @@ import {
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
+import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
+import { showDeviceRegistryDetailDialog } from "../config/devices/device-registry-detail/show-dialog-device-registry-detail";
+import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
 import "../lovelace/hui-root";
 import type { ExtraActionItem } from "../lovelace/hui-root";
 import { expandLovelaceConfigStrategies } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
-import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
-import { showDeviceRegistryDetailDialog } from "../config/devices/device-registry-detail/show-dialog-device-registry-detail";
 import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 
 @customElement("ha-panel-home")
@@ -172,12 +173,25 @@ class PanelHome extends LitElement {
   private _handleLLCustomEvent = (ev: Event) => {
     const detail = (ev as CustomEvent).detail;
     if (detail.home_panel) {
-      const { type, device_id } = detail.home_panel;
-      if (type === "assign_area") {
-        this._showAssignAreaDialog(device_id);
+      const { type } = detail.home_panel;
+      switch (type) {
+        case "assign_area": {
+          const { device_id } = detail.home_panel;
+          this._showAssignAreaDialog(device_id);
+          break;
+        }
+        case "add_integration": {
+          this._showAddIntegrationDialog();
+          break;
+        }
       }
     }
   };
+
+  private async _showAddIntegrationDialog() {
+    await this.hass.loadFragmentTranslation("config");
+    showAddIntegrationDialog(this, { navigateToResult: false });
+  }
 
   private _showAssignAreaDialog(deviceId: string) {
     const device = this.hass.devices[deviceId];
