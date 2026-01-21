@@ -1,4 +1,7 @@
-import { computeCssColor } from "../common/color/compute-color";
+import {
+  computeCssColor,
+  isValidColorString,
+} from "../common/color/compute-color";
 import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -159,9 +162,14 @@ export const getCalendars = (
     .map((eid, idx) => {
       const stateObj = hass.states[eid];
       const entityColor = entityOptionsMap.get(eid)?.calendar?.color;
-      const backgroundColor = entityColor
-        ? computeCssColor(entityColor)
-        : getColorByIndex(idx, computedStyles);
+      let backgroundColor: string;
+      // Validate and use the color from entity registry if valid
+      if (entityColor && isValidColorString(entityColor)) {
+        backgroundColor = computeCssColor(entityColor);
+      } else {
+        // Fall back to default color by index
+        backgroundColor = getColorByIndex(idx, computedStyles);
+      }
       return {
         ...stateObj,
         name: computeStateName(stateObj),
