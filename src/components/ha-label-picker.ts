@@ -39,7 +39,7 @@ import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
 
-export const renderLabelColorBadge = (color: string | null) =>
+export const renderLabelColorBadge = (color: string | undefined) =>
   html`<div
     style=${styleMap({
       backgroundColor: color ? computeCssColor(color) : undefined,
