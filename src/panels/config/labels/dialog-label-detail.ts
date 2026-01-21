@@ -44,6 +44,12 @@ class DialogLabelDetail
     this._params = params;
     this._error = undefined;
     if (this._params.entry) {
+      fireEvent(this, "hass-quick-bar-context", {
+        itemType: "label",
+        itemId: this._params.entry.label_id,
+      });
+    }
+    if (this._params.entry) {
       this._name = this._params.entry.name || "";
       this._icon = this._params.entry.icon || "";
       this._color = this._params.entry.color || "";

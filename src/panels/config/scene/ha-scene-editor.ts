@@ -652,6 +652,13 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         );
       }
     }
+
+    if (changedProps.has("_scene") && this._scene?.entity_id) {
+      fireEvent(this, "hass-quick-bar-context", {
+        itemType: "scene",
+        itemId: this._scene.entity_id,
+      });
+    }
   }
 
   private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {

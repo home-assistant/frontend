@@ -583,6 +583,13 @@ export class HaScriptEditor extends SubscribeMixin(
       this._dirty = false;
       this._readOnly = true;
     }
+
+    if (changedProps.has("_entityId") && this._entityId) {
+      fireEvent(this, "hass-quick-bar-context", {
+        itemType: "script",
+        itemId: this._entityId,
+      });
+    }
   }
 
   private async _checkValidation() {

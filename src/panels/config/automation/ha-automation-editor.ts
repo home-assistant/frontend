@@ -682,6 +682,16 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         sub(this._config)
       );
     }
+
+    if (changedProps.has("_entityId") || changedProps.has("entityId")) {
+      const automationEntityId = this._entityId ?? this.entityId;
+      if (automationEntityId) {
+        fireEvent(this, "hass-quick-bar-context", {
+          itemType: "automation",
+          itemId: automationEntityId,
+        });
+      }
+    }
   }
 
   private _setEntityId() {

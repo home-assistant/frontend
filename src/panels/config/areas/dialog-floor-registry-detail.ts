@@ -55,6 +55,12 @@ class DialogFloorDetail extends LitElement {
   public showDialog(params: FloorRegistryDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
+    if (this._params.entry) {
+      fireEvent(this, "hass-quick-bar-context", {
+        itemType: "floor",
+        itemId: this._params.entry.floor_id,
+      });
+    }
     this._name = this._params.entry
       ? this._params.entry.name
       : this._params.suggestedName || "";

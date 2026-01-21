@@ -41,6 +41,10 @@ class DialogDeviceRegistryDetail extends LitElement {
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
+    fireEvent(this, "hass-quick-bar-context", {
+      itemType: "device",
+      itemId: this._params.device.id,
+    });
     this._nameByUser = this._params.device.name_by_user || "";
     this._areaId = this._params.device.area_id || "";
     this._labels = this._params.device.labels || [];

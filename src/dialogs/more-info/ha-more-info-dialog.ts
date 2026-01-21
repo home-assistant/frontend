@@ -143,6 +143,15 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
+    const domain = computeDomain(this._entityId);
+    const itemType: ItemType = SearchableDomains.has(domain)
+      ? (domain as ItemType)
+      : "entity";
+    fireEvent(this, "hass-quick-bar-context", {
+      itemType,
+      itemId: this._entityId,
+    });
+
     this._data = params.data;
     this._currView = params.view || DEFAULT_VIEW;
     this._initialView = params.view || DEFAULT_VIEW;

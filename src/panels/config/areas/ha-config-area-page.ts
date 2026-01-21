@@ -10,6 +10,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
@@ -137,6 +138,12 @@ class HaConfigAreaPage extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("areaId")) {
       this._findRelated();
+      if (this.areaId) {
+        fireEvent(this, "hass-quick-bar-context", {
+          itemType: "area",
+          itemId: this.areaId,
+        });
+      }
     }
   }
 
