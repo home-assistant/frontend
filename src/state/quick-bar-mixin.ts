@@ -6,6 +6,7 @@ import { mainWindow } from "../common/dom/get_main_window";
 import { ShortcutManager } from "../common/keyboard/shortcuts";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import type {
+  QuickBarContextItem,
   QuickBarParams,
   QuickBarSection,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
@@ -24,15 +25,13 @@ declare global {
     "hass-quick-bar": QuickBarParams;
     "hass-quick-bar-trigger": KeyboardEvent;
     "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
-    "hass-quick-bar-context":
-      | { itemType: ItemType; itemId: string }
-      | undefined;
+    "hass-quick-bar-context": QuickBarContextItem | undefined;
   }
 }
 
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
-    private _quickBarContext?: { itemType: ItemType; itemId: string };
+    private _quickBarContext?: QuickBarContextItem;
 
     private _clearQuickBarContext = () => {
       this._quickBarContext = undefined;

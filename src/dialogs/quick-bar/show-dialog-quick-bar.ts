@@ -8,11 +8,16 @@ export type QuickBarSection =
   | "navigate"
   | "command";
 
+export interface QuickBarContextItem {
+  itemType: ItemType;
+  itemId: string;
+}
+
 export interface QuickBarParams {
   entityFilter?: string;
   mode?: QuickBarSection;
   hint?: string;
-  contextItem?: { itemType: ItemType; itemId: string };
+  contextItem?: QuickBarContextItem;
 }
 
 export const loadQuickBar = () => import("./ha-quick-bar");
