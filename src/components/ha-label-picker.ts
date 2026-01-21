@@ -17,7 +17,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import {
   getLabels,
   labelComboBoxKeys,
-  type ColorComboBoxItem,
+  type LabelComboBoxItem,
 } from "../data/label/label_picker";
 import {
   createLabelRegistryEntry,
@@ -128,7 +128,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _rowRenderer: RenderItemFunction<ColorComboBoxItem> = (item) =>
+  private _rowRenderer: RenderItemFunction<LabelComboBoxItem> = (item) =>
     html`<ha-combo-box-item type="button" compact>
       ${DEFAULT_ROW_RENDERER_CONTENT(item)}
       ${item.id !== ADD_NEW_ID
