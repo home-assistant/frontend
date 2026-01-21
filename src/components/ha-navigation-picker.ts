@@ -391,7 +391,9 @@ export class HaNavigationPicker extends LitElement {
       relatedResult = context.entity_id
         ? await findRelated(this.hass, "entity", context.entity_id)
         : await findRelated(this.hass, "area", context.area_id!);
-    } catch (_err) {
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching related items for navigation picker", err);
       return [];
     }
 
