@@ -365,9 +365,26 @@ export class HaNavigationPicker extends LitElement {
       return;
     }
 
-    const relatedResult: RelatedResult | undefined = this.context?.entity_id
-      ? await findRelated(this.hass, "entity", this.context.entity_id)
-      : await findRelated(this.hass, "area", this.context!.area_id!);
+    const context = this.context;
+    const contextMatches = () =>
+      this.context?.entity_id === context?.entity_id &&
+      this.context?.area_id === context?.area_id;
+
+    let relatedResult: RelatedResult | undefined;
+    try {
+      relatedResult = context.entity_id
+        ? await findRelated(this.hass, "entity", context.entity_id)
+        : await findRelated(this.hass, "area", context.area_id!);
+    } catch (_err) {
+      if (contextMatches()) {
+        updateRelatedItems([]);
+      }
+      return;
+    }
+
+    if (!contextMatches()) {
+      return;
+    }
 
     const relatedDeviceIds = new Set(relatedResult?.device ?? []);
     const relatedAreaIds = new Set(relatedResult?.area ?? []);
