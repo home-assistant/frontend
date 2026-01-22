@@ -52,109 +52,120 @@ export const computeAttributeValueToParts = (
   attribute: string,
   value?: any
 ): ValuePart[] => {
-  const parts: ValuePart[] = [];
-
-  let formattedValue;
   const attributeValue =
-    value !== undefined
-      ? value
-      : attribute in stateObj.attributes
-        ? stateObj.attributes[attribute]
-        : undefined;
+    value !== undefined ? value : stateObj.attributes[attribute];
 
-  if (attributeValue === null || attributeValue === undefined)
-    formattedValue = localize("state.default.unknown");
-  else {
-    if (typeof attributeValue === "number") {
-      const domain = computeStateDomain(stateObj);
-      const formatter = DOMAIN_ATTRIBUTES_FORMATERS[domain]?.[attribute];
-      formattedValue = formatter
-        ? formatter(attributeValue, locale)
-        : formatNumber(attributeValue, locale);
-    } else if (typeof attributeValue === "string") {
-      // Date handling
-      if (isDate(attributeValue, true)) {
-        // Timestamp handling
-        if (isTimestamp(attributeValue)) {
-          const date = new Date(attributeValue);
-          if (checkValidDate(date))
-            formattedValue = formatDateTimeWithSeconds(date, locale, config);
-        } else {
-          // Value was not a timestamp, so only do date formatting
-          const date = new Date(attributeValue);
-          if (checkValidDate(date))
-            formattedValue = formatDate(date, locale, config);
-        }
-      }
-    } else if (
-      // Values are objects, render object
-      (Array.isArray(attributeValue) &&
-        attributeValue.some((val) => val instanceof Object)) ||
-      (!Array.isArray(attributeValue) && attributeValue instanceof Object)
-    ) {
-      formattedValue = JSON.stringify(attributeValue);
-    } else if (Array.isArray(attributeValue)) {
-      // If this is an array, try to determine the display value for each item
-      formattedValue = attributeValue
-        .map((item) =>
-          computeAttributeValueDisplay(
-            localize,
-            stateObj,
-            locale,
-            config,
-            entities,
-            attribute,
-            item
-          )
-        )
-        .join(", ");
-    }
-
-    if (formattedValue === undefined) {
-      // We've explored all known value handling, so now we'll try to find a
-      // translation for the value.
-      const entityId = stateObj.entity_id;
-      const domain = computeDomain(entityId);
-      const deviceClass = stateObj.attributes.device_class;
-      const registryEntry = entities[entityId] as
-        | EntityRegistryDisplayEntry
-        | undefined;
-      const translationKey = registryEntry?.translation_key;
-
-      formattedValue =
-        (translationKey &&
-          localize(
-            `component.${registryEntry.platform}.entity.${domain}.${translationKey}.state_attributes.${attribute}.state.${attributeValue}`
-          )) ||
-        (deviceClass &&
-          localize(
-            `component.${domain}.entity_component.${deviceClass}.state_attributes.${attribute}.state.${attributeValue}`
-          )) ||
-        localize(
-          `component.${domain}.entity_component._.state_attributes.${attribute}.state.${attributeValue}`
-        ) ||
-        attributeValue;
-    }
+  // Null value, the state is unknown
+  if (attributeValue === null || attributeValue === undefined) {
+    return [{ type: "value", value: localize("state.default.unknown") }];
   }
 
-  let unit;
+  // Number value, return formatted number
   if (typeof attributeValue === "number") {
     const domain = computeStateDomain(stateObj);
-    unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as string | undefined;
+
+    const formatter = DOMAIN_ATTRIBUTES_FORMATERS[domain]?.[attribute];
+
+    const formattedValue = formatter
+      ? formatter(attributeValue, locale)
+      : formatNumber(attributeValue, locale);
+
+    let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
+      | string
+      | undefined;
+
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
     } else if (TEMPERATURE_ATTRIBUTES.has(attribute)) {
       unit = config.unit_system.temperature;
     }
+
+    if (unit) {
+      const literal = blankBeforeUnit(unit, locale);
+
+      return [
+        { type: "value", value: formattedValue },
+        ...(literal
+          ? [{ type: "literal", value: literal } satisfies ValuePart]
+          : []),
+        { type: "unit", value: unit },
+      ];
+    }
+
+    return [{ type: "value", value: formattedValue }];
   }
 
-  let literal;
-  if (unit) literal = blankBeforeUnit(unit, locale);
+  // Special handling in case this is a string with a known format
+  if (typeof attributeValue === "string") {
+    // Date handling
+    if (isDate(attributeValue, true)) {
+      // Timestamp handling
+      if (isTimestamp(attributeValue)) {
+        const date = new Date(attributeValue);
+        if (checkValidDate(date)) {
+          const formattedDate = formatDateTimeWithSeconds(date, locale, config);
+          return [{ type: "value", value: formattedDate }];
+        }
+      }
 
-  parts.push({ type: "value", value: formattedValue });
-  if (literal) parts.push({ type: "literal", value: literal });
-  if (unit) parts.push({ type: "unit", value: unit });
-  return parts;
+      // Value was not a timestamp, so only do date formatting
+      const date = new Date(attributeValue);
+      if (checkValidDate(date)) {
+        return [{ type: "value", value: formatDate(date, locale, config) }];
+      }
+    }
+  }
+
+  // Values are objects, render object
+  if (
+    (Array.isArray(attributeValue) &&
+      attributeValue.some((val) => val instanceof Object)) ||
+    (!Array.isArray(attributeValue) && attributeValue instanceof Object)
+  ) {
+    return [{ type: "value", value: JSON.stringify(attributeValue) }];
+  }
+  // If this is an array, try to determine the display value for each item
+  if (Array.isArray(attributeValue)) {
+    const formattedValue = attributeValue
+      .map((item) =>
+        computeAttributeValueDisplay(
+          localize,
+          stateObj,
+          locale,
+          config,
+          entities,
+          attribute,
+          item
+        )
+      )
+      .join(", ");
+    return [{ type: "value", value: formattedValue }];
+  }
+
+  // We've explored all known value handling, so now we'll try to find a
+  // translation for the value.
+  const entityId = stateObj.entity_id;
+  const domain = computeDomain(entityId);
+  const deviceClass = stateObj.attributes.device_class;
+  const registryEntry = entities[entityId] as
+    | EntityRegistryDisplayEntry
+    | undefined;
+  const translationKey = registryEntry?.translation_key;
+
+  const formattedValue =
+    (translationKey &&
+      localize(
+        `component.${registryEntry.platform}.entity.${domain}.${translationKey}.state_attributes.${attribute}.state.${attributeValue}`
+      )) ||
+    (deviceClass &&
+      localize(
+        `component.${domain}.entity_component.${deviceClass}.state_attributes.${attribute}.state.${attributeValue}`
+      )) ||
+    localize(
+      `component.${domain}.entity_component._.state_attributes.${attribute}.state.${attributeValue}`
+    ) ||
+    attributeValue;
+  return [{ type: "value", value: formattedValue }];
 };
 
 export const computeAttributeNameDisplay = (
