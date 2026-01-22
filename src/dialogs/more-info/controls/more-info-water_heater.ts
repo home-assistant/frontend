@@ -11,12 +11,12 @@ import type { WaterHeaterEntity } from "../../../data/water_heater";
 import {
   WaterHeaterEntityFeature,
   compareWaterHeaterOperationMode,
-  computeOperationModeIcon,
 } from "../../../data/water_heater";
 import "../../../state-control/water_heater/ha-state-control-water_heater-temperature";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+import "../../../components/ha-attribute-icon";
 
 @customElement("more-info-water_heater")
 class MoreInfoWaterHeater extends LitElement {
@@ -89,10 +89,13 @@ class MoreInfoWaterHeater extends LitElement {
                   .map(
                     (mode) => html`
                       <ha-list-item .value=${mode} graphic="icon">
-                        <ha-svg-icon
+                        <ha-attribute-icon
                           slot="graphic"
-                          .path=${computeOperationModeIcon(mode)}
-                        ></ha-svg-icon>
+                          .hass=${this.hass}
+                          .stateObj=${stateObj}
+                          attribute="operation_mode"
+                          .attributeValue=${mode}
+                        ></ha-attribute-icon>
                         ${this.hass.formatEntityState(stateObj, mode)}
                       </ha-list-item>
                     `

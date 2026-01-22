@@ -139,9 +139,7 @@ export class HuiHeadingCardEditor
       <ha-expansion-panel outlined>
         <ha-svg-icon slot="leading-icon" .path=${mdiListBox}></ha-svg-icon>
         <h3 slot="header">
-          ${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.heading.entities"
-          )}
+          ${this.hass!.localize("ui.panel.lovelace.editor.card.heading.badges")}
         </h3>
         <div class="content">
           <hui-heading-badges-editor

@@ -21,8 +21,8 @@ import "../../../components/ha-wa-dialog";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
-} from "../../../data/area_registry";
-import { deleteAreaRegistryEntry } from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
+import { deleteAreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,

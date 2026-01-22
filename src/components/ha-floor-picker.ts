@@ -8,7 +8,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
-import { updateAreaRegistryEntry } from "../data/area_registry";
+import { updateAreaRegistryEntry } from "../data/area/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,

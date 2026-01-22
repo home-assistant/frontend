@@ -9,13 +9,13 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-dropdown";
+import "../../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-list-item";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
 import {
   haStyleDialog,
@@ -98,13 +98,18 @@ class DialogDashboardStrategyEditor extends LitElement {
     this.closeDialog();
   }
 
-  private _handleAction(ev) {
-    ev.stopPropagation();
-    switch (ev.detail.index) {
-      case 0:
+  private _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail.item.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "toggle-mode":
         this._toggleMode();
         break;
-      case 1:
+      case "take-control":
         this._takeControl();
         break;
     }
@@ -150,41 +155,32 @@ class DialogDashboardStrategyEditor extends LitElement {
           ${this._params.title
             ? html`<span slot="subtitle">${this._params.title}</span>`
             : nothing}
-          <ha-button-menu
-            corner="BOTTOM_END"
-            menu-corner="END"
+          <ha-dropdown
+            placement="bottom-end"
             slot="actionItems"
-            @closed=${stopPropagation}
-            fixed
-            @action=${this._handleAction}
+            @wa-select=${this._handleAction}
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item
-              graphic="icon"
+            <ha-dropdown-item
+              value="toggle-mode"
               .disabled=${!this._guiModeAvailable && !this._GUImode}
             >
               ${this.hass!.localize(
                 `ui.panel.lovelace.editor.edit_view.edit_${!this._GUImode ? "ui" : "yaml"}`
               )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
-            </ha-list-item>
-            <ha-list-item graphic="icon">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            </ha-dropdown-item>
+            <ha-dropdown-item value="take-control">
               ${this.hass.localize(
                 "ui.panel.lovelace.editor.strategy-editor.take_control"
               )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiAccountHardHat}
-              ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
+              <ha-svg-icon slot="icon" .path=${mdiAccountHardHat}></ha-svg-icon>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </ha-dialog-header>
         <div class="content">
           <hui-dashboard-strategy-element-editor

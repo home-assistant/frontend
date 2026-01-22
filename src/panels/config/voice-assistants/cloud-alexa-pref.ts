@@ -18,7 +18,7 @@ import {
   setExposeNewEntities,
 } from "../../../data/expose";
 import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
+import "../../../components/voice-assistant-brand-icon";
 
 @customElement("cloud-alexa-pref")
 export class CloudAlexaPref extends LitElement {
@@ -64,16 +64,12 @@ export class CloudAlexaPref extends LitElement {
     return html`
       <ha-card outlined>
         <h1 class="card-header">
-          <img
-            alt=""
-            src=${brandsUrl({
-              domain: "alexa",
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-          />${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
+          <voice-assistant-brand-icon
+            .voiceAssistantId=${"cloud.alexa"}
+            .hass=${this.hass}
+          >
+          </voice-assistant-brand-icon
+          >${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
         </h1>
         <div class="header-actions">
           <a

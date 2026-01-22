@@ -24,7 +24,6 @@ import {
   extractSearchParam,
 } from "../../common/url/search-params";
 import "../../components/ha-button";
-import "../../components/ha-button-menu";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../components/ha-dropdown-item";
@@ -67,8 +66,6 @@ class PanelTodo extends LitElement {
   })
   private _entityId?: string;
 
-  private _headerHeight = 56;
-
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
@@ -86,10 +83,6 @@ class PanelTodo extends LitElement {
     );
     this._mql.addListener(this._setIsMobile);
     this.mobile = this._mql.matches;
-    const computedStyles = getComputedStyle(this);
-    this._headerHeight = Number(
-      computedStyles.getPropertyValue("--header-height").replace("px", "")
-    );
   }
 
   public disconnectedCallback() {
@@ -155,19 +148,18 @@ class PanelTodo extends LitElement {
     const showPane = this._showPaneController.value ?? !this.narrow;
     const listItems = getTodoLists(this.hass).map(
       (list) =>
-        html`<ha-list-item
-          graphic="icon"
-          @click=${this._handleEntityPicked}
-          .entityId=${list.entity_id}
-          .activated=${list.entity_id === this._entityId}
+        html`<ha-dropdown-item
+          @click=${this._setEntityId}
+          value=${list.entity_id}
+          class=${list.entity_id === this._entityId ? "selected" : ""}
         >
           <ha-state-icon
             .stateObj=${list}
             .hass=${this.hass}
-            slot="graphic"
+            slot="icon"
           ></ha-state-icon
           >${list.name}
-        </ha-list-item> `
+        </ha-dropdown-item> `
     );
     return html`
       <ha-two-pane-top-app-bar-fixed
@@ -182,38 +174,26 @@ class PanelTodo extends LitElement {
         ></ha-menu-button>
         <div slot="title">
           ${!showPane
-            ? html`<ha-button-menu
-                class="lists"
-                activatable
-                fixed
-                .noAnchor=${this.mobile}
-                .y=${this.mobile
-                  ? this._headerHeight / 2
-                  : this._headerHeight / 4}
-                .x=${this.mobile ? 0 : undefined}
-              >
+            ? html`<ha-dropdown class="lists">
                 <ha-button slot="trigger">
                   <div>
                     ${this._entityId
                       ? entityState
                         ? computeStateName(entityState)
                         : this._entityId
-                      : ""}
+                      : nothing}
                   </div>
                   <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
                 </ha-button>
                 ${listItems}
                 ${this.hass.user?.is_admin
-                  ? html`<li divider role="separator"></li>
-                      <ha-list-item graphic="icon" @click=${this._addList}>
-                        <ha-svg-icon
-                          .path=${mdiPlus}
-                          slot="graphic"
-                        ></ha-svg-icon>
+                  ? html`<wa-divider></wa-divider>
+                      <ha-dropdown-item @click=${this._addList}>
+                        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
                         ${this.hass.localize("ui.panel.todo.create_list")}
-                      </ha-list-item>`
+                      </ha-dropdown-item>`
                   : nothing}
-              </ha-button-menu>`
+              </ha-dropdown>`
             : this.hass.localize("panel.todo")}
         </div>
         <ha-list slot="pane" activatable>${listItems}</ha-list>
@@ -286,10 +266,6 @@ class PanelTodo extends LitElement {
           : nothing}
       </ha-two-pane-top-app-bar-fixed>
     `;
-  }
-
-  private _handleEntityPicked(ev) {
-    this._entityId = ev.currentTarget.entityId;
   }
 
   private async _addList(): Promise<void> {
@@ -382,6 +358,12 @@ class PanelTodo extends LitElement {
     }
   }
 
+  private _setEntityId(ev: Event) {
+    const item = ev.currentTarget as HaDropdownItem;
+
+    this._entityId = item.value;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -401,23 +383,14 @@ class PanelTodo extends LitElement {
           max-width: 500px;
           min-width: 0;
         }
-        :host([mobile]) .lists {
-          --mdc-menu-min-width: 100vw;
-        }
-        :host(:not([mobile])) .lists ha-list-item {
-          max-width: calc(100vw - 120px);
-        }
-        :host([mobile]) ha-button-menu {
-          --mdc-shape-medium: 0 0 var(--mdc-shape-medium)
-            var(--mdc-shape-medium);
-        }
-        ha-button-menu {
+        ha-dropdown {
+          display: inline-block;
           max-width: 100%;
         }
-        ha-button-menu ha-button {
+        ha-dropdown ha-button {
           --ha-font-size-m: var(--ha-font-size-l);
         }
-        ha-button-menu ha-button div {
+        ha-dropdown ha-button div {
           text-overflow: ellipsis;
           width: 100%;
           overflow: hidden;
@@ -430,6 +403,17 @@ class PanelTodo extends LitElement {
           bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
           inset-inline-end: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-start: initial;
+        }
+
+        ha-dropdown.lists ha-dropdown-item {
+          max-width: 80vw;
+        }
+
+        ha-dropdown-item.selected {
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--primary-color);
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+          --icon-primary-color: var(--primary-color);
         }
       `,
     ];
