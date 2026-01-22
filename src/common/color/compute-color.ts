@@ -27,8 +27,10 @@ export const THEME_COLORS = new Set([
   "disabled",
 ]);
 
+const YAML_ONLY_THEMES_COLORS = new Set(["primary-text", "secondary-text"]);
+
 export function computeCssColor(color: string): string {
-  if (THEME_COLORS.has(color)) {
+  if (THEME_COLORS.has(color) || YAML_ONLY_THEMES_COLORS.has(color)) {
     return `var(--${color}-color)`;
   }
   return color;
