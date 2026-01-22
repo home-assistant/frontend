@@ -2690,6 +2690,7 @@
           },
           "configuration": {
             "no_configuration": "This app has no configuration options.",
+            "reset_defaults": "Reset to defaults",
             "options": {
               "header": "Options",
               "edit_in_ui": "Edit in UI",

@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiDotsVertical } from "@mdi/js";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -8,16 +7,17 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
-import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-dropdown";
+import "../../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-form/ha-form";
 import type {
-  HaFormSchema,
   HaFormDataContainer,
+  HaFormSchema,
 } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
@@ -30,12 +30,12 @@ import {
   validateHassioAddonOption,
 } from "../../../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
+import type { ObjectSelector, Selector } from "../../../../../data/selector";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
-import type { ObjectSelector, Selector } from "../../../../../data/selector";
+import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 
 const SUPPORTED_UI_TYPES = [
   "string",
@@ -221,13 +221,16 @@ class SupervisorAppConfig extends LitElement {
             )}
           </h2>
           <div class="card-menu">
-            <ha-button-menu @action=${this._handleAction}>
+            <ha-dropdown @wa-select=${this._handleAction}>
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.menu")}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
-              <ha-list-item .disabled=${!this._canShowSchema || this.disabled}>
+              <ha-dropdown-item
+                value="toggle_yaml"
+                .disabled=${!this._canShowSchema || this.disabled}
+              >
                 ${this._yamlMode
                   ? this.hass.localize(
                       "ui.panel.config.apps.configuration.options.edit_in_ui"
@@ -235,14 +238,17 @@ class SupervisorAppConfig extends LitElement {
                   : this.hass.localize(
                       "ui.panel.config.apps.configuration.options.edit_in_yaml"
                     )}
-              </ha-list-item>
-              <ha-list-item
-                class=${!this.disabled ? "warning" : ""}
+              </ha-dropdown-item>
+              <ha-dropdown-item
+                value="reset"
+                .variant=${!this.disabled ? "danger" : "default"}
                 .disabled=${this.disabled}
               >
-                ${this.hass.localize("ui.common.reset_defaults")}
-              </ha-list-item>
-            </ha-button-menu>
+                ${this.hass.localize(
+                  "ui.panel.config.apps.configuration.reset_defaults"
+                )}
+              </ha-dropdown-item>
+            </ha-dropdown>
           </div>
         </div>
 
@@ -341,14 +347,19 @@ class SupervisorAppConfig extends LitElement {
     }
   }
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail.item.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "toggle_yaml":
         this._yamlMode = !this._yamlMode;
-        break;
-      case 1:
+        return;
+      case "reset":
         this._resetTapped(ev);
-        break;
     }
   }
 
@@ -481,7 +492,7 @@ class SupervisorAppConfig extends LitElement {
           z-index: 3;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
-        ha-list-item[disabled] {
+        ha-dropdown-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .header {

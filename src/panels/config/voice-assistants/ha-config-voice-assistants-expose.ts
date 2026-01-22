@@ -802,11 +802,6 @@ export class VoiceAssistantsExpose extends LitElement {
         .header-btns > ha-icon-button {
           margin: var(--ha-space-2);
         }
-        ha-button-menu {
-          margin-left: var(--ha-space-2);
-          margin-inline-start: var(--ha-space-2);
-          margin-inline-end: initial;
-        }
         .clear {
           color: var(--primary-color);
           padding-left: var(--ha-space-2);

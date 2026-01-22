@@ -3,15 +3,14 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-button-menu";
 import "../ha-check-list-item";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-formfield";
 import "../ha-icon-button";
-import "../ha-textfield";
 import "../ha-md-button-menu";
 import "../ha-md-menu-item";
+import "../ha-textfield";
 
 import type {
   HaFormElement,
@@ -41,7 +40,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @state() private _opened = false;
 
-  @query("ha-button-menu") private _input?: HTMLElement;
+  @query("ha-md-button-menu") private _input?: HTMLElement;
 
   public focus(): void {
     if (this._input) {
