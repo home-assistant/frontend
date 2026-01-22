@@ -55,6 +55,7 @@ import type { DomainManifestLookup } from "../../../../data/integration";
 import {
   getLabels,
   labelComboBoxKeys,
+  type LabelComboBoxItem,
 } from "../../../../data/label/label_picker";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
@@ -489,6 +490,7 @@ export class HaAutomationAddSearch extends LitElement {
         | string
         | FloorComboBoxItem
         | EntityComboBoxItem
+        | LabelComboBoxItem
         | PickerComboBoxItem
       )[] = [];
 
@@ -718,6 +720,7 @@ export class HaAutomationAddSearch extends LitElement {
       | PickerComboBoxItem
       | EntityComboBoxItem
       | AutomationItemComboBoxItem
+      | LabelComboBoxItem
     )[],
     searchTerm: string,
     searchKeys: FuseWeightedKey[],
