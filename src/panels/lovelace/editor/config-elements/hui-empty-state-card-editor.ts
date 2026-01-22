@@ -1,8 +1,16 @@
-import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  array,
+  assert,
+  assign,
+  boolean,
+  enums,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -16,15 +24,25 @@ import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
+const buttonStruct = object({
+  text: string(),
+  icon: optional(string()),
+  appearance: optional(enums(["accent", "filled", "outlined", "plain"])),
+  variant: optional(
+    enums(["brand", "neutral", "success", "warning", "danger"])
+  ),
+  tap_action: actionConfigStruct,
+});
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     content_only: optional(boolean()),
     icon: optional(string()),
+    icon_color: optional(string()),
     title: optional(string()),
     content: optional(string()),
-    action_button_text: optional(string()),
-    tap_action: optional(actionConfigStruct),
+    buttons: optional(array(buttonStruct)),
   })
 );
 
@@ -70,24 +88,66 @@ export class HuiEmptyStateCardEditor
           },
         },
         { name: "icon", selector: { icon: {} } },
+        {
+          name: "icon_color",
+          selector: {
+            ui_color: {},
+          },
+        },
         { name: "title", selector: { text: {} } },
         { name: "content", selector: { text: { multiline: true } } },
         {
-          name: "interactions",
-          type: "expandable",
-          flatten: true,
-          iconPath: mdiGestureTap,
-          schema: [
-            { name: "action_button_text", selector: { text: {} } },
-            {
-              name: "tap_action",
-              selector: {
-                ui_action: {
-                  default_action: "none",
+          name: "buttons",
+          selector: {
+            object: {
+              multiple: true,
+              label_field: "text",
+              fields: {
+                text: {
+                  selector: { text: {} },
+                  required: true,
+                },
+                icon: {
+                  selector: { icon: {} },
+                },
+                appearance: {
+                  selector: {
+                    select: {
+                      options: [
+                        { value: "accent", label: "Accent" },
+                        { value: "filled", label: "Filled" },
+                        { value: "outlined", label: "Outlined" },
+                        { value: "plain", label: "Plain" },
+                      ],
+                      mode: "dropdown",
+                    },
+                  },
+                },
+                variant: {
+                  selector: {
+                    select: {
+                      options: [
+                        { value: "brand", label: "Brand" },
+                        { value: "neutral", label: "Neutral" },
+                        { value: "success", label: "Success" },
+                        { value: "warning", label: "Warning" },
+                        { value: "danger", label: "Danger" },
+                      ],
+                      mode: "dropdown",
+                    },
+                  },
+                },
+                tap_action: {
+                  selector: {
+                    ui_action: {
+                      default_action: "none",
+                    },
+                  },
+                  required: true,
                 },
               },
             },
-          ],
+          },
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -134,7 +194,7 @@ export class HuiEmptyStateCardEditor
     switch (schema.name) {
       case "style":
       case "content":
-      case "action_button_text":
+      case "buttons":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.empty_state.${schema.name}`
         );

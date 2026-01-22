@@ -12,15 +12,13 @@ const getStore = memoizeOne(async () => {
   const iconStore = createStore("hass-icon-db", "mdi-icon-store");
 
   // Supervisor doesn't use icons, and should not update/downgrade the icon DB.
-  if (!__SUPERVISOR__) {
-    const version = await get("_version", iconStore);
+  const version = await get("_version", iconStore);
 
-    if (!version) {
-      set("_version", iconMetadata.version, iconStore);
-    } else if (version !== iconMetadata.version) {
-      await clear(iconStore);
-      set("_version", iconMetadata.version, iconStore);
-    }
+  if (!version) {
+    set("_version", iconMetadata.version, iconStore);
+  } else if (version !== iconMetadata.version) {
+    await clear(iconStore);
+    set("_version", iconMetadata.version, iconStore);
   }
 
   return iconStore;

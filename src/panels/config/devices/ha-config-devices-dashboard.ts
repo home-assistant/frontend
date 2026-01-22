@@ -42,7 +42,6 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
@@ -1263,11 +1262,6 @@ ${rejected
         }
         hass-tabs-subpage-data-table.narrow {
           --data-table-row-height: 72px;
-        }
-        ha-button-menu {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);
