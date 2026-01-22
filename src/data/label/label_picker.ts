@@ -29,7 +29,7 @@ export const labelComboBoxKeys: FuseWeightedKey[] = [
 ];
 
 export interface LabelComboBoxItem extends PickerComboBoxItem {
-  color: string | undefined;
+  color?: string;
 }
 
 export const getLabels = (
