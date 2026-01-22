@@ -110,7 +110,7 @@ export class HaConfigLabels extends LitElement {
         showNarrow: true,
         label: localize("ui.panel.config.labels.headers.color"),
         type: "icon",
-        template: (label) => renderLabelColorBadge(label.color),
+        template: (label) => renderLabelColorBadge(label.color ?? undefined),
       },
       name: {
         title: localize("ui.panel.config.labels.headers.name"),
