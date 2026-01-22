@@ -381,7 +381,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const newConfig = addSection(
       this.lovelace!.config,
       this.index!,
-      this._defaultSection(true)
+      generateDefaultSection(this.hass.localize, true)
     );
     this.lovelace!.saveConfig(newConfig);
   }
