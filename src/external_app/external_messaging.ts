@@ -111,6 +111,9 @@ interface EMOutgoingMessageExoplayerStop extends EMMessage {
 
 interface EMOutgoingMessageThemeUpdate extends EMMessage {
   type: "theme-update";
+  payload: {
+    darkMode: boolean;
+  };
 }
 
 interface EMOutgoingMessageHaptic extends EMMessage {

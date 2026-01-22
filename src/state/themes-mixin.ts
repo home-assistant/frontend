@@ -179,6 +179,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         themeMeta.setAttribute("content", themeColor);
       }
 
-      this.hass!.auth.external?.fireMessage({ type: "theme-update" });
+      this.hass!.auth.external?.fireMessage({
+        type: "theme-update",
+        payload: {
+          darkMode,
+        },
+      });
     }
   };
