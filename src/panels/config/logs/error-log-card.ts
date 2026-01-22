@@ -56,14 +56,10 @@ import {
   fetchHassioLogsFollow,
   fetchHassioLogsFollowSkip,
   fetchHassioLogsLegacy,
-  getHassioLogDownloadLinesUrl,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
 import type { HomeAssistant } from "../../../types";
-import {
-  downloadFileSupported,
-  fileDownload,
-} from "../../../util/file_download";
+import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 
 const NUMBER_OF_LINES = 100;
@@ -129,10 +125,6 @@ class ErrorLogCard extends LitElement {
   @state() private _showBootsSelect = false;
 
   @state() private _wrapLines = true;
-
-  @state() private _downloadSupported?: boolean;
-
-  @state() private _logsFileLink?: string;
 
   protected render(): TemplateResult {
     const streaming =
@@ -207,30 +199,11 @@ class ErrorLogCard extends LitElement {
                     </ha-md-menu>
                   `
                 : nothing}
-              ${this._downloadSupported
-                ? html`
-                    <ha-icon-button
-                      .path=${mdiDownload}
-                      @click=${this._downloadLogs}
-                      .label=${localize("ui.panel.config.logs.download_logs")}
-                    ></ha-icon-button>
-                  `
-                : this._logsFileLink
-                  ? html`
-                      <a
-                        href=${this._logsFileLink}
-                        target="_blank"
-                        class="download-link"
-                      >
-                        <ha-icon-button
-                          .path=${mdiDownload}
-                          .label=${localize(
-                            "ui.panel.config.logs.download_logs"
-                          )}
-                        ></ha-icon-button>
-                      </a>
-                    `
-                  : nothing}
+              <ha-icon-button
+                .path=${mdiDownload}
+                @click=${this._downloadLogs}
+                .label=${localize("ui.panel.config.logs.download_logs")}
+              ></ha-icon-button>
               <ha-icon-button
                 .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
                 @click=${this._toggleLineWrap}
@@ -338,7 +311,6 @@ class ErrorLogCard extends LitElement {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
-      this._downloadSupported = downloadFileSupported(this.hass);
       this._streamSupported =
         !__SUPERVISOR__ || atLeastVersion(this.hass.config.version, 2024, 11);
 
@@ -538,17 +510,6 @@ class ErrorLogCard extends LitElement {
               this._scrollToBottom();
             } else {
               this._newLogsIndicator = true;
-            }
-
-            if (!this._downloadSupported) {
-              const downloadUrl = getHassioLogDownloadLinesUrl(
-                this.provider!,
-                this._numberOfLines,
-                this._boot
-              );
-              getSignedPath(this.hass, downloadUrl).then((signedUrl) => {
-                this._logsFileLink = signedUrl.path;
-              });
             }
 
             // first chunk loads successfully, reset retry param
