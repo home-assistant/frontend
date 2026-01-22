@@ -3,7 +3,9 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { navigate } from "../../common/navigate";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -16,11 +18,9 @@ import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
 import type {
   LovelaceConfig,
-  LovelaceDashboardStrategyConfig,
   LovelaceRawConfig,
 } from "../../data/lovelace/config/types";
 import {
-  deleteConfig,
   fetchConfig,
   isStrategyDashboard,
   saveConfig,
@@ -38,14 +38,10 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
+import { generateDefaultView } from "./views/default-view";
+import { fetchDashboards } from "../../data/lovelace/dashboard";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
-
-const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
-  strategy: {
-    type: "original-states",
-  },
-};
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -371,7 +367,7 @@ export class LovelacePanel extends LitElement {
     }
 
     try {
-      rawConf = await confProm!;
+      rawConf = await confProm;
 
       // If strategy defined, apply it here.
       if (isStrategyDashboard(rawConf)) {
@@ -391,8 +387,19 @@ export class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      navigate("/home", { replace: true });
-      return;
+
+      // If there is no dashboard called "lovelace", redirect to /home
+      if (this.urlPath === "lovelace") {
+        const dashboards = await fetchDashboards(this.hass!);
+        const dashboard = dashboards.find((d) => d.url_path === "lovelace");
+        if (!dashboard) {
+          navigate("/home", { replace: true });
+          return;
+        }
+      }
+      // Config not found, create a default one
+      conf = this._generateDefaultConfig(this.hass!.localize);
+      rawConf = conf;
     } finally {
       this._loading = false;
       // Ignore updates for another 2 seconds.
@@ -497,19 +504,17 @@ export class LovelacePanel extends LitElement {
           mode: previousMode,
         } = this.lovelace!;
         try {
-          // Optimistic update
-          const generatedConf = await generateLovelaceDashboardStrategy(
-            DEFAULT_CONFIG,
-            this.hass!
+          const defaultConfig = this._generateDefaultConfig(
+            this.hass!.localize
           );
+          // Optimistic update
           this._updateLovelace({
-            config: generatedConf,
-            rawConfig: DEFAULT_CONFIG,
-            mode: "generated",
-            editMode: false,
+            config: defaultConfig,
+            rawConfig: defaultConfig,
+            mode: "storage",
           });
           this._ignoreNextUpdateEvent = true;
-          await deleteConfig(this.hass!, urlPath);
+          await saveConfig(this.hass!, urlPath, defaultConfig);
         } catch (err: any) {
           // eslint-disable-next-line
           console.error(err);
@@ -525,6 +530,12 @@ export class LovelacePanel extends LitElement {
       showToast: (params: ShowToastParams) => showToast(this, params),
     };
   }
+
+  private _generateDefaultConfig = memoizeOne(
+    (localize: LocalizeFunc): LovelaceConfig => ({
+      views: [generateDefaultView(localize, true)],
+    })
+  );
 
   private _updateLovelace(props: Partial<Lovelace>) {
     this.lovelace = {
