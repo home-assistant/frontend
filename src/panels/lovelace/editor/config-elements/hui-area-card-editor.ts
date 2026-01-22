@@ -194,6 +194,7 @@ export class HuiAreaCardEditor
               selector: {
                 ui_action: {
                   default_action: "none",
+                  actions: ["navigate", "url", "perform-action", "none"],
                 },
               },
             },
@@ -205,6 +206,16 @@ export class HuiAreaCardEditor
                       ui_action: {
                         default_action:
                           displayType === "camera" ? "more-info" : "none",
+                        actions:
+                          displayType === "camera"
+                            ? [
+                                "more-info",
+                                "navigate",
+                                "url",
+                                "perform-action",
+                                "none",
+                              ]
+                            : ["navigate", "url", "perform-action", "none"],
                       },
                     },
                   },
@@ -499,7 +510,13 @@ export class HuiAreaCardEditor
     }
 
     // Clean up image_tap_action if compact display type (no image area)
-    if (config.display_type === "compact" && config.image_tap_action) {
+    // or if it's more-info but not in camera mode (no entity to show)
+    if (
+      config.image_tap_action &&
+      (config.display_type === "compact" ||
+        (config.display_type !== "camera" &&
+          config.image_tap_action.action === "more-info"))
+    ) {
       delete config.image_tap_action;
     }
 
