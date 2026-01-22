@@ -35,7 +35,11 @@ import {
   type EntityComboBoxItem,
 } from "../data/entity/entity_picker";
 import { domainToName } from "../data/integration";
-import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
+import {
+  getLabels,
+  labelComboBoxKeys,
+  type LabelComboBoxItem,
+} from "../data/label/label_picker";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import {
   areaMeetsFilter,
@@ -726,6 +730,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         | string
         | FloorComboBoxItem
         | EntityComboBoxItem
+        | LabelComboBoxItem
         | PickerComboBoxItem
       )[] = [];
 
@@ -887,7 +892,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _filterGroup(
     type: TargetType,
-    items: (FloorComboBoxItem | PickerComboBoxItem | EntityComboBoxItem)[],
+    items: (
+      | FloorComboBoxItem
+      | PickerComboBoxItem
+      | EntityComboBoxItem
+      | LabelComboBoxItem
+    )[],
     searchTerm: string,
     weightedKeys: FuseWeightedKey[],
     sort = true
