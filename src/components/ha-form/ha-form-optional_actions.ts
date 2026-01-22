@@ -7,7 +7,8 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
-import "../ha-list-item";
+import "../ha-dropdown";
+import "../ha-dropdown-item";
 import "../ha-svg-icon";
 import "./ha-form";
 import type {
@@ -116,9 +117,8 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
         : nothing}
       ${hiddenActions.length > 0
         ? html`
-            <ha-button-menu
-              @action=${this._handleAddAction}
-              fixed
+            <ha-dropdown
+              @wa-select=${this._handleAddAction}
               @closed=${stopPropagation}
             >
               <ha-button slot="trigger" appearance="filled" size="small">
@@ -129,26 +129,21 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
               ${hiddenActions.map((action) => {
                 const actionSchema = schemaMap.get(action);
                 return html`
-                  <ha-list-item>
+                  <ha-dropdown-item .value=${action}>
                     ${this.computeLabel && actionSchema
                       ? this.computeLabel(actionSchema)
                       : action}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `;
               })}
-            </ha-button-menu>
+            </ha-dropdown>
           `
         : nothing}
     `;
   }
 
-  private _handleAddAction(ev: CustomEvent) {
-    const hiddenActions = this._hiddenActions(
-      this.schema.schema,
-      this._displayActions ?? NO_ACTIONS
-    );
-    const index = ev.detail.index;
-    const action = hiddenActions[index];
+  private _handleAddAction(ev: CustomEvent<{ item: { value: string } }>) {
+    const action = ev.detail.item.value;
     this._displayActions = [...(this._displayActions ?? []), action];
   }
 
@@ -160,6 +155,9 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     }
     :host ha-form {
       display: block;
+    }
+    ha-dropdown {
+      display: inline-block;
     }
   `;
 }

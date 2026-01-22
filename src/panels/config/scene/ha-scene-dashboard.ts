@@ -11,6 +11,7 @@ import {
   mdiMenuDown,
   mdiOpenInNew,
   mdiPalette,
+  mdiPencil,
   mdiPencilOff,
   mdiPlay,
   mdiPlus,
@@ -91,8 +92,10 @@ import {
   activateScene,
   deleteScene,
   getSceneConfig,
+  saveScene,
   showSceneEditor,
 } from "../../../data/scene";
+import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -409,6 +412,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                     `ui.panel.config.scene.picker.${scene.category ? "edit_category" : "assign_category"}`
                   ),
                   action: () => this._editCategory(scene),
+                },
+                {
+                  path: mdiPencil,
+                  label: this.hass.localize(
+                    "ui.panel.config.scene.editor.rename"
+                  ),
+                  action: () => this._rename(scene),
+                  disabled: !scene.attributes.id,
                 },
                 {
                   divider: true,
@@ -1206,6 +1217,31 @@ ${rejected
         entityRegEntry?.area_id || undefined
       );
     }
+  }
+
+  private async _rename(scene: SceneEntity): Promise<void> {
+    if (!scene.attributes.id) {
+      return;
+    }
+    const config = await getSceneConfig(this.hass, scene.attributes.id);
+    const entityRegEntry = this._entityReg.find(
+      (reg) => reg.entity_id === scene.entity_id
+    );
+    showSceneSaveDialog(this, {
+      config,
+      domain: "scene",
+      entityRegistryEntry: entityRegEntry,
+      updateConfig: async (newConfig, entityRegistryUpdate) => {
+        await saveScene(this.hass, scene.attributes.id!, newConfig);
+        if (entityRegEntry) {
+          await updateEntityRegistryEntry(this.hass, scene.entity_id, {
+            area_id: entityRegistryUpdate.area || null,
+            labels: entityRegistryUpdate.labels,
+            categories: { scene: entityRegistryUpdate.category || null },
+          });
+        }
+      },
+    });
   }
 
   private _showHelp() {

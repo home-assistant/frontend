@@ -14,7 +14,6 @@ import {
   mdiLabel,
   mdiLightningBolt,
   mdiMapMarkerRadius,
-  mdiMathLog,
   mdiMemory,
   mdiMicrophone,
   mdiNetwork,
@@ -27,6 +26,7 @@ import {
   mdiScriptText,
   mdiShape,
   mdiSofa,
+  mdiTextBoxOutline,
   mdiTools,
   mdiUpdate,
   mdiViewDashboard,
@@ -85,7 +85,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "zone",
     },
     {
-      path: "/hassio",
+      path: "/config/apps",
       translationKey: "supervisor",
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
@@ -381,7 +381,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "logs",
       path: "/config/logs",
       translationKey: "logs",
-      iconPath: mdiMathLog,
+      iconPath: mdiTextBoxOutline,
       iconColor: "#C65326",
       core: true,
     },
@@ -645,6 +645,14 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-application-credentials",
         load: () =>
           import("./application_credentials/ha-config-application-credentials"),
+      },
+      apps: {
+        tag: "ha-config-apps",
+        load: () => import("./apps/ha-config-apps"),
+      },
+      app: {
+        tag: "ha-config-app-dashboard",
+        load: () => import("./apps/ha-config-app-dashboard"),
       },
     },
   };

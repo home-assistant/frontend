@@ -14,9 +14,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { formatDurationDigital } from "../../../common/datetime/format_duration";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { debounce } from "../../../common/util/debounce";
+import {
+  startMediaProgressInterval,
+  stopMediaProgressInterval,
+} from "../../../common/util/media-progress";
+import { VolumeSliderController } from "../../../common/util/volume-slider";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -38,6 +43,7 @@ import {
   cleanupMediaTitle,
   computeMediaControls,
   computeMediaDescription,
+  formatMediaTime,
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
@@ -54,6 +60,34 @@ class MoreInfoMediaPlayer extends LitElement {
   @query("#position-slider")
   private _positionSlider?: HaSlider;
 
+  @query(".volume-slider")
+  private _volumeSlider?: HaSlider;
+
+  private _progressInterval?: number;
+
+  private _volumeStep = 2;
+
+  private _debouncedVolumeSet = debounce((value: number) => {
+    this._setVolume(value);
+  }, 100);
+
+  private _volumeController = new VolumeSliderController({
+    getSlider: () => this._volumeSlider,
+    step: this._volumeStep,
+    onSetVolume: (value) => this._setVolume(value),
+    onSetVolumeDebounced: (value) => this._debouncedVolumeSet(value),
+  });
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._syncProgressInterval();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._clearProgressInterval();
+  }
+
   protected firstUpdated(_changedProperties: PropertyValues) {
     if (this._positionSlider) {
       this._positionSlider.valueFormatter = (value: number) =>
@@ -62,14 +96,7 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _formatDuration(duration: number) {
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-    const seconds = Math.floor(duration % 60);
-    return formatDurationDigital(this.hass.locale, {
-      hours,
-      minutes,
-      seconds,
-    })!;
+    return formatMediaTime(duration);
   }
 
   protected _renderVolumeControl() {
@@ -139,13 +166,25 @@ class MoreInfoMediaPlayer extends LitElement {
                   ${!supportsMute
                     ? html`<ha-svg-icon .path=${mdiVolumeHigh}></ha-svg-icon>`
                     : nothing}
-                  <ha-slider
-                    labeled
-                    id="input"
-                    .value=${Number(this.stateObj.attributes.volume_level) *
-                    100}
-                    @change=${this._selectedValueChanged}
-                  ></ha-slider>
+                  <div
+                    class="volume-slider-container"
+                    @touchstart=${this._volumeController.handleTouchStart}
+                    @touchmove=${this._volumeController.handleTouchMove}
+                    @touchend=${this._volumeController.handleTouchEnd}
+                    @touchcancel=${this._volumeController.handleTouchCancel}
+                    @wheel=${this._volumeController.handleWheel}
+                  >
+                    <ha-slider
+                      class="volume-slider"
+                      labeled
+                      id="input"
+                      .value=${Number(this.stateObj.attributes.volume_level) *
+                      100}
+                      .step=${this._volumeStep}
+                      @input=${this._volumeController.handleInput}
+                      @change=${this._volumeController.handleChange}
+                    ></ha-slider>
+                  </div>
                 `
               : nothing}
           </div>
@@ -261,17 +300,17 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const stateObj = this.stateObj;
     const controls = computeMediaControls(stateObj, true);
-    const coverUrl =
+    const coverUrlRaw =
       stateObj.attributes.entity_picture_local ||
       stateObj.attributes.entity_picture ||
       "";
+    const coverUrl = coverUrlRaw ? this.hass.hassUrl(coverUrlRaw) : "";
     const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
 
     const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
     const duration = Math.max(stateObj.attributes.media_duration || 0, 0);
-    const remaining = Math.max(duration - position, 0);
-    const remainingFormatted = this._formatDuration(remaining);
     const positionFormatted = this._formatDuration(position);
+    const durationFormatted = this._formatDuration(duration);
     const primaryTitle = cleanupMediaTitle(stateObj.attributes.media_title);
     const secondaryTitle = computeMediaDescription(stateObj);
     const turnOn = controls?.find((c) => c.action === "turn_on");
@@ -331,8 +370,12 @@ class MoreInfoMediaPlayer extends LitElement {
                 ?disabled=${!stateActive(stateObj) ||
                 !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
               >
-                <span slot="reference">${positionFormatted}</span>
-                <span slot="reference">${remainingFormatted}</span>
+                <span class="position-time" slot="reference"
+                  >${positionFormatted}</span
+                >
+                <span class="position-time" slot="reference"
+                  >${durationFormatted}</span
+                >
               </ha-slider>
             </div>
           `
@@ -531,6 +574,16 @@ class MoreInfoMediaPlayer extends LitElement {
       margin-left: var(--ha-space-2);
     }
 
+    .volume-slider-container {
+      width: 100%;
+    }
+
+    @media (pointer: coarse) {
+      .volume-slider {
+        pointer-events: none;
+      }
+    }
+
     .volume ha-svg-icon {
       padding: var(--ha-space-1);
       height: 16px;
@@ -566,6 +619,10 @@ class MoreInfoMediaPlayer extends LitElement {
 
     .position-bar ha-slider::part(references) {
       color: var(--secondary-text-color);
+    }
+
+    .position-time {
+      margin-top: var(--ha-space-2);
     }
 
     .media-info-row {
@@ -622,6 +679,39 @@ class MoreInfoMediaPlayer extends LitElement {
     );
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("stateObj")) {
+      this._syncProgressInterval();
+    }
+  }
+
+  private _syncProgressInterval(): void {
+    if (this._shouldUpdateProgress()) {
+      this._progressInterval = startMediaProgressInterval(
+        this._progressInterval,
+        () => this.requestUpdate()
+      );
+      return;
+    }
+    this._clearProgressInterval();
+  }
+
+  private _clearProgressInterval(): void {
+    this._progressInterval = stopMediaProgressInterval(this._progressInterval);
+  }
+
+  private _shouldUpdateProgress(): boolean {
+    const stateObj = this.stateObj;
+    return (
+      !!stateObj &&
+      stateObj.state === "playing" &&
+      Number(stateObj.attributes.media_duration) > 0 &&
+      "media_position" in stateObj.attributes &&
+      "media_position_updated_at" in stateObj.attributes
+    );
+  }
+
   private _toggleMute() {
     this.hass!.callService("media_player", "volume_mute", {
       entity_id: this.stateObj!.entity_id,
@@ -629,10 +719,10 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _selectedValueChanged(e: Event): void {
+  private _setVolume(value: number) {
     this.hass!.callService("media_player", "volume_set", {
       entity_id: this.stateObj!.entity_id,
-      volume_level: (e.target as any).value / 100,
+      volume_level: value / 100,
     });
   }
 

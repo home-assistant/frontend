@@ -1,17 +1,17 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiDotsVertical } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
-import "../../../components/ha-check-list-item";
-import "../../../components/ha-list-item";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
   severitySort,
@@ -81,40 +81,36 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}
       >
         <div slot="toolbar-icon">
-          <ha-button-menu multi>
+          <ha-dropdown @wa-select=${this._handleDropdownSelect}>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-check-list-item
-              left
-              @request-selected=${this._toggleIgnored}
-              .selected=${this._showIgnored}
+            <ha-dropdown-item
+              type="checkbox"
+              value="toggle_ignored"
+              .checked=${this._showIgnored}
             >
               ${this.hass.localize("ui.panel.config.repairs.show_ignored")}
-            </ha-check-list-item>
-            <li divider role="separator"></li>
+            </ha-dropdown-item>
+            <wa-divider></wa-divider>
             ${isComponentLoaded(this.hass, "system_health") ||
             isComponentLoaded(this.hass, "hassio")
               ? html`
-                  <ha-list-item
-                    @request-selected=${this._showSystemInformationDialog}
-                  >
+                  <ha-dropdown-item value="system_information">
                     ${this.hass.localize(
                       "ui.panel.config.repairs.system_information"
                     )}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `
-              : ""}
-            <ha-list-item
-              @request-selected=${this._showIntegrationStartupDialog}
-            >
+              : nothing}
+            <ha-dropdown-item value="integration_startup_time">
               ${this.hass.localize(
                 "ui.panel.config.repairs.integration_startup_time"
               )}
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
         <div class="content">
           <ha-card outlined>
@@ -141,32 +137,32 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _showSystemInformationDialog(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _showSystemInformationDialog(): void {
     showSystemInformationDialog(this);
   }
 
-  private _showIntegrationStartupDialog(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): void {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _showIntegrationStartupDialog(): void {
     showIntegrationStartupDialog(this);
   }
 
-  private _toggleIgnored(ev: CustomEvent<RequestSelectedDetail>): void {
-    if (ev.detail.source !== "property") {
-      return;
-    }
-
+  private _toggleIgnored(): void {
     this._showIgnored = !this._showIgnored;
+  }
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    switch (action) {
+      case "toggle_ignored":
+        this._toggleIgnored();
+        break;
+      case "system_information":
+        this._showSystemInformationDialog();
+        break;
+      case "integration_startup_time":
+        this._showIntegrationStartupDialog();
+        break;
+    }
   }
 
   static styles = css`

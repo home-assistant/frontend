@@ -169,7 +169,7 @@ const SCHEMAS: {
   {
     title: "Selectors",
     translations: {
-      addon: "Addon",
+      addon: "App",
       entity: "Entity",
       device: "Device",
       area: "Area",
