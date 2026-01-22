@@ -1,8 +1,11 @@
+import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { navigate } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
+import { updateAreaRegistryEntry } from "../../data/area/area_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   fetchFrontendSystemData,
@@ -13,8 +16,10 @@ import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
 import "../lovelace/hui-root";
+import type { ExtraActionItem } from "../lovelace/hui-root";
 import { expandLovelaceConfigStrategies } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
+import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
 import { showDeviceRegistryDetailDialog } from "../config/devices/device-registry-detail/show-dialog-device-registry-detail";
 import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 
@@ -32,12 +37,18 @@ class PanelHome extends LitElement {
 
   @state() private _config: FrontendSystemData["home"] = {};
 
+  @state() private _extraActionItems?: ExtraActionItem[];
+
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
       this._setup();
       return;
+    }
+
+    if (changedProps.has("route")) {
+      this._updateExtraActionItems();
     }
 
     if (!changedProps.has("hass")) {
@@ -74,6 +85,7 @@ class PanelHome extends LitElement {
   }
 
   private async _setup() {
+    this._updateExtraActionItems();
     try {
       const [_, data] = await Promise.all([
         this.hass.loadFragmentTranslation("lovelace"),
@@ -94,7 +106,67 @@ class PanelHome extends LitElement {
   );
 
   private _registriesChanged = async () => {
+    // If on an area view that no longer exists, redirect to overview
+    const path = this.route?.path?.split("/")[1];
+    if (path?.startsWith("areas-")) {
+      const areaId = path.replace("areas-", "");
+      if (!this.hass.areas[areaId]) {
+        navigate("/home");
+        return;
+      }
+    }
     this._setLovelace();
+  };
+
+  private _updateExtraActionItems() {
+    const path = this.route?.path?.split("/")[1];
+
+    if (path?.startsWith("areas-")) {
+      this._extraActionItems = [
+        {
+          icon: mdiPencil,
+          labelKey: "ui.panel.lovelace.menu.edit_area",
+          action: this._editArea,
+        },
+      ];
+    } else if (!path || path === "overview") {
+      this._extraActionItems = [
+        {
+          icon: mdiPencil,
+          labelKey: "ui.panel.lovelace.menu.edit_overview",
+          action: this._editHome,
+        },
+      ];
+    } else {
+      this._extraActionItems = undefined;
+    }
+  }
+
+  private _editHome = () => {
+    showEditHomeDialog(this, {
+      config: this._config,
+      saveConfig: async (config) => {
+        await this._saveConfig(config);
+      },
+    });
+  };
+
+  private _editArea = async () => {
+    const path = this.route?.path?.split("/")[1];
+    if (!path?.startsWith("areas-")) {
+      return;
+    }
+    const areaId = path.replace("areas-", "");
+    const area = this.hass.areas[areaId];
+    if (!area) {
+      return;
+    }
+    await this.hass.loadFragmentTranslation("config");
+    showAreaRegistryDetailDialog(this, {
+      entry: area,
+      updateEntry: (values) =>
+        updateAreaRegistryEntry(this.hass, areaId, values),
+    });
   };
 
   private _handleLLCustomEvent = (ev: Event) => {
@@ -132,6 +204,8 @@ class PanelHome extends LitElement {
         .lovelace=${this._lovelace}
         .route=${this.route}
         .panel=${this.panel}
+        no-edit
+        .extraActionItems=${this._extraActionItems}
         @ll-custom=${this._handleLLCustomEvent}
       ></hui-root>
     `;
@@ -165,19 +239,10 @@ class PanelHome extends LitElement {
       enableFullEditMode: () => undefined,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
-      setEditMode: this._setEditMode,
+      setEditMode: () => undefined,
       showToast: () => undefined,
     };
   }
-
-  private _setEditMode = () => {
-    showEditHomeDialog(this, {
-      config: this._config,
-      saveConfig: async (config) => {
-        await this._saveConfig(config);
-      },
-    });
-  };
 
   private async _saveConfig(config: HomeFrontendSystemData): Promise<void> {
     try {

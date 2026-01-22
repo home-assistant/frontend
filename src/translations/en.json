@@ -7791,7 +7791,9 @@
           "create_area_action": "View area",
           "add_person_success": "Person added",
           "add_person_action": "View persons",
-          "add_person": "Add person"
+          "add_person": "Add person",
+          "edit_overview": "Edit overview",
+          "edit_area": "Edit area"
         },
         "reload_resources": {
           "refresh_header": "Do you want to refresh?",
