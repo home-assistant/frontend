@@ -58,8 +58,6 @@ class PanelCalendar extends LitElement {
 
   private _mql?: MediaQueryList;
 
-  private _headerHeight = 56;
-
   public connectedCallback() {
     super.connectedCallback();
     this._mql = window.matchMedia(
@@ -67,10 +65,6 @@ class PanelCalendar extends LitElement {
     );
     this._mql.addListener(this._setIsMobile);
     this.mobile = this._mql.matches;
-    const computedStyles = getComputedStyle(this);
-    this._headerHeight = Number(
-      computedStyles.getPropertyValue("--header-height").replace("px", "")
-    );
   }
 
   public disconnectedCallback() {

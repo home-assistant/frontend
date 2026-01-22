@@ -66,8 +66,6 @@ class PanelTodo extends LitElement {
   })
   private _entityId?: string;
 
-  private _headerHeight = 56;
-
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
@@ -85,10 +83,6 @@ class PanelTodo extends LitElement {
     );
     this._mql.addListener(this._setIsMobile);
     this.mobile = this._mql.matches;
-    const computedStyles = getComputedStyle(this);
-    this._headerHeight = Number(
-      computedStyles.getPropertyValue("--header-height").replace("px", "")
-    );
   }
 
   public disconnectedCallback() {
