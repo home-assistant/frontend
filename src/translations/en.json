@@ -8228,7 +8228,8 @@
                 "icon": "Area icon",
                 "picture": "Area picture",
                 "camera": "Camera feed"
-              }
+              },
+              "image_tap_action": "Image tap behavior"
             },
             "calendar": {
               "name": "Calendar",

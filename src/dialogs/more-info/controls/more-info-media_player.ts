@@ -218,7 +218,11 @@ class MoreInfoMediaPlayer extends LitElement {
               ? "selected"
               : ""}
           >
-            ${source}
+            ${this.hass.formatEntityAttributeValue(
+              this.stateObj!,
+              "source",
+              source
+            )}
           </ha-dropdown-item>`
       )}
     </ha-dropdown>`;
@@ -251,7 +255,11 @@ class MoreInfoMediaPlayer extends LitElement {
               ? "selected"
               : ""}
           >
-            ${soundMode}
+            ${this.hass.formatEntityAttributeValue(
+              this.stateObj!,
+              "sound_mode",
+              soundMode
+            )}
           </ha-dropdown-item>`
       )}
     </ha-dropdown>`;
