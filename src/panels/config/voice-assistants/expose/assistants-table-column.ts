@@ -71,10 +71,10 @@ export const getAssistantsTableColumnIcon = (
 
 export const getAssistantsSortableKey = (
   entityAssistants: string[]
-): string => {
+): string | undefined => {
   let result = 0;
   if (!entityAssistants.length) {
-    return "z";
+    return undefined;
   }
   const assistantsOrdered = [
     "conversation",
