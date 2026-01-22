@@ -22,6 +22,7 @@ export function getAssistantsTableColumn<T>(
     type: "flex",
     defaultHidden: !visible,
     sortable: true,
+    showNarrow: true,
     minWidth: "160px",
     maxWidth: "160px",
     valueColumn: "assistants_sortable_key",
