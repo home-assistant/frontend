@@ -7559,7 +7559,8 @@
             "favorites": "Favorites",
             "welcome_title": "No devices here yet",
             "welcome_content": "Add lights, switches, sensors, or other smart home devices to get started.",
-            "welcome_add_device": "Add new device"
+            "welcome_add_device": "Add new device",
+            "welcome_edit_areas": "Edit areas"
           },
           "common_controls": {
             "not_loaded": "Usage Prediction integration is not loaded.",

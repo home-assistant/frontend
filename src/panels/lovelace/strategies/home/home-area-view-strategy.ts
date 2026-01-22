@@ -378,10 +378,11 @@ export class HomeAreaViewStrategy extends ReactiveElement {
               ? {
                   buttons: [
                     {
+                      icon: "mdi:plus",
                       text: hass.localize(
                         "ui.panel.lovelace.strategy.home-area.no_devices_add_device"
                       ),
-                      appearance: "filled",
+                      appearance: "plain",
                       variant: "brand",
                       tap_action: {
                         action: "fire-dom-event",
@@ -391,6 +392,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                       },
                     },
                     {
+                      icon: "mdi:home-plus",
                       text: hass.localize(
                         "ui.panel.lovelace.strategy.home-area.no_devices_assign_device"
                       ),

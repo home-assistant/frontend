@@ -363,6 +363,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
               ? {
                   buttons: [
                     {
+                      icon: "mdi:plus",
                       text: hass.localize(
                         "ui.panel.lovelace.strategy.home.welcome_add_device"
                       ),
@@ -373,6 +374,18 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
                         home_panel: {
                           type: "add_integration",
                         },
+                      },
+                    },
+                    {
+                      icon: "mdi:home-edit",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home.welcome_edit_areas"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/config/areas/dashboard",
                       },
                     },
                   ],
