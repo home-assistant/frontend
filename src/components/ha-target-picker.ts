@@ -896,6 +896,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       | FloorComboBoxItem
       | PickerComboBoxItem
       | EntityComboBoxItem
+      | LabelComboBoxItem
     )[],
     searchTerm: string,
     weightedKeys: FuseWeightedKey[],
