@@ -56,8 +56,7 @@ class HaAttributeValue extends LitElement {
         this.stateObj!,
         this.attribute
       );
-      const value = parts.find((part) => part.type === "value")?.value;
-      return value;
+      return parts.find((part) => part.type === "value")?.value;
     }
 
     return this.hass.formatEntityAttributeValue(
