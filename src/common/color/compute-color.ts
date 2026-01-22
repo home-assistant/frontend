@@ -24,8 +24,6 @@ export const THEME_COLORS = new Set([
   "blue-grey",
   "black",
   "white",
-  "primary-text",
-  "secondary-text",
   "disabled",
 ]);
 
