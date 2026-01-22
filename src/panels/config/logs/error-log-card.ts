@@ -311,8 +311,11 @@ class ErrorLogCard extends LitElement {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
-      this._streamSupported =
-        !__SUPERVISOR__ || atLeastVersion(this.hass.config.version, 2024, 11);
+      this._streamSupported = atLeastVersion(
+        this.hass.config.version,
+        2024,
+        11
+      );
 
       // just needs to be loaded once, because only the host endpoints provide boots information
       this._loadBoots();
