@@ -80,19 +80,16 @@ export const computeAttributeValueToParts = (
       unit = config.unit_system.temperature;
     }
 
+    const parts: ValuePart[] = [{ type: "value", value: formattedValue }];
+
     if (unit) {
       const literal = blankBeforeUnit(unit, locale);
-
-      return [
-        { type: "value", value: formattedValue },
-        ...(literal
-          ? [{ type: "literal", value: literal } satisfies ValuePart]
-          : []),
-        { type: "unit", value: unit },
-      ];
+      if (literal) {
+        parts.push({ type: "literal", value: literal });
+      }
+      parts.push({ type: "unit", value: unit });
     }
-
-    return [{ type: "value", value: formattedValue }];
+    return parts;
   }
 
   // Special handling in case this is a string with a known format
