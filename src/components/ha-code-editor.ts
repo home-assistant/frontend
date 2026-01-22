@@ -691,15 +691,10 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _getIconItems = async (): Promise<Completion[]> => {
     if (!this._iconList) {
-      let iconList: {
+      const iconList: {
         name: string;
         keywords: string[];
-      }[];
-      if (__SUPERVISOR__) {
-        iconList = [];
-      } else {
-        iconList = (await import("../../build/mdi/iconList.json")).default;
-      }
+      }[] = (await import("../../build/mdi/iconList.json")).default;
 
       this._iconList = iconList.map((icon) => ({
         type: "variable",

@@ -43,28 +43,10 @@ const compressAppModernBrotli = () =>
 const compressAppModernZopfli = () =>
   compressModern(paths.app_output_root, paths.app_output_latest, "zopfli");
 
-const compressHassioModernBrotli = () =>
-  compressModern(
-    paths.hassio_output_root,
-    paths.hassio_output_latest,
-    "brotli"
-  );
-const compressHassioModernZopfli = () =>
-  compressModern(
-    paths.hassio_output_root,
-    paths.hassio_output_latest,
-    "zopfli"
-  );
-
 const compressAppOtherBrotli = () =>
   compressOther(paths.app_output_root, paths.app_output_latest, "brotli");
 const compressAppOtherZopfli = () =>
   compressOther(paths.app_output_root, paths.app_output_latest, "zopfli");
-
-const compressHassioOtherBrotli = () =>
-  compressOther(paths.hassio_output_root, paths.hassio_output_latest, "brotli");
-const compressHassioOtherZopfli = () =>
-  compressOther(paths.hassio_output_root, paths.hassio_output_latest, "zopfli");
 
 gulp.task(
   "compress-app",
@@ -73,14 +55,5 @@ gulp.task(
     compressAppOtherBrotli,
     compressAppModernZopfli,
     compressAppOtherZopfli
-  )
-);
-gulp.task(
-  "compress-hassio",
-  gulp.parallel(
-    compressHassioModernBrotli,
-    compressHassioOtherBrotli,
-    compressHassioModernZopfli,
-    compressHassioOtherZopfli
   )
 );

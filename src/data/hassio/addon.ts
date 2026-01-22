@@ -8,7 +8,7 @@ import type { HassioResponse } from "./common";
 import { extractApiErrorMessage, hassioApiResultExtractor } from "./common";
 
 export type AddonCapability = Exclude<
-  keyof TranslationDict["supervisor"]["app"]["dashboard"]["capability"],
+  keyof TranslationDict["ui"]["panel"]["config"]["apps"]["dashboard"]["capability"],
   "label" | "role" | "stages"
 >;
 export type AddonStage = "stable" | "experimental" | "deprecated";

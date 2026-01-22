@@ -59,6 +59,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
         strategy: {
           type: "home-area",
           area: area.area_id,
+          home_panel: config.home_panel,
         } satisfies HomeAreaViewStrategyConfig,
       };
     });
@@ -92,6 +93,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
           strategy: {
             type: "home-overview",
             favorite_entities: config.favorite_entities,
+            home_panel: config.home_panel,
           } satisfies HomeOverviewViewStrategyConfig,
         },
         ...areaViews,

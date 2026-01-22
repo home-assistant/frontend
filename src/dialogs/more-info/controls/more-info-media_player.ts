@@ -216,7 +216,11 @@ class MoreInfoMediaPlayer extends LitElement {
             @keydown=${this._handleSourceClick}
             .selected=${source === this.stateObj?.attributes.source}
           >
-            ${source}
+            ${this.hass.formatEntityAttributeValue(
+              this.stateObj!,
+              "source",
+              source
+            )}
           </ha-md-menu-item>`
       )}
     </ha-md-button-menu>`;
@@ -249,7 +253,11 @@ class MoreInfoMediaPlayer extends LitElement {
             @keydown=${this._handleSoundModeClick}
             .selected=${soundMode === this.stateObj?.attributes.sound_mode}
           >
-            ${soundMode}
+            ${this.hass.formatEntityAttributeValue(
+              this.stateObj!,
+              "sound_mode",
+              soundMode
+            )}
           </ha-md-menu-item>`
       )}
     </ha-md-button-menu>`;

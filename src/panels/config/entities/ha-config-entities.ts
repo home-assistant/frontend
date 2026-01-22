@@ -56,7 +56,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
@@ -1647,11 +1646,6 @@ ${rejected
         }
         .header-btns > ha-icon-button {
           margin: 8px;
-        }
-        ha-button-menu {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);
