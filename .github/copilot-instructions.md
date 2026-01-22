@@ -621,7 +621,6 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 
 #### Key Terminology
 
-- **"add-on"** (hyphenated, not "addon")
 - **"integration"** (preferred over "component")
 - **Technical terms**: Use lowercase (automation, entity, device, service)
 
@@ -713,7 +712,7 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 - [ ] American English spelling
 - [ ] Friendly, informational tone
 - [ ] Avoids abbreviations and jargon
-- [ ] Correct terminology (add-on not addon, integration not component)
+- [ ] Correct terminology (integration not component)
 
 ### Component-Specific Checks
 

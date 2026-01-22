@@ -1,23 +1,23 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/ha-card";
+import { formatNumber } from "../../../../common/number/format_number";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
+import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
-import type { PipelineRun } from "../../../../data/assist_pipeline";
-import type { HomeAssistant } from "../../../../types";
-import { formatNumber } from "../../../../common/number/format_number";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import type { LocalizeKeys } from "../../../../common/translations/localize";
+import type { PipelineRun } from "../../../../data/assist_pipeline";
 import type {
-  ChatLogAssistantContent,
   ChatLog,
+  ChatLogAssistantContent,
   ChatLogContent,
   ChatLogUserContent,
 } from "../../../../data/chat_log";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../../types";
 
 const RUN_DATA = ["pipeline", "language"];
 const WAKE_WORD_DATA = ["engine"];
@@ -670,6 +670,10 @@ export class AssistPipelineDebug extends LitElement {
       background-color: var(--light-primary-color);
       color: var(--text-light-primary-color, var(--primary-text-color));
       direction: var(--direction);
+      --primary-text-color: var(
+        --text-light-primary-color,
+        var(--primary-text-color)
+      );
     }
 
     .message.user,

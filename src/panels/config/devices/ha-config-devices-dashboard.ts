@@ -42,7 +42,6 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
@@ -54,7 +53,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
-import { createAreaRegistryEntry } from "../../../data/area_registry";
+import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
@@ -1085,6 +1084,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     }
     showAddIntegrationDialog(this, {
       domain: this._searchParms.get("domain") || undefined,
+      navigateToResult: true,
     });
   }
 
@@ -1262,11 +1262,6 @@ ${rejected
         }
         hass-tabs-subpage-data-table.narrow {
           --data-table-row-height: 72px;
-        }
-        ha-button-menu {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);

@@ -67,7 +67,7 @@ import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import { createAreaRegistryEntry } from "../../../data/area_registry";
+import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
 import {
   deleteAutomation,
@@ -82,11 +82,14 @@ import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
   serializeFilters,
+  isUsedFilter as isFilterUsed,
+  isUsedRelatedItemsFilter as isRelatedItemsFilterUsed,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
@@ -117,15 +120,21 @@ import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 type AutomationItem = AutomationEntity & {
   name: string;
   area: string | undefined;
-  last_triggered?: string | undefined;
+  last_triggered: string | undefined;
   formatted_state: string;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  assistants: string[];
+  assistants_sortable_key: string | undefined;
 };
 
 @customElement("ha-automation-picker")
@@ -138,11 +147,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
+
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  @state() private _filteredAutomations?: string[] | null;
+  @state() private _filteredEntityIds?: string[] | null;
 
   @state()
   @storage({
@@ -213,6 +224,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
+
   private _automations = memoizeOne(
     (
       automations: AutomationEntity[],
@@ -237,6 +252,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.automation;
         const labels = labelReg && entityRegEntry?.labels;
+        const assistants = getEntityVoiceAssistantsIds(
+          entityReg,
+          automation.entity_id
+        );
         return {
           ...automation,
           name: computeStateName(automation),
@@ -251,6 +270,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
+          assistants,
+          assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -261,8 +282,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     (
       narrow: boolean,
       localize: LocalizeFunc,
-      locale: HomeAssistant["locale"]
-    ): DataTableColumnContainer => {
+      locale: HomeAssistant["locale"],
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer<AutomationItem> => {
       const columns: DataTableColumnContainer<AutomationItem> = {
         icon: {
           title: "",
@@ -379,31 +401,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           `,
         },
-        voice_assistants: {
-          title: localize(
-            "ui.panel.config.voice_assistants.expose.headers.assistants"
-          ),
-          type: "flex",
-          defaultHidden: true,
-          minWidth: "160px",
-          maxWidth: "160px",
-          template: (automation) => {
-            const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
-              this._entityReg,
-              automation.entity_id
-            );
-            return html` ${exposedToVoiceAssistantIds.length !== 0
-              ? exposedToVoiceAssistantIds.map(
-                  (vaId) =>
-                    html` <voice-assistants-expose-assistant-icon
-                      .assistant=${vaId}
-                      .hass=${this.hass}
-                    >
-                    </voice-assistants-expose-assistant-icon>`
-                )
-              : "—"}`;
-          },
-        },
+        assistants: getAssistantsTableColumn(
+          localize,
+          this.hass,
+          this._availableAssistants,
+          entitiesToCheck
+        ),
       };
       return columns;
     }
@@ -549,7 +552,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       this.hass.areas,
       this._categories,
       this._labels,
-      this._filteredAutomations
+      this._filteredEntityIds
     );
     return html`
       <hass-tabs-subpage-data-table
@@ -582,7 +585,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         .columns=${this._columns(
           this.narrow,
           this.hass.localize,
-          this.hass.locale
+          this.hass.locale,
+          automations
         )}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
@@ -1003,91 +1007,49 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   private _applyFilters() {
     const filters = Object.entries(this._filters);
-    let items: Set<string> | undefined;
+    let filteredEntityIds = this.automations.map(
+      (automation) => automation.entity_id
+    );
     for (const [key, filter] of filters) {
-      if (filter.items) {
-        if (!items) {
-          items = filter.items;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(filter.items)
-            : new Set([...items].filter((x) => filter.items!.has(x)));
-      }
       if (
-        key === "ha-filter-categories" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
+        // these 4 filters actually apply any selected options, and expose
+        // the list of automations that match these options as filter.items
+        isRelatedItemsFilterUsed(key, filter, [
+          "ha-filter-floor-areas",
+          "ha-filter-devices",
+          "ha-filter-entities",
+          "ha-filter-blueprints",
+        ])
       ) {
-        const categoryItems = new Set<string>();
-        this.automations
-          .filter(
-            (automation) =>
-              filter.value![0] ===
-              this._entityReg.find(
-                (reg) => reg.entity_id === automation.entity_id
-              )?.categories.automation
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          filter.items!.has(entityId)
+        );
+
+        // the filters below only expose the selected options (as filter.value);
+        // category filter only allows a single selected option
+        // applying the filter must be done here
+      } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
+        filteredEntityIds = filteredEntityIds.filter(
+          (entityId) =>
+            filter.value![0] ===
+            this._entityReg.find((reg) => reg.entity_id === entityId)
+              ?.categories.automation
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          this._entityReg
+            .find((reg) => reg.entity_id === entityId)
+            ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
+            (filter.value as string[]).includes(va)
           )
-          .forEach((automation) => categoryItems.add(automation.entity_id));
-        if (!items) {
-          items = categoryItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(categoryItems)
-            : new Set([...items].filter((x) => categoryItems!.has(x)));
-      } else if (
-        key === "ha-filter-labels" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const labelItems = new Set<string>();
-        this.automations
-          .filter((automation) =>
-            this._entityReg
-              .find((reg) => reg.entity_id === automation.entity_id)
-              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
-          )
-          .forEach((automation) => labelItems.add(automation.entity_id));
-        if (!items) {
-          items = labelItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(labelItems)
-            : new Set([...items].filter((x) => labelItems!.has(x)));
-      } else if (
-        key === "ha-filter-voice-assistants" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const assistItems = new Set<string>();
-        this.automations
-          .filter((automation) =>
-            getEntityVoiceAssistantsIds(
-              this._entityReg,
-              automation.entity_id
-            ).some((va) => (filter.value as string[]).includes(va))
-          )
-          .forEach((automation) => assistItems.add(automation.entity_id));
-        if (!items) {
-          items = assistItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(assistItems)
-            : new Set([...items].filter((x) => assistItems!.has(x)));
+        );
       }
     }
-    this._filteredAutomations = items ? [...items] : undefined;
+    this._filteredEntityIds = filteredEntityIds;
   }
 
   private _filterLabel() {

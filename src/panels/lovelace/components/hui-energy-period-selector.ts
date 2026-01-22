@@ -1,5 +1,4 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiCheck, mdiDotsVertical } from "@mdi/js";
 import {
   differenceInDays,
   differenceInMonths,
@@ -16,14 +15,16 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import {
   calcDate,
-  calcDateProperty,
   calcDateDifferenceProperty,
+  calcDateProperty,
   shiftDateRange,
 } from "../../../common/datetime/calc_date";
+import type { DateRange } from "../../../common/datetime/calc_date_range";
+import { calcDateRange } from "../../../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
@@ -33,19 +34,19 @@ import {
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-button";
-import "../../../components/ha-check-list-item";
 import "../../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../data/energy";
 import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import { calcDateRange } from "../../../common/datetime/calc_date_range";
-import type { DateRange } from "../../../common/datetime/calc_date_range";
 
 const RANGE_KEYS: DateRange[] = [
   "today",
@@ -233,25 +234,30 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             </ha-button>`
           : nothing}
 
-        <ha-button-menu>
+        <ha-dropdown
+          placement="bottom-end"
+          @wa-select=${this._handleMenuAction}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           ${this.allowCompare
-            ? html`<ha-check-list-item
-                left
-                @request-selected=${this._toggleCompare}
-                .selected=${this._compare}
-              >
+            ? html`<ha-dropdown-item value="toggle-compare">
+                ${this._compare
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${mdiCheck}
+                    ></ha-svg-icon>`
+                  : nothing}
                 ${this.hass.localize(
                   "ui.panel.lovelace.components.energy_period_selector.compare"
                 )}
-              </ha-check-list-item>`
+              </ha-dropdown-item>`
             : nothing}
           <slot name="overflow-menu"></slot>
-        </ha-button-menu>
+        </ha-dropdown>
       </div>
     `;
   }
@@ -464,11 +470,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._datepickerOpen = ev.detail.open;
   }
 
-  private _toggleCompare(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "interaction") {
-      return;
+  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const value = ev.detail.item.value;
+    if (value === "toggle-compare") {
+      this._toggleCompare();
     }
-    this._compare = ev.detail.selected;
+  }
+
+  private _toggleCompare() {
+    this._compare = !this._compare;
     const energyCollection = getEnergyDataCollection(this.hass, {
       key: this.collectionKey,
     });

@@ -1,16 +1,16 @@
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-list-item";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -113,29 +113,23 @@ export class HuiDialogEditViewHeader extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <h2 slot="title">${title}</h2>
-          <ha-button-menu
+          <ha-dropdown
             slot="actionItems"
-            fixed
-            corner="BOTTOM_END"
-            menu-corner="END"
-            @action=${this._handleAction}
-            @closed=${stopPropagation}
+            placement="bottom-end"
+            @wa-select=${this._handleAction}
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass!.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item graphic="icon">
+            <ha-dropdown-item value="toggle-mode">
               ${this.hass!.localize(
                 `ui.panel.lovelace.editor.edit_view_header.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </ha-dialog-header>
         ${content}
         <ha-button
@@ -150,13 +144,11 @@ export class HuiDialogEditViewHeader extends LitElement {
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    ev.stopPropagation();
-    ev.preventDefault();
-    switch (ev.detail.index) {
-      case 0:
-        this._yamlMode = !this._yamlMode;
-        break;
+  private async _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail.item.value;
+
+    if (action === "toggle-mode") {
+      this._yamlMode = !this._yamlMode;
     }
   }
 

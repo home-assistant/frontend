@@ -208,7 +208,8 @@ export class HaBaseTimeInput extends LitElement {
             ? html`<ha-textfield
                 id="sec"
                 type="number"
-                inputmode="numeric"
+                inputmode="decimal"
+                step="any"
                 .value=${this._formatValue(this.seconds)}
                 .label=${this.secLabel}
                 @change=${this._valueChanged}
@@ -217,7 +218,6 @@ export class HaBaseTimeInput extends LitElement {
                 no-spinner
                 .required=${this.required}
                 .autoValidate=${this.autoValidate}
-                maxlength="2"
                 max="59"
                 min="0"
                 .disabled=${this.disabled}
@@ -311,7 +311,8 @@ export class HaBaseTimeInput extends LitElement {
    * Format time fragments
    */
   private _formatValue(value: number, padding = 2) {
-    return value.toString().padStart(padding, "0");
+    const str = value.toString();
+    return str.includes(".") ? str : str.padStart(padding, "0");
   }
 
   /**

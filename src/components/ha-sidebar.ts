@@ -589,10 +589,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     // On keypresses on the listbox, we're going to ignore mouse enter events
     // for 100ms so that we ignore it when pressing down arrow scrolls the
     // sidebar causing the mouse to hover a new icon
-    if (
-      this.alwaysExpand ||
-      new Date().getTime() < this._recentKeydownActiveUntil
-    ) {
+    if (new Date().getTime() < this._recentKeydownActiveUntil) {
       return;
     }
     if (this._mouseLeaveTimeout) {
@@ -612,7 +609,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _listboxFocusIn(ev) {
-    if (this.alwaysExpand || ev.target.localName !== "ha-md-list-item") {
+    if (ev.target.localName !== "ha-md-list-item") {
       return;
     }
     this._showTooltip(ev.target);
@@ -652,6 +649,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       clearTimeout(this._tooltipHideTimeout);
       this._tooltipHideTimeout = undefined;
     }
+    const itemText = item.querySelector(".item-text") as HTMLElement | null;
+    if (this.hasAttribute("expanded") && itemText) {
+      const isTruncated = itemText.scrollWidth > itemText.clientWidth;
+      if (!isTruncated) {
+        this._hideTooltip();
+        return;
+      }
+    }
     const tooltip = this._tooltip;
     const allListbox = this.shadowRoot!.querySelectorAll("ha-md-list")!;
     const listbox = [...allListbox].find((lb) => lb.contains(item));
@@ -662,9 +667,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       (listbox?.offsetTop ?? 0) -
       (listbox?.scrollTop ?? 0);
 
-    tooltip.innerText = (
-      item.querySelector(".item-text") as HTMLElement
-    ).innerText;
+    tooltip.innerText = itemText?.innerText ?? "";
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
@@ -846,6 +849,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         :host([expanded]) ha-md-list-item .item-text {
           display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .divider {
@@ -913,7 +919,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           position: absolute;
           opacity: 0.9;
           border-radius: var(--ha-border-radius-sm);
-          white-space: nowrap;
+          max-width: calc(var(--ha-space-20) * 3);
+          white-space: normal;
+          overflow-wrap: break-word;
           color: var(--sidebar-background-color);
           background-color: var(--sidebar-text-color);
           padding: var(--ha-space-1);

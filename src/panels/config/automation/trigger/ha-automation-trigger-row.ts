@@ -815,6 +815,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    ev.stopPropagation();
     const action = ev.detail?.item?.value;
 
     if (!action) {

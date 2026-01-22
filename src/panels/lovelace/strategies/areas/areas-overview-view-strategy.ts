@@ -1,11 +1,14 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
+import { getAreaControlEntities } from "../../../../data/area/area_controls";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { getAreaControlEntities } from "../../card-features/hui-area-controls-card-feature";
-import { AREA_CONTROLS, type AreaControl } from "../../card-features/types";
+import {
+  AREA_CONTROL_DOMAINS,
+  type AreaControlDomain,
+} from "../../card-features/types";
 import type { AreaCardConfig, HeadingCardConfig } from "../../cards/types";
 import type { EntitiesDisplay } from "./area-view-strategy";
 import {
@@ -76,7 +79,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
             .map((display) => display.hidden || [])
             .flat();
 
-          const controls: AreaControl[] = AREA_CONTROLS.filter(
+          const controls: AreaControlDomain[] = AREA_CONTROL_DOMAINS.filter(
             (a) => a !== "switch" // Exclude switches control for areas as we don't know what the switches control
           );
           const controlEntities = getAreaControlEntities(

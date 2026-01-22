@@ -6,13 +6,14 @@ import {
   mdiOpenInNew,
 } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-list-item";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -53,7 +54,7 @@ export class HaConfigFlowCard extends LitElement {
         .hass=${this.hass}
         .manifest=${this.manifest}
         .domain=${this.flow.handler}
-        .label=${this.flow.localized_title}
+        .label=${this.flow.localized_title ?? ""}
       >
         ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
         this.flow.context.unique_id
@@ -62,7 +63,7 @@ export class HaConfigFlowCard extends LitElement {
                 "ui.panel.config.integrations.ignore.ignore"
               )}</ha-button
             >`
-          : ""}
+          : nothing}
         <ha-button
           @click=${this._continueFlow}
           variant=${attention ? "danger" : "brand"}
@@ -75,7 +76,11 @@ export class HaConfigFlowCard extends LitElement {
           )}
         </ha-button>
         ${this.flow.context.configuration_url || this.manifest || attention
-          ? html`<ha-button-menu slot="header-button">
+          ? html`<ha-dropdown
+              slot="header-button"
+              placement="bottom-end"
+              @wa-select=${this._handleDropdownSelect}
+            >
               <ha-icon-button
                 slot="trigger"
                 .label=${this.hass.localize("ui.common.menu")}
@@ -94,18 +99,18 @@ export class HaConfigFlowCard extends LitElement {
                       ? "_self"
                       : "_blank"}
                   >
-                    <ha-list-item graphic="icon" hasMeta>
+                    <ha-dropdown-item>
                       ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.open_configuration_url"
                       )}
-                      <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+                      <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
                       <ha-svg-icon
-                        slot="meta"
+                        slot="details"
                         .path=${mdiOpenInNew}
                       ></ha-svg-icon>
-                    </ha-list-item>
+                    </ha-dropdown-item>
                   </a>`
-                : ""}
+                : nothing}
               ${this.manifest
                 ? html`<a
                     href=${this.manifest.is_built_in
@@ -117,39 +122,31 @@ export class HaConfigFlowCard extends LitElement {
                     rel="noreferrer"
                     target="_blank"
                   >
-                    <ha-list-item graphic="icon" hasMeta>
+                    <ha-dropdown-item>
                       ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.documentation"
                       )}
                       <ha-svg-icon
-                        slot="graphic"
+                        slot="icon"
                         .path=${mdiBookshelf}
                       ></ha-svg-icon>
                       <ha-svg-icon
-                        slot="meta"
+                        slot="details"
                         .path=${mdiOpenInNew}
                       ></ha-svg-icon>
-                    </ha-list-item>
+                    </ha-dropdown-item>
                   </a>`
-                : ""}
+                : nothing}
               ${attention
-                ? html`<ha-list-item
-                    class="warning"
-                    graphic="icon"
-                    @click=${this._handleDelete}
-                  >
-                    <ha-svg-icon
-                      class="warning"
-                      slot="graphic"
-                      .path=${mdiDelete}
-                    ></ha-svg-icon>
+                ? html`<ha-dropdown-item variant="danger" value="delete">
+                    <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
                     ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.delete"
                     )}
-                  </ha-list-item>`
-                : ""}
-            </ha-button-menu>`
-          : ""}
+                  </ha-dropdown-item>`
+                : nothing}
+            </ha-dropdown>`
+          : nothing}
       </ha-integration-action-card>
     `;
   }
@@ -263,7 +260,7 @@ export class HaConfigFlowCard extends LitElement {
     }
   }
 
-  private async _handleDelete() {
+  private _handleDelete = async () => {
     const entryId = this.flow.context.entry_id;
 
     if (!entryId) {
@@ -306,6 +303,14 @@ export class HaConfigFlowCard extends LitElement {
     }
 
     this._handleFlowUpdated();
+  };
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (action === "delete") {
+      this._handleDelete();
+    }
   }
 
   static styles = css`
@@ -313,7 +318,7 @@ export class HaConfigFlowCard extends LitElement {
       text-decoration: none;
       color: var(--primary-color);
     }
-    ha-button-menu {
+    ha-dropdown {
       color: var(--secondary-text-color);
     }
     ha-svg-icon[slot="meta"] {
@@ -323,9 +328,6 @@ export class HaConfigFlowCard extends LitElement {
     .attention {
       --mdc-theme-primary: var(--error-color);
       --ha-card-border-color: var(--error-color);
-    }
-    .warning {
-      --mdc-theme-text-primary-on-background: var(--error-color);
     }
   `;
 }

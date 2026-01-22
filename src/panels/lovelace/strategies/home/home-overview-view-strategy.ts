@@ -7,7 +7,7 @@ import {
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
-import type { AreaRegistryEntry } from "../../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
@@ -19,6 +19,8 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
+  DiscoveredDevicesCardConfig,
+  EmptyStateCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   TileCardConfig,
@@ -31,6 +33,7 @@ import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
+  home_panel?: boolean;
 }
 
 const computeAreaCard = (
@@ -239,6 +242,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
+      // Discovered devices card - only visible to admins, hides when empty
+      {
+        type: "discovered-devices",
+        hide_empty: true,
+      } satisfies DiscoveredDevicesCardConfig,
       hasLights &&
         ({
           type: "home-summary",
@@ -334,6 +342,59 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
             cards: [summaryHeadingCard, ...sidebarSummaryCards],
           }
         : undefined;
+
+    // No sections, show empty state
+    if (floorsSections.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:home-assistant",
+            icon_color: "primary",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.home.welcome_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.home.welcome_content"
+            ),
+            ...(config.home_panel && hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      icon: "mdi:plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home.welcome_add_device"
+                      ),
+                      appearance: "filled",
+                      variant: "brand",
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "add_integration",
+                        },
+                      },
+                    },
+                    {
+                      icon: "mdi:home-edit",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home.welcome_edit_areas"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/config/areas/dashboard",
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          } as EmptyStateCardConfig,
+        ],
+      };
+    }
 
     const sections = (
       [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
