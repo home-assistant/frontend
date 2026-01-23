@@ -52,7 +52,7 @@ export const getRGBContrastRatio = (
 
 /**
  * Simple contrasted color.
- * If at least two RGB components <= 127 - return #ff0000, otherwise - #000000
+ * If at least two RGB components <= threshold - return #ffffff, otherwise - #000000
  */
 export const getContrastedColorHex = (themeColor: string): string => {
   const blackColor = "#000000";
@@ -60,7 +60,8 @@ export const getContrastedColorHex = (themeColor: string): string => {
   // prettier-ignore
   colorHex = colorHex.startsWith("#") && colorHex.length === 7
     ? colorHex : blackColor;
-  return hex2rgb(colorHex).filter((component) => component <= 127).length >= 2
+  const threshold = 150;
+  return hex2rgb(colorHex).filter((component) => component <= threshold).length >= 2
     ? "#ffffff"
     : blackColor;
 };
