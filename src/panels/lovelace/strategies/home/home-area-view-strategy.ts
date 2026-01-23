@@ -27,6 +27,7 @@ import {
 export interface HomeAreaViewStrategyConfig {
   type: "home-area";
   area?: string;
+  home_panel?: boolean;
 }
 
 @customElement("home-area-view-strategy")
@@ -365,13 +366,46 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:sofa-outline",
+            icon_color: "primary",
             content_only: true,
             title: hass.localize(
-              "ui.panel.lovelace.strategy.areas.empty_state_title"
+              "ui.panel.lovelace.strategy.home-area.no_devices_title"
             ),
             content: hass.localize(
-              "ui.panel.lovelace.strategy.areas.empty_state_content"
+              "ui.panel.lovelace.strategy.home-area.no_devices_content"
             ),
+            ...(config.home_panel && hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      icon: "mdi:plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home-area.no_devices_add_device"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "add_integration",
+                        },
+                      },
+                    },
+                    {
+                      icon: "mdi:home-plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home-area.no_devices_assign_device"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/home/other-devices",
+                      },
+                    },
+                  ],
+                }
+              : {}),
           } as EmptyStateCardConfig,
         ],
       };

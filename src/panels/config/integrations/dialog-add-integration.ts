@@ -105,10 +105,19 @@ class AddIntegrationDialog extends LitElement {
     const loadPromise = this._load();
 
     if (params?.domain) {
-      // Just open the config flow dialog, do not show this dialog
+      // If we get here we clicked the button to add an entry for a specific integration
+      // If there is discovery in process, show this dialog to select a new flow
+      // or continue an existing flow.
+      // If no flow in process, just open the config flow dialog directly
       await loadPromise;
-      await this._createFlow(params.domain);
-      return;
+      const flowsInProgress = this._getFlowsInProgressForDomains([
+        params.domain,
+      ]);
+
+      if (!flowsInProgress.length) {
+        await this._createFlow(params.domain);
+        return;
+      }
     }
 
     if (params?.brand === "_discovered") {
@@ -117,10 +126,12 @@ class AddIntegrationDialog extends LitElement {
       this._showDiscovered = true;
     }
 
-    // Only open the dialog if no domain is provided
+    // Only open the dialog if no domain is provided or we need to select a flow
     this._open = true;
     this._pickedBrand =
-      params?.brand === "_discovered" ? undefined : params?.brand;
+      params?.brand === "_discovered"
+        ? undefined
+        : params?.domain || params?.brand;
     this._initialFilter = params?.initialFilter;
     this._navigateToResult = params?.navigateToResult ?? false;
     this._narrow = matchMedia(

@@ -57,13 +57,21 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
   conditions: (Condition | LegacyCondition)[];
 }
 
+export interface EmptyStateButtonConfig {
+  text: string;
+  icon?: string;
+  appearance?: "accent" | "filled" | "outlined" | "plain";
+  variant?: "brand" | "neutral" | "success" | "warning" | "danger";
+  tap_action: ActionConfig;
+}
+
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
   content_only?: boolean;
   icon?: string;
+  icon_color?: string;
   title?: string;
   content?: string;
-  action_button_text?: string;
-  tap_action?: ActionConfig;
+  buttons?: EmptyStateButtonConfig[];
 }
 
 export interface EntityCardConfig extends LovelaceCardConfig {
@@ -134,6 +142,9 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
   exclude_entities?: string[];
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  image_tap_action?: ActionConfig;
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {

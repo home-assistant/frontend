@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiArrowDown,
@@ -28,9 +29,9 @@ import type {
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 import "../components/ha-dialog";
 import "../components/ha-dialog-header";
-import "../components/ha-md-button-menu";
-import "../components/ha-md-divider";
-import "../components/ha-md-menu-item";
+import "../components/ha-dropdown";
+import "../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../components/ha-dropdown-item";
 import "../components/search-input-outlined";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
@@ -254,7 +255,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
       ? html`
-          <ha-md-button-menu positioning="popover">
+          <ha-dropdown @wa-select=${this._handleSortBy}>
             <ha-assist-chip
               slot="trigger"
               .label=${localize("ui.components.subpage-data-table.sort_by", {
@@ -273,12 +274,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             ${Object.entries(this.columns).map(([id, column]) =>
               column.sortable
                 ? html`
-                    <ha-md-menu-item
+                    <ha-dropdown-item
                       .value=${id}
-                      @click=${this._handleSortBy}
-                      @keydown=${this._handleSortBy}
-                      keep-open
-                      .selected=${id === this._sortColumn}
                       class=${classMap({ selected: id === this._sortColumn })}
                     >
                       ${this._sortColumn === id
@@ -292,17 +289,17 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                           `
                         : nothing}
                       ${column.title || column.label}
-                    </ha-md-menu-item>
+                    </ha-dropdown-item>
                   `
                 : nothing
             )}
-          </ha-md-button-menu>
+          </ha-dropdown>
         `
       : nothing;
 
     const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
       ? html`
-          <ha-md-button-menu positioning="popover">
+          <ha-dropdown @wa-select=${this._handleGroupBy}>
             <ha-assist-chip
               .label=${localize("ui.components.subpage-data-table.group_by", {
                 groupColumn:
@@ -320,49 +317,47 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             ${Object.entries(this.columns).map(([id, column]) =>
               column.groupable
                 ? html`
-                    <ha-md-menu-item
+                    <ha-dropdown-item
                       .value=${id}
                       .clickAction=${this._handleGroupBy}
                       .selected=${id === this._groupColumn}
                       class=${classMap({ selected: id === this._groupColumn })}
                     >
                       ${column.title || column.label}
-                    </ha-md-menu-item>
+                    </ha-dropdown-item>
                   `
                 : nothing
             )}
-            <ha-md-menu-item
-              .value=${""}
-              .clickAction=${this._handleGroupBy}
-              .selected=${!this._groupColumn}
+            <ha-dropdown-item
+              value="reset"
               class=${classMap({ selected: !this._groupColumn })}
             >
               ${localize("ui.components.subpage-data-table.dont_group_by")}
-            </ha-md-menu-item>
-            <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-            <ha-md-menu-item
-              .clickAction=${this._collapseAllGroups}
+            </ha-dropdown-item>
+            <wa-divider></wa-divider>
+            <ha-dropdown-item
+              value="collapse_all"
               .disabled=${!this._groupColumn}
             >
               <ha-svg-icon
-                slot="start"
+                slot="icon"
                 .path=${mdiUnfoldLessHorizontal}
               ></ha-svg-icon>
               ${localize(
                 "ui.components.subpage-data-table.collapse_all_groups"
               )}
-            </ha-md-menu-item>
-            <ha-md-menu-item
-              .clickAction=${this._expandAllGroups}
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              value="expand_all"
               .disabled=${!this._groupColumn}
             >
               <ha-svg-icon
-                slot="start"
+                slot="icon"
                 .path=${mdiUnfoldMoreHorizontal}
               ></ha-svg-icon>
               ${localize("ui.components.subpage-data-table.expand_all_groups")}
-            </ha-md-menu-item>
-          </ha-md-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
         `
       : nothing;
 
@@ -399,7 +394,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
-                <ha-md-button-menu>
+                <ha-dropdown @wa-select=${this._handleSelect}>
                   <ha-assist-chip
                     .label=${localize(
                       "ui.components.subpage-data-table.select"
@@ -415,36 +410,19 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                       .path=${mdiMenuDown}
                     ></ha-svg-icon
                   ></ha-assist-chip>
-                  <ha-md-menu-item
-                    .value=${undefined}
-                    .clickAction=${this._selectAll}
-                  >
-                    <div slot="headline">
-                      ${localize("ui.components.subpage-data-table.select_all")}
-                    </div>
-                  </ha-md-menu-item>
-                  <ha-md-menu-item
-                    .value=${undefined}
-                    .clickAction=${this._selectNone}
-                  >
-                    <div slot="headline">
-                      ${localize(
-                        "ui.components.subpage-data-table.select_none"
-                      )}
-                    </div>
-                  </ha-md-menu-item>
-                  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-                  <ha-md-menu-item
-                    .value=${undefined}
-                    .clickAction=${this._disableSelectMode}
-                  >
-                    <div slot="headline">
-                      ${localize(
-                        "ui.components.subpage-data-table.exit_selection_mode"
-                      )}
-                    </div>
-                  </ha-md-menu-item>
-                </ha-md-button-menu>
+                  <ha-dropdown-item value="all">
+                    ${localize("ui.components.subpage-data-table.select_all")}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item value="none">
+                    ${localize("ui.components.subpage-data-table.select_none")}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>
+                  <ha-dropdown-item value="disable_select_mode">
+                    ${localize(
+                      "ui.components.subpage-data-table.exit_selection_mode"
+                    )}
+                  </ha-dropdown-item>
+                </ha-dropdown>
                 ${this.selected !== undefined
                   ? html`<p>
                       ${localize("ui.components.subpage-data-table.selected", {
@@ -612,10 +590,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._sortColumn = this._sortDirection ? ev.detail.column : undefined;
   }
 
-  private _handleSortBy(ev) {
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") return;
+  private _handleSortBy(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    ev.preventDefault(); // keep the dropdown open
 
-    const columnId = ev.currentTarget.value;
+    const columnId = ev.detail.item.value;
     if (!this._sortDirection || this._sortColumn !== columnId) {
       this._sortDirection = "asc";
     } else if (this._sortDirection === "asc") {
@@ -631,9 +609,24 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _handleGroupBy = (item) => {
-    this._setGroupColumn(item.value);
-  };
+  private _handleGroupBy(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const group = ev.detail.item.value;
+
+    if (group === "reset") {
+      this._setGroupColumn("");
+      return;
+    }
+    if (group === "collapse_all") {
+      this._collapseAllGroups();
+      return;
+    }
+    if (group === "expand_all") {
+      this._expandAllGroups();
+      return;
+    }
+
+    this._setGroupColumn(group);
+  }
 
   private _setGroupColumn(columnId: string) {
     this._groupColumn = columnId;
@@ -667,6 +660,26 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   private _enableSelectMode() {
     this._selectMode = true;
+  }
+
+  private _handleSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail.item.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "all":
+        this._selectAll();
+        break;
+      case "none":
+        this._selectNone();
+        break;
+      case "disable_select_mode":
+        this._disableSelectMode();
+        break;
+    }
   }
 
   private _disableSelectMode = () => {
@@ -902,8 +915,16 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       flex-direction: column;
     }
 
-    ha-md-button-menu ha-assist-chip {
+    ha-dropdown ha-assist-chip {
       --md-assist-chip-trailing-space: 8px;
+    }
+
+    ha-dropdown-item.selected {
+      border: 1px solid var(--primary-color);
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-color);
+      background-color: var(--ha-color-fill-primary-quiet-resting);
+      --icon-primary-color: var(--primary-color);
     }
   `;
 }

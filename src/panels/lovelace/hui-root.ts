@@ -144,6 +144,8 @@ class HUIRoot extends LitElement {
 
   @property({ attribute: false }) public extraActionItems?: ExtraActionItem[];
 
+  @property({ type: Boolean, attribute: "no-edit" }) public noEdit = false;
+
   @state() private _curView?: number | "hass-unused-entities";
 
   private _configChangedByUndo = false;
@@ -345,7 +347,8 @@ class HUIRoot extends LitElement {
           !this._editMode &&
           this.hass!.user?.is_admin &&
           !this.hass!.config.recovery_mode &&
-          !this.hass.kioskMode,
+          !this.hass.kioskMode &&
+          !this.noEdit,
         overflow: true,
         overflow_can_promote: true,
       },

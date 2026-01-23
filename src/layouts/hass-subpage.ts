@@ -22,8 +22,6 @@ class HassSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public supervisor = false;
-
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
 
@@ -34,7 +32,6 @@ class HassSubpage extends LitElement {
           ${this.mainPage || history.state?.root
             ? html`
                 <ha-menu-button
-                  .hassio=${this.supervisor}
                   .hass=${this.hass}
                   .narrow=${this.narrow}
                 ></ha-menu-button>

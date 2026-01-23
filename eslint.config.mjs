@@ -43,7 +43,6 @@ export default tseslint.config(
         __BUILD__: false,
         __VERSION__: false,
         __STATIC_PATH__: false,
-        __SUPERVISOR__: false,
       },
 
       parser: tseslint.parser,

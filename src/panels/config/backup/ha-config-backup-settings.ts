@@ -4,16 +4,16 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { debounce } from "../../../common/util/debounce";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
@@ -26,6 +26,7 @@ import {
 } from "../../../data/supervisor/update";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./components/config/ha-backup-config-addon";
 import "./components/config/ha-backup-config-agents";
@@ -35,7 +36,6 @@ import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
-import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -140,25 +140,22 @@ class HaConfigBackupSettings extends LitElement {
       >
         ${supervisor
           ? html`
-              <ha-button-menu slot="toolbar-icon">
+              <ha-dropdown
+                slot="toolbar-icon"
+                @wa-select=${this._handleDropdownSelect}
+              >
                 <ha-icon-button
                   slot="trigger"
                   .label=${this.hass.localize("ui.common.menu")}
                   .path=${mdiDotsVertical}
                 ></ha-icon-button>
-                <ha-list-item
-                  graphic="icon"
-                  @request-selected=${this._changeLocalLocation}
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiHarddisk}
-                  ></ha-svg-icon>
+                <ha-dropdown-item value="change_local_location">
+                  <ha-svg-icon slot="icon" .path=${mdiHarddisk}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.backup.settings.menu.change_default_location"
                   )}
-                </ha-list-item>
-              </ha-button-menu>
+                </ha-dropdown-item>
+              </ha-dropdown>
             `
           : nothing}
 
@@ -372,13 +369,9 @@ class HaConfigBackupSettings extends LitElement {
     `;
   }
 
-  private async _changeLocalLocation(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _changeLocalLocation = () => {
     showLocalBackupLocationDialog(this, {});
-  }
+  };
 
   private async _supervisorUpdateConfigChanged(ev) {
     const config = ev.detail.value as SupervisorUpdateConfig;
@@ -497,6 +490,14 @@ class HaConfigBackupSettings extends LitElement {
       schedule: this._config!.schedule,
     });
     fireEvent(this, "ha-refresh-backup-config");
+  }
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (action === "change_local_location") {
+      this._changeLocalLocation();
+    }
   }
 
   static styles = css`
