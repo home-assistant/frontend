@@ -1,3 +1,4 @@
+import { mdiOpenInNew, mdiRoomServiceOutline } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -5,6 +6,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-state-icon";
+import "../../../components/ha-svg-icon";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
@@ -18,6 +20,23 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { HeadingCardConfig } from "./types";
+
+// Mapping of tap actions to their indicator icons
+// Only actions in this map will show an indicator icon in the heading card
+const TAP_ACTION_INDICATOR_ICONS = {
+  navigate: "navigate", // Special value for ha-icon-next
+  url: mdiOpenInNew,
+  "perform-action": mdiRoomServiceOutline,
+} as const;
+
+// Type for actions that support indicators
+type IndicatorSupportedAction = keyof typeof TAP_ACTION_INDICATOR_ICONS;
+
+// Helper to check if an action supports tap action indicators
+const supportsTapActionIndicator = (
+  action?: string
+): action is IndicatorSupportedAction =>
+  action !== undefined && action in TAP_ACTION_INDICATOR_ICONS;
 
 export const migrateHeadingCardConfig = (
   config: HeadingCardConfig
@@ -76,6 +95,17 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
+  private get _tapActionIndicatorIcon(): string | undefined {
+    const action = this._config?.tap_action?.action;
+
+    // Use the centralized mapping - only supported actions have icons
+    if (action && supportsTapActionIndicator(action)) {
+      return TAP_ACTION_INDICATOR_ICONS[action];
+    }
+
+    return undefined;
+  }
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -103,7 +133,13 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
             ${this._config.heading
               ? html`<p>${this._config.heading}</p>`
               : nothing}
-            ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
+            ${this._tapActionIndicatorIcon
+              ? this._tapActionIndicatorIcon === "navigate"
+                ? html`<ha-icon-next></ha-icon-next>`
+                : html`<ha-svg-icon
+                    .path=${this._tapActionIndicatorIcon}
+                  ></ha-svg-icon>`
+              : nothing}
           </div>
           ${badges?.length
             ? html`
@@ -143,7 +179,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     [role="button"] {
       cursor: pointer;
     }
-    ha-icon-next {
+    ha-icon-next,
+    .content ha-svg-icon {
       display: inline-block;
       transition: transform 180ms ease-in-out;
     }
@@ -156,7 +193,8 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       overflow: visible;
       gap: var(--ha-space-2);
     }
-    .content:hover ha-icon-next {
+    .content:hover ha-icon-next,
+    .content:hover ha-svg-icon {
       transform: translateX(calc(4px * var(--scale-direction)));
     }
     .container .content {
@@ -188,9 +226,11 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       --mdc-icon-size: 18px;
     }
     .content ha-icon,
-    .content ha-icon-next {
+    .content ha-icon-next,
+    .content ha-svg-icon {
       display: flex;
       flex: none;
+      --mdc-icon-size: 18px;
     }
     .content p {
       margin: 0;
