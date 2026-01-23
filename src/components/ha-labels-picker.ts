@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
+import { getContrastedColorHex } from "../common/color/rgb";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
@@ -22,6 +23,14 @@ import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
 import "./ha-tooltip";
+
+export const getLabelColorStyle = (labelColor: string | undefined | null) => {
+  const color = labelColor ? computeCssColor(labelColor) : undefined;
+  return color
+    ? `--color: ${color};
+       --color-text: ${getContrastedColorHex(labelColor!)};`
+    : `--color-text: ${getContrastedColorHex("grey")};`;
+};
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends SubscribeMixin(LitElement) {
@@ -141,9 +150,6 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                 (label) => label?.label_id,
                 (label) => {
                   if (!label) return nothing;
-                  const color = label.color
-                    ? computeCssColor(label.color)
-                    : undefined;
                   const elementId = "label-" + label.label_id;
                   return html`
                     <ha-tooltip
@@ -160,7 +166,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                       .disabled=${this.disabled}
                       .label=${label.name}
                       selected
-                      style=${color ? `--color: ${color}` : ""}
+                      style=${getLabelColorStyle(label.color)}
                     >
                       ${label.icon
                         ? html`<ha-icon
@@ -246,7 +252,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     }
     ha-input-chip {
       --md-input-chip-selected-container-color: var(--color, var(--grey-color));
-      --ha-input-chip-selected-container-opacity: 0.5;
+      --primary-text-color: var(--color-text);
       --md-input-chip-selected-outline-width: 1px;
     }
     label {
