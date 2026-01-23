@@ -61,7 +61,8 @@ export const getContrastedColorHex = (themeColor: string): string => {
   colorHex = colorHex.startsWith("#") && colorHex.length === 7
     ? colorHex : blackColor;
   const threshold = 150;
-  return hex2rgb(colorHex).filter((component) => component <= threshold).length >= 2
+  return hex2rgb(colorHex).filter((component) => component <= threshold)
+    .length >= 2
     ? "#ffffff"
     : blackColor;
 };
