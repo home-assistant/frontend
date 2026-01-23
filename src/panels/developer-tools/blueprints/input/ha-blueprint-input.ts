@@ -27,6 +27,8 @@ import "./types/ha-blueprint-input-input";
 export class HaBlueprintInput extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public inputs!: [
     string,
     BlueprintInput | BlueprintInputSection | null,
@@ -194,6 +196,7 @@ export class HaBlueprintInput extends LitElement {
                 @move-up=${this._moveUp}
                 @value-changed=${this._inputChanged}
                 .hass=${this.hass}
+                .narrow=${this.narrow}
               >
                 ${this._showReorder && !this.disabled
                   ? html`

@@ -14,6 +14,8 @@ import { dynamicElement } from "../../../../common/dom/dynamic-element-directive
 export default class HaBlueprintInputEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) input!:
     | BlueprintInput
     | BlueprintInputSection
@@ -47,6 +49,7 @@ export default class HaBlueprintInputEditor extends LitElement {
       `ha-blueprint-input-${this._inputIsSection(this.input) ? "section" : "input"}`,
       {
         hass: this.hass,
+        narrow: this.narrow,
         input: this.input,
         disabled: this.disabled,
       }

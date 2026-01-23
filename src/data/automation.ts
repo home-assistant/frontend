@@ -9,7 +9,7 @@ import { navigate } from "../common/navigate";
 import type { LocalizeKeys } from "../common/translations/localize";
 import { createSearchParam } from "../common/url/search-params";
 import type { Context, HomeAssistant } from "../types";
-import type { BlueprintInput } from "./blueprint";
+import type { BlueprintInput, BlueprintInputSection } from "./blueprint";
 import type { ConditionDescription } from "./condition";
 import { CONDITION_BUILDING_BLOCKS } from "./condition";
 import type {
@@ -660,12 +660,20 @@ export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
   yamlMode: boolean;
 }
 
+export interface BlueprintInputSidebarConfig extends BaseSidebarConfig {
+  save: (value: BlueprintInput | BlueprintInputSection) => void;
+  config: BlueprintInput | BlueprintInputSection;
+  toggleYamlMode: () => void;
+  yamlMode: boolean;
+}
+
 export type SidebarConfig =
   | TriggerSidebarConfig
   | ConditionSidebarConfig
   | ActionSidebarConfig
   | OptionSidebarConfig
-  | ScriptFieldSidebarConfig;
+  | ScriptFieldSidebarConfig
+  | BlueprintInputSidebarConfig;
 
 export interface ShowAutomationEditorParams {
   data?: Partial<AutomationConfig>;

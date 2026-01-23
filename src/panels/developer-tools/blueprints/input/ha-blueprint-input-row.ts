@@ -22,9 +22,10 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
-import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-automation-row";
 import type {
   BlueprintInputSection,
   BlueprintClipboard,
@@ -38,13 +39,15 @@ import {
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-blueprint-input-editor";
-import "../../../../components/ha-alert";
+import type { BlueprintInputSidebarConfig } from "../../../../data/automation";
 
 const preventDefault = (ev) => ev.preventDefault();
 
 @customElement("ha-blueprint-input-row")
 export default class HaBlueprintInputRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public input!: [
     string,
@@ -75,8 +78,61 @@ export default class HaBlueprintInputRow extends LitElement {
 
   @state() private _testingResult?: boolean;
 
+  @state() private _selected = false;
+
   private _inputIsSection(x: any): x is BlueprintInputSection {
     return "input" in x;
+  }
+
+  private _toggleSidebar(ev: Event) {
+    ev?.stopPropagation();
+
+    if (this._selected) {
+      fireEvent(this, "request-close-sidebar");
+      return;
+    }
+    this.openSidebar();
+  }
+
+  public openSidebar(input?: BlueprintInput | BlueprintInputSection): void {
+    if (!input && this.input[1]) {
+      input = this.input[1];
+    }
+
+    if (!input) {
+      return;
+    }
+
+    fireEvent(this, "open-sidebar", {
+      config: input,
+      save: (value) => {
+        fireEvent(this, "value-changed", { value });
+      },
+      toggleYamlMode: () => {
+        if (this._yamlMode) {
+          this._switchUiMode();
+        } else {
+          this._switchYamlMode();
+        }
+        this.openSidebar();
+      },
+      close: () => {
+        fireEvent(this, "request-close-sidebar");
+        this._selected = false;
+      },
+      delete: this._onDelete,
+      yamlMode: this._yamlMode,
+    } satisfies BlueprintInputSidebarConfig);
+    this._selected = true;
+
+    if (this.narrow) {
+      window.setTimeout(() => {
+        this.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+        });
+      }, 180);
+    }
   }
 
   protected render() {
@@ -90,7 +146,7 @@ export default class HaBlueprintInputRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        <ha-expansion-panel leftChevron>
+        <ha-automation-row @click=${this._toggleSidebar}>
           <h3 slot="header">
             <ha-svg-icon class="input-icon" .path=${icon}></ha-svg-icon>
             ${this.input[0]}
@@ -193,7 +249,7 @@ export default class HaBlueprintInputRow extends LitElement {
             </ha-list-item>
           </ha-button-menu>
 
-          <div class=${classMap({ "card-content": true })}>
+          <div class="card-content">
             ${this._warnings
               ? html`<ha-alert
                   alert-type="warning"
@@ -220,10 +276,11 @@ export default class HaBlueprintInputRow extends LitElement {
               .yamlMode=${this._yamlMode}
               .disabled=${this.disabled}
               .hass=${this.hass}
+              .narrow=${this.narrow}
               .input=${this.input[1]}
             ></ha-blueprint-input-editor>
           </div>
-        </ha-expansion-panel>
+        </ha-automation-row>
         <div
           class="testing ${classMap({
             active: this._testing,
@@ -373,12 +430,12 @@ export default class HaBlueprintInputRow extends LitElement {
           opacity: 0.5;
           pointer-events: none;
         }
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 var(--ha-space-2);
-          --expansion-panel-content-padding: 0;
-        }
         h3 {
           margin: 0;
+          padding: var(--ha-space-2) 0;
+          min-height: 32px;
+          display: flex;
+          align-items: center;
           font-size: inherit;
           font-weight: inherit;
         }
@@ -401,8 +458,14 @@ export default class HaBlueprintInputRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-          border-top-left-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+          border-top-right-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
+          border-top-left-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
         ha-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
@@ -424,8 +487,14 @@ export default class HaBlueprintInputRow extends LitElement {
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-          border-top-left-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+          border-top-right-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
+          border-top-left-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
         .testing.active {
           max-height: 100px;

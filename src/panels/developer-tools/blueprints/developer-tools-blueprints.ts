@@ -1,5 +1,5 @@
 import type { CSSResultGroup } from "lit";
-import { css, LitElement, html, nothing } from "lit";
+import { css, LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiContentSave } from "@mdi/js";
 import "../../../components/ha-yaml-editor";
@@ -7,19 +7,31 @@ import "../../../components/ha-textfield";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import { dump } from "js-yaml";
+import yaml, { dump } from "js-yaml";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
 import type {
   Blueprint,
   BlueprintDomain,
-  BlueprintMetaDataEditorSchema,
   BlueprintOrError,
   Blueprints,
 } from "../../../data/blueprint";
+import { showPickBlueprintDialog } from "./pick-blueprint-dialog/show-dialog-pick-blueprint";
 import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
+import {
+  manualEditorStyles,
+  saveFabStyles,
+} from "../../config/automation/styles";
+import type { BlueprintInputSidebarConfig } from "../../../data/automation";
+import {
+  DefaultAutomationBlueprint,
+  DefaultScriptBlueprint,
+  getBlueprint,
+  normalizeBlueprint,
   saveBlueprint,
   fetchBlueprints,
   isValidBlueprint,
@@ -27,13 +39,10 @@ import {
 } from "../../../data/blueprint";
 import "./ha-blueprint-editor";
 import "./blueprint-metadata-editor";
-import { showPickBlueprintDialog } from "./pick-blueprint-dialog/show-dialog-pick-blueprint";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../dialogs/generic/show-dialog-box";
-import { manualEditorStyles } from "../../config/automation/styles";
-import type { SidebarConfig } from "../../../data/automation";
+
+// TODO: the problem is that there is a left padding in both the blueprint
+//       editor and the automation/script editor, so the sidebar position is
+//       all jank.
 
 @customElement("developer-tools-blueprints")
 class HaPanelDevBlueprints extends LitElement {
@@ -55,14 +64,7 @@ class HaPanelDevBlueprints extends LitElement {
 
   @state() private _originalBlueprintPath?: string;
 
-  @state() private _sidebarConfig?: SidebarConfig;
-
-  private validBlueprints = memoizeOne(
-    (x: Record<BlueprintDomain, Blueprints>) =>
-      Object.values(x)
-        .flatMap((b) => Object.values(b))
-        .filter((b) => isValidBlueprint(b))
-  );
+  @state() private _sidebarConfig?: BlueprintInputSidebarConfig;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -71,6 +73,29 @@ class HaPanelDevBlueprints extends LitElement {
     this.addEventListener("reload-blueprints", () => {
       this._getBlueprints();
     });
+  }
+
+  private async _loadBlueprint(domain: BlueprintDomain, path: string) {
+    try {
+      const blueprintGetResult = await getBlueprint(this.hass, domain, path);
+      const blueprint = yaml.load(blueprintGetResult.yaml, {
+        schema: BlueprintYamlSchema,
+      }) as Blueprint;
+      return normalizeBlueprint(blueprint);
+    } catch (err: any) {
+      await showAlertDialog(this, {
+        text:
+          err.status_code === 404
+            ? this.hass.localize(
+                "ui.panel.developer-tools.tabs.blueprints.editor.load_error_not_editable"
+              )
+            : this.hass.localize(
+                "ui.panel.developer-tools.tabs.blueprints.editor.load_error_unknown",
+                { err_no: err.status_code }
+              ),
+      });
+      return null;
+    }
   }
 
   private async _getBlueprints() {
@@ -92,110 +117,56 @@ class HaPanelDevBlueprints extends LitElement {
     }
   }
 
-  private _setSelectedBlueprint(blueprint: Blueprint, dirty: boolean) {
+  private _onBlueprintContentChanged(ev: CustomEvent<{ value: Blueprint }>) {
+    ev.stopPropagation();
     if (
       !this._selectedBlueprint ||
       !isValidBlueprint(this._selectedBlueprint)
     ) {
-      this._selectedBlueprint = blueprint;
+      this._selectedBlueprint = ev.detail.value;
     } else {
       this._selectedBlueprint = {
         ...this._selectedBlueprint,
-        ...blueprint,
+        ...ev.detail.value,
         metadata: {
           ...this._selectedBlueprint.metadata,
-          input: blueprint.metadata.input,
+          input: ev.detail.value.metadata.input,
         },
         blueprint: {
           ...this._selectedBlueprint.metadata,
-          input: blueprint.metadata.input,
+          input: ev.detail.value.metadata.input,
         },
       };
     }
 
-    this._dirty = dirty;
-  }
-
-  private _onBlueprintContentChanged(ev: CustomEvent<{ value: Blueprint }>) {
-    ev.stopPropagation();
-    this._setSelectedBlueprint(ev.detail.value, true);
-  }
-
-  private _onBlueprintInit(ev: CustomEvent<{ value: Blueprint }>) {
-    ev.stopPropagation();
-    this._setSelectedBlueprint(ev.detail.value, false);
-  }
-
-  private _onBlueprintMetadataChanged(
-    ev: CustomEvent<{ value: BlueprintMetaDataEditorSchema }>
-  ) {
-    ev.stopPropagation();
-    if (
-      !this._selectedBlueprint ||
-      !isValidBlueprint(this._selectedBlueprint)
-    ) {
-      return;
-    }
-
-    this._selectedBlueprint = {
-      ...this._selectedBlueprint,
-      metadata: {
-        ...this._selectedBlueprint.metadata,
-        domain: this._selectedBlueprintDomain!,
-        name: ev.detail.value.name,
-        author: ev.detail.value.author,
-        description: ev.detail.value.description,
-        homeassistant: {
-          min_version: ev.detail.value.min_version,
-        },
-      },
-      blueprint: {
-        ...this._selectedBlueprint.metadata,
-        domain: this._selectedBlueprintDomain!,
-        name: ev.detail.value.name,
-        author: ev.detail.value.author,
-        description: ev.detail.value.description,
-        homeassistant: {
-          min_version: ev.detail.value.min_version,
-        },
-      },
-    };
-
-    this._selectedBlueprintPath = ev.detail.value.path;
     this._dirty = true;
   }
 
-  private _handleBlueprintPicked(domain: BlueprintDomain, id: string) {
-    if (!this._blueprints) {
+  private async _handleBlueprintPicked(domain: BlueprintDomain, id: string) {
+    const blueprint = await this._loadBlueprint(domain, id);
+    if (!blueprint) {
       return;
     }
 
-    const allBlueprints = [
-      ...Object.entries(this._blueprints.script),
-      ...Object.entries(this._blueprints.automation),
-    ];
-    const entry = allBlueprints.find(([blueprintId]) => blueprintId === id);
-    if (entry) {
-      this._dirty = false;
-      this._originalBlueprint = entry[1];
-      this._selectedBlueprint = entry[1];
-      this._selectedBlueprintPath = id;
-      this._originalBlueprintPath = id;
-      this._selectedBlueprintDomain = domain;
-    }
+    this._dirty = false;
+    this._originalBlueprint = blueprint;
+    this._selectedBlueprint = blueprint;
+    this._selectedBlueprintPath = id;
+    this._originalBlueprintPath = id;
+    this._selectedBlueprintDomain = domain;
   }
 
   private _handleNewBlueprintPicked(domain: BlueprintDomain) {
-    const editorElement = customElements.get(
-      `ha-blueprint-${domain}-editor`
-    ) as CustomElementConstructor & {
-      defaultConfig: Blueprint;
-    };
-
     this._dirty = false;
     this._selectedBlueprintDomain = domain;
-    this._originalBlueprint = editorElement.defaultConfig;
-    this._selectedBlueprint = editorElement.defaultConfig;
+    this._originalBlueprint =
+      domain === "automation"
+        ? DefaultAutomationBlueprint
+        : DefaultScriptBlueprint;
+    this._selectedBlueprint =
+      domain === "automation"
+        ? DefaultAutomationBlueprint
+        : DefaultScriptBlueprint;
     this._originalBlueprintPath = "";
     this._selectedBlueprintPath = "";
   }
@@ -303,7 +274,7 @@ class HaPanelDevBlueprints extends LitElement {
     this.style.setProperty("--sidebar-dynamic-width", ev.detail);
   }
 
-  private async _openSidebar(ev: CustomEvent<SidebarConfig>) {
+  private async _openSidebar(ev: CustomEvent<BlueprintInputSidebarConfig>) {
     this._sidebarConfig = ev.detail;
   }
 
@@ -311,30 +282,43 @@ class HaPanelDevBlueprints extends LitElement {
     this._sidebarConfig = undefined;
   }
 
-  protected render() {
-    if (!this._blueprints) {
-      return nothing;
+  private _renderContent() {
+    if (!this._selectedBlueprint || !this._originalBlueprintPath) {
+      return html`
+        ${this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.none_selected"
+        )}
+      `;
     }
 
-    const validBlueprints = this.validBlueprints(this._blueprints);
-    const blueprintMetadata =
-      !this._selectedBlueprint || !isValidBlueprint(this._selectedBlueprint)
-        ? ({
-            name: "",
-            description: "",
-            min_version: "",
-            path: "",
-            author: "",
-          } as BlueprintMetaDataEditorSchema)
-        : ({
-            name: this._selectedBlueprint.metadata.name,
-            description: this._selectedBlueprint.metadata.description,
-            min_version:
-              this._selectedBlueprint.metadata.homeassistant?.min_version,
-            path: this._selectedBlueprintPath,
-            author: this._selectedBlueprint.metadata.author,
-          } as BlueprintMetaDataEditorSchema);
+    if (!isValidBlueprint(this._selectedBlueprint)) {
+      return html`
+        ${this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.error"
+        )}
+      `;
+    }
 
+    return html`
+      <ha-blueprint-editor
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .isWide=${!this.narrow}
+        .blueprint=${this._selectedBlueprint}
+        .blueprintPath=${this._originalBlueprintPath}
+        .domain=${this._selectedBlueprintDomain}
+        .dirty=${this._dirty}
+        @value-changed=${this._onBlueprintContentChanged}
+        @reset=${this._resetBlueprint}
+        @resize-sidebar=${this._resizeSidebar}
+        @open-sidebar=${this._openSidebar}
+        @close-sidebar=${this._closeSidebar}
+      >
+      </ha-blueprint-editor>
+    `;
+  }
+
+  protected render() {
     return html`
       <div class="container">
         <div class="full-row">
@@ -349,45 +333,7 @@ class HaPanelDevBlueprints extends LitElement {
             "has-sidebar": this._sidebarConfig && !this.narrow,
           })}
         >
-          ${!this._selectedBlueprint
-            ? html`
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.blueprints.editor.none_selected"
-                )}
-              `
-            : !isValidBlueprint(this._selectedBlueprint)
-              ? html`
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.blueprints.editor.error"
-                  )}
-                `
-              : html`
-                  <div class="content-wrapper">
-                    <blueprint-metadata-editor
-                      .hass=${this.hass}
-                      .metadata=${blueprintMetadata}
-                      @value-changed=${this._onBlueprintMetadataChanged}
-                    ></blueprint-metadata-editor>
-                  </div>
-                  <ha-blueprint-editor
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .isWide=${!this.narrow}
-                    .blueprints=${validBlueprints}
-                    .blueprintPath=${this._originalBlueprintPath}
-                    .domain=${this._selectedBlueprint.blueprint?.domain ??
-                    this._selectedBlueprint.metadata.domain ??
-                    ""}
-                    .dirty=${this._dirty}
-                    @value-changed=${this._onBlueprintContentChanged}
-                    @value-init=${this._onBlueprintInit}
-                    @reset=${this._resetBlueprint}
-                    @resize-sidebar=${this._resizeSidebar}
-                    @open-sidebar=${this._openSidebar}
-                    @close-sidebar=${this._closeSidebar}
-                  >
-                  </ha-blueprint-editor>
-                `}
+          ${this._renderContent()}
         </ha-card>
         <ha-yaml-editor
           .hass=${this.hass}
@@ -415,6 +361,7 @@ class HaPanelDevBlueprints extends LitElement {
     return [
       haStyle,
       manualEditorStyles,
+      saveFabStyles,
       css`
         :host {
           --safe-area-inset-top: 52.4px;
@@ -440,14 +387,9 @@ class HaPanelDevBlueprints extends LitElement {
         .full-row {
           flex: 1 0 100%;
         }
+
         ha-fab {
           position: fixed;
-          bottom: calc(-80px - var(--safe-area-inset-bottom));
-          right: calc(24px + var(--safe-area-inset-right));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: calc(24px + var(--safe-area-inset-bottom));
         }
       `,
     ];

@@ -243,6 +243,23 @@ export function isValidBlueprint(
   return !("error" in blueprint);
 }
 
+export function normalizeBlueprint(blueprint: Blueprint): Blueprint {
+  // Normalize data: ensure triggers, actions and conditions are lists
+  // Happens when people copy paste their automations into the config
+  for (const key of ["triggers", "conditions", "actions"]) {
+    const value = blueprint[key];
+    if (value && !Array.isArray(value)) {
+      blueprint[key] = [value];
+    }
+  }
+
+  if (blueprint.blueprint) {
+    blueprint.metadata = blueprint.blueprint;
+  }
+
+  return blueprint;
+}
+
 export const DefaultAutomationBlueprint: AutomationBlueprint = {
   metadata: {
     name: "",
@@ -262,4 +279,12 @@ export const DefaultScriptBlueprint: ScriptBlueprint = {
   },
   alias: "",
   sequence: [],
+};
+
+export const DefaultBlueprintMetadata: BlueprintMetaDataEditorSchema = {
+  name: "",
+  description: "",
+  min_version: "",
+  path: "",
+  author: "",
 };

@@ -63,6 +63,7 @@ import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-
 import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
+import type { ScriptBlueprint } from "../../../data/blueprint";
 
 const scriptConfigStruct = object({
   alias: optional(string()),
@@ -86,7 +87,9 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public saving = false;
 
-  @property({ attribute: false }) public config!: ScriptConfig;
+  @property({ attribute: false }) public config!:
+    | ScriptConfig
+    | ScriptBlueprint;
 
   @property({ attribute: false }) public dirty = false;
 

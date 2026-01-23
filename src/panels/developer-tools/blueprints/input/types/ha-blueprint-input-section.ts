@@ -26,6 +26,8 @@ export class HaBlueprintInputSection extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) input!: BlueprintInputSection;
 
   @property({ type: Boolean }) public disabled = false;
@@ -91,6 +93,7 @@ export class HaBlueprintInputSection extends LitElement {
         .inputs=${Object.entries(this.input?.input || {})}
         @value-changed=${this._inputChanged}
         .hass=${this.hass}
+        .narrow=${this.narrow}
         .disabled=${this.disabled}
       >
       </ha-blueprint-input>
