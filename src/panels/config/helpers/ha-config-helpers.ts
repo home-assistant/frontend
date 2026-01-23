@@ -20,7 +20,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -54,6 +53,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
+import { getLabelColorStyle } from "../../../components/ha-labels-picker";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
@@ -678,7 +678,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         </div>
       </ha-md-menu-item>`;
     const labelItems = html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
           this._labelsForEntity(entityId).includes(label.label_id)
         );
@@ -700,7 +699,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             reducedTouchTarget
           ></ha-checkbox>
           <ha-label
-            style=${color ? `--color: ${color}` : ""}
+            style=${getLabelColorStyle(label.color)}
             .description=${label.description}
           >
             ${label.icon
@@ -1558,7 +1557,7 @@ ${rejected
         }
         ha-label {
           --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
+          --primary-text-color: var(--color-text);
         }
       `,
     ];
