@@ -24,11 +24,12 @@ import {
 import { VolumeSliderController } from "../../../common/util/volume-slider";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-marquee-text";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-menu-item";
 import "../../../components/ha-select";
 import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
@@ -201,29 +202,30 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
-    return html`<ha-md-button-menu positioning="popover">
+    return html`<ha-dropdown>
       <ha-icon-button
         slot="trigger"
-        .title=${this.hass.localize(`ui.card.media_player.source`)}
+        .label=${this.hass.localize(`ui.card.media_player.source`)}
         .path=${mdiLoginVariant}
+        @wa-select=${this._handleSourceChange}
       >
       </ha-icon-button>
       ${this.stateObj.attributes.source_list!.map(
         (source) =>
-          html`<ha-md-menu-item
-            data-source=${source}
-            @click=${this._handleSourceClick}
-            @keydown=${this._handleSourceClick}
-            .selected=${source === this.stateObj?.attributes.source}
+          html`<ha-dropdown-item
+            .value=${source}
+            class=${source === this.stateObj?.attributes.source
+              ? "selected"
+              : ""}
           >
             ${this.hass.formatEntityAttributeValue(
               this.stateObj!,
               "source",
               source
             )}
-          </ha-md-menu-item>`
+          </ha-dropdown-item>`
       )}
-    </ha-md-button-menu>`;
+    </ha-dropdown>`;
   }
 
   protected _renderSoundMode() {
@@ -238,29 +240,29 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
-    return html`<ha-md-button-menu positioning="popover">
+    return html`<ha-dropdown @wa-select=${this._handleSoundModeChange}>
       <ha-icon-button
         slot="trigger"
-        .title=${this.hass.localize(`ui.card.media_player.sound_mode`)}
+        .label=${this.hass.localize(`ui.card.media_player.sound_mode`)}
         .path=${mdiMusicNoteEighth}
       >
       </ha-icon-button>
       ${this.stateObj.attributes.sound_mode_list!.map(
         (soundMode) =>
-          html`<ha-md-menu-item
-            data-sound-mode=${soundMode}
-            @click=${this._handleSoundModeClick}
-            @keydown=${this._handleSoundModeClick}
-            .selected=${soundMode === this.stateObj?.attributes.sound_mode}
+          html`<ha-dropdown-item
+            .value=${soundMode}
+            class=${soundMode === this.stateObj?.attributes.sound_mode
+              ? "selected"
+              : ""}
           >
             ${this.hass.formatEntityAttributeValue(
               this.stateObj!,
               "sound_mode",
               soundMode
             )}
-          </ha-md-menu-item>`
+          </ha-dropdown-item>`
       )}
-    </ha-md-button-menu>`;
+    </ha-dropdown>`;
   }
 
   protected _renderGrouping() {
@@ -677,6 +679,13 @@ class MoreInfoMediaPlayer extends LitElement {
       align-self: center;
       width: 320px;
     }
+
+    ha-dropdown-item.selected {
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-color);
+      background-color: var(--ha-color-fill-primary-quiet-resting);
+      --icon-primary-color: var(--primary-color);
+    }
   `;
 
   private _handleClick(e: MouseEvent): void {
@@ -734,8 +743,8 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSourceClick(e: Event) {
-    const source = (e.currentTarget as HTMLElement).getAttribute("data-source");
+  private _handleSourceChange(e: CustomEvent<{ item: HaDropdownItem }>) {
+    const source = e.detail.item.value;
     if (!source || this.stateObj!.attributes.source === source) {
       return;
     }
@@ -746,10 +755,8 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSoundModeClick(e: Event) {
-    const soundMode = (e.currentTarget as HTMLElement).getAttribute(
-      "data-sound-mode"
-    );
+  private _handleSoundModeChange(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const soundMode = ev.detail.item.value;
     if (!soundMode || this.stateObj!.attributes.sound_mode === soundMode) {
       return;
     }

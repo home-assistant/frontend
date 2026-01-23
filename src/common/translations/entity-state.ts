@@ -1,6 +1,6 @@
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../data/translation";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValuePart } from "../../types";
 import {
   computeEntityNameDisplay,
   type EntityNameItem,
@@ -17,6 +17,11 @@ export type FormatEntityAttributeValueFunc = (
   attribute: string,
   value?: any
 ) => string;
+export type FormatEntityAttributeValueToPartsFunc = (
+  stateObj: HassEntity,
+  attribute: string,
+  value?: any
+) => ValuePart[];
 export type FormatEntityAttributeNameFunc = (
   stateObj: HassEntity,
   attribute: string
@@ -42,13 +47,17 @@ export const computeFormatFunctions = async (
 ): Promise<{
   formatEntityState: FormatEntityStateFunc;
   formatEntityAttributeValue: FormatEntityAttributeValueFunc;
+  formatEntityAttributeValueToParts: FormatEntityAttributeValueToPartsFunc;
   formatEntityAttributeName: FormatEntityAttributeNameFunc;
   formatEntityName: FormatEntityNameFunc;
 }> => {
   const { computeStateDisplay } =
     await import("../entity/compute_state_display");
-  const { computeAttributeValueDisplay, computeAttributeNameDisplay } =
-    await import("../entity/compute_attribute_display");
+  const {
+    computeAttributeValueDisplay,
+    computeAttributeValueToParts,
+    computeAttributeNameDisplay,
+  } = await import("../entity/compute_attribute_display");
 
   return {
     formatEntityState: (stateObj, state) =>
@@ -63,6 +72,16 @@ export const computeFormatFunctions = async (
       ),
     formatEntityAttributeValue: (stateObj, attribute, value) =>
       computeAttributeValueDisplay(
+        localize,
+        stateObj,
+        locale,
+        config,
+        entities,
+        attribute,
+        value
+      ),
+    formatEntityAttributeValueToParts: (stateObj, attribute, value) =>
+      computeAttributeValueToParts(
         localize,
         stateObj,
         locale,

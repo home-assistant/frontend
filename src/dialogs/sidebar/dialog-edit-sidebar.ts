@@ -7,6 +7,8 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-fade-in";
 import "../../components/ha-icon-button";
 import "../../components/ha-items-display-editor";
@@ -14,12 +16,10 @@ import type {
   DisplayItem,
   DisplayValue,
 } from "../../components/ha-items-display-editor";
-import "../../components/ha-md-button-menu";
-import "../../components/ha-md-menu-item";
-import "../../components/ha-wa-dialog";
 import { computePanels } from "../../components/ha-sidebar";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
+import "../../components/ha-wa-dialog";
 import {
   fetchFrontendUserData,
   saveFrontendUserData,
@@ -176,22 +176,17 @@ class DialogEditSidebar extends LitElement {
           : ""}
         @closed=${this._dialogClosed}
       >
-        <ha-md-button-menu
-          slot="headerActionItems"
-          positioning="popover"
-          anchor-corner="end-end"
-          menu-corner="start-end"
-        >
+        <ha-dropdown slot="headerActionItems" placement="bottom-end">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-md-menu-item .clickAction=${this._resetToDefaults}>
-            <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
+          <ha-dropdown-item @click=${this._resetToDefaults}>
+            <ha-svg-icon slot="icon" .path=${mdiRestart}></ha-svg-icon>
             ${this.hass.localize("ui.sidebar.reset_to_defaults")}
-          </ha-md-menu-item>
-        </ha-md-button-menu>
+          </ha-dropdown-item>
+        </ha-dropdown>
         <div class="content">${this._renderContent()}</div>
         <ha-dialog-footer slot="footer">
           <ha-button
