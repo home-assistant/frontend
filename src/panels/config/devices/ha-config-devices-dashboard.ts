@@ -10,12 +10,10 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -53,6 +51,7 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
+import { getLabelColorStyle } from "../../../components/ha-labels-picker";
 import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
@@ -730,7 +729,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((deviceId) =>
           this.hass.devices[deviceId]?.labels.includes(label.label_id)
         );
@@ -752,7 +750,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             reducedTouchTarget
           ></ha-checkbox>
           <ha-label
-            style=${color ? `--color: ${color}` : ""}
+            style=${getLabelColorStyle(label.color)}
             .description=${label.description || undefined}
           >
             ${label.icon
@@ -1301,7 +1299,7 @@ ${rejected
         }
         ha-label {
           --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
+          --primary-text-color: var(--color-text);
         }
       `,
       haStyle,
