@@ -24,7 +24,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -56,6 +55,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
+import { getLabelColorStyle } from "../../../components/ha-labels-picker";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
@@ -477,7 +477,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       </ha-md-menu-item>`;
 
     const labelItems = html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
           this.hass.entities[entityId]?.labels.includes(label.label_id)
         );
@@ -499,7 +498,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             .indeterminate=${partial}
           ></ha-checkbox>
           <ha-label
-            style=${color ? `--color: ${color}` : ""}
+            style=${getLabelColorStyle(label.color)}
             .description=${label.description}
           >
             ${label.icon
@@ -1388,7 +1387,7 @@ ${rejected
         }
         ha-label {
           --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
+          --primary-text-color: var(--color-text);
         }
       `,
     ];
