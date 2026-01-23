@@ -1,7 +1,7 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -106,6 +106,9 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
+  @property({ type: Boolean, attribute: "without-header" })
+  public withoutHeader = false;
+
   @state()
   private _open = false;
 
@@ -147,29 +150,35 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
       >
-        <slot name="header">
-          <ha-dialog-header
-            .subtitlePosition=${this.headerSubtitlePosition}
-            .showBorder=${this._bodyScrolled}
-          >
-            <slot name="headerNavigationIcon" slot="navigationIcon">
-              <ha-icon-button
-                data-dialog="close"
-                .label=${this.hass?.localize("ui.common.close") ?? "Close"}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            </slot>
-            ${this.headerTitle !== undefined
-              ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
-                  ${this.headerTitle}
-                </span>`
-              : html`<slot name="headerTitle" slot="title"></slot>`}
-            ${this.headerSubtitle !== undefined
-              ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-              : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
-            <slot name="headerActionItems" slot="actionItems"></slot>
-          </ha-dialog-header>
-        </slot>
+        ${!this.withoutHeader
+          ? html` <slot name="header">
+              <ha-dialog-header
+                .subtitlePosition=${this.headerSubtitlePosition}
+                .showBorder=${this._bodyScrolled}
+              >
+                <slot name="headerNavigationIcon" slot="navigationIcon">
+                  <ha-icon-button
+                    data-dialog="close"
+                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                    .path=${mdiClose}
+                  ></ha-icon-button>
+                </slot>
+                ${this.headerTitle !== undefined
+                  ? html`<span
+                      slot="title"
+                      class="title"
+                      id="ha-wa-dialog-title"
+                    >
+                      ${this.headerTitle}
+                    </span>`
+                  : html`<slot name="headerTitle" slot="title"></slot>`}
+                ${this.headerSubtitle !== undefined
+                  ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
+                  : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
+                <slot name="headerActionItems" slot="actionItems"></slot>
+              </ha-dialog-header>
+            </slot>`
+          : nothing}
         <div class="content-wrapper">
           <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
             <slot></slot>

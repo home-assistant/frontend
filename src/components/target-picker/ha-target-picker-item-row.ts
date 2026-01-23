@@ -20,7 +20,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
-import type { AreaRegistryEntry } from "../../data/area_registry";
+import type { AreaRegistryEntry } from "../../data/area/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";

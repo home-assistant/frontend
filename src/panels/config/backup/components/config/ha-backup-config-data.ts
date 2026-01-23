@@ -170,7 +170,7 @@ class HaBackupConfigData extends LitElement {
         data.addons_mode === "all" ||
         (data.addons_mode === "custom" && data.addons.length > 0)
       ) {
-        // It would be better if we could receive individual addon sizes in the WS request instead
+        // It would be better if we could receive individual app sizes in the WS request instead
         totalBytes +=
           (segments.addons_data ?? 0) + (segments.addons_config ?? 0);
       }
@@ -335,12 +335,12 @@ class HaBackupConfigData extends LitElement {
                       ></ha-svg-icon>
                       <span slot="headline">
                         ${this.hass.localize(
-                          "ui.panel.config.backup.data.local_addons"
+                          "ui.panel.config.backup.data.local_apps"
                         )}
                       </span>
                       <span slot="supporting-text">
                         ${this.hass.localize(
-                          "ui.panel.config.backup.data.local_addons_description"
+                          "ui.panel.config.backup.data.local_apps_description"
                         )}
                       </span>
                       <ha-switch
@@ -361,12 +361,12 @@ class HaBackupConfigData extends LitElement {
                       ></ha-svg-icon>
                       <span slot="headline">
                         ${this.hass.localize(
-                          "ui.panel.config.backup.data.addons"
+                          "ui.panel.config.backup.data.apps"
                         )}
                       </span>
                       <span slot="supporting-text">
                         ${this.hass.localize(
-                          "ui.panel.config.backup.data.addons_description"
+                          "ui.panel.config.backup.data.apps_description"
                         )}
                       </span>
                       <ha-md-select
@@ -378,21 +378,21 @@ class HaBackupConfigData extends LitElement {
                         <ha-md-select-option value="all">
                           <div slot="headline">
                             ${this.hass.localize(
-                              "ui.panel.config.backup.data.addons_all"
+                              "ui.panel.config.backup.data.apps_all"
                             )}
                           </div>
                         </ha-md-select-option>
                         <ha-md-select-option value="none">
                           <div slot="headline">
                             ${this.hass.localize(
-                              "ui.panel.config.backup.data.addons_none"
+                              "ui.panel.config.backup.data.apps_none"
                             )}
                           </div>
                         </ha-md-select-option>
                         <ha-md-select-option value="custom">
                           <div slot="headline">
                             ${this.hass.localize(
-                              "ui.panel.config.backup.data.addons_custom"
+                              "ui.panel.config.backup.data.apps_custom"
                             )}
                           </div>
                         </ha-md-select-option>
@@ -405,7 +405,11 @@ class HaBackupConfigData extends LitElement {
       </ha-md-list>
       ${isHassio && this._showAddons && this._addons.length
         ? html`
-            <ha-expansion-panel .header=${"Add-ons"} outlined expanded>
+            <ha-expansion-panel
+              .header=${this.hass.localize("ui.panel.config.backup.data.apps")}
+              outlined
+              expanded
+            >
               <ha-backup-addons-picker
                 .hass=${this.hass}
                 .value=${data.addons}
@@ -511,7 +515,7 @@ class HaBackupConfigData extends LitElement {
             )}
             ${addonsNotAccurate
               ? html`<br /><br />${this.hass.localize(
-                    "ui.panel.config.backup.data.estimated_size_disclaimer_addons_custom"
+                    "ui.panel.config.backup.data.estimated_size_disclaimer_apps_custom"
                   )}`
               : nothing}
           </ha-tooltip>

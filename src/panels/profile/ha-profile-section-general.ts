@@ -154,6 +154,10 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
+            <ha-pick-theme-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-theme-row>
             <ha-pick-dashboard-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -208,10 +212,6 @@ class HaProfileSectionGeneral extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.client_settings_detail")}
             </div>
-            <ha-pick-theme-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-theme-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row

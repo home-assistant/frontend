@@ -9,10 +9,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-request-selected-event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-wa-dialog";
 import type { AutomationConfig } from "../../../../data/automation";
 import { showAutomationEditor } from "../../../../data/automation";
 import type {
@@ -44,12 +44,19 @@ export class DialogDeviceAutomation extends LitElement {
 
   @state() private _params?: DeviceAutomationDialogParams;
 
+  @state() private _open = false;
+
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -136,18 +143,18 @@ export class DialogDeviceAutomation extends LitElement {
     });
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, title)}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
       >
         <ha-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel="Create new automation"
           rootTabbable
-          dialogInitialFocus
+          autofocus
         >
           ${this._triggers.length
             ? html`
@@ -245,7 +252,7 @@ export class DialogDeviceAutomation extends LitElement {
             <ha-icon-next slot="meta"></ha-icon-next>
           </ha-list-item>
         </ha-list>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -254,12 +261,12 @@ export class DialogDeviceAutomation extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
           --mdc-dialog-max-height: 60vh;
         }
         @media all and (min-width: 550px) {
-          ha-dialog {
+          ha-wa-dialog {
             --mdc-dialog-min-width: 500px;
           }
         }

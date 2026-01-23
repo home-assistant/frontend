@@ -57,13 +57,21 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
   conditions: (Condition | LegacyCondition)[];
 }
 
+export interface EmptyStateButtonConfig {
+  text: string;
+  icon?: string;
+  appearance?: "accent" | "filled" | "outlined" | "plain";
+  variant?: "brand" | "neutral" | "success" | "warning" | "danger";
+  tap_action: ActionConfig;
+}
+
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
   content_only?: boolean;
   icon?: string;
+  icon_color?: string;
   title?: string;
   content?: string;
-  action_button_text?: string;
-  tap_action?: ActionConfig;
+  buttons?: EmptyStateButtonConfig[];
 }
 
 export interface EntityCardConfig extends LovelaceCardConfig {
@@ -74,6 +82,9 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   unit?: string;
   theme?: string;
   state_color?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -131,6 +142,9 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
   exclude_entities?: string[];
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  image_tap_action?: ActionConfig;
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
@@ -644,6 +658,23 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
 
 export interface HomeSummaryCard extends LovelaceCardConfig {
   summary: HomeSummary;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface DistributionEntityConfig extends EntityConfig {}
+
+export interface DistributionCardConfig extends LovelaceCardConfig {
+  type: "distribution";
+  title?: string;
+  entities: (string | DistributionEntityConfig)[];
+  theme?: string;
+}
+
+export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {
+  hide_empty?: boolean;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

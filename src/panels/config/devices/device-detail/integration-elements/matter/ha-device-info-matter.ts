@@ -51,7 +51,7 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
     return html`
       <ha-expansion-panel
         .header=${this.hass.localize(
-          "ui.panel.config.matter.device_info.device_info"
+          "ui.panel.config.matter.device_info.matter_info"
         )}
       >
         <div class="row">
