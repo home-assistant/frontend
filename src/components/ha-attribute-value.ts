@@ -59,10 +59,7 @@ class HaAttributeValue extends LitElement {
       return parts.find((part) => part.type === "value")?.value;
     }
 
-    return this.hass.formatEntityAttributeValue(
-      this.stateObj!,
-      this.attribute
-    );
+    return this.hass.formatEntityAttributeValue(this.stateObj!, this.attribute);
   }
 
   static styles = css`
