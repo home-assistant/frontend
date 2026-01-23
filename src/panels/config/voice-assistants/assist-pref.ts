@@ -435,10 +435,6 @@ export class AssistPref extends LitElement {
       --mdc-list-side-padding-left: 16px;
     }
 
-    ha-button-menu a {
-      text-decoration: none;
-    }
-
     ha-list-item span ha-svg-icon {
       color: currentColor;
       width: 16px;

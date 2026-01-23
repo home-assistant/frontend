@@ -101,27 +101,3 @@ jobs:
           path: hass_frontend/
           if-no-files-found: error
           retention-days: 7
-  supervisor:
-    name: Build supervisor
-    needs: [lint, test]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out files from GitHub
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-      - name: Setup Node
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
-        with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-      - name: Install dependencies
-        run: yarn install --immutable
-      - name: Build Application
-        run: ./node_modules/.bin/gulp build-hassio
-        env:
-          IS_TEST: "true"
-      - name: Upload bundle stats
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        with:
-          name: supervisor-bundle-stats
-          path: build/stats/*.json
-          if-no-files-found: error

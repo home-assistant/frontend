@@ -1,6 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { computeCssColor } from "../../../common/color/compute-color";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
 import "../../../components/ha-icon";
@@ -49,17 +52,44 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
       >
         <div class="container">
           ${this._config.icon
-            ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
+            ? html`
+                <ha-icon
+                  class="card-icon"
+                  .icon=${this._config.icon}
+                  style=${styleMap({
+                    color: this._config.icon_color
+                      ? computeCssColor(this._config.icon_color)
+                      : undefined,
+                  })}
+                ></ha-icon>
+              `
             : nothing}
           ${this._config.title ? html`<h1>${this._config.title}</h1>` : nothing}
           ${this._config.content
             ? html`<p>${this._config.content}</p>`
             : nothing}
-          ${this._config.tap_action && this._config.action_button_text
+          ${this._config.buttons?.length
             ? html`
-                <ha-button @click=${this._handleAction}>
-                  ${this._config.action_button_text}
-                </ha-button>
+                <div class="buttons">
+                  ${this._config.buttons.map(
+                    (button, index) => html`
+                      <ha-button
+                        .index=${index}
+                        @click=${this._handleButtonAction}
+                        appearance=${ifDefined(button.appearance)}
+                        variant=${ifDefined(button.variant)}
+                      >
+                        ${button.icon
+                          ? html`<ha-icon
+                              slot="start"
+                              .icon=${button.icon}
+                            ></ha-icon>`
+                          : nothing}
+                        ${button.text}
+                      </ha-button>
+                    `
+                  )}
+                </div>
               `
             : nothing}
         </div>
@@ -67,9 +97,11 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleAction(): void {
-    if (this._config?.tap_action && this.hass) {
-      handleAction(this, this.hass, this._config, "tap");
+  private _handleButtonAction(ev: Event): void {
+    const index = (ev.currentTarget as any).index;
+    const button = this._config?.buttons?.[index];
+    if (this.hass && button) {
+      handleAction(this, this.hass, { tap_action: button.tap_action }, "tap");
     }
   }
 
@@ -94,8 +126,8 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
       max-width: 640px;
       margin: 0 auto;
     }
-    ha-icon {
-      --mdc-icon-size: var(--ha-space-12);
+    .card-icon {
+      --mdc-icon-size: var(--ha-space-16);
       color: var(--secondary-text-color);
     }
     h1 {
@@ -106,6 +138,12 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
     p {
       margin: 0;
       color: var(--secondary-text-color);
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--ha-space-2);
     }
     .content-only {
       background: none;
