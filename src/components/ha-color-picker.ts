@@ -3,7 +3,8 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
+import { computeCssColor } from "../common/color/compute-color";
+import { DEFAULT_THEME_COLORS } from "../resources/theme/color/color.globals";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
@@ -128,7 +129,7 @@ export class HaColorPicker extends LitElement {
         });
       }
 
-      Array.from(THEME_COLORS).forEach((color) => {
+      Object.keys(DEFAULT_THEME_COLORS).forEach((color) => {
         const themeLabel =
           this.hass.localize(
             `ui.components.color-picker.colors.${color}` as LocalizeKeys
@@ -142,7 +143,7 @@ export class HaColorPicker extends LitElement {
       const isSpecial =
         currentValue === "none" ||
         currentValue === "state" ||
-        THEME_COLORS.has(currentValue || "");
+        (currentValue || "") in DEFAULT_THEME_COLORS;
 
       const hasValue = currentValue && currentValue.length > 0;
 
