@@ -147,7 +147,7 @@ export function theme2hex(themeColor: string): string {
   }
 
   // Attempting to find a match in a theme colors array
-  const hexFromThemedColorName = DEFAULT_THEME_COLORS[themeColor];
+  const hexFromThemedColorName = DEFAULT_THEME_COLORS[themeColor.toLowerCase()];
   if (hexFromThemedColorName) {
     return theme2hex(hexFromThemedColorName);
   }
