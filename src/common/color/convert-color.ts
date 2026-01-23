@@ -1,5 +1,6 @@
 import colors from "color-name";
 import { expandHex } from "./hex";
+import { DEFAULT_THEME_COLORS } from "../../resources/theme/color/color.globals";
 
 const rgb_hex = (component: number): string => {
   const hex = Math.round(Math.min(Math.max(component, 0), 255)).toString(16);
@@ -131,6 +132,7 @@ export const hs2rgb = (hs: [number, number]): [number, number, number] =>
   hsv2rgb([hs[0], hs[1], 255]);
 
 export function theme2hex(themeColor: string): string {
+  // Attempting to find a HEX pattern in the input string
   if (themeColor.startsWith("#")) {
     if (themeColor.length === 4 || themeColor.length === 5) {
       const c = themeColor;
@@ -144,11 +146,19 @@ export function theme2hex(themeColor: string): string {
     return themeColor;
   }
 
+  // Attempting to find a match in a theme colors array
+  const hexFromThemedColorName = DEFAULT_THEME_COLORS[themeColor];
+  if (hexFromThemedColorName) {
+    return theme2hex(hexFromThemedColorName);
+  }
+
+  // Attempting to find a match in a web colors array
   const rgbFromColorName = colors[themeColor.toLowerCase()];
   if (rgbFromColorName) {
     return rgb2hex(rgbFromColorName);
   }
 
+  // Attempting to find an RGB pattern in the input string
   const rgbMatch = themeColor.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
   if (rgbMatch) {
     const [, r, g, b] = rgbMatch.map(Number);
