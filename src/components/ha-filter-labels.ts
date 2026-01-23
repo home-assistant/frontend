@@ -6,7 +6,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
@@ -20,6 +19,7 @@ import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-label";
+import { getLabelColorStyle } from "./ha-labels-picker";
 import "./ha-list";
 import "./ha-list-item";
 import "./search-input-outlined";
@@ -100,17 +100,14 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                 ${repeat(
                   this._filteredLabels(this._labels, this._filter, this.value),
                   (label) => label.label_id,
-                  (label) => {
-                    const color = label.color
-                      ? computeCssColor(label.color)
-                      : undefined;
-                    return html`<ha-check-list-item
+                  (label) =>
+                    html`<ha-check-list-item
                       .value=${label.label_id}
                       .selected=${(this.value || []).includes(label.label_id)}
                       hasMeta
                     >
                       <ha-label
-                        style=${color ? `--color: ${color}` : ""}
+                        style=${getLabelColorStyle(label.color)}
                         .description=${label.description}
                       >
                         ${label.icon
@@ -121,8 +118,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                           : nothing}
                         ${label.name}
                       </ha-label>
-                    </ha-check-list-item>`;
-                  }
+                    </ha-check-list-item>`
                 )}
               </ha-list> `
           : nothing}
@@ -252,7 +248,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         }
         ha-label {
           --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
+          --primary-text-color: var(--color-text);
         }
         .add {
           position: absolute;
