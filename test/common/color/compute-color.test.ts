@@ -1,8 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { computeCssColor } from "../../../src/common/color/compute-color";
-import {
-  DEFAULT_THEME_COLORS
-} from "../../../src/resources/theme/color/color.globals";
+import { DEFAULT_THEME_COLORS } from "../../../src/resources/theme/color/color.globals";
 
 describe("computeCssColor", () => {
   it("should return CSS variable for theme colors", () => {
