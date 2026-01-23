@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
+import { computeCssColor } from "../../../src/common/color/compute-color";
 import {
-  computeCssColor,
-  THEME_COLORS,
-} from "../../../src/common/color/compute-color";
+  DEFAULT_THEME_COLORS
+} from "../../../src/resources/theme/color/color.globals";
 
 describe("computeCssColor", () => {
   it("should return CSS variable for theme colors", () => {
-    THEME_COLORS.forEach((color) => {
+    Object.keys(DEFAULT_THEME_COLORS).forEach((color) => {
       expect(computeCssColor(color)).toBe(`var(--${color}-color)`);
     });
   });
