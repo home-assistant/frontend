@@ -145,11 +145,11 @@ export const computePanels = memoizeOne(
       const isDefaultPanel = panel.url_path === defaultPanel;
 
       if (
-        !isDefaultPanel && // ? can defaultPanel be hidden?
-        (!panel.title || // ? why a title could be empty?
+        !isDefaultPanel &&
+        (!panel.title ||
           hiddenPanels.includes(panel.url_path) ||
           (panel.default_visible === false &&
-            !panelsOrder.includes(panel.url_path))) // ? why to check for presense in panelsOrder?
+            !panelsOrder.includes(panel.url_path)))
       ) {
         return;
       }
@@ -418,7 +418,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       defaultPanel,
       this._panelOrder,
       this._hiddenPanels,
-      // this._pinnedPanels, // ? in future
       this.hass.locale
     );
 
