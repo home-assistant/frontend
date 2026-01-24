@@ -5908,6 +5908,9 @@
             }
           }
         },
+        "domains": {
+          "caption": "Domains"
+        },
         "person": {
           "caption": "People",
           "introduction": "Manage the people Home Assistant recognizes and control their access.",
