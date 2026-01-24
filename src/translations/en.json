@@ -5858,6 +5858,7 @@
               "integration": "Integration",
               "disabled_by": "Disabled by",
               "status": "Status",
+              "domain": "Domain",
               "availability": "Availability",
               "visibility": "Visibility",
               "enabled": "Enabled"
