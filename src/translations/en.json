@@ -2296,6 +2296,13 @@
       "config": {
         "generic": {
           "headers": {
+            "entity_id": "Entity ID",
+            "domain": "Domain",
+            "area": "Area",
+            "floor": "Floor",
+            "category": "Category",
+            "assistants": "Assistants",
+            "editable": "Editable",
             "modified_at": "Modified",
             "created_at": "Created",
             "actions": "Actions"
@@ -3618,11 +3625,7 @@
             "headers": {
               "icon": "Icon",
               "name": "Name",
-              "entity_id": "Entity ID",
-              "type": "Type",
-              "editable": "Editable",
-              "category": "Category",
-              "area": "Area"
+              "type": "Type"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -4088,10 +4091,6 @@
             "headers": {
               "icon": "Icon",
               "name": "Name",
-              "entity_id": "Entity ID",
-              "area": "Area",
-              "domain": "Domain",
-              "assistants": "Assistants",
               "aliases": "Aliases",
               "remove": "[%key:ui::common::remove%]"
             },
@@ -4261,8 +4260,6 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State",
-              "category": "Category",
-              "area": "Area",
               "icon": "Icon"
             },
             "bulk_action": "Action",
@@ -5282,8 +5279,6 @@
             "headers": {
               "name": "Name",
               "state": "State",
-              "category": "Category",
-              "area": "Area",
               "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
@@ -5409,9 +5404,6 @@
               "state": "State",
               "name": "Name",
               "last_activated": "Last activated",
-              "category": "Category",
-              "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
-              "area": "Area",
               "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
@@ -5805,8 +5797,6 @@
             "device": "Device",
             "manufacturer": "Manufacturer",
             "model": "Model",
-            "area": "Area",
-            "floor": "Floor",
             "integration": "Integration",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -5864,13 +5854,10 @@
             "headers": {
               "state_icon": "State icon",
               "entity": "Entity",
-              "entity_id": "Entity ID",
               "device": "Device",
               "integration": "Integration",
-              "area": "Area",
               "disabled_by": "Disabled by",
               "status": "Status",
-              "domain": "Domain",
               "availability": "Availability",
               "visibility": "Visibility",
               "enabled": "Enabled"
@@ -5907,6 +5894,9 @@
               "button": "Unhide selected"
             }
           }
+        },
+        "domains": {
+          "caption": "Domains"
         },
         "person": {
           "caption": "People",
