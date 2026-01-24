@@ -19,7 +19,6 @@ import {
   mdiToggleSwitchOffOutline,
   mdiTransitConnection,
 } from "@mdi/js";
-import { differenceInDays } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -28,14 +27,11 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
-import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -120,6 +116,13 @@ import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
+import {
+  getEntityIdHiddenTableColumn,
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getLabelsTableColumn,
+  getTriggeredAtTableColumn,
+} from "../common/data-table-columns";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsTableColumn,
@@ -132,7 +135,7 @@ type AutomationItem = AutomationEntity & {
   last_triggered: string | undefined;
   formatted_state: string;
   category: string | undefined;
-  labels: LabelRegistryEntry[];
+  label_entries: LabelRegistryEntry[];
   assistants: string[];
   assistants_sortable_key: string | undefined;
 };
@@ -267,7 +270,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          labels: (labels || []).map(
+          label_entries: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
           assistants,
@@ -282,7 +285,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     (
       narrow: boolean,
       localize: LocalizeFunc,
-      locale: HomeAssistant["locale"],
       entitiesToCheck?: any[]
     ): DataTableColumnContainer<AutomationItem> => {
       const columns: DataTableColumnContainer<AutomationItem> = {
@@ -304,11 +306,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               })}
             ></ha-state-icon>`,
         },
-        entity_id: {
-          title: "",
-          hidden: true,
-          filterable: true,
-        },
+        entity_id: getEntityIdHiddenTableColumn(),
         name: {
           title: localize("ui.panel.config.automation.picker.headers.name"),
           main: true,
@@ -317,59 +315,17 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           direction: "asc",
           flex: 2,
           extraTemplate: (automation) =>
-            automation.labels.length
+            automation.label_entries.length
               ? html`<ha-data-table-labels
                   @label-clicked=${narrow ? undefined : this._labelClicked}
-                  .labels=${automation.labels}
+                  .labels=${automation.label_entries}
                 ></ha-data-table-labels>`
               : nothing,
         },
-        area: {
-          title: localize("ui.panel.config.automation.picker.headers.area"),
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        category: {
-          title: localize("ui.panel.config.automation.picker.headers.category"),
-          defaultHidden: true,
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        labels: {
-          title: "",
-          hidden: true,
-          filterable: true,
-          template: (automation) =>
-            automation.labels.map((lbl) => lbl.name).join(" "),
-        },
-        last_triggered: {
-          sortable: true,
-          title: localize("ui.card.automation.last_triggered"),
-          template: (automation) => {
-            if (!automation.last_triggered) {
-              return this.hass.localize("ui.components.relative_time.never");
-            }
-            const date = new Date(automation.last_triggered);
-            const now = new Date();
-            const dayDifference = differenceInDays(now, date);
-            const formattedTime = formatShortDateTimeWithConditionalYear(
-              date,
-              this.hass.locale,
-              this.hass.config
-            );
-            const elementId = "last-triggered-" + slugify(automation.entity_id);
-            return html`
-              ${dayDifference > 3
-                ? formattedTime
-                : html`
-                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
-                    <span id=${elementId}>${relativeTime(date, locale)}</span>
-                  `}
-            `;
-          },
-        },
+        area: getAreaTableColumn(localize),
+        category: getCategoryTableColumn(localize),
+        labels: getLabelsTableColumn(),
+        last_triggered: getTriggeredAtTableColumn(localize, this.hass),
         formatted_state: {
           minWidth: "82px",
           maxWidth: "82px",
@@ -582,12 +538,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 )
           ).length
         }
-        .columns=${this._columns(
-          this.narrow,
-          this.hass.localize,
-          this.hass.locale,
-          automations
-        )}
+        .columns=${this._columns(this.narrow, this.hass.localize, automations)}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
