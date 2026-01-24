@@ -58,8 +58,7 @@ const SORT_VALUE_URL_PATHS = {
   map: 2,
   logbook: 3,
   history: 4,
-  "developer-tools": 9,
-  config: 11,
+  "developer-tools": 100,
 };
 
 const panelSorter = (
@@ -146,11 +145,11 @@ export const computePanels = memoizeOne(
       const isDefaultPanel = panel.url_path === defaultPanel;
 
       if (
-        !isDefaultPanel &&
-        (!panel.title ||
+        !isDefaultPanel && // ? can defaultPanel be hidden?
+        (!panel.title || // ? why a title could be empty?
           hiddenPanels.includes(panel.url_path) ||
           (panel.default_visible === false &&
-            !panelsOrder.includes(panel.url_path)))
+            !panelsOrder.includes(panel.url_path))) // ? why to check for presense in panelsOrder?
       ) {
         return;
       }
@@ -267,10 +266,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`
       ${this._renderHeader()}
       ${this._renderAllPanels(selectedPanel)}
-      <ha-md-list class="bottommost">
-        ${this._renderNotifications()}
-        ${this._renderUserItem(selectedPanel)}
-      </ha-md-list>
       <div class="tooltip"></div>`;
   }
 
@@ -389,11 +384,30 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   }
 
   private _renderAllPanels(selectedPanel: string) {
+    const renderList = (content, cls: string, scrollable: boolean) =>
+      html`<ha-md-list
+        class=${classMap({
+          "ha-scrollbar": scrollable,
+          [cls]: true,
+        })}
+        @focusin=${this._listboxFocusIn}
+        @focusout=${this._listboxFocusOut}
+        @touchend=${this._listboxTouchend}
+        @scroll=${this._listboxScroll}
+        @keydown=${this._listboxKeydown}
+        >${content}</ha-md-list
+      >`;
+
     if (!this._panelOrder || !this._hiddenPanels) {
       return html`
         <ha-fade-in .delay=${500}>
           <ha-spinner size="small"></ha-spinner>
         </ha-fade-in>
+        ${renderList(
+          html` ${this._renderFixedPanels(selectedPanel)} `,
+          "after-spacer",
+          false
+        )}
       `;
     }
 
@@ -404,26 +418,14 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       defaultPanel,
       this._panelOrder,
       this._hiddenPanels,
+      // this._pinnedPanels, // ? in future
       this.hass.locale
     );
 
-    const commonListPart = (_content, _class, scrollable: boolean) =>
-      html`<ha-md-list
-        class=${classMap({
-          "ha-scrollbar": scrollable,
-          [_class]: true,
-        })}
-        @focusin=${this._listboxFocusIn}
-        @focusout=${this._listboxFocusOut}
-        @touchend=${this._listboxTouchend}
-        @scroll=${this._listboxScroll}
-        @keydown=${this._listboxKeydown}
-        >${_content}</ha-md-list
-      >`;
-
+    // prettier-ignore
     return html`<div class="panels-list">
       <div class="wrapper">
-        ${commonListPart(
+        ${renderList(
           this._renderPanels(beforeSpacer, selectedPanel),
           "before-spacer",
           true
@@ -431,17 +433,26 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         ${this.renderScrollableFades()}
       </div>
       ${this._renderSpacer()}
-      ${commonListPart(
+      ${renderList(
         html`
           ${this._renderPanels(afterSpacer, selectedPanel)}
-          ${this.hass.user?.is_admin
-            ? this._renderConfiguration(selectedPanel)
-            : this._renderExternalConfiguration()}
+          ${this._renderFixedPanels(selectedPanel)}
         `,
         "after-spacer",
         false
       )}
     </div>`;
+  }
+
+  private _renderFixedPanels(selectedPanel: string) {
+    // prettier-ignore
+    return html`
+      ${this.hass.user?.is_admin
+        ? this._renderConfiguration(selectedPanel)
+        : this._renderExternalConfiguration()}
+      ${this._renderNotifications()}
+      ${this._renderUserItem(selectedPanel)}
+    `;
   }
 
   private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
@@ -777,21 +788,13 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         :host([expanded]) .title {
           display: initial;
         }
-        .hidden-panel {
-          display: none;
-        }
-
-        ha-fade-in,
-        .panels-list {
-          height: calc(
-            100vh - var(--header-height) - var(--safe-area-inset-top, 0px) -
-              104px
-          ); /* 104px = two bottommost list items w/o padding-top */
-        }
 
         .panels-list {
           display: flex;
           flex-direction: column;
+          height: calc(
+            100vh - var(--header-height) - var(--safe-area-inset-top, 0px)
+          );
         }
 
         ha-fade-in {
@@ -800,6 +803,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           display: flex;
           justify-content: center;
           align-items: center;
+          height: calc(
+            100vh - var(--header-height) - var(--safe-area-inset-top, 0px) -
+              152px
+          ); /* 152px = three list items w/o padding-top */
         }
 
         ha-md-list {
@@ -820,11 +827,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         }
         ha-md-list.after-spacer {
           padding-top: 0;
-          padding-bottom: 0;
           min-height: fit-content;
-        }
-        ha-md-list.bottommost {
-          padding-top: 0;
         }
 
         ha-md-list-item {
@@ -932,14 +935,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         .spacer {
           margin-top: auto;
           pointer-events: none;
-        }
-
-        .subheader {
-          color: var(--sidebar-text-color);
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
-          padding: var(--ha-space-4);
-          white-space: nowrap;
         }
 
         .tooltip {
