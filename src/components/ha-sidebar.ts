@@ -404,7 +404,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           <ha-spinner size="small"></ha-spinner>
         </ha-fade-in>
         ${renderList(
-          html` ${this._renderFixedPanels(selectedPanel)} `,
+          html`${this._renderFixedPanels(selectedPanel)}`,
           "after-spacer",
           false
         )}
