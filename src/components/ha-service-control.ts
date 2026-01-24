@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircle, mdiFileEdit } from "@mdi/js";
 import type {
   HassService,
   HassServices,
@@ -492,26 +492,40 @@ export class HaServiceControl extends LitElement {
       : html`
           <div class="description">
             ${description ? html`<p>${description}</p>` : ""}
-            ${this._manifest
-              ? html` <a
-                  href=${this._manifest.is_built_in
-                    ? documentationUrl(
-                        this.hass,
-                        `/integrations/${this._manifest.domain}`
-                      )
-                    : this._manifest.documentation}
-                  title=${this.hass.localize(
-                    "ui.components.service-control.integration_doc"
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <ha-icon-button
-                    .path=${mdiHelpCircle}
-                    class="help-icon"
-                  ></ha-icon-button>
-                </a>`
-              : nothing}
+            <div class="description-icons">
+              ${domain === "script"
+                ? html` <a
+                    href=${`/config/script/edit/${serviceName}`}
+                    title=${this.hass.localize(
+                      "ui.components.service-control.edit_script"
+                    )}
+                    ><ha-icon-button
+                      .path=${mdiFileEdit}
+                      class="edit-icon"
+                    ></ha-icon-button
+                  ></a>`
+                : nothing}
+              ${this._manifest
+                ? html` <a
+                    href=${this._manifest.is_built_in
+                      ? documentationUrl(
+                          this.hass,
+                          `/integrations/${this._manifest.domain}`
+                        )
+                      : this._manifest.documentation}
+                    title=${this.hass.localize(
+                      "ui.components.service-control.integration_doc"
+                    )}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <ha-icon-button
+                      .path=${mdiHelpCircle}
+                      class="help-icon"
+                    ></ha-icon-button>
+                  </a>`
+                : nothing}
+            </div>
           </div>
         `}
     ${serviceData && "target" in serviceData
@@ -1007,7 +1021,8 @@ export class HaServiceControl extends LitElement {
       margin-inline-start: -16px;
       margin-inline-end: initial;
     }
-    .help-icon {
+    .help-icon,
+    .edit-icon {
       color: var(--secondary-text-color);
     }
     .description {
@@ -1020,6 +1035,10 @@ export class HaServiceControl extends LitElement {
     }
     .description p {
       direction: ltr;
+    }
+    .description-icons {
+      display: flex;
+      flex-wrap: nowrap;
     }
     ha-expansion-panel {
       --ha-card-border-radius: var(--ha-border-radius-square);
