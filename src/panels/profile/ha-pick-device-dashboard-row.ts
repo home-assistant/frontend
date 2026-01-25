@@ -24,21 +24,17 @@ class HaPickDeviceDashboardRow extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _dashboards?: LovelaceDashboard[];
-  @state() private _devicePanel?: string | null;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._getDashboards();
-    this._devicePanel = JSON.parse(
-      localStorage.getItem("devicePanel") || "null"
-    );
   }
 
   protected render(): TemplateResult {
-    const value =
-      this._devicePanel ??
-      this.hass.userData?.default_panel ??
-      USE_SYSTEM_VALUE;
+    const storedValue = JSON.parse(
+      localStorage.getItem("devicePanel") || "null"
+    );
+    const value = storedValue ?? USE_SYSTEM_VALUE;
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
@@ -54,7 +50,7 @@ class HaPickDeviceDashboardRow extends LitElement {
                   "ui.panel.profile.device-dashboard.dropdown_label"
                 )}
                 .value=${value}
-                @selected=${this._dashboardChanged}
+                @selected=${this._deviceDashboardChanged}
                 naturalMenuWidth
               >
                 <ha-list-item .value=${USE_SYSTEM_VALUE}>
@@ -127,8 +123,9 @@ class HaPickDeviceDashboardRow extends LitElement {
     this._dashboards = await fetchDashboards(this.hass);
   }
 
-  private _dashboardChanged(ev) {
+  private _deviceDashboardChanged(ev) {
     const value = ev.target.value as string;
+
     if (!value) {
       return;
     }
@@ -139,8 +136,11 @@ class HaPickDeviceDashboardRow extends LitElement {
     if (urlPath === currentPanel) {
       return;
     }
-    localStorage.setItem("devicePanel", JSON.stringify(urlPath));
-    this._devicePanel = urlPath;
+    if (urlPath === undefined) {
+      localStorage.removeItem("devicePanel");
+    } else {
+      localStorage.setItem("devicePanel", JSON.stringify(urlPath));
+    }
   }
 
   static get styles(): CSSResultGroup {

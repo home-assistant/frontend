@@ -48,7 +48,7 @@ class HaPickUserDashboardRow extends LitElement {
                   "ui.panel.profile.user-dashboard.dropdown_label"
                 )}
                 .value=${value}
-                @selected=${this._dashboardChanged}
+                @selected=${this._userDashboardChanged}
                 naturalMenuWidth
               >
                 <ha-list-item .value=${USE_SYSTEM_VALUE}>
@@ -121,7 +121,7 @@ class HaPickUserDashboardRow extends LitElement {
     this._dashboards = await fetchDashboards(this.hass);
   }
 
-  private _dashboardChanged(ev) {
+  private _userDashboardChanged(ev) {
     const value = ev.target.value as string;
     if (!value) {
       return;
