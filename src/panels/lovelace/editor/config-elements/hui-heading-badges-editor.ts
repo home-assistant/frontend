@@ -9,13 +9,14 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import { computeRTL } from "../../../../common/util/compute_rtl";
+import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
@@ -25,7 +26,6 @@ import type {
   EntityHeadingBadgeConfig,
   LovelaceHeadingBadgeConfig,
 } from "../../heading-badges/types";
-import { nextRender } from "../../../../common/util/render-status";
 
 const UI_BADGE_TYPES = ["entity", "button"] as const;
 
@@ -83,23 +83,19 @@ export class HuiHeadingBadgesEditor extends LitElement {
             </ha-sortable>
           `
         : nothing}
-      <ha-button-menu
-        fixed
-        @action=${this._addBadge}
-        @closed=${stopPropagation}
-      >
+      <ha-dropdown @wa-select=${this._addBadge}>
         <ha-button slot="trigger" appearance="filled" size="small">
           <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
           ${this.hass.localize(`ui.panel.lovelace.editor.heading-badges.add`)}
         </ha-button>
         ${UI_BADGE_TYPES.map(
           (type) => html`
-            <ha-list-item .value=${type}>
+            <ha-dropdown-item .value=${type}>
               ${this._getBadgeTypeLabel(type)}
-            </ha-list-item>
+            </ha-dropdown-item>
           `
         )}
-      </ha-button-menu>
+      </ha-dropdown>
     `;
   }
 
@@ -223,13 +219,11 @@ export class HuiHeadingBadgesEditor extends LitElement {
     `;
   }
 
-  private async _addBadge(ev: CustomEvent): Promise<void> {
-    const index = ev.detail.index as number;
-
-    if (index == null) return;
-
-    const type = UI_BADGE_TYPES[index];
-    if (!type) return;
+  private async _addBadge(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const type = ev.detail.item.value;
+    if (!type) {
+      return;
+    }
 
     const elClass = await getHeadingBadgeElementClass(type);
 
@@ -281,7 +275,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
       flex-direction: column;
     }
 
-    ha-button-menu {
+    ha-dropdown {
+      display: inline-block;
+      align-self: flex-start;
       margin-top: var(--ha-space-2);
     }
 

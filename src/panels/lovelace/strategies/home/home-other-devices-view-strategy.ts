@@ -142,7 +142,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
                       type: "button",
                       icon: "mdi:home-plus",
                       text: hass.localize(
-                        "ui.panel.lovelace.strategy.other_devices.assign_area"
+                        "ui.panel.lovelace.strategy.home-other-devices.assign_area"
                       ),
                       tap_action: {
                         action: "fire-dom-event",
@@ -178,7 +178,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: hass.localize(
-              "ui.panel.lovelace.strategy.other_devices.helpers"
+              "ui.panel.lovelace.strategy.home-other-devices.helpers"
             ),
           } satisfies HeadingCardConfig,
           ...helpersEntities.map((e) => ({
@@ -197,7 +197,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: hass.localize(
-              "ui.panel.lovelace.strategy.other_devices.entities"
+              "ui.panel.lovelace.strategy.home-other-devices.entities"
             ),
           } satisfies HeadingCardConfig,
           ...otherEntities.map((e) => ({
@@ -216,12 +216,13 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:check-all",
+            icon_color: "primary",
             content_only: true,
             title: hass.localize(
-              "ui.panel.lovelace.strategy.other_devices.empty_state_title"
+              "ui.panel.lovelace.strategy.home-other-devices.all_organized_title"
             ),
             content: hass.localize(
-              "ui.panel.lovelace.strategy.other_devices.empty_state_content"
+              "ui.panel.lovelace.strategy.home-other-devices.all_organized_content"
             ),
           } as EmptyStateCardConfig,
         ],

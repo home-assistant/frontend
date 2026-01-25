@@ -11,9 +11,7 @@ import {
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
@@ -46,6 +44,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
+import { renderLabelColorBadge } from "../../../components/ha-label-picker";
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {
@@ -111,19 +110,7 @@ export class HaConfigLabels extends LitElement {
         showNarrow: true,
         label: localize("ui.panel.config.labels.headers.color"),
         type: "icon",
-        template: (label) =>
-          html`<div
-            style=${styleMap({
-              backgroundColor: label.color
-                ? computeCssColor(label.color)
-                : undefined,
-              borderRadius: "var(--ha-border-radius-md)",
-              border: "1px solid var(--outline-color)",
-              boxSizing: "border-box",
-              width: "var(--ha-space-5)",
-              height: "var(--ha-space-5)",
-            })}
-          ></div>`,
+        template: (label) => renderLabelColorBadge(label.color ?? undefined),
       },
       name: {
         title: localize("ui.panel.config.labels.headers.name"),

@@ -1,18 +1,19 @@
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import { mdiDotsVertical } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/search-input";
 import type {
-  HassioAddonsInfo,
   HassioAddonRepository,
+  HassioAddonsInfo,
 } from "../../../data/hassio/addon";
 import {
   fetchHassioAddonsInfo,
@@ -28,10 +29,9 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { HomeAssistant, Route } from "../../../types";
-import { showRepositoriesDialog } from "./dialogs/repositories/show-dialog-repositories";
 import { showRegistriesDialog } from "./dialogs/registries/show-dialog-registries";
+import { showRepositoriesDialog } from "./dialogs/repositories/show-dialog-repositories";
 import "./supervisor-apps-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
@@ -132,24 +132,24 @@ export class HaConfigAppsAvailable extends LitElement {
         back-path="/config/apps"
         .header=${this.hass.localize("ui.panel.config.apps.store.title")}
       >
-        <ha-button-menu slot="toolbar-icon" @action=${this._handleAction}>
+        <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleAction}>
           <ha-icon-button
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
-          <ha-list-item>
+          <ha-dropdown-item value="check_updates">
             ${this.hass.localize("ui.panel.config.apps.store.check_updates")}
-          </ha-list-item>
-          <ha-list-item>
+          </ha-dropdown-item>
+          <ha-dropdown-item value="repositories">
             ${this.hass.localize("ui.panel.config.apps.store.repositories")}
-          </ha-list-item>
+          </ha-dropdown-item>
           ${this.hass.userData?.showAdvanced
-            ? html`<ha-list-item>
+            ? html`<ha-dropdown-item value="registries">
                 ${this.hass.localize("ui.panel.config.apps.store.registries")}
-              </ha-list-item>`
-            : ""}
-        </ha-button-menu>
+              </ha-dropdown-item>`
+            : nothing}
+        </ha-dropdown>
         ${repos.length === 0
           ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
           : html`
@@ -202,15 +202,21 @@ export class HaConfigAppsAvailable extends LitElement {
       })
   );
 
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail.item.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "check_updates":
         this._refreshData();
         break;
-      case 1:
+      case "repositories":
         this._manageRepositoriesClicked();
         break;
-      case 2:
+      case "registries":
         this._manageRegistries();
         break;
     }

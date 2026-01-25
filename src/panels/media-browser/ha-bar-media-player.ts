@@ -681,12 +681,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       --ha-slider-indicator-color: var(--primary-color);
     }
 
-    ha-button-menu ha-button[slot="trigger"] {
-      line-height: 1;
-      --mdc-theme-primary: var(--primary-text-color);
-      --mdc-icon-size: 16px;
-    }
-
     .info {
       flex: 1;
       display: flex;
