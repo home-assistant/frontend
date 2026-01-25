@@ -212,7 +212,9 @@ export class HuiDialogEditBadge
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" @click=${this._enlarge}>${heading}</span>
+          <span slot="title" style="display: block;" @click=${this._enlarge}
+            >${heading}</span
+          >
           ${this._documentationURL !== undefined
             ? html`
                 <a
