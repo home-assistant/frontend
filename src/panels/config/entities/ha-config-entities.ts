@@ -90,7 +90,6 @@ import type {
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
@@ -127,7 +126,6 @@ import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -848,7 +846,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._entities,
         this.hass.devices,
         this.hass.areas,
-        this._stateEntities,
+        this._entitiesWithoutUniqueId,
         this._filters,
         this._filteredItems,
         this._entries,
