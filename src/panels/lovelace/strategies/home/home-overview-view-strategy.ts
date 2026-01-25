@@ -192,9 +192,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         type: "common-controls",
         limit: maxCommonControls,
         include_entities: favoriteEntities,
-        title: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
-        title_visibilty: [largeScreenCondition],
         hide_empty: true,
+        heading: {
+          type: "heading",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+          heading_style: "title",
+          visibility: [largeScreenCondition],
+          grid_options: {
+            rows: "auto", // Compact style
+          },
+        },
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
     } as LovelaceStrategySectionConfig;
@@ -339,7 +346,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       sidebarSummaryCards.length > 0
         ? {
             type: "grid",
-            cards: [summaryHeadingCard, ...sidebarSummaryCards],
+            cards: [
+              {
+                ...summaryHeadingCard,
+                grid_options: { rows: "auto" }, // Compact style
+              },
+              ...sidebarSummaryCards,
+            ],
           }
         : undefined;
 
