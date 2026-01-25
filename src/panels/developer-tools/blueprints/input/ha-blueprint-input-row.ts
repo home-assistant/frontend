@@ -53,6 +53,8 @@ export default class HaBlueprintInputRow extends LitElement {
     BlueprintInput | BlueprintInputSection | null,
   ];
 
+  @property({ attribute: false }) public path!: string[];
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public first?: boolean;
@@ -99,7 +101,13 @@ export default class HaBlueprintInputRow extends LitElement {
       return;
     }
 
+    if (this.path) {
+      fireEvent(this, "open-input-group-path", this.path.concat(this.input[0]));
+      return;
+    }
+
     fireEvent(this, "open-sidebar", {
+      id: this.input[0],
       config: this.input[1],
       save: this._handleChangeEvent.bind(this),
       toggleYamlMode: this._toggleYamlMode.bind(this),
@@ -463,5 +471,9 @@ export default class HaBlueprintInputRow extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-blueprint-input-row": HaBlueprintInputRow;
+  }
+
+  interface HASSDomEvents {
+    "open-input-group-path": string[];
   }
 }

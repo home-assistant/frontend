@@ -2,14 +2,14 @@ import { customElement, property } from "lit/decorators";
 import { css, type CSSResultGroup, html, LitElement } from "lit";
 import type { HomeAssistant } from "../../../../../types";
 import type { BlueprintInputSection } from "../../../../../data/blueprint";
-import "../../../../../components/ha-textarea";
-import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-select";
-import "../../../../../components/ha-selector/ha-selector";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { haStyle } from "../../../../../resources/styles";
 
+import "../../../../../components/ha-textarea";
+import "../../../../../components/ha-textfield";
+import "../../../../../components/ha-select";
+import "../../../../../components/ha-selector/ha-selector";
 import "../ha-blueprint-input";
 
 @customElement("ha-blueprint-input-section")
@@ -29,6 +29,8 @@ export class HaBlueprintInputSection extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) input!: BlueprintInputSection;
+
+  @property({ attribute: false }) public path?: string[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -91,6 +93,7 @@ export class HaBlueprintInputSection extends LitElement {
       ></ha-form>
       <ha-blueprint-input
         .inputs=${Object.entries(this.input?.input || {})}
+        .path=${this.path}
         @value-changed=${this._inputChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}

@@ -1,30 +1,30 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
-  mdiContentCopy,
-  mdiContentCut,
+  mdiChevronRight,
   mdiDelete,
   mdiIdentifier,
   mdiPlaylistEdit,
-  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
 } from "@mdi/js";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
+import { join } from "lit/directives/join";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import "../../../../components/ha-dropdown-item";
+import { isMac } from "../../../../util/is_mac";
+import { overflowStyles, sidebarEditorStyles } from "../styles";
+import type { BlueprintInputSection } from "../../../../data/blueprint";
+import { isInputSection } from "../../../../data/blueprint";
 import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type { BlueprintInputSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
-import { isMac } from "../../../../util/is_mac";
-import { overflowStyles, sidebarEditorStyles } from "../styles";
 import type HaBlueprintInputEditor from "../../../developer-tools/blueprints/input/ha-blueprint-input-editor";
 import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
+import "../../../../components/ha-dropdown-item";
 import "../../../developer-tools/blueprints/input/ha-blueprint-input-editor";
-import { isInputSection } from "../../../../data/blueprint";
 
 @customElement("ha-automation-sidebar-blueprint-input")
 export default class HaAutomationSidebarBlueprintInput extends LitElement {
@@ -44,6 +44,8 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
   @state() private _requestShowId = false;
 
   @state() private _warnings?: string[];
+
+  @state() private _path?: string[];
 
   @query(".sidebar-editor")
   public editor?: HaBlueprintInputEditor;
@@ -84,7 +86,26 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     );
   }
 
+  private _openInputGroup = (i: number) => () => {
+    if (!this._path) {
+      return;
+    }
+
+    this._path = this._path.slice(0, i);
+  };
+
+  private _openInputGroupPath(ev: CustomEvent<string[]>) {
+    this._path = ev.detail;
+  }
+
   protected render() {
+    const config = this._path
+      ? this._path.reduce(
+          (acc, x) => (acc as BlueprintInputSection).input[x]!,
+          this.config.config
+        )
+      : this.config.config;
+
     return html`
       <ha-automation-sidebar-card
         .hass=${this.hass}
@@ -121,64 +142,6 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
           : nothing}
 
         <wa-divider slot="menu-items"></wa-divider>
-
-        <ha-dropdown-item slot="menu-items" value="duplicate">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.duplicate"
-          )}
-          <ha-svg-icon
-            slot="icon"
-            .path=${mdiPlusCircleMultipleOutline}
-          ></ha-svg-icon>
-        </ha-dropdown-item>
-
-        <ha-dropdown-item slot="menu-items" value="copy">
-          <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-          <div class="overflow-label">
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.copy"
-            )}
-            ${!this.narrow
-              ? html`<span class="shortcut">
-                  <span
-                    >${isMac
-                      ? html`<ha-svg-icon
-                          .path=${mdiAppleKeyboardCommand}
-                        ></ha-svg-icon>`
-                      : this.hass.localize(
-                          "ui.panel.config.automation.editor.ctrl"
-                        )}</span
-                  >
-                  <span>+</span>
-                  <span>C</span>
-                </span>`
-              : nothing}
-          </div>
-        </ha-dropdown-item>
-
-        <ha-dropdown-item slot="menu-items" value="cut">
-          <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
-          <div class="overflow-label">
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.cut"
-            )}
-            ${!this.narrow
-              ? html`<span class="shortcut">
-                  <span
-                    >${isMac
-                      ? html`<ha-svg-icon
-                          .path=${mdiAppleKeyboardCommand}
-                        ></ha-svg-icon>`
-                      : this.hass.localize(
-                          "ui.panel.config.automation.editor.ctrl"
-                        )}</span
-                  >
-                  <span>+</span>
-                  <span>X</span>
-                </span>`
-              : nothing}
-          </div>
-        </ha-dropdown-item>
         <ha-dropdown-item
           slot="menu-items"
           value="toggle_yaml_mode"
@@ -220,14 +183,34 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
               : nothing}
           </div>
         </ha-dropdown-item>
+
+        <div class="breadcrumbs">
+          ${this._path
+            ? join(
+                [this.config.id, ...this._path].map(
+                  (pathPart, i) => html`
+                    <ha-button
+                      appearance="plain"
+                      @click=${this._openInputGroup(i)}
+                      >${pathPart}</ha-button
+                    >
+                  `
+                ),
+                html`<ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>`
+              )
+            : nothing}
+        </div>
+
         ${keyed(
           this.sidebarKey,
           html`<ha-blueprint-input-editor
             class="sidebar-editor"
             .hass=${this.hass}
             .narrow=${this.narrow}
-            .input=${this.config.config}
+            .input=${config}
+            .path=${this._path}
             .yamlMode=${this.yamlMode}
+            @open-input-group-path=${this._openInputGroupPath}
             @value-changed=${this._valueChangedSidebar}
             @yaml-changed=${this._yamlChangedSidebar}
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
@@ -287,15 +270,6 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
       case "show_id":
         this._showTriggerId();
         break;
-      case "duplicate":
-        this.config.duplicate();
-        break;
-      case "copy":
-        this.config.copy();
-        break;
-      case "cut":
-        this.config.cut();
-        break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();
         break;
@@ -305,11 +279,32 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     }
   }
 
-  static styles = [sidebarEditorStyles, overflowStyles];
+  static styles = [
+    sidebarEditorStyles,
+    overflowStyles,
+    css`
+      .breadcrumbs {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        overflow-x: auto;
+      }
+
+      .breadcrumbs > ha-button,
+      .breadcrumbs > ha-svg-icon {
+        flex-shrink: 0;
+      }
+    `,
+  ];
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-sidebar-blueprint-input": HaAutomationSidebarBlueprintInput;
+  }
+
+  interface HASSDomEvents {
+    "open-input-group-path": string[];
   }
 }

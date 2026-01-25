@@ -1,16 +1,16 @@
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-yaml-editor";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
   BlueprintInput,
   BlueprintInputSection,
 } from "../../../../data/blueprint";
+import { isInputSection } from "../../../../data/blueprint";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
-import { query } from "lit/decorators.js";
-import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/ha-yaml-editor";
 
 @customElement("ha-blueprint-input-editor")
 export default class HaBlueprintInputEditor extends LitElement {
@@ -23,16 +23,14 @@ export default class HaBlueprintInputEditor extends LitElement {
     | BlueprintInputSection
     | null;
 
+  @property({ attribute: false }) path?: string[];
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public yamlMode = false;
 
   @query("ha-yaml-editor")
   public yamlEditor?: HaYamlEditor;
-
-  private _inputIsSection(x: any): x is BlueprintInputSection {
-    return "input" in x;
-  }
 
   protected render() {
     if (!this.input) {
@@ -51,11 +49,12 @@ export default class HaBlueprintInputEditor extends LitElement {
     }
 
     return dynamicElement(
-      `ha-blueprint-input-${this._inputIsSection(this.input) ? "section" : "input"}`,
+      `ha-blueprint-input-${isInputSection(this.input) ? "section" : "input"}`,
       {
         hass: this.hass,
         narrow: this.narrow,
         input: this.input,
+        path: this.path ?? [],
         disabled: this.disabled,
       }
     );

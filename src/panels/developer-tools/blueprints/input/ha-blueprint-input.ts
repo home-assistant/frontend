@@ -29,6 +29,8 @@ export class HaBlueprintInput extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ attribute: false }) public path?: string[];
+
   @property({ attribute: false }) public inputs!: [
     string,
     BlueprintInput | BlueprintInputSection | null,
@@ -190,6 +192,7 @@ export class HaBlueprintInput extends LitElement {
                 .last=${idx === this.inputs.length - 1}
                 .index=${idx}
                 .input=${inputPair}
+                .path=${this.path}
                 .disabled=${this.disabled}
                 @duplicate=${this._duplicateInput}
                 @move-down=${this._moveDown}
