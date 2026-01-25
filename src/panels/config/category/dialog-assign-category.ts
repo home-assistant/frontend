@@ -4,10 +4,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-textfield";
+import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog-footer";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -28,14 +26,21 @@ class DialogAssignCategory extends LitElement {
 
   @state() private _submitting?: boolean;
 
+  @state() private _open = false;
+
   public showDialog(params: AssignCategoryDialogParams): void {
     this._params = params;
     this._scope = params.scope;
     this._category = params.entityReg.categories[params.scope];
     this._error = undefined;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -47,47 +52,46 @@ class DialogAssignCategory extends LitElement {
     }
     const entry = this._params.entityReg.categories[this._params.scope];
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          entry
-            ? this.hass.localize("ui.panel.config.category.assign.edit")
-            : this.hass.localize("ui.panel.config.category.assign.assign")
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${entry
+          ? this.hass.localize("ui.panel.config.category.assign.edit")
+          : this.hass.localize("ui.panel.config.category.assign.assign")}
+        @closed=${this._dialogClosed}
       >
-        <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
-          <div class="form">
-            <ha-category-picker
-              .hass=${this.hass}
-              .scope=${this._scope}
-              .label=${this.hass.localize(
-                "ui.components.category-picker.category"
-              )}
-              .value=${this._category}
-              @value-changed=${this._categoryChanged}
-            ></ha-category-picker>
-          </div>
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
+        <div class="form">
+          <ha-category-picker
+            .hass=${this.hass}
+            .scope=${this._scope}
+            .label=${this.hass.localize(
+              "ui.components.category-picker.category"
+            )}
+            .value=${this._category}
+            @value-changed=${this._categoryChanged}
+            autofocus
+          ></ha-category-picker>
         </div>
-        <ha-button
-          appearance="plain"
-          slot="primaryAction"
-          @click=${this.closeDialog}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${!!this._submitting}
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${!!this._submitting}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 

@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import {
   STATE_DISPLAY_SPECIAL_CONTENT,
   STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS,
@@ -95,6 +96,9 @@ export class HaStateContentPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-name" }) public allowName =
     false;
 
+  @property({ type: Boolean, attribute: "allow-context" }) public allowContext =
+    false;
+
   @property() public label?: string;
 
   @property() public value?: string[] | string;
@@ -106,7 +110,12 @@ export class HaStateContentPicker extends LitElement {
   private _editIndex?: number;
 
   private _getItems = memoizeOne(
-    (entityId?: string, stateObj?: HassEntity, allowName?: boolean) => {
+    (
+      entityId?: string,
+      stateObj?: HassEntity,
+      allowName?: boolean,
+      allowContext?: boolean
+    ) => {
       const domain = entityId ? computeDomain(entityId) : undefined;
       const items: PickerComboBoxItem[] = [
         {
@@ -149,6 +158,52 @@ export class HaStateContentPicker extends LitElement {
             "ui.components.state-content-picker.last_updated"
           ),
         },
+        ...(allowContext && stateObj
+          ? (() => {
+              const context = getEntityContext(
+                stateObj,
+                this.hass.entities,
+                this.hass.devices,
+                this.hass.areas,
+                this.hass.floors
+              );
+              const contextItems: PickerComboBoxItem[] = [];
+              if (context.device) {
+                contextItems.push({
+                  id: "device_name",
+                  primary: this.hass.localize(
+                    "ui.components.state-content-picker.device_name"
+                  ),
+                  sorting_label: this.hass.localize(
+                    "ui.components.state-content-picker.device_name"
+                  ),
+                });
+              }
+              if (context.area) {
+                contextItems.push({
+                  id: "area_name",
+                  primary: this.hass.localize(
+                    "ui.components.state-content-picker.area_name"
+                  ),
+                  sorting_label: this.hass.localize(
+                    "ui.components.state-content-picker.area_name"
+                  ),
+                });
+              }
+              if (context.floor) {
+                contextItems.push({
+                  id: "floor_name",
+                  primary: this.hass.localize(
+                    "ui.components.state-content-picker.floor_name"
+                  ),
+                  sorting_label: this.hass.localize(
+                    "ui.components.state-content-picker.floor_name"
+                  ),
+                });
+              }
+              return contextItems;
+            })()
+          : []),
         ...(domain
           ? STATE_DISPLAY_SPECIAL_CONTENT.filter((content) =>
               STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[domain]?.includes(content)
@@ -300,7 +355,8 @@ export class HaStateContentPicker extends LitElement {
       const items = this._getItems(
         this.entityId,
         stateObjForItems,
-        this.allowName
+        this.allowName,
+        this.allowContext
       );
       return items.find((item) => item.id === value)?.primary;
     }
@@ -343,7 +399,12 @@ export class HaStateContentPicker extends LitElement {
     const stateObj = this.entityId
       ? this.hass.states[this.entityId]
       : undefined;
-    const items = this._getItems(this.entityId, stateObj, this.allowName);
+    const items = this._getItems(
+      this.entityId,
+      stateObj,
+      this.allowName,
+      this.allowContext
+    );
     const currentValue =
       this._editIndex != null ? this._value[this._editIndex] : undefined;
 
@@ -367,7 +428,12 @@ export class HaStateContentPicker extends LitElement {
     const stateObj = this.entityId
       ? this.hass.states[this.entityId]
       : undefined;
-    const items = this._getItems(this.entityId, stateObj, this.allowName);
+    const items = this._getItems(
+      this.entityId,
+      stateObj,
+      this.allowName,
+      this.allowContext
+    );
 
     // If the search string does not match with the id of any of the items,
     // offer to add it as a custom attribute

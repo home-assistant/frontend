@@ -138,10 +138,10 @@ export class HaMarkdown extends LitElement {
       --markdown-table-padding-inline: 0;
       --markdown-table-padding-block: 0;
       th {
-        vertical-align: attr(align, center);
+        vertical-align: attr(valign, middle);
       }
       td {
-        vertical-align: attr(align, left);
+        vertical-align: attr(valign, middle);
       }
     }
     table {

@@ -61,12 +61,13 @@ import "../../../components/ha-state-icon";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import { createAreaRegistryEntry } from "../../../data/area_registry";
+import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
+import type { CloudStatus } from "../../../data/cloud";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
@@ -109,13 +110,19 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
-import "../voice-assistants/expose/expose-assistant-icon";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import {
+  getAssistantsTableColumn,
+  getAssistantsSortableKey,
+} from "../voice-assistants/expose/assistants-table-column";
 
 type SceneItem = SceneEntity & {
   name: string;
   area: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  assistants: string[];
+  assistants_sortable_key: string | undefined;
 };
 
 @customElement("ha-scene-dashboard")
@@ -127,6 +134,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
 
@@ -201,6 +210,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width,
   });
 
+  private get _availableAssistants() {
+    return getAvailableAssistants(this.cloudStatus, this.hass);
+  }
+
   private _scenes = memoizeOne(
     (
       scenes: SceneEntity[],
@@ -223,6 +236,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.scene;
         const labels = labelReg && entityRegEntry?.labels;
+        const assistants = getEntityVoiceAssistantsIds(
+          entityReg,
+          scene.entity_id
+        );
         return {
           ...scene,
           name: computeStateName(scene),
@@ -235,6 +252,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           labels: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
+          assistants,
+          assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -242,7 +261,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoizeOne(
-    (localize: LocalizeFunc): DataTableColumnContainer => {
+    (
+      localize: LocalizeFunc,
+      entitiesToCheck?: any[]
+    ): DataTableColumnContainer<SceneItem> => {
       const columns: DataTableColumnContainer<SceneItem> = {
         icon: {
           title: "",
@@ -413,31 +435,12 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             </ha-icon-overflow-menu>
           `,
         },
-        voice_assistants: {
-          title: localize(
-            "ui.panel.config.scene.picker.headers.voice_assistants"
-          ),
-          type: "icon",
-          defaultHidden: true,
-          minWidth: "100px",
-          maxWidth: "100px",
-          template: (scene) => {
-            const exposedToVoiceAssistantIds = getEntityVoiceAssistantsIds(
-              this._entityReg,
-              scene.entity_id
-            );
-            return html` ${exposedToVoiceAssistantIds.length !== 0
-              ? exposedToVoiceAssistantIds.map(
-                  (vaId) =>
-                    html` <voice-assistants-expose-assistant-icon
-                      .assistant=${vaId}
-                      .hass=${this.hass}
-                    >
-                    </voice-assistants-expose-assistant-icon>`
-                )
-              : "—"}`;
-          },
-        },
+        assistants: getAssistantsTableColumn(
+          localize,
+          this.hass,
+          this._availableAssistants,
+          entitiesToCheck
+        ),
       };
 
       return columns;
@@ -600,7 +603,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, scenes)}
         id="entity_id"
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
@@ -1189,13 +1192,19 @@ ${rejected
   private async _duplicate(scene) {
     if (scene.attributes.id) {
       const config = await getSceneConfig(this.hass, scene.attributes.id);
-      showSceneEditor({
-        ...config,
-        id: undefined,
-        name: `${config?.name} (${this.hass.localize(
-          "ui.panel.config.scene.picker.duplicate"
-        )})`,
-      });
+      const entityRegEntry = this._entityReg.find(
+        (reg) => reg.entity_id === scene.entity_id
+      );
+      showSceneEditor(
+        {
+          ...config,
+          id: undefined,
+          name: `${config?.name} (${this.hass.localize(
+            "ui.panel.config.scene.picker.duplicate"
+          )})`,
+        },
+        entityRegEntry?.area_id || undefined
+      );
     }
   }
 

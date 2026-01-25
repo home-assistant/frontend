@@ -1,12 +1,12 @@
-import type { HomeAssistant } from "../types";
-import type { DeviceRegistryEntry } from "./device/device_registry";
+import type { HomeAssistant } from "../../types";
+import type { DeviceRegistryEntry } from "../device/device_registry";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
-} from "./entity/entity_registry";
-import type { RegistryEntry } from "./registry";
+} from "../entity/entity_registry";
+import type { RegistryEntry } from "../registry";
 
-export { subscribeAreaRegistry } from "./ws-area_registry";
+export { subscribeAreaRegistry } from "../ws-area_registry";
 
 export interface AreaRegistryEntry extends RegistryEntry {
   aliases: string[];
