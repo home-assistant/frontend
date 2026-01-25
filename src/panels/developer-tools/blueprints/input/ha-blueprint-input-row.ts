@@ -19,7 +19,6 @@ import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
@@ -102,24 +101,12 @@ export default class HaBlueprintInputRow extends LitElement {
 
     fireEvent(this, "open-sidebar", {
       config: this.input[1],
-      save: (value) => {
-        fireEvent(this, "value-changed", { value });
-      },
-      toggleYamlMode: () => {
-        if (this._yamlMode) {
-          this._switchUiMode();
-        } else {
-          this._switchYamlMode();
-        }
-        this.openSidebar();
-      },
-      close: () => {
-        fireEvent(this, "close-sidebar");
-        this._selected = false;
-      },
-      delete: this._onDelete,
+      save: this._handleChangeEvent.bind(this),
+      toggleYamlMode: this._toggleYamlMode.bind(this),
+      close: this._closeSidebar.bind(this),
+      delete: this._onDelete.bind(this),
       yamlMode: this._yamlMode,
-      rename: this._renameInput,
+      rename: this._renameInput.bind(this),
     } satisfies BlueprintInputSidebarConfig);
     this._selected = true;
 
@@ -246,38 +233,6 @@ export default class HaBlueprintInputRow extends LitElement {
               ></ha-svg-icon>
             </ha-list-item>
           </ha-button-menu>
-
-          <div class="card-content">
-            ${this._warnings
-              ? html`<ha-alert
-                  alert-type="warning"
-                  .title=${this.hass.localize(
-                    "ui.errors.config.editor_not_supported"
-                  )}
-                >
-                  ${this._warnings!.length > 0 &&
-                  this._warnings![0] !== undefined
-                    ? html` <ul>
-                        ${this._warnings!.map(
-                          (warning) => html`<li>${warning}</li>`
-                        )}
-                      </ul>`
-                    : ""}
-                  ${this.hass.localize(
-                    "ui.errors.config.edit_in_yaml_supported"
-                  )}
-                </ha-alert>`
-              : ""}
-            <ha-blueprint-input-editor
-              @ui-mode-not-available=${this._handleUiModeNotAvailable}
-              @value-changed=${this._handleChangeEvent}
-              .yamlMode=${this._yamlMode}
-              .disabled=${this.disabled}
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .input=${this.input[1]}
-            ></ha-blueprint-input-editor>
-          </div>
         </ha-automation-row>
         <div
           class="testing ${classMap({
@@ -298,24 +253,24 @@ export default class HaBlueprintInputRow extends LitElement {
     `;
   }
 
-  private _handleUiModeNotAvailable(ev: CustomEvent) {
-    // Prevent possible parent action-row from switching to yamlMode
-    ev.stopPropagation();
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
-    if (!this._yamlMode) {
-      this._yamlMode = true;
-    }
+  private _handleChangeEvent(newValue: BlueprintInput | BlueprintInputSection) {
+    fireEvent(this, "value-changed", {
+      value: [this.input[0], newValue],
+    });
   }
 
-  private _handleChangeEvent(ev: CustomEvent) {
-    ev.stopPropagation();
-    if (ev.detail.yaml) {
-      this._warnings = undefined;
+  private _toggleYamlMode() {
+    if (this._yamlMode) {
+      this._switchUiMode();
+    } else {
+      this._switchYamlMode();
     }
+    this.openSidebar();
+  }
 
-    fireEvent(this, "value-changed", {
-      value: [this.input[0], ev.detail.value],
-    });
+  private _closeSidebar() {
+    fireEvent(this, "close-sidebar");
+    this._selected = false;
   }
 
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
