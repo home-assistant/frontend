@@ -88,23 +88,20 @@ export default class HaBlueprintInputRow extends LitElement {
     ev?.stopPropagation();
 
     if (this._selected) {
-      fireEvent(this, "request-close-sidebar");
+      this._selected = false;
+      fireEvent(this, "close-sidebar");
       return;
     }
     this.openSidebar();
   }
 
-  public openSidebar(input?: BlueprintInput | BlueprintInputSection): void {
-    if (!input && this.input[1]) {
-      input = this.input[1];
-    }
-
-    if (!input) {
+  public openSidebar(): void {
+    if (!this.input[1]) {
       return;
     }
 
     fireEvent(this, "open-sidebar", {
-      config: input,
+      config: this.input[1],
       save: (value) => {
         fireEvent(this, "value-changed", { value });
       },
@@ -117,11 +114,12 @@ export default class HaBlueprintInputRow extends LitElement {
         this.openSidebar();
       },
       close: () => {
-        fireEvent(this, "request-close-sidebar");
+        fireEvent(this, "close-sidebar");
         this._selected = false;
       },
       delete: this._onDelete,
       yamlMode: this._yamlMode,
+      rename: this._renameInput,
     } satisfies BlueprintInputSidebarConfig);
     this._selected = true;
 
@@ -347,7 +345,7 @@ export default class HaBlueprintInputRow extends LitElement {
         } else {
           this._switchYamlMode();
         }
-        this.expand();
+        this.openSidebar();
         break;
       case 7:
         this._onDelete();
@@ -410,12 +408,6 @@ export default class HaBlueprintInputRow extends LitElement {
     const value = [id, this.input[1]];
     fireEvent(this, "value-changed", {
       value,
-    });
-  }
-
-  public expand() {
-    this.updateComplete.then(() => {
-      this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
   }
 

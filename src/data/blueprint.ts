@@ -243,6 +243,12 @@ export function isValidBlueprint(
   return !("error" in blueprint);
 }
 
+export function isInputSection(
+  input: BlueprintInput | BlueprintInputSection
+): input is BlueprintInputSection {
+  return "input" in input;
+}
+
 export function normalizeBlueprint(blueprint: Blueprint): Blueprint {
   // Normalize data: ensure triggers, actions and conditions are lists
   // Happens when people copy paste their automations into the config

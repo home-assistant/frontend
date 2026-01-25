@@ -9,6 +9,8 @@ import type {
   BlueprintInputSection,
 } from "../../../../data/blueprint";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { query } from "lit/decorators.js";
+import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 
 @customElement("ha-blueprint-input-editor")
 export default class HaBlueprintInputEditor extends LitElement {
@@ -24,6 +26,9 @@ export default class HaBlueprintInputEditor extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public yamlMode = false;
+
+  @query("ha-yaml-editor")
+  public yamlEditor?: HaYamlEditor;
 
   private _inputIsSection(x: any): x is BlueprintInputSection {
     return "input" in x;

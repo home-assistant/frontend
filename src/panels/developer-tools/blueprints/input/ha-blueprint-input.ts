@@ -161,7 +161,7 @@ export class HaBlueprintInput extends LitElement {
         "ha-blueprint-input-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.expand();
+        row.openSidebar();
         row.scrollIntoView();
         row.focus();
       });

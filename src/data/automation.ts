@@ -661,6 +661,7 @@ export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface BlueprintInputSidebarConfig extends BaseSidebarConfig {
+  rename: () => void;
   save: (value: BlueprintInput | BlueprintInputSection) => void;
   config: BlueprintInput | BlueprintInputSection;
   toggleYamlMode: () => void;

@@ -9538,6 +9538,7 @@
               "abandon_changes_title": "You have unsaved changes",
               "abandon_changes_text": "Picking a new blueprint will cause your changes to be lost.",
               "abandon_changes_confirm_text": "Abandon changes",
+              "reset_text": "You will lose all of the changes you've made so far.",
               "actions": {
                 "delete": "Delete",
                 "duplicate": "Duplicate",
@@ -9558,6 +9559,10 @@
                 "delete_confirm_text": "Do you want to delete this input from your blueprint?",
                 "id": "ID",
                 "change_id": "Change input ID",
+                "editor": {
+                  "single": "Input",
+                  "section": "Input section"
+                },
                 "type": {
                   "new": {
                     "input": "Input",

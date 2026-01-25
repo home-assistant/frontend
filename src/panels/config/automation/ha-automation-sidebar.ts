@@ -14,6 +14,7 @@ import {
   type ScriptFieldSidebarConfig,
   type SidebarConfig,
   type TriggerSidebarConfig,
+  type BlueprintInputSidebarConfig,
 } from "../../../data/automation";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
@@ -23,6 +24,7 @@ import "./sidebar/ha-automation-sidebar-option";
 import "./sidebar/ha-automation-sidebar-script-field";
 import "./sidebar/ha-automation-sidebar-script-field-selector";
 import "./sidebar/ha-automation-sidebar-trigger";
+import "./sidebar/ha-automation-sidebar-blueprint-input";
 
 @customElement("ha-automation-sidebar")
 export default class HaAutomationSidebar extends LitElement {
@@ -71,7 +73,7 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _renderContent() {
     // get config type
-    const type = this._getType();
+    const type = this.getType();
 
     if (type === "trigger") {
       return html`
@@ -166,6 +168,21 @@ export default class HaAutomationSidebar extends LitElement {
         ></ha-automation-sidebar-script-field>
       `;
     }
+    if (type === "blueprint-input") {
+      return html`
+        <ha-automation-sidebar-blueprint-input
+          class="sidebar-content"
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .narrow=${this.narrow}
+          .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this.triggerCloseSidebar}
+        ></ha-automation-sidebar-blueprint-input>
+      `;
+    }
 
     return nothing;
   }
@@ -199,7 +216,7 @@ export default class HaAutomationSidebar extends LitElement {
     `;
   }
 
-  private _getType() {
+  public getType() {
     if (
       (this.config as TriggerSidebarConfig)?.config &&
       (isTrigger((this.config as TriggerSidebarConfig)?.config) ||
@@ -226,6 +243,12 @@ export default class HaAutomationSidebar extends LitElement {
 
     if ((this.config as ActionSidebarConfig)?.config.action) {
       return "action";
+    }
+
+    // Blueprint inputs are difficult to detect - every field is optional,
+    // so we can't test for any in particular
+    if ((this.config as BlueprintInputSidebarConfig)?.config) {
+      return "blueprint-input";
     }
 
     return undefined;

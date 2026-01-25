@@ -130,15 +130,28 @@ class HaPanelDevBlueprints extends LitElement {
         ...ev.detail.value,
         metadata: {
           ...this._selectedBlueprint.metadata,
-          input: ev.detail.value.metadata.input,
+          ...ev.detail.value.metadata,
+          input: {
+            ...this._selectedBlueprint.metadata.input,
+            ...ev.detail.value.metadata.input,
+          },
         },
         blueprint: {
           ...this._selectedBlueprint.metadata,
-          input: ev.detail.value.metadata.input,
+          ...ev.detail.value.metadata,
+          input: {
+            ...this._selectedBlueprint.metadata.input,
+            ...ev.detail.value.metadata.input,
+          },
         },
       };
     }
 
+    this._dirty = true;
+  }
+
+  private _onBlueprintPathChanged(ev: CustomEvent<{ value: string }>) {
+    this._selectedBlueprintPath = ev.detail.value;
     this._dirty = true;
   }
 
@@ -283,7 +296,7 @@ class HaPanelDevBlueprints extends LitElement {
   }
 
   private _renderContent() {
-    if (!this._selectedBlueprint || !this._originalBlueprintPath) {
+    if (!this._selectedBlueprint) {
       return html`
         ${this.hass.localize(
           "ui.panel.developer-tools.tabs.blueprints.editor.none_selected"
@@ -305,10 +318,11 @@ class HaPanelDevBlueprints extends LitElement {
         .narrow=${this.narrow}
         .isWide=${!this.narrow}
         .blueprint=${this._selectedBlueprint}
-        .blueprintPath=${this._originalBlueprintPath}
+        .blueprintPath=${this._selectedBlueprintPath ?? ""}
         .domain=${this._selectedBlueprintDomain}
         .dirty=${this._dirty}
         @value-changed=${this._onBlueprintContentChanged}
+        @path-changed=${this._onBlueprintPathChanged}
         @reset=${this._resetBlueprint}
         @resize-sidebar=${this._resizeSidebar}
         @open-sidebar=${this._openSidebar}

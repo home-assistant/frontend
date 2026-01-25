@@ -1,7 +1,7 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, css, nothing, LitElement } from "lit";
 import { mdiHelpCircle } from "@mdi/js";
-import { property, state, customElement } from "lit/decorators";
+import { property, state, customElement, query } from "lit/decorators";
 import "../../../layouts/hass-subpage";
 import { classMap } from "lit/directives/class-map";
 import type { HomeAssistant, Route } from "../../../types";
@@ -25,13 +25,14 @@ import { haStyle } from "../../../resources/styles";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { manualEditorStyles } from "../../config/automation/styles";
 import type { SidebarConfig } from "../../../data/automation";
-import "../../../components/ha-button";
 import { SIDEBAR_DEFAULT_WIDTH } from "../../config/automation/manual-automation-editor";
+import { storage } from "../../../common/decorators/storage";
+import "../../../components/ha-button";
 import "../../config/script/manual-script-editor";
 import "./input/ha-blueprint-input";
 import "./blueprint-metadata-editor";
 import "./double-sidebar-padding-fix";
-import { storage } from "../../../common/decorators/storage";
+import type HaAutomationSidebar from "../../config/automation/ha-automation-sidebar";
 
 @customElement("ha-blueprint-editor")
 export class HaBlueprintEditor extends PreventUnsavedMixin(
@@ -55,7 +56,11 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
 
   @state() private _sidebarConfig?: SidebarConfig;
 
+  @state() private _manualEditorSidebarIsOpen = false;
+
   @state() private _sidebarKey = 0;
+
+  @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
   @storage({
     key: "automation-sidebar-width",
@@ -65,6 +70,16 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
   private _sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
 
   private _prevSidebarWidthPx?: number;
+
+  protected firstUpdated(changedProps: PropertyValues): void {
+    super.firstUpdated(changedProps);
+
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
+    fireEvent(this, "resize-sidebar", `${this._sidebarWidthPx}px`);
+  }
 
   protected _valueChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
@@ -92,7 +107,12 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
   }
 
   private async _resetBlueprint() {
-    const shouldReset = await showConfirmationDialog(this, {});
+    const shouldReset = await showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.developer-tools.tabs.blueprints.editor.reset_text"
+      ),
+      destructive: true,
+    });
     if (!shouldReset) {
       return;
     }
@@ -108,36 +128,58 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
       return;
     }
 
-    const blueprint = {
-      ...this.blueprint,
-      metadata: {
-        ...this.blueprint.metadata,
-        domain: this.domain,
-        name: ev.detail.value.name,
-        author: ev.detail.value.author,
-        description: ev.detail.value.description,
-        homeassistant: {
-          min_version: ev.detail.value.min_version,
-        },
-      },
-      blueprint: {
-        ...this.blueprint.metadata,
-        domain: this.domain,
-        name: ev.detail.value.name,
-        author: ev.detail.value.author,
-        description: ev.detail.value.description,
-        homeassistant: {
-          min_version: ev.detail.value.min_version,
-        },
+    const metadata = {
+      ...this.blueprint.metadata,
+      domain: this.domain,
+      name: ev.detail.value.name,
+      author: ev.detail.value.author,
+      description: ev.detail.value.description,
+      homeassistant: {
+        min_version: ev.detail.value.min_version,
       },
     };
+    const blueprint = {
+      ...this.blueprint,
+      metadata,
+      blueprint: metadata,
+    };
 
+    if (
+      !this.blueprintPath ||
+      this.blueprintPath === this.blueprint.metadata.name
+    ) {
+      fireEvent(this, "path-changed", { value: ev.detail.value.name });
+    } else {
+      fireEvent(this, "path-changed", { value: ev.detail.value.path });
+    }
     fireEvent(this, "value-changed", { value: blueprint });
-    fireEvent(this, "path-changed", { value: ev.detail.value.path });
   }
 
-  protected _resizeSidebar(ev: CustomEvent<string>) {
-    this.style.setProperty("--sidebar-dynamic-width", ev.detail);
+  protected _resizeSidebar(ev: CustomEvent) {
+    ev.stopPropagation();
+
+    if (typeof ev.detail === "string") {
+      this.style.setProperty("--sidebar-dynamic-width", ev.detail);
+      return;
+    }
+
+    const delta = ev.detail.deltaInPx as number;
+
+    // set initial resize width to add / reduce delta from it
+    if (!this._prevSidebarWidthPx) {
+      this._prevSidebarWidthPx =
+        this._sidebarElement?.clientWidth || SIDEBAR_DEFAULT_WIDTH;
+    }
+
+    const widthPx = delta + this._prevSidebarWidthPx;
+
+    this._sidebarWidthPx = widthPx;
+
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
+    fireEvent(this, "resize-sidebar", `${this._sidebarWidthPx}px`);
   }
 
   private _stopResizeSidebar(ev) {
@@ -155,13 +197,26 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
     );
   }
 
-  protected async _openSidebar(ev: CustomEvent<SidebarConfig>) {
+  protected async _openBlueprintSidebar(ev: CustomEvent<SidebarConfig>) {
+    // deselect previous selected row
+    this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+
+    // be sure the sidebar editor is recreated
     this._sidebarKey++;
+
+    await this._sidebarElement?.updateComplete;
+    this._sidebarElement?.focus();
   }
 
-  protected async _closeSidebar() {
+  protected _openManualEditorSidebar() {
+    this._closeSidebar();
+    this._manualEditorSidebarIsOpen = true;
+  }
+
+  protected _closeSidebar() {
     this._sidebarConfig = undefined;
+    this._manualEditorSidebarIsOpen = false;
   }
 
   private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
@@ -191,7 +246,9 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
     return html`
       <div
         class=${classMap({
-          "has-sidebar": this._sidebarConfig && !this.narrow,
+          "has-sidebar":
+            (this._manualEditorSidebarIsOpen || this._sidebarConfig) &&
+            !this.narrow,
           "editor-content": true,
         })}
       >
@@ -231,12 +288,17 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
           <ha-blueprint-input
             role="region"
             aria-labelledby="inputs-heading"
+            .hass=${this.hass}
             .inputs=${Object.entries(this.blueprint.metadata?.input || {})}
             @value-changed=${this._inputChanged}
-            .hass=${this.hass}
+            @resize-sidebar=${this._resizeSidebar}
+            @open-sidebar=${this._openBlueprintSidebar}
+            @close-sidebar=${this._closeSidebar}
           ></ha-blueprint-input>
 
-          <double-sidebar-padding-fix .hasSidebar=${!!this._sidebarConfig}>
+          <double-sidebar-padding-fix
+            .fixSidebar=${this._manualEditorSidebarIsOpen}
+          >
             ${this.domain === "automation"
               ? html`
                   <manual-automation-editor
@@ -246,7 +308,7 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
                     .config=${this.blueprint}
                     @value-changed=${this._valueChanged}
                     @resize-sidebar=${this._resizeSidebar}
-                    @open-sidebar=${this._openSidebar}
+                    @open-sidebar=${this._openManualEditorSidebar}
                     @close-sidebar=${this._closeSidebar}
                   ></manual-automation-editor>
                 `
@@ -258,7 +320,7 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
                     .config=${this.blueprint}
                     @value-changed=${this._valueChanged}
                     @resize-sidebar=${this._resizeSidebar}
-                    @open-sidebar=${this._openSidebar}
+                    @open-sidebar=${this._openManualEditorSidebar}
                     @close-sidebar=${this._closeSidebar}
                   ></manual-script-editor>
                 `}
@@ -347,13 +409,6 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
         manual-automation-editor,
         manual-script-editor {
           margin-top: calc(var(--ha-space-12) * -1);
-        }
-
-        .has-sidebar manual-automation-editor,
-        .has-sidebar manual-script-editor {
-          margin-right: calc(
-            var(--sidebar-width) * -1 + var(--sidebar-gap) * -1
-          );
         }
 
         .actions {
