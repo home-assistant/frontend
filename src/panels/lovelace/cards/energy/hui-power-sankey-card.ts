@@ -28,7 +28,7 @@ const DEFAULT_CONFIG: Partial<PowerSankeyCardConfig> = {
 };
 
 // Minimum power threshold in watts (W) to display a device node
-const MIN_POWER_THRESHOLD = 10;
+const MIN_POWER_THRESHOLD = 1;
 
 interface PowerData {
   solar: number;

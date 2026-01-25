@@ -1,16 +1,16 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiDotsVertical } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import "./ha-md-button-menu";
+import "./ha-dropdown";
+import "./ha-dropdown-item";
 import "./ha-icon-button";
+import "./ha-md-divider";
 import "./ha-svg-icon";
 import "./ha-tooltip";
-import "./ha-md-menu-item";
-import "./ha-md-divider";
 
 export interface IconOverflowMenuItem {
   [key: string]: any;
@@ -39,10 +39,7 @@ export class HaIconOverflowMenu extends LitElement {
     return html`
       ${this.narrow
         ? html` <!-- Collapsed representation for small screens -->
-            <ha-md-button-menu
-              @click=${this._handleIconOverflowMenuOpened}
-              positioning="popover"
-            >
+            <ha-dropdown @wa-show=${this._handleIconOverflowMenuOpened}>
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.overflow_menu")}
                 .path=${mdiDotsVertical}
@@ -51,24 +48,17 @@ export class HaIconOverflowMenu extends LitElement {
 
               ${this.items.map((item) =>
                 item.divider
-                  ? html`<ha-md-divider
-                      role="separator"
-                      tabindex="-1"
-                    ></ha-md-divider>`
-                  : html`<ha-md-menu-item
+                  ? html`<wa-divider></wa-divider>`
+                  : html`<ha-dropdown-item
                       ?disabled=${item.disabled}
-                      .clickAction=${item.action}
-                      class=${classMap({ warning: Boolean(item.warning) })}
+                      @click=${item.action}
+                      variant=${item.warning ? "danger" : "default"}
                     >
-                      <ha-svg-icon
-                        slot="start"
-                        class=${classMap({ warning: Boolean(item.warning) })}
-                        .path=${item.path}
-                      ></ha-svg-icon>
+                      <ha-svg-icon slot="icon" .path=${item.path}></ha-svg-icon>
                       ${item.label}
-                    </ha-md-menu-item>`
+                    </ha-dropdown-item>`
               )}
-            </ha-md-button-menu>`
+            </ha-dropdown>`
         : html`
             <!-- Icon representation for big screens -->
             ${this.items.map((item) =>

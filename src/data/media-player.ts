@@ -423,12 +423,17 @@ export const formatMediaTime = (seconds: number | undefined): string => {
     return "";
   }
 
-  let secondsString = new Date(seconds * 1000).toISOString();
-  secondsString =
-    seconds > 3600
-      ? secondsString.substring(11, 16)
-      : secondsString.substring(14, 19);
-  return secondsString.replace(/^0+/, "").padStart(4, "0");
+  const totalSeconds = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
+  const pad = (value: number) => value.toString().padStart(2, "0");
+
+  if (hours > 0) {
+    return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
+  }
+
+  return `${pad(minutes)}:${pad(secs)}`;
 };
 
 export const cleanupMediaTitle = (title?: string): string | undefined => {

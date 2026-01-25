@@ -59,11 +59,8 @@ export interface PickerComboBoxItem {
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 const PADDING_ID = "___padding___";
 
-const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (
-  item
-) => html`
-  <ha-combo-box-item type="button" compact>
-    ${item.icon
+export const DEFAULT_ROW_RENDERER_CONTENT = (item: PickerComboBoxItem) =>
+  html` ${item.icon
       ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
       : item.icon_path
         ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
@@ -71,9 +68,12 @@ const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (
     <span slot="headline">${item.primary}</span>
     ${item.secondary
       ? html`<span slot="supporting-text">${item.secondary}</span>`
-      : nothing}
-  </ha-combo-box-item>
-`;
+      : nothing}`;
+
+const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (item) =>
+  html`<ha-combo-box-item type="button" compact>
+    ${DEFAULT_ROW_RENDERER_CONTENT(item)}
+  </ha-combo-box-item>`;
 
 export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
   search: string,
