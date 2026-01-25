@@ -24,14 +24,21 @@ class HaPickDeviceDashboardRow extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _dashboards?: LovelaceDashboard[];
+  @state() private _devicePanel?: string | null;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._getDashboards();
+    this._devicePanel = JSON.parse(
+      localStorage.getItem("devicePanel") || "null"
+    );
   }
 
   protected render(): TemplateResult {
-    const value = this.hass.userData?.default_panel || USE_SYSTEM_VALUE;
+    const value =
+      this._devicePanel ??
+      this.hass.userData?.default_panel ??
+      USE_SYSTEM_VALUE;
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
@@ -133,6 +140,7 @@ class HaPickDeviceDashboardRow extends LitElement {
       return;
     }
     localStorage.setItem("devicePanel", JSON.stringify(urlPath));
+    this._devicePanel = urlPath;
   }
 
   static get styles(): CSSResultGroup {
