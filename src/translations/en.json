@@ -764,6 +764,11 @@
       "country-picker": {
         "country": "Country"
       },
+      "currency-picker": {
+        "currency": "Currency",
+        "no_match": "No currencies found for {term}",
+        "no_currencies": "No currencies available"
+      },
       "timezone-picker": {
         "time_zone": "Time zone",
         "no_match": "No time zones found for {term}",

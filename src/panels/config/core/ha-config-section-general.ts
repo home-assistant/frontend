@@ -200,7 +200,7 @@ class HaConfigSectionGeneral extends LitElement {
               </div>
               <div>
                 <ha-currency-picker
-                  .language=${this.hass.locale.language}
+                  .hass=${this.hass}
                   .label=${this.hass.localize(
                     "ui.panel.config.core.section.core.core_config.currency"
                   )}
@@ -208,8 +208,7 @@ class HaConfigSectionGeneral extends LitElement {
                   .disabled=${disabled}
                   .value=${this._currency}
                   @value-changed=${this._handleValueChanged}
-                >
-                </ha-currency-picker>
+                ></ha-currency-picker>
                 <a
                   href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
                   target="_blank"
