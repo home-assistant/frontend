@@ -421,7 +421,7 @@ export class HaNavigationPicker extends LitElement {
         id: path,
         primary,
         secondary: path,
-        icon: mdiDevices,
+        icon_path: mdiDevices,
         sorting_label: createSortingLabel(
           RELATED_SORT_PREFIX.device,
           primary,
@@ -442,7 +442,8 @@ export class HaNavigationPicker extends LitElement {
         id: path,
         primary,
         secondary: path,
-        icon: area?.icon ?? mdiTextureBox,
+        icon: area?.icon ?? undefined,
+        icon_path: area?.icon ? undefined : mdiTextureBox,
         sorting_label: createSortingLabel(
           RELATED_SORT_PREFIX.area,
           primary,
