@@ -60,6 +60,10 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
           this.editor?.yamlEditor?.setValue(this.config.config);
         }
       }
+
+      if (changedProperties.get("config")?.id !== this.config?.id) {
+        this._path = [];
+      }
     }
   }
 
@@ -185,7 +189,7 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
         </ha-dropdown-item>
 
         <div class="breadcrumbs">
-          ${this._path
+          ${this._path && this._path.length > 0
             ? join(
                 [this.config.id, ...this._path].map(
                   (pathPart, i) => html`
