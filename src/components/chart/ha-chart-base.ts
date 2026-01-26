@@ -93,13 +93,13 @@ export class HaChartBase extends LitElement {
 
   private _resizeAnimationDuration?: number;
 
-  private _deferResize = false;
+  private _suspendResize = false;
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
       if (this.chart) {
-        if (this._deferResize) {
+        if (this._suspendResize) {
           this._shouldResizeChart = true;
           return;
         }
@@ -193,8 +193,8 @@ export class HaChartBase extends LitElement {
       const event = ev as HASSDomEvent<
         HASSDomEvents["hass-sidebar-transition"]
       >;
-      this._deferResize = Boolean(event.detail?.active);
-      if (!this._deferResize) {
+      this._suspendResize = Boolean(event.detail?.active);
+      if (!this._suspendResize) {
         this._resizeChartIfNeeded();
       }
     };
@@ -1019,6 +1019,9 @@ export class HaChartBase extends LitElement {
     if (!this.chart || !this._shouldResizeChart) {
       return;
     }
+    if (this._suspendResize) {
+      return;
+    }
     if (!this.chart.getZr().animation.isFinished()) {
       return;
     }
@@ -1053,11 +1056,13 @@ export class HaChartBase extends LitElement {
       display: block;
       position: relative;
       letter-spacing: normal;
+      overflow: visible;
     }
     .container {
       display: flex;
       flex-direction: column;
       position: relative;
+      overflow: visible;
     }
     .container.has-height {
       max-height: var(--chart-max-height, 350px);
