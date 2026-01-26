@@ -39,6 +39,7 @@ import {
 } from "../../cards/hui-area-card";
 import type { AreaCardConfig, AreaCardDisplayType } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -61,6 +62,8 @@ const cardConfigStruct = assign(
     features_position: optional(enums(["bottom", "inline"])),
     aspect_ratio: optional(string()),
     exclude_entities: optional(array(string())),
+    tap_action: optional(actionConfigStruct),
+    image_tap_action: optional(actionConfigStruct),
   })
 );
 
@@ -187,10 +190,37 @@ export class HuiAreaCardEditor
           iconPath: mdiGestureTap,
           schema: [
             {
-              name: "navigation_path",
-              required: false,
-              selector: { navigation: {} },
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  default_action: "none",
+                  actions: ["navigate", "url", "perform-action", "none"],
+                },
+              },
             },
+            ...(displayType !== "compact"
+              ? ([
+                  {
+                    name: "image_tap_action",
+                    selector: {
+                      ui_action: {
+                        default_action:
+                          displayType === "camera" ? "more-info" : "none",
+                        actions:
+                          displayType === "camera"
+                            ? [
+                                "more-info",
+                                "navigate",
+                                "url",
+                                "perform-action",
+                                "none",
+                              ]
+                            : ["navigate", "url", "perform-action", "none"],
+                      },
+                    },
+                  },
+                ] as const satisfies readonly HaFormSchema[])
+              : []),
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
@@ -390,7 +420,10 @@ export class HuiAreaCardEditor
 
     const vertical = this._config.vertical && displayType === "compact";
 
-    const featuresSchema = this._featuresSchema(this.hass.localize, vertical);
+    const featuresSchema = this._featuresSchema(
+      this.hass.localize,
+      Boolean(vertical)
+    );
 
     const data = {
       camera_view: "auto",
@@ -400,6 +433,14 @@ export class HuiAreaCardEditor
       content_layout: vertical ? "vertical" : "horizontal",
       ...this._config,
     };
+
+    // Backwards compatibility: convert navigation_path to tap_action for display
+    if (data.navigation_path && !data.tap_action) {
+      data.tap_action = {
+        action: "navigate",
+        navigation_path: data.navigation_path,
+      };
+    }
 
     // Default features position to bottom and force it to bottom in vertical mode
     if (!data.features_position || vertical) {
@@ -459,8 +500,24 @@ export class HuiAreaCardEditor
       ...newConfig,
     };
 
+    // Clean up navigation_path if tap_action is set
+    if (config.tap_action && config.navigation_path) {
+      delete config.navigation_path;
+    }
+
     if (config.display_type !== "camera") {
       delete config.camera_view;
+    }
+
+    // Clean up image_tap_action if compact display type (no image area)
+    // or if it's more-info but not in camera mode (no entity to show)
+    if (
+      config.image_tap_action &&
+      (config.display_type === "compact" ||
+        (config.display_type !== "camera" &&
+          config.image_tap_action.action === "more-info"))
+    ) {
+      delete config.image_tap_action;
     }
 
     // Convert content_layout to vertical
@@ -545,12 +602,13 @@ export class HuiAreaCardEditor
       case "camera_view":
       case "content":
       case "interactions":
+      case "tap_action":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
-      case "navigation_path":
+      case "image_tap_action":
         return this.hass!.localize(
-          "ui.panel.lovelace.editor.action-editor.navigation_path"
+          `ui.panel.lovelace.editor.card.area.${schema.name}`
         );
       case "features_position":
         return this.hass!.localize(

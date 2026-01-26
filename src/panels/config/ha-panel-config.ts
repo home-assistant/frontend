@@ -57,7 +57,6 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "ha-refresh-cloud-status": undefined;
-    "ha-refresh-supervisor": undefined;
   }
 }
 
