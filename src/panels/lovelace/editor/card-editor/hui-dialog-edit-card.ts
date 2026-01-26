@@ -1,6 +1,6 @@
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -36,6 +36,7 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import { DialogEnlargeMixin } from "../../../../mixins/dialog-enlarge-mixin";
 
 declare global {
   // for fire event
@@ -50,12 +51,10 @@ declare global {
 
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard
-  extends LitElement
+  extends DialogEnlargeMixin(LitElement)
   implements HassDialog<EditCardDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean, reflect: true }) public large = false;
 
   @state() private _params?: EditCardDialogParams;
 
@@ -88,7 +87,6 @@ export class HuiDialogEditCard
     this._cardConfig = params.cardConfig;
     this._dirty = Boolean(this._params.isNew);
 
-    this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
@@ -172,7 +170,7 @@ export class HuiDialogEditCard
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" style="display: block;" @click=${this._enlarge}
+          <span slot="title" class="title-enlargeable" @click=${this.enlarge}
             >${heading}</span
           >
           ${this._documentationURL !== undefined
@@ -266,10 +264,6 @@ export class HuiDialogEditCard
         </div>
       </ha-dialog>
     `;
-  }
-
-  private _enlarge() {
-    this.large = !this.large;
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -373,8 +367,9 @@ export class HuiDialogEditCard
     }
   }
 
-  static get styles(): CSSResultGroup {
+  static get styles() {
     return [
+      ...super.styles,
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
@@ -405,12 +400,6 @@ export class HuiDialogEditCard
           .content {
             width: 100%;
             max-width: 100%;
-          }
-        }
-
-        @media all and (min-width: 451px) and (min-height: 501px) {
-          :host([large]) .content {
-            max-width: none;
           }
         }
 
