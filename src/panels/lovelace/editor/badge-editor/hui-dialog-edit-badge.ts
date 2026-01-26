@@ -1,6 +1,6 @@
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -37,6 +37,7 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-badge-element-editor";
 import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
 import type { EditBadgeDialogParams } from "./show-edit-badge-dialog";
+import { DialogEnlargeMixin } from "../../../../mixins/dialog-enlarge-mixin";
 
 declare global {
   // for fire event
@@ -51,12 +52,10 @@ declare global {
 
 @customElement("hui-dialog-edit-badge")
 export class HuiDialogEditBadge
-  extends LitElement
+  extends DialogEnlargeMixin(LitElement)
   implements HassDialog<EditBadgeDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean, reflect: true }) public large = false;
 
   @state() private _params?: EditBadgeDialogParams;
 
@@ -105,7 +104,6 @@ export class HuiDialogEditBadge
       this._badgeConfig = badge != null ? ensureBadgeConfig(badge) : badge;
     }
 
-    this.large = false;
     if (this._badgeConfig && !Object.isFrozen(this._badgeConfig)) {
       this._badgeConfig = deepFreeze(this._badgeConfig);
     }
@@ -212,7 +210,7 @@ export class HuiDialogEditBadge
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" style="display: block;" @click=${this._enlarge}
+          <span slot="title" class="title-enlargeable" @click=${this.enlarge}
             >${heading}</span
           >
           ${this._documentationURL !== undefined
@@ -298,10 +296,6 @@ export class HuiDialogEditBadge
           : nothing}
       </ha-dialog>
     `;
-  }
-
-  private _enlarge() {
-    this.large = !this.large;
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -397,8 +391,9 @@ export class HuiDialogEditBadge
     this.closeDialog();
   }
 
-  static get styles(): CSSResultGroup {
+  static get styles() {
     return [
+      ...super.styles,
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
@@ -429,12 +424,6 @@ export class HuiDialogEditBadge
           .content {
             width: 100%;
             max-width: 100%;
-          }
-        }
-
-        @media all and (min-width: 451px) and (min-height: 501px) {
-          :host([large]) .content {
-            max-width: none;
           }
         }
 
