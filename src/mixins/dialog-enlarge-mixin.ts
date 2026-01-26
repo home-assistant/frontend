@@ -23,7 +23,7 @@ export const DialogEnlargeMixin = <T extends Constructor<LitElement>>(
     protected static getEnlargeConfig(): DialogEnlargeConfig {
       return {
         enlargeableElement: ".content",
-        minWidth: 451, 
+        minWidth: 451,
         style: "max-width: none;",
       };
     }
