@@ -129,9 +129,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     window.location.hash.substring(1)
   );
 
-  @state() private _searchParams = new URLSearchParams(
-    window.location.search
-  );
+  @state() private _searchParams = new URLSearchParams(window.location.search);
 
   @state() private _filter: string = history.state?.filter || "";
 
