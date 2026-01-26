@@ -17,12 +17,14 @@ import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import {
+  DialogEnlargeMixin,
+  type DialogEnlargeConfig,
+} from "../../../mixins/dialog-enlarge-mixin";
 
 @customElement("ha-dialog-import-blueprint")
-class DialogImportBlueprint extends LitElement {
+class DialogImportBlueprint extends DialogEnlargeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean, reflect: true }) public large = false;
 
   @state() private _params?;
 
@@ -38,11 +40,18 @@ class DialogImportBlueprint extends LitElement {
 
   @query("#input") private _input?: HaTextField;
 
+  protected static getEnlargeConfig(): DialogEnlargeConfig {
+    return {
+      enlargeableElement: "ha-dialog",
+      minWidth: 667, // (default width=600px) / 0.9
+      style: "--mdc-dialog-min-width: 90vw; --mdc-dialog-max-width: 90vw;",
+    };
+  }
+
   public showDialog(params): void {
     this._params = params;
     this._error = undefined;
     this._url = this._params.url;
-    this.large = false;
   }
 
   public closeDialog(): void {
@@ -67,9 +76,9 @@ class DialogImportBlueprint extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" style="display: block;" @click=${this._enlarge}>
-            ${heading}
-          </span>
+          <span slot="title" class="title-enlargeable" @click=${this.enlarge}
+            >${heading}</span
+          >
         </ha-dialog-header>
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -210,10 +219,6 @@ class DialogImportBlueprint extends LitElement {
     `;
   }
 
-  private _enlarge() {
-    this.large = !this.large;
-  }
-
   private async _import() {
     this._url = undefined;
     this._importing = true;
@@ -258,32 +263,31 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static styles = [
-    haStyleDialog,
-    css`
-      p {
-        margin-top: 0;
-        margin-bottom: 8px;
-      }
-      ha-textfield {
-        display: block;
-        margin-top: 24px;
-      }
-      a {
-        text-decoration: none;
-      }
-      a ha-svg-icon {
-        --mdc-icon-size: 16px;
-      }
-      :host([large]) ha-dialog {
-        --mdc-dialog-min-width: 90vw;
-        --mdc-dialog-max-width: 90vw;
-      }
-      ha-expansion-panel {
-        --expansion-panel-content-padding: 0px;
-      }
-    `,
-  ];
+  static get styles() {
+    return [
+      ...super.styles,
+      haStyleDialog,
+      css`
+        p {
+          margin-top: 0;
+          margin-bottom: 8px;
+        }
+        ha-textfield {
+          display: block;
+          margin-top: 24px;
+        }
+        a {
+          text-decoration: none;
+        }
+        a ha-svg-icon {
+          --mdc-icon-size: 16px;
+        }
+        ha-expansion-panel {
+          --expansion-panel-content-padding: 0px;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
