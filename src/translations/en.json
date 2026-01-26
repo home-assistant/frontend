@@ -1335,7 +1335,11 @@
         "error": "Fail!"
       },
       "navigation-picker": {
-        "add_custom_path": "Add custom path"
+        "add_custom_path": "Add custom path",
+        "dashboards": "[%key:ui::panel::config::dashboard::dashboards::main%]",
+        "related": "Related",
+        "views": "Views",
+        "other_routes": "Other routes"
       }
     },
     "dialogs": {
@@ -7725,7 +7729,8 @@
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
-              "untracked": "untracked"
+              "untracked": "untracked",
+              "other": "Other"
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",

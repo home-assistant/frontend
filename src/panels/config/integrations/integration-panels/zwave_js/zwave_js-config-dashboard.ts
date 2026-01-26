@@ -56,6 +56,7 @@ import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-no
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
+import { formatHomeIdAsHex } from "./functions";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -271,7 +272,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           "ui.panel.config.zwave_js.dashboard.home_id"
                         )}:
                       </span>
-                      <span>${this._network.controller.home_id}</span>
+                      <span
+                        >${formatHomeIdAsHex(
+                          this._network.controller.home_id
+                        )}</span
+                      >
                     </div>
                     <div class="row">
                       <span>

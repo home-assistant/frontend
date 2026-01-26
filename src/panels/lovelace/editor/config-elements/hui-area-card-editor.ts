@@ -40,6 +40,7 @@ import {
 import type { AreaCardConfig, AreaCardDisplayType } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -197,6 +198,7 @@ export class HuiAreaCardEditor
                   actions: ["navigate", "url", "perform-action", "none"],
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             ...(displayType !== "compact"
               ? ([
@@ -218,6 +220,7 @@ export class HuiAreaCardEditor
                             : ["navigate", "url", "perform-action", "none"],
                       },
                     },
+                    context: ACTION_RELATED_CONTEXT,
                   },
                 ] as const satisfies readonly HaFormSchema[])
               : []),
