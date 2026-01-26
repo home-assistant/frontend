@@ -361,6 +361,7 @@ export class HaCountryPicker extends LitElement {
         .value=${value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
+        .required=${this.required}
         .helper=${this.helper}
         .getItems=${this._getItems}
         .searchKeys=${SEARCH_KEYS}
