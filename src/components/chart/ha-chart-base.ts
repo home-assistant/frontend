@@ -93,16 +93,10 @@ export class HaChartBase extends LitElement {
 
   private _resizeAnimationDuration?: number;
 
-  private _deferResize = false;
-
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
       if (this.chart) {
-        if (this._deferResize) {
-          this._shouldResizeChart = true;
-          return;
-        }
         if (!this.chart.getZr().animation.isFinished()) {
           this._shouldResizeChart = true;
         } else {
@@ -115,6 +109,8 @@ export class HaChartBase extends LitElement {
   private _loading = false;
 
   private _reducedMotion = false;
+
+  private _sidebarTransitionActive = false;
 
   private _listeners: (() => void)[] = [];
 
@@ -140,7 +136,7 @@ export class HaChartBase extends LitElement {
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
         if (this._reducedMotion !== matches) {
           this._reducedMotion = matches;
-          this._setChartOptions({ animation: !this._reducedMotion });
+          this._setAnimationState();
         }
       })
     );
@@ -193,10 +189,8 @@ export class HaChartBase extends LitElement {
       const event = ev as HASSDomEvent<
         HASSDomEvents["hass-sidebar-transition"]
       >;
-      this._deferResize = Boolean(event.detail?.active);
-      if (!this._deferResize) {
-        this._resizeChartIfNeeded();
-      }
+      this._sidebarTransitionActive = Boolean(event.detail?.active);
+      this._setAnimationState();
     };
     window.addEventListener("hass-sidebar-transition", handleSidebarTransition);
     this._listeners.push(() =>
@@ -616,8 +610,8 @@ export class HaChartBase extends LitElement {
       );
     }
     const options = {
-      animation: !this._reducedMotion,
-      animationDuration: 500,
+      animation: this._shouldAnimate(),
+      animationDuration: this._shouldAnimate() ? 500 : 0,
       darkMode: this._themes.darkMode ?? false,
       aria: { show: true },
       dataZoom: this._getDataZoomConfig(),
@@ -886,6 +880,18 @@ export class HaChartBase extends LitElement {
 
   private _getDefaultHeight() {
     return Math.max(this.clientWidth / 2, 200);
+  }
+
+  private _shouldAnimate() {
+    return !this._reducedMotion && !this._sidebarTransitionActive;
+  }
+
+  private _setAnimationState() {
+    const shouldAnimate = this._shouldAnimate();
+    this._setChartOptions({
+      animation: shouldAnimate,
+      animationDuration: shouldAnimate ? 500 : 0,
+    });
   }
 
   private _setChartOptions(options: ECOption) {
