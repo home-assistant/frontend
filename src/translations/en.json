@@ -764,6 +764,11 @@
       "country-picker": {
         "country": "Country"
       },
+      "timezone-picker": {
+        "time_zone": "Time zone",
+        "no_match": "No time zones found for {term}",
+        "no_timezones": "No time zones available"
+      },
       "pipeline-picker": {
         "pipeline": "Assistant",
         "preferred": "Preferred assistant ({preferred})",
