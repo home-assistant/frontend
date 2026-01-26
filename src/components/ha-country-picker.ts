@@ -11,6 +11,7 @@ import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 const SEARCH_KEYS = [
   { name: "primary", weight: 10 },
+  { name: "secondary", weight: 8 },
   { name: "search_labels.english", weight: 5 },
 ];
 
@@ -287,6 +288,7 @@ export const getCountryOptions = (
     return {
       id: country,
       primary,
+      secondary: country,
       search_labels: {
         english: englishName !== primary ? englishName : null,
       },
