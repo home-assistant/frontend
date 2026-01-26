@@ -5984,6 +5984,8 @@
           "integration": "integration",
           "discovered": "Discovered",
           "discovered_devices": "{count, plural,\n one {# discovered device}\n other {# discovered devices}\n}",
+          "manage_discovered": "Manage discovered devices",
+          "manage_discovered_description": "Ignore or configure previously discovered devices",
           "disabled": "Disabled",
           "available_integrations": "Available integrations",
           "new_flow": "Set up another instance of {integration}",

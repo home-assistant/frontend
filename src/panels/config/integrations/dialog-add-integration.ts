@@ -445,6 +445,7 @@ class AddIntegrationDialog extends LitElement {
         .integration=${integration}
         .flowsInProgress=${flowsInProgress}
         .navigateToResult=${this._navigateToResult}
+        .showManageLink=${this._showDiscovered}
         style=${styleMap({
           minWidth: `${this._width}px`,
           minHeight: `581px`,
@@ -452,7 +453,8 @@ class AddIntegrationDialog extends LitElement {
         @close-dialog=${this.closeDialog}
         @supported-by=${this._handleSupportedByEvent}
         @select-brand=${this._handleSelectBrandEvent}
-      ></ha-domain-integrations>`;
+      ></ha-domain-integrations>
+`;
   }
 
   private _handleSelectBrandEvent(ev: CustomEvent) {
