@@ -1,11 +1,11 @@
 import timezones from "google-timezones-json";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
-import type { HaGenericPicker } from "./ha-generic-picker";
+
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 const SEARCH_KEYS = [
@@ -31,8 +31,6 @@ export class HaTimeZonePicker extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
-
-  @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
 
   private _getTimezoneOptions = memoizeOne(getTimezoneOptions);
 
@@ -61,6 +59,7 @@ export class HaTimeZonePicker extends LitElement {
         .value=${this.value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
+        .required=${this.required}
         .getItems=${this._getItems}
         .searchKeys=${SEARCH_KEYS}
         @value-changed=${this._changed}
