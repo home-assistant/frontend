@@ -1,17 +1,10 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { css, html } from "lit";
-import type {
-  CSSResultGroup,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import type { LitElement, PropertyValues, TemplateResult } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { state } from "lit/decorators";
 import type { Constructor } from "../types";
-
-const stylesArray = (styles?: CSSResultGroup | CSSResultGroup[]) =>
-  styles === undefined ? [] : Array.isArray(styles) ? styles : [styles];
+import { getInheritedStyles } from "./common";
 
 /**
  * Mixin that adds top and bottom fade overlays for scrollable content.
@@ -116,14 +109,8 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
     }
 
     static get styles() {
-      const superCtor = Object.getPrototypeOf(this) as
-        | typeof LitElement
-        | undefined;
-      const inheritedStyles = stylesArray(
-        (superCtor?.styles ?? []) as CSSResultGroup | CSSResultGroup[]
-      );
       return [
-        ...inheritedStyles,
+        ...getInheritedStyles(this),
         css`
           .fade-top,
           .fade-bottom {
