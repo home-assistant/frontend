@@ -5,8 +5,8 @@ import { getInheritedStyles } from "./common";
 
 export interface DialogEnlargeConfig {
   enlargeableElement: string;
-  minWidth: number;
-  style: string;
+  minWidth: number; // media query breakpoint
+  style: string; // CSS style for enlarged element
 }
 
 /**
@@ -23,7 +23,7 @@ export const DialogEnlargeMixin = <T extends Constructor<LitElement>>(
     protected static getEnlargeConfig(): DialogEnlargeConfig {
       return {
         enlargeableElement: ".content",
-        minWidth: 451,
+        minWidth: 451, 
         style: "max-width: none;",
       };
     }
