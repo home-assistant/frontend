@@ -1226,7 +1226,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     ) {
       // represent all entities without unique id
       // (entities present in this.hass.states but not in fullEntitiesContext)
-      // as StateEntities, to this component can treat them the same as the
+      // as StateEntities, so this component can treat them the same as the
       // entities with id
       const entitiesWithoutUniqueId: StateEntity[] = [];
       const regEntityIds = new Set(
