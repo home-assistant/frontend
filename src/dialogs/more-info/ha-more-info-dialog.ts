@@ -73,6 +73,10 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
+import {
+  DialogEnlargeMixin,
+  type DialogEnlargeConfig,
+} from "../../mixins/dialog-enlarge-mixin";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -103,10 +107,10 @@ declare global {
 const DEFAULT_VIEW: View = "info";
 
 @customElement("ha-more-info-dialog")
-export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
+export class MoreInfoDialog extends DialogEnlargeMixin(
+  ScrollableFadeMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean, reflect: true }) public large = false;
 
   @state() private _parentEntityIds: string[] = [];
 
@@ -136,6 +140,14 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     return this._contentElement || null;
   }
 
+  protected static getEnlargeConfig(): DialogEnlargeConfig {
+    return {
+      enlargeableElement: "ha-dialog",
+      minWidth: 645, // (default width=580px) / 0.9
+      style: "--mdc-dialog-min-width: 90vw; --mdc-dialog-max-width: 90vw;",
+    };
+  }
+
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
     if (!this._entityId) {
@@ -147,7 +159,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._currView = params.view || DEFAULT_VIEW;
     this._initialView = params.view || DEFAULT_VIEW;
     this._childView = undefined;
-    this.large = false;
     this._loadEntityRegistryEntry();
   }
 
@@ -438,7 +449,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span slot="title" @click=${this._enlarge} class="title">
+          <span slot="title" @click=${this.enlarge} class="title">
             ${breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
                 ? html`
@@ -707,10 +718,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._entry = ev.detail;
   }
 
-  private _enlarge() {
-    this.large = !this.large;
-  }
-
   private _handleOpened() {
     window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.addEventListener("show-dialog", this._disableEscapeKeyClose);
@@ -790,11 +797,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
           .main-title {
             cursor: default;
-          }
-
-          :host([large]) ha-dialog {
-            --mdc-dialog-min-width: 90vw;
-            --mdc-dialog-max-width: 90vw;
           }
         }
 
