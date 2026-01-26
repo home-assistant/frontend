@@ -8,11 +8,11 @@ import type { HASSDomEvent } from "../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
-    "hass-sidebar-transition": { active: boolean };
+    "hass-layout-transition": { active: boolean; reason?: string };
   }
   interface HTMLElementEventMap {
-    "hass-sidebar-transition": HASSDomEvent<
-      HASSDomEvents["hass-sidebar-transition"]
+    "hass-layout-transition": HASSDomEvent<
+      HASSDomEvents["hass-layout-transition"]
     >;
   }
 }
@@ -34,7 +34,10 @@ export class HaDrawer extends DrawerBase {
       return;
     }
     this._sidebarTransitionActive = true;
-    fireEvent(window, "hass-sidebar-transition", { active: true });
+    fireEvent(window, "hass-layout-transition", {
+      active: true,
+      reason: "sidebar",
+    });
   };
 
   private _handleDrawerTransitionEnd = (ev: TransitionEvent) => {
@@ -42,7 +45,10 @@ export class HaDrawer extends DrawerBase {
       return;
     }
     this._sidebarTransitionActive = false;
-    fireEvent(window, "hass-sidebar-transition", { active: false });
+    fireEvent(window, "hass-layout-transition", {
+      active: false,
+      reason: "sidebar",
+    });
   };
 
   protected createAdapter() {

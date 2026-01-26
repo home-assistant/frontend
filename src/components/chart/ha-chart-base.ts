@@ -189,20 +189,18 @@ export class HaChartBase extends LitElement {
       );
     }
 
-    const handleSidebarTransition: EventListener = (ev) => {
-      const event = ev as HASSDomEvent<
-        HASSDomEvents["hass-sidebar-transition"]
-      >;
+    const handleLayoutTransition: EventListener = (ev) => {
+      const event = ev as HASSDomEvent<HASSDomEvents["hass-layout-transition"]>;
       this._suspendResize = Boolean(event.detail?.active);
       if (!this._suspendResize) {
         this._resizeChartIfNeeded();
       }
     };
-    window.addEventListener("hass-sidebar-transition", handleSidebarTransition);
+    window.addEventListener("hass-layout-transition", handleLayoutTransition);
     this._listeners.push(() =>
       window.removeEventListener(
-        "hass-sidebar-transition",
-        handleSidebarTransition
+        "hass-layout-transition",
+        handleLayoutTransition
       )
     );
   }
