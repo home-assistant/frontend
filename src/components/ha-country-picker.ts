@@ -1,12 +1,18 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import "./ha-list-item";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
+import type { FrontendLocaleData } from "../data/translation";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "search_labels.english", weight: 5 },
+];
 
 export const COUNTRIES = [
   "AD",
@@ -260,9 +266,44 @@ export const COUNTRIES = [
   "ZW",
 ];
 
+export const getCountryOptions = (
+  countries: string[],
+  noSort: boolean,
+  locale?: FrontendLocaleData
+): PickerComboBoxItem[] => {
+  const language = locale?.language ?? "en";
+  const countryDisplayNames = new Intl.DisplayNames(language, {
+    type: "region",
+    fallback: "code",
+  });
+  const englishDisplayNames = new Intl.DisplayNames("en", {
+    type: "region",
+    fallback: "code",
+  });
+
+  const options: PickerComboBoxItem[] = countries.map((country) => {
+    const primary = countryDisplayNames.of(country) ?? country;
+    const englishName = englishDisplayNames.of(country) ?? country;
+    return {
+      id: country,
+      primary,
+      search_labels: {
+        english: englishName !== primary ? englishName : null,
+      },
+    };
+  });
+
+  if (!noSort && locale) {
+    options.sort((a, b) =>
+      caseInsensitiveStringCompare(a.primary, b.primary, locale.language)
+    );
+  }
+  return options;
+};
+
 @customElement("ha-country-picker")
 export class HaCountryPicker extends LitElement {
-  @property() public language = "en";
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: string;
 
@@ -278,76 +319,75 @@ export class HaCountryPicker extends LitElement {
 
   @property({ attribute: "no-sort", type: Boolean }) public noSort = false;
 
-  private _getOptions = memoizeOne(
-    (language?: string, countries?: string[]) => {
-      let options: { label: string; value: string }[] = [];
-      const countryDisplayNames = new Intl.DisplayNames(language, {
-        type: "region",
-        fallback: "code",
-      });
-      if (countries) {
-        options = countries.map((country) => ({
-          value: country,
-          label: countryDisplayNames
-            ? countryDisplayNames.of(country)!
-            : country,
-        }));
-      } else {
-        options = COUNTRIES.map((country) => ({
-          value: country,
-          label: countryDisplayNames
-            ? countryDisplayNames.of(country)!
-            : country,
-        }));
-      }
+  @state() private _defaultCountries: string[] = COUNTRIES;
 
-      if (!this.noSort) {
-        options.sort((a, b) =>
-          caseInsensitiveStringCompare(a.label, b.label, language)
-        );
-      }
-      return options;
-    }
-  );
+  @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
+
+  private _getCountryOptions = memoizeOne(getCountryOptions);
+
+  private _getItems = () =>
+    this._getCountryOptions(
+      this.countries ?? this._defaultCountries,
+      this.noSort,
+      this.hass?.locale
+    );
+
+  private _getCountryName = (country?: string) =>
+    this._getItems().find((c) => c.id === country)?.primary;
+
+  private _valueRenderer = (value: string) =>
+    html`<span slot="headline">${this._getCountryName(value) ?? value}</span>`;
 
   protected render() {
-    const options = this._getOptions(this.language, this.countries);
+    const label =
+      this.label ??
+      (this.hass?.localize("ui.components.country-picker.country") ||
+        "Country");
+
+    const value =
+      this.value ??
+      (this.required && !this.disabled ? this._getItems()[0]?.id : this.value);
 
     return html`
-      <ha-select
-        .label=${this.label}
-        .value=${this.value}
-        .required=${this.required}
-        .helper=${this.helper}
+      <ha-generic-picker
+        .hass=${this.hass}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass?.localize(
+          "ui.components.country-picker.no_countries"
+        ) || "No countries available"}
+        .label=${label}
+        .value=${value}
+        .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
-        @selected=${this._changed}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
-      >
-        ${options.map(
-          (option) => html`
-            <ha-list-item .value=${option.value}>${option.label}</ha-list-item>
-          `
-        )}
-      </ha-select>
+        .helper=${this.helper}
+        .getItems=${this._getItems}
+        .searchKeys=${SEARCH_KEYS}
+        @value-changed=${this._changed}
+        hide-clear-icon
+      ></ha-generic-picker>
     `;
   }
 
   static styles = css`
-    ha-select {
+    ha-generic-picker {
       width: 100%;
+      min-width: 200px;
+      display: block;
     }
   `;
 
-  private _changed(ev): void {
-    const target = ev.target as HaSelect;
-    if (target.value === "" || target.value === this.value) {
-      return;
-    }
-    this.value = target.value;
+  private _changed(ev: ValueChangedEvent<string>): void {
+    ev.stopPropagation();
+    this.value = ev.detail.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
+
+  private _notFoundLabel = (search: string) => {
+    const term = html`<b>'${search}'</b>`;
+    return this.hass
+      ? this.hass.localize("ui.components.country-picker.no_match", { term })
+      : html`No countries found for ${term}`;
+  };
 }
 
 declare global {

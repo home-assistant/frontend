@@ -228,7 +228,6 @@ class HaConfigSectionGeneral extends LitElement {
                 name="country"
                 .disabled=${disabled}
                 .value=${this._country}
-                @closed=${stopPropagation}
                 @value-changed=${this._handleValueChanged}
               ></ha-country-picker>
               <ha-language-picker

@@ -762,7 +762,9 @@
         "none": "None"
       },
       "country-picker": {
-        "country": "Country"
+        "country": "Country",
+        "no_match": "No countries found for {term}",
+        "no_countries": "No countries available"
       },
       "pipeline-picker": {
         "pipeline": "Assistant",
