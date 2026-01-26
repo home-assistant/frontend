@@ -1,12 +1,11 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { FrontendLocaleData } from "../data/translation";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
-import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 const SEARCH_KEYS = [
@@ -212,8 +211,6 @@ export class HaCurrencyPicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
-
   private _getCurrencyOptions = memoizeOne(getCurrencyOptions);
 
   private _getItems = () => this._getCurrencyOptions(this.hass?.locale);
@@ -241,6 +238,7 @@ export class HaCurrencyPicker extends LitElement {
         .value=${this.value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
+        .required=${this.required}
         .getItems=${this._getItems}
         .searchKeys=${SEARCH_KEYS}
         @value-changed=${this._changed}
