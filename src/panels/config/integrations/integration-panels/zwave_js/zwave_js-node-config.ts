@@ -16,13 +16,14 @@ import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-generic-picker";
 import "../../../../../components/ha-list-item";
+import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-combo-box";
 import type {
   ZWaveJSNodeCapabilities,
   ZWaveJSNodeConfigParam,
@@ -329,19 +330,22 @@ class ZWaveJSNodeConfig extends LitElement {
       ) {
         return html`
           ${labelAndDescription}
-          <ha-combo-box
+          <ha-generic-picker
             .hass=${this.hass}
             .value=${item.value?.toString()}
             allow-custom-value
             hide-clear-icon
-            .items=${this._getComboBoxOptions(item.metadata.states)}
+            .getItems=${this._getManualEntryItems(item.metadata.states)}
             .disabled=${!item.metadata.writeable}
             .invalid=${result?.status === "error"}
             .placeholder=${item.metadata.unit}
             .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
+            .valueRenderer=${this._enumeratedPickerValueRenderer(
+              item.metadata.states
+            )}
             @value-changed=${this._getComboBoxValueChangedCallback(id, item)}
           >
-          </ha-combo-box>
+          </ha-generic-picker>
         `;
       }
       return html`${labelAndDescription}
@@ -363,7 +367,10 @@ class ZWaveJSNodeConfig extends LitElement {
         </ha-textfield>`;
     }
 
-    if (item.configuration_value_type === "enumerated") {
+    if (
+      item.configuration_value_type === "enumerated" &&
+      Object.keys(item.metadata.states).length < 5
+    ) {
       return html`
         ${labelAndDescription}
         <ha-select
@@ -383,6 +390,28 @@ class ZWaveJSNodeConfig extends LitElement {
             `
           )}
         </ha-select>
+      `;
+    }
+    if (item.configuration_value_type === "enumerated") {
+      return html`
+        ${labelAndDescription}
+        <ha-generic-picker
+          .hass=${this.hass}
+          .disabled=${!item.metadata.writeable}
+          .value=${item.value?.toString()}
+          .key=${id}
+          hide-clear-icon
+          @value-changed=${this._pickerValueChanged}
+          .helper=${defaultLabel}
+          .getItems=${this._getEnumeratedPickerItems(item.metadata.states!)}
+          .valueRenderer=${this._enumeratedPickerValueRenderer(
+            item.metadata.states!
+          )}
+          .property=${item.property}
+          .endpoint=${item.endpoint}
+          .propertyKey=${item.property_key}
+        >
+        </ha-generic-picker>
       `;
     }
 
@@ -429,15 +458,23 @@ class ZWaveJSNodeConfig extends LitElement {
   }
 
   private _dropdownSelected(ev) {
+    this._handleEnumeratedPickerValueChanged(ev, ev.target.value);
+  }
+
+  private _pickerValueChanged(ev) {
+    this._handleEnumeratedPickerValueChanged(ev, ev.detail.value);
+  }
+
+  private _handleEnumeratedPickerValueChanged(ev, value: string) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config![ev.target.key].value?.toString() === ev.target.value) {
+    if (this._config![ev.target.key].value?.toString() === value) {
       return;
     }
     this._setResult(ev.target.key, undefined);
 
-    this._updateConfigParameter(ev.target, Number(ev.target.value));
+    this._updateConfigParameter(ev.target, Number(value));
   }
 
   private _numericInputChanged(ev) {
@@ -474,11 +511,36 @@ class ZWaveJSNodeConfig extends LitElement {
     this._updateConfigParameter(ev.target, value);
   }
 
-  private _getComboBoxOptions = memoizeOne((states: Record<string, string>) =>
-    Object.entries(states).map(([value, label]) => ({
-      value,
-      label: `${value} - ${label}`,
-    }))
+  private _getEnumeratedPickerItems = memoizeOne(
+    (states: Record<string, string>) => {
+      const items: PickerComboBoxItem[] = Object.entries(states).map(
+        ([value, label]) => ({
+          id: value,
+          primary: label,
+          sorting_label: `${label}_${value}`,
+        })
+      );
+      return () => items;
+    }
+  );
+
+  private _enumeratedPickerValueRenderer = memoizeOne(
+    (states: Record<string, string>) => (value: string) =>
+      html`<span slot="headline">${states[value] || value}</span>`
+  );
+
+  private _getManualEntryItems = memoizeOne(
+    (states: Record<string, string>) => {
+      const items: PickerComboBoxItem[] = Object.entries(states).map(
+        ([value, label]) => ({
+          id: value,
+          primary: `${label}`,
+          secondary: value,
+          sorting_label: `${label}_${value}`,
+        })
+      );
+      return () => items;
+    }
   );
 
   private _getComboBoxValueChangedCallback(

@@ -60,6 +60,9 @@ export class HuiCardEditMode extends LitElement {
     });
     this.addEventListener("touchstart", () => {
       this._touchStarted = true;
+      // Set hover on touchstart for touch devices
+      this._hover = true;
+      document.addEventListener("click", this._documentClicked);
     });
     this.addEventListener("touchend", () => {
       setTimeout(() => {

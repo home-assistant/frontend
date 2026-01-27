@@ -15,17 +15,16 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/entity/ha-battery-icon";
-import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { VacuumEntity } from "../../../data/vacuum";
 import { VacuumEntityFeature } from "../../../data/vacuum";
 import type { HomeAssistant } from "../../../types";
@@ -109,9 +108,6 @@ class MoreInfoVacuum extends LitElement {
     }
 
     const stateObj = this.stateObj;
-
-    const filterExtraAttributes =
-      "fan_speed,fan_speed_list,status,battery_level,battery_icon";
 
     return html`
       ${stateObj.state !== UNAVAILABLE
@@ -208,12 +204,6 @@ class MoreInfoVacuum extends LitElement {
             </div>
           `
         : ""}
-
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        .extraFilters=${filterExtraAttributes}
-      ></ha-attributes>
     `;
   }
 

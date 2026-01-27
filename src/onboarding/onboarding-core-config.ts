@@ -68,7 +68,7 @@ class OnboardingCoreConfig extends LitElement {
 
       <ha-country-picker
         class="flex"
-        .language=${this.hass.locale.language}
+        .hass=${this.hass}
         .label=${this.hass.localize(
           "ui.panel.config.core.section.core.core_config.country"
         ) || "Country"}
@@ -76,8 +76,7 @@ class OnboardingCoreConfig extends LitElement {
         .disabled=${this._working}
         .value=${this._countryValue}
         @value-changed=${this._handleCountryChanged}
-      >
-      </ha-country-picker>
+      ></ha-country-picker>
 
       <div class="footer">
         <ha-button @click=${this._save} .disabled=${this._working}>

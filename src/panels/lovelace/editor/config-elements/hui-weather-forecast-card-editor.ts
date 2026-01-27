@@ -16,12 +16,13 @@ import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { UNAVAILABLE } from "../../../../data/entity";
+import { UNAVAILABLE } from "../../../../data/entity/entity";
 import type { ForecastType, WeatherEntity } from "../../../../data/weather";
 import { WeatherEntityFeature } from "../../../../data/weather";
 import type { HomeAssistant } from "../../../../types";
 import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
@@ -267,6 +268,7 @@ export class HuiWeatherForecastCardEditor
                         default_action: "more-info",
                       },
                     },
+                    context: ACTION_RELATED_CONTEXT,
                   },
                   {
                     name: "",
@@ -280,6 +282,7 @@ export class HuiWeatherForecastCardEditor
                             default_action: "none" as const,
                           },
                         },
+                        context: ACTION_RELATED_CONTEXT,
                       })
                     ),
                   },

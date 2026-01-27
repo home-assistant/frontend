@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { refine } from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -26,6 +27,16 @@ import type { EditorTarget } from "../editor/types";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
+export interface ActionRelatedContext {
+  entity_id?: string;
+  area_id?: string;
+}
+
+export const ACTION_RELATED_CONTEXT = {
+  entity_id: "entity",
+  area_id: "area",
+} as const satisfies HaFormSchema["context"] & ActionRelatedContext;
+
 const DEFAULT_ACTIONS: UiAction[] = [
   "more-info",
   "toggle",
@@ -36,14 +47,10 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "none",
 ];
 
-const NAVIGATE_SCHEMA = [
-  {
-    name: "navigation_path",
-    selector: {
-      navigation: {},
-    },
-  },
-] as const satisfies readonly HaFormSchema[];
+export const supportedActions = (struct: any, supported_actions: UiAction[]) =>
+  refine(struct, supported_actions.toString(), (value: any) =>
+    supported_actions.includes(value.action)
+  );
 
 const ASSIST_SCHEMA = [
   {
@@ -82,6 +89,9 @@ export class HuiActionEditor extends LitElement {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false })
+  public context?: ActionRelatedContext;
+
   @query("ha-select") private _select!: HaSelect;
 
   get _navigation_path(): string {
@@ -107,6 +117,23 @@ export class HuiActionEditor extends LitElement {
         : null),
       target: config.target,
     })
+  );
+
+  private _navigateSchema = memoizeOne(
+    (
+      relatedEntityId?: string,
+      relatedAreaId?: string
+    ): readonly HaFormSchema[] => [
+      {
+        name: "navigation_path",
+        selector: {
+          navigation: {
+            ...(relatedEntityId ? { entity_id: relatedEntityId } : {}),
+            ...(relatedAreaId ? { area_id: relatedAreaId } : {}),
+          },
+        },
+      },
+    ]
   );
 
   protected updated(changedProperties: PropertyValues<typeof this>) {
@@ -172,7 +199,10 @@ export class HuiActionEditor extends LitElement {
         ? html`
             <ha-form
               .hass=${this.hass}
-              .schema=${NAVIGATE_SCHEMA}
+              .schema=${this._navigateSchema(
+                this.context?.entity_id,
+                this.context?.area_id
+              )}
               .data=${this.config}
               .computeLabel=${this._computeFormLabel}
               @value-changed=${this._formValueChanged}

@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
+import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
 import { mdiClose } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -49,7 +50,6 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @cssprop --ha-dialog-hide-duration - Hide animation duration.
  * @cssprop --ha-dialog-surface-background - Dialog background color.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
- * @cssprop --dialog-z-index - Z-index for the dialog.
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
@@ -106,6 +106,9 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
 
+  @property({ type: Boolean, attribute: "without-header" })
+  public withoutHeader = false;
+
   @state()
   private _open = false;
 
@@ -113,6 +116,8 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
 
   @state()
   private _bodyScrolled = false;
+
+  private _escapePressed = false;
 
   protected get scrollableElement(): HTMLElement | null {
     return this.bodyContainer;
@@ -139,33 +144,41 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
             (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
         )}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
+        @keydown=${this._handleKeyDown}
+        @wa-hide=${this._handleHide}
         @wa-show=${this._handleShow}
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
       >
-        <slot name="header">
-          <ha-dialog-header
-            .subtitlePosition=${this.headerSubtitlePosition}
-            .showBorder=${this._bodyScrolled}
-          >
-            <slot name="headerNavigationIcon" slot="navigationIcon">
-              <ha-icon-button
-                data-dialog="close"
-                .label=${this.hass?.localize("ui.common.close") ?? "Close"}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            </slot>
-            ${this.headerTitle !== undefined
-              ? html`<span slot="title" class="title" id="ha-wa-dialog-title">
-                  ${this.headerTitle}
-                </span>`
-              : html`<slot name="headerTitle" slot="title"></slot>`}
-            ${this.headerSubtitle !== undefined
-              ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-              : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
-            <slot name="headerActionItems" slot="actionItems"></slot>
-          </ha-dialog-header>
-        </slot>
+        ${!this.withoutHeader
+          ? html` <slot name="header">
+              <ha-dialog-header
+                .subtitlePosition=${this.headerSubtitlePosition}
+                .showBorder=${this._bodyScrolled}
+              >
+                <slot name="headerNavigationIcon" slot="navigationIcon">
+                  <ha-icon-button
+                    data-dialog="close"
+                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                    .path=${mdiClose}
+                  ></ha-icon-button>
+                </slot>
+                ${this.headerTitle !== undefined
+                  ? html`<span
+                      slot="title"
+                      class="title"
+                      id="ha-wa-dialog-title"
+                    >
+                      ${this.headerTitle}
+                    </span>`
+                  : html`<slot name="headerTitle" slot="title"></slot>`}
+                ${this.headerSubtitle !== undefined
+                  ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
+                  : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
+                <slot name="headerActionItems" slot="actionItems"></slot>
+              </ha-dialog-header>
+            </slot>`
+          : nothing}
         <div class="content-wrapper">
           <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
             <slot></slot>
@@ -184,6 +197,22 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
+      // temporary disabled because of issues with focus in iOS app, can be reenabled in 2026.2.0
+      // if (isIosApp(this.hass)) {
+      //   const element = this.querySelector("[autofocus]");
+      //   if (element !== null) {
+      //     if (!element.id) {
+      //       element.id = "ha-wa-dialog-autofocus";
+      //     }
+      //     this.hass.auth.external!.fireMessage({
+      //       type: "focus_element",
+      //       payload: {
+      //         element_id: element.id,
+      //       },
+      //     });
+      //   }
+      //   return;
+      // }
       (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
     });
   };
@@ -192,9 +221,11 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "after-show");
   };
 
-  private _handleAfterHide = () => {
-    this._open = false;
-    fireEvent(this, "closed");
+  private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
+    if (ev.eventPhase === Event.AT_TARGET) {
+      this._open = false;
+      fireEvent(this, "closed");
+    }
   };
 
   public disconnectedCallback(): void {
@@ -205,6 +236,23 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   @eventOptions({ passive: true })
   private _handleBodyScroll(ev: Event) {
     this._bodyScrolled = (ev.target as HTMLDivElement).scrollTop > 0;
+  }
+
+  private _handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Escape") {
+      this._escapePressed = true;
+    }
+  }
+
+  private _handleHide(ev: CustomEvent<{ source: Element }>) {
+    if (
+      this.preventScrimClose &&
+      this._escapePressed &&
+      ev.detail.source === (ev.target as WaDialog).dialog
+    ) {
+      ev.preventDefault();
+    }
+    this._escapePressed = false;
   }
 
   static get styles() {
@@ -235,6 +283,12 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
           );
           max-width: var(--ha-dialog-max-width, var(--safe-width));
         }
+        @media (prefers-reduced-motion: reduce) {
+          wa-dialog {
+            --show-duration: 0ms;
+            --hide-duration: 0ms;
+          }
+        }
 
         :host([width="small"]) wa-dialog {
           --width: min(var(--ha-dialog-width-sm, 320px), var(--full-width));
@@ -249,6 +303,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(dialog) {
+          color: var(--primary-text-color);
           min-width: var(--width, var(--full-width));
           max-width: var(--width, var(--full-width));
           max-height: var(
@@ -260,15 +315,15 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
           /* Used to offset the dialog from the safe areas when space is limited */
           transform: translate(
             calc(
-              var(--safe-area-offset-left, var(--ha-space-0)) - var(
+              var(--safe-area-offset-left, 0px) - var(
                   --safe-area-offset-right,
-                  var(--ha-space-0)
+                  0px
                 )
             ),
             calc(
-              var(--safe-area-offset-top, var(--ha-space-0)) - var(
+              var(--safe-area-offset-top, 0px) - var(
                   --safe-area-offset-bottom,
-                  var(--ha-space-0)
+                  0px
                 )
             )
           );
@@ -279,7 +334,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
           :host([type="standard"]) {
-            --ha-dialog-border-radius: var(--ha-space-0);
+            --ha-dialog-border-radius: 0;
 
             wa-dialog {
               /* Make the container fill the whole screen width and not the safe width */
@@ -366,7 +421,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(footer) {
-          padding: var(--ha-space-0);
+          padding: 0;
         }
 
         ::slotted([slot="footer"]) {

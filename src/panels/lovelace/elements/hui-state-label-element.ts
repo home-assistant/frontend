@@ -3,7 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { isUnavailableState } from "../../../data/entity";
+import { isUnavailableState } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";

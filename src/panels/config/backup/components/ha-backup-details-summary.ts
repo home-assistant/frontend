@@ -34,7 +34,7 @@ class HaBackupDetailsSummary extends LitElement {
     if (this.backup.failed_addons?.length) {
       errors.push({
         title: this.hass.localize(
-          "ui.panel.config.backup.details.summary.error.failed_addons"
+          "ui.panel.config.backup.details.summary.error.failed_apps"
         ),
         items: this.backup.failed_addons.map(
           (addon) => `${addon.name || addon.slug} (${addon.version})`
@@ -127,7 +127,7 @@ class HaBackupDetailsSummary extends LitElement {
         return this.hass.localize(`ui.panel.config.backup.data_picker.ssl`);
       case "addons/local":
         return this.hass.localize(
-          `ui.panel.config.backup.data_picker.local_addons`
+          `ui.panel.config.backup.data_picker.local_apps`
         );
     }
     return capitalizeFirstLetter(folder);

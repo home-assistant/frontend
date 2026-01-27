@@ -42,10 +42,6 @@ export class WaterViewStrategy extends ReactiveElement {
     const section = view.sections![0] as LovelaceSectionConfig;
 
     section.cards!.push({
-      type: "energy-date-selection",
-      collection_key: collectionKey,
-    });
-    section.cards!.push({
       type: "energy-compare",
       collection_key: collectionKey,
     });

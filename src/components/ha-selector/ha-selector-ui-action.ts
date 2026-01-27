@@ -5,6 +5,7 @@ import type { ActionConfig } from "../../data/lovelace/config/action";
 import type { UiActionSelector } from "../../data/selector";
 import "../../panels/lovelace/components/hui-action-editor";
 import type { HomeAssistant } from "../../types";
+import type { ActionRelatedContext } from "../../panels/lovelace/components/hui-action-editor";
 
 @customElement("ha-selector-ui_action")
 export class HaSelectorUiAction extends LitElement {
@@ -13,6 +14,8 @@ export class HaSelectorUiAction extends LitElement {
   @property({ attribute: false }) public selector!: UiActionSelector;
 
   @property({ attribute: false }) public value?: ActionConfig;
+
+  @property({ attribute: false }) public context?: ActionRelatedContext;
 
   @property() public label?: string;
 
@@ -24,6 +27,7 @@ export class HaSelectorUiAction extends LitElement {
         .label=${this.label}
         .hass=${this.hass}
         .config=${this.value}
+        .context=${this.context}
         .actions=${this.selector.ui_action?.actions}
         .defaultAction=${this.selector.ui_action?.default_action}
         .tooltipText=${this.helper}

@@ -37,7 +37,7 @@ import {
   getAreasAndFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
-} from "../../../../data/area_floor";
+} from "../../../../data/area_floor_picker";
 import { CONDITION_BUILDING_BLOCKS_GROUP } from "../../../../data/condition";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { labelsContext } from "../../../../data/context";
@@ -45,18 +45,18 @@ import {
   deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
-} from "../../../../data/device_registry";
+} from "../../../../data/device/device_picker";
 import {
   entityComboBoxKeys,
   getEntities,
   type EntityComboBoxItem,
-} from "../../../../data/entity_registry";
+} from "../../../../data/entity/entity_picker";
 import type { DomainManifestLookup } from "../../../../data/integration";
 import {
   getLabels,
   labelComboBoxKeys,
-  type LabelRegistryEntry,
-} from "../../../../data/label_registry";
+} from "../../../../data/label/label_picker";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   getTargetComboBoxItemType,
   TARGET_SEPARATOR,
@@ -85,11 +85,11 @@ const TARGET_SEARCH_SECTIONS = [
 
 export const ITEM_SEARCH_KEYS: FuseWeightedKey[] = [
   {
-    name: "name",
+    name: "primary",
     weight: 10,
   },
   {
-    name: "description",
+    name: "secondary",
     weight: 7,
   },
 ];
@@ -327,7 +327,7 @@ export class HaAutomationAddSearch extends LitElement {
                 style=${styleMap({
                   width: "var(--ha-space-12)",
                   position: "absolute",
-                  top: "var(--ha-space-0)",
+                  top: "0",
                   left: rtl ? undefined : "var(--ha-space-1)",
                   right: rtl ? "var(--ha-space-1)" : undefined,
                   transform: rtl ? "scaleX(-1)" : "",
@@ -339,40 +339,39 @@ export class HaAutomationAddSearch extends LitElement {
               ></ha-tree-indicator>
             `
           : nothing}
-        ${item.icon
-          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-          : item.icon_path
-            ? html`<ha-svg-icon
-                slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>`
-            : type === "entity" && (item as EntityComboBoxItem).stateObj
-              ? html`
-                  <state-badge
-                    slot="start"
-                    .stateObj=${(item as EntityComboBoxItem).stateObj}
-                    .hass=${this.hass}
-                  ></state-badge>
-                `
-              : type === "device" && (item as DevicePickerItem).domain
+        ${(item as AutomationItemComboBoxItem).renderedIcon
+          ? html`<div slot="start">
+              ${(item as AutomationItemComboBoxItem).renderedIcon}
+            </div>`
+          : item.icon
+            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+            : item.icon_path || type === "area"
+              ? html`<ha-svg-icon
+                  slot="start"
+                  .path=${item.icon_path || mdiTextureBox}
+                ></ha-svg-icon>`
+              : type === "entity" && (item as EntityComboBoxItem).stateObj
                 ? html`
-                    <ha-domain-icon
+                    <state-badge
                       slot="start"
+                      .stateObj=${(item as EntityComboBoxItem).stateObj}
                       .hass=${this.hass}
-                      .domain=${(item as DevicePickerItem).domain!}
-                      brand-fallback
-                    ></ha-domain-icon>
+                    ></state-badge>
                   `
-                : type === "floor"
-                  ? html`<ha-floor-icon
-                      slot="start"
-                      .floor=${(item as FloorComboBoxItem).floor!}
-                    ></ha-floor-icon>`
-                  : type === "area"
-                    ? html`<ha-svg-icon
+                : type === "device" && (item as DevicePickerItem).domain
+                  ? html`
+                      <ha-domain-icon
                         slot="start"
-                        .path=${item.icon_path || mdiTextureBox}
-                      ></ha-svg-icon>`
+                        .hass=${this.hass}
+                        .domain=${(item as DevicePickerItem).domain!}
+                        brand-fallback
+                      ></ha-domain-icon>
+                    `
+                  : type === "floor"
+                    ? html`<ha-floor-icon
+                        slot="start"
+                        .floor=${(item as FloorComboBoxItem).floor!}
+                      ></ha-floor-icon>`
                     : nothing}
         <span slot="headline">${item.primary}</span>
         ${item.secondary
@@ -792,7 +791,7 @@ export class HaAutomationAddSearch extends LitElement {
       id: key,
       primary: name,
       secondary: description,
-      iconPath,
+      icon_path: iconPath,
       renderedIcon: icon,
       type,
       search_labels: {

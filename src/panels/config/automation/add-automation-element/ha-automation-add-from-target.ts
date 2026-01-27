@@ -20,25 +20,25 @@ import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/entity/state-badge";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-section-title";
+import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
+import {
+  getAreaDeviceLookup,
+  getAreaEntityLookup,
+} from "../../../../data/area/area_registry";
 import {
   getAreasNestedInFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
   type FloorNestedComboBoxItem,
   type UnassignedAreasFloorComboBoxItem,
-} from "../../../../data/area_floor";
-import {
-  getAreaDeviceLookup,
-  getAreaEntityLookup,
-} from "../../../../data/area_registry";
+} from "../../../../data/area_floor_picker";
 import {
   getConfigEntries,
   type ConfigEntry,
@@ -52,15 +52,13 @@ import {
   localizeContext,
   statesContext,
 } from "../../../../data/context";
-import { getDeviceEntityLookup } from "../../../../data/device_registry";
+import { getDeviceEntityLookup } from "../../../../data/device/device_registry";
 import {
   domainToName,
   type DomainManifestLookup,
 } from "../../../../data/integration";
-import {
-  getLabels,
-  type LabelRegistryEntry,
-} from "../../../../data/label_registry";
+import { getLabels } from "../../../../data/label/label_picker";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
   type SingleHassServiceTarget,
@@ -781,11 +779,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _renderEntityIcon =
     (stateObj: HassEntity) => (slot: string | undefined) =>
-      html`<state-badge
+      html`<ha-state-icon
+        .hass=${this.hass}
         slot=${ifDefined(slot)}
         .stateObj=${stateObj}
-        .hass=${this.hass}
-      ></state-badge>`;
+      ></ha-state-icon>`;
 
   private _renderItem(
     label: string,
@@ -1437,6 +1435,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     ha-svg-icon,
     ha-icon,
+    ha-state-icon,
     ha-floor-icon {
       padding: var(--ha-space-1);
       color: var(--ha-color-on-neutral-quiet);
@@ -1459,13 +1458,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
     state-badge {
       width: 24px;
       height: 24px;
-    }
-
-    wa-tree-item[selected],
-    wa-tree-item[selected] > ha-svg-icon,
-    wa-tree-item[selected] > ha-icon,
-    wa-tree-item[selected] > ha-floor-icon {
-      color: var(--ha-color-on-primary-normal);
     }
 
     wa-tree-item[selected]::part(item):hover {
@@ -1492,6 +1484,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
       --icon-primary-color: var(--ha-color-on-primary-normal);
     }
 
+    wa-tree-item[selected],
+    wa-tree-item[selected] > ha-svg-icon,
+    wa-tree-item[selected] > ha-icon,
+    wa-tree-item[selected] > ha-state-icon,
+    wa-tree-item[selected] > ha-floor-icon,
     ha-md-list-item.selected ha-icon,
     ha-md-list-item.selected ha-svg-icon {
       color: var(--ha-color-on-primary-normal);
@@ -1507,14 +1504,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       box-shadow: inset var(--ha-shadow-offset-x-lg)
         calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
         var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .targets-show-more {
-        box-shadow: inset var(--ha-shadow-offset-x-lg)
-          calc(var(--ha-shadow-offset-y-lg) * -1) var(--ha-shadow-blur-lg)
-          var(--ha-shadow-spread-lg) var(--ha-color-shadow-dark);
-      }
+      z-index: 2;
     }
 
     @media all and (max-width: 870px), all and (max-height: 500px) {

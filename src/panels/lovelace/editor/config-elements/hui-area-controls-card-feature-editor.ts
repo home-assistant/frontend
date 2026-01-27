@@ -1,21 +1,28 @@
-import { html, LitElement, nothing } from "lit";
+import { mdiDragHorizontalVariant } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import "../../../../components/ha-area-controls-picker";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import "../../../../components/chips/ha-input-chip";
+import "../../../../components/ha-sortable";
+import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import {
   getAreaControlEntities,
   MAX_DEFAULT_AREA_CONTROLS,
-} from "../../card-features/hui-area-controls-card-feature";
+} from "../../../../data/area/area_controls";
 import {
-  AREA_CONTROLS,
+  AREA_CONTROL_DOMAINS,
   type AreaControl,
+  type AreaControlDomain,
   type AreaControlsCardFeatureConfig,
 } from "../../card-features/types";
 import type { AreaCardFeatureContext } from "../../cards/hui-area-card";
@@ -40,40 +47,14 @@ export class HuiAreaControlsCardFeatureEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      customizeControls: boolean,
-      compatibleControls: AreaControl[]
-    ) =>
-      [
-        {
-          name: "customize_controls",
-          selector: {
-            boolean: {},
-          },
-        },
-        ...(customizeControls
-          ? ([
-              {
-                name: "controls",
-                selector: {
-                  select: {
-                    reorder: true,
-                    multiple: true,
-                    options: compatibleControls.map((control) => ({
-                      value: control,
-                      label: localize(
-                        `ui.panel.lovelace.editor.features.types.area-controls.controls_options.${control}`
-                      ),
-                    })),
-                  },
-                },
-              },
-            ] as const satisfies readonly HaFormSchema[])
-          : []),
-      ] as const satisfies readonly HaFormSchema[]
-  );
+  private _schema = [
+    {
+      name: "customize_controls",
+      selector: {
+        boolean: {},
+      },
+    },
+  ] as const satisfies readonly HaFormSchema[];
 
   private _supportedControls = memoizeOne(
     (
@@ -88,7 +69,7 @@ export class HuiAreaControlsCardFeatureEditor
         return [];
       }
       const controlEntities = getAreaControlEntities(
-        AREA_CONTROLS as unknown as AreaControl[],
+        AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[],
         areaId,
         excludeEntities,
         this.hass!
@@ -127,21 +108,131 @@ export class HuiAreaControlsCardFeatureEditor
       customize_controls: this._config.controls !== undefined,
     };
 
-    const schema = this._schema(
-      this.hass.localize,
-      data.customize_controls,
-      supportedControls
+    const value = this._config.controls || [];
+    const excludeValues = value.map((control) =>
+      typeof control === "string" ? control : control.entity_id
     );
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${this._schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
+      ${data.customize_controls
+        ? html`
+            ${value.length
+              ? html`
+                  <ha-sortable
+                    no-style
+                    @item-moved=${this._itemMoved}
+                    handle-selector="button.primary.action"
+                  >
+                    <ha-chip-set>
+                      ${repeat(
+                        value,
+                        (item) =>
+                          typeof item === "string" ? item : item.entity_id,
+                        (item, idx) => {
+                          const label = this._getItemLabel(item);
+                          return html`
+                            <ha-input-chip
+                              .idx=${idx}
+                              @remove=${this._removeItem}
+                              .label=${label}
+                              selected
+                            >
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiDragHorizontalVariant}
+                              ></ha-svg-icon>
+                              ${label}
+                            </ha-input-chip>
+                          `;
+                        }
+                      )}
+                    </ha-chip-set>
+                  </ha-sortable>
+                `
+              : nothing}
+            <ha-area-controls-picker
+              .hass=${this.hass}
+              .areaId=${this.context.area_id}
+              .excludeEntities=${this.context.exclude_entities}
+              .excludeValues=${excludeValues}
+              .value=${""}
+              .addButtonLabel=${this.hass.localize(
+                "ui.panel.lovelace.editor.features.types.area-controls.controls"
+              )}
+              @value-changed=${this._controlChanged}
+            ></ha-area-controls-picker>
+          `
+        : nothing}
     `;
+  }
+
+  private _getItemLabel(item: AreaControl): string {
+    if (!this.hass) {
+      return typeof item === "string" ? item : JSON.stringify(item);
+    }
+
+    if (typeof item === "string") {
+      if (AREA_CONTROL_DOMAINS.includes(item as AreaControlDomain)) {
+        return this.hass.localize(
+          `ui.panel.lovelace.editor.features.types.area-controls.controls_options.${item}`
+        );
+      }
+      // Invalid/unknown domain string
+      return item;
+    }
+
+    if ("entity_id" in item) {
+      const entityState = this.hass.states[item.entity_id];
+      if (entityState) {
+        return computeStateName(entityState);
+      }
+      return item.entity_id;
+    }
+
+    return JSON.stringify(item);
+  }
+
+  private _itemMoved(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const { oldIndex, newIndex } = ev.detail;
+    const controls = [...(this._config!.controls || [])];
+    const item = controls.splice(oldIndex, 1)[0];
+    controls.splice(newIndex, 0, item);
+    this._updateControls(controls);
+  }
+
+  private _removeItem(ev: CustomEvent): void {
+    const index = (ev.currentTarget as any).idx;
+    const controls = [...(this._config!.controls || [])];
+    controls.splice(index, 1);
+    this._updateControls(controls);
+  }
+
+  private _controlChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    if (!value) {
+      return;
+    }
+    // If it's a domain control (in AREA_CONTROL_DOMAINS), save as string for backwards compatibility
+    // If it's an entity, save in explicit format
+    const control = AREA_CONTROL_DOMAINS.includes(value as AreaControlDomain)
+      ? value
+      : { entity_id: value };
+    const controls = [...(this._config!.controls || []), control];
+    this._updateControls(controls);
+  }
+
+  private _updateControls(controls: AreaControl[]): void {
+    const config = { ...this._config!, controls };
+    fireEvent(this, "config-changed", { config });
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -166,10 +257,9 @@ export class HuiAreaControlsCardFeatureEditor
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema: SchemaUnion<typeof this._schema>
   ) => {
     switch (schema.name) {
-      case "controls":
       case "customize_controls":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.area-controls.${schema.name}`
@@ -178,6 +268,16 @@ export class HuiAreaControlsCardFeatureEditor
         return "";
     }
   };
+
+  static styles = css`
+    ha-sortable {
+      display: block;
+      margin-bottom: var(--ha-space-2);
+    }
+    ha-chip-set {
+      margin-bottom: var(--ha-space-2);
+    }
+  `;
 }
 
 declare global {

@@ -2,19 +2,22 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
+import { round } from "../../../common/number/round";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
 import {
+  WEATHER_TEMPERATURE_ATTRIBUTES,
   getForecast,
   getSecondaryWeatherAttribute,
   getWeatherStateIcon,
@@ -23,10 +26,8 @@ import {
   subscribeForecast,
   weatherAttrIcons,
   weatherSVGStyles,
-  WEATHER_TEMPERATURE_ATTRIBUTES,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
-import { round } from "../../../common/number/round";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
@@ -40,7 +41,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {

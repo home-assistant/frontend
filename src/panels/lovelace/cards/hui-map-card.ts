@@ -176,6 +176,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return { type: "map", entities: foundEntities, theme_mode: "auto" };
   }
 
+  protected firstUpdated() {
+    this._mapEntities = this._getMapEntities();
+  }
+
   protected render() {
     if (!this._config) {
       return nothing;

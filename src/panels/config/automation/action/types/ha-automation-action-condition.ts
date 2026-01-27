@@ -109,6 +109,7 @@ export class HaConditionAction
                   <ha-list-item .value=${opt} graphic="icon">
                     ${label}
                     <ha-condition-icon
+                      .hass=${this.hass}
                       slot="graphic"
                       .condition=${condition}
                     ></ha-condition-icon>

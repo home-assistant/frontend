@@ -15,7 +15,10 @@ import {
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -44,6 +47,7 @@ import "../../../../components/ha-svg-icon";
 import { TRIGGER_ICONS } from "../../../../components/ha-trigger-icon";
 import type {
   AutomationClipboard,
+  PlatformTrigger,
   Trigger,
   TriggerList,
   TriggerSidebarConfig,
@@ -52,7 +56,8 @@ import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { DeviceTrigger } from "../../../../data/device/device_automation";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import {
@@ -64,6 +69,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import "../target/ha-automation-row-targets";
 import "./ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
@@ -191,6 +197,15 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     const yamlMode = this._yamlMode || !supported;
 
+    const target =
+      type === "platform" &&
+      "target" in
+        this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
+        ? (this.trigger as PlatformTrigger).target
+        : type === "device" && (this.trigger as DeviceTrigger).device_id
+          ? { device_id: (this.trigger as DeviceTrigger).device_id }
+          : undefined;
+
     return html`
       ${type === "list"
         ? html`<ha-svg-icon
@@ -205,6 +220,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ></ha-trigger-icon>`}
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -449,6 +465,14 @@ export default class HaAutomationTriggerRow extends LitElement {
       </ha-card>
     `;
   }
+
+  private _renderTargets = memoizeOne(
+    (target?: HassServiceTarget) =>
+      html`<ha-automation-row-targets
+        .hass=${this.hass}
+        .target=${target}
+      ></ha-automation-row-targets>`
+  );
 
   protected willUpdate(changedProperties) {
     // on yaml toggle --> clear warnings
@@ -791,6 +815,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    ev.stopPropagation();
     const action = ev.detail?.item?.value;
 
     if (!action) {

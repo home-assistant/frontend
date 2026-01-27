@@ -1,3 +1,4 @@
+import type { Condition } from "../../../panels/lovelace/common/validate-condition";
 import type { MediaSelectorValue } from "../../selector";
 import type { LovelaceBadgeConfig } from "./badge";
 import type { LovelaceCardConfig } from "./card";
@@ -40,6 +41,7 @@ export interface LovelaceViewSidebarConfig {
   sections?: LovelaceSectionConfig[];
   content_label?: string;
   sidebar_label?: string;
+  visibility?: Condition[];
 }
 
 export interface LovelaceBaseViewConfig {
@@ -47,6 +49,7 @@ export interface LovelaceBaseViewConfig {
   title?: string;
   path?: string;
   icon?: string;
+  show_icon_and_title?: boolean;
   theme?: string;
   panel?: boolean;
   background?: string | LovelaceViewBackgroundConfig;

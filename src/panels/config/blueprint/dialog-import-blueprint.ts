@@ -114,6 +114,7 @@ class DialogImportBlueprint extends LitElement {
                   <ha-code-editor
                     mode="yaml"
                     .value=${this._result.raw_data}
+                    .hass=${this.hass}
                     read-only
                     dir="ltr"
                   ></ha-code-editor>
@@ -162,7 +163,7 @@ class DialogImportBlueprint extends LitElement {
         </div>
         <ha-button
           appearance="plain"
-          slot="primaryAction"
+          slot="secondaryAction"
           @click=${this.closeDialog}
           .disabled=${this._saving}
         >

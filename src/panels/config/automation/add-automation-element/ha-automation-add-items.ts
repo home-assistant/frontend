@@ -1,9 +1,4 @@
-import {
-  mdiInformationOutline,
-  mdiLabel,
-  mdiPlus,
-  mdiTextureBox,
-} from "@mdi/js";
+import { mdiInformationOutline, mdiPlus } from "@mdi/js";
 import { LitElement, css, html, nothing, type TemplateResult } from "lit";
 import {
   customElement,
@@ -17,17 +12,15 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import "../../../../components/entity/state-badge";
-import "../../../../components/ha-domain-icon";
-import "../../../../components/ha-floor-icon";
-import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import type { ConfigEntry } from "../../../../data/config_entries";
+import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../../types";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
+import { getTargetIcon } from "../target/get_target_icon";
 
 type Target = [string, string | undefined, string | undefined];
 
@@ -46,11 +39,13 @@ export class HaAutomationAddItems extends LitElement {
 
   @property({ attribute: "empty-label" }) public emptyLabel!: string;
 
+  @property({ attribute: false }) public emptyNote?: string | TemplateResult;
+
   @property({ attribute: false }) public target?: Target;
 
   @property({ attribute: false }) public getLabel!: (
     id: string
-  ) => { name: string; icon?: string } | undefined;
+  ) => LabelRegistryEntry | undefined;
 
   @property({ attribute: false }) public configEntryLookup: Record<
     string,
@@ -86,6 +81,9 @@ export class HaAutomationAddItems extends LitElement {
             ? html`${this.emptyLabel}
               ${this.target
                 ? html`<div>${this._renderTarget(this.target)}</div>`
+                : nothing}
+              ${this.emptyNote
+                ? html`<div class="empty-note">${this.emptyNote}</div>`
                 : nothing}`
             : repeat(
                 this.items,
@@ -164,71 +162,16 @@ export class HaAutomationAddItems extends LitElement {
     }
 
     return html`<div class="selected-target">
-      ${this._getSelectedTargetIcon(target[0], target[1])}
+      ${getTargetIcon(
+        this.hass,
+        target[0],
+        target[1],
+        this.configEntryLookup,
+        this.getLabel
+      )}
       <div class="label">${target[2]}</div>
     </div>`;
   });
-
-  private _getSelectedTargetIcon(
-    targetType: string,
-    targetId: string | undefined
-  ): TemplateResult | typeof nothing {
-    if (!targetId) {
-      return nothing;
-    }
-
-    if (targetType === "floor") {
-      return html`<ha-floor-icon
-        .floor=${this.hass.floors[targetId]}
-      ></ha-floor-icon>`;
-    }
-
-    if (targetType === "area" && this.hass.areas[targetId]) {
-      const area = this.hass.areas[targetId];
-      if (area.icon) {
-        return html`<ha-icon .icon=${area.icon}></ha-icon>`;
-      }
-      return html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`;
-    }
-
-    if (targetType === "device" && this.hass.devices[targetId]) {
-      const device = this.hass.devices[targetId];
-      const configEntry = device.primary_config_entry
-        ? this.configEntryLookup[device.primary_config_entry]
-        : undefined;
-      const domain = configEntry?.domain;
-
-      if (domain) {
-        return html`<ha-domain-icon
-          slot="start"
-          .hass=${this.hass}
-          .domain=${domain}
-          brand-fallback
-        ></ha-domain-icon>`;
-      }
-    }
-
-    if (targetType === "entity" && this.hass.states[targetId]) {
-      const stateObj = this.hass.states[targetId];
-      if (stateObj) {
-        return html`<state-badge
-          .stateObj=${stateObj}
-          .hass=${this.hass}
-          .stateColor=${false}
-        ></state-badge>`;
-      }
-    }
-
-    if (targetType === "label") {
-      const label = this.getLabel(targetId);
-      if (label?.icon) {
-        return html`<ha-icon .icon=${label.icon}></ha-icon>`;
-      }
-      return html`<ha-svg-icon .path=${mdiLabel}></ha-svg-icon>`;
-    }
-
-    return nothing;
-  }
 
   private _selected(ev) {
     const item = ev.currentTarget;
@@ -261,6 +204,7 @@ export class HaAutomationAddItems extends LitElement {
   static styles = css`
     :host {
       display: flex;
+      flex-grow: 1;
     }
     :host([scrollable]) .items {
       overflow: auto;
@@ -275,11 +219,22 @@ export class HaAutomationAddItems extends LitElement {
       background-color: var(--ha-color-surface-default);
       align-items: center;
       color: var(--ha-color-text-secondary);
-      padding: var(--ha-space-0);
-      margin: var(--ha-space-0) var(--ha-space-4)
+      padding: var(--ha-space-4);
+      margin: 0 var(--ha-space-4)
         max(var(--safe-area-inset-bottom), var(--ha-space-3));
       line-height: var(--ha-line-height-expanded);
       justify-content: center;
+    }
+
+    .empty-note {
+      color: var(--ha-color-text-secondary);
+      margin-top: var(--ha-space-2);
+      text-align: center;
+    }
+
+    .empty-note a {
+      color: currentColor;
+      text-decoration: underline;
     }
 
     .items.error {
@@ -295,7 +250,7 @@ export class HaAutomationAddItems extends LitElement {
       --md-list-item-supporting-text-font: var(--ha-font-family-body);
       --ha-md-list-item-gap: var(--ha-space-3);
       gap: var(--ha-space-2);
-      padding: var(--ha-space-0) var(--ha-space-4);
+      padding: 0 var(--ha-space-4);
     }
     .items ha-md-list ha-md-list-item {
       border-radius: var(--ha-border-radius-lg);
@@ -335,10 +290,6 @@ export class HaAutomationAddItems extends LitElement {
       border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
     }
 
-    ha-icon-next {
-      width: var(--ha-space-6);
-    }
-
     ha-svg-icon.plus {
       color: var(--primary-color);
     }
@@ -351,6 +302,8 @@ export class HaAutomationAddItems extends LitElement {
       border-radius: var(--ha-border-radius-md);
       background: var(--ha-color-fill-neutral-normal-resting);
       padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
+      border: var(--ha-border-width-sm) solid
+        var(--ha-color-border-neutral-quiet);
       color: var(--ha-color-on-neutral-normal);
       overflow: hidden;
     }
@@ -362,16 +315,11 @@ export class HaAutomationAddItems extends LitElement {
 
     .selected-target ha-icon,
     .selected-target ha-svg-icon,
-    .selected-target state-badge,
     .selected-target ha-domain-icon {
       display: flex;
       padding: var(--ha-space-1) 0;
     }
 
-    .selected-target state-badge {
-      --mdc-icon-size: 24px;
-    }
-    .selected-target state-badge,
     .selected-target ha-floor-icon {
       display: flex;
       height: 32px;

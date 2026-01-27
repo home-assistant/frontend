@@ -13,7 +13,6 @@ import {
   createCastConfig,
   createDemoConfig,
   createGalleryConfig,
-  createHassioConfig,
   createLandingPageConfig,
 } from "../rspack.cjs";
 
@@ -155,31 +154,6 @@ gulp.task("rspack-prod-cast", () =>
   prodBuild(
     bothBuilds(createCastConfig, {
       isProdBuild: true,
-    })
-  )
-);
-
-gulp.task("rspack-watch-hassio", () => {
-  // This command will run forever because we don't close compiler
-  rspack(
-    createHassioConfig({
-      isProdBuild: false,
-      latestBuild: true,
-    })
-  ).watch({ ignored: /build/, poll: isWsl }, doneHandler());
-
-  gulp.watch(
-    path.join(paths.translations_src, "en.json"),
-    gulp.series("build-supervisor-translations", "copy-translations-supervisor")
-  );
-});
-
-gulp.task("rspack-prod-hassio", () =>
-  prodBuild(
-    bothBuilds(createHassioConfig, {
-      isProdBuild: true,
-      isStatsBuild: env.isStatsBuild(),
-      isTestBuild: env.isTestBuild(),
     })
   )
 );

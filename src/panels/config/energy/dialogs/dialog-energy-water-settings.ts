@@ -278,7 +278,11 @@ export class DialogEnergyWaterSettings
   }
 
   private async _statisticChanged(ev: CustomEvent<{ value: string }>) {
-    if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
+    if (
+      ev.detail.value &&
+      isExternalStatistic(ev.detail.value) &&
+      this._costs !== "statistic"
+    ) {
       this._costs = "no-costs";
     }
     this._source = {

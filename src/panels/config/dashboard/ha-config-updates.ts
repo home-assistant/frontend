@@ -12,15 +12,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-progress-ring";
 import "../../../components/ha-spinner";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import { subscribeDeviceRegistry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-progress-ring";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends SubscribeMixin(LitElement) {
@@ -31,6 +31,8 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public updateEntities?: UpdateEntity[];
 
   @property({ type: Number }) public total?: number;
+
+  @property({ attribute: false }) public isInstallable = true;
 
   @state() private _devices?: DeviceRegistryEntry[];
 
@@ -89,9 +91,16 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
     return html`
       <div class="title" role="heading" aria-level="2">
-        ${this.hass.localize("ui.panel.config.updates.title", {
-          count: this.total || this.updateEntities.length,
-        })}
+        ${this.isInstallable
+          ? this.hass.localize("ui.panel.config.updates.title", {
+              count: this.total || this.updateEntities.length,
+            })
+          : this.hass.localize(
+              "ui.panel.config.updates.title_not_installable",
+              {
+                count: this.total || this.updateEntities.length,
+              }
+            )}
       </div>
       <ha-md-list>
         ${updates.map((entity) => {

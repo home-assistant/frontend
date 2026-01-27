@@ -1,6 +1,3 @@
-import type { HomeAssistant } from "../../../types";
-import { UNKNOWN } from "../../../data/entity";
-import { getUserPerson } from "../../../data/person";
 import { ensureArray } from "../../../common/array/ensure-array";
 import {
   checkTimeInRange,
@@ -11,6 +8,9 @@ import {
   type WeekdayShort,
 } from "../../../common/datetime/weekday";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { UNKNOWN } from "../../../data/entity/entity";
+import { getUserPerson } from "../../../data/person";
+import type { HomeAssistant } from "../../../types";
 
 export type Condition =
   | LocationCondition
@@ -104,6 +104,11 @@ function checkStateCondition(
       ? hass.states[condition.entity].state
       : UNKNOWN;
   let value = condition.state ?? condition.state_not;
+
+  // Guard against invalid/incomplete condition configuration
+  if (value === undefined) {
+    return false;
+  }
 
   // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
   if (Array.isArray(value)) {

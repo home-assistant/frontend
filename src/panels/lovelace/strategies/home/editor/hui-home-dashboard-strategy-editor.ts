@@ -36,7 +36,6 @@ export class HuiHomeDashboardStrategyEditor
           "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
         )}
         reorder
-        allow-custom-entity
         @value-changed=${this._valueChanged}
       >
       </ha-entities-picker>

@@ -120,6 +120,7 @@ export interface BackupContent {
   failed_folders?: string[];
   extra_metadata?: {
     "supervisor.addon_update"?: string;
+    "supervisor.app_update"?: string;
   };
   with_automatic_settings: boolean;
 }
@@ -338,14 +339,14 @@ export const computeBackupAgentName = (
 export const computeBackupSize = (backup: BackupContent) =>
   Math.max(...Object.values(backup.agents).map((agent) => agent.size));
 
-export type BackupType = "automatic" | "manual" | "addon_update";
+export type BackupType = "automatic" | "manual" | "app_update";
 
-const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "addon_update", "manual"];
+const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "app_update", "manual"];
 
 export const getBackupTypes = memoize((isHassio: boolean) =>
   isHassio
     ? BACKUP_TYPE_ORDER
-    : BACKUP_TYPE_ORDER.filter((type) => type !== "addon_update")
+    : BACKUP_TYPE_ORDER.filter((type) => type !== "app_update")
 );
 
 export const computeBackupType = (
@@ -355,8 +356,12 @@ export const computeBackupType = (
   if (backup.with_automatic_settings) {
     return "automatic";
   }
-  if (isHassio && backup.extra_metadata?.["supervisor.addon_update"] != null) {
-    return "addon_update";
+  if (
+    isHassio &&
+    (backup.extra_metadata?.["supervisor.addon_update"] != null ||
+      backup.extra_metadata?.["supervisor.app_update"] != null)
+  ) {
+    return "app_update";
   }
   return "manual";
 };

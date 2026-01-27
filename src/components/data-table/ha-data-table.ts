@@ -1364,6 +1364,9 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell > * {
           transition: var(--float-start) 0.2s ease;
         }
+        .mdc-data-table__header-cell--numeric > span {
+          transition: none;
+        }
         .mdc-data-table__header-cell ha-svg-icon {
           top: -3px;
           position: absolute;
@@ -1402,6 +1405,9 @@ export class HaDataTable extends LitElement {
         }
         .secondary {
           color: var(--secondary-text-color);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .scroller {
           height: calc(100% - 57px);

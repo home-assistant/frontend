@@ -11,22 +11,20 @@ import type { ControlSelectOption } from "../../../components/ha-control-select"
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
+import "../../../components/ha-attribute-icon";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   OperationMode,
   WaterHeaterEntity,
 } from "../../../data/water_heater";
-import {
-  computeOperationModeIcon,
-  compareWaterHeaterOperationMode,
-} from "../../../data/water_heater";
-import { UNAVAILABLE } from "../../../data/entity";
+import { compareWaterHeaterOperationMode } from "../../../data/water_heater";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
 import type {
-  WaterHeaterOperationModesCardFeatureConfig,
   LovelaceCardFeatureContext,
+  WaterHeaterOperationModesCardFeatureConfig,
 } from "./types";
 
 export const supportsWaterHeaterOperationModesCardFeature = (
@@ -162,10 +160,13 @@ class HuiWaterHeaterOperationModeCardFeature
       value: mode,
       label: this.hass!.formatEntityState(this._stateObj!, mode),
       icon: html`
-        <ha-svg-icon
+        <ha-attribute-icon
           slot="graphic"
-          .path=${computeOperationModeIcon(mode as OperationMode)}
-        ></ha-svg-icon>
+          .hass=${this.hass}
+          .stateObj=${this._stateObj}
+          attribute="operation_mode"
+          .attributeValue=${mode}
+        ></ha-attribute-icon>
       `,
     }));
 
@@ -184,10 +185,13 @@ class HuiWaterHeaterOperationModeCardFeature
         >
           ${this._currentOperationMode
             ? html`
-                <ha-svg-icon
+                <ha-attribute-icon
                   slot="icon"
-                  .path=${computeOperationModeIcon(this._currentOperationMode)}
-                ></ha-svg-icon>
+                  .hass=${this.hass}
+                  .stateObj=${this._stateObj}
+                  attribute="operation_mode"
+                  .attributeValue=${this._currentOperationMode}
+                ></ha-attribute-icon>
               `
             : html`
                 <ha-svg-icon slot="icon" .path=${mdiWaterBoiler}></ha-svg-icon>

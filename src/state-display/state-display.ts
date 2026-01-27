@@ -6,7 +6,7 @@ import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import "../components/ha-relative-time";
-import { isUnavailableState } from "../data/entity";
+import { isUnavailableState } from "../data/entity/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
 import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
@@ -101,6 +101,15 @@ class StateDisplay extends LitElement {
     }
     if (content === "name" && this.name) {
       return html`${this.name}`;
+    }
+
+    if (
+      content === "device_name" ||
+      content === "area_name" ||
+      content === "floor_name"
+    ) {
+      const type = content.replace("_name", "") as "device" | "area" | "floor";
+      return this.hass.formatEntityName(stateObj, { type }) || undefined;
     }
 
     let relativeDateTime: string | Date | undefined;

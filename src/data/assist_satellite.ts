@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { UNAVAILABLE } from "./entity";
+import type { HomeAssistant } from "../types";
+import { UNAVAILABLE } from "./entity/entity";
 
 export const enum AssistSatelliteEntityFeature {
   ANNOUNCE = 1,

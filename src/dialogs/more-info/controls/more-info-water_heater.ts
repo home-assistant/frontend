@@ -6,17 +6,17 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { WaterHeaterEntity } from "../../../data/water_heater";
 import {
   WaterHeaterEntityFeature,
   compareWaterHeaterOperationMode,
-  computeOperationModeIcon,
 } from "../../../data/water_heater";
 import "../../../state-control/water_heater/ha-state-control-water_heater-temperature";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+import "../../../components/ha-attribute-icon";
 
 @customElement("more-info-water_heater")
 class MoreInfoWaterHeater extends LitElement {
@@ -89,10 +89,13 @@ class MoreInfoWaterHeater extends LitElement {
                   .map(
                     (mode) => html`
                       <ha-list-item .value=${mode} graphic="icon">
-                        <ha-svg-icon
+                        <ha-attribute-icon
                           slot="graphic"
-                          .path=${computeOperationModeIcon(mode)}
-                        ></ha-svg-icon>
+                          .hass=${this.hass}
+                          .stateObj=${stateObj}
+                          attribute="operation_mode"
+                          .attributeValue=${mode}
+                        ></ha-attribute-icon>
                         ${this.hass.formatEntityState(stateObj, mode)}
                       </ha-list-item>
                     `
@@ -214,7 +217,7 @@ class MoreInfoWaterHeater extends LitElement {
           align-items: center;
           justify-content: center;
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: var(--ha-space-10);
         }
 
         .current div {
@@ -237,7 +240,7 @@ class MoreInfoWaterHeater extends LitElement {
           font-size: var(--ha-font-size-m);
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.4px;
-          margin-bottom: 4px;
+          margin-bottom: var(--ha-space-1);
         }
 
         .current .value {

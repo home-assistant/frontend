@@ -24,10 +24,6 @@ gulp.task(
   )
 );
 
-gulp.task("clean-hassio", async () =>
-  deleteSync([paths.hassio_output_root, paths.build_dir])
-);
-
 gulp.task(
   "clean-gallery",
   gulp.parallel("clean-translations", async () =>

@@ -22,7 +22,7 @@ import {
   CLIMATE_HVAC_ACTION_TO_MODE,
   ClimateEntityFeature,
 } from "../../data/climate";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,

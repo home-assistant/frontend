@@ -1,5 +1,4 @@
 import { customElement, property } from "lit/decorators";
-import { navigate } from "../../../../../common/navigate";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
@@ -11,10 +10,6 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean }) public narrow = false;
-
-  private _configEntry = new URLSearchParams(window.location.search).get(
-    "config_entry"
-  );
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -52,24 +47,12 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
     el.hass = this.hass;
     el.isWide = this.isWide;
     el.narrow = this.narrow;
-    el.configEntryId = this._configEntry;
     if (this._currentPage === "group") {
       el.groupId = this.routeTail.path.substr(1);
     } else if (this._currentPage === "device") {
       el.ieee = this.routeTail.path.substr(1);
     } else if (this._currentPage === "visualization") {
       el.zoomedDeviceIdFromURL = this.routeTail.path.substr(1);
-    }
-
-    const searchParams = new URLSearchParams(window.location.search);
-    if (this._configEntry && !searchParams.has("config_entry")) {
-      searchParams.append("config_entry", this._configEntry);
-      navigate(
-        `${this.routeTail.prefix}${
-          this.routeTail.path
-        }?${searchParams.toString()}`,
-        { replace: true }
-      );
     }
   }
 }

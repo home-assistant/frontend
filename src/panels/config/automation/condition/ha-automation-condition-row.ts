@@ -16,6 +16,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -43,6 +44,7 @@ import type {
   AutomationClipboard,
   Condition,
   ConditionSidebarConfig,
+  PlatformCondition,
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
@@ -50,7 +52,7 @@ import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -60,6 +62,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import "../target/ha-automation-row-targets";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./types/ha-automation-condition-and";
@@ -73,6 +76,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import type { DeviceCondition } from "../../../../data/device/device_automation";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -181,6 +185,14 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _renderRow() {
+    const target =
+      "target" in (this.conditionDescriptions[this.condition.condition] || {})
+        ? (this.condition as PlatformCondition).target
+        : "device_id" in this.condition &&
+            (this.condition as DeviceCondition).device_id
+          ? { device_id: [(this.condition as DeviceCondition).device_id] }
+          : undefined;
+
     return html`
       <ha-condition-icon
         slot="leading-icon"
@@ -191,6 +203,7 @@ export default class HaAutomationConditionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -474,6 +487,14 @@ export default class HaAutomationConditionRow extends LitElement {
         : nothing}
     `;
   }
+
+  private _renderTargets = memoizeOne(
+    (target?: HassServiceTarget) =>
+      html`<ha-automation-row-targets
+        .hass=${this.hass}
+        .target=${target}
+      ></ha-automation-row-targets>`
+  );
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -818,6 +839,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    ev.stopPropagation();
     const action = ev.detail?.item?.value;
 
     if (!action) {

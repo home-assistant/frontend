@@ -4,8 +4,8 @@ import type { HassioResponse } from "./common";
 import { hassioApiResultExtractor } from "./common";
 
 export interface HassioResolution {
-  unsupported: (keyof TranslationDict["supervisor"]["system"]["supervisor"]["unsupported_reason"])[];
-  unhealthy: (keyof TranslationDict["supervisor"]["system"]["supervisor"]["unhealthy_reason"])[];
+  unsupported: (keyof TranslationDict["ui"]["dialogs"]["unsupported"]["reasons"])[];
+  unhealthy: (keyof TranslationDict["ui"]["dialogs"]["unhealthy"]["reasons"])[];
   issues: string[];
   suggestions: string[];
 }

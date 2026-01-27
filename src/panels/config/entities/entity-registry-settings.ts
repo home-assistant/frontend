@@ -10,12 +10,12 @@ import {
   deleteConfigEntry,
   getConfigEntry,
 } from "../../../data/config_entries";
-import { updateDeviceRegistryEntry } from "../../../data/device_registry";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../../data/integration";
 import {
   showAlertDialog,

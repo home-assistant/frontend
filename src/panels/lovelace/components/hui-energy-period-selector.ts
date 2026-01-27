@@ -1,5 +1,4 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiCheck, mdiDotsVertical } from "@mdi/js";
 import {
   differenceInDays,
   differenceInMonths,
@@ -16,13 +15,16 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import {
   calcDate,
-  calcDateProperty,
   calcDateDifferenceProperty,
+  calcDateProperty,
   shiftDateRange,
 } from "../../../common/datetime/calc_date";
+import type { DateRange } from "../../../common/datetime/calc_date_range";
+import { calcDateRange } from "../../../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
@@ -32,19 +34,19 @@ import {
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-button";
-import "../../../components/ha-check-list-item";
 import "../../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../data/energy";
 import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
-import { calcDateRange } from "../../../common/datetime/calc_date_range";
-import type { DateRange } from "../../../common/datetime/calc_date_range";
 
 const RANGE_KEYS: DateRange[] = [
   "today",
@@ -64,10 +66,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @property({ attribute: "collection-key" }) public collectionKey?: string;
 
-  @property({ type: Boolean, reflect: true }) public narrow?;
+  @property({ type: Boolean, reflect: true }) public narrow?: boolean;
+
+  @property({ type: Boolean, reflect: true }) public fixed?: boolean;
 
   @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
     true;
+
+  @property({ attribute: "vertical-opening-direction" })
+  public verticalOpeningDirection?: "up" | "down";
+
+  @state() _datepickerOpen = false;
 
   @state() _startDate?: Date;
 
@@ -150,7 +159,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     );
 
     return html`
-      <div class="row">
+      <div
+        class=${classMap({
+          row: true,
+          "datepicker-open": this._datepickerOpen,
+        })}
+      >
+        <div class="backdrop"></div>
         <div class="label">
           ${simpleRange === "day"
             ? this.narrow
@@ -202,8 +217,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .ranges=${this._ranges}
             @value-changed=${this._dateRangeChanged}
             @preset-selected=${this._presetSelected}
+            @toggle=${this._handleDatepickerToggle}
             minimal
             header-position
+            .verticalOpeningDirection=${this.verticalOpeningDirection}
           ></ha-date-range-picker>
         </div>
 
@@ -219,25 +236,30 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             </ha-button>`
           : nothing}
 
-        <ha-button-menu>
+        <ha-dropdown
+          placement="bottom-end"
+          @wa-select=${this._handleMenuAction}
+        >
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           ${this.allowCompare
-            ? html`<ha-check-list-item
-                left
-                @request-selected=${this._toggleCompare}
-                .selected=${this._compare}
-              >
+            ? html`<ha-dropdown-item value="toggle-compare">
+                ${this._compare
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${mdiCheck}
+                    ></ha-svg-icon>`
+                  : nothing}
                 ${this.hass.localize(
                   "ui.panel.lovelace.components.energy_period_selector.compare"
                 )}
-              </ha-check-list-item>`
+              </ha-dropdown-item>`
             : nothing}
           <slot name="overflow-menu"></slot>
-        </ha-button-menu>
+        </ha-dropdown>
       </div>
     `;
   }
@@ -446,11 +468,19 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._endDate = energyData.end || endOfToday();
   }
 
-  private _toggleCompare(ev: CustomEvent<RequestSelectedDetail>) {
-    if (ev.detail.source !== "interaction") {
-      return;
+  private _handleDatepickerToggle(ev: CustomEvent<{ open: boolean }>) {
+    this._datepickerOpen = ev.detail.open;
+  }
+
+  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const value = ev.detail.item.value;
+    if (value === "toggle-compare") {
+      this._toggleCompare();
     }
-    this._compare = ev.detail.selected;
+  }
+
+  private _toggleCompare() {
+    this._compare = !this._compare;
     const energyCollection = getEnergyDataCollection(this.hass, {
       key: this.collectionKey,
     });
@@ -464,6 +494,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     .row {
       display: flex;
       align-items: center;
+      justify-content: space-between;
     }
     :host .time-handle {
       display: flex;
@@ -484,7 +515,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-start: auto;
       margin-inline-end: initial;
     }
-    :host([narrow]) .label {
+    :host([narrow]) .label,
+    :host([fixed]) .label {
       margin-left: unset;
       margin-inline-start: unset;
       margin-inline-end: initial;
@@ -495,6 +527,29 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-end: initial;
       flex-shrink: 0;
       --ha-button-theme-color: currentColor;
+    }
+    .backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: var(--dialog-z-index, 8);
+      -webkit-backdrop-filter: var(
+        --ha-dialog-scrim-backdrop-filter,
+        var(--dialog-backdrop-filter)
+      );
+      backdrop-filter: var(
+        --ha-dialog-scrim-backdrop-filter,
+        var(--dialog-backdrop-filter)
+      );
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--ha-animation-base-duration) ease-in-out;
+    }
+    .datepicker-open .backdrop {
+      opacity: 1;
+      pointer-events: auto;
     }
   `;
 }

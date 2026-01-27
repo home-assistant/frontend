@@ -63,11 +63,11 @@ import {
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { fullEntitiesContext } from "../../../data/context";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   type EntityRegistryEntry,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { Action } from "../../../data/script";
 import {
   showAlertDialog,
@@ -82,7 +82,6 @@ import type { Entries, HomeAssistant, Route } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import {
   type EntityRegistryUpdate,

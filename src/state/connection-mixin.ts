@@ -10,9 +10,9 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { promiseTimeout } from "../common/util/promise-timeout";
-import { subscribeAreaRegistry } from "../data/area_registry";
+import { subscribeAreaRegistry } from "../data/area/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
-import { subscribeDeviceRegistry } from "../data/device_registry";
+import { subscribeDeviceRegistry } from "../data/device/device_registry";
 import {
   subscribeFrontendSystemData,
   subscribeFrontendUserData,
@@ -77,6 +77,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         resources: null as any,
         localize: () => "",
         translationMetadata,
+        kioskMode: false,
         dockedSidebar: "docked",
         vibrate: true,
         debugConnection: __DEV__,
@@ -211,6 +212,13 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
         formatEntityAttributeValue: (stateObj, attribute, value) =>
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
+        formatEntityAttributeValueToParts: (stateObj, attribute, value) => [
+          {
+            type: "value",
+            value:
+              value != null ? value : (stateObj.attributes[attribute] ?? ""),
+          },
+        ],
         formatEntityName: (stateObj) => computeStateName(stateObj),
         ...getState(),
         ...this._pendingHass,

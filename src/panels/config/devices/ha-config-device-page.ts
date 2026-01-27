@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiCog,
@@ -9,6 +10,7 @@ import {
   mdiPencil,
   mdiPlusCircle,
   mdiRestore,
+  mdiShapeOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -29,10 +31,11 @@ import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
@@ -46,23 +49,23 @@ import {
   sortConfigEntries,
 } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
+} from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import {
   fetchDiagnosticHandler,
   getConfigEntryDiagnosticsDownloadUrl,
   getDeviceDiagnosticsDownloadUrl,
 } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
   updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
@@ -687,20 +690,34 @@ export class HaConfigDevicePage extends LitElement {
         @click=${this._showSettings}
         .label=${this.hass.localize("ui.panel.config.devices.edit_settings")}
       ></ha-icon-button>
-      <ha-md-button-menu slot="toolbar-icon">
+      <ha-dropdown
+        slot="toolbar-icon"
+        @wa-select=${this._handleToolbarMenuAction}
+      >
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
 
-        <ha-md-menu-item .clickAction=${this._resetEntityIds}>
-          <ha-svg-icon slot="start" .path=${mdiRestore}></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.config.devices.restore_entity_ids")}
-          </div>
-        </ha-md-menu-item>
-      </ha-md-button-menu>
+        <a href=${`/config/entities?historyBack=1&device=${this.deviceId}`}>
+          <ha-dropdown-item>
+            <ha-svg-icon .path=${mdiShapeOutline} slot="icon"></ha-svg-icon>
+            ${this.hass.localize(
+              `ui.panel.config.integrations.config_entry.entities`,
+              { count: entities.length }
+            )}
+            <ha-icon-next slot="details"></ha-icon-next>
+          </ha-dropdown-item>
+        </a>
+
+        <wa-divider></wa-divider>
+
+        <ha-dropdown-item value="reset_entity_ids">
+          <ha-svg-icon slot="icon" .path=${mdiRestore}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.devices.restore_entity_ids")}
+        </ha-dropdown-item>
+      </ha-dropdown>
 
       <div class="container">
         <div class="header fullwidth">
@@ -806,39 +823,43 @@ export class HaConfigDevicePage extends LitElement {
 
                     ${actions.length
                       ? html`
-                          <ha-button-menu>
+                          <ha-dropdown
+                            @wa-select=${this._deviceActionSelected}
+                            placement="bottom-end"
+                          >
                             <ha-icon-button
                               slot="trigger"
                               .label=${this.hass.localize("ui.common.menu")}
                               .path=${mdiDotsVertical}
                             ></ha-icon-button>
-                            ${actions.map((deviceAction) => {
-                              const listItem = html`<ha-list-item
-                                class=${ifDefined(deviceAction.classes)}
-                                .action=${deviceAction.action}
-                                @click=${this._deviceActionClicked}
-                                graphic="icon"
-                                .hasMeta=${Boolean(deviceAction.trailingIcon)}
+                            ${actions.map((deviceAction, idx) => {
+                              const dropdownItem = html`<ha-dropdown-item
+                                .value=${idx}
+                                .data=${deviceAction}
+                                .variant=${deviceAction.classes?.includes(
+                                  "warning"
+                                )
+                                  ? "danger"
+                                  : "default"}
                               >
-                                ${deviceAction.label}
                                 ${deviceAction.icon
                                   ? html`
                                       <ha-svg-icon
-                                        class=${ifDefined(deviceAction.classes)}
                                         .path=${deviceAction.icon}
-                                        slot="graphic"
+                                        slot="icon"
                                       ></ha-svg-icon>
                                     `
                                   : ""}
+                                ${deviceAction.label}
                                 ${deviceAction.trailingIcon
                                   ? html`
                                       <ha-svg-icon
-                                        slot="meta"
+                                        slot="details"
                                         .path=${deviceAction.trailingIcon}
                                       ></ha-svg-icon>
                                     `
                                   : ""}
-                              </ha-list-item>`;
+                              </ha-dropdown-item>`;
                               return deviceAction.href
                                 ? html`<a
                                     href=${deviceAction.href}
@@ -848,11 +869,11 @@ export class HaConfigDevicePage extends LitElement {
                                         ? "noreferrer"
                                         : undefined
                                     )}
-                                    >${listItem}
+                                    >${dropdownItem}
                                   </a>`
-                                : listItem;
+                                : dropdownItem;
                             })}
-                          </ha-button-menu>
+                          </ha-dropdown>
                         `
                       : ""}
                   </div>
@@ -1317,6 +1338,13 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
+  private _handleToolbarMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+    if (action === "reset_entity_ids") {
+      this._resetEntityIds();
+    }
+  }
+
   private _resetEntityIds = () => {
     const entities = this._entities(this.deviceId, this._entityReg).map(
       (e) => e.entity_id
@@ -1456,6 +1484,13 @@ export class HaConfigDevicePage extends LitElement {
 
     const signedUrl = await getSignedPath(this.hass, a.getAttribute("href"));
     fileDownload(signedUrl.path);
+  }
+
+  private _deviceActionSelected(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const deviceAction = (ev.detail?.item as any)?.data as DeviceAction;
+    if (deviceAction?.action) {
+      deviceAction.action(ev);
+    }
   }
 
   private _deviceActionClicked(ev) {

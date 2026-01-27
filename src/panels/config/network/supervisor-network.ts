@@ -4,8 +4,10 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
@@ -476,9 +478,9 @@ export class HassioNetwork extends LitElement {
                     <div class="address-row">
                       <ha-textfield
                         id="nameserver"
-                        .label=${this.hass.localize(
+                        .label=${`${this.hass.localize(
                           "ui.panel.config.network.supervisor.dns_server"
-                        )}
+                        )}${this._getPredefinedDnsName(nameserver, version)}`}
                         .version=${version}
                         .value=${nameserver}
                         .index=${index}
@@ -500,13 +502,12 @@ export class HassioNetwork extends LitElement {
                   `
                 )}
               </div>
-              <ha-button-menu
-                @opened=${this._handleDNSMenuOpened}
-                @closed=${this._handleDNSMenuClosed}
+              <ha-dropdown
+                @wa-show=${this._handleDNSMenuOpened}
+                @wa-hide=${this._handleDNSMenuClosed}
                 .version=${version}
+                @wa-select=${this._handleDropdownSelect}
                 class="add-nameserver"
-                appearance="filled"
-                size="small"
               >
                 <ha-button appearance="filled" size="small" slot="trigger">
                   ${this.hass.localize(
@@ -519,25 +520,36 @@ export class HassioNetwork extends LitElement {
                 </ha-button>
                 ${Object.entries(PREDEFINED_DNS[version]).map(
                   ([name, addresses]) => html`
-                    <ha-list-item
-                      @click=${this._addPredefinedDNS}
+                    <ha-dropdown-item
+                      value="add_predefined"
                       .version=${version}
                       .addresses=${addresses}
                     >
                       ${name}
-                    </ha-list-item>
+                    </ha-dropdown-item>
                   `
                 )}
-                <ha-list-item @click=${this._addCustomDNS} .version=${version}>
+                <ha-dropdown-item value="add_custom" .version=${version}>
                   ${this.hass.localize(
                     "ui.panel.config.network.supervisor.custom_dns"
                   )}
-                </ha-list-item>
-              </ha-button-menu>
+                </ha-dropdown-item>
+              </ha-dropdown>
             `
           : nothing}
       </ha-expansion-panel>
     `;
+  }
+
+  private _getPredefinedDnsName(nameserver: string, version: string) {
+    for (const [name, addresses] of Object.entries(
+      PREDEFINED_DNS[version as "ipv4" | "ipv6"]
+    )) {
+      if (addresses.includes(nameserver)) {
+        return ` - ${name}`;
+      }
+    }
+    return "";
   }
 
   private async _updateNetwork() {
@@ -747,10 +759,7 @@ export class HassioNetwork extends LitElement {
     this._dnsMenuOpen = false;
   }
 
-  private _addPredefinedDNS(ev: Event) {
-    const source = ev.target as any;
-    const version = source.version as "ipv4" | "ipv6";
-    const addresses = source.addresses as string[];
+  private _addPredefinedDNS(version: "ipv4" | "ipv6", addresses: string[]) {
     if (!this._interface![version]!.nameservers) {
       this._interface![version]!.nameservers = [];
     }
@@ -759,9 +768,7 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_interface");
   }
 
-  private _addCustomDNS(ev: Event) {
-    const source = ev.target as any;
-    const version = source.version as "ipv4" | "ipv6";
+  private _addCustomDNS(version: "ipv4" | "ipv6") {
     if (!this._interface![version]!.nameservers) {
       this._interface![version]!.nameservers = [];
     }
@@ -777,6 +784,22 @@ export class HassioNetwork extends LitElement {
     this._interface![version]!.nameservers!.splice(index, 1);
     this._dirty = true;
     this.requestUpdate("_interface");
+  }
+
+  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    const action = ev.detail?.item?.value;
+
+    if (action === "add_predefined") {
+      this._addPredefinedDNS(
+        (ev.detail.item as any).version,
+        (ev.detail.item as any).addresses
+      );
+      return;
+    }
+
+    if (action === "add_custom") {
+      this._addCustomDNS((ev.detail.item as any).version);
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -817,6 +840,10 @@ export class HassioNetwork extends LitElement {
           --mdc-icon-button-size: 36px;
           margin-top: 16px;
         }
+        ha-dropdown {
+          display: block;
+        }
+
         .add-address,
         .add-nameserver {
           margin-top: 16px;

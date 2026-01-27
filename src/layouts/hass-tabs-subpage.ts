@@ -23,6 +23,8 @@ export interface PageNavigation {
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
+  iconSecondaryPath?: string;
+  iconViewBox?: string;
   description?: string;
   iconColor?: string;
   info?: any;
@@ -31,8 +33,6 @@ export interface PageNavigation {
 @customElement("hass-tabs-subpage")
 class HassTabsSubpage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean }) public supervisor = false;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
@@ -137,7 +137,6 @@ class HassTabsSubpage extends LitElement {
             ${this.mainPage || (!this.backPath && history.state?.root)
               ? html`
                   <ha-menu-button
-                    .hassio=${this.supervisor}
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                   ></ha-menu-button>
