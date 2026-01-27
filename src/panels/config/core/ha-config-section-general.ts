@@ -106,6 +106,7 @@ class HaConfigSectionGeneral extends LitElement {
                 .disabled=${disabled}
                 .value=${this._timeZone}
                 @value-changed=${this._handleValueChanged}
+                hide-clear-icon
               ></ha-timezone-picker>
               <ha-textfield
                 .label=${this.hass.localize(

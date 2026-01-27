@@ -68,6 +68,7 @@ export type Selector =
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TimezoneSelector
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
@@ -294,6 +295,10 @@ export interface LanguageSelector {
     native_name?: boolean;
     no_sort?: boolean;
   } | null;
+}
+
+export interface TimezoneSelector {
+  timezone: {} | null;
 }
 
 export interface LocationSelector {
