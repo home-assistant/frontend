@@ -53,7 +53,10 @@ const computeAreaCard = (
     area: areaId,
     display_type: "compact",
     sensor_classes: sensorClasses,
-    navigation_path: path,
+    tap_action: {
+      action: "navigate",
+      navigation_path: path,
+    },
     vertical: true,
     grid_options: {
       rows: 2,
