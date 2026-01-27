@@ -98,6 +98,7 @@ class HaConfigSectionGeneral extends LitElement {
                 @change=${this._handleChange}
               ></ha-textfield>
               <ha-timezone-picker
+                .hass=${this.hass}
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.time_zone"
                 )}
@@ -105,8 +106,7 @@ class HaConfigSectionGeneral extends LitElement {
                 .disabled=${disabled}
                 .value=${this._timeZone}
                 @value-changed=${this._handleValueChanged}
-              >
-              </ha-timezone-picker>
+              ></ha-timezone-picker>
               <ha-textfield
                 .label=${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.elevation"
