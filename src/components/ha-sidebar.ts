@@ -133,7 +133,6 @@ export const computePanels = memoizeOne(
     }
 
     const beforeSpacer: PanelInfo[] = [];
-    const afterSpacer: PanelInfo[] = [];
 
     const allPanels = Object.values(panels).filter(
       (panel) =>
@@ -161,11 +160,8 @@ export const computePanels = memoizeOne(
     beforeSpacer.sort((a, b) =>
       panelSorter(reverseSort, defaultPanel, a, b, locale.language)
     );
-    afterSpacer.sort((a, b) =>
-      panelSorter(reverseSort, defaultPanel, a, b, locale.language)
-    );
 
-    return [beforeSpacer, afterSpacer];
+    return [beforeSpacer, []];
   }
 );
 
