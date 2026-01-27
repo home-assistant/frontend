@@ -2,7 +2,7 @@ import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { navigate } from "../../common/navigate";
+import { goBack, navigate } from "../../common/navigate";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
@@ -136,7 +136,7 @@ class PanelDeveloperTools extends LitElement {
   }
 
   private _handleBack() {
-    navigate("/config");
+    goBack("/config");
   }
 
   static get styles(): CSSResultGroup {
