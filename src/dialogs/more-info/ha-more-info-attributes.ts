@@ -128,7 +128,7 @@ class HaMoreInfoAttributes extends LitElement {
     }
 
     .card-content {
-      padding: var(--ha-space-4);
+      padding: var(--ha-space-2) var(--ha-space-4);
     }
 
     .data-entry {
@@ -139,7 +139,7 @@ class HaMoreInfoAttributes extends LitElement {
       border-bottom: 1px solid var(--divider-color);
     }
 
-    .data-entry:last-child {
+    .data-entry:last-of-type {
       border-bottom: none;
     }
 
