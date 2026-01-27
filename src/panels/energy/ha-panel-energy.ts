@@ -115,6 +115,8 @@ class PanelEnergy extends LitElement {
   @state()
   private _prefs?: EnergyPreferences;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   @state()
   private _error?: string;
 
@@ -248,6 +250,8 @@ class PanelEnergy extends LitElement {
         .lovelace=${this._lovelace}
         .route=${this.route}
         .panel=${this.panel}
+        .backButton=${this._searchParms.has("historyBack")}
+        .backPath=${this._searchParms.get("backPath") || "/"}
         .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
         class=${classMap({ "has-period-selector": showEnergySelector })}

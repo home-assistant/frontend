@@ -146,6 +146,10 @@ class HUIRoot extends LitElement {
 
   @property({ type: Boolean, attribute: "no-edit" }) public noEdit = false;
 
+  @property({ attribute: false }) public backButton = false;
+
+  @property({ attribute: false }) public backPath?: string;
+
   @state() private _curView?: number | "hass-unused-entities";
 
   private _configChangedByUndo = false;
@@ -567,7 +571,7 @@ class HUIRoot extends LitElement {
                     <div class="action-items">${this._renderActionItems()}</div>
                   `
                 : html`
-                    ${isSubview
+                    ${isSubview || this.backButton
                       ? html`
                           <ha-icon-button-arrow-prev
                             .hass=${this.hass}
@@ -880,6 +884,8 @@ class HUIRoot extends LitElement {
 
     if (curViewConfig?.back_path != null) {
       navigate(curViewConfig.back_path, { replace: true });
+    } else if (this.backPath) {
+      navigate(this.backPath, { replace: true });
     } else if (history.length > 1) {
       goBack();
     } else if (!views[0].subview) {
