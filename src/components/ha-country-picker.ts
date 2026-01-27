@@ -1,12 +1,11 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { FrontendLocaleData } from "../data/translation";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
-import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 const SEARCH_KEYS = [
@@ -321,15 +320,11 @@ export class HaCountryPicker extends LitElement {
 
   @property({ attribute: "no-sort", type: Boolean }) public noSort = false;
 
-  @state() private _defaultCountries: string[] = COUNTRIES;
-
-  @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
-
   private _getCountryOptions = memoizeOne(getCountryOptions);
 
   private _getItems = () =>
     this._getCountryOptions(
-      this.countries ?? this._defaultCountries,
+      this.countries ?? COUNTRIES,
       this.noSort,
       this.hass?.locale
     );
