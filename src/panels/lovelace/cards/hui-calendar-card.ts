@@ -128,10 +128,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       );
       if (this._config?.entities) {
         this._calendars = this._config.entities.map((entity, idx) => {
-          const entityColor = entityOptionsMap.get(entity)?.calendar?.color as
-            | string
-            | null
-            | undefined;
+          const entityColor = entityOptionsMap.get(entity)?.calendar?.color;
           let backgroundColor: string;
           // Validate and use the color from entity registry if valid
           if (entityColor && isValidColorString(entityColor)) {
