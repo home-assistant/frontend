@@ -4,6 +4,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { isServiceLoaded } from "../../common/config/is_service_loaded";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
@@ -14,6 +15,7 @@ import {
   MediaPlayerEntityFeature,
   mediaPlayerJoin,
   mediaPlayerUnjoin,
+  mediaPlayerGetGroupablePlayers,
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -21,6 +23,7 @@ import "../ha-alert";
 import "../ha-button";
 import "../ha-dialog";
 import "../ha-dialog-header";
+import "../ha-spinner";
 import "./ha-media-player-toggle";
 import type { JoinMediaPlayersDialogParams } from "./show-join-media-players-dialog";
 
@@ -34,12 +37,17 @@ class DialogJoinMediaPlayers extends LitElement {
 
   @state() private _selectedEntities!: string[];
 
+  @state() private _joinableMembers?: string[];
+
+  @state() private _loading = false;
+
   @state() private _submitting?: boolean;
 
   @state() private _error?: string;
 
-  public showDialog(params: JoinMediaPlayersDialogParams): void {
+  public async showDialog(params: JoinMediaPlayersDialogParams): Promise<void> {
     this._entityId = params.entityId;
+    this._loading = true;
 
     const stateObj = this.hass.states[params.entityId] as
       | MediaPlayerEntity
@@ -51,12 +59,42 @@ class DialogJoinMediaPlayers extends LitElement {
       ) || [];
 
     this._selectedEntities = this._groupMembers;
+
+    try {
+      if (isServiceLoaded(this.hass, "media_player", "get_groupable_players")) {
+        try {
+          const joinableMembers = await mediaPlayerGetGroupablePlayers(
+            this.hass,
+            params.entityId
+          );
+          if (this._entityId === params.entityId) {
+            this._joinableMembers = joinableMembers;
+            this._error = undefined;
+          }
+        } catch (_err) {
+          if (this._entityId === params.entityId) {
+            this._joinableMembers = undefined;
+            this._error = this.hass.localize(
+              "ui.card.media_player.groupable_players_load_error"
+            );
+          }
+        }
+      } else {
+        this._joinableMembers = undefined;
+      }
+    } finally {
+      if (this._entityId === params.entityId) {
+        this._loading = false;
+      }
+    }
   }
 
   public closeDialog() {
     this._entityId = undefined;
     this._selectedEntities = [];
     this._groupMembers = [];
+    this._joinableMembers = undefined;
+    this._loading = false;
     this._submitting = false;
     this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -108,15 +146,24 @@ class DialogJoinMediaPlayers extends LitElement {
             checked
             disabled
           ></ha-media-player-toggle>
-          ${this._mediaPlayerEntities(this.hass.entities).map(
-            (entity) =>
-              html`<ha-media-player-toggle
-                .hass=${this.hass}
-                .entityId=${entity.entity_id}
-                .checked=${this._selectedEntities.includes(entity.entity_id)}
-                @change=${this._handleSelectedChange}
-              ></ha-media-player-toggle>`
-          )}
+          ${this._loading
+            ? html`<div class="loading" role="status" aria-live="polite">
+                <ha-spinner></ha-spinner>
+                <p>
+                  ${this.hass.localize("ui.card.media_player.loading_members")}
+                </p>
+              </div>`
+            : this._mediaPlayerEntities(this.hass.entities).map(
+                (entity) =>
+                  html`<ha-media-player-toggle
+                    .hass=${this.hass}
+                    .entityId=${entity.entity_id}
+                    .checked=${this._selectedEntities.includes(
+                      entity.entity_id
+                    )}
+                    @change=${this._handleSelectedChange}
+                  ></ha-media-player-toggle>`
+              )}
         </div>
         <ha-button
           appearance="plain"
@@ -141,6 +188,13 @@ class DialogJoinMediaPlayers extends LitElement {
   ) => {
     if (!this._entityId) {
       return [];
+    }
+
+    // If joinable members were loaded from service, use those
+    if (this._joinableMembers !== undefined) {
+      return this._joinableMembers
+        .filter((entityId) => entityId in entities)
+        .map((entityId) => entities[entityId]);
     }
 
     const currentPlatform = this.hass.entities[this._entityId]?.platform;
@@ -223,6 +277,20 @@ class DialogJoinMediaPlayers extends LitElement {
         ha-dialog-header ha-button {
           margin: 6px;
           display: block;
+        }
+
+        .loading {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: var(--ha-space-8) 0;
+          gap: var(--ha-space-4);
+        }
+
+        .loading p {
+          margin: 0;
+          color: var(--secondary-text-color);
         }
       `,
     ];
