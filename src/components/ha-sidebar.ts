@@ -418,21 +418,21 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`<div class="panels-list">
       <div class="wrapper">
         ${renderList(
-          this._renderPanels(beforeSpacer, selectedPanel),
-          "before-spacer",
-          true
-        )}
+      this._renderPanels(beforeSpacer, selectedPanel),
+      "before-spacer",
+      true
+    )}
         ${this.renderScrollableFades()}
       </div>
       ${this._renderSpacer()}
       ${renderList(
-        html`
+      html`
           ${this._renderPanels(afterSpacer, selectedPanel)}
           ${this._renderFixedPanels(selectedPanel)}
         `,
-        "after-spacer",
-        false
-      )}
+      "after-spacer",
+      false
+    )}
     </div>`;
   }
 
@@ -674,20 +674,13 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       }
     }
     const tooltip = this._tooltip;
-    const allListbox = this.shadowRoot!.querySelectorAll("ha-md-list")!;
-    const listbox = [...allListbox].find((lb) => lb.contains(item));
-
-    const top =
-      item.offsetTop +
-      11 +
-      (listbox?.offsetTop ?? 0) -
-      (listbox?.scrollTop ?? 0);
+    const itemRect = item.getBoundingClientRect();
 
     tooltip.innerText = itemText?.innerText ?? "";
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
-    tooltip.style.top = `${top}px`;
-    tooltip.style.left = `calc(${item.offsetLeft + item.clientWidth + 8}px + var(--safe-area-inset-left, 0px))`;
+    tooltip.style.top = `${itemRect.top + itemRect.height / 2 - tooltip.offsetHeight / 2}px`;
+    tooltip.style.left = `calc(${itemRect.right + 8}px)`;
   }
 
   private _hideTooltip() {
