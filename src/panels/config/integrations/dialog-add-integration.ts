@@ -453,7 +453,7 @@ class AddIntegrationDialog extends LitElement {
         @close-dialog=${this.closeDialog}
         @supported-by=${this._handleSupportedByEvent}
         @select-brand=${this._handleSelectBrandEvent}
-      ></ha-domain-integrations> `;
+      ></ha-domain-integrations>`;
   }
 
   private _handleSelectBrandEvent(ev: CustomEvent) {
