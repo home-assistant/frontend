@@ -2368,6 +2368,10 @@
             "main": "System",
             "secondary": "Create backups, check logs, or reboot your system"
           },
+          "developer_tools": {
+            "main": "Developer tools",
+            "secondary": "Advanced tools for inspecting and debugging your system"
+          },
           "about": {
             "main": "About",
             "secondary": "Version information, credit, and more"

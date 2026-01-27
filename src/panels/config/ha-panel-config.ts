@@ -9,6 +9,7 @@ import {
   mdiDatabase,
   mdiDevices,
   mdiFlask,
+  mdiHammer,
   mdiInformation,
   mdiInformationOutline,
   mdiLabel,
@@ -194,6 +195,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "system",
       iconPath: mdiCog,
       iconColor: "#301ABE",
+      core: true,
+    },
+    {
+      path: "/developer-tools",
+      translationKey: "developer_tools",
+      iconPath: mdiHammer,
+      iconColor: "#7A5AA6",
       core: true,
     },
     {

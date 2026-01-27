@@ -58,7 +58,6 @@ const SORT_VALUE_URL_PATHS = {
   map: 2,
   logbook: 3,
   history: 4,
-  "developer-tools": 100,
 };
 
 const panelSorter = (
