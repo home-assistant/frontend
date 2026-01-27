@@ -144,6 +144,8 @@ class HUIRoot extends LitElement {
 
   @property({ attribute: false }) public extraActionItems?: ExtraActionItem[];
 
+  @property({ type: Boolean, attribute: "no-edit" }) public noEdit = false;
+
   @state() private _curView?: number | "hass-unused-entities";
 
   private _configChangedByUndo = false;
@@ -345,7 +347,8 @@ class HUIRoot extends LitElement {
           !this._editMode &&
           this.hass!.user?.is_admin &&
           !this.hass!.config.recovery_mode &&
-          !this.hass.kioskMode,
+          !this.hass.kioskMode &&
+          !this.noEdit,
         overflow: true,
         overflow_can_promote: true,
       },
@@ -1302,7 +1305,6 @@ class HUIRoot extends LitElement {
         .header {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
           width: calc(
@@ -1339,6 +1341,7 @@ class HUIRoot extends LitElement {
           color: var(--app-header-edit-text-color, white);
         }
         .toolbar {
+          border-bottom: var(--app-header-border-bottom, none);
           height: var(--header-height);
           display: flex;
           align-items: center;
@@ -1346,6 +1349,9 @@ class HUIRoot extends LitElement {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
+        }
+        .edit-mode .toolbar {
+          border-bottom: none;
         }
         .narrow .toolbar {
           padding: 0 4px;

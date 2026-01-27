@@ -138,4 +138,3 @@ export const getPanelIconPath = (panel: PanelInfo): string | undefined =>
   PANEL_ICON_PATHS[panel.url_path];
 
 export const FIXED_PANELS = ["profile", "config"];
-export const SHOW_AFTER_SPACER_PANELS = ["developer-tools"];

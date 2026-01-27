@@ -13,8 +13,8 @@ import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
-import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-badge";
+import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
@@ -28,13 +28,13 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { tileCardStyle } from "./tile/tile-card-style";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
+import { tileCardStyle } from "./tile/tile-card-style";
 import type { TileCardConfig } from "./types";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
@@ -284,6 +284,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const featurePosition = this._featurePosition(this._config);
     const features = this._displayedFeatures(this._config);
 
+    const hasImage = Boolean(imageUrl);
+
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         <ha-tile-container
@@ -307,14 +309,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
             data-state=${ifDefined(stateObj?.state)}
-            class=${classMap({ image: Boolean(imageUrl) })}
+            class=${classMap({ image: hasImage })}
           >
-            <ha-state-icon
-              slot="icon"
-              .icon=${this._config.icon}
-              .stateObj=${stateObj}
-              .hass=${this.hass}
-            ></ha-state-icon>
+            ${hasImage
+              ? nothing
+              : html`
+                  <ha-state-icon
+                    slot="icon"
+                    .icon=${this._config.icon}
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                  ></ha-state-icon>
+                `}
             ${renderTileBadge(stateObj, this.hass)}
           </ha-tile-icon>
           <ha-tile-info slot="info">

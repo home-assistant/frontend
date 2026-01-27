@@ -9,13 +9,17 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
-import { navigate } from "../../../common/navigate";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import {
   formatNumber,
   isNumericState,
@@ -109,10 +113,28 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const displayType =
       config.display_type || (config.show_camera ? "camera" : "picture");
     const vertical = displayType === "compact" ? config.vertical : false;
+
+    // Backwards compatibility: convert navigation_path to tap_action
+    let tapAction = config.tap_action;
+    if (config.navigation_path && !tapAction) {
+      tapAction = {
+        action: "navigate",
+        navigation_path: config.navigation_path,
+      };
+    }
+
+    // Set smart default for image_tap_action only for camera display type
+    let imageTapAction = config.image_tap_action;
+    if (displayType === "camera" && !imageTapAction) {
+      imageTapAction = { action: "more-info" };
+    }
+
     this._config = {
       ...config,
       vertical,
       display_type: displayType,
+      tap_action: tapAction || { action: "none" },
+      image_tap_action: imageTapAction,
     };
 
     this._featureContext = {
@@ -181,12 +203,38 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   }
 
   private get _hasCardAction() {
-    return this._config?.navigation_path;
+    return hasAction(this._config?.tap_action);
   }
 
-  private _handleAction() {
-    if (this._config?.navigation_path) {
-      navigate(this._config.navigation_path);
+  private get _hasImageAction() {
+    if (this._config?.display_type === "compact") {
+      return false;
+    }
+    // Image is interactive if it has its own action OR if card has an action
+    return (
+      hasAction(this._config?.image_tap_action) ||
+      hasAction(this._config?.tap_action)
+    );
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _handleImageAction(ev: ActionHandlerEvent) {
+    if (hasAction(this._config?.image_tap_action)) {
+      const entity =
+        this._config?.display_type === "camera"
+          ? this._getCameraEntity(this.hass.entities, this._config.area!)
+          : undefined;
+      handleAction(
+        this,
+        this.hass!,
+        { entity, tap_action: this._config!.image_tap_action },
+        ev.detail.action!
+      );
+    } else {
+      handleAction(this, this.hass!, this._config!, ev.detail.action!);
     }
   }
 
@@ -578,7 +626,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           ? nothing
           : html`
               <div class="header">
-                <div class="picture">
+                <div
+                  class="picture"
+                  @action=${this._handleImageAction}
+                  .actionHandler=${this._hasImageAction
+                    ? actionHandler()
+                    : nothing}
+                  role=${ifDefined(this._hasImageAction ? "button" : undefined)}
+                  tabindex=${ifDefined(this._hasImageAction ? "0" : undefined)}
+                >
                   ${(displayType === "picture" || displayType === "camera") &&
                   (cameraEntityId || area.picture)
                     ? html`
@@ -614,6 +670,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
           .interactive=${Boolean(this._hasCardAction)}
+          .actionHandler=${actionHandler()}
           @action=${this._handleAction}
         >
           <ha-tile-icon
@@ -664,7 +721,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         border-end-end-radius: 0;
         border-end-start-radius: 0;
-        pointer-events: none;
+        position: relative;
+        z-index: 1;
       }
       .picture {
         height: 100%;
@@ -672,6 +730,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         background-size: cover;
         background-position: center;
         position: relative;
+        pointer-events: none;
+      }
+      .picture[role="button"] {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+      .picture[role="button"]:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: -2px;
       }
       .picture hui-image {
         height: 100%;

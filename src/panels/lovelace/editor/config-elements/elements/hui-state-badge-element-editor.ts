@@ -6,6 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
+import { ACTION_RELATED_CONTEXT } from "../../../components/hui-action-editor";
 import type { LovelacePictureElementEditor } from "../../../types";
 import type { StateBadgeElementConfig } from "../../../elements/types";
 import { actionConfigStruct } from "../../structs/action-struct";
@@ -38,6 +39,7 @@ const SCHEMA = [
             default_action: "more-info",
           },
         },
+        context: ACTION_RELATED_CONTEXT,
       },
       {
         name: "hold_action",
@@ -46,6 +48,7 @@ const SCHEMA = [
             default_action: "more-info",
           },
         },
+        context: ACTION_RELATED_CONTEXT,
       },
       {
         name: "",
@@ -59,6 +62,7 @@ const SCHEMA = [
                 default_action: "none",
               },
             },
+            context: ACTION_RELATED_CONTEXT,
           },
         ],
       },

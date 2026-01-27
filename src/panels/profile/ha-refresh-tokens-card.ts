@@ -20,7 +20,6 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
 import "../../components/ha-list-item";
-import "../../components/ha-md-button-menu";
 import "../../components/ha-md-menu-item";
 import "../../components/ha-settings-row";
 import { deleteAllRefreshTokens } from "../../data/auth";

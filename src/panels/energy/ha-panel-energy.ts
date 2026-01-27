@@ -142,7 +142,7 @@ class PanelEnergy extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass && oldHass.localize !== this.hass.localize) {
+    if (this._lovelace && oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
     }
   }
@@ -260,6 +260,7 @@ class PanelEnergy extends LitElement {
                 .hass=${this.hass}
                 .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
                 vertical-opening-direction="up"
+                fixed
               ></hui-energy-period-selector>
             </ha-card>
           `
@@ -700,7 +701,7 @@ class PanelEnergy extends LitElement {
             inset-inline-start var(--ha-animation-duration-normal) ease,
             inset-inline-end var(--ha-animation-duration-normal) ease;
           margin: 0 auto;
-          max-width: calc(min(450px, 100% - var(--ha-space-4)));
+          max-width: calc(min(470px, 100% - var(--ha-space-4)));
           box-sizing: border-box;
           padding-left: var(--ha-space-2);
           padding-right: 0;

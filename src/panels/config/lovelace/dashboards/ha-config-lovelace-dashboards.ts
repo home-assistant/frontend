@@ -8,7 +8,7 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
@@ -21,12 +21,12 @@ import type {
   SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-overflow-menu";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import { saveFrontendSystemData } from "../../../../data/frontend";
@@ -413,16 +413,20 @@ export class HaConfigLovelaceDashboards extends LitElement {
         has-fab
         clickable
       >
-        <ha-md-button-menu slot="toolbar-icon">
+        <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-md-list-item type="link" href="/config/lovelace/resources">
-            ${this.hass.localize("ui.panel.config.lovelace.resources.caption")}
-          </ha-md-list-item>
-        </ha-md-button-menu>
+          <a href="/config/lovelace/resources">
+            <ha-dropdown-item>
+              ${this.hass.localize(
+                "ui.panel.config.lovelace.resources.caption"
+              )}
+            </ha-dropdown-item>
+          </a>
+        </ha-dropdown>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -613,6 +617,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
   }
+
+  static styles = css`
+    ha-dropdown a {
+      text-decoration: none;
+    }
+  `;
 }
 
 declare global {
