@@ -1359,7 +1359,7 @@ class HUIRoot extends LitElement {
         }
         .main-title {
           margin: 0;
-          margin-inline-start: 24px;
+          margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
           text-overflow: ellipsis;
@@ -1368,7 +1368,7 @@ class HUIRoot extends LitElement {
           min-width: 0;
         }
         .narrow .main-title {
-          margin-inline-start: 8px;
+          margin-inline-start: var(--ha-space-2);
         }
         .action-items {
           white-space: nowrap;

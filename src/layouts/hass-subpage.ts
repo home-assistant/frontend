@@ -134,7 +134,7 @@ class HassSubpage extends LitElement {
 
         .main-title {
           margin: 0;
-          margin-inline-start: 24px;
+          margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           min-width: 0;
           flex-grow: 1;
@@ -146,7 +146,7 @@ class HassSubpage extends LitElement {
           text-overflow: ellipsis;
         }
         .narrow .main-title {
-          margin-inline-start: 8px;
+          margin-inline-start: var(--ha-space-2);
         }
 
         .content {
