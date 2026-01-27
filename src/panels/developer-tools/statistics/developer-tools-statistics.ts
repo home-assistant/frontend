@@ -28,10 +28,11 @@ import type {
   SortingDirection,
 } from "../../../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../../../components/data-table/show-dialog-data-table-settings";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-divider";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import type { HaMdMenu } from "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/search-input-outlined";
@@ -325,7 +326,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
-                <ha-md-button-menu positioning="absolute">
+                <ha-dropdown>
                   <ha-assist-chip
                     .label=${localize(
                       "ui.components.subpage-data-table.select"
@@ -341,46 +342,24 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                       .path=${mdiMenuDown}
                     ></ha-svg-icon
                   ></ha-assist-chip>
-                  <ha-md-menu-item
-                    .value=${undefined}
-                    @click=${this._selectAll}
-                  >
-                    <div slot="headline">
-                      ${localize("ui.components.subpage-data-table.select_all")}
-                    </div>
-                  </ha-md-menu-item>
-                  <ha-md-menu-item
-                    .value=${undefined}
-                    @click=${this._selectAllIssues}
-                  >
-                    <div slot="headline">
-                      ${localize(
-                        "ui.panel.developer-tools.tabs.statistics.data_table.select_all_issues"
-                      )}
-                    </div>
-                  </ha-md-menu-item>
-                  <ha-md-menu-item
-                    .value=${undefined}
-                    @click=${this._selectNone}
-                  >
-                    <div slot="headline">
-                      ${localize(
-                        "ui.components.subpage-data-table.select_none"
-                      )}
-                    </div>
-                  </ha-md-menu-item>
-                  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-                  <ha-md-menu-item
-                    .value=${undefined}
-                    @click=${this._disableSelectMode}
-                  >
-                    <div slot="headline">
-                      ${localize(
-                        "ui.components.subpage-data-table.exit_selection_mode"
-                      )}
-                    </div>
-                  </ha-md-menu-item>
-                </ha-md-button-menu>
+                  <ha-dropdown-item @click=${this._selectAll}>
+                    ${localize("ui.components.subpage-data-table.select_all")}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item @click=${this._selectAllIssues}>
+                    ${localize(
+                      "ui.panel.developer-tools.tabs.statistics.data_table.select_all_issues"
+                    )}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item @click=${this._selectNone}>
+                    ${localize("ui.components.subpage-data-table.select_none")}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>
+                  <ha-dropdown-item @click=${this._disableSelectMode}>
+                    ${localize(
+                      "ui.components.subpage-data-table.exit_selection_mode"
+                    )}
+                  </ha-dropdown-item>
+                </ha-dropdown>
                 <p>
                   ${localize("ui.components.subpage-data-table.selected", {
                     selected: this._selected.length,
@@ -814,7 +793,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
         #sort-by-anchor,
         #group-by-anchor,
-        ha-md-button-menu ha-assist-chip {
+        ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
       `,
