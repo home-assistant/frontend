@@ -157,6 +157,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @state() private _items: PickerComboBoxItem[] = [];
 
+  @state() private _selectedSection?: string;
+
   public setFieldValue(value: string) {
     if (this._searchFieldElement) {
       this._searchFieldElement.value = value;
@@ -191,6 +193,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   public willUpdate() {
     if (!this.hasUpdated) {
       loadVirtualizer();
+      this._selectedSection = this.selectedSection;
       this._allItems = this._getItems();
       this._items = this._allItems;
     }
@@ -227,7 +230,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         ? html`
             <div class="section-title-wrapper">
               <div
-                class="section-title ${!this.selectedSection &&
+                class="section-title ${!this._selectedSection &&
                 this._sectionTitle
                   ? "show"
                   : ""}"
@@ -278,7 +281,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
             : html`<ha-filter-chip
                 @click=${this._toggleSection}
                 .section-id=${section.id}
-                .selected=${this.selectedSection === section.id}
+                .selected=${this._selectedSection === section.id}
                 .label=${section.label}
               >
               </ha-filter-chip>`
@@ -315,7 +318,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this.getAdditionalItems?.(searchString) || [];
 
   private _getItems = () => {
-    let items = [...(this.getItems(this._search, this.selectedSection) || [])];
+    let items = [...(this.getItems(this._search, this._selectedSection) || [])];
 
     if (!this.sections?.length) {
       items = items.sort((entityA, entityB) => {
@@ -505,10 +508,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (!section) {
       return;
     }
-    if (this.selectedSection === section) {
-      this.selectedSection = undefined;
+    if (this._selectedSection === section) {
+      this._selectedSection = undefined;
     } else {
-      this.selectedSection = section;
+      this._selectedSection = section;
     }
 
     this._items = this._getItems();
