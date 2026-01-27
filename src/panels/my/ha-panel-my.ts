@@ -330,6 +330,15 @@ export const getMyRedirects = (): Redirects => ({
   supervisor_addons: {
     redirect: "/config/apps",
   },
+  supervisor_app: {
+    redirect: "/config/app",
+    params: {
+      app: "string",
+    },
+    optional_params: {
+      repository_url: "url",
+    },
+  },
   supervisor_addon: {
     redirect: "/config/app",
     params: {
@@ -525,12 +534,16 @@ class HaPanelMy extends LitElement {
   private _createRedirectUrl(): string {
     const params = extractSearchParamsObject();
 
-    // Special case for supervisor_addon: use path-based URL
-    if (params.addon && this._redirect!.redirect === "/config/app") {
-      const addon = params.addon;
-      delete params.addon;
-      const optionalParams = this._createOptionalParams(params);
-      return `/config/app/${addon}/info${optionalParams}`;
+    // Special case for supervisor_app/supervisor_addon: use path-based URL
+    // Support both "app" (new) and "addon" (legacy) parameters
+    if (this._redirect!.redirect === "/config/app") {
+      const appSlug = params.app || params.addon;
+      if (appSlug) {
+        delete params.app;
+        delete params.addon;
+        const optionalParams = this._createOptionalParams(params);
+        return `/config/app/${appSlug}/info${optionalParams}`;
+      }
     }
 
     const resultParams = this._createRedirectParams();

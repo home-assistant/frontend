@@ -11,12 +11,16 @@ const DEFAULT_LIMIT = 8;
 
 export interface CommonControlSectionStrategyConfig {
   type: "common-controls";
-  title?: string;
-  icon?: string;
   limit?: number;
   exclude_entities?: string[];
   include_entities?: string[];
   hide_empty?: boolean;
+  heading?: HeadingCardConfig;
+  /** @deprecated Use `heading` instead */
+  icon?: string;
+  /** @deprecated Use `heading` instead */
+  title?: string;
+  /** @deprecated Use `heading` instead */
   title_visibilty?: Condition[];
 }
 
@@ -31,7 +35,9 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       cards: [],
     };
 
-    if (config.title) {
+    if (config.heading) {
+      section.cards?.push(config.heading);
+    } else if (config.title) {
       section.cards?.push({
         type: "heading",
         heading: config.title,

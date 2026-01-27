@@ -16,6 +16,7 @@ import {
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { showAddIntegrationDialog } from "../../config/integrations/show-add-integration-dialog";
 import type { HomeAssistant } from "../../../types";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -78,13 +79,7 @@ export class HuiDiscoveredDevicesCard
   }
 
   public setConfig(config: DiscoveredDevicesCardConfig): void {
-    this._config = {
-      tap_action: {
-        action: "navigate",
-        navigation_path: "/config/integrations/dashboard",
-      },
-      ...config,
-    };
+    this._config = config;
   }
 
   public getCardSize(): number {
@@ -108,12 +103,18 @@ export class HuiDiscoveredDevicesCard
     };
   }
 
-  private _handleAction(ev: ActionHandlerEvent) {
+  private async _handleAction(ev: ActionHandlerEvent) {
+    if (ev.detail.action === "tap" && !hasAction(this._config?.tap_action)) {
+      await this.hass!.loadFragmentTranslation("config");
+      showAddIntegrationDialog(this, { brand: "_discovered" });
+      return;
+    }
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   private get _hasCardAction() {
     return (
+      !this._config?.tap_action ||
       hasAction(this._config?.tap_action) ||
       hasAction(this._config?.hold_action) ||
       hasAction(this._config?.double_tap_action)

@@ -14,7 +14,6 @@ import {
   mdiLabel,
   mdiLightningBolt,
   mdiMapMarkerRadius,
-  mdiMathLog,
   mdiMemory,
   mdiMicrophone,
   mdiNetwork,
@@ -27,6 +26,7 @@ import {
   mdiScriptText,
   mdiShape,
   mdiSofa,
+  mdiTextBoxOutline,
   mdiTools,
   mdiUpdate,
   mdiViewDashboard,
@@ -57,7 +57,6 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "ha-refresh-cloud-status": undefined;
-    "ha-refresh-supervisor": undefined;
   }
 }
 
@@ -381,7 +380,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "logs",
       path: "/config/logs",
       translationKey: "logs",
-      iconPath: mdiMathLog,
+      iconPath: mdiTextBoxOutline,
       iconColor: "#C65326",
       core: true,
     },

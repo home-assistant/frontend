@@ -601,7 +601,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
           const category = entityRegEntry?.categories.helpers;
-          const areaId = entityRegEntry?.area_id;
+          const deviceId = entityRegEntry?.device_id;
+          const areaId =
+            entityRegEntry?.area_id || this.hass.devices?.[deviceId!]?.area_id;
           const area =
             areaId && this.hass.areas?.[areaId]
               ? computeAreaName(this.hass.areas[areaId])

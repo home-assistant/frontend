@@ -12,7 +12,6 @@ import type {
 import { showQuickBar } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import type { Redirects } from "../panels/my/ha-panel-my";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
@@ -146,16 +145,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       const targetPath = mainWindow.location.pathname;
       const myParams = new URLSearchParams();
 
-      let redirects: Redirects;
-
-      if (targetPath.startsWith("/hassio")) {
-        const myPanelSupervisor =
-          await import("../../hassio/src/hassio-my-redirect");
-        redirects = myPanelSupervisor.REDIRECTS;
-      } else {
-        const myPanel = await import("../panels/my/ha-panel-my");
-        redirects = myPanel.getMyRedirects();
-      }
+      const myPanel = await import("../panels/my/ha-panel-my");
+      const redirects = myPanel.getMyRedirects();
 
       for (const [slug, redirect] of Object.entries(redirects)) {
         if (!targetPath.startsWith(redirect.redirect)) {
@@ -173,6 +164,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         }
         if (redirect.redirect === "/config/integrations/integration") {
           myParams.append("domain", targetPath.split("/")[4]);
+        } else if (redirect.redirect === "/config/app") {
+          myParams.append("app", targetPath.split("/")[3]);
         } else if (redirect.redirect === "/hassio/addon") {
           myParams.append("addon", targetPath.split("/")[3]);
         }

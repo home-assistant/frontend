@@ -10,11 +10,13 @@ import {
   HOME_SUMMARIES_ICONS,
 } from "./helpers/home-summaries";
 import type { HomeAreaViewStrategyConfig } from "./home-area-view-strategy";
+import type { HomeOtherDevicesViewStrategyConfig } from "./home-other-devices-view-strategy";
 import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strategy";
 
 export interface HomeDashboardStrategyConfig {
   type: "home";
   favorite_entities?: string[];
+  home_panel?: boolean;
 }
 
 @customElement("home-dashboard-strategy")
@@ -57,6 +59,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
         strategy: {
           type: "home-area",
           area: area.area_id,
+          home_panel: config.home_panel,
         } satisfies HomeAreaViewStrategyConfig,
       };
     });
@@ -77,7 +80,8 @@ export class HomeDashboardStrategy extends ReactiveElement {
       subview: true,
       strategy: {
         type: "home-other-devices",
-      },
+        home_panel: config.home_panel,
+      } satisfies HomeOtherDevicesViewStrategyConfig,
       icon: "mdi:devices",
     } satisfies LovelaceViewRawConfig;
 
@@ -89,6 +93,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
           strategy: {
             type: "home-overview",
             favorite_entities: config.favorite_entities,
+            home_panel: config.home_panel,
           } satisfies HomeOverviewViewStrategyConfig,
         },
         ...areaViews,
