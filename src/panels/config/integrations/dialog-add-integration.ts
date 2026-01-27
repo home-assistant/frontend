@@ -1,3 +1,4 @@
+import { mdiClose } from "@mdi/js";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
@@ -91,6 +92,8 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _showDiscovered = false;
 
+  @state() private _openedDirectly = false;
+
   @state() private _navigateToResult = false;
 
   @state() private _open = false;
@@ -132,6 +135,7 @@ class AddIntegrationDialog extends LitElement {
       params?.brand === "_discovered"
         ? undefined
         : params?.domain || params?.brand;
+    this._openedDirectly = !!(params?.brand || params?.domain);
     this._initialFilter = params?.initialFilter;
     this._navigateToResult = params?.navigateToResult ?? false;
     this._narrow = matchMedia(
@@ -147,6 +151,7 @@ class AddIntegrationDialog extends LitElement {
     this._prevPickedBrand = undefined;
     this._flowsInProgress = undefined;
     this._showDiscovered = false;
+    this._openedDirectly = false;
     this._navigateToResult = false;
     this._filter = undefined;
     this._width = undefined;
@@ -436,7 +441,16 @@ class AddIntegrationDialog extends LitElement {
     }
 
     return html`<div slot="heading">
-        <ha-icon-button-prev @click=${this._prevClicked}></ha-icon-button-prev>
+        ${this._openedDirectly
+          ? html`<ha-icon-button
+              class="header-close-button"
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${mdiClose}
+              dialogAction="close"
+            ></ha-icon-button>`
+          : html`<ha-icon-button-prev
+              @click=${this._prevClicked}
+            ></ha-icon-button-prev>`}
         <h2 class="mdc-dialog__title">${heading}</h2>
       </div>
       <ha-domain-integrations
@@ -839,7 +853,8 @@ class AddIntegrationDialog extends LitElement {
       ha-integration-list-item {
         width: 100%;
       }
-      ha-icon-button-prev {
+      ha-icon-button-prev,
+      .header-close-button {
         color: var(--secondary-text-color);
         position: absolute;
         left: 16px;
