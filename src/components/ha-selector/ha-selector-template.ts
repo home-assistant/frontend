@@ -61,6 +61,13 @@ export class HaTemplateSelector extends LitElement {
     this._unsubscribeTemplate();
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._test) {
+      this._subscribeTemplate();
+    }
+  }
+
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("value") && this._test) {
       this._subscribeTemplate();
