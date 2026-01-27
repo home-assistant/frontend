@@ -55,18 +55,6 @@ class HaMoreInfoAttributes extends LitElement {
 
     const attributes = this._computeDisplayAttributes(this._stateObj);
 
-    if (attributes.length === 0) {
-      return html`
-        <div class="content">
-          <p class="no-attributes">
-            ${this.hass.localize(
-              "ui.dialogs.more_info_control.attributes.no_attributes"
-            )}
-          </p>
-        </div>
-      `;
-    }
-
     return html`
       <div class="content">
         <ha-card>
@@ -115,12 +103,6 @@ class HaMoreInfoAttributes extends LitElement {
     .content {
       padding: var(--ha-space-6);
       padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
-    }
-
-    .no-attributes {
-      color: var(--secondary-text-color);
-      text-align: center;
-      margin: var(--ha-space-4) 0;
     }
 
     ha-card {
