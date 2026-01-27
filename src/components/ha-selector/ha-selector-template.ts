@@ -215,7 +215,7 @@ ${typeof this._templateResult.result === "object"
       clear: both;
       white-space: pre-wrap;
       background-color: var(--secondary-background-color);
-      padding: 8px;
+      padding: var(--ha-space-2);
       margin-top: var(--ha-space-3);
       margin-bottom: 0;
       direction: ltr;
