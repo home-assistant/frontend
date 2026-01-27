@@ -58,7 +58,9 @@ declare global {
 
 @customElement("ha-panel-lovelace")
 export class LovelacePanel extends LitElement {
-  @property({ attribute: false }) public panel?: PanelInfo<LovelacePanelConfig>;
+  @property({ attribute: false }) public panel?: PanelInfo<
+    LovelacePanelConfig | undefined
+  >;
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -335,7 +337,14 @@ export class LovelacePanel extends LitElement {
 
     let conf: LovelaceConfig;
     let rawConf: LovelaceRawConfig | undefined;
-    const confMode: Lovelace["mode"] = this.panel!.config.mode;
+    const confMode = this.panel!.config?.mode;
+
+    // If no mode, redirect to /home as there is no "lovelace" dashboard
+    if (!confMode) {
+      navigate("/home", { replace: true });
+      return;
+    }
+
     let confProm: Promise<LovelaceRawConfig> | undefined;
     const preloadWindow = window as WindowWithPreloads;
 
@@ -444,7 +453,11 @@ export class LovelacePanel extends LitElement {
       setEditMode: (editMode: boolean) => {
         // If the dashboard is generated (default dashboard)
         // Propose to take control of it
-        if (this.lovelace!.mode === "generated" && editMode) {
+        if (
+          this.lovelace!.mode === "generated" &&
+          editMode &&
+          this.panel?.config
+        ) {
           showSaveDialog(this, {
             lovelace: this.lovelace!,
             mode: this.panel!.config.mode,
