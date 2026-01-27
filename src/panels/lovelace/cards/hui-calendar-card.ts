@@ -17,6 +17,7 @@ import type { Calendar, CalendarEvent } from "../../../data/calendar";
 import { fetchCalendarEvents } from "../../../data/calendar";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type {
   CalendarViewChanged,
   FullCalendarView,
@@ -33,7 +34,10 @@ import type {
 import type { CalendarCardConfig } from "./types";
 
 @customElement("hui-calendar-card")
-export class HuiCalendarCard extends LitElement implements LovelaceCard {
+export class HuiCalendarCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-calendar-card-editor");
     return document.createElement("hui-calendar-card-editor");
@@ -82,8 +86,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
   private _endDate?: Date;
 
   private _resizeObserver?: ResizeObserver;
-
-  private _unsubEntityRegistry?: UnsubscribeFunc;
 
   public setConfig(config: CalendarCardConfig): void {
     if (!config.entities?.length) {
@@ -159,38 +161,23 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     };
   }
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass!.connection!, (entities) => {
+        this._entityRegistry = entities;
+      }),
+    ];
+  }
+
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachObserver());
-    if (this.hass) {
-      this._subscribeEntityRegistry();
-    }
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
-    }
-    this._unsubscribeEntityRegistry();
-  }
-
-  private _subscribeEntityRegistry(): void {
-    if (this._unsubEntityRegistry || !this.hass) {
-      return;
-    }
-    this._unsubEntityRegistry = subscribeEntityRegistry(
-      this.hass.connection!,
-      (entities) => {
-        this._entityRegistry = entities;
-      }
-    );
-  }
-
-  private _unsubscribeEntityRegistry(): void {
-    if (this._unsubEntityRegistry) {
-      this._unsubEntityRegistry();
-      this._unsubEntityRegistry = undefined;
     }
   }
 
@@ -239,11 +226,6 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-
-    // Subscribe to entity registry when hass becomes available
-    if (changedProps.has("hass") && this.hass) {
-      this._subscribeEntityRegistry();
-    }
 
     if (!this._config || !this.hass) {
       return;
