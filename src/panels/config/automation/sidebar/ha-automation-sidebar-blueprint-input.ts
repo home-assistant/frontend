@@ -100,12 +100,16 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     this._path = ev.detail;
   }
 
+  private _getInputSectionChild(path: string[]): BlueprintInputSection {
+    return path.reduce(
+      (acc, x) => (acc as BlueprintInputSection).input[x]!,
+      this.config.config
+    ) as BlueprintInputSection;
+  }
+
   protected render() {
     const config = this._path
-      ? this._path.reduce(
-          (acc, x) => (acc as BlueprintInputSection).input[x]!,
-          this.config.config
-        )
+      ? this._getInputSectionChild(this._path)
       : this.config.config;
 
     return html`
@@ -175,15 +179,20 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
         <div class="breadcrumbs">
           ${this._path && this._path.length > 0
             ? join(
-                [this.config.id, ...this._path].map(
-                  (pathPart, i) => html`
+                [this.config.id, ...this._path].map((pathPart, i, array) => {
+                  const pathPartName =
+                    i === 0
+                      ? this.config.config.name
+                      : this._getInputSectionChild(array.slice(1, i + 1)).name;
+                  return html`
                     <ha-button
                       appearance="plain"
                       @click=${this._openInputGroup(i)}
-                      >${pathPart}</ha-button
                     >
-                  `
-                ),
+                      ${pathPartName ?? pathPart}
+                    </ha-button>
+                  `;
+                }),
                 html`<ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>`
               )
             : nothing}

@@ -136,13 +136,14 @@ export default class HaBlueprintInputRow extends LitElement {
     const icon = this._inputIsSection(this.input[1])
       ? mdiGroup
       : INPUT_ICONS[Object.keys(this.input[1].selector!)[0]];
+    const label = this.input[1]?.name ?? this.input[0];
 
     return html`
       <ha-card outlined>
         <ha-automation-row @click=${this._toggleSidebar}>
           <h3 slot="header">
             <ha-svg-icon class="input-icon" .path=${icon}></ha-svg-icon>
-            ${this.input[0]}
+            ${label}
           </h3>
 
           <slot name="icons" slot="icons"></slot>
