@@ -25,6 +25,7 @@ import type { EntitySources } from "./entity/entity_sources";
 export type Selector =
   | ActionSelector
   | AddonSelector
+  | AppSelector
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
@@ -84,6 +85,13 @@ export interface ActionSelector {
 
 export interface AddonSelector {
   addon: {
+    name?: string;
+    slug?: string;
+  } | null;
+}
+
+export interface AppSelector {
+  app: {
     name?: string;
     slug?: string;
   } | null;

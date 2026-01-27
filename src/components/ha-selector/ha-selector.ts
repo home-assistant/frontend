@@ -13,6 +13,7 @@ import type { HomeAssistant } from "../../types";
 const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
   addon: () => import("./ha-selector-addon"),
+  app: () => import("./ha-selector-app"),
   area: () => import("./ha-selector-area"),
   areas_display: () => import("./ha-selector-areas-display"),
   attribute: () => import("./ha-selector-attribute"),
