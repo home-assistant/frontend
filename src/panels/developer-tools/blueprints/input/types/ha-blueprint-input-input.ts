@@ -3,14 +3,13 @@ import { css, html, LitElement } from "lit";
 import memoizeOne from "memoize-one";
 import type { HomeAssistant } from "../../../../../types";
 import type { BlueprintInput } from "../../../../../data/blueprint";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type { Selector } from "../../../../../data/selector";
 import "../../../../../components/ha-textarea";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-selector/ha-selector";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import type { Selector } from "../../../../../data/selector";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("ha-blueprint-input-input")
 export class HaBlueprintInputInput extends LitElement {
@@ -58,13 +57,6 @@ export class HaBlueprintInputInput extends LitElement {
       `ui.panel.developer-tools.tabs.blueprints.editor.inputs.type.single.${schema.name}`
     );
 
-  private _valueChanged(e: CustomEvent) {
-    e.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: { ...e.detail.value },
-    });
-  }
-
   protected render() {
     const selector = this.input.selector ?? { text: {} };
     const schema = this._schema(selector);
@@ -76,7 +68,6 @@ export class HaBlueprintInputInput extends LitElement {
         .schema=${schema}
         .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }

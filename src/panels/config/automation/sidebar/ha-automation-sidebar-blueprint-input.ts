@@ -15,7 +15,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { isMac } from "../../../../util/is_mac";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
-import type { BlueprintInputSection } from "../../../../data/blueprint";
+import type {
+  BlueprintInput,
+  BlueprintInputSection,
+} from "../../../../data/blueprint";
 import { isInputSection } from "../../../../data/blueprint";
 import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type { BlueprintInputSidebarConfig } from "../../../../data/automation";
@@ -67,8 +70,7 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     }
   }
 
-  private _getTitle() {
-    const input = this.config.config;
+  private _getTitle(input: BlueprintInput | BlueprintInputSection) {
     const isSection = isInputSection(input);
     if (isSection) {
       return this.hass.localize(
@@ -83,8 +85,8 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     );
   }
 
-  private _getSubtitle() {
-    const isSection = isInputSection(this.config.config);
+  private _getSubtitle(input: BlueprintInput | BlueprintInputSection) {
+    const isSection = isInputSection(input);
     return this.hass.localize(
       `ui.panel.developer-tools.tabs.blueprints.editor.inputs.editor.${isSection ? "section" : "single"}`
     );
@@ -119,8 +121,8 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
         .narrow=${this.narrow}
         @wa-select=${this._handleDropdownSelect}
       >
-        <span slot="title">${this._getTitle()}</span>
-        <span slot="subtitle">${this._getSubtitle()}</span>
+        <span slot="title">${this._getTitle(config)}</span>
+        <span slot="subtitle">${this._getSubtitle(config)}</span>
         <ha-dropdown-item slot="menu-items" value="rename">
           <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           <div class="overflow-label">
@@ -215,8 +217,8 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
             .path=${this._path}
             .yamlMode=${this.yamlMode}
             @open-input-group-path=${this._openInputGroupPath}
-            @value-changed=${this._valueChangedSidebar}
-            @yaml-changed=${this._yamlChangedSidebar}
+            @value-changed=${this._valueChanged}
+            @yaml-changed=${this._valueChanged}
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
           ></ha-blueprint-input-editor>`
         )}
@@ -231,25 +233,25 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     }
   }
 
-  private _valueChangedSidebar(ev: CustomEvent) {
+  private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
 
-    this.config?.save?.(ev.detail.value);
+    if (this._path && this._path.length > 0) {
+      const config = { ...this.config.config };
+      let innerConfig = config;
+      for (let i = 0; i < this._path.length - 1; i++) {
+        innerConfig = (innerConfig as BlueprintInputSection).input[
+          this._path[i]
+        ]!;
+      }
 
-    if (this.config) {
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.config,
-          config: ev.detail.value,
-        },
-      });
+      const lastPathKey = this._path[this._path.length - 1]!;
+      (innerConfig as BlueprintInputSection).input[lastPathKey] =
+        ev.detail.value;
+      this.config?.save?.(config);
+    } else {
+      this.config?.save?.(ev.detail.value);
     }
-  }
-
-  private _yamlChangedSidebar(ev: CustomEvent) {
-    ev.stopPropagation();
-
-    this.config?.save?.(ev.detail.value);
   }
 
   private _toggleYamlMode = () => {

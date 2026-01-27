@@ -24,7 +24,11 @@ const SCHEMA = [
   },
   {
     name: "description",
-    type: "string",
+    selector: {
+      text: {
+        multiline: true,
+      },
+    },
   },
   {
     name: "author",
