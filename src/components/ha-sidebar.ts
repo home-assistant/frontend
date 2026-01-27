@@ -448,9 +448,14 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   }
 
   private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
-    return panels.map((panel) =>
-      this._renderPanel(panel, panel.url_path === selectedPanel)
-    );
+    return panels.map((panel) => {
+      // Check both url_path match AND if current route matches panel's iframe destination
+      const isSelected =
+        panel.url_path === selectedPanel ||
+        (panel.config?.url?.startsWith("/") &&
+          this.route.path?.startsWith(panel.config.url));
+      return this._renderPanel(panel, isSelected);
+    });
   }
 
   private _renderPanel(panel: PanelInfo, isSelected: boolean) {
