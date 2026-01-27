@@ -3,7 +3,6 @@ import {
   mdiAppleKeyboardCommand,
   mdiChevronRight,
   mdiDelete,
-  mdiIdentifier,
   mdiPlaylistEdit,
   mdiRenameBox,
 } from "@mdi/js";
@@ -44,8 +43,6 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
   @property({ type: Number, attribute: "sidebar-key" })
   public sidebarKey?: number;
 
-  @state() private _requestShowId = false;
-
   @state() private _warnings?: string[];
 
   @state() private _path?: string[];
@@ -55,7 +52,6 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
 
   protected willUpdate(changedProperties) {
     if (changedProperties.has("config")) {
-      this._requestShowId = false;
       this._warnings = undefined;
       if (this.config) {
         this.yamlMode = this.config.yamlMode;
@@ -132,20 +128,6 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
             <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
           </div>
         </ha-dropdown-item>
-
-        ${!this.yamlMode &&
-        !("id" in this.config.config) &&
-        !this._requestShowId
-          ? html`<ha-dropdown-item slot="menu-items" value="show_id">
-              <ha-svg-icon slot="icon" .path=${mdiIdentifier}></ha-svg-icon>
-              <div class="overflow-label">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.triggers.edit_id"
-                )}
-                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
-              </div>
-            </ha-dropdown-item>`
-          : nothing}
 
         <wa-divider slot="menu-items"></wa-divider>
         <ha-dropdown-item
@@ -258,10 +240,6 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  private _showTriggerId = () => {
-    this._requestShowId = true;
-  };
-
   private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
     const action = ev.detail?.item?.value;
 
@@ -272,9 +250,6 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     switch (action) {
       case "rename":
         this.config.rename();
-        break;
-      case "show_id":
-        this._showTriggerId();
         break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();
