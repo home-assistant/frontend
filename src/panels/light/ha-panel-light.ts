@@ -175,7 +175,6 @@ class PanelLight extends LitElement {
         .header {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
           width: calc(
@@ -220,6 +219,7 @@ class PanelLight extends LitElement {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
+          border-bottom: var(--app-header-border-bottom, none);
         }
         :host([narrow]) .toolbar {
           padding: 0 4px;

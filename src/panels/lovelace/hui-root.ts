@@ -1305,7 +1305,6 @@ class HUIRoot extends LitElement {
         .header {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
           width: calc(
@@ -1343,6 +1342,7 @@ class HUIRoot extends LitElement {
           color: var(--app-header-edit-text-color, white);
         }
         .toolbar {
+          border-bottom: var(--app-header-border-bottom, none);
           height: var(--header-height);
           display: flex;
           align-items: center;
@@ -1350,6 +1350,9 @@ class HUIRoot extends LitElement {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
+        }
+        .edit-mode .toolbar {
+          border-bottom: none;
         }
         .narrow .toolbar {
           padding: 0 4px;

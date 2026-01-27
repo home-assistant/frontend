@@ -162,7 +162,6 @@ class PanelDeveloperTools extends LitElement {
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
           color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
         }
@@ -216,6 +215,7 @@ class PanelDeveloperTools extends LitElement {
           --ha-tab-active-text-color: var(--app-header-text-color, white);
           --ha-tab-indicator-color: var(--app-header-text-color, white);
           --ha-tab-track-color: transparent;
+          border-bottom: var(--app-header-border-bottom, none);
         }
       `,
     ];

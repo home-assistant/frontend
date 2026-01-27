@@ -297,8 +297,9 @@ export const colorStyles = css`
     --mdc-theme-text-hint-on-background: var(--secondary-text-color);
     --mdc-theme-text-icon-on-background: var(--secondary-text-color);
     --mdc-theme-error: var(--error-color);
-    --app-header-text-color: var(--primary-text-color);
-    --app-header-background-color: var(--primary-background-color);
+    --app-header-text-color: var(--sidebar-text-color);
+    --app-header-background-color: var(--sidebar-background-color);
+    --app-header-border-bottom: 1px solid var(--divider-color);
     --app-theme-color: var(--app-header-background-color);
     --mdc-checkbox-unchecked-color: rgba(var(--rgb-primary-text-color), 0.54);
     --mdc-checkbox-disabled-color: var(--disabled-text-color);
