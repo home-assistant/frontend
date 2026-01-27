@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { goBack } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -12,8 +13,8 @@ import type { HomeAssistant } from "../../types";
 import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
-import "../lovelace/views/hui-view-container";
 import "../lovelace/views/hui-view-background";
+import "../lovelace/views/hui-view-container";
 
 const CLIMATE_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   strategy: {
@@ -95,7 +96,7 @@ class PanelClimate extends LitElement {
 
   protected render() {
     return html`
-      <div class="header">
+      <div class="header ${classMap({ narrow: this.narrow })}">
         <div class="toolbar">
           ${
             this._searchParms.has("historyBack")
@@ -225,9 +226,13 @@ class PanelClimate extends LitElement {
           padding: 0 4px;
         }
         .main-title {
-          margin: var(--margin-title);
+          margin: 0;
+          margin-inline-start: 24px;
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
+        }
+        .narrow .main-title {
+          margin-inline-start: 8px;
         }
         hui-view-container {
           position: relative;
