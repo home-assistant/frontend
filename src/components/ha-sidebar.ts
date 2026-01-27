@@ -138,9 +138,7 @@ export const computePanels = memoizeOne(
     const afterSpacer: PanelInfo[] = [];
 
     const allPanels = Object.values(panels).filter(
-      (panel) =>
-        !FIXED_PANELS.includes(panel.url_path) &&
-        panel.url_path !== "developer-tools"
+      (panel) => !FIXED_PANELS.includes(panel.url_path)
     );
 
     allPanels.forEach((panel) => {
