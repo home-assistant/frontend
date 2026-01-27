@@ -29,6 +29,7 @@ import {
   getPanelIcon,
   getPanelIconPath,
   getPanelTitle,
+  SHOW_AFTER_SPACER_PANELS,
 } from "../../data/panel";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
@@ -143,6 +144,7 @@ class DialogEditSidebar extends LitElement {
         `${defaultPanel === panel.url_path ? " (default)" : ""}`,
       icon: getPanelIcon(panel),
       iconPath: getPanelIconPath(panel),
+      disableSorting: SHOW_AFTER_SPACER_PANELS.includes(panel.url_path),
       disableHiding: panel.url_path === defaultPanel,
     }));
 
