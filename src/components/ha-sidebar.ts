@@ -30,6 +30,7 @@ import {
   getPanelIcon,
   getPanelIconPath,
   getPanelTitle,
+  SHOW_AFTER_SPACER_PANELS,
 } from "../data/panel";
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
@@ -57,6 +58,7 @@ const SORT_VALUE_URL_PATHS = {
   map: 2,
   logbook: 3,
   history: 4,
+  "developer-tools": 100,
 };
 
 const panelSorter = (
@@ -133,6 +135,7 @@ export const computePanels = memoizeOne(
     }
 
     const beforeSpacer: PanelInfo[] = [];
+    const afterSpacer: PanelInfo[] = [];
 
     const allPanels = Object.values(panels).filter(
       (panel) =>
@@ -152,7 +155,10 @@ export const computePanels = memoizeOne(
       ) {
         return;
       }
-      beforeSpacer.push(panel);
+      (SHOW_AFTER_SPACER_PANELS.includes(panel.url_path)
+        ? afterSpacer
+        : beforeSpacer
+      ).push(panel);
     });
 
     const reverseSort = [...panelsOrder].reverse();
@@ -160,8 +166,11 @@ export const computePanels = memoizeOne(
     beforeSpacer.sort((a, b) =>
       panelSorter(reverseSort, defaultPanel, a, b, locale.language)
     );
+    afterSpacer.sort((a, b) =>
+      panelSorter(reverseSort, defaultPanel, a, b, locale.language)
+    );
 
-    return [beforeSpacer, []];
+    return [beforeSpacer, afterSpacer];
   }
 );
 
@@ -418,21 +427,21 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`<div class="panels-list">
       <div class="wrapper">
         ${renderList(
-      this._renderPanels(beforeSpacer, selectedPanel),
-      "before-spacer",
-      true
-    )}
+          this._renderPanels(beforeSpacer, selectedPanel),
+          "before-spacer",
+          true
+        )}
         ${this.renderScrollableFades()}
       </div>
       ${this._renderSpacer()}
       ${renderList(
-      html`
+        html`
           ${this._renderPanels(afterSpacer, selectedPanel)}
           ${this._renderFixedPanels(selectedPanel)}
         `,
-      "after-spacer",
-      false
-    )}
+        "after-spacer",
+        false
+      )}
     </div>`;
   }
 
