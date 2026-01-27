@@ -133,7 +133,6 @@ class HassSubpage extends LitElement {
         }
 
         .main-title {
-          margin: 0;
           margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           min-width: 0;

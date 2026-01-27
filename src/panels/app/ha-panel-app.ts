@@ -453,7 +453,6 @@ class HaPanelApp extends LitElement {
     }
 
     .main-title {
-      margin: 0;
       margin-inline-start: var(--ha-space-6);
       line-height: var(--ha-line-height-condensed);
       flex-grow: 1;

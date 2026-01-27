@@ -189,7 +189,6 @@ class PanelDeveloperTools extends LitElement {
           padding: var(--ha-space-1);
         }
         .main-title {
-          margin: 0;
           margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
