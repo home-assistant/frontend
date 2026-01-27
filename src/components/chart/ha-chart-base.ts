@@ -95,6 +95,8 @@ export class HaChartBase extends LitElement {
 
   private _suspendResize = false;
 
+  private _layoutTransitionActive = false;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
@@ -191,7 +193,12 @@ export class HaChartBase extends LitElement {
 
     const handleLayoutTransition: EventListener = (ev) => {
       const event = ev as HASSDomEvent<HASSDomEvents["hass-layout-transition"]>;
-      this._suspendResize = Boolean(event.detail?.active);
+      this._layoutTransitionActive = Boolean(event.detail?.active);
+      this.toggleAttribute(
+        "layout-transition-active",
+        this._layoutTransitionActive
+      );
+      this._suspendResize = this._layoutTransitionActive;
       if (!this._suspendResize) {
         this._resizeChartIfNeeded();
       }
@@ -1055,6 +1062,11 @@ export class HaChartBase extends LitElement {
       position: relative;
       letter-spacing: normal;
       overflow: visible;
+    }
+    :host([layout-transition-active]),
+    :host([layout-transition-active]) .container,
+    :host([layout-transition-active]) .chart-container {
+      overflow: hidden;
     }
     .container {
       display: flex;
