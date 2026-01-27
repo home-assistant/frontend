@@ -58,6 +58,7 @@ export class HaTemplateSelector extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._debounceError.cancel();
+    this._unsubscribeTemplate();
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -162,13 +163,9 @@ ${typeof this._templateResult.result === "object"
       );
       await this._unsubRenderTemplate;
     } catch (err: any) {
-      this._error = "Unknown error";
+      this._error = err.message || "Unknown error";
       this._errorLevel = undefined;
-      if (err.message) {
-        this._error = err.message;
-        this._errorLevel = undefined;
-        this._templateResult = undefined;
-      }
+      this._templateResult = undefined;
       this._unsubRenderTemplate = undefined;
     }
   }
