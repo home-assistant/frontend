@@ -6,6 +6,7 @@ import { navigate } from "../../common/navigate";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
@@ -31,11 +32,11 @@ class PanelDeveloperTools extends LitElement {
     return html`
       <div class="header">
         <div class="toolbar">
-          <ha-menu-button
+          <ha-icon-button-arrow-prev
             slot="navigationIcon"
             .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
+            @click=${this._handleBack}
+          ></ha-icon-button-arrow-prev>
           <div class="main-title">
             ${this.hass.localize("panel.developer_tools")}
           </div>
@@ -132,6 +133,10 @@ class PanelDeveloperTools extends LitElement {
 
   private get _page() {
     return this.route.path.substr(1);
+  }
+
+  private _handleBack() {
+    navigate("/config");
   }
 
   static get styles(): CSSResultGroup {
