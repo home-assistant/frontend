@@ -192,7 +192,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
                       `ui.dialogs.more_info_control.light.favorite_color.${
                         this.editMode ? "edit" : "set"
                       }`,
-                      { number: index }
+                      { number: index + 1 }
                     )}
                     .disabled=${this.stateObj!.state === UNAVAILABLE}
                     .color=${color}
@@ -212,11 +212,11 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
                           .index=${index}
                           aria-label=${this.hass.localize(
                             `ui.dialogs.more_info_control.light.favorite_color.delete`,
-                            { number: index }
+                            { number: index + 1 }
                           )}
                           .title=${this.hass.localize(
                             `ui.dialogs.more_info_control.light.favorite_color.delete`,
-                            { number: index }
+                            { number: index + 1 }
                           )}
                         >
                           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
@@ -256,7 +256,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
       justify-content: center;
       margin: calc(var(--ha-space-2) * -1);
       flex-wrap: wrap;
-      max-width: 250px;
+      max-width: 300px;
       user-select: none;
     }
 

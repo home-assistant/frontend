@@ -111,12 +111,13 @@ export type LightColor =
       rgbww_color: [number, number, number, number, number];
     };
 
-const COLOR_TEMP_COUNT = 4;
+const COLOR_TEMP_COUNT = 5;
 const DEFAULT_COLORED_COLORS = [
-  { rgb_color: [127, 172, 255] }, // blue #7FACFF
-  { rgb_color: [215, 150, 255] }, // purple #D796FF
-  { rgb_color: [255, 158, 243] }, // pink #FF9EF3
-  { rgb_color: [255, 110, 84] }, // red #FF6E54
+  { rgb_color: [255, 85, 85] }, // Red    #FF5555
+  { rgb_color: [40, 240, 60] }, // Green  #28F03C
+  { rgb_color: [60, 140, 255] }, // Blue   #3C8CFF
+  { rgb_color: [255, 215, 60] }, // Yellow #FFD73C
+  { rgb_color: [210, 90, 255] }, // Purple #D25AFF
 ] as LightColor[];
 
 export const computeDefaultFavoriteColors = (
@@ -131,26 +132,54 @@ export const computeDefaultFavoriteColors = (
 
   const supportsColor = lightSupportsColor(stateObj);
 
-  if (supportsColorTemp) {
-    const min = stateObj.attributes.min_color_temp_kelvin!;
-    const max = stateObj.attributes.max_color_temp_kelvin!;
-    const step = (max - min) / (COLOR_TEMP_COUNT - 1);
+  if (supportsColorTemp || supportsColor) {
+    const min = supportsColorTemp
+      ? stateObj.attributes.min_color_temp_kelvin!
+      : 2000;
+    const max = supportsColorTemp
+      ? stateObj.attributes.max_color_temp_kelvin!
+      : 6500;
 
-    for (let i = 0; i < COLOR_TEMP_COUNT; i++) {
-      colors.push({
-        color_temp_kelvin: Math.round(min + step * i),
-      });
-    }
-  } else if (supportsColor) {
-    const min = 2000;
-    const max = 6500;
-    const step = (max - min) / (COLOR_TEMP_COUNT - 1);
+    const steps = new Set<number>([min, max]);
+    [
+      2700, // Warm White
+      4000, // Neutral White
+      5500, // Daylight
+    ].forEach((preset) => {
+      if (
+        preset >= min + 250 &&
+        preset <= max - 250 &&
+        steps.size < COLOR_TEMP_COUNT
+      ) {
+        steps.add(preset);
+      }
+    });
 
-    for (let i = 0; i < COLOR_TEMP_COUNT; i++) {
-      colors.push({
-        rgb_color: temperature2rgb(Math.round(min + step * i)),
-      });
+    const kelvinSteps = Array.from(steps).sort((a, b) => a - b);
+    while (kelvinSteps.length < COLOR_TEMP_COUNT) {
+      let maxGap = 0;
+      let insertIndex = 1;
+
+      for (let i = 0; i < kelvinSteps.length - 1; i++) {
+        const gap = kelvinSteps[i + 1] - kelvinSteps[i];
+
+        if (gap > maxGap) {
+          maxGap = gap;
+          insertIndex = i + 1;
+        }
+      }
+
+      const midpoint = Math.round(kelvinSteps[insertIndex - 1] + maxGap / 2);
+      kelvinSteps.splice(insertIndex, 0, midpoint);
     }
+
+    kelvinSteps.forEach((kelvin) => {
+      if (supportsColorTemp) {
+        colors.push({ color_temp_kelvin: kelvin });
+      } else {
+        colors.push({ rgb_color: temperature2rgb(kelvin) });
+      }
+    });
   }
 
   if (supportsColor) {
@@ -159,5 +188,3 @@ export const computeDefaultFavoriteColors = (
 
   return colors;
 };
-
-export const formatTempColor = (value: number) => `${value} K`;
