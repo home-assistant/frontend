@@ -198,7 +198,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       core: true,
     },
     {
-      path: "/developer-tools",
+      path: "/developer-tools?back=1",
       translationKey: "developer_tools",
       iconPath: mdiHammer,
       iconColor: "#7A5AA6",
