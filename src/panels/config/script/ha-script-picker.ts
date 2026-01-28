@@ -80,7 +80,6 @@ import type {
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   createLabelRegistryEntry,
@@ -126,7 +125,6 @@ import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 
 type ScriptItem = ScriptEntity & {
   name: string;
