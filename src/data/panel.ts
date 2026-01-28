@@ -131,4 +131,5 @@ export const getPanelIconPath = (panel: PanelInfo): string | undefined =>
 
 export const FIXED_PANELS = ["profile", "config"];
 export const DEFAULT_HIDDEN_PANELS = ["developer-tools"];
+export const PRESENT_IN_MENU_PANELS = ["developer-tools"];
 export const SHOW_AFTER_SPACER_PANELS = ["developer-tools"];
