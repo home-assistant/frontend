@@ -6,7 +6,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
@@ -296,6 +296,7 @@ export class DialogAddUser extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      HaSettingsRow.styleHasSwitch,
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
