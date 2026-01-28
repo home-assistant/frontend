@@ -1,5 +1,5 @@
 import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
-import type { PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -11,7 +11,7 @@ import "../../../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../../components/ha-settings-row";
 import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
@@ -312,38 +312,41 @@ export class HuiCardLayoutEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static styles = [
-    haStyle,
-    css`
-      .header {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-      }
-      .header .intro {
-        flex: 1;
-        margin: 0;
-        color: var(--secondary-text-color);
-      }
-      .header ha-dropdown {
-        --mdc-theme-text-primary-on-background: var(--primary-text-color);
-        margin-top: -8px;
-      }
-      .disabled {
-        opacity: 0.5;
-        pointer-events: none;
-      }
-      ha-grid-size-picker {
-        display: block;
-        margin: 16px auto;
-        direction: ltr;
-      }
-      ha-yaml-editor {
-        display: block;
-        margin: 16px 0;
-      }
-    `,
-  ];
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      HaSettingsRow.styleHasSwitch,
+      css`
+        .header {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+        }
+        .header .intro {
+          flex: 1;
+          margin: 0;
+          color: var(--secondary-text-color);
+        }
+        .header ha-dropdown {
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
+          margin-top: -8px;
+        }
+        .disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+        ha-grid-size-picker {
+          display: block;
+          margin: 16px auto;
+          direction: ltr;
+        }
+        ha-yaml-editor {
+          display: block;
+          margin: 16px 0;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
