@@ -1,4 +1,5 @@
 import { mdiHelpCircle } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -7,7 +8,7 @@ import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../data/cloud";
@@ -246,47 +247,52 @@ export class CloudAlexaPref extends LitElement {
     }
   }
 
-  static styles = css`
-    a {
-      color: var(--primary-color);
-    }
-    ha-settings-row {
-      padding: 0;
-    }
-    .header-actions {
-      position: absolute;
-      right: 24px;
-      inset-inline-end: 24px;
-      inset-inline-start: initial;
-      top: 24px;
-      display: flex;
-      flex-direction: row;
-    }
-    .header-actions .icon-link {
-      margin-top: -16px;
-      margin-right: 8px;
-      margin-inline-end: 8px;
-      margin-inline-start: initial;
-      direction: var(--direction);
-      color: var(--secondary-text-color);
-    }
-    .card-actions {
-      display: flex;
-    }
-    .card-actions a {
-      text-decoration: none;
-    }
-    .card-header {
-      display: flex;
-      align-items: center;
-    }
-    img {
-      height: 28px;
-      margin-right: 16px;
-      margin-inline-end: 16px;
-      margin-inline-start: initial;
-    }
-  `;
+  static get styles(): CSSResultGroup {
+    return [
+      HaSettingsRow.styleHasSwitch,
+      css`
+        a {
+          color: var(--primary-color);
+        }
+        ha-settings-row {
+          padding: 0;
+        }
+        .header-actions {
+          position: absolute;
+          right: 24px;
+          inset-inline-end: 24px;
+          inset-inline-start: initial;
+          top: 24px;
+          display: flex;
+          flex-direction: row;
+        }
+        .header-actions .icon-link {
+          margin-top: -16px;
+          margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
+          direction: var(--direction);
+          color: var(--secondary-text-color);
+        }
+        .card-actions {
+          display: flex;
+        }
+        .card-actions a {
+          text-decoration: none;
+        }
+        .card-header {
+          display: flex;
+          align-items: center;
+        }
+        img {
+          height: 28px;
+          margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
