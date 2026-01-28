@@ -520,6 +520,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       "developer-tools": {
         tag: "ha-panel-developer-tools",
         load: () => import("./developer-tools/ha-panel-developer-tools"),
+        cache: true,
       },
       logs: {
         tag: "ha-config-logs",
