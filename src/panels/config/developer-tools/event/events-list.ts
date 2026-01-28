@@ -1,9 +1,9 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { stringCompare } from "../../../common/string/compare";
-import { fireEvent } from "../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../types";
+import { stringCompare } from "../../../../common/string/compare";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../../types";
 
 interface EventListenerCount {
   event: string;
@@ -27,7 +27,7 @@ class EventsList extends LitElement {
               >
               <span>
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.events.count_listeners",
+                  "ui.panel.config.developer-tools.tabs.events.count_listeners",
                   {
                     count: event.listener_count,
                   }

@@ -3,28 +3,31 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-spinner";
-import "../../../components/ha-dialog";
-import "../../../components/ha-button";
-import "../../../components/ha-form/ha-form";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
-import "../../../components/ha-selector/ha-selector-datetime";
-import "../../../components/ha-selector/ha-selector-number";
-import "../../../components/ha-svg-icon";
-import type { StatisticValue } from "../../../data/recorder";
+import { formatDateTime } from "../../../../common/datetime/format_date_time";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-spinner";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-button";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-icon-next";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-selector/ha-selector-datetime";
+import "../../../../components/ha-selector/ha-selector-number";
+import "../../../../components/ha-svg-icon";
+import type { StatisticValue } from "../../../../data/recorder";
 import {
   adjustStatisticsSum,
   fetchStatistics,
   getDisplayUnit,
-} from "../../../data/recorder";
-import type { DateTimeSelector, NumberSelector } from "../../../data/selector";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import { showToast } from "../../../util/toast";
+} from "../../../../data/recorder";
+import type {
+  DateTimeSelector,
+  NumberSelector,
+} from "../../../../data/selector";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 import type { DialogStatisticsAdjustSumParams } from "./show-dialog-statistics-adjust-sum";
 
 interface CombinedStat {
@@ -108,7 +111,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         escapeKeyAction
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
         )}
       >
         ${content}
@@ -133,7 +136,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     } else if (this._statsHour.length < 1 && this._stats5min.length < 1) {
       stats = html`<p>
         ${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.no_statistics_found"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.no_statistics_found"
         )}
       </p>`;
     } else {
@@ -172,20 +175,20 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     return html`
       <div class="text-content">
         ${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.info_text_1"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.info_text_1"
         )}
       </div>
       <div class="text-content">
         <b
           >${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.statistic"
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.statistic"
           )}</b
         >
         ${this._params!.statistic.statistic_id}
       </div>
       <ha-selector-datetime
         .label=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
         )}
         .hass=${this.hass}
         .selector=${this._dateTimeSelector}
@@ -199,7 +202,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         @click=${this._fetchOutliers}
       >
         ${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
         )}
       </ha-button>
       <ha-button slot="primaryAction" dialogAction="cancel">
@@ -236,7 +239,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       <div class="text-content">
         <b
           >${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.statistic"
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.statistic"
           )}</b
         >
         ${this._params!.statistic.statistic_id}
@@ -245,7 +248,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       <div class="table-row">
         <span
           >${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.start"
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.start"
           )}</span
         >
         <span
@@ -260,7 +263,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       <div class="table-row">
         <span
           >${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.end"
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.end"
           )}</span
         >
         <span
@@ -274,7 +277,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
       <ha-selector-number
         .label=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.new_value"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
         .hass=${this.hass}
         .selector=${this._amountSelector(unit || undefined)}
@@ -297,7 +300,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         @click=${this._fixIssue}
       >
         ${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
         )}</ha-button
       >
     `;
@@ -470,7 +473,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       this._busy = false;
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
           { message: err.message || err }
         ),
       });
@@ -478,7 +481,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     }
     showToast(this, {
       message: this.hass.localize(
-        "ui.panel.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
+        "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
     this.closeDialog();

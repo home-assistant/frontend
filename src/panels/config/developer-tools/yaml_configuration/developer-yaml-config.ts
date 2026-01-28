@@ -1,19 +1,19 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { componentsWithService } from "../../../common/config/components_with_service";
-import { stringCompare } from "../../../common/string/compare";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-card";
-import "../../../components/ha-spinner";
-import type { CheckConfigResult } from "../../../data/core";
-import { checkCoreConfig } from "../../../data/core";
-import { domainToName } from "../../../data/integration";
-import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route, TranslationDict } from "../../../types";
+import { componentsWithService } from "../../../../common/config/components_with_service";
+import { stringCompare } from "../../../../common/string/compare";
+import "../../../../components/buttons/ha-call-service-button";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/ha-spinner";
+import type { CheckConfigResult } from "../../../../data/core";
+import { checkCoreConfig } from "../../../../data/core";
+import { domainToName } from "../../../../data/integration";
+import { showRestartDialog } from "../../../../dialogs/restart/show-dialog-restart";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant, Route, TranslationDict } from "../../../../types";
 
 type ReloadableDomain = Exclude<
   keyof TranslationDict["ui"]["panel"]["developer-tools"]["tabs"]["yaml"]["section"]["reloading"],
@@ -63,10 +63,10 @@ export class DeveloperYamlConfig extends LitElement {
           domain,
           name:
             this.hass.localize(
-              `ui.panel.developer-tools.tabs.yaml.section.reloading.${domain}`
+              `ui.panel.config.developer-tools.tabs.yaml.section.reloading.${domain}`
             ) ||
             this.hass.localize(
-              "ui.panel.developer-tools.tabs.yaml.section.reloading.reload",
+              "ui.panel.config.developer-tools.tabs.yaml.section.reloading.reload",
               { domain: domainToName(this.hass.localize, domain) }
             ),
         }))
@@ -82,12 +82,12 @@ export class DeveloperYamlConfig extends LitElement {
         <ha-card
           outlined
           header=${this.hass.localize(
-            "ui.panel.developer-tools.tabs.yaml.section.validation.heading"
+            "ui.panel.config.developer-tools.tabs.yaml.section.validation.heading"
           )}
         >
           <div class="card-content">
             ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.yaml.section.validation.introduction"
+              "ui.panel.config.developer-tools.tabs.yaml.section.validation.introduction"
             )}
             ${!this._validateResult
               ? this._validating
@@ -104,10 +104,10 @@ export class DeveloperYamlConfig extends LitElement {
                         ${
                           this._validateResult.result === "valid"
                             ? this.hass.localize(
-                                "ui.panel.developer-tools.tabs.yaml.section.validation.valid"
+                                "ui.panel.config.developer-tools.tabs.yaml.section.validation.valid"
                               )
                             : this.hass.localize(
-                                "ui.panel.developer-tools.tabs.yaml.section.validation.invalid"
+                                "ui.panel.config.developer-tools.tabs.yaml.section.validation.invalid"
                               )
                         }
                     </div>
@@ -117,7 +117,7 @@ export class DeveloperYamlConfig extends LitElement {
                         ? html`<ha-alert
                             alert-type="error"
                             .title=${this.hass.localize(
-                              "ui.panel.developer-tools.tabs.yaml.section.validation.errors"
+                              "ui.panel.config.developer-tools.tabs.yaml.section.validation.errors"
                             )}
                           >
                             <!-- prettier-ignore -->
@@ -131,7 +131,7 @@ export class DeveloperYamlConfig extends LitElement {
                         ? html`<ha-alert
                             alert-type="warning"
                             .title=${this.hass.localize(
-                              "ui.panel.developer-tools.tabs.yaml.section.validation.warnings"
+                              "ui.panel.config.developer-tools.tabs.yaml.section.validation.warnings"
                             )}
                           >
                             <!-- prettier-ignore -->
@@ -146,7 +146,7 @@ export class DeveloperYamlConfig extends LitElement {
           <div class="card-actions">
             <ha-button appearance="plain" @click=${this._validateConfig}>
               ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.yaml.section.validation.check_config"
+                "ui.panel.config.developer-tools.tabs.yaml.section.validation.check_config"
               )}
             </ha-button>
             <ha-button
@@ -156,7 +156,7 @@ export class DeveloperYamlConfig extends LitElement {
               .disabled=${this._validateResult?.result === "invalid"}
             >
               ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.yaml.section.server_management.restart"
+                "ui.panel.config.developer-tools.tabs.yaml.section.server_management.restart"
               )}
             </ha-button>
           </div>
@@ -164,12 +164,12 @@ export class DeveloperYamlConfig extends LitElement {
         <ha-card
           outlined
           header=${this.hass.localize(
-            "ui.panel.developer-tools.tabs.yaml.section.reloading.heading"
+            "ui.panel.config.developer-tools.tabs.yaml.section.reloading.heading"
           )}
         >
           <div class="card-content">
             ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.yaml.section.reloading.introduction"
+              "ui.panel.config.developer-tools.tabs.yaml.section.reloading.introduction"
             )}
           </div>
           <div class="card-actions">
@@ -178,7 +178,7 @@ export class DeveloperYamlConfig extends LitElement {
               domain="homeassistant"
               service="reload_all"
               >${this.hass.localize(
-                "ui.panel.developer-tools.tabs.yaml.section.reloading.all"
+                "ui.panel.config.developer-tools.tabs.yaml.section.reloading.all"
               )}
             </ha-call-service-button>
           </div>
@@ -188,7 +188,7 @@ export class DeveloperYamlConfig extends LitElement {
               domain="homeassistant"
               service="reload_core_config"
               >${this.hass.localize(
-                "ui.panel.developer-tools.tabs.yaml.section.reloading.core"
+                "ui.panel.config.developer-tools.tabs.yaml.section.reloading.core"
               )}
             </ha-call-service-button>
           </div>

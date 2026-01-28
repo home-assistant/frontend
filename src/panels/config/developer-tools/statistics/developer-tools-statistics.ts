@@ -15,42 +15,42 @@ import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/data-table/ha-data-table";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/chips/ha-assist-chip";
+import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   HaDataTable,
   SelectionChangedEvent,
   SortingDirection,
-} from "../../../components/data-table/ha-data-table";
-import { showDataTableSettingsDialog } from "../../../components/data-table/show-dialog-data-table-settings";
+} from "../../../../components/data-table/ha-data-table";
+import { showDataTableSettingsDialog } from "../../../../components/data-table/show-dialog-data-table-settings";
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import "../../../components/ha-button";
-import "../../../components/ha-dialog";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import type { HaMdMenu } from "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu-item";
-import "../../../components/search-input-outlined";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
+import type { HaMdMenu } from "../../../../components/ha-md-menu";
+import "../../../../components/ha-md-menu-item";
+import "../../../../components/search-input-outlined";
 import type {
   StatisticsMetaData,
   StatisticsValidationResult,
-} from "../../../data/recorder";
+} from "../../../../data/recorder";
 import {
   clearStatistics,
   getStatisticIds,
   StatisticMeanType,
   updateStatisticsIssues,
   validateStatistics,
-} from "../../../data/recorder";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
+} from "../../../../data/recorder";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { showConfirmationDialog } from "../../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
 
@@ -139,7 +139,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           ?.map(
             (issue) =>
               localize(
-                `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
+                `ui.panel.config.developer-tools.tabs.statistics.issues.${issue.type}`,
                 issue.data
               ) || issue.type
           )
@@ -153,7 +153,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     ): DataTableColumnContainer<DisplayedStatisticData> => ({
       displayName: {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.data_table.name"
+          "ui.panel.config.developer-tools.tabs.statistics.data_table.name"
         ),
         main: true,
         sortable: true,
@@ -162,7 +162,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       },
       statistic_id: {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.data_table.statistic_id"
+          "ui.panel.config.developer-tools.tabs.statistics.data_table.statistic_id"
         ),
         sortable: true,
         filterable: true,
@@ -170,7 +170,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       },
       statistics_unit_of_measurement: {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.data_table.statistics_unit"
+          "ui.panel.config.developer-tools.tabs.statistics.data_table.statistics_unit"
         ),
         sortable: true,
         filterable: true,
@@ -178,7 +178,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       },
       source: {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.data_table.source"
+          "ui.panel.config.developer-tools.tabs.statistics.data_table.source"
         ),
         sortable: true,
         filterable: true,
@@ -186,7 +186,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       },
       issues_string: {
         title: localize(
-          "ui.panel.developer-tools.tabs.statistics.data_table.issue"
+          "ui.panel.config.developer-tools.tabs.statistics.data_table.issue"
         ),
         sortable: true,
         filterable: true,
@@ -195,12 +195,14 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         flex: 2,
         template: (statistic) =>
           html`${statistic.issues_string ??
-          localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
+          localize(
+            "ui.panel.config.developer-tools.tabs.statistics.no_issue"
+          )}`,
       },
       fix: {
         title: "",
         label: this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
         ),
         type: "icon",
         template: (statistic) =>
@@ -215,8 +217,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                   statistic.issues.some((issue) =>
                     FIXABLE_ISSUES.includes(issue.type)
                   )
-                    ? "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
-                    : "ui.panel.developer-tools.tabs.statistics.fix_issue.info"
+                    ? "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
+                    : "ui.panel.config.developer-tools.tabs.statistics.fix_issue.info"
                 )}
               </ha-button>`
             : "—"}`,
@@ -226,7 +228,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       },
       actions: {
         title: "",
-        label: localize("ui.panel.developer-tools.tabs.statistics.adjust_sum"),
+        label: localize(
+          "ui.panel.config.developer-tools.tabs.statistics.adjust_sum"
+        ),
         type: "icon-button",
         showNarrow: true,
         template: (statistic) =>
@@ -234,7 +238,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             ? html`
                 <ha-icon-button
                   .label=${localize(
-                    "ui.panel.developer-tools.tabs.statistics.adjust_sum"
+                    "ui.panel.config.developer-tools.tabs.statistics.adjust_sum"
                   )}
                   .path=${mdiSlopeUphill}
                   .statistic=${statistic}
@@ -347,7 +351,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                   </ha-dropdown-item>
                   <ha-dropdown-item @click=${this._selectAllIssues}>
                     ${localize(
-                      "ui.panel.developer-tools.tabs.statistics.data_table.select_all_issues"
+                      "ui.panel.config.developer-tools.tabs.statistics.data_table.select_all_issues"
                     )}
                   </ha-dropdown-item>
                   <ha-dropdown-item @click=${this._selectNone}>
@@ -371,7 +375,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
               </div>
               <ha-assist-chip
                 .label=${localize(
-                  "ui.panel.developer-tools.tabs.statistics.delete_selected"
+                  "ui.panel.config.developer-tools.tabs.statistics.delete_selected"
                 )}
                 .disabled=${!this._selected.length}
                 @click=${this._clearSelected}
@@ -397,7 +401,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           .columns=${columns}
           .data=${this._displayData(this._data, this.hass.localize)}
           .noDataText=${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.data_table.no_statistics"
+            "ui.panel.config.developer-tools.tabs.statistics.data_table.no_statistics"
           )}
           .filter=${this.filter}
           .selectable=${this._selectMode}
@@ -648,10 +652,10 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
     await showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.developer-tools.tabs.statistics.multi_delete.title"
+        "ui.panel.config.developer-tools.tabs.statistics.multi_delete.title"
       ),
       text: html`${this.hass.localize(
-        "ui.panel.developer-tools.tabs.statistics.multi_delete.info_text",
+        "ui.panel.config.developer-tools.tabs.statistics.multi_delete.info_text",
         { statistic_count: deletableIds.length }
       )}`,
       confirmText: this.hass.localize("ui.common.delete"),

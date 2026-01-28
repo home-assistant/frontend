@@ -4,7 +4,6 @@ import {
   mdiChartBox,
   mdiClipboardList,
   mdiFormatListBulletedType,
-  mdiHammer,
   mdiLightningBolt,
   mdiPlayBoxMultiple,
   mdiTooltipAccount,
@@ -116,7 +115,6 @@ export const getPanelIcon = (panel: PanelInfo): string | undefined => {
 
 export const PANEL_ICON_PATHS = {
   calendar: mdiCalendar,
-  "developer-tools": mdiHammer,
   energy: mdiLightningBolt,
   history: mdiChartBox,
   logbook: mdiFormatListBulletedType,

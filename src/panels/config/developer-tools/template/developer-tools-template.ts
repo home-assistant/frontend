@@ -3,18 +3,18 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-card";
-import "../../../components/ha-code-editor";
-import "../../../components/ha-spinner";
-import type { RenderTemplateResult } from "../../../data/ws-templates";
-import { subscribeRenderTemplate } from "../../../data/ws-templates";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
+import { debounce } from "../../../../common/util/debounce";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/ha-code-editor";
+import "../../../../components/ha-spinner";
+import type { RenderTemplateResult } from "../../../../data/ws-templates";
+import { subscribeRenderTemplate } from "../../../../data/ws-templates";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { documentationUrl } from "../../../../util/documentation-url";
 
 const DEMO_TEMPLATE = `{## Imitate available variables: ##}
 {% set my_test_json = {
@@ -92,7 +92,7 @@ class HaPanelDevTemplate extends LitElement {
         <div class="description">
           <p>
             ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.description"
+              "ui.panel.config.developer-tools.tabs.templates.description"
             )}
           </p>
           <ul>
@@ -102,7 +102,7 @@ class HaPanelDevTemplate extends LitElement {
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.jinja_documentation"
+                  "ui.panel.config.developer-tools.tabs.templates.jinja_documentation"
                 )}
               </a>
             </li>
@@ -116,7 +116,7 @@ class HaPanelDevTemplate extends LitElement {
                 rel="noreferrer"
               >
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.template_extensions"
+                  "ui.panel.config.developer-tools.tabs.templates.template_extensions"
                 )}</a
               >
             </li>
@@ -132,7 +132,7 @@ class HaPanelDevTemplate extends LitElement {
         <ha-card
           class="edit-pane"
           header=${this.hass.localize(
-            "ui.panel.developer-tools.tabs.templates.editor"
+            "ui.panel.config.developer-tools.tabs.templates.editor"
           )}
         >
           <div class="card-content">
@@ -151,7 +151,7 @@ class HaPanelDevTemplate extends LitElement {
           <div class="card-actions">
             <ha-button appearance="plain" @click=${this._restoreDemo}>
               ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.templates.reset"
+                "ui.panel.config.developer-tools.tabs.templates.reset"
               )}
             </ha-button>
             <ha-button appearance="plain" @click=${this._clear}>
@@ -163,7 +163,7 @@ class HaPanelDevTemplate extends LitElement {
         <ha-card
           class="render-pane"
           header=${this.hass.localize(
-            "ui.panel.developer-tools.tabs.templates.result"
+            "ui.panel.config.developer-tools.tabs.templates.result"
           )}
         >
           <div class="card-content">
@@ -191,7 +191,7 @@ ${type === "object"
                   >
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.templates.result_type"
+                      "ui.panel.config.developer-tools.tabs.templates.result_type"
                     )}:
                     ${resultType}
                   </p>
@@ -199,7 +199,7 @@ ${type === "object"
                     ? html`
                         <p>
                           ${this.hass.localize(
-                            "ui.panel.developer-tools.tabs.templates.time"
+                            "ui.panel.config.developer-tools.tabs.templates.time"
                           )}
                         </p>
                       `
@@ -210,7 +210,7 @@ ${type === "object"
                       ? html`
                           <p class="all_listeners">
                             ${this.hass.localize(
-                              "ui.panel.developer-tools.tabs.templates.all_listeners"
+                              "ui.panel.config.developer-tools.tabs.templates.all_listeners"
                             )}
                           </p>
                         `
@@ -219,7 +219,7 @@ ${type === "object"
                         ? html`
                             <p>
                               ${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.templates.listeners"
+                                "ui.panel.config.developer-tools.tabs.templates.listeners"
                               )}
                             </p>
                             <ul>
@@ -230,7 +230,7 @@ ${type === "object"
                                     <li>
                                       <b
                                         >${this.hass.localize(
-                                          "ui.panel.developer-tools.tabs.templates.domain"
+                                          "ui.panel.config.developer-tools.tabs.templates.domain"
                                         )}</b
                                       >: ${domain}
                                     </li>
@@ -243,7 +243,7 @@ ${type === "object"
                                     <li>
                                       <b
                                         >${this.hass.localize(
-                                          "ui.panel.developer-tools.tabs.templates.entity"
+                                          "ui.panel.config.developer-tools.tabs.templates.entity"
                                         )}</b
                                       >: ${entity_id}
                                     </li>
@@ -254,7 +254,7 @@ ${type === "object"
                         : !this._templateResult.listeners.time
                           ? html`<span class="all_listeners">
                               ${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.templates.no_listeners"
+                                "ui.panel.config.developer-tools.tabs.templates.no_listeners"
                               )}
                             </span>`
                           : nothing}`
@@ -457,7 +457,7 @@ ${type === "object"
     if (
       !(await showConfirmationDialog(this, {
         text: this.hass.localize(
-          "ui.panel.developer-tools.tabs.templates.confirm_reset"
+          "ui.panel.config.developer-tools.tabs.templates.confirm_reset"
         ),
         warning: true,
       }))
@@ -473,7 +473,7 @@ ${type === "object"
     if (
       !(await showConfirmationDialog(this, {
         text: this.hass.localize(
-          "ui.panel.developer-tools.tabs.templates.confirm_clear"
+          "ui.panel.config.developer-tools.tabs.templates.confirm_clear"
         ),
         warning: true,
       }))

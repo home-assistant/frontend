@@ -1,17 +1,17 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-yaml-editor";
-import "../../../components/ha-textfield";
-import "../../../components/ha-button";
-import "../../../components/ha-card";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { documentationUrl } from "../../../util/documentation-url";
+import "../../../../components/ha-yaml-editor";
+import "../../../../components/ha-textfield";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { documentationUrl } from "../../../../util/documentation-url";
 import "./event-subscribe-card";
 import "./events-list";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("developer-tools-event")
 class HaPanelDevEvent extends LitElement {
@@ -39,7 +39,7 @@ class HaPanelDevEvent extends LitElement {
             <div class="card-content">
               <p>
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.events.description"
+                  "ui.panel.config.developer-tools.tabs.events.description"
                 )}
                 <a
                   href=${documentationUrl(
@@ -50,14 +50,14 @@ class HaPanelDevEvent extends LitElement {
                   rel="noreferrer"
                 >
                   ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.events.documentation"
+                    "ui.panel.config.developer-tools.tabs.events.documentation"
                   )}
                 </a>
               </p>
               <div class="inputs">
                 <ha-textfield
                   .label=${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.events.type"
+                    "ui.panel.config.developer-tools.tabs.events.type"
                   )}
                   autofocus
                   required
@@ -66,7 +66,7 @@ class HaPanelDevEvent extends LitElement {
                 ></ha-textfield>
                 <p>
                   ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.events.data"
+                    "ui.panel.config.developer-tools.tabs.events.data"
                   )}
                 </p>
               </div>
@@ -85,7 +85,7 @@ class HaPanelDevEvent extends LitElement {
                 appearance="filled"
                 .disabled=${!this._isValid}
                 >${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.events.fire_event"
+                  "ui.panel.config.developer-tools.tabs.events.fire_event"
                 )}</ha-button
               >
             </div>
@@ -100,7 +100,7 @@ class HaPanelDevEvent extends LitElement {
         <div>
           <h2>
             ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.events.active_listeners"
+              "ui.panel.config.developer-tools.tabs.events.active_listeners"
             )}
           </h2>
           <events-list
@@ -130,7 +130,7 @@ class HaPanelDevEvent extends LitElement {
     if (!this._eventType) {
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.developer-tools.tabs.events.alert_event_type"
+          "ui.panel.config.developer-tools.tabs.events.alert_event_type"
         ),
       });
       return;
@@ -142,7 +142,7 @@ class HaPanelDevEvent extends LitElement {
     );
     fireEvent(this, "hass-notification", {
       message: this.hass.localize(
-        "ui.panel.developer-tools.tabs.events.notification_event_fired",
+        "ui.panel.config.developer-tools.tabs.events.notification_event_fired",
         { type: this._eventType }
       ),
     });

@@ -1,20 +1,20 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-card";
-import "../../../components/ha-button";
-import "../../../components/entity/ha-entity-picker";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import "../../../../components/ha-card";
+import "../../../../components/ha-button";
+import "../../../../components/entity/ha-entity-picker";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import "./ha-debug-connection-row";
 import {
   getStatisticMetadata,
   validateStatistics,
-} from "../../../data/recorder";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { showToast } from "../../../util/toast";
-import { getExtendedEntityRegistryEntry } from "../../../data/entity/entity_registry";
+} from "../../../../data/recorder";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import { showToast } from "../../../../util/toast";
+import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 
 @customElement("developer-tools-debug")
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {
@@ -29,7 +29,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
       <div class="content">
         <ha-card
           .header=${this.hass.localize(
-            "ui.panel.developer-tools.tabs.debug.title"
+            "ui.panel.config.developer-tools.tabs.debug.title"
           )}
         >
           <ha-debug-connection-row
@@ -39,14 +39,14 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
         </ha-card>
         <ha-card
           .header=${this.hass.localize(
-            "ui.panel.developer-tools.tabs.debug.entity_diagnostic.title"
+            "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.title"
           )}
         >
           <div class="card-content">
             <ha-entity-picker
               .hass=${this.hass}
               .helper=${this.hass.localize(
-                "ui.panel.developer-tools.tabs.debug.entity_diagnostic.description"
+                "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.description"
               )}
               @value-changed=${this._entityPicked}
             ></ha-entity-picker>
@@ -57,7 +57,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
               appearance="filled"
               .disabled=${!this._entityId}
               >${this.hass.localize(
-                "ui.panel.developer-tools.tabs.debug.entity_diagnostic.copy_to_clipboard"
+                "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.copy_to_clipboard"
               )}</ha-button
             >
           </div>

@@ -1,18 +1,18 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-dialog";
-import "../../../components/ha-button";
-import "../../../components/ha-formfield";
-import "../../../components/ha-radio";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-button";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
 import {
   clearStatistics,
   getStatisticLabel,
   updateStatisticsMetadata,
-} from "../../../data/recorder";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+} from "../../../../data/recorder";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import type { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
 
 @customElement("dialog-statistics-fix-units-changed")
@@ -50,12 +50,12 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         escapeKeyAction
         @closed=${this._closeDialog}
         .heading=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.title"
+          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.title"
         )}
       >
         <p>
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_1",
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_1",
             {
               name: getStatisticLabel(
                 this.hass,
@@ -68,21 +68,21 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             }
           )}<br />
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_2"
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_2"
           )}<br />
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_3"
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_3"
           )}
         </p>
 
         <h3>
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.how_to_fix"
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.how_to_fix"
           )}
         </h3>
         <ha-formfield
           .label=${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.update",
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.update",
             this._params.issue.data
           )}
         >
@@ -96,7 +96,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         </ha-formfield>
         <ha-formfield
           .label=${this.hass.localize(
-            `ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.clear`
+            `ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.clear`
           )}
         >
           <ha-radio
@@ -116,7 +116,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         </ha-button>
         <ha-button slot="primaryAction" @click=${this._fixIssue}>
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
           )}
         </ha-button>
       </ha-dialog>

@@ -3,16 +3,16 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { goBack, navigate } from "../../common/navigate";
-import "../../components/ha-dropdown";
-import "../../components/ha-dropdown-item";
-import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
-import "../../components/ha-tab-group";
-import "../../components/ha-tab-group-tab";
-import { haStyle } from "../../resources/styles";
-import type { HomeAssistant, Route } from "../../types";
+import { navigate } from "../../../common/navigate";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-button-arrow-prev";
+import "../../../components/ha-menu-button";
+import "../../../components/ha-tab-group";
+import "../../../components/ha-tab-group-tab";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../types";
 import "./developer-tools-router";
 
 @customElement("ha-panel-developer-tools")
@@ -39,7 +39,9 @@ class PanelDeveloperTools extends LitElement {
             @click=${this._handleBack}
           ></ha-icon-button-arrow-prev>
           <div class="main-title">
-            ${this.hass.localize("panel.developer_tools")}
+            ${this.hass.localize(
+              "ui.panel.config.dashboard.developer_tools.main"
+            )}
           </div>
           <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
             <ha-icon-button
@@ -48,27 +50,35 @@ class PanelDeveloperTools extends LitElement {
               .path=${mdiDotsVertical}
             ></ha-icon-button>
             <ha-dropdown-item value="debug">
-              ${this.hass.localize("ui.panel.developer-tools.tabs.debug.title")}
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.debug.title"
+              )}
             </ha-dropdown-item>
           </ha-dropdown>
         </div>
         <ha-tab-group @wa-tab-show=${this._handlePageSelected}>
           <ha-tab-group-tab slot="nav" panel="yaml" .active=${page === "yaml"}>
-            ${this.hass.localize("ui.panel.developer-tools.tabs.yaml.title")}
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.yaml.title"
+            )}
           </ha-tab-group-tab>
           <ha-tab-group-tab
             slot="nav"
             panel="state"
             .active=${page === "state"}
           >
-            ${this.hass.localize("ui.panel.developer-tools.tabs.states.title")}
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.states.title"
+            )}
           </ha-tab-group-tab>
           <ha-tab-group-tab
             slot="nav"
             panel="action"
             .active=${page === "action"}
           >
-            ${this.hass.localize("ui.panel.developer-tools.tabs.actions.title")}
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.actions.title"
+            )}
           </ha-tab-group-tab>
           <ha-tab-group-tab
             slot="nav"
@@ -76,7 +86,7 @@ class PanelDeveloperTools extends LitElement {
             .active=${page === "template"}
           >
             ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.templates.title"
+              "ui.panel.config.developer-tools.tabs.templates.title"
             )}
           </ha-tab-group-tab>
           <ha-tab-group-tab
@@ -84,7 +94,9 @@ class PanelDeveloperTools extends LitElement {
             panel="event"
             .active=${page === "event"}
           >
-            ${this.hass.localize("ui.panel.developer-tools.tabs.events.title")}
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.events.title"
+            )}
           </ha-tab-group-tab>
           <ha-tab-group-tab
             slot="nav"
@@ -92,7 +104,7 @@ class PanelDeveloperTools extends LitElement {
             .active=${page === "statistics"}
           >
             ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.statistics.title"
+              "ui.panel.config.developer-tools.tabs.statistics.title"
             )}
           </ha-tab-group-tab>
           <ha-tab-group-tab
@@ -117,7 +129,7 @@ class PanelDeveloperTools extends LitElement {
       return;
     }
     if (newPage !== this._page) {
-      navigate(`/developer-tools/${newPage}`);
+      navigate(`/config/developer-tools/${newPage}`);
     } else {
       scrollTo({ behavior: "smooth", top: 0 });
     }
@@ -128,7 +140,7 @@ class PanelDeveloperTools extends LitElement {
   ) {
     const action = ev.detail.item.value;
     if (action === "debug") {
-      navigate(`/developer-tools/debug`);
+      navigate(`/config/developer-tools/debug`);
     }
   }
 
@@ -137,7 +149,7 @@ class PanelDeveloperTools extends LitElement {
   }
 
   private _handleBack() {
-    goBack("/config");
+    navigate("/config");
   }
 
   static get styles(): CSSResultGroup {

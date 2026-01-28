@@ -1,11 +1,11 @@
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
-import type { HomeAssistant } from "../../../types";
-import { storeState } from "../../../util/ha-pref-storage";
+import "../../../../components/ha-settings-row";
+import "../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../components/ha-switch";
+import type { HomeAssistant } from "../../../../types";
+import { storeState } from "../../../../util/ha-pref-storage";
 
 @customElement("ha-debug-connection-row")
 class HaDebugConnectionRow extends LitElement {
@@ -18,12 +18,12 @@ class HaDebugConnectionRow extends LitElement {
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.debug.debug_connection.title"
+            "ui.panel.config.developer-tools.tabs.debug.debug_connection.title"
           )}
         </span>
         <span slot="description">
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.debug.debug_connection.description"
+            "ui.panel.config.developer-tools.tabs.debug.debug_connection.description"
           )}
         </span>
         <ha-switch

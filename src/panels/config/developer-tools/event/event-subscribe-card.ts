@@ -3,13 +3,13 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { formatTime } from "../../../common/datetime/format_time";
-import "../../../components/ha-card";
-import "../../../components/ha-textfield";
-import "../../../components/ha-yaml-editor";
-import "../../../components/ha-button";
-import "../../../components/ha-alert";
-import type { HomeAssistant } from "../../../types";
+import { formatTime } from "../../../../common/datetime/format_time";
+import "../../../../components/ha-card";
+import "../../../../components/ha-textfield";
+import "../../../../components/ha-yaml-editor";
+import "../../../../components/ha-button";
+import "../../../../components/ha-alert";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("event-subscribe-card")
 class EventSubscribeCard extends LitElement {
@@ -58,17 +58,17 @@ class EventSubscribeCard extends LitElement {
     return html`
       <ha-card
         header=${this.hass!.localize(
-          "ui.panel.developer-tools.tabs.events.listen_to_events"
+          "ui.panel.config.developer-tools.tabs.events.listen_to_events"
         )}
       >
         <div class="card-content">
           <ha-textfield
             .label=${this._subscribed
               ? this.hass!.localize(
-                  "ui.panel.developer-tools.tabs.events.listening_to"
+                  "ui.panel.config.developer-tools.tabs.events.listening_to"
                 )
               : this.hass!.localize(
-                  "ui.panel.developer-tools.tabs.events.subscribe_to"
+                  "ui.panel.config.developer-tools.tabs.events.subscribe_to"
                 )}
             .disabled=${this._subscribed !== undefined}
             .value=${this._eventType}
@@ -76,12 +76,12 @@ class EventSubscribeCard extends LitElement {
           ></ha-textfield>
           <ha-textfield
             .label=${this.hass!.localize(
-              "ui.panel.developer-tools.tabs.events.filter_events"
+              "ui.panel.config.developer-tools.tabs.events.filter_events"
             )}
             .value=${this._eventFilter}
             .disabled=${this._subscribed !== undefined}
             helperPersistent
-            .helper=${`${this.hass!.localize("ui.panel.developer-tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.developer-tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
+            .helper=${`${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
             @input=${this._filterChanged}
           ></ha-textfield>
           ${this._error
@@ -96,10 +96,10 @@ class EventSubscribeCard extends LitElement {
           >
             ${this._subscribed
               ? this.hass!.localize(
-                  "ui.panel.developer-tools.tabs.events.stop_listening"
+                  "ui.panel.config.developer-tools.tabs.events.stop_listening"
                 )
               : this.hass!.localize(
-                  "ui.panel.developer-tools.tabs.events.start_listening"
+                  "ui.panel.config.developer-tools.tabs.events.start_listening"
                 )}
           </ha-button>
           <ha-button
@@ -108,7 +108,7 @@ class EventSubscribeCard extends LitElement {
             @click=${this._clearEvents}
           >
             ${this.hass!.localize(
-              "ui.panel.developer-tools.tabs.events.clear_events"
+              "ui.panel.config.developer-tools.tabs.events.clear_events"
             )}
           </ha-button>
         </div>
@@ -122,7 +122,7 @@ class EventSubscribeCard extends LitElement {
               (event) => html`
                 <div class="event">
                   ${this.hass!.localize(
-                    "ui.panel.developer-tools.tabs.events.event_fired",
+                    "ui.panel.config.developer-tools.tabs.events.event_fired",
                     { name: event.id }
                   )}
                   ${formatTime(
@@ -216,7 +216,7 @@ class EventSubscribeCard extends LitElement {
           }, this._eventType);
       } catch (error: any) {
         this._error = this.hass!.localize(
-          "ui.panel.developer-tools.tabs.events.subscribe_failed",
+          "ui.panel.config.developer-tools.tabs.events.subscribe_failed",
           { error: error.message || "Unknown error" }
         );
       }

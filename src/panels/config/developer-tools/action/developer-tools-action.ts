@@ -7,38 +7,41 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
-import { storage } from "../../../common/decorators/storage";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { hasTemplate, isTemplate } from "../../../common/string/has-template";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import { extractSearchParam } from "../../../common/url/search-params";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
-import { showToast } from "../../../util/toast";
+import { storage } from "../../../../common/decorators/storage";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../../common/entity/compute_object_id";
+import {
+  hasTemplate,
+  isTemplate,
+} from "../../../../common/string/has-template";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { extractSearchParam } from "../../../../common/url/search-params";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import type { HaProgressButton } from "../../../../components/buttons/ha-progress-button";
+import { showToast } from "../../../../util/toast";
 
-import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-card";
-import "../../../components/buttons/ha-progress-button";
-import "../../../components/ha-expansion-panel";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-service-control";
-import "../../../components/ha-service-picker";
-import "../../../components/ha-yaml-editor";
-import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
-import { forwardHaptic } from "../../../data/haptics";
-import type { Action, ServiceAction } from "../../../data/script";
-import { migrateAutomationAction } from "../../../data/script";
+import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/buttons/ha-progress-button";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-service-control";
+import "../../../../components/ha-service-picker";
+import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { forwardHaptic } from "../../../../data/haptics";
+import type { Action, ServiceAction } from "../../../../data/script";
+import { migrateAutomationAction } from "../../../../data/script";
 import {
   callExecuteScript,
   serviceCallWillDisconnect,
-} from "../../../data/service";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
-import { resolveMediaSource } from "../../../data/media_source";
+} from "../../../../data/service";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import { documentationUrl } from "../../../../util/documentation-url";
+import { resolveMediaSource } from "../../../../data/media_source";
 
 @customElement("developer-tools-action")
 class HaPanelDevAction extends LitElement {
@@ -144,7 +147,7 @@ class HaPanelDevAction extends LitElement {
       <div class="content">
         <p>
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.actions.description"
+            "ui.panel.config.developer-tools.tabs.actions.description"
           )}
         </p>
         <ha-card>
@@ -189,23 +192,23 @@ class HaPanelDevAction extends LitElement {
             >
               ${this._yamlMode
                 ? this.hass.localize(
-                    "ui.panel.developer-tools.tabs.actions.ui_mode"
+                    "ui.panel.config.developer-tools.tabs.actions.ui_mode"
                   )
                 : this.hass.localize(
-                    "ui.panel.developer-tools.tabs.actions.yaml_mode"
+                    "ui.panel.config.developer-tools.tabs.actions.yaml_mode"
                   )}
             </ha-button>
             ${!this._uiAvailable
               ? html`<span class="error"
                   >${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.actions.no_template_ui_support"
+                    "ui.panel.config.developer-tools.tabs.actions.no_template_ui_support"
                   )}</span
                 >`
               : ""}
           </div>
           <ha-progress-button raised @click=${this._callService}>
             ${this.hass.localize(
-              "ui.panel.developer-tools.tabs.actions.call_service"
+              "ui.panel.config.developer-tools.tabs.actions.call_service"
             )}
           </ha-progress-button>
         </div>
@@ -214,7 +217,7 @@ class HaPanelDevAction extends LitElement {
         ? html`<div class="content response">
             <ha-card
               .header=${this.hass.localize(
-                "ui.panel.developer-tools.tabs.actions.response"
+                "ui.panel.config.developer-tools.tabs.actions.response"
               )}
             >
               <div class="card-content">
@@ -230,7 +233,7 @@ class HaPanelDevAction extends LitElement {
                     slot="extra-actions"
                     @click=${this._copyTemplate}
                     >${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.actions.copy_clipboard_template"
+                      "ui.panel.config.developer-tools.tabs.actions.copy_clipboard_template"
                     )}</ha-button
                   >
                 </ha-yaml-editor>
@@ -244,10 +247,10 @@ class HaPanelDevAction extends LitElement {
             <ha-expansion-panel
               .header=${this._yamlMode
                 ? this.hass.localize(
-                    "ui.panel.developer-tools.tabs.actions.all_parameters"
+                    "ui.panel.config.developer-tools.tabs.actions.all_parameters"
                   )
                 : this.hass.localize(
-                    "ui.panel.developer-tools.tabs.actions.yaml_parameters"
+                    "ui.panel.config.developer-tools.tabs.actions.yaml_parameters"
                   )}
               outlined
               .expanded=${this._yamlMode}
@@ -258,7 +261,7 @@ class HaPanelDevAction extends LitElement {
                       ${target
                         ? html`
                             ${this.hass.localize(
-                              "ui.panel.developer-tools.tabs.actions.accepts_target"
+                              "ui.panel.config.developer-tools.tabs.actions.accepts_target"
                             )}
                           `
                         : ""}
@@ -289,17 +292,17 @@ class HaPanelDevAction extends LitElement {
                 <tr>
                   <th>
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.actions.column_parameter"
+                      "ui.panel.config.developer-tools.tabs.actions.column_parameter"
                     )}
                   </th>
                   <th>
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.actions.column_description"
+                      "ui.panel.config.developer-tools.tabs.actions.column_description"
                     )}
                   </th>
                   <th>
                     ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.actions.column_example"
+                      "ui.panel.config.developer-tools.tabs.actions.column_example"
                     )}
                   </th>
                 </tr>
@@ -333,7 +336,7 @@ class HaPanelDevAction extends LitElement {
                     appearance="plain"
                     @click=${this._fillExampleData}
                     >${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.actions.fill_example_data"
+                      "ui.panel.config.developer-tools.tabs.actions.fill_example_data"
                     )}</ha-button
                   >`
                 : ""}
@@ -366,14 +369,14 @@ class HaPanelDevAction extends LitElement {
     const errorCategory = yamlMode ? "yaml" : "ui";
     if (!serviceData?.action) {
       return localize(
-        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.no_action`
+        `ui.panel.config.developer-tools.tabs.actions.errors.${errorCategory}.no_action`
       );
     }
     const domain = computeDomain(serviceData.action);
     const service = computeObjectId(serviceData.action);
     if (!domain || !service) {
       return localize(
-        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.invalid_action`
+        `ui.panel.config.developer-tools.tabs.actions.errors.${errorCategory}.invalid_action`
       );
     }
     const dataIsTemplate =
@@ -387,7 +390,7 @@ class HaPanelDevAction extends LitElement {
       !serviceData.data?.area_id
     ) {
       return localize(
-        `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.no_target`
+        `ui.panel.config.developer-tools.tabs.actions.errors.${errorCategory}.no_target`
       );
     }
     for (const field of fields) {
@@ -397,7 +400,7 @@ class HaPanelDevAction extends LitElement {
         (!serviceData.data || serviceData.data[field.key] === undefined)
       ) {
         return localize(
-          `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.missing_required_field`,
+          `ui.panel.config.developer-tools.tabs.actions.errors.${errorCategory}.missing_required_field`,
           { key: field.key }
         );
       }
@@ -456,7 +459,7 @@ class HaPanelDevAction extends LitElement {
       forwardHaptic(this, "failure");
       button.actionError();
       this._error = this.hass.localize(
-        "ui.panel.developer-tools.tabs.actions.errors.yaml.invalid_yaml"
+        "ui.panel.config.developer-tools.tabs.actions.errors.yaml.invalid_yaml"
       );
       return;
     }
@@ -529,7 +532,7 @@ class HaPanelDevAction extends LitElement {
                               rel="noreferrer"
                               ><ha-button>
                                 ${this.hass.localize(
-                                  "ui.panel.developer-tools.tabs.actions.open_media"
+                                  "ui.panel.config.developer-tools.tabs.actions.open_media"
                                 )}
                               </ha-button></a
                             >

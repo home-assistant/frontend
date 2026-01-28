@@ -9,14 +9,14 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { loadVirtualizer } from "../../../resources/virtualizer";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import "../../../components/ha-checkbox";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
-import { showToast } from "../../../util/toast";
-import { haStyle } from "../../../resources/styles";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { loadVirtualizer } from "../../../../resources/virtualizer";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import "../../../../components/ha-checkbox";
+import "../../../../components/ha-svg-icon";
+import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
+import { haStyle } from "../../../../resources/styles";
 
 @customElement("developer-tools-state-renderer")
 class HaPanelDevStateRenderer extends LitElement {
@@ -69,21 +69,21 @@ class HaPanelDevStateRenderer extends LitElement {
             <div class="header" role="columnheader">
               <span class="padded">
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.states.entity"
+                  "ui.panel.config.developer-tools.tabs.states.entity"
                 )}
               </span>
             </div>
             <div class="header" role="columnheader">
               <span class="padded">
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.states.state"
+                  "ui.panel.config.developer-tools.tabs.states.state"
                 )}
               </span>
             </div>
             <div class="header" role="columnheader">
               <span class="padded">
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.states.attributes"
+                  "ui.panel.config.developer-tools.tabs.states.attributes"
                 )}
               </span>
             </div>
@@ -105,7 +105,7 @@ class HaPanelDevStateRenderer extends LitElement {
                   <div class="cell" role="cell" aria-colspan="3">
                     <span class="padded">
                       ${this.hass.localize(
-                        "ui.panel.developer-tools.tabs.states.no_entities"
+                        "ui.panel.config.developer-tools.tabs.states.no_entities"
                       )}
                     </span>
                   </div>
@@ -152,10 +152,10 @@ class HaPanelDevStateRenderer extends LitElement {
                   @click=${this._copyEntity}
                   .entity=${item}
                   alt=${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.states.copy_id"
+                    "ui.panel.config.developer-tools.tabs.states.copy_id"
                   )}
                   title=${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.states.copy_id"
+                    "ui.panel.config.developer-tools.tabs.states.copy_id"
                   )}
                   .path=${mdiClipboardTextMultipleOutline}
                 ></ha-svg-icon>
@@ -168,10 +168,10 @@ class HaPanelDevStateRenderer extends LitElement {
                   @click=${this._entityMoreInfo}
                   .entity=${item}
                   alt=${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.states.more_info"
+                    "ui.panel.config.developer-tools.tabs.states.more_info"
                   )}
                   title=${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.states.more_info"
+                    "ui.panel.config.developer-tools.tabs.states.more_info"
                   )}
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>

@@ -9,7 +9,6 @@
     "logbook": "Activity",
     "history": "History",
     "todo": "To-do lists",
-    "developer_tools": "Developer tools",
     "media_browser": "Media",
     "profile": "Profile",
     "light": "Lights",
@@ -1368,45 +1367,45 @@
         "navigate_title": "Navigate",
         "commands": {
           "reload": {
-            "all": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::all%]",
-            "reload": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::reload%]",
-            "core": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::core%]",
-            "group": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::group%]",
-            "automation": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::automation%]",
-            "script": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::script%]",
-            "scene": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::scene%]",
-            "person": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::person%]",
-            "zone": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::zone%]",
-            "input_boolean": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_boolean%]",
-            "input_button": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_button%]",
-            "input_text": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_text%]",
-            "input_number": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_number%]",
-            "input_datetime": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_datetime%]",
-            "input_select": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_select%]",
-            "template": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::template%]",
-            "universal": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::universal%]",
-            "rest": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::rest%]",
-            "command_line": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::command_line%]",
-            "filter": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::filter%]",
-            "statistics": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::statistics%]",
-            "generic": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::generic%]",
-            "generic_thermostat": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::generic_thermostat%]",
-            "homekit": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::homekit%]",
-            "min_max": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::min_max%]",
-            "history_stats": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::history_stats%]",
-            "trend": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::trend%]",
-            "ping": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::ping%]",
-            "filesize": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::filesize%]",
-            "telegram": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::telegram%]",
-            "smtp": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::smtp%]",
-            "mqtt": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::mqtt%]",
-            "rpi_gpio": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::rpi_gpio%]",
-            "themes": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::themes%]"
+            "all": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::all%]",
+            "reload": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::reload%]",
+            "core": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::core%]",
+            "group": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::group%]",
+            "automation": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::automation%]",
+            "script": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::script%]",
+            "scene": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::scene%]",
+            "person": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::person%]",
+            "zone": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::zone%]",
+            "input_boolean": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_boolean%]",
+            "input_button": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_button%]",
+            "input_text": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_text%]",
+            "input_number": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_number%]",
+            "input_datetime": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_datetime%]",
+            "input_select": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_select%]",
+            "template": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::template%]",
+            "universal": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::universal%]",
+            "rest": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::rest%]",
+            "command_line": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::command_line%]",
+            "filter": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::filter%]",
+            "statistics": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::statistics%]",
+            "generic": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::generic%]",
+            "generic_thermostat": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::generic_thermostat%]",
+            "homekit": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::homekit%]",
+            "min_max": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::min_max%]",
+            "history_stats": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::history_stats%]",
+            "trend": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::trend%]",
+            "ping": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::ping%]",
+            "filesize": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::filesize%]",
+            "telegram": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::telegram%]",
+            "smtp": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::smtp%]",
+            "mqtt": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::mqtt%]",
+            "rpi_gpio": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::rpi_gpio%]",
+            "themes": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::themes%]"
           },
           "server_control": {
             "perform_action": "{action} server",
-            "restart": "[%key:ui::panel::developer-tools::tabs::yaml::section::server_management::restart%]",
-            "stop": "[%key:ui::panel::developer-tools::tabs::yaml::section::server_management::stop%]"
+            "restart": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::server_management::restart%]",
+            "stop": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::server_management::stop%]"
           },
           "types": {
             "reload": "Reload",
@@ -1440,7 +1439,7 @@
             "analytics": "[%key:ui::panel::config::analytics::caption%]",
             "system_health": "[%key:ui::panel::config::system_health::caption%]",
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
-            "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]",
+            "server_control": "[%key:ui::panel::config::developer-tools::tabs::yaml::title%]",
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
             "app_dashboard": "App dashboard",
             "app_store": "App store",
@@ -1928,12 +1927,12 @@
           "data": "Additional data"
         },
         "template": {
-          "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
-          "all_listeners": "[%key:ui::panel::developer-tools::tabs::templates::all_listeners%]",
-          "no_listeners": "[%key:ui::panel::developer-tools::tabs::templates::no_listeners%]",
-          "listeners": "[%key:ui::panel::developer-tools::tabs::templates::listeners%]",
-          "entity": "[%key:ui::panel::developer-tools::tabs::templates::entity%]",
-          "domain": "[%key:ui::panel::developer-tools::tabs::templates::domain%]"
+          "time": "[%key:ui::panel::config::developer-tools::tabs::templates::time%]",
+          "all_listeners": "[%key:ui::panel::config::developer-tools::tabs::templates::all_listeners%]",
+          "no_listeners": "[%key:ui::panel::config::developer-tools::tabs::templates::no_listeners%]",
+          "listeners": "[%key:ui::panel::config::developer-tools::tabs::templates::listeners%]",
+          "entity": "[%key:ui::panel::config::developer-tools::tabs::templates::entity%]",
+          "domain": "[%key:ui::panel::config::developer-tools::tabs::templates::domain%]"
         }
       },
       "options_flow": {
@@ -3436,6 +3435,289 @@
             "companion_apps": "Companion apps"
           }
         },
+        "developer-tools": {
+          "tabs": {
+            "assist": {
+              "title": "Sentences parser",
+              "description": "Enter sentences and see how they will be parsed by Home Assistant. Each line will be processed as an individual sentence. Intents will not be executed on your instance.",
+              "parse_sentences": "Parse sentences",
+              "sentences": "Sentences",
+              "download_results": "Download results",
+              "no_match": "No intent matched",
+              "language": "[%key:ui::components::language-picker::language%]"
+            },
+            "debug": {
+              "title": "Debug tools",
+              "debug_connection": {
+                "title": "Debug connection",
+                "description": "Observe requests to the server and responses from the server in browser console."
+              },
+              "entity_diagnostic": {
+                "title": "Entity diagnostic",
+                "description": "Select an entity to copy diagnostic details.",
+                "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+              }
+            },
+            "events": {
+              "title": "Events",
+              "description": "Fire an event on the event bus.",
+              "documentation": "Events documentation",
+              "type": "Event type",
+              "data": "Event data (YAML, optional)",
+              "fire_event": "Fire event",
+              "event_fired": "Event {name} fired",
+              "active_listeners": "Active listeners",
+              "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
+              "listen_to_events": "Listen to events",
+              "filter_events": "Filter events",
+              "filter_helper": "Only capture events containing the filter string.",
+              "filter_ignored": "Ignored {count} events.",
+              "listening_to": "Listening to",
+              "subscribe_to": "Event to subscribe to",
+              "start_listening": "Start listening",
+              "stop_listening": "Stop listening",
+              "clear_events": "Clear events",
+              "alert_event_type": "Event type is a mandatory field",
+              "notification_event_fired": "Event {type} successfully fired!",
+              "subscribe_failed": "Failed to subscribe to event: {error}"
+            },
+            "actions": {
+              "title": "Actions",
+              "description": "The actions dev tool allows you to perform any action available in Home Assistant.",
+              "call_service": "Perform action",
+              "response": "Response",
+              "column_parameter": "Parameter",
+              "column_description": "Description",
+              "column_example": "Example",
+              "fill_example_data": "Fill example data",
+              "yaml_mode": "Go to YAML mode",
+              "ui_mode": "Go to UI mode",
+              "yaml_parameters": "Parameters only available in YAML mode",
+              "all_parameters": "All available parameters",
+              "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
+              "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
+              "copy_clipboard_template": "Copy to clipboard as template",
+              "open_media": "Open media",
+              "errors": {
+                "ui": {
+                  "no_action": "No action selected, please select an action",
+                  "invalid_action": "Selected action is invalid, please select a valid action",
+                  "no_target": "This action requires a target, please select a target from the picker",
+                  "missing_required_field": "This action requires field {key}, please enter a valid value for {key}"
+                },
+                "yaml": {
+                  "invalid_yaml": "Action YAML contains syntax errors, please fix the syntax",
+                  "no_action": "No action defined, please define an 'action:' key",
+                  "invalid_action": "Defined action is invalid, please provide an action in the format domain.action",
+                  "no_target": "This action requires a target, please define a target 'entity_id', 'device_id', or 'area_id' under 'target:' or 'data:'",
+                  "missing_required_field": "This action requires field {key}, which must be provided under 'data:'"
+                }
+              }
+            },
+            "states": {
+              "title": "States",
+              "description1": "Set the current state representation of an entity within Home Assistant.",
+              "description2": "If the entity belongs to a device, there will be no actual communication with that device.",
+              "entity": "Entity",
+              "state": "State",
+              "attributes": "Attributes",
+              "state_attributes": "State attributes (YAML, optional)",
+              "set_state": "Set state",
+              "current_entities": "Current entity states",
+              "filter_entities": "Filter entities",
+              "filter_states": "Filter states",
+              "filter_attributes": "Filter attributes",
+              "no_entities": "No entities",
+              "more_info": "More info",
+              "alert_entity_field": "Entity is a mandatory field",
+              "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
+              "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",
+              "copy_id": "Copy ID to clipboard"
+            },
+            "templates": {
+              "title": "Template",
+              "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+              "editor": "Template editor",
+              "result": "Result",
+              "reset": "Reset to demo template",
+              "confirm_reset": "Do you want to reset your current template back to the demo template?",
+              "confirm_clear": "Do you want to clear your current template?",
+              "result_type": "Result type",
+              "jinja_documentation": "Jinja2 template documentation",
+              "template_extensions": "Home Assistant template extensions",
+              "unknown_error_template": "Unknown error rendering template",
+              "time": "This template updates at the start of each minute.",
+              "all_listeners": "This template listens for all state changed events.",
+              "no_listeners": "This template does not listen for any events and will not update automatically.",
+              "listeners": "This template listens for the following state changed events:",
+              "entity": "Entity",
+              "domain": "Domain"
+            },
+            "statistics": {
+              "title": "Statistics",
+              "entity": "Entity",
+              "issue": "Issue",
+              "no_issue": "No issue",
+              "issues": {
+                "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
+                "mean_type_changed": "The mean type of this entity changed from ''{metadata_mean_type}'' to ''{state_mean_type}''.",
+                "state_class_removed": "This entity no longer has a state class",
+                "entity_not_recorded": "This entity is excluded from being recorded.",
+                "entity_no_longer_recorded": "This entity is no longer being recorded.",
+                "no_state": "There is no state available for this entity."
+              },
+              "delete_selected": "Delete selected statistics",
+              "multi_delete": {
+                "title": "Delete selected statistics",
+                "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
+              },
+              "mean_type": {
+                "0": "None",
+                "1": "Arithmetic",
+                "2": "Circular"
+              },
+              "fix_issue": {
+                "fix": "Fix issue",
+                "clearing_failed": "Clearing the statistics failed",
+                "clearing_timeout_title": "Clearing not done yet",
+                "clearing_timeout_text": "The clearing of the statistics took longer than expected, it might take longer for the issue to disappear.",
+                "fix_all": "Fix all",
+                "info": "Info",
+                "no_support": {
+                  "title": "Fix issue",
+                  "info_text_1": "Fixing this issue is not supported yet."
+                },
+                "no_state": {
+                  "title": "Entity has no state",
+                  "info_text_1": "''{name}'' ({statistic_id}) has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
+                  "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+                },
+                "entity_not_recorded": {
+                  "title": "Entity is not recorded",
+                  "info_text_1": "State changes of ''{name}'' ({statistic_id}) are not recorded, therefore, we cannot track long term statistics for it.",
+                  "info_text_2": "You probably excluded this entity, or have just included some entities.",
+                  "info_text_3_link": "See the Recorder documentation for more information."
+                },
+                "entity_no_longer_recorded": {
+                  "title": "Entity is no longer recorded",
+                  "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
+                  "info_text_2": "You probably excluded this entity, or have just included some entities.",
+                  "info_text_3_link": "See the Recorder documentation for more information.",
+                  "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
+                },
+                "state_class_removed": {
+                  "title": "The entity no longer has a state class",
+                  "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but it no longer has a state class, therefore, we cannot track long term statistics for it anymore.",
+                  "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
+                  "info_text_3": "If the state class was previously provided by an integration, this might be a bug. Please report an issue.",
+                  "info_text_4": "If you previously set the state class yourself, please correct it.",
+                  "info_text_4_link": "The different state classes and when to use which can be found in the developer documentation.",
+                  "info_text_5": "If the state class has permanently been removed, you may want to delete the long term statistics of it from your database.",
+                  "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+                },
+                "units_changed": {
+                  "title": "The unit has changed",
+                  "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
+                  "clear": "Delete all old statistic data for this entity",
+                  "how_to_fix": "How do you want to fix this issue?",
+                  "info_text_1": "The unit of ''{name}'' ({statistic_id}) changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
+                  "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
+                  "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
+                },
+                "mean_type_changed": {
+                  "title": "The mean type has changed",
+                  "info_text_1": "The mean type of ''{name}'' ({statistic_id}) changed from ''{metadata_mean_type}'' to ''{state_mean_type}''.",
+                  "info_text_2": "Statistics cannot be generated until the old statistics are deleted, or the mean type matches the old statistics data again.",
+                  "info_text_3": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+                },
+                "adjust_sum": {
+                  "title": "Adjust a statistic",
+                  "no_statistics_found": "No statistics found for this period.",
+                  "info_text_1": "Sometimes the statistics end up being incorrect for a specific point in time. This can mess up your beautiful graphs! Select a time below to find the bad moment and adjust the data.",
+                  "pick_a_time": "Pick a time",
+                  "statistic": "Statistic:",
+                  "start": "Start",
+                  "end": "End",
+                  "new_value": "New value",
+                  "adjust": "Adjust",
+                  "outliers": "Outliers",
+                  "sum_adjusted": "Statistic sum adjusted",
+                  "error_sum_adjusted": "Error adjusting sum: {message}"
+                }
+              },
+              "adjust_sum": "Adjust sum",
+              "data_table": {
+                "select_all_issues": "Select all with issues",
+                "name": "Name",
+                "statistic_id": "Statistic ID",
+                "statistics_unit": "Statistics unit",
+                "source": "Source",
+                "issue": "Issue",
+                "no_statistics": "[%key:ui::components::statistics_charts::no_statistics_found%]"
+              }
+            },
+            "yaml": {
+              "title": "YAML",
+              "section": {
+                "validation": {
+                  "heading": "Check and restart",
+                  "introduction": "A basic validation of the configuration is automatically done before restarting. The basic validation ensures the YAML configuration doesn't have errors which will prevent Home Assistant or any integration from starting. It's also possible to only do the basic validation check without restarting.",
+                  "check_config": "Check configuration",
+                  "valid": "Configuration will not prevent Home Assistant from starting!",
+                  "invalid": "Configuration invalid!",
+                  "warnings": "Configuration warnings",
+                  "errors": "Configuration errors"
+                },
+                "reloading": {
+                  "all": "All YAML configuration",
+                  "heading": "YAML configuration reloading",
+                  "introduction": "Some parts of Home Assistant can reload without requiring a restart. Selecting one of the options below will unload their current YAML configuration and load the new one.",
+                  "reload": "{domain}",
+                  "core": "Location & customizations",
+                  "group": "Groups, group entities, and notify services",
+                  "automation": "Automations",
+                  "script": "Scripts",
+                  "scene": "Scenes",
+                  "person": "People",
+                  "zone": "Zones",
+                  "input_boolean": "Input booleans",
+                  "input_button": "Input buttons",
+                  "input_text": "Input texts",
+                  "input_number": "Input numbers",
+                  "input_datetime": "Input datetimes",
+                  "input_select": "Input selects",
+                  "template": "Template entities",
+                  "universal": "Universal media player entities",
+                  "rest": "REST entities and notify services",
+                  "command_line": "Command line entities",
+                  "filter": "Filter entities",
+                  "statistics": "Statistics entities",
+                  "generic": "Generic IP camera entities",
+                  "generic_thermostat": "Generic thermostat entities",
+                  "homekit": "HomeKit",
+                  "min_max": "Min/max entities",
+                  "history_stats": "History stats entities",
+                  "trend": "Trend entities",
+                  "ping": "Ping binary sensor entities",
+                  "filesize": "File size entities",
+                  "telegram": "Telegram notify services",
+                  "smtp": "SMTP notify services",
+                  "mqtt": "Manually configured MQTT entities",
+                  "rpi_gpio": "Raspberry Pi GPIO entities",
+                  "timer": "Timers",
+                  "themes": "Themes"
+                },
+                "server_management": {
+                  "heading": "Home Assistant",
+                  "restart": "Restart",
+                  "stop": "Stop",
+                  "confirm_stop": "Are you sure you want to stop Home Assistant?",
+                  "restart_error": "Failed to restart Home Assistant"
+                }
+              }
+            }
+          }
+        },
         "energy": {
           "caption": "Energy",
           "description": "Monitor your energy production and consumption",
@@ -4099,7 +4381,7 @@
               "run_text_pipeline": "Run text pipeline",
               "run_audio_pipeline": "Run audio pipeline",
               "run_audio_with_wake": "Run audio pipeline with wake word detection",
-              "response": "[%key:ui::panel::developer-tools::tabs::actions::response%]",
+              "response": "[%key:ui::panel::config::developer-tools::tabs::actions::response%]",
               "send": "Send",
               "continue_listening": "Continue listening for wake word",
               "continue_talking": "Continue talking",
@@ -9598,289 +9880,6 @@
                 "living_room_nest_mini": "Nest mini",
                 "kitchen_nest_audio": "Nest Audio",
                 "study_nest_hub": "Nest Hub"
-              }
-            }
-          }
-        }
-      },
-      "developer-tools": {
-        "tabs": {
-          "assist": {
-            "title": "Sentences parser",
-            "description": "Enter sentences and see how they will be parsed by Home Assistant. Each line will be processed as an individual sentence. Intents will not be executed on your instance.",
-            "parse_sentences": "Parse sentences",
-            "sentences": "Sentences",
-            "download_results": "Download results",
-            "no_match": "No intent matched",
-            "language": "[%key:ui::components::language-picker::language%]"
-          },
-          "debug": {
-            "title": "Debug tools",
-            "debug_connection": {
-              "title": "Debug connection",
-              "description": "Observe requests to the server and responses from the server in browser console."
-            },
-            "entity_diagnostic": {
-              "title": "Entity diagnostic",
-              "description": "Select an entity to copy diagnostic details.",
-              "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
-            }
-          },
-          "events": {
-            "title": "Events",
-            "description": "Fire an event on the event bus.",
-            "documentation": "Events documentation",
-            "type": "Event type",
-            "data": "Event data (YAML, optional)",
-            "fire_event": "Fire event",
-            "event_fired": "Event {name} fired",
-            "active_listeners": "Active listeners",
-            "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
-            "listen_to_events": "Listen to events",
-            "filter_events": "Filter events",
-            "filter_helper": "Only capture events containing the filter string.",
-            "filter_ignored": "Ignored {count} events.",
-            "listening_to": "Listening to",
-            "subscribe_to": "Event to subscribe to",
-            "start_listening": "Start listening",
-            "stop_listening": "Stop listening",
-            "clear_events": "Clear events",
-            "alert_event_type": "Event type is a mandatory field",
-            "notification_event_fired": "Event {type} successfully fired!",
-            "subscribe_failed": "Failed to subscribe to event: {error}"
-          },
-          "actions": {
-            "title": "Actions",
-            "description": "The actions dev tool allows you to perform any action available in Home Assistant.",
-            "call_service": "Perform action",
-            "response": "Response",
-            "column_parameter": "Parameter",
-            "column_description": "Description",
-            "column_example": "Example",
-            "fill_example_data": "Fill example data",
-            "yaml_mode": "Go to YAML mode",
-            "ui_mode": "Go to UI mode",
-            "yaml_parameters": "Parameters only available in YAML mode",
-            "all_parameters": "All available parameters",
-            "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
-            "no_template_ui_support": "The UI does not support templates, you can still use the YAML editor.",
-            "copy_clipboard_template": "Copy to clipboard as template",
-            "open_media": "Open media",
-            "errors": {
-              "ui": {
-                "no_action": "No action selected, please select an action",
-                "invalid_action": "Selected action is invalid, please select a valid action",
-                "no_target": "This action requires a target, please select a target from the picker",
-                "missing_required_field": "This action requires field {key}, please enter a valid value for {key}"
-              },
-              "yaml": {
-                "invalid_yaml": "Action YAML contains syntax errors, please fix the syntax",
-                "no_action": "No action defined, please define an 'action:' key",
-                "invalid_action": "Defined action is invalid, please provide an action in the format domain.action",
-                "no_target": "This action requires a target, please define a target 'entity_id', 'device_id', or 'area_id' under 'target:' or 'data:'",
-                "missing_required_field": "This action requires field {key}, which must be provided under 'data:'"
-              }
-            }
-          },
-          "states": {
-            "title": "States",
-            "description1": "Set the current state representation of an entity within Home Assistant.",
-            "description2": "If the entity belongs to a device, there will be no actual communication with that device.",
-            "entity": "Entity",
-            "state": "State",
-            "attributes": "Attributes",
-            "state_attributes": "State attributes (YAML, optional)",
-            "set_state": "Set state",
-            "current_entities": "Current entity states",
-            "filter_entities": "Filter entities",
-            "filter_states": "Filter states",
-            "filter_attributes": "Filter attributes",
-            "no_entities": "No entities",
-            "more_info": "More info",
-            "alert_entity_field": "Entity is a mandatory field",
-            "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
-            "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",
-            "copy_id": "Copy ID to clipboard"
-          },
-          "templates": {
-            "title": "Template",
-            "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
-            "editor": "Template editor",
-            "result": "Result",
-            "reset": "Reset to demo template",
-            "confirm_reset": "Do you want to reset your current template back to the demo template?",
-            "confirm_clear": "Do you want to clear your current template?",
-            "result_type": "Result type",
-            "jinja_documentation": "Jinja2 template documentation",
-            "template_extensions": "Home Assistant template extensions",
-            "unknown_error_template": "Unknown error rendering template",
-            "time": "This template updates at the start of each minute.",
-            "all_listeners": "This template listens for all state changed events.",
-            "no_listeners": "This template does not listen for any events and will not update automatically.",
-            "listeners": "This template listens for the following state changed events:",
-            "entity": "Entity",
-            "domain": "Domain"
-          },
-          "statistics": {
-            "title": "Statistics",
-            "entity": "Entity",
-            "issue": "Issue",
-            "no_issue": "No issue",
-            "issues": {
-              "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "mean_type_changed": "The mean type of this entity changed from ''{metadata_mean_type}'' to ''{state_mean_type}''.",
-              "state_class_removed": "This entity no longer has a state class",
-              "entity_not_recorded": "This entity is excluded from being recorded.",
-              "entity_no_longer_recorded": "This entity is no longer being recorded.",
-              "no_state": "There is no state available for this entity."
-            },
-            "delete_selected": "Delete selected statistics",
-            "multi_delete": {
-              "title": "Delete selected statistics",
-              "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
-            },
-            "mean_type": {
-              "0": "None",
-              "1": "Arithmetic",
-              "2": "Circular"
-            },
-            "fix_issue": {
-              "fix": "Fix issue",
-              "clearing_failed": "Clearing the statistics failed",
-              "clearing_timeout_title": "Clearing not done yet",
-              "clearing_timeout_text": "The clearing of the statistics took longer than expected, it might take longer for the issue to disappear.",
-              "fix_all": "Fix all",
-              "info": "Info",
-              "no_support": {
-                "title": "Fix issue",
-                "info_text_1": "Fixing this issue is not supported yet."
-              },
-              "no_state": {
-                "title": "Entity has no state",
-                "info_text_1": "''{name}'' ({statistic_id}) has no state at the moment, if this is an orphaned entity, you may want to delete the long term statistics of it from your database.",
-                "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
-              },
-              "entity_not_recorded": {
-                "title": "Entity is not recorded",
-                "info_text_1": "State changes of ''{name}'' ({statistic_id}) are not recorded, therefore, we cannot track long term statistics for it.",
-                "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the Recorder documentation for more information."
-              },
-              "entity_no_longer_recorded": {
-                "title": "Entity is no longer recorded",
-                "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but state changes of this entity are no longer recorded, therefore, we cannot track long term statistics for it anymore.",
-                "info_text_2": "You probably excluded this entity, or have just included some entities.",
-                "info_text_3_link": "See the Recorder documentation for more information.",
-                "info_text_4": "If you no longer wish to keep the long term statistics recorded in the past, you may delete them now."
-              },
-              "state_class_removed": {
-                "title": "The entity no longer has a state class",
-                "info_text_1": "We have generated statistics for ''{name}'' ({statistic_id}) in the past, but it no longer has a state class, therefore, we cannot track long term statistics for it anymore.",
-                "info_text_2": "Statistics cannot be generated until this entity has a supported state class.",
-                "info_text_3": "If the state class was previously provided by an integration, this might be a bug. Please report an issue.",
-                "info_text_4": "If you previously set the state class yourself, please correct it.",
-                "info_text_4_link": "The different state classes and when to use which can be found in the developer documentation.",
-                "info_text_5": "If the state class has permanently been removed, you may want to delete the long term statistics of it from your database.",
-                "info_text_6": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
-              },
-              "units_changed": {
-                "title": "The unit has changed",
-                "update": "Update the unit of the historic statistic values from ''{metadata_unit}'' to ''{state_unit}'', without converting.",
-                "clear": "Delete all old statistic data for this entity",
-                "how_to_fix": "How do you want to fix this issue?",
-                "info_text_1": "The unit of ''{name}'' ({statistic_id}) changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
-                "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
-                "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
-              },
-              "mean_type_changed": {
-                "title": "The mean type has changed",
-                "info_text_1": "The mean type of ''{name}'' ({statistic_id}) changed from ''{metadata_mean_type}'' to ''{state_mean_type}''.",
-                "info_text_2": "Statistics cannot be generated until the old statistics are deleted, or the mean type matches the old statistics data again.",
-                "info_text_3": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
-              },
-              "adjust_sum": {
-                "title": "Adjust a statistic",
-                "no_statistics_found": "No statistics found for this period.",
-                "info_text_1": "Sometimes the statistics end up being incorrect for a specific point in time. This can mess up your beautiful graphs! Select a time below to find the bad moment and adjust the data.",
-                "pick_a_time": "Pick a time",
-                "statistic": "Statistic:",
-                "start": "Start",
-                "end": "End",
-                "new_value": "New value",
-                "adjust": "Adjust",
-                "outliers": "Outliers",
-                "sum_adjusted": "Statistic sum adjusted",
-                "error_sum_adjusted": "Error adjusting sum: {message}"
-              }
-            },
-            "adjust_sum": "Adjust sum",
-            "data_table": {
-              "select_all_issues": "Select all with issues",
-              "name": "Name",
-              "statistic_id": "Statistic ID",
-              "statistics_unit": "Statistics unit",
-              "source": "Source",
-              "issue": "Issue",
-              "no_statistics": "[%key:ui::components::statistics_charts::no_statistics_found%]"
-            }
-          },
-          "yaml": {
-            "title": "YAML",
-            "section": {
-              "validation": {
-                "heading": "Check and restart",
-                "introduction": "A basic validation of the configuration is automatically done before restarting. The basic validation ensures the YAML configuration doesn't have errors which will prevent Home Assistant or any integration from starting. It's also possible to only do the basic validation check without restarting.",
-                "check_config": "Check configuration",
-                "valid": "Configuration will not prevent Home Assistant from starting!",
-                "invalid": "Configuration invalid!",
-                "warnings": "Configuration warnings",
-                "errors": "Configuration errors"
-              },
-              "reloading": {
-                "all": "All YAML configuration",
-                "heading": "YAML configuration reloading",
-                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Selecting one of the options below will unload their current YAML configuration and load the new one.",
-                "reload": "{domain}",
-                "core": "Location & customizations",
-                "group": "Groups, group entities, and notify services",
-                "automation": "Automations",
-                "script": "Scripts",
-                "scene": "Scenes",
-                "person": "People",
-                "zone": "Zones",
-                "input_boolean": "Input booleans",
-                "input_button": "Input buttons",
-                "input_text": "Input texts",
-                "input_number": "Input numbers",
-                "input_datetime": "Input datetimes",
-                "input_select": "Input selects",
-                "template": "Template entities",
-                "universal": "Universal media player entities",
-                "rest": "REST entities and notify services",
-                "command_line": "Command line entities",
-                "filter": "Filter entities",
-                "statistics": "Statistics entities",
-                "generic": "Generic IP camera entities",
-                "generic_thermostat": "Generic thermostat entities",
-                "homekit": "HomeKit",
-                "min_max": "Min/max entities",
-                "history_stats": "History stats entities",
-                "trend": "Trend entities",
-                "ping": "Ping binary sensor entities",
-                "filesize": "File size entities",
-                "telegram": "Telegram notify services",
-                "smtp": "SMTP notify services",
-                "mqtt": "Manually configured MQTT entities",
-                "rpi_gpio": "Raspberry Pi GPIO entities",
-                "timer": "Timers",
-                "themes": "Themes"
-              },
-              "server_management": {
-                "heading": "Home Assistant",
-                "restart": "Restart",
-                "stop": "Stop",
-                "confirm_stop": "Are you sure you want to stop Home Assistant?",
-                "restart_error": "Failed to restart Home Assistant"
               }
             }
           }
