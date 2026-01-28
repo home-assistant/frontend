@@ -1,8 +1,13 @@
+import {
+  computeCssColor,
+  isValidColorString,
+} from "../common/color/compute-color";
 import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
 import { isUnavailableState } from "./entity/entity";
+import type { EntityRegistryEntry } from "./entity/entity_registry";
 
 export interface Calendar {
   entity_id: string;
@@ -139,9 +144,13 @@ const getCalendarDate = (dateObj: any): string | undefined => {
 
 export const getCalendars = (
   hass: HomeAssistant,
-  element: Element
+  element: Element,
+  entityRegistry?: EntityRegistryEntry[]
 ): Calendar[] => {
   const computedStyles = getComputedStyle(element);
+  const entityOptionsMap = new Map(
+    entityRegistry?.map((entry) => [entry.entity_id, entry.options]) ?? []
+  );
   return Object.keys(hass.states)
     .filter(
       (eid) =>
@@ -150,11 +159,23 @@ export const getCalendars = (
         hass.entities[eid]?.hidden !== true
     )
     .sort()
-    .map((eid, idx) => ({
-      ...hass.states[eid],
-      name: computeStateName(hass.states[eid]),
-      backgroundColor: getColorByIndex(idx, computedStyles),
-    }));
+    .map((eid, idx) => {
+      const stateObj = hass.states[eid];
+      const entityColor = entityOptionsMap.get(eid)?.calendar?.color;
+      let backgroundColor: string;
+      // Validate and use the color from entity registry if valid
+      if (entityColor && isValidColorString(entityColor)) {
+        backgroundColor = computeCssColor(entityColor);
+      } else {
+        // Fall back to default color by index
+        backgroundColor = getColorByIndex(idx, computedStyles);
+      }
+      return {
+        ...stateObj,
+        name: computeStateName(stateObj),
+        backgroundColor,
+      };
+    });
 };
 
 export const createCalendarEvent = (

@@ -53,7 +53,10 @@ const computeAreaCard = (
     area: areaId,
     display_type: "compact",
     sensor_classes: sensorClasses,
-    navigation_path: path,
+    tap_action: {
+      action: "navigate",
+      navigation_path: path,
+    },
     vertical: true,
     grid_options: {
       rows: 2,
@@ -192,9 +195,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         type: "common-controls",
         limit: maxCommonControls,
         include_entities: favoriteEntities,
-        title: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
-        title_visibilty: [largeScreenCondition],
         hide_empty: true,
+        heading: {
+          type: "heading",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+          heading_style: "title",
+          visibility: [largeScreenCondition],
+          grid_options: {
+            rows: "auto", // Compact style
+          },
+        },
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
     } as LovelaceStrategySectionConfig;
@@ -298,7 +308,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           summary: "energy",
           tap_action: {
             action: "navigate",
-            navigation_path: "/energy?historyBack=1",
+            navigation_path: config.home_panel
+              ? "/energy?historyBack=1&backPath=/home"
+              : "/energy?historyBack=1",
           },
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
@@ -339,7 +351,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       sidebarSummaryCards.length > 0
         ? {
             type: "grid",
-            cards: [summaryHeadingCard, ...sidebarSummaryCards],
+            cards: [
+              {
+                ...summaryHeadingCard,
+                grid_options: { rows: "auto" }, // Compact style
+              },
+              ...sidebarSummaryCards,
+            ],
           }
         : undefined;
 

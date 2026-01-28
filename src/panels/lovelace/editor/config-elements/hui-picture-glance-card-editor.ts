@@ -28,6 +28,7 @@ import type { PictureGlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -143,6 +144,7 @@ export class HuiPictureGlanceCardEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -156,6 +158,7 @@ export class HuiPictureGlanceCardEditor
                       default_action: "none",
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 },
                 {
                   name: "double_tap_action",
@@ -164,6 +167,7 @@ export class HuiPictureGlanceCardEditor
                       default_action: "none",
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 },
               ],
             },
@@ -201,6 +205,7 @@ export class HuiPictureGlanceCardEditor
                 : "more-info",
             },
           },
+          context: ACTION_RELATED_CONTEXT,
         },
         {
           name: "",
@@ -214,6 +219,7 @@ export class HuiPictureGlanceCardEditor
                   default_action: "none" as const,
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             })
           ),
         },
