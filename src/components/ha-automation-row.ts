@@ -155,7 +155,7 @@ export class HaAutomationRow extends LitElement {
     }
     :host([building-block]) ::slotted([slot="leading-icon"]) {
       --mdc-icon-size: var(--ha-space-5);
-      color: var(--ha-color-on-surface);
+      color: var(--ha-color-on-surface-default);
       transform: rotate(-45deg);
     }
     :host([collapsed]) .expand-button {
