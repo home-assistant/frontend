@@ -31,6 +31,7 @@ import {
   getPanelIconPath,
   getPanelTitle,
   SHOW_AFTER_SPACER_PANELS,
+  DEFAULT_HIDDEN_PANELS,
 } from "../data/panel";
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
@@ -227,7 +228,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           }
           if (!this._hiddenPanels) {
             const storedHidden = localStorage.getItem("sidebarHiddenPanels");
-            this._hiddenPanels = storedHidden ? JSON.parse(storedHidden) : [];
+            this._hiddenPanels = storedHidden
+              ? JSON.parse(storedHidden)
+              : [...DEFAULT_HIDDEN_PANELS];
           }
         }
       ),
