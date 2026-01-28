@@ -113,7 +113,7 @@ class PanelHome extends LitElement {
         this.hass.config.state === "RUNNING" &&
         oldHass.config.state !== "RUNNING"
       ) {
-        this._setLovelace();
+        this._setup();
       }
     }
   }
