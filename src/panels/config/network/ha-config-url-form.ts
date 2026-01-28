@@ -1,4 +1,4 @@
-import type { PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiContentCopy, mdiEyeOff, mdiEye } from "@mdi/js";
@@ -8,7 +8,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import "../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../components/ha-settings-row";
 import "../../../components/ha-button";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { CloudStatus } from "../../../data/cloud";
@@ -402,70 +402,75 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     this._external_url = this._urls?.external ?? "";
   }
 
-  static styles = css`
-    .description {
-      margin-bottom: 1em;
-    }
-    .row {
-      display: flex;
-      flex-direction: row;
-      margin: 0 -8px;
-      align-items: center;
-      padding: 8px 0;
-    }
+  static get styles(): CSSResultGroup {
+    return [
+      HaSettingsRow.styleHasSwitch,
+      css`
+        .description {
+          margin-bottom: 1em;
+        }
+        .row {
+          display: flex;
+          flex-direction: row;
+          margin: 0 -8px;
+          align-items: center;
+          padding: 8px 0;
+        }
 
-    .secondary {
-      color: var(--secondary-text-color);
-    }
+        .secondary {
+          color: var(--secondary-text-color);
+        }
 
-    .flex {
-      flex: 1;
-    }
+        .flex {
+          flex: 1;
+        }
 
-    .row > * {
-      margin: 0 8px;
-    }
+        .row > * {
+          margin: 0 8px;
+        }
 
-    ha-alert {
-      display: block;
-      margin: 16px 0;
-    }
+        ha-alert {
+          display: block;
+          margin: 16px 0;
+        }
 
-    .card-actions {
-      display: flex;
-      flex-direction: row-reverse;
-    }
+        .card-actions {
+          display: flex;
+          flex-direction: row-reverse;
+        }
 
-    a {
-      color: var(--primary-color);
-      text-decoration: none;
-    }
+        a {
+          color: var(--primary-color);
+          text-decoration: none;
+        }
 
-    .url-container {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-2);
-      margin-top: 8px;
-    }
-    .textfield-container {
-      position: relative;
-      flex: 1;
-    }
-    .textfield-container ha-textfield {
-      display: block;
-    }
-    .toggle-unmasked-url {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      inset-inline-start: initial;
-      inset-inline-end: 8px;
-      --mdc-icon-button-size: 40px;
-      --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
-      direction: var(--direction);
-    }
-  `;
+        .url-container {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          margin-top: 8px;
+        }
+        .textfield-container {
+          position: relative;
+          flex: 1;
+        }
+        .textfield-container ha-textfield {
+          display: block;
+        }
+        .toggle-unmasked-url {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          inset-inline-start: initial;
+          inset-inline-end: 8px;
+          --mdc-icon-button-size: 40px;
+          --mdc-icon-size: 20px;
+          color: var(--secondary-text-color);
+          direction: var(--direction);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
