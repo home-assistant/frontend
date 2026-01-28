@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
 import "../../../components/ha-card";
-import "../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../components/ha-settings-row";
 import type { HaSwitch } from "../../../components/ha-switch";
 import type { Analytics } from "../../../data/analytics";
 import {
@@ -173,6 +173,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      HaSettingsRow.styleHasSwitch,
       css`
         .error {
           color: var(--error-color);
