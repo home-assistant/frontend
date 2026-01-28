@@ -80,7 +80,6 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                     "ui.panel.config.analytics.preferences.snapshots.data_use_statement"
                   )}</a
                 >${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.data_use_statement_suffix"
                 )}
               </p>
               <ha-settings-row>
