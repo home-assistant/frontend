@@ -1,7 +1,7 @@
-import type { TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
@@ -41,6 +41,10 @@ class HaDebugConnectionRow extends LitElement {
     }
     this.hass.debugConnection = debugConnection;
     storeState(this.hass);
+  }
+
+  static get styles(): CSSResultGroup {
+    return [HaSettingsRow.styleHasSwitch];
   }
 }
 
