@@ -5,7 +5,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
-import "./ha-settings-row";
+import { HaSettingsRow } from "./ha-settings-row";
 import "./ha-switch";
 import "./ha-tooltip";
 import type { HaSwitch } from "./ha-switch";
@@ -159,6 +159,7 @@ export class HaAnalytics extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      HaSettingsRow.styleHasSwitch,
       css`
         .error {
           color: var(--error-color);
