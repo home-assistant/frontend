@@ -5,7 +5,7 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import "../../../../components/ha-card";
 import "../../../../components/ha-button";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn, CloudWebhook } from "../../../../data/cloud";
 import { createCloudhook, deleteCloudhook } from "../../../../data/cloud";
@@ -212,6 +212,7 @@ export class CloudWebhooks extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      HaSettingsRow.styleHasSwitch,
       css`
         .body-text {
           padding: 8px 0;
