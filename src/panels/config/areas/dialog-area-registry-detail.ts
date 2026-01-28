@@ -30,7 +30,6 @@ import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
 } from "../../../data/sensor";
-import { fetchLabelRegistry } from "../../../data/label/label_registry";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
@@ -42,6 +41,7 @@ import {
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../common/suggest-metadata-ai";
+import { fetchLabels } from "../common/suggest-metadata-helpers";
 import { buildAreaMetadataInspirations } from "../common/suggest-metadata-inspirations";
 import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
@@ -259,6 +259,16 @@ class DialogAreaDetail
     `;
   }
 
+  private async _getLabelNames(): Promise<string[]> {
+    if (!this._labels.length) {
+      return [];
+    }
+    const labels = await fetchLabels(this.hass.connection);
+    return this._labels
+      .map((labelId) => labels[labelId])
+      .filter((name): name is string => Boolean(name));
+  }
+
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
     this._suggestionInclude = {
       ...this._suggestionInclude,
@@ -279,11 +289,7 @@ class DialogAreaDetail
       {
         name: this._name,
         aliases: this._aliases,
-        labels: this._labels.length
-          ? (await fetchLabelRegistry(this.hass.connection))
-              .filter((label) => this._labels.includes(label.label_id))
-              .map((label) => label.name)
-          : [],
+        labels: await this._getLabelNames(),
         floor: this._floor ? this.hass.floors?.[this._floor]?.name : null,
         temperature_entity: this._temperatureEntity
           ? (this.hass.states[this._temperatureEntity]?.attributes
