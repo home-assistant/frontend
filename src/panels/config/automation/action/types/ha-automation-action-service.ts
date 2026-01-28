@@ -20,6 +20,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ attribute: false }) contextVariables?;
+
   @state() private _action?: ServiceAction;
 
   @state() private _responseChecked = false;
@@ -78,6 +80,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         .showAdvanced=${this.hass.userData?.showAdvanced}
         .hidePicker=${!!this._action.metadata}
+        .contextVariables=${this.contextVariables}
         @value-changed=${this._actionChanged}
       ></ha-service-control>
       ${domain && service && this.hass.services[domain]?.[service]?.response

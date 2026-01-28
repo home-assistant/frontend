@@ -98,6 +98,8 @@ export class HaServiceControl extends LitElement {
   @property({ attribute: "hide-description", type: Boolean })
   public hideDescription = false;
 
+  @property({ attribute: false }) contextVariables?;
+
   @state() private _value!: this["value"];
 
   @state() private _checkedKeys = new Set();
@@ -711,7 +713,10 @@ export class HaServiceControl extends LitElement {
             ></ha-markdown>
           </span>
           <ha-selector
-            .context=${this._selectorContext(targetEntities)}
+            .context=${this._selectorContext(
+              targetEntities,
+              this.contextVariables
+            )}
             .disabled=${this.disabled ||
             (showOptional &&
               !this._checkedKeys.has(dataField.key) &&
@@ -732,9 +737,12 @@ export class HaServiceControl extends LitElement {
       : "";
   };
 
-  private _selectorContext = memoizeOne((targetEntities: string[] | null) => ({
-    filter_entity: targetEntities || undefined,
-  }));
+  private _selectorContext = memoizeOne(
+    (targetEntities: string[] | null, contextVariables) => ({
+      filter_entity: targetEntities || undefined,
+      variables: contextVariables,
+    })
+  );
 
   private _localizeValueCallback = (key: string) => {
     if (!this._value?.action) {

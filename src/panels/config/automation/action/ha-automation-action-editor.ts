@@ -36,6 +36,8 @@ export default class HaAutomationActionEditor extends LitElement {
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
+  @property({ attribute: false }) contextVariables: Record<string, any> = {};
+
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   @query(COLLAPSIBLE_ACTION_ELEMENTS.join(", "))
@@ -87,6 +89,7 @@ export default class HaAutomationActionEditor extends LitElement {
                   optionsInSidebar: this.indent,
                   indent: this.indent,
                   inSidebar: this.inSidebar,
+                  contextVariables: this.contextVariables,
                 })}
               </div>
             `}

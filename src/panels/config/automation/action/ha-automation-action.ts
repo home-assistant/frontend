@@ -46,6 +46,8 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ attribute: false }) public highlightedActions?: Action[];
 
+  @property({ attribute: false }) public contextVariables?;
+
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
 
@@ -95,6 +97,7 @@ export default class HaAutomationAction extends LitElement {
                 .action=${action}
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
+                .contextVariables=${this.contextVariables}
                 @duplicate=${this._duplicateAction}
                 @insert-after=${this._insertAfter}
                 @move-down=${this._moveDown}

@@ -33,6 +33,8 @@ export class HaTemplateSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @property({ attribute: false }) public context?: any;
+
   @state() private warn: string | undefined = undefined;
 
   @state() private _test = false;
@@ -69,7 +71,10 @@ export class HaTemplateSelector extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("value") && this._test) {
+    if (
+      (changedProps.has("value") || changedProps.has("context")) &&
+      this._test
+    ) {
       this._subscribeTemplate();
     }
   }
@@ -144,8 +149,10 @@ ${typeof this._templateResult.result === "object"
   private async _subscribeTemplate() {
     await this._unsubscribeTemplate();
 
-    const template = this.value || "";
-
+    const template = `
+    ${this.context?.variables ? Object.entries(this.context?.variables).map(([key, val]) => `{% set ${key} = ${JSON.stringify(val)} %}`) : ""}
+    ${this.value || ""}
+    `;
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,

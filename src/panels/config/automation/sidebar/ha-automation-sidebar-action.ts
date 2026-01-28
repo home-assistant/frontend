@@ -289,6 +289,7 @@ export default class HaAutomationSidebarAction extends LitElement {
               .action=${actionConfig}
               .yamlMode=${this.yamlMode}
               .uiSupported=${this.config.uiSupported}
+              .contextVariables=${this.config.contextVariables}
               @value-changed=${this._valueChangedSidebar}
               @yaml-changed=${this._yamlChangedSidebar}
               sidebar

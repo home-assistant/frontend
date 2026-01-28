@@ -162,6 +162,8 @@ export default class HaAutomationActionRow extends LitElement {
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @storage({
     key: "automationClipboard",
     state: false,
@@ -235,6 +237,14 @@ export default class HaAutomationActionRow extends LitElement {
     ) {
       // update sidebar if uiSupported changed
       this.openSidebar();
+    }
+    if (
+      changedProps.has("contextVariables") &&
+      this._selected &&
+      this.optionsInSidebar
+    ) {
+      // update sidebar if variables changed
+      this.updateSidebar();
     }
   }
 
@@ -489,6 +499,7 @@ export default class HaAutomationActionRow extends LitElement {
               .yamlMode=${this._yamlMode}
               .narrow=${this.narrow}
               .uiSupported=${this._uiSupported}
+              .contextVariables=${this.contextVariables}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-action-editor>`
         : nothing}
@@ -563,6 +574,7 @@ export default class HaAutomationActionRow extends LitElement {
             .uiSupported=${this._uiSupported}
             indent
             .selected=${this._selected}
+            .contextVariables=${this.contextVariables}
             @value-changed=${this._onValueChange}
           ></ha-automation-action-editor>`
         : nothing}
@@ -635,7 +647,21 @@ export default class HaAutomationActionRow extends LitElement {
     }
 
     try {
-      await callExecuteScript(this.hass, this.action);
+      const script: Action[] = [];
+      const variable = (this.action as any).response_variable;
+      if (variable) {
+        script.push(this.action);
+        script.push({
+          stop: "done",
+          response_variable: variable,
+        });
+      } else {
+        script.push(this.action);
+      }
+      const result = await callExecuteScript(this.hass, script);
+      if (result.response) {
+        fireEvent(this, "update-variables", { [variable]: result.response });
+      }
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -816,6 +842,7 @@ export default class HaAutomationActionRow extends LitElement {
       duplicate: this._duplicateAction,
       insertAfter: this._insertAfter,
       run: this._runAction,
+      contextVariables: this.contextVariables,
       config: {
         action: sidebarAction,
       },
@@ -833,6 +860,12 @@ export default class HaAutomationActionRow extends LitElement {
         });
       }, 180); // duration of transition of added padding for bottom sheet
     }
+  }
+
+  public updateSidebar() {
+    fireEvent(this, "update-sidebar", {
+      contextVariables: this.contextVariables,
+    });
   }
 
   public expand() {

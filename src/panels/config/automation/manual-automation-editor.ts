@@ -110,6 +110,8 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
 
   @state() private _sidebarKey = 0;
 
+  @state() private _contextVariables: Record<string, any> = {};
+
   @storage({
     key: "automation-sidebar-width",
     state: false,
@@ -286,10 +288,13 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
         .highlightedActions=${this._pastedConfig?.actions}
+        .contextVariables=${this._contextVariables}
         @value-changed=${this._actionChanged}
         @open-sidebar=${this._openSidebar}
+        @update-sidebar=${this._updateSidebar}
         @request-close-sidebar=${this.triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
+        @update-variables=${this._updateVariables}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled || this.saving}
@@ -297,6 +302,10 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
         sidebar
       ></ha-automation-action>
     `;
+  }
+
+  protected _updateVariables(ev) {
+    this._contextVariables = { ...this._contextVariables, ...ev.detail };
   }
 
   protected render() {
@@ -381,6 +390,12 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
 
     await this._sidebarElement?.updateComplete;
     this._sidebarElement?.focus();
+  }
+
+  private async _updateSidebar(ev) {
+    if (this._sidebarConfig) {
+      this._sidebarConfig = { ...this._sidebarConfig, ...ev.detail };
+    }
   }
 
   private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
@@ -778,6 +793,8 @@ declare global {
 
   interface HASSDomEvents {
     "open-sidebar": SidebarConfig;
+    "update-sidebar": any;
+    "update-variables": any;
     "request-close-sidebar": undefined;
     "close-sidebar": undefined;
   }
