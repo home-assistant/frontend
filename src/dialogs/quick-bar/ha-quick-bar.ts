@@ -15,6 +15,7 @@ import "../../components/ha-icon";
 import "../../components/ha-picker-combo-box";
 import type {
   HaPickerComboBox,
+  PickerComboBoxIndexSelectedDetail,
   PickerComboBoxItem,
 } from "../../components/ha-picker-combo-box";
 import "../../components/ha-spinner";
@@ -613,9 +614,12 @@ export class QuickBar extends LitElement {
 
   // #region interaction
 
-  private async _handleItemSelected(ev: CustomEvent<{ index: number }>) {
+  private async _handleItemSelected(
+    ev: CustomEvent<PickerComboBoxIndexSelectedDetail>
+  ) {
     if (this._comboBox && this._comboBox.virtualizerElement) {
       const index = ev.detail.index;
+      const newTab = ev.detail.newTab;
       const item = this._comboBox.virtualizerElement.items[
         index
       ] as PickerComboBoxItem;
@@ -631,15 +635,25 @@ export class QuickBar extends LitElement {
 
       // device selected
       if (item && item.id.startsWith(`device${SEPARATOR}`)) {
+        const path = `/config/devices/device/${item.id.split(SEPARATOR)[1]}`;
         this.closeDialog();
-        navigate(`/config/devices/device/${item.id.split(SEPARATOR)[1]}`);
+        if (newTab) {
+          window.open(path, "_blank", "noreferrer");
+        } else {
+          navigate(path);
+        }
         return;
       }
 
       // area selected
       if (item && item.id.startsWith(`area${SEPARATOR}`)) {
+        const path = `/config/areas/area/${item.id.split(SEPARATOR)[1]}`;
         this.closeDialog();
-        navigate(`/config/areas/area/${item.id.split(SEPARATOR)[1]}`);
+        if (newTab) {
+          window.open(path, "_blank", "noreferrer");
+        } else {
+          navigate(path);
+        }
         return;
       }
 
@@ -693,7 +707,12 @@ export class QuickBar extends LitElement {
           return;
         }
 
-        navigate((item as NavigationComboBoxItem).path);
+        const path = (item as NavigationComboBoxItem).path;
+        if (newTab) {
+          window.open(path, "_blank", "noreferrer");
+        } else {
+          navigate(path);
+        }
       }
     }
   }
