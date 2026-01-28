@@ -27,7 +27,7 @@ export const getDefaultPanelUrlPath = (hass: HomeAssistant): string => {
     hass.systemData?.default_panel ||
     getLegacyDefaultPanelUrlPath() ||
     DEFAULT_PANEL;
-  // If default panel is lovelace and we have lovelace panel with no config, use home
+  // If default panel is lovelace and we have lovelace panel without config, use home
   if (defaultPanel === "lovelace" && !hass.panels.lovelace?.config) {
     return "home";
   }
