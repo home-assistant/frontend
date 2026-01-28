@@ -115,6 +115,8 @@ class PanelEnergy extends LitElement {
   @state()
   private _prefs?: EnergyPreferences;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   @state()
   private _error?: string;
 
@@ -248,6 +250,8 @@ class PanelEnergy extends LitElement {
         .lovelace=${this._lovelace}
         .route=${this.route}
         .panel=${this.panel}
+        .backButton=${this._searchParms.has("historyBack")}
+        .backPath=${this._searchParms.get("backPath") || "/"}
         .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
         class=${classMap({ "has-period-selector": showEnergySelector })}
@@ -260,6 +264,7 @@ class PanelEnergy extends LitElement {
                 .hass=${this.hass}
                 .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
                 vertical-opening-direction="up"
+                fixed
               ></hui-energy-period-selector>
             </ha-card>
           `
@@ -695,7 +700,7 @@ class PanelEnergy extends LitElement {
           );
           inset-inline-end: var(--safe-area-inset-right, 0);
           margin: 0 auto;
-          max-width: calc(min(450px, 100% - var(--ha-space-4)));
+          max-width: calc(min(470px, 100% - var(--ha-space-4)));
           box-sizing: border-box;
           padding-left: var(--ha-space-2);
           padding-right: 0;

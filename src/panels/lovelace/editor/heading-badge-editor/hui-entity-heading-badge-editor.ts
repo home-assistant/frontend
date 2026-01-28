@@ -24,6 +24,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { Condition } from "../../common/validate-condition";
 import type { EntityHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
@@ -157,6 +158,7 @@ export class HuiHeadingEntityEditor
                   default_action: "none",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -170,6 +172,7 @@ export class HuiHeadingEntityEditor
                       default_action: "none" as const,
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 })
               ),
             },
