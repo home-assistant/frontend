@@ -16,7 +16,7 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, Route, TranslationDict } from "../../../../types";
 
 type ReloadableDomain = Exclude<
-  keyof TranslationDict["ui"]["panel"]["developer-tools"]["tabs"]["yaml"]["section"]["reloading"],
+  keyof TranslationDict["ui"]["panel"]["config"]["developer-tools"]["tabs"]["yaml"]["section"]["reloading"],
   "heading" | "introduction" | "reload"
 >;
 
