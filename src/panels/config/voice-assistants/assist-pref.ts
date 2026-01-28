@@ -405,7 +405,7 @@ export class AssistPref extends LitElement {
           }
         : {}),
     });
-  } // ???
+  }
 
   static get styles(): CSSResultGroup {
     return [
