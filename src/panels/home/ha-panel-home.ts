@@ -4,22 +4,21 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
-import "../../components/ha-svg-icon";
-import "../../components/ha-button";
+import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
+import "../../components/ha-button";
+import "../../components/ha-svg-icon";
 import { updateAreaRegistryEntry } from "../../data/area/area_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
-import { atLeastVersion } from "../../common/config/version";
 import {
   fetchFrontendSystemData,
   saveFrontendSystemData,
   type HomeFrontendSystemData,
 } from "../../data/frontend";
-import { fetchDashboards } from "../../data/lovelace/dashboard";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
+import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
@@ -31,6 +30,7 @@ import { expandLovelaceConfigStrategies } from "../lovelace/strategies/get-strat
 import type { Lovelace } from "../lovelace/types";
 import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 import { showNewOverviewDialog } from "./dialogs/show-dialog-new-overview";
+import { hasLegacyOverviewPanel } from "../../data/panel";
 
 @customElement("ha-panel-home")
 class PanelHome extends LitElement {
@@ -48,7 +48,24 @@ class PanelHome extends LitElement {
 
   @state() private _extraActionItems?: ExtraActionItem[];
 
-  @state() private _showBanner = false;
+  private get _showBanner(): boolean {
+    // Don't show if already dismissed
+    if (this._config.welcome_banner_dismissed) {
+      return false;
+    }
+    // Don't show if HA is not running or systemData is not loaded
+    if (this.hass.config.state !== "RUNNING") {
+      return false;
+    }
+    // Show banner only for users who:
+    // 1. Were onboarded before 2026.2 (or have no onboarded_version)
+    // 2. Don't have a custom "lovelace" dashboard (old overview)
+    const onboardedVersion = this.hass.systemData?.onboarded_version;
+    const isNewInstance =
+      onboardedVersion && atLeastVersion(onboardedVersion, 2026, 2);
+    const hasOldOverview = hasLegacyOverviewPanel(this.hass);
+    return !isNewInstance && !hasOldOverview;
+  }
 
   private _bannerHeight = new ResizeController(this, {
     target: null,
@@ -97,7 +114,6 @@ class PanelHome extends LitElement {
         oldHass.config.state !== "RUNNING"
       ) {
         this._setLovelace();
-        this._checkShowBanner();
       }
     }
   }
@@ -116,33 +132,6 @@ class PanelHome extends LitElement {
       this._config = {};
     }
     this._setLovelace();
-    this._checkShowBanner();
-  }
-
-  private async _checkShowBanner() {
-    // Don't show if already dismissed
-    if (this._config.welcome_banner_dismissed) {
-      this._showBanner = false;
-      return;
-    }
-
-    try {
-      const dashboards = await fetchDashboards(this.hass);
-
-      // Show banner only for users who:
-      // 1. Were onboarded before 2026.2 (or have no onboarded_version)
-      // 2. Don't have a manual dashboard with "lovelace" url_path (old overview)
-      const onboardedVersion = this.hass.systemData?.onboarded_version;
-      const isNewInstance =
-        onboardedVersion && atLeastVersion(onboardedVersion, 2026, 2);
-      const hasOldOverview = dashboards.some(
-        (dashboard) => dashboard.url_path === "lovelace"
-      );
-      this._showBanner = !isNewInstance && !hasOldOverview;
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Failed to check banner visibility:", err);
-    }
   }
 
   private _debounceRegistriesChanged = debounce(
@@ -312,7 +301,6 @@ class PanelHome extends LitElement {
   private _learnMore() {
     showNewOverviewDialog(this, {
       dismiss: async () => {
-        this._showBanner = false;
         const newConfig = {
           ...this._config,
           welcome_banner_dismissed: true,
