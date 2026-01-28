@@ -39,7 +39,7 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-markdown";
-import "../../../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
@@ -1283,6 +1283,7 @@ class SupervisorAppInfo extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      HaSettingsRow.styleHasSwitch,
       css`
         :host {
           display: block;
