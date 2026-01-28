@@ -1,8 +1,8 @@
-import type { TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-settings-row";
+import { HaSettingsRow } from "../../components/ha-settings-row";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { HomeAssistant } from "../../types";
@@ -37,6 +37,10 @@ class HaEnableShortcutsRow extends LitElement {
     }
 
     fireEvent(this, "hass-enable-shortcuts", enabled);
+  }
+
+  static get styles(): CSSResultGroup {
+    return [HaSettingsRow.styleHasSwitch];
   }
 }
 
