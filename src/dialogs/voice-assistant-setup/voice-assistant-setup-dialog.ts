@@ -8,8 +8,10 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../common/language/format_language";
 import "../../components/chips/ha-assist-chip";
 import "../../components/ha-dialog";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import { getLanguageOptions } from "../../components/ha-language-picker";
-import "../../components/ha-md-button-menu";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { getLanguageScores } from "../../data/conversation";
@@ -169,9 +171,9 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
               >`
             : this._step === STEP.PIPELINE
               ? this._language
-                ? html`<ha-md-button-menu
+                ? html`<ha-dropdown
                     slot="actionItems"
-                    positioning="fixed"
+                    @wa-select=${this._handlePickLanguage}
                   >
                     <ha-assist-chip
                       .label=${formatLanguageCode(
@@ -192,16 +194,14 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                       this.hass.locale
                     ).map(
                       (lang) =>
-                        html`<ha-md-menu-item
+                        html`<ha-dropdown-item
                           .value=${lang.id}
-                          @click=${this._handlePickLanguage}
-                          @keydown=${this._handlePickLanguage}
-                          .selected=${this._language === lang.id}
+                          class=${this._language === lang.id ? "selected" : ""}
                         >
                           ${lang.primary}
-                        </ha-md-menu-item>`
+                        </ha-dropdown-item>`
                     )}
-                  </ha-md-button-menu>`
+                  </ha-dropdown>`
                 : nothing
               : nothing}
         </ha-dialog-header>
@@ -328,10 +328,8 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     }
   }
 
-  private _handlePickLanguage(ev) {
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") return;
-
-    this._language = ev.target.value;
+  private _handlePickLanguage(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    this._language = ev.detail.item.value;
   }
 
   private _languageChanged(ev: CustomEvent) {
@@ -401,13 +399,20 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
           margin: 24px;
           display: block;
         }
-        ha-md-button-menu {
+        ha-dropdown {
           height: 48px;
           display: flex;
           align-items: center;
           margin-right: 12px;
           margin-inline-end: 12px;
           margin-inline-start: initial;
+        }
+        ha-dropdown-item.selected {
+          border: 1px solid var(--primary-color);
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--primary-color);
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+          --icon-primary-color: var(--primary-color);
         }
       `,
     ];

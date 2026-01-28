@@ -9,6 +9,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
 import {
   type UiAction,
+  ACTION_RELATED_CONTEXT,
   supportedActions,
 } from "../../components/hui-action-editor";
 
@@ -90,6 +91,7 @@ const SCHEMA = [
             default_action: "more-info",
           },
         },
+        context: ACTION_RELATED_CONTEXT,
       },
       {
         name: "",
@@ -104,6 +106,7 @@ const SCHEMA = [
                 default_action: "none" as const,
               },
             },
+            context: ACTION_RELATED_CONTEXT,
           })
         ),
       },

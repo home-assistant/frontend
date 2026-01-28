@@ -6,6 +6,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-card";
+import "../../components/ha-divider";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
@@ -130,34 +131,6 @@ class HaProfileSectionGeneral extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.user_settings_detail")}
             </div>
-            <ha-pick-language-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-language-row>
-            <ha-pick-number-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-number-format-row>
-            <ha-pick-time-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-time-format-row>
-            <ha-pick-date-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-date-format-row>
-            <ha-pick-time-zone-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-time-zone-row>
-            <ha-pick-first-weekday-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-first-weekday-row>
-            <ha-pick-theme-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-theme-row>
             <ha-pick-dashboard-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -201,6 +174,31 @@ class HaProfileSectionGeneral extends LitElement {
                   ></ha-entity-id-picker-row>
                 `
               : ""}
+            <ha-divider></ha-divider>
+            <ha-pick-language-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-language-row>
+            <ha-pick-number-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-number-format-row>
+            <ha-pick-time-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-time-format-row>
+            <ha-pick-date-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-date-format-row>
+            <ha-pick-time-zone-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-time-zone-row>
+            <ha-pick-first-weekday-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-first-weekday-row>
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
@@ -212,6 +210,10 @@ class HaProfileSectionGeneral extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.client_settings_detail")}
             </div>
+            <ha-pick-theme-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-theme-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row

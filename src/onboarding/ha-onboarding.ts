@@ -25,6 +25,7 @@ import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
 import type { AuthUrlSearchParams } from "../data/auth";
 import { hassUrl } from "../data/auth";
+import { saveFrontendSystemData } from "../data/frontend";
 import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
 import {
   fetchInstallationType,
@@ -405,6 +406,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
                 })
               ),
             };
+
+      await saveFrontendSystemData(this.hass!.connection, "core", {
+        onboarded_version: this.hass!.config.version,
+        onboarded_date: new Date().toISOString(),
+      });
 
       let result: OnboardingResponses["integration"];
 

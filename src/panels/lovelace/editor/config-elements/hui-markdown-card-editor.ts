@@ -76,7 +76,11 @@ export class HuiMarkdownCardEditor
         ...(!text_only
           ? ([{ name: "title", selector: { text: {} } }] as const)
           : []),
-        { name: "content", required: true, selector: { template: {} } },
+        {
+          name: "content",
+          required: true,
+          selector: { template: { preview: false } },
+        },
         {
           name: "interactions",
           type: "expandable",
