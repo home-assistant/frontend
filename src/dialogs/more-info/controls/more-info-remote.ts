@@ -2,14 +2,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attributes";
 import type { RemoteEntity } from "../../../data/remote";
 import { REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-select";
 import "../../../components/ha-list-item";
-
-const filterExtraAttributes = "activity_list,current_activity";
 
 @customElement("more-info-remote")
 class MoreInfoRemote extends LitElement {
@@ -51,12 +48,6 @@ class MoreInfoRemote extends LitElement {
             </ha-select>
           `
         : nothing}
-
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        .extraFilters=${filterExtraAttributes}
-      ></ha-attributes>
     `;
   }
 

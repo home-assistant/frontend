@@ -327,8 +327,8 @@ export class HuiViewHeader extends LitElement {
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 24px 8px;
-      --spacing: 24px;
+      gap: 16px 8px;
+      --spacing: 8px;
     }
 
     .layout.has-heading {

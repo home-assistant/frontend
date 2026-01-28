@@ -2,10 +2,12 @@ import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { navigate } from "../../common/navigate";
+import { classMap } from "lit/directives/class-map";
+import { goBack, navigate } from "../../common/navigate";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
@@ -29,13 +31,13 @@ class PanelDeveloperTools extends LitElement {
   protected render(): TemplateResult {
     const page = this._page;
     return html`
-      <div class="header">
+      <div class="header ${classMap({ narrow: this.narrow })}">
         <div class="toolbar">
-          <ha-menu-button
+          <ha-icon-button-arrow-prev
             slot="navigationIcon"
             .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
+            @click=${this._handleBack}
+          ></ha-icon-button-arrow-prev>
           <div class="main-title">
             ${this.hass.localize("panel.developer_tools")}
           </div>
@@ -134,6 +136,10 @@ class PanelDeveloperTools extends LitElement {
     return this.route.path.substr(1);
   }
 
+  private _handleBack() {
+    goBack("/config");
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -157,7 +163,6 @@ class PanelDeveloperTools extends LitElement {
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
           color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
         }
@@ -184,9 +189,12 @@ class PanelDeveloperTools extends LitElement {
           padding: var(--ha-space-1);
         }
         .main-title {
-          margin: var(--margin-title);
+          margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
+        }
+        .narrow .main-title {
+          margin-inline-start: var(--ha-space-2);
         }
         developer-tools-router {
           display: block;
@@ -211,6 +219,7 @@ class PanelDeveloperTools extends LitElement {
           --ha-tab-active-text-color: var(--app-header-text-color, white);
           --ha-tab-indicator-color: var(--app-header-text-color, white);
           --ha-tab-track-color: transparent;
+          border-bottom: var(--app-header-border-bottom, none);
         }
       `,
     ];

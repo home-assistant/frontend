@@ -66,7 +66,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @property({ attribute: "collection-key" }) public collectionKey?: string;
 
-  @property({ type: Boolean, reflect: true }) public narrow?;
+  @property({ type: Boolean, reflect: true }) public narrow?: boolean;
+
+  @property({ type: Boolean, reflect: true }) public fixed?: boolean;
 
   @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
     true;
@@ -492,6 +494,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     .row {
       display: flex;
       align-items: center;
+      justify-content: space-between;
     }
     :host .time-handle {
       display: flex;
@@ -512,7 +515,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-start: auto;
       margin-inline-end: initial;
     }
-    :host([narrow]) .label {
+    :host([narrow]) .label,
+    :host([fixed]) .label {
       margin-left: unset;
       margin-inline-start: unset;
       margin-inline-end: initial;

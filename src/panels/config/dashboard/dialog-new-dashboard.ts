@@ -1,21 +1,23 @@
+import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/search-input";
-import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
+import { generateDefaultView } from "../../lovelace/views/default-view";
 import "./dashboard-card";
-import type { LocalizeKeys } from "../../../common/translations/localize";
-
-const EMPTY_CONFIG: LovelaceRawConfig = { views: [{ title: "Home" }] };
+import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
 
 interface Strategy {
   type: string;
@@ -95,10 +97,18 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     return true;
   }
 
+  private _generateDefaultConfig = memoizeOne(
+    (localize: LocalizeFunc): LovelaceConfig => ({
+      views: [generateDefaultView(localize, true)],
+    })
+  );
+
   protected render() {
     if (!this._opened) {
       return nothing;
     }
+
+    const defaultConfig = this._generateDefaultConfig(this.hass.localize);
 
     return html`
       <ha-dialog
@@ -159,7 +169,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                       `ui.panel.config.lovelace.dashboards.dialog_new.create_empty`
                     )}
                     @click=${this._selected}
-                    .config=${EMPTY_CONFIG}
+                    .config=${defaultConfig}
                   ></dashboard-card>
                 </div>
                 <div class="cards-container">

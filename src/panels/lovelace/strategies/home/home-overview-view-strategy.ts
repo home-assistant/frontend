@@ -20,6 +20,7 @@ import type { HomeAssistant } from "../../../../types";
 import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
+  EmptyStateCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   TileCardConfig,
@@ -32,6 +33,7 @@ import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
   favorite_entities?: string[];
+  home_panel?: boolean;
 }
 
 const computeAreaCard = (
@@ -51,7 +53,10 @@ const computeAreaCard = (
     area: areaId,
     display_type: "compact",
     sensor_classes: sensorClasses,
-    navigation_path: path,
+    tap_action: {
+      action: "navigate",
+      navigation_path: path,
+    },
     vertical: true,
     grid_options: {
       rows: 2,
@@ -190,9 +195,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         type: "common-controls",
         limit: maxCommonControls,
         include_entities: favoriteEntities,
-        title: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
-        title_visibilty: [largeScreenCondition],
         hide_empty: true,
+        heading: {
+          type: "heading",
+          heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
+          heading_style: "title",
+          visibility: [largeScreenCondition],
+          grid_options: {
+            rows: "auto", // Compact style
+          },
+        },
       } satisfies CommonControlSectionStrategyConfig,
       column_span: maxColumns,
     } as LovelaceStrategySectionConfig;
@@ -296,7 +308,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           summary: "energy",
           tap_action: {
             action: "navigate",
-            navigation_path: "/energy?historyBack=1",
+            navigation_path: config.home_panel
+              ? "/energy?historyBack=1&backPath=/home"
+              : "/energy?historyBack=1",
           },
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];
@@ -337,9 +351,68 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       sidebarSummaryCards.length > 0
         ? {
             type: "grid",
-            cards: [summaryHeadingCard, ...sidebarSummaryCards],
+            cards: [
+              {
+                ...summaryHeadingCard,
+                grid_options: { rows: "auto" }, // Compact style
+              },
+              ...sidebarSummaryCards,
+            ],
           }
         : undefined;
+
+    // No sections, show empty state
+    if (floorsSections.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:home-assistant",
+            icon_color: "primary",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.home.welcome_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.home.welcome_content"
+            ),
+            ...(config.home_panel && hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      icon: "mdi:plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home.welcome_add_device"
+                      ),
+                      appearance: "filled",
+                      variant: "brand",
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "add_integration",
+                        },
+                      },
+                    },
+                    {
+                      icon: "mdi:home-edit",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home.welcome_edit_areas"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/config/areas/dashboard",
+                      },
+                    },
+                  ],
+                }
+              : {}),
+          } as EmptyStateCardConfig,
+        ],
+      };
+    }
 
     const sections = (
       [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (

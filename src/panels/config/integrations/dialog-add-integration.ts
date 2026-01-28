@@ -1,3 +1,4 @@
+import { mdiClose } from "@mdi/js";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
@@ -91,6 +92,8 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _showDiscovered = false;
 
+  @state() private _openedDirectly = false;
+
   @state() private _navigateToResult = false;
 
   @state() private _open = false;
@@ -105,10 +108,19 @@ class AddIntegrationDialog extends LitElement {
     const loadPromise = this._load();
 
     if (params?.domain) {
-      // Just open the config flow dialog, do not show this dialog
+      // If we get here we clicked the button to add an entry for a specific integration
+      // If there is discovery in process, show this dialog to select a new flow
+      // or continue an existing flow.
+      // If no flow in process, just open the config flow dialog directly
       await loadPromise;
-      await this._createFlow(params.domain);
-      return;
+      const flowsInProgress = this._getFlowsInProgressForDomains([
+        params.domain,
+      ]);
+
+      if (!flowsInProgress.length) {
+        await this._createFlow(params.domain);
+        return;
+      }
     }
 
     if (params?.brand === "_discovered") {
@@ -117,10 +129,13 @@ class AddIntegrationDialog extends LitElement {
       this._showDiscovered = true;
     }
 
-    // Only open the dialog if no domain is provided
+    // Only open the dialog if no domain is provided or we need to select a flow
     this._open = true;
     this._pickedBrand =
-      params?.brand === "_discovered" ? undefined : params?.brand;
+      params?.brand === "_discovered"
+        ? undefined
+        : params?.domain || params?.brand;
+    this._openedDirectly = !!(params?.brand || params?.domain);
     this._initialFilter = params?.initialFilter;
     this._navigateToResult = params?.navigateToResult ?? false;
     this._narrow = matchMedia(
@@ -136,6 +151,7 @@ class AddIntegrationDialog extends LitElement {
     this._prevPickedBrand = undefined;
     this._flowsInProgress = undefined;
     this._showDiscovered = false;
+    this._openedDirectly = false;
     this._navigateToResult = false;
     this._filter = undefined;
     this._width = undefined;
@@ -425,7 +441,16 @@ class AddIntegrationDialog extends LitElement {
     }
 
     return html`<div slot="heading">
-        <ha-icon-button-prev @click=${this._prevClicked}></ha-icon-button-prev>
+        ${this._openedDirectly
+          ? html`<ha-icon-button
+              class="header-close-button"
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${mdiClose}
+              dialogAction="close"
+            ></ha-icon-button>`
+          : html`<ha-icon-button-prev
+              @click=${this._prevClicked}
+            ></ha-icon-button-prev>`}
         <h2 class="mdc-dialog__title">${heading}</h2>
       </div>
       <ha-domain-integrations
@@ -434,6 +459,7 @@ class AddIntegrationDialog extends LitElement {
         .integration=${integration}
         .flowsInProgress=${flowsInProgress}
         .navigateToResult=${this._navigateToResult}
+        .showManageLink=${this._showDiscovered}
         style=${styleMap({
           minWidth: `${this._width}px`,
           minHeight: `581px`,
@@ -827,7 +853,8 @@ class AddIntegrationDialog extends LitElement {
       ha-integration-list-item {
         width: 100%;
       }
-      ha-icon-button-prev {
+      ha-icon-button-prev,
+      .header-close-button {
         color: var(--secondary-text-color);
         position: absolute;
         left: 16px;

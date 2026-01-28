@@ -1,6 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { goBack } from "../common/navigate";
 import "../components/ha-icon-button-arrow-prev";
@@ -22,19 +23,16 @@ class HassSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public supervisor = false;
-
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
 
   protected render(): TemplateResult {
     return html`
-      <div class="toolbar">
+      <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <div class="toolbar-content">
           ${this.mainPage || history.state?.root
             ? html`
                 <ha-menu-button
-                  .hassio=${this.supervisor}
                   .hass=${this.hass}
                   .narrow=${this.narrow}
                 ></ha-menu-button>
@@ -135,7 +133,7 @@ class HassSubpage extends LitElement {
         }
 
         .main-title {
-          margin: var(--margin-title);
+          margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           min-width: 0;
           flex-grow: 1;
@@ -145,6 +143,9 @@ class HassSubpage extends LitElement {
           -webkit-box-orient: vertical;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+        .narrow .main-title {
+          margin-inline-start: var(--ha-space-2);
         }
 
         .content {

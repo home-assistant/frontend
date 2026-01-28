@@ -147,6 +147,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @state() private _uiSupported = false;
+
   @property({ attribute: false })
   public triggerDescriptions: TriggerDescriptions = {};
 
@@ -193,9 +195,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   private _renderRow() {
     const type = this._getType(this.trigger, this.triggerDescriptions);
 
-    const supported = this._uiSupported(type);
-
-    const yamlMode = this._yamlMode || !supported;
+    const yamlMode = this._yamlMode || !this._uiSupported;
 
     const target =
       type === "platform" &&
@@ -333,7 +333,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
         <ha-dropdown-item
           value="toggle_yaml_mode"
-          .disabled=${!supported || !!this._warnings}
+          .disabled=${!this._uiSupported || !!this._warnings}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
           ${this._renderOverflowLabel(
@@ -412,7 +412,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 : undefined}
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
-              .uiSupported=${supported}
+              .uiSupported=${this._uiSupported}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-trigger-editor>`
         : nothing}
@@ -479,12 +479,29 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
     }
+
+    if (changedProperties.has("trigger") || !this.hasUpdated) {
+      const type = this._getType(this.trigger, this.triggerDescriptions);
+      const uiSupported = this._checkUiSupport(type);
+      if (uiSupported !== this._uiSupported || !this.hasUpdated) {
+        this._uiSupported = uiSupported;
+      }
+    }
   }
 
-  protected override updated(changedProps: PropertyValues<this>): void {
+  protected override updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (changedProps.has("trigger")) {
       this._subscribeTrigger();
+    }
+
+    if (
+      changedProps.has("_uiSupported") &&
+      this._selected &&
+      this.optionsInSidebar
+    ) {
+      // update sidebar if uiSupported changed
+      this.openSidebar();
     }
   }
 
@@ -603,9 +620,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       cut: this._cutTrigger,
       insertAfter: this._insertAfter,
       config: trigger,
-      uiSupported: this._uiSupported(
-        this._getType(trigger, this.triggerDescriptions)
-      ),
+      uiSupported: this._uiSupported,
       description:
         "trigger" in trigger
           ? this.triggerDescriptions[trigger.trigger]
@@ -805,7 +820,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
   );
 
-  private _uiSupported = memoizeOne(
+  private _checkUiSupport = memoizeOne(
     (type: string) =>
       customElements.get(`ha-automation-trigger-${type}`) !== undefined
   );

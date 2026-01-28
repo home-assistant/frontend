@@ -22,6 +22,7 @@ export function getAssistantsTableColumn<T>(
     type: "flex",
     defaultHidden: !visible,
     sortable: true,
+    showNarrow: true,
     minWidth: "160px",
     maxWidth: "160px",
     valueColumn: "assistants_sortable_key",
@@ -70,10 +71,10 @@ export const getAssistantsTableColumnIcon = (
 
 export const getAssistantsSortableKey = (
   entityAssistants: string[]
-): string => {
+): string | undefined => {
   let result = 0;
   if (!entityAssistants.length) {
-    return "z";
+    return undefined;
   }
   const assistantsOrdered = [
     "conversation",
