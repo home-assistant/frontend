@@ -29,7 +29,7 @@ import "../../../components/ha-labels-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
-import "../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../components/ha-settings-row";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -1550,6 +1550,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      HaSettingsRow.styleHasSwitch,
       css`
         :host {
           display: block;
