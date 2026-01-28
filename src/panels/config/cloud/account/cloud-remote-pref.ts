@@ -1,4 +1,5 @@
 import { mdiHelpCircle } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -6,7 +7,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 
 import { formatDate } from "../../../../common/datetime/format_date";
@@ -239,72 +240,77 @@ export class CloudRemotePref extends LitElement {
     }
   }
 
-  static styles = css`
-    .preparing {
-      padding: 0 16px 16px;
-    }
-    a {
-      color: var(--primary-color);
-    }
-    .header-actions {
-      position: absolute;
-      right: 16px;
-      inset-inline-end: 16px;
-      inset-inline-start: initial;
-      top: 24px;
-      display: flex;
-      flex-direction: row;
-    }
-    .header-actions .icon-link {
-      margin-top: -16px;
-      margin-right: 8px;
-      margin-inline-end: 8px;
-      margin-inline-start: initial;
-      direction: var(--direction);
-      color: var(--secondary-text-color);
-    }
-    .warning {
-      font-weight: var(--ha-font-weight-bold);
-      margin-bottom: 1em;
-    }
-    .break-word {
-      overflow-wrap: break-word;
-    }
-    .connection-status {
-      position: absolute;
-      right: 24px;
-      top: 24px;
-      inset-inline-end: 24px;
-      inset-inline-start: initial;
-    }
-    .card-actions {
-      display: flex;
-    }
-    .card-actions a {
-      text-decoration: none;
-    }
-    ha-expansion-panel {
-      margin-top: 16px;
-    }
-    ha-settings-row {
-      padding: 0;
-      border-top: none !important;
-    }
-    ha-expansion-panel {
-      --expansion-panel-content-padding: 0 16px;
-      --expansion-panel-summary-padding: 0 16px;
-    }
-    ha-alert {
-      display: block;
-      margin-bottom: 16px;
-    }
-    hr {
-      border: none;
-      height: 1px;
-      background-color: var(--divider-color);
-      margin: 8px 0;
-    }
-  `;
+  static get styles(): CSSResultGroup {
+    return [
+      HaSettingsRow.styleHasSwitch,
+      css`
+        .preparing {
+          padding: 0 16px 16px;
+        }
+        a {
+          color: var(--primary-color);
+        }
+        .header-actions {
+          position: absolute;
+          right: 16px;
+          inset-inline-end: 16px;
+          inset-inline-start: initial;
+          top: 24px;
+          display: flex;
+          flex-direction: row;
+        }
+        .header-actions .icon-link {
+          margin-top: -16px;
+          margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
+          direction: var(--direction);
+          color: var(--secondary-text-color);
+        }
+        .warning {
+          font-weight: var(--ha-font-weight-bold);
+          margin-bottom: 1em;
+        }
+        .break-word {
+          overflow-wrap: break-word;
+        }
+        .connection-status {
+          position: absolute;
+          right: 24px;
+          top: 24px;
+          inset-inline-end: 24px;
+          inset-inline-start: initial;
+        }
+        .card-actions {
+          display: flex;
+        }
+        .card-actions a {
+          text-decoration: none;
+        }
+        ha-expansion-panel {
+          margin-top: 16px;
+        }
+        ha-settings-row {
+          padding: 0;
+          border-top: none !important;
+        }
+        ha-expansion-panel {
+          --expansion-panel-content-padding: 0 16px;
+          --expansion-panel-summary-padding: 0 16px;
+        }
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
+        }
+        hr {
+          border: none;
+          height: 1px;
+          background-color: var(--divider-color);
+          margin: 8px 0;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
