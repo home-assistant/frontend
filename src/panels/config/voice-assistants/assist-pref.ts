@@ -23,6 +23,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
+import { HaSettingsRow } from "../../../components/ha-settings-row";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
@@ -405,7 +406,7 @@ export class AssistPref extends LitElement {
           }
         : {}),
     });
-  }
+  } // ???
 
   static get styles(): CSSResultGroup {
     return [
