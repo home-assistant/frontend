@@ -1,9 +1,9 @@
-import type { TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
 import "../../components/ha-card";
-import "../../components/ha-settings-row";
+import { HaSettingsRow } from "../../components/ha-settings-row";
 import "../../components/ha-switch";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { saveFrontendUserData } from "../../data/frontend";
@@ -61,15 +61,20 @@ class AdvancedModeRow extends LitElement {
     }
   }
 
-  static styles = css`
-    a {
-      color: var(--primary-color);
-    }
-    ha-alert {
-      margin: 0 16px;
-      display: block;
-    }
-  `;
+  static get styles(): CSSResultGroup {
+    return [
+      HaSettingsRow.styleHasSwitch,
+      css`
+        a {
+          color: var(--primary-color);
+        }
+        ha-alert {
+          margin: 0 16px;
+          display: block;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
