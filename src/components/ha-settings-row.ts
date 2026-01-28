@@ -14,6 +14,12 @@ export class HaSettingsRow extends LitElement {
   @property({ type: Boolean, attribute: "wrap-heading", reflect: true })
   public wrapHeading = false;
 
+  public static styleHasSwitch = css`
+    ha-settings-row:has(ha-switch) {
+      --settings-row-content-min-width: auto;
+    }
+  `;
+
   protected render(): TemplateResult {
     return html`
       <div class="prefix-wrap">
@@ -89,7 +95,7 @@ export class HaSettingsRow extends LitElement {
       display: var(--settings-row-content-display, flex);
       justify-content: flex-end;
       flex: 1;
-      min-width: 0;
+      min-width: var(--settings-row-content-min-width, 0);
       padding: 16px 0;
     }
     .content ::slotted(*) {
