@@ -70,23 +70,17 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
             <div class="card-content">
               <p>
                 ${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.info", {data_use_statement: html`<a
-                  href="https://www.openhomefoundation.org/device-database-data-use-statement"
-                  target="_blank"
-                  rel="noreferrer"
-                  >${this.hass.localize(
-                    "ui.panel.config.analytics.preferences.snapshots.data_use_statement"
-                  )}</a
-                >`}
-                )}
-                <a
-                  href="https://www.openhomefoundation.org/device-database-data-use-statement"
-                  target="_blank"
-                  rel="noreferrer"
-                  >${this.hass.localize(
-                    "ui.panel.config.analytics.preferences.snapshots.data_use_statement"
-                  )}</a
-                >${this.hass.localize(
+                  "ui.panel.config.analytics.preferences.snapshots.info",
+                  {
+                    data_use_statement: html`<a
+                      href="https://www.openhomefoundation.org/device-database-data-use-statement"
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.panel.config.analytics.preferences.snapshots.data_use_statement"
+                      )}</a
+                    >`,
+                  }
                 )}
               </p>
               <ha-settings-row>
