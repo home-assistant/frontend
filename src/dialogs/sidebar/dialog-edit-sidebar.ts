@@ -30,6 +30,7 @@ import {
   getPanelIconPath,
   getPanelTitle,
   SHOW_AFTER_SPACER_PANELS,
+  DEFAULT_HIDDEN_PANELS,
 } from "../../data/panel";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
@@ -71,7 +72,9 @@ class DialogEditSidebar extends LitElement {
       if (!this._hidden) {
         const storedHidden = localStorage.getItem("sidebarHiddenPanels");
         this._migrateToUserData = this._migrateToUserData || !!storedHidden;
-        this._hidden = storedHidden ? JSON.parse(storedHidden) : [];
+        this._hidden = storedHidden
+          ? JSON.parse(storedHidden)
+          : [...DEFAULT_HIDDEN_PANELS];
       }
     } catch (err: any) {
       this._error = err.message || err;
@@ -225,7 +228,7 @@ class DialogEditSidebar extends LitElement {
     }
 
     this._order = [];
-    this._hidden = [];
+    this._hidden = [...DEFAULT_HIDDEN_PANELS];
     try {
       await saveFrontendUserData(this.hass.connection, "sidebar", {});
     } catch (err: any) {
