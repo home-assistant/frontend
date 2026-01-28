@@ -42,8 +42,11 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
       }
       .mdc-top-app-bar__title {
         font-size: var(--ha-font-size-xl);
-        padding-inline-start: 24px;
+        padding-inline-start: var(--ha-space-6);
         padding-inline-end: initial;
+      }
+      :host([narrow]) .mdc-top-app-bar__title {
+        padding-inline-start: var(--ha-space-2);
       }
     `,
   ];

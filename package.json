@@ -147,7 +147,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.28.6",
-    "@babel/helper-define-polyfill-provider": "0.6.5",
+    "@babel/helper-define-polyfill-provider": "0.6.6",
     "@babel/plugin-transform-runtime": "7.28.5",
     "@babel/preset-env": "7.28.6",
     "@bundle-stats/plugin-webpack-filter": "4.21.8",
@@ -216,7 +216,7 @@
     "ts-lit-plugin": "2.0.2",
     "typescript": "5.9.3",
     "typescript-eslint": "8.53.1",
-    "vite-tsconfig-paths": "6.0.4",
+    "vite-tsconfig-paths": "6.0.5",
     "vitest": "4.0.18",
     "webpack-stats-plugin": "1.1.3",
     "webpackbar": "7.0.0",

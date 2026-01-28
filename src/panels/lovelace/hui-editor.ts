@@ -198,16 +198,17 @@ class LovelaceFullConfigEditor extends LitElement {
     }
   }
 
-  private async _removeConfig() {
+  private async _resetConfig() {
     try {
       await this.lovelace!.deleteConfig();
     } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.lovelace.editor.raw_editor.error_remove",
+          "ui.panel.lovelace.editor.raw_editor.error_save_yaml",
           { error: err }
         ),
       });
+      return;
     }
     window.onbeforeunload = null;
     if (this.closeEditor) {
@@ -223,14 +224,14 @@ class LovelaceFullConfigEditor extends LitElement {
     if (!value) {
       showConfirmationDialog(this, {
         title: this.hass.localize(
-          "ui.panel.lovelace.editor.raw_editor.confirm_delete_config_title"
+          "ui.panel.lovelace.editor.raw_editor.confirm_reset_config_title"
         ),
         text: this.hass.localize(
-          "ui.panel.lovelace.editor.raw_editor.confirm_delete_config_text"
+          "ui.panel.lovelace.editor.raw_editor.confirm_reset_config_text"
         ),
-        confirmText: this.hass.localize("ui.common.delete"),
+        confirmText: this.hass.localize("ui.common.reset"),
         dismissText: this.hass.localize("ui.common.cancel"),
-        confirm: () => this._removeConfig(),
+        confirm: () => this._resetConfig(),
         destructive: true,
       });
       return;

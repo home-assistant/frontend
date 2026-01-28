@@ -78,14 +78,16 @@ export const findIconChunk = (icon: string): string => {
 
 export const writeCache = async (chunks: Chunks) => {
   const keys = Object.keys(chunks);
-  const iconsSets: Icons[] = await Promise.all(Object.values(chunks));
+  const results = await Promise.allSettled(Object.values(chunks));
   const iconStore = await getStore();
   // We do a batch opening the store just once, for (considerable) performance
   iconStore("readwrite", (store) => {
-    iconsSets.forEach((icons, idx) => {
-      Object.entries(icons).forEach(([name, path]) => {
-        store.put(path, name);
-      });
+    results.forEach((result, idx) => {
+      if (result.status === "fulfilled") {
+        Object.entries(result.value).forEach(([name, path]) => {
+          store.put(path, name);
+        });
+      }
       delete chunks[keys[idx]];
     });
   });

@@ -125,9 +125,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   @state() private _showDisabled = false;
 
-  @state() private _searchParms = new URLSearchParams(
+  @state() private _hashParams = new URLSearchParams(
     window.location.hash.substring(1)
   );
+
+  @state() private _searchParams = new URLSearchParams(window.location.search);
 
   @state() private _filter: string = history.state?.filter || "";
 
@@ -356,8 +358,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       this._handleRouteChanged();
     }
     if (
-      (this._searchParms.has("config_entry") ||
-        this._searchParms.has("domain")) &&
+      (this._hashParams.has("config_entry") ||
+        this._hashParams.has("domain")) &&
       changed.has("configEntries") &&
       !changed.get("configEntries") &&
       this.configEntries
@@ -449,7 +451,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParams.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.devices}
         has-fab
@@ -799,7 +803,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   private async _highlightEntry() {
     await nextRender();
-    const entryId = this._searchParms.get("config_entry");
+    const entryId = this._hashParams.get("config_entry");
     let domain: string | null;
     if (entryId) {
       const configEntry = this.configEntries!.find(
@@ -810,7 +814,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       }
       domain = configEntry.domain;
     } else {
-      domain = this._searchParms.get("domain");
+      domain = this._hashParams.get("domain");
     }
     const card: HaIntegrationCard = this.shadowRoot!.querySelector(
       `[data-domain=${domain}]`

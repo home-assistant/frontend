@@ -1,17 +1,18 @@
-import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-check-list-item";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
+import "../ha-dropdown";
+import "../ha-dropdown-item";
 import "../ha-formfield";
 import "../ha-icon-button";
-import "../ha-md-button-menu";
-import "../ha-md-menu-item";
-import "../ha-textfield";
+import "../ha-picker-field";
 
+import type { HaDropdown } from "../ha-dropdown";
+import type { HaDropdownItem } from "../ha-dropdown-item";
 import type {
   HaFormElement,
   HaFormMultiSelectData,
@@ -36,16 +37,12 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property({ type: Boolean }) public disabled = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  @state() private _opened = false;
-
-  @query("ha-md-button-menu") private _input?: HTMLElement;
+  @query("ha-dropdown") private _dropdown!: HaDropdown;
 
   public focus(): void {
-    if (this._input) {
-      this._input.focus();
-    }
+    this._dropdown?.focus();
   }
 
   protected render(): TemplateResult {
@@ -74,13 +71,14 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     }
 
     return html`
-      <ha-md-button-menu
-        .disabled=${this.disabled}
-        @opening=${this._handleOpen}
-        @closing=${this._handleClose}
-        positioning="fixed"
+      <ha-dropdown
+        @wa-select=${this._toggleItem}
+        @wa-show=${this._showDropdown}
+        placement="bottom"
+        tabindex="0"
+        @keydown=${this._handleKeydown}
       >
-        <ha-textfield
+        <ha-picker-field
           slot="trigger"
           .label=${this.label}
           .value=${data
@@ -91,68 +89,39 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             )
             .join(", ")}
           .disabled=${this.disabled}
-          tabindex="-1"
-        ></ha-textfield>
-        <ha-icon-button
-          slot="trigger"
-          .label=${this.label}
-          .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-        ></ha-icon-button>
+          hide-clear-icon
+        >
+        </ha-picker-field>
         ${options.map((item: string | [string, string]) => {
           const value = optionValue(item);
           const selected = data.includes(value);
-          return html`<ha-md-menu-item
-            type="option"
-            aria-checked=${selected}
+          return html`<ha-dropdown-item
             .value=${value}
             .action=${selected ? "remove" : "add"}
-            .activated=${selected}
-            @click=${this._toggleItem}
-            @keydown=${this._keydown}
-            keep-open
+            type="checkbox"
+            .checked=${selected}
           >
-            <ha-checkbox
-              slot="start"
-              tabindex="-1"
-              .checked=${selected}
-            ></ha-checkbox>
             ${optionLabel(item)}
-          </ha-md-menu-item>`;
+          </ha-dropdown-item>`;
         })}
-      </ha-md-button-menu>
+      </ha-dropdown>
     `;
   }
 
-  protected _keydown(ev) {
-    if (ev.code === "Space" || ev.code === "Enter") {
-      ev.preventDefault();
-      this._toggleItem(ev);
-    }
-  }
+  protected _toggleItem(ev: CustomEvent<{ item: HaDropdownItem }>) {
+    ev.preventDefault(); // keep the dropdown open
+    const value = ev.detail.item.value;
+    const action = (ev.detail.item as any).action;
 
-  protected _toggleItem(ev) {
     const oldData = this.data || [];
     let newData: string[];
-    if (ev.currentTarget.action === "add") {
-      newData = [...oldData, ev.currentTarget.value];
+    if (action === "add") {
+      newData = [...oldData, value];
     } else {
-      newData = oldData.filter((d) => d !== ev.currentTarget.value);
+      newData = oldData.filter((d) => d !== value);
     }
     fireEvent(this, "value-changed", {
       value: newData,
-    });
-  }
-
-  protected firstUpdated() {
-    this.updateComplete.then(() => {
-      const { formElement, mdcRoot } =
-        this.shadowRoot?.querySelector("ha-textfield") || ({} as any);
-      if (formElement) {
-        formElement.style.textOverflow = "ellipsis";
-      }
-      if (mdcRoot) {
-        mdcRoot.style.cursor = "pointer";
-      }
     });
   }
 
@@ -194,25 +163,28 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     });
   }
 
-  private _handleOpen(ev: Event): void {
-    ev.stopPropagation();
-    this._opened = true;
-    this.toggleAttribute("opened", true);
+  private _showDropdown(ev) {
+    if (this.disabled) {
+      ev.preventDefault();
+    }
+    this.style.setProperty(
+      "--dropdown-width",
+      `${this._dropdown.offsetWidth}px`
+    );
   }
 
-  private _handleClose(ev: Event): void {
-    ev.stopPropagation();
-    this._opened = false;
-    this.toggleAttribute("opened", false);
+  private _handleKeydown(ev) {
+    if ((ev.code === "Space" || ev.code === "Enter") && this._dropdown) {
+      this._dropdown.open = true;
+    }
   }
 
   static styles = css`
     :host([own-margin]) {
       margin-bottom: 5px;
     }
-    ha-md-button-menu {
+    ha-dropdown {
       display: block;
-      cursor: pointer;
     }
     ha-formfield {
       display: block;
@@ -239,9 +211,15 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     :host([opened]) ha-icon-button {
       color: var(--primary-color);
     }
-    :host([opened]) ha-md-button-menu {
-      --mdc-text-field-idle-line-color: var(--input-hover-line-color);
-      --mdc-text-field-label-ink-color: var(--primary-color);
+
+    ha-dropdown::part(menu) {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      width: var(--dropdown-width);
+    }
+
+    :host([disabled]) ha-dropdown ha-picker-field {
+      cursor: not-allowed;
     }
   `;
 }
