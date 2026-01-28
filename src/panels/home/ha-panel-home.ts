@@ -53,7 +53,7 @@ class PanelHome extends LitElement {
     if (this._config.welcome_banner_dismissed) {
       return false;
     }
-    // Don't show if HA is not running or systemData is not loaded
+    // Don't show if HA is not running
     if (this.hass.config.state !== "RUNNING") {
       return false;
     }
