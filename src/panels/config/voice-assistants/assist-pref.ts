@@ -9,7 +9,7 @@ import {
   mdiStar,
   mdiTrashCan,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -405,68 +405,73 @@ export class AssistPref extends LitElement {
           }
         : {}),
     });
+  } // ???
+
+  static get styles(): CSSResultGroup {
+    return [
+      HaSettingsRow.styleHasSwitch,
+      css`
+        a {
+          color: var(--primary-color);
+        }
+        .header-actions {
+          position: absolute;
+          right: 0px;
+          inset-inline-end: 0px;
+          inset-inline-start: initial;
+          top: 24px;
+          display: flex;
+          flex-direction: row;
+        }
+        .header-actions .icon-link {
+          margin-top: -16px;
+          margin-right: 8px;
+          margin-inline-end: 8px;
+          margin-inline-start: initial;
+          direction: var(--direction);
+          color: var(--secondary-text-color);
+        }
+        ha-list-item {
+          --mdc-list-item-meta-size: auto;
+          --mdc-list-item-meta-display: flex;
+          --mdc-list-side-padding-right: 8px;
+          --mdc-list-side-padding-left: 16px;
+        }
+
+        ha-list-item span ha-svg-icon {
+          color: currentColor;
+          width: 16px;
+        }
+
+        .add {
+          margin: 0 16px 16px;
+        }
+        .card-actions {
+          display: flex;
+        }
+        .card-actions a {
+          text-decoration: none;
+        }
+        .card-header {
+          display: flex;
+          align-items: center;
+          padding-bottom: 0;
+        }
+        img {
+          height: 28px;
+          margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
+        }
+
+        ha-dropdown {
+          font-size: var(--ha-font-size-m);
+          font-family: var(--ha-font-family-body);
+          letter-spacing: normal;
+        }
+      `,
+    ];
   }
-
-  static styles = css`
-    a {
-      color: var(--primary-color);
-    }
-    .header-actions {
-      position: absolute;
-      right: 0px;
-      inset-inline-end: 0px;
-      inset-inline-start: initial;
-      top: 24px;
-      display: flex;
-      flex-direction: row;
-    }
-    .header-actions .icon-link {
-      margin-top: -16px;
-      margin-right: 8px;
-      margin-inline-end: 8px;
-      margin-inline-start: initial;
-      direction: var(--direction);
-      color: var(--secondary-text-color);
-    }
-    ha-list-item {
-      --mdc-list-item-meta-size: auto;
-      --mdc-list-item-meta-display: flex;
-      --mdc-list-side-padding-right: 8px;
-      --mdc-list-side-padding-left: 16px;
-    }
-
-    ha-list-item span ha-svg-icon {
-      color: currentColor;
-      width: 16px;
-    }
-
-    .add {
-      margin: 0 16px 16px;
-    }
-    .card-actions {
-      display: flex;
-    }
-    .card-actions a {
-      text-decoration: none;
-    }
-    .card-header {
-      display: flex;
-      align-items: center;
-      padding-bottom: 0;
-    }
-    img {
-      height: 28px;
-      margin-right: 16px;
-      margin-inline-end: 16px;
-      margin-inline-start: initial;
-    }
-
-    ha-dropdown {
-      font-size: var(--ha-font-size-m);
-      font-family: var(--ha-font-family-body);
-      letter-spacing: normal;
-    }
-  `;
 }
 
 declare global {
