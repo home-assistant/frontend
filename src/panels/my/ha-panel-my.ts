@@ -26,34 +26,34 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/application_credentials",
   },
   developer_assist: {
-    redirect: "/developer-tools/assist",
+    redirect: "/config/developer-tools/assist",
   },
   developer_debug: {
-    redirect: "/developer-tools/debug",
+    redirect: "/config/developer-tools/debug",
   },
   developer_states: {
-    redirect: "/developer-tools/state",
+    redirect: "/config/developer-tools/state",
   },
   developer_services: {
-    redirect: "/developer-tools/action",
+    redirect: "/config/developer-tools/action",
   },
   developer_call_service: {
-    redirect: "/developer-tools/action",
+    redirect: "/config/developer-tools/action",
     params: {
       service: "string",
     },
   },
   developer_template: {
-    redirect: "/developer-tools/template",
+    redirect: "/config/developer-tools/template",
   },
   developer_events: {
-    redirect: "/developer-tools/event",
+    redirect: "/config/developer-tools/event",
   },
   developer_statistics: {
-    redirect: "/developer-tools/statistics",
+    redirect: "/config/developer-tools/statistics",
   },
   server_controls: {
-    redirect: "/developer-tools/yaml",
+    redirect: "/config/developer-tools/yaml",
   },
   calendar: {
     component: "calendar",
