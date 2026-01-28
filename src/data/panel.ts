@@ -21,11 +21,18 @@ export const getLegacyDefaultPanelUrlPath = (): string | null => {
   return defaultPanel ? JSON.parse(defaultPanel) : null;
 };
 
-export const getDefaultPanelUrlPath = (hass: HomeAssistant): string =>
-  hass.userData?.default_panel ||
-  hass.systemData?.default_panel ||
-  getLegacyDefaultPanelUrlPath() ||
-  DEFAULT_PANEL;
+export const getDefaultPanelUrlPath = (hass: HomeAssistant): string => {
+  const defaultPanel =
+    hass.userData?.default_panel ||
+    hass.systemData?.default_panel ||
+    getLegacyDefaultPanelUrlPath() ||
+    DEFAULT_PANEL;
+  // If default panel is lovelace and we have lovelace panel with no config, use home
+  if (defaultPanel === "lovelace" && !hass.panels.lovelace?.config) {
+    return "home";
+  }
+  return defaultPanel;
+};
 
 export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
   const panel = getDefaultPanelUrlPath(hass);
