@@ -4,6 +4,11 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { goBack, navigate } from "../../common/navigate";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import {
+  extractSearchParamsObject,
+  removeSearchParam,
+} from "../../common/url/search-params";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
@@ -23,9 +28,27 @@ class PanelDeveloperTools extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  private _showBack?: boolean = false;
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.back) {
+      if (searchParams.back === "1") {
+        this._showBack = true;
+      } else if (searchParams.back === "0") {
+        this._showBack = false;
+      }
+      navigate(constructUrlCurrentPath(removeSearchParam("back")), {
+        replace: true,
+      });
+    }
   }
 
   protected render(): TemplateResult {
@@ -33,11 +56,17 @@ class PanelDeveloperTools extends LitElement {
     return html`
       <div class="header ${classMap({ narrow: this.narrow })}">
         <div class="toolbar">
-          <ha-icon-button-arrow-prev
-            slot="navigationIcon"
-            .hass=${this.hass}
-            @click=${this._handleBack}
-          ></ha-icon-button-arrow-prev>
+          ${this._showBack
+            ? html`<ha-icon-button-arrow-prev
+                slot="navigationIcon"
+                .hass=${this.hass}
+                @click=${this._handleBack}
+              ></ha-icon-button-arrow-prev>`
+            : html`<ha-menu-button
+                slot="navigationIcon"
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>`}
           <div class="main-title">
             ${this.hass.localize("panel.developer_tools")}
           </div>
