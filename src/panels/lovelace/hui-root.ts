@@ -1497,7 +1497,10 @@ class HUIRoot extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
-          padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
+          padding-top: calc(
+            var(--header-height) + var(--safe-area-inset-top) +
+              var(--view-container-padding-top, 0px)
+          );
           padding-right: var(--safe-area-inset-right);
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: calc(
