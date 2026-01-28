@@ -14,7 +14,7 @@ import { removeLaunchScreen } from "../util/launch-screen";
 import type { RouteOptions, RouterOptions } from "./hass-router-page";
 import { HassRouterPage } from "./hass-router-page";
 
-const CACHE_URL_PATHS = ["home", "config"];
+const CACHE_URL_PATHS = ["lovelace", "home", "config"];
 const COMPONENTS = {
   app: () => import("../panels/app/ha-panel-app"),
   energy: () => import("../panels/energy/ha-panel-energy"),
