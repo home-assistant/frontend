@@ -84,12 +84,7 @@ export interface ActionSelector {
   } | null;
 }
 
-export interface AddonSelector {
-  addon: {
-    name?: string;
-    slug?: string;
-  } | null;
-}
+export interface AddonSelector extends AppSelector {}
 
 export interface AppSelector {
   app: {
