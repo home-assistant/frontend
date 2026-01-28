@@ -146,6 +146,10 @@ class HUIRoot extends LitElement {
 
   @property({ type: Boolean, attribute: "no-edit" }) public noEdit = false;
 
+  @property({ attribute: false }) public backButton = false;
+
+  @property({ attribute: false }) public backPath?: string;
+
   @state() private _curView?: number | "hass-unused-entities";
 
   private _configChangedByUndo = false;
@@ -567,7 +571,7 @@ class HUIRoot extends LitElement {
                     <div class="action-items">${this._renderActionItems()}</div>
                   `
                 : html`
-                    ${isSubview
+                    ${isSubview || this.backButton
                       ? html`
                           <ha-icon-button-arrow-prev
                             .hass=${this.hass}
@@ -880,6 +884,8 @@ class HUIRoot extends LitElement {
 
     if (curViewConfig?.back_path != null) {
       navigate(curViewConfig.back_path, { replace: true });
+    } else if (this.backPath) {
+      navigate(this.backPath, { replace: true });
     } else if (history.length > 1) {
       goBack();
     } else if (!views[0].subview) {
@@ -1305,7 +1311,6 @@ class HUIRoot extends LitElement {
         .header {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
           width: calc(
@@ -1343,6 +1348,7 @@ class HUIRoot extends LitElement {
           color: var(--app-header-edit-text-color, white);
         }
         .toolbar {
+          border-bottom: var(--app-header-border-bottom, none);
           height: var(--header-height);
           display: flex;
           align-items: center;
@@ -1351,11 +1357,14 @@ class HUIRoot extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
+        .edit-mode .toolbar {
+          border-bottom: none;
+        }
         .narrow .toolbar {
           padding: 0 4px;
         }
         .main-title {
-          margin: var(--margin-title);
+          margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
           text-overflow: ellipsis;
@@ -1364,8 +1373,7 @@ class HUIRoot extends LitElement {
           min-width: 0;
         }
         .narrow .main-title {
-          margin: 0;
-          margin-inline-start: 8px;
+          margin-inline-start: var(--ha-space-2);
         }
         .action-items {
           white-space: nowrap;

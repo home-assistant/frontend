@@ -28,9 +28,16 @@ export class HaTimeZonePicker extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
+  @property() public placeholder?: string;
+
   @property({ type: Boolean }) public required = false;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
+
+  @property({ type: Boolean, attribute: "hide-clear-icon" })
+  public hideClearIcon = false;
 
   private _getTimezoneOptions = memoizeOne(getTimezoneOptions);
 
@@ -56,14 +63,16 @@ export class HaTimeZonePicker extends LitElement {
           "ui.components.timezone-picker.no_timezones"
         ) || "No time zones available"}
         .label=${label}
+        .helper=${this.helper}
+        .placeholder=${this.placeholder}
         .value=${this.value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
         .required=${this.required}
         .getItems=${this._getItems}
         .searchKeys=${SEARCH_KEYS}
+        .hideClearIcon=${this.hideClearIcon}
         @value-changed=${this._changed}
-        hide-clear-icon
       ></ha-generic-picker>
     `;
   }

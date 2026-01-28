@@ -106,6 +106,7 @@ class HaConfigSectionGeneral extends LitElement {
                 .disabled=${disabled}
                 .value=${this._timeZone}
                 @value-changed=${this._handleValueChanged}
+                hide-clear-icon
               ></ha-timezone-picker>
               <ha-textfield
                 .label=${this.hass.localize(
@@ -200,7 +201,7 @@ class HaConfigSectionGeneral extends LitElement {
               </div>
               <div>
                 <ha-currency-picker
-                  .language=${this.hass.locale.language}
+                  .hass=${this.hass}
                   .label=${this.hass.localize(
                     "ui.panel.config.core.section.core.core_config.currency"
                   )}
@@ -208,8 +209,7 @@ class HaConfigSectionGeneral extends LitElement {
                   .disabled=${disabled}
                   .value=${this._currency}
                   @value-changed=${this._handleValueChanged}
-                >
-                </ha-currency-picker>
+                ></ha-currency-picker>
                 <a
                   href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
                   target="_blank"
@@ -228,7 +228,6 @@ class HaConfigSectionGeneral extends LitElement {
                 name="country"
                 .disabled=${disabled}
                 .value=${this._country}
-                @closed=${stopPropagation}
                 @value-changed=${this._handleValueChanged}
               ></ha-country-picker>
               <ha-language-picker

@@ -8,14 +8,13 @@ import {
   mdiLightningBolt,
   mdiPlayBoxMultiple,
   mdiTooltipAccount,
-  mdiViewDashboard,
 } from "@mdi/js";
 import type { HomeAssistant, PanelInfo } from "../types";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { LocalizeKeys } from "../common/translations/localize";
 
 /** Panel to show when no panel is picked. */
-export const DEFAULT_PANEL = "lovelace";
+export const DEFAULT_PANEL = "home";
 
 export const getLegacyDefaultPanelUrlPath = (): string | null => {
   const defaultPanel = window.localStorage.getItem("defaultPanel");
@@ -35,10 +34,6 @@ export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
 };
 
 export const getPanelNameTranslationKey = (panel: PanelInfo) => {
-  if (panel.url_path === "lovelace") {
-    return "panel.states" as const;
-  }
-
   if (panel.url_path === "profile") {
     return "panel.profile" as const;
   }
@@ -113,8 +108,6 @@ export const getPanelIcon = (panel: PanelInfo): string | undefined => {
     switch (panel.component_name) {
       case "profile":
         return "mdi:account";
-      case "lovelace":
-        return "mdi:view-dashboard";
     }
   }
 
@@ -127,9 +120,8 @@ export const PANEL_ICON_PATHS = {
   energy: mdiLightningBolt,
   history: mdiChartBox,
   logbook: mdiFormatListBulletedType,
-  lovelace: mdiViewDashboard,
-  profile: mdiAccount,
   map: mdiTooltipAccount,
+  profile: mdiAccount,
   "media-browser": mdiPlayBoxMultiple,
   todo: mdiClipboardList,
 };
@@ -138,4 +130,3 @@ export const getPanelIconPath = (panel: PanelInfo): string | undefined =>
   PANEL_ICON_PATHS[panel.url_path];
 
 export const FIXED_PANELS = ["profile", "config"];
-export const SHOW_AFTER_SPACER_PANELS = ["developer-tools"];

@@ -440,6 +440,7 @@
       "edit_item": "Edit {name}",
       "submit": "Submit",
       "rename": "Rename",
+      "reset": "Reset",
       "search": "[%key:ui::components::data-table::search%]",
       "ok": "OK",
       "yes": "Yes",
@@ -764,7 +765,14 @@
         "none": "None"
       },
       "country-picker": {
-        "country": "Country"
+        "country": "Country",
+        "no_match": "No countries found for {term}",
+        "no_countries": "No countries available"
+      },
+      "currency-picker": {
+        "currency": "Currency",
+        "no_match": "No currencies found for {term}",
+        "no_currencies": "No currencies available"
       },
       "timezone-picker": {
         "time_zone": "Time zone",
@@ -1303,7 +1311,8 @@
         "error": "Error in parsing YAML: {reason}",
         "error_location": "line: {line}, column: {column}",
         "enter_fullscreen": "Enter fullscreen",
-        "exit_fullscreen": "Exit fullscreen"
+        "exit_fullscreen": "Exit fullscreen",
+        "find_and_replace": "Find and replace"
       },
       "state-content-picker": {
         "state": "State",
@@ -1484,6 +1493,7 @@
         "info": "Information",
         "related": "Related",
         "add_entity_to": "Add to",
+        "attributes": "Attributes",
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",
@@ -1628,6 +1638,7 @@
           "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "default_code": "Default code",
           "default_code_error": "Code does not match code format",
+          "calendar_color": "Calendar color",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of measurement",
           "precipitation_unit": "Precipitation unit",
@@ -2361,6 +2372,10 @@
           "system": {
             "main": "System",
             "secondary": "Create backups, check logs, or reboot your system"
+          },
+          "developer_tools": {
+            "main": "Developer tools",
+            "secondary": "Advanced tools for inspecting and debugging your system"
           },
           "about": {
             "main": "About",
@@ -5919,6 +5934,9 @@
             }
           }
         },
+        "domains": {
+          "caption": "Domains"
+        },
         "person": {
           "caption": "People",
           "introduction": "Manage the people Home Assistant recognizes and control their access.",
@@ -5991,6 +6009,8 @@
           "integration": "integration",
           "discovered": "Discovered",
           "discovered_devices": "{count, plural,\n one {# discovered device}\n other {# discovered devices}\n}",
+          "manage_discovered": "Manage discovered devices",
+          "manage_discovered_description": "Ignore or configure previously discovered devices",
           "disabled": "Disabled",
           "available_integrations": "Available integrations",
           "new_flow": "Set up another instance of {integration}",
@@ -7822,6 +7842,7 @@
         },
         "editor": {
           "header": "Edit UI",
+          "default_view_title": "Home",
           "yaml_unsupported": "The edit UI is not available when in YAML mode.",
           "undo_redo_failed_to_apply_changes": "Unable to apply changes: {error}",
           "menu": {
@@ -7843,14 +7864,13 @@
             "saved": "Saved",
             "reload": "Reload",
             "lovelace_changed": "Your dashboard was updated, do you want to load the updated config in the editor and lose your current changes?",
-            "confirm_delete_config_title": "Delete dashboard configuration?",
-            "confirm_delete_config_text": "This dashboard will be permanently deleted. The dashboard will be automatically regenerated to display your areas, devices and entities.",
+            "confirm_reset_config_title": "Reset dashboard configuration?",
+            "confirm_reset_config_text": "Your dashboard will be reset to an empty state. You can start fresh and build your dashboard from scratch.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contain comments, these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
-            "error_remove": "Unable to remove configuration: {error}",
             "resources_moved": "Resources should no longer be added to the dashboard configuration but can be added in the dashboard config panel."
           },
           "edit_lovelace": {

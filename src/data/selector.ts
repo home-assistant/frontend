@@ -25,6 +25,7 @@ import type { EntitySources } from "./entity/entity_sources";
 export type Selector =
   | ActionSelector
   | AddonSelector
+  | AppSelector
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
@@ -68,6 +69,7 @@ export type Selector =
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TimezoneSelector
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
@@ -84,6 +86,13 @@ export interface ActionSelector {
 
 export interface AddonSelector {
   addon: {
+    name?: string;
+    slug?: string;
+  } | null;
+}
+
+export interface AppSelector {
+  app: {
     name?: string;
     slug?: string;
   } | null;
@@ -294,6 +303,10 @@ export interface LanguageSelector {
     native_name?: boolean;
     no_sort?: boolean;
   } | null;
+}
+
+export interface TimezoneSelector {
+  timezone: {} | null;
 }
 
 export interface LocationSelector {
