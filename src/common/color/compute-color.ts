@@ -27,7 +27,7 @@ export function isValidColorString(color: string | undefined): boolean {
   }
 
   // Check if it's a theme color
-  if (THEME_COLORS.has(color)) {
+  if (DEFAULT_THEME_COLORS.has(color)) {
     return true;
   }
 
