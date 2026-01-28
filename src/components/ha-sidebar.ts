@@ -31,6 +31,7 @@ import {
   getPanelIconPath,
   getPanelTitle,
   SHOW_AFTER_SPACER_PANELS,
+  PRESENT_IN_MENU_PANELS,
   DEFAULT_HIDDEN_PANELS,
 } from "../data/panel";
 import type { PersistentNotification } from "../data/persistent_notification";
@@ -466,12 +467,15 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   private _renderPanel(panel: PanelInfo, isSelected: boolean) {
     const title = getPanelTitle(this.hass, panel);
     const urlPath = panel.url_path;
+    const urlParams = PRESENT_IN_MENU_PANELS.includes(panel.url_path)
+      ? "?back=0"
+      : "";
     const icon = getPanelIcon(panel);
     const iconPath = getPanelIconPath(panel);
 
     return html`
       <ha-md-list-item
-        .href=${`/${urlPath}`}
+        .href=${`/${urlPath}${urlParams}`}
         type="link"
         class=${classMap({ selected: isSelected })}
         @mouseenter=${this._itemMouseEnter}
