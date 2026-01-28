@@ -118,7 +118,6 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import {
   getEntityIdHiddenTableColumn,
   getAreaTableColumn,
@@ -132,7 +131,6 @@ import {
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import { showNewAutomationDialog } from "./show-dialog-new-automation";
 
 type AutomationItem = AutomationEntity & {
   name: string;
