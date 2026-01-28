@@ -13,6 +13,8 @@ export interface SidebarFrontendUserData {
 
 export interface CoreFrontendSystemData {
   default_panel?: string;
+  onboarded_version?: string;
+  onboarded_date?: string;
 }
 
 export interface HomeFrontendSystemData {
