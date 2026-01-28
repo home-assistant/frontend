@@ -56,6 +56,11 @@ export interface PickerComboBoxItem {
   icon?: string;
 }
 
+export interface PickerComboBoxIndexSelectedDetail {
+  index: number;
+  newTab?: boolean;
+}
+
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 const PADDING_ID = "___padding___";
 
@@ -417,18 +422,19 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     return this.value || "";
   }
 
-  private _valueSelected = (ev: Event) => {
+  private _valueSelected = (ev: MouseEvent) => {
     ev.stopPropagation();
     const value = (ev.currentTarget as any).value as string;
     const index = Number((ev.currentTarget as any).index);
     const newValue = value?.trim();
+    const newTab = ev.ctrlKey || ev.metaKey;
 
-    this._fireSelectedEvents(newValue, index);
+    this._fireSelectedEvents(newValue, index, newTab);
   };
 
-  private _fireSelectedEvents(value: string, index: number) {
+  private _fireSelectedEvents(value: string, index: number, newTab = false) {
     fireEvent(this, "value-changed", { value });
-    fireEvent(this, "index-selected", { index });
+    fireEvent(this, "index-selected", { index, newTab });
   }
 
   private _clearSearch = () => {
@@ -891,6 +897,6 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "index-selected": { index: number };
+    "index-selected": PickerComboBoxIndexSelectedDetail;
   }
 }
