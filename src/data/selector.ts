@@ -84,7 +84,9 @@ export interface ActionSelector {
   } | null;
 }
 
-export interface AddonSelector extends AppSelector {}
+export interface AddonSelector {
+  addon: AppSelector["app"];
+}
 
 export interface AppSelector {
   app: {
