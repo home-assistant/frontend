@@ -10,7 +10,7 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
-import "../../../components/ha-settings-row";
+import { HaSettingsRow } from "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import { adminChangeUsername } from "../../../data/auth";
 import type { PersonMutableParams } from "../../../data/person";
@@ -540,6 +540,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      HaSettingsRow.styleHasSwitch,
       css`
         ha-picture-upload,
         ha-textfield {
