@@ -9,16 +9,7 @@ import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
-import {
-  formatNumber,
-  getNumberFormatOptions,
-  isNumericState,
-} from "../../common/number/format_number";
-import {
-  isUnavailableState,
-  UNAVAILABLE,
-  UNKNOWN,
-} from "../../data/entity/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
 import type { HomeAssistant } from "../../types";
@@ -180,16 +171,11 @@ export class HaStateLabelBadge extends LitElement {
         }
       // eslint-disable-next-line: disable=no-fallthrough
       default:
-        return entityState.state === UNKNOWN ||
-          entityState.state === UNAVAILABLE
+        return isUnavailableState(entityState.state)
           ? "—"
-          : isNumericState(entityState)
-            ? formatNumber(
-                entityState.state,
-                this.hass!.locale,
-                getNumberFormatOptions(entityState, entry)
-              )
-            : this.hass!.formatEntityState(entityState);
+          : this.hass!.formatEntityStateToParts(entityState).find(
+              (part) => part.type === "value"
+            )?.value;
     }
   }
 
