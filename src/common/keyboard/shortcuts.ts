@@ -16,6 +16,7 @@ export interface ShortcutConfig {
    * Default is false to avoid interrupting copy/paste.
    */
   allowWhenTextSelected?: boolean;
+  allowInInput?: boolean;
 }
 
 /**
@@ -29,7 +30,10 @@ function registerShortcuts(
 
   Object.entries(shortcuts).forEach(([key, config]) => {
     wrappedShortcuts[key] = (event: KeyboardEvent) => {
-      if (!canOverrideAlphanumericInput(event.composedPath())) {
+      if (
+        !config.allowInInput &&
+        !canOverrideAlphanumericInput(event.composedPath())
+      ) {
         return;
       }
       if (!config.allowWhenTextSelected && window.getSelection()?.toString()) {
