@@ -11,6 +11,7 @@ import { fetchConfig } from "../data/lovelace/config/types";
 import { getPanelIcon, getPanelTitle } from "../data/panel";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
+import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { multiTermSortedSearch } from "../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { ActionRelatedContext } from "../panels/lovelace/components/hui-action-editor";
@@ -25,7 +26,8 @@ import {
 type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
 
 const RELATED_SORT_PREFIX = {
-  area: "0_area",
+  area_view: "0_area_view",
+  area: "0_area_settings",
   device: "1_device",
 } as const;
 
@@ -437,6 +439,24 @@ export class HaNavigationPicker extends LitElement {
     for (const areaId of relatedAreaIds) {
       const area = this.hass.areas[areaId];
       const primary = area?.name ?? areaId;
+
+      // Area dashboard view
+      const viewPath = `/home/${computeAreaPath(areaId)}`;
+      relatedItems.push({
+        id: viewPath,
+        primary,
+        secondary: viewPath,
+        icon: area?.icon ?? undefined,
+        icon_path: area?.icon ? undefined : mdiTextureBox,
+        sorting_label: createSortingLabel(
+          RELATED_SORT_PREFIX.area_view,
+          primary,
+          viewPath
+        ),
+        group: "related",
+      });
+
+      // Area settings
       const path = `/config/areas/area/${areaId}`;
       relatedItems.push({
         id: path,
