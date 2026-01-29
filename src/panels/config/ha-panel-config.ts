@@ -198,7 +198,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       core: true,
     },
     {
-      path: "/developer-tools",
+      path: "/config/developer-tools",
       translationKey: "developer_tools",
       iconPath: mdiHammer,
       iconColor: "#7A5AA6",
@@ -516,6 +516,11 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       system: {
         tag: "ha-config-system-navigation",
         load: () => import("./core/ha-config-system-navigation"),
+      },
+      "developer-tools": {
+        tag: "ha-panel-developer-tools",
+        load: () => import("./developer-tools/ha-panel-developer-tools"),
+        cache: true,
       },
       logs: {
         tag: "ha-config-logs",

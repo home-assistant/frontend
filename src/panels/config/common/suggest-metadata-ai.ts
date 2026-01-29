@@ -1,163 +1,84 @@
 import { dump } from "js-yaml";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { subscribeOne } from "../../../common/util/subscribe-one";
 import type { AITaskStructure, GenDataTaskResult } from "../../../data/ai_task";
-import { fetchCategoryRegistry } from "../../../data/category_registry";
-import {
-  subscribeEntityRegistry,
-  type EntityRegistryEntry,
-} from "../../../data/entity/entity_registry";
-import { subscribeLabelRegistry } from "../../../data/label/label_registry";
 import type { HomeAssistant } from "../../../types";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
+import {
+  fetchCategories,
+  fetchFloors,
+  fetchLabels,
+} from "./suggest-metadata-helpers";
 
 export interface MetadataSuggestionResult {
-  name: string;
+  name?: string;
   description?: string;
   category?: string;
   labels?: string[];
+  floor?: string;
 }
 
-export type MetadataSuggestionDomain = "automation" | "script" | "scene";
+export type MetadataSuggestionDomain =
+  | "automation"
+  | "script"
+  | "scene"
+  | "area";
 
 export interface MetadataSuggestionInclude {
+  name: boolean;
   description?: boolean;
   categories?: boolean;
   labels?: boolean;
+  floor?: boolean;
 }
 
-type Categories = Record<string, string>;
-type Entities = Record<string, EntityRegistryEntry>;
-type Labels = Record<string, string>;
-
-export const SUGGESTION_INCLUDE_ALL: MetadataSuggestionInclude = {
+export const SUGGESTION_INCLUDE_DEFAULT: MetadataSuggestionInclude = {
+  name: true,
   description: true,
   categories: true,
   labels: true,
 } as const;
 
-const tryCatchEmptyObject = <T>(promise: Promise<T>): Promise<T> =>
-  promise.catch((err) => {
-    // eslint-disable-next-line no-console
-    console.error("Error fetching data for suggestion: ", err);
-    return {} as T;
-  });
-
-const fetchCategories = (
-  connection: HomeAssistant["connection"],
-  domain: MetadataSuggestionDomain
-): Promise<Categories> =>
-  tryCatchEmptyObject<Categories>(
-    fetchCategoryRegistry(connection, domain).then((cats) =>
-      Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
-    )
-  );
-
-const fetchEntities = (
-  connection: HomeAssistant["connection"]
-): Promise<Entities> =>
-  tryCatchEmptyObject<Entities>(
-    subscribeOne(connection, subscribeEntityRegistry).then((ents) =>
-      Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
-    )
-  );
-
-const fetchLabels = (
-  connection: HomeAssistant["connection"]
-): Promise<Labels> =>
-  tryCatchEmptyObject<Labels>(
-    subscribeOne(connection, subscribeLabelRegistry).then((labs) =>
-      Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
-    )
-  );
-
-function buildMetadataInspirations(
-  domain: MetadataSuggestionDomain,
-  states: HomeAssistant["states"],
-  entities: Entities,
-  categories?: Categories,
-  labels?: Labels
-): string[] {
-  const inspirations: string[] = [];
-
-  for (const entityId of Object.keys(entities)) {
-    const entityEntry = entities[entityId];
-    if (!entityEntry || computeDomain(entityId) !== domain) {
-      continue;
-    }
-
-    const entity = states[entityId];
-    if (
-      !entity ||
-      entity.attributes.restored ||
-      !entity.attributes.friendly_name
-    ) {
-      continue;
-    }
-
-    let inspiration = `- ${entity.attributes.friendly_name}`;
-
-    // Get the category for this domain
-    if (categories && categories[entityEntry.categories[domain]]) {
-      inspiration += ` (category: ${categories[entityEntry.categories[domain]]})`;
-    }
-
-    if (labels && entityEntry.labels.length) {
-      inspiration += ` (labels: ${entityEntry.labels
-        .map((label) => labels[label])
-        .join(", ")})`;
-    }
-
-    inspirations.push(inspiration);
-  }
-
-  return inspirations;
-}
+// Always English to format lists in the prompt
+const PROMPT_LIST_FORMAT = new Intl.ListFormat("en", {
+  style: "long",
+  type: "conjunction",
+});
 
 /**
- * Generates an AI task for suggesting metadata
- * for automations or scripts based on their configuration.
+ * Generates an AI task for suggesting metadata based on their configuration.
  *
  * @param connection - Home Assistant connection
- * @param states - Current state objects
  * @param language - User's language preference
- * @param domain - The domain to suggest metadata for (automation, script)
+ * @param domain - The domain to suggest metadata for
  * @param config - The configuration to suggest metadata for
+ * @param inspirations - Existing entries to use as inspiration
  * @param include - The metadata fields to include in the suggestion
  * @returns Promise resolving to the AI task structure
  */
 export async function generateMetadataSuggestionTask<T>(
   connection: HomeAssistant["connection"],
-  states: HomeAssistant["states"],
   language: HomeAssistant["language"],
   domain: MetadataSuggestionDomain,
   config: T,
-  include = SUGGESTION_INCLUDE_ALL
+  inspirations: string[] = [],
+  include = SUGGESTION_INCLUDE_DEFAULT
 ): Promise<SuggestWithAIGenerateTask> {
-  const [categories, entities, labels] = await Promise.all([
+  const [categories, floors] = await Promise.all([
     include.categories
       ? fetchCategories(connection, domain)
       : Promise.resolve(undefined),
-    fetchEntities(connection),
-    include.labels ? fetchLabels(connection) : Promise.resolve(undefined),
+    include.floor ? fetchFloors(connection) : Promise.resolve(undefined),
   ]);
 
-  const inspirations = buildMetadataInspirations(
-    domain,
-    states,
-    entities,
-    categories,
-    labels
-  );
-
   const structure: AITaskStructure = {
-    name: {
-      description: `The name of the ${domain}`,
-      required: true,
-      selector: {
-        text: {},
+    ...(include.name && {
+      name: {
+        description: `The name of the ${domain}`,
+        required: true,
+        selector: {
+          text: {},
+        },
       },
-    },
+    }),
     ...(include.description && {
       description: {
         description: `A short description of the ${domain}`,
@@ -193,49 +114,83 @@ export async function generateMetadataSuggestionTask<T>(
           },
         },
       }),
+    ...(include.floor &&
+      floors && {
+        floor: {
+          description: `The floor of the ${domain}`,
+          required: false,
+          selector: {
+            select: {
+              options: Object.values(floors).map((floor) => ({
+                value: floor.floor_id,
+                label: floor.name,
+              })),
+            },
+          },
+        },
+      }),
   };
 
-  const categoryLabelText: string[] = [];
-  if (include.categories) {
-    categoryLabelText.push("category");
-  }
-  if (include.labels) {
-    categoryLabelText.push("labels");
-  }
-  const categoryLabelString =
-    categoryLabelText.length > 0 ? `, ${categoryLabelText.join(" and ")}` : "";
+  const requestedParts = [
+    include.name ? "a name" : null,
+    include.description ? "a description" : null,
+    include.categories ? "a category" : null,
+    include.labels ? "labels" : null,
+    include.floor ? "a floor" : null,
+  ].filter((entry): entry is string => entry !== null);
+
+  const categoryLabels: string[] = [
+    include.categories ? "category" : null,
+    include.labels ? "labels" : null,
+    include.floor ? "floor" : null,
+  ].filter((entry): entry is string => entry !== null);
+
+  const categoryLabelsText = PROMPT_LIST_FORMAT.format(categoryLabels);
+
+  const requestedPartsText = requestedParts.length
+    ? PROMPT_LIST_FORMAT.format(requestedParts)
+    : "suggestions";
 
   return {
     type: "data",
     task: {
       task_name: `frontend__${domain}__save`,
-      instructions: `Suggest in language "${language}" a name${include.description ? ", description" : ""}${categoryLabelString} for the following Home Assistant ${domain}.
-
-The name should be relevant to the ${domain}'s purpose.
-${
-  inspirations.length
-    ? `The name should be in same style and sentence capitalization as existing ${domain}s.${
-        include.categories || include.labels
-          ? `
-Suggest ${categoryLabelText.join(" and ")} if relevant to the ${domain}'s purpose.
-Only suggest ${categoryLabelText.join(" and ")} that are already used by existing ${domain}s.`
-          : ""
-      }`
-    : `The name should be short, descriptive, sentence case, and written in the language ${language}.`
-}${
-        include.description
-          ? `
-If the ${domain} contains 5+ steps, include a short description.`
-          : ""
-      }
-
-For inspiration, here are existing ${domain}s:
-${inspirations.join("\n")}
-
-The ${domain} configuration is as follows:
-
-${dump(config)}
-`,
+      instructions: [
+        `Suggest in language "${language}" ${requestedPartsText} for the following Home Assistant ${domain}.`,
+        "",
+        include.name
+          ? `The name should be relevant to the ${domain}'s purpose.`
+          : `The suggestions should be relevant to the ${domain}'s purpose.`,
+        ...(inspirations.length
+          ? [
+              ...(include.name
+                ? [
+                    `The name should be in same style and sentence capitalization as existing ${domain}s.`,
+                  ]
+                : []),
+              ...(include.categories || include.labels || include.floor
+                ? [
+                    `Suggest ${categoryLabelsText} if relevant to the ${domain}'s purpose.`,
+                    `Only suggest ${categoryLabelsText} that are already used by existing ${domain}s.`,
+                  ]
+                : []),
+            ]
+          : include.name
+            ? [
+                `The name should be short, descriptive, sentence case, and written in the language ${language}.`,
+              ]
+            : []),
+        ...(include.description
+          ? [`If the ${domain} contains 5+ steps, include a short description.`]
+          : []),
+        "",
+        `For inspiration, here are existing ${domain}s:`,
+        inspirations.join("\n"),
+        "",
+        `The ${domain} configuration is as follows:`,
+        "",
+        `${dump(config)}`,
+      ].join("\n"),
       structure,
     },
   };
@@ -243,7 +198,7 @@ ${dump(config)}
 
 /**
  * Processes the result of an AI task for suggesting metadata
- * for automations or scripts based on their configuration.
+ * based on their configuration.
  *
  * @param connection - Home Assistant connection
  * @param domain - The domain of the ${domain}
@@ -255,17 +210,18 @@ export async function processMetadataSuggestion(
   connection: HomeAssistant["connection"],
   domain: MetadataSuggestionDomain,
   result: GenDataTaskResult<MetadataSuggestionResult>,
-  include: MetadataSuggestionInclude
+  include = SUGGESTION_INCLUDE_DEFAULT
 ): Promise<MetadataSuggestionResult> {
-  const [categories, labels] = await Promise.all([
+  const [categories, labels, floors] = await Promise.all([
     include.categories
       ? fetchCategories(connection, domain)
       : Promise.resolve(undefined),
     include.labels ? fetchLabels(connection) : Promise.resolve(undefined),
+    include.floor ? fetchFloors(connection) : Promise.resolve(undefined),
   ]);
 
   const processed: MetadataSuggestionResult = {
-    name: result.data.name,
+    name: include.name ? result.data.name : undefined,
     description: include.description ? result.data.description : undefined,
   };
 
@@ -299,6 +255,18 @@ export async function processMetadataSuggestion(
     );
     if (foundLabels.length) {
       processed.labels = foundLabels;
+    }
+  }
+
+  if (include.floor && floors && result.data.floor) {
+    const floorId =
+      result.data.floor in floors
+        ? result.data.floor
+        : Object.entries(floors).find(
+            ([, floor]) => floor.name === result.data.floor
+          )?.[0];
+    if (floorId) {
+      processed.floor = floorId;
     }
   }
 

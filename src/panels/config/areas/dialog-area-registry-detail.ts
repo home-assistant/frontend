@@ -16,8 +16,11 @@ import "../../../components/ha-labels-picker";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-suggest-with-ai-button";
+import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
 import "../../../components/ha-textfield";
 import "../../../components/ha-wa-dialog";
+import type { GenDataTaskResult } from "../../../data/ai_task";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
@@ -32,6 +35,14 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import {
+  type MetadataSuggestionInclude,
+  type MetadataSuggestionResult,
+  generateMetadataSuggestionTask,
+  processMetadataSuggestion,
+} from "../common/suggest-metadata-ai";
+import { fetchLabels } from "../common/suggest-metadata-helpers";
+import { buildAreaMetadataInspirations } from "../common/suggest-metadata-inspirations";
 import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
 const cropOptions: CropOptions = {
@@ -74,6 +85,12 @@ class DialogAreaDetail
   @state() private _submitting?: boolean;
 
   @state() private _open = false;
+
+  @state() private _suggestionInclude: MetadataSuggestionInclude = {
+    name: true,
+    labels: true,
+    floor: true,
+  };
 
   public async showDialog(
     params: AreaRegistryDetailDialogParams
@@ -242,6 +259,76 @@ class DialogAreaDetail
     `;
   }
 
+  private async _getLabelNames(): Promise<string[]> {
+    if (!this._labels.length) {
+      return [];
+    }
+    const labels = await fetchLabels(this.hass.connection);
+    return this._labels
+      .map((labelId) => labels[labelId])
+      .filter((name): name is string => Boolean(name));
+  }
+
+  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
+    this._suggestionInclude = {
+      ...this._suggestionInclude,
+      name: this._name.trim() === "",
+    };
+
+    return generateMetadataSuggestionTask<{
+      name: string;
+      aliases: string[];
+      labels: string[];
+      floor: string | null;
+      temperature_entity: string | null;
+      humidity_entity: string | null;
+    }>(
+      this.hass.connection,
+      this.hass.language,
+      "area",
+      {
+        name: this._name,
+        aliases: this._aliases,
+        labels: await this._getLabelNames(),
+        floor: this._floor ? this.hass.floors?.[this._floor]?.name : null,
+        temperature_entity: this._temperatureEntity
+          ? (this.hass.states[this._temperatureEntity]?.attributes
+              ?.friendly_name ?? null)
+          : null,
+        humidity_entity: this._humidityEntity
+          ? (this.hass.states[this._humidityEntity]?.attributes
+              ?.friendly_name ?? null)
+          : null,
+      },
+      await buildAreaMetadataInspirations(this.hass.connection),
+      this._suggestionInclude
+    );
+  };
+
+  private async _handleSuggestion(
+    event: CustomEvent<GenDataTaskResult<MetadataSuggestionResult>>
+  ) {
+    const result = event.detail;
+    const processed = await processMetadataSuggestion(
+      this.hass.connection,
+      "area",
+      result,
+      this._suggestionInclude
+    );
+
+    if (processed.name) {
+      this._name = processed.name;
+    }
+
+    if (processed.labels?.length) {
+      this._labels = processed.labels;
+    }
+
+    if (processed.floor) {
+      this._floor = processed.floor;
+    }
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -259,6 +346,12 @@ class DialogAreaDetail
           : this.hass.localize("ui.panel.config.areas.editor.create_area")}
         @closed=${this._dialogClosed}
       >
+        <ha-suggest-with-ai-button
+          slot="headerActionItems"
+          .hass=${this.hass}
+          .generateTask=${this._generateTask}
+          @suggestion=${this._handleSuggestion}
+        ></ha-suggest-with-ai-button>
         <div>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -423,13 +516,16 @@ class DialogAreaDetail
         ha-picture-upload,
         ha-expansion-panel {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
         .content {
-          padding: 12px;
+          padding: var(--ha-space-3);
         }
         .description {
-          margin: 0 0 16px 0;
+          margin: 0 0 var(--ha-space-4) 0;
+        }
+        ha-suggest-with-ai-button {
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
       `,
     ];

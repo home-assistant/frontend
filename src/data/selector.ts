@@ -85,10 +85,7 @@ export interface ActionSelector {
 }
 
 export interface AddonSelector {
-  addon: {
-    name?: string;
-    slug?: string;
-  } | null;
+  addon: AppSelector["app"];
 }
 
 export interface AppSelector {
@@ -476,7 +473,9 @@ export interface TargetSelector {
 }
 
 export interface TemplateSelector {
-  template: {} | null;
+  template: {
+    preview?: boolean;
+  } | null;
 }
 
 export interface ThemeSelector {

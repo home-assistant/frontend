@@ -13,6 +13,8 @@ import {
   mdiArrowCollapse,
   mdiArrowExpand,
   mdiContentCopy,
+  mdiBug,
+  mdiBugOutline,
   mdiFindReplace,
   mdiRedo,
   mdiUndo,
@@ -37,6 +39,7 @@ import type { HaIconButtonToolbar } from "./ha-icon-button-toolbar";
 declare global {
   interface HASSDomEvents {
     "editor-save": undefined;
+    "test-toggle": undefined;
   }
 }
 
@@ -82,6 +85,11 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean, attribute: "has-toolbar" })
   public hasToolbar = true;
+
+  @property({ type: Boolean, attribute: "has-test" })
+  public hasTest = false;
+
+  @property({ attribute: false }) public testing = false;
 
   @property({ type: String }) public placeholder?: string;
 
@@ -214,7 +222,8 @@ export class HaCodeEditor extends ReactiveElement {
     if (
       changedProps.has("_canCopy") ||
       changedProps.has("_canUndo") ||
-      changedProps.has("_canRedo")
+      changedProps.has("_canRedo") ||
+      changedProps.has("testing")
     ) {
       this._updateToolbarButtons();
     }
@@ -362,6 +371,19 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     this._editorToolbar.items = [
+      ...(this.hasTest && !this._isFullscreen
+        ? [
+            {
+              id: "test",
+              label:
+                this.hass?.localize(
+                  `ui.components.yaml-editor.test_${this.testing ? "off" : "on"}`
+                ) || "Test",
+              path: this.testing ? mdiBugOutline : mdiBug,
+              action: (e: Event) => this._handleTestClick(e),
+            },
+          ]
+        : []),
       {
         id: "undo",
         disabled: !this._canUndo,
@@ -425,6 +447,15 @@ export class HaCodeEditor extends ReactiveElement {
           "Copied to clipboard",
       });
     }
+  };
+
+  private _handleTestClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror) {
+      return;
+    }
+    fireEvent(this, "test-toggle");
   };
 
   private _handleUndoClick = (e: Event) => {
