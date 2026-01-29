@@ -2,6 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { ActionHandlerOptions } from "../../data/lovelace/action_handler";
 import { actionHandler } from "../../panels/lovelace/common/directives/action-handler-directive";
 import "../ha-ripple";
@@ -47,7 +48,11 @@ export class HaTileContainer extends LitElement {
       >
         <ha-ripple .disabled=${!this.interactive}></ha-ripple>
       </div>
-      <div class="container ${containerOrientationClass}">
+      <div
+        class="container ${containerOrientationClass}"
+        @action=${stopPropagation}
+        @click=${stopPropagation}
+      >
         <div class="content ${classMap(contentClasses)}">
           <slot name="icon"></slot>
           <slot name="info" id="info"></slot>
