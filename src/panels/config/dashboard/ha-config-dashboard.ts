@@ -124,6 +124,14 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
         content: hass.localize("ui.tips.key_a_tip", localizeParam),
         weight: 1,
         narrow: false,
+      },
+      {
+        content: hass.localize("ui.tips.key_shortcut_quick_search", {
+          ...localizeParam,
+          modifier: isMac ? "⌘" : "Ctrl",
+        }),
+        weight: 1,
+        narrow: false,
       }
     );
   }
