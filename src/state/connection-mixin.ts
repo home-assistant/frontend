@@ -209,6 +209,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           this._loadFragmentTranslations(this.hass?.language, fragment),
         formatEntityState: (stateObj, state) =>
           (state != null ? state : stateObj.state) ?? "",
+        formatEntityStateToParts: (stateObj, state) => [
+          {
+            type: "value",
+            value: (state != null ? state : stateObj.state) ?? "",
+          },
+        ],
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
         formatEntityAttributeValue: (stateObj, attribute, value) =>
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
