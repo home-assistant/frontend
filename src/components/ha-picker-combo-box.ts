@@ -543,6 +543,16 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
   }
 
+  /**
+   * Initialize keyboard selection to the currently selected value,
+   * or fall back to the first item.
+   */
+  private _initializeSelectedIndex(): void {
+    const initialIndex = this._getInitialSelectedIndex();
+    this._selectedItemIndex = initialIndex > 0 ? initialIndex : 0;
+    this._scrollToSelectedItem();
+  }
+
   private _selectNextItem = (ev?: KeyboardEvent) => {
     ev?.stopPropagation();
     ev?.preventDefault();
@@ -558,6 +568,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     if (maxItems === -1) {
       this._resetSelectedItem();
+      return;
+    }
+
+    // If no item is selected yet, start from the currently selected value
+    if (this._selectedItemIndex === -1) {
+      this._initializeSelectedIndex();
       return;
     }
 
