@@ -8,7 +8,7 @@ export const computeGroupEntitiesState = (states: HassEntity[]): string => {
     return UNAVAILABLE;
   }
 
-  const validState = states.filter((stateObj) => !isUnavailableState(stateObj.state));
+  const validState = states.some((stateObj) => !isUnavailableState(stateObj.state));
 
   if (!validState) {
     return UNAVAILABLE;
