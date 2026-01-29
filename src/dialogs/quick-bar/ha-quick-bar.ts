@@ -45,6 +45,7 @@ import {
   type ActionCommandComboBoxItem,
   type NavigationComboBoxItem,
 } from "../../data/quick_bar";
+import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import {
   multiTermSortedSearch,
   type FuseWeightedKey,
@@ -81,6 +82,8 @@ export class QuickBar extends LitElement {
 
   private _addons?: HassioAddonInfo[];
 
+  private _navigationFilterOptions: NavigationFilterOptions = {};
+
   private _translationsLoaded = false;
 
   // #region lifecycle
@@ -105,6 +108,12 @@ export class QuickBar extends LitElement {
       this._configEntryLookup = Object.fromEntries(
         configEntries.map((entry) => [entry.entry_id, entry])
       );
+      // Derive Bluetooth config entries status for navigation filtering
+      this._navigationFilterOptions = {
+        hasBluetoothConfigEntries: configEntries.some(
+          (entry) => entry.domain === "bluetooth"
+        ),
+      };
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Error fetching config entries for quick bar", err);
@@ -397,7 +406,8 @@ export class QuickBar extends LitElement {
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
           this.hass,
-          this._addons
+          this._addons,
+          this._navigationFilterOptions
         ).sort(this._sortBySortingLabel);
 
         if (filter) {
@@ -563,7 +573,11 @@ export class QuickBar extends LitElement {
   );
 
   private _generateNavigationCommandsMemoized = memoizeOne(
-    generateNavigationCommands
+    (
+      hass: HomeAssistant,
+      apps: HassioAddonInfo[] | undefined,
+      filterOptions: NavigationFilterOptions
+    ) => generateNavigationCommands(hass, apps, filterOptions)
   );
 
   private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);

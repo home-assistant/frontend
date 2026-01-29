@@ -1447,7 +1447,14 @@
             "app_info": "{app} info",
             "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
             "labs": "[%key:ui::panel::config::labs::caption%]",
-            "developer-tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]"
+            "developer-tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+            "matter": "[%key:ui::panel::config::dashboard::matter::main%]",
+            "zha": "[%key:ui::panel::config::dashboard::zha::main%]",
+            "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
+            "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
+            "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
+            "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
+            "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -2386,24 +2393,31 @@
             "secondary": "Loading..."
           },
           "zwave_js": {
+            "main": "Z-Wave",
             "secondary": "Sub-GHz mesh protocol"
           },
           "zha": {
+            "main": "Zigbee",
             "secondary": "Low-power mesh network"
           },
           "matter": {
+            "main": "Matter",
             "secondary": "Cross-vendor smart home standard"
           },
           "thread": {
+            "main": "Thread",
             "secondary": "Mesh network often used for Matter devices"
           },
           "bluetooth": {
+            "main": "Bluetooth",
             "secondary": "Local device connectivity"
           },
           "knx": {
+            "main": "KNX",
             "secondary": "Building automation standard"
           },
           "insteon": {
+            "main": "Insteon",
             "secondary": "Dual-mesh home automation"
           }
         },

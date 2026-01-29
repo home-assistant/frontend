@@ -5,7 +5,10 @@ import {
   mdiServerNetwork,
   mdiStorePlus,
 } from "@mdi/js";
-import { canShowPage } from "../common/config/can_show_page";
+import {
+  filterNavigationPages,
+  type NavigationFilterOptions,
+} from "../common/config/filter_navigation_pages";
 import { componentsWithService } from "../common/config/components_with_service";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
@@ -99,33 +102,30 @@ const getNavigationInfoFromConfig = (
 };
 
 const generateNavigationConfigSectionCommands = (
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  filterOptions: NavigationFilterOptions = {}
 ): BaseNavigationCommand[] => {
   if (!hass.user?.is_admin) {
     return [];
   }
 
   const items: NavigationInfo[] = [];
+  const allPages = Object.values(configSections).flat();
+  const visiblePages = filterNavigationPages(hass, allPages, filterOptions);
 
-  Object.values(configSections).forEach((sectionPages) => {
-    sectionPages.forEach((page) => {
-      if (!canShowPage(hass, page)) {
-        return;
-      }
+  for (const page of visiblePages) {
+    const info = getNavigationInfoFromConfig(hass.localize, page);
 
-      const info = getNavigationInfoFromConfig(hass.localize, page);
+    if (!info) {
+      continue;
+    }
+    // Add to list, but only if we do not already have an entry for the same path and component
+    if (items.some((e) => e.path === info.path)) {
+      continue;
+    }
 
-      if (!info) {
-        return;
-      }
-      // Add to list, but only if we do not already have an entry for the same path and component
-      if (items.some((e) => e.path === info.path)) {
-        return;
-      }
-
-      items.push(info);
-    });
-  });
+    items.push(info);
+  }
 
   return items;
 };
@@ -149,7 +149,8 @@ const finalizeNavigationCommands = (
 
 export const generateNavigationCommands = (
   hass: HomeAssistant,
-  apps?: HassioAddonInfo[]
+  apps?: HassioAddonInfo[],
+  filterOptions: NavigationFilterOptions = {}
 ): NavigationComboBoxItem[] => {
   const panelItems = generateNavigationPanelCommands(
     hass.localize,
@@ -157,7 +158,10 @@ export const generateNavigationCommands = (
     apps
   );
 
-  const sectionItems = generateNavigationConfigSectionCommands(hass);
+  const sectionItems = generateNavigationConfigSectionCommands(
+    hass,
+    filterOptions
+  );
   const appItems: BaseNavigationCommand[] = [];
   if (hass.user?.is_admin && isComponentLoaded(hass, "hassio")) {
     appItems.push({
