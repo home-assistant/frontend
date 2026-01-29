@@ -1,10 +1,15 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
+import "../../components/ha-button";
+import "../../components/ha-svg-icon";
 import { updateAreaRegistryEntry } from "../../data/area/area_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
@@ -13,6 +18,7 @@ import {
   type HomeFrontendSystemData,
 } from "../../data/frontend";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
+import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
@@ -23,6 +29,8 @@ import type { ExtraActionItem } from "../lovelace/hui-root";
 import { expandLovelaceConfigStrategies } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
 import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
+import { showNewOverviewDialog } from "./dialogs/show-dialog-new-overview";
+import { hasLegacyOverviewPanel } from "../../data/panel";
 
 @customElement("ha-panel-home")
 class PanelHome extends LitElement {
@@ -39,6 +47,31 @@ class PanelHome extends LitElement {
   @state() private _config: FrontendSystemData["home"] = {};
 
   @state() private _extraActionItems?: ExtraActionItem[];
+
+  private get _showBanner(): boolean {
+    // Don't show if already dismissed
+    if (this._config.welcome_banner_dismissed) {
+      return false;
+    }
+    // Don't show if HA is not running
+    if (this.hass.config.state !== "RUNNING") {
+      return false;
+    }
+    // Show banner only for users who:
+    // 1. Were onboarded before 2026.2 (or have no onboarded_version)
+    // 2. Don't have a custom "lovelace" dashboard (old overview)
+    const onboardedVersion = this.hass.systemData?.onboarded_version;
+    const isNewInstance =
+      onboardedVersion && atLeastVersion(onboardedVersion, 2026, 2);
+    const hasOldOverview = hasLegacyOverviewPanel(this.hass);
+    return !isNewInstance && !hasOldOverview;
+  }
+
+  private _bannerHeight = new ResizeController(this, {
+    target: null,
+    callback: (entries) =>
+      (entries[0]?.target as HTMLElement | undefined)?.offsetHeight ?? 0,
+  });
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -80,7 +113,7 @@ class PanelHome extends LitElement {
         this.hass.config.state === "RUNNING" &&
         oldHass.config.state !== "RUNNING"
       ) {
-        this._setLovelace();
+        this._setup();
       }
     }
   }
@@ -211,7 +244,14 @@ class PanelHome extends LitElement {
       return nothing;
     }
 
+    const huiRootStyle = styleMap({
+      "--view-container-padding-top": this._bannerHeight.value
+        ? `${this._bannerHeight.value}px`
+        : undefined,
+    });
+
     return html`
+      ${this._renderBanner()}
       <hui-root
         .hass=${this.hass}
         .narrow=${this.narrow}
@@ -221,8 +261,54 @@ class PanelHome extends LitElement {
         no-edit
         .extraActionItems=${this._extraActionItems}
         @ll-custom=${this._handleLLCustomEvent}
+        style=${huiRootStyle}
       ></hui-root>
     `;
+  }
+
+  private _renderBanner() {
+    if (!this._showBanner) {
+      return nothing;
+    }
+
+    return html`
+      <div class="banner">
+        <div class="banner-content">
+          <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
+          <span class="banner-text">
+            Welcome to the new overview dashboard.
+          </span>
+        </div>
+        <div class="banner-actions">
+          <ha-button size="small" appearance="filled" @click=${this._learnMore}>
+            Learn more
+          </ha-button>
+        </div>
+      </div>
+    `;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_showBanner") || changedProps.has("_lovelace")) {
+      const banner = this.shadowRoot?.querySelector(".banner");
+      if (banner) {
+        this._bannerHeight.observe(banner);
+      }
+    }
+  }
+
+  private _learnMore() {
+    showNewOverviewDialog(this, {
+      dismiss: async () => {
+        const newConfig = {
+          ...this._config,
+          welcome_banner_dismissed: true,
+        };
+        this._config = newConfig;
+        await saveFrontendSystemData(this.hass.connection, "home", newConfig);
+      },
+    });
   }
 
   private async _setLovelace() {
@@ -281,6 +367,45 @@ class PanelHome extends LitElement {
   static readonly styles: CSSResultGroup = css`
     :host {
       display: block;
+    }
+    .banner {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      background-color: var(--primary-color);
+      color: var(--text-primary-color);
+      gap: var(--ha-space-2);
+      position: fixed;
+      top: var(--header-height, 56px);
+      left: var(--mdc-drawer-width, 0px);
+      right: 0;
+      z-index: 5;
+    }
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      flex: 1;
+      min-width: 200px;
+    }
+    .banner ha-svg-icon {
+      --mdc-icon-size: 24px;
+      flex-shrink: 0;
+    }
+    .banner-text {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .banner-actions {
+      display: flex;
+      flex: none;
+      gap: var(--ha-space-2);
+      align-items: center;
+      margin-inline-start: auto;
+    }
+    .banner-actions ha-button::part(base) {
+      text-wrap: nowrap;
     }
   `;
 }

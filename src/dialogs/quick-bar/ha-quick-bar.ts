@@ -15,6 +15,7 @@ import "../../components/ha-icon";
 import "../../components/ha-picker-combo-box";
 import type {
   HaPickerComboBox,
+  PickerComboBoxIndexSelectedDetail,
   PickerComboBoxItem,
 } from "../../components/ha-picker-combo-box";
 import "../../components/ha-spinner";
@@ -281,6 +282,9 @@ export class QuickBar extends LitElement {
                     slot="start"
                     alt=${item.primary ?? "Unknown"}
                     .src=${item.image}
+                    style=${"iconColor" in item && item.iconColor
+                      ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                      : ""}
                   />
                 `
               : item.icon
@@ -613,9 +617,19 @@ export class QuickBar extends LitElement {
 
   // #region interaction
 
-  private async _handleItemSelected(ev: CustomEvent<{ index: number }>) {
+  private _navigate(path: string, newTab = false) {
+    if (newTab) {
+      window.open(path, "_blank", "noreferrer");
+    } else {
+      navigate(path);
+    }
+  }
+
+  private async _handleItemSelected(
+    ev: CustomEvent<PickerComboBoxIndexSelectedDetail>
+  ) {
     if (this._comboBox && this._comboBox.virtualizerElement) {
-      const index = ev.detail.index;
+      const { index, newTab } = ev.detail;
       const item = this._comboBox.virtualizerElement.items[
         index
       ] as PickerComboBoxItem;
@@ -631,15 +645,17 @@ export class QuickBar extends LitElement {
 
       // device selected
       if (item && item.id.startsWith(`device${SEPARATOR}`)) {
+        const path = `/config/devices/device/${item.id.split(SEPARATOR)[1]}`;
         this.closeDialog();
-        navigate(`/config/devices/device/${item.id.split(SEPARATOR)[1]}`);
+        this._navigate(path, newTab);
         return;
       }
 
       // area selected
       if (item && item.id.startsWith(`area${SEPARATOR}`)) {
+        const path = `/config/areas/area/${item.id.split(SEPARATOR)[1]}`;
         this.closeDialog();
-        navigate(`/config/areas/area/${item.id.split(SEPARATOR)[1]}`);
+        this._navigate(path, newTab);
         return;
       }
 
@@ -693,7 +709,8 @@ export class QuickBar extends LitElement {
           return;
         }
 
-        navigate((item as NavigationComboBoxItem).path);
+        const path = (item as NavigationComboBoxItem).path;
+        this._navigate(path, newTab);
       }
     }
   }

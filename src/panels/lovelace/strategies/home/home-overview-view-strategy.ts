@@ -53,7 +53,10 @@ const computeAreaCard = (
     area: areaId,
     display_type: "compact",
     sensor_classes: sensorClasses,
-    navigation_path: path,
+    tap_action: {
+      action: "navigate",
+      navigation_path: path,
+    },
     vertical: true,
     grid_options: {
       rows: 2,
@@ -305,7 +308,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           summary: "energy",
           tap_action: {
             action: "navigate",
-            navigation_path: "/energy?historyBack=1",
+            navigation_path: config.home_panel
+              ? "/energy?historyBack=1&backPath=/home"
+              : "/energy?historyBack=1",
           },
         } satisfies HomeSummaryCard),
     ].filter(Boolean) as LovelaceCardConfig[];

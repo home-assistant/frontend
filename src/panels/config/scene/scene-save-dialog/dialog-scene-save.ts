@@ -33,9 +33,11 @@ import {
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
+import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
+import type { SceneConfig } from "../../../../data/scene";
 
-const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
-  description: false,
+const SUGGESTION_INCLUDE: MetadataSuggestionInclude = {
+  name: true,
   categories: true,
   labels: true,
 };
@@ -281,13 +283,17 @@ class DialogSceneSave extends LitElement {
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask(
+    generateMetadataSuggestionTask<SceneConfig>(
       this.hass.connection,
-      this.hass.states,
       this.hass.language,
       "scene",
       this._params.config,
-      SUGGESTION_CONFIG
+      await buildEntityMetadataInspirations(
+        this.hass.connection,
+        this.hass.states,
+        "scene"
+      ),
+      SUGGESTION_INCLUDE
     );
 
   private async _handleSuggestion(
@@ -298,12 +304,14 @@ class DialogSceneSave extends LitElement {
       this.hass.connection,
       "scene",
       result,
-      SUGGESTION_CONFIG
+      SUGGESTION_INCLUDE
     );
 
-    this._newName = processed.name;
-    if (this._error && this._newName.trim()) {
-      this._error = false;
+    if (processed.name) {
+      this._newName = processed.name;
+      if (this._error && this._newName.trim()) {
+        this._error = false;
+      }
     }
 
     if (processed.category) {

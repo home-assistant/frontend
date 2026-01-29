@@ -14,6 +14,8 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import {
   disableConfigEntry,
   type ConfigEntry,
@@ -95,10 +97,10 @@ class HaConfigEntryDeviceRow extends LitElement {
           ></ha-icon-button>`
         : nothing}
 
-      <ha-md-button-menu
-        positioning="popover"
+      <ha-dropdown
         slot="end"
         @click=${stopPropagation}
+        @wa-select=${this._handleMenuAction}
       >
         <ha-icon-button
           slot="trigger"
@@ -106,34 +108,31 @@ class HaConfigEntryDeviceRow extends LitElement {
           .path=${mdiDotsVertical}
         ></ha-icon-button>
         ${this.narrow
-          ? html`<ha-md-menu-item .clickAction=${this._handleEditDevice}>
-              <ha-svg-icon .path=${mdiPencil} slot="start"></ha-svg-icon>
+          ? html`<ha-dropdown-item value="edit">
+              <ha-svg-icon .path=${mdiPencil} slot="icon"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.device.edit"
               )}
-            </ha-md-menu-item>`
+            </ha-dropdown-item>`
           : nothing}
         ${entities.length
           ? html`
-              <ha-md-menu-item .clickAction=${this._handleNavigateToEntities}>
-                <ha-svg-icon
-                  .path=${mdiShapeOutline}
-                  slot="start"
-                ></ha-svg-icon>
+              <ha-dropdown-item value="entities">
+                <ha-svg-icon .path=${mdiShapeOutline} slot="icon"></ha-svg-icon>
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.entities`,
                   { count: entities.length }
                 )}
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-menu-item>
+                <ha-icon-next slot="details"></ha-icon-next>
+              </ha-dropdown-item>
             `
           : nothing}
-        <ha-md-menu-item
-          class=${device.disabled_by !== "user" ? "warning" : ""}
-          .clickAction=${this._handleDisableDevice}
-          .disabled=${device.disabled_by !== "user" && device.disabled_by}
+        <ha-dropdown-item
+          .variant=${device.disabled_by !== "user" ? "danger" : "default"}
+          value="disable"
+          .disabled=${device.disabled_by !== "user" && !!device.disabled_by}
         >
-          <ha-svg-icon .path=${mdiStopCircleOutline} slot="start"></ha-svg-icon>
+          <ha-svg-icon .path=${mdiStopCircleOutline} slot="icon"></ha-svg-icon>
 
           ${device.disabled_by && device.disabled_by !== "user"
             ? this.hass.localize(
@@ -156,24 +155,39 @@ class HaConfigEntryDeviceRow extends LitElement {
               : this.hass.localize(
                   "ui.panel.config.integrations.config_entry.device.disable"
                 )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
         ${this.entry.supports_remove_device
-          ? html`<ha-md-menu-item
-              class="warning"
-              .clickAction=${this._handleDeleteDevice}
-            >
-              <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
+          ? html`<ha-dropdown-item variant="danger" value="delete">
+              <ha-svg-icon .path=${mdiDelete} slot="icon"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.device.delete"
               )}
-            </ha-md-menu-item>`
+            </ha-dropdown-item>`
           : nothing}
-      </ha-md-button-menu>
+      </ha-dropdown>
     </ha-md-list-item> `;
   }
 
   private _getEntities = (): EntityRegistryEntry[] =>
     this.entities?.filter((entity) => entity.device_id === this.device.id);
+
+  private _handleMenuAction = (ev: CustomEvent) => {
+    ev.stopPropagation();
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "edit":
+        this._handleEditDevice();
+        return;
+      case "entities":
+        this._handleNavigateToEntities();
+        return;
+      case "disable":
+        this._doDisableDevice();
+        return;
+      case "delete":
+        this._handleDeleteDevice();
+    }
+  };
 
   private _handleEditDeviceButton(ev: MouseEvent) {
     ev.stopPropagation(); // Prevent triggering the click handler on the list item
@@ -193,7 +207,7 @@ class HaConfigEntryDeviceRow extends LitElement {
     navigate(`/config/entities/?historyBack=1&device=${this.device.id}`);
   };
 
-  private _handleDisableDevice = async () => {
+  private _doDisableDevice = async () => {
     const disable = this.device.disabled_by === null;
 
     if (disable) {
@@ -205,10 +219,8 @@ class HaConfigEntryDeviceRow extends LitElement {
         )
       ) {
         const config_entry = this.entry;
-        if (
-          config_entry &&
-          !config_entry.disabled_by &&
-          (await showConfirmationDialog(this, {
+        if (config_entry && !config_entry.disabled_by) {
+          const confirm = await showConfirmationDialog(this, {
             title: this.hass.localize(
               "ui.panel.config.devices.confirm_disable_config_entry_title"
             ),
@@ -219,8 +231,12 @@ class HaConfigEntryDeviceRow extends LitElement {
             destructive: true,
             confirmText: this.hass.localize("ui.common.yes"),
             dismissText: this.hass.localize("ui.common.no"),
-          }))
-        ) {
+          });
+
+          if (!confirm) {
+            return;
+          }
+
           let result: DisableConfigEntryResult;
           try {
             result = await disableConfigEntry(this.hass, this.entry.entry_id);

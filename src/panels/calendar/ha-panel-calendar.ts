@@ -1,7 +1,8 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
@@ -16,19 +17,23 @@ import "../../components/ha-icon-button";
 import "../../components/ha-list";
 import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
+import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
 import type { Calendar, CalendarEvent } from "../../data/calendar";
 import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
 import "./ha-full-calendar";
 
 @customElement("ha-panel-calendar")
-class PanelCalendar extends LitElement {
+class PanelCalendar extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -40,6 +45,8 @@ class PanelCalendar extends LitElement {
   @state() private _events: CalendarEvent[] = [];
 
   @state() private _error?: string = undefined;
+
+  @state() private _entityRegistry?: EntityRegistryEntry[];
 
   @state()
   @storage({
@@ -77,14 +84,46 @@ class PanelCalendar extends LitElement {
     this.mobile = ev.matches;
   };
 
-  public willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
-      this._calendars = getCalendars(this.hass, this);
-    }
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityRegistry = entities;
+        // Refresh calendars when entity registry updates (includes color changes)
+        this._calendars = getCalendars(this.hass, this, this._entityRegistry);
+        // Refetch events if view dates are available (handles both initial load and color updates)
+        if (this._start && this._end) {
+          this._fetchEvents(
+            this._start,
+            this._end,
+            this._selectedCalendars
+          ).then((result) => {
+            this._events = result.events;
+            this._handleErrors(result.errors);
+          });
+        }
+      }),
+    ];
   }
 
   protected render(): TemplateResult {
+    if (!this._entityRegistry) {
+      return html`
+        <ha-two-pane-top-app-bar-fixed .narrow=${this.narrow}>
+          <ha-menu-button
+            slot="navigationIcon"
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-menu-button>
+          <div slot="title">
+            ${this.hass.localize("ui.components.calendar.my_calendars")}
+          </div>
+          <div class="loading">
+            <ha-spinner></ha-spinner>
+          </div>
+        </ha-two-pane-top-app-bar-fixed>
+      `;
+    }
+
     const calendarItems = this._calendars.map(
       (selCal) => html`
         <ha-dropdown-item
@@ -220,7 +259,7 @@ class PanelCalendar extends LitElement {
       manifest: await fetchIntegrationManifest(this.hass, "local_calendar"),
       dialogClosedCallback: ({ flowFinished }) => {
         if (flowFinished) {
-          this._calendars = getCalendars(this.hass, this);
+          this._calendars = getCalendars(this.hass, this, this._entityRegistry);
         }
       },
     });
@@ -300,6 +339,13 @@ class PanelCalendar extends LitElement {
 
         :host([mobile]) {
           padding-left: unset;
+        }
+        .loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: var(--ha-space-8);
+          min-height: 400px;
         }
       `,
     ];

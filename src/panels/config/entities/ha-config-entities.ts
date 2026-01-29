@@ -84,12 +84,12 @@ import type {
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
+  EntityRegistryOptions,
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
@@ -119,11 +119,13 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import { listExposedEntities, voiceAssistants } from "../../../data/expose";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -165,17 +167,22 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @state() private _stateEntities: StateEntity[] = [];
-
   @state() private _entries?: ConfigEntry[];
 
   @state() private _subEntries?: SubEntry[];
 
   @state() private _manifests?: IntegrationManifest[];
 
+  // does NOT contain the entities without unique id (e.g. Sun)
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
+
+  @state() private _entitiesWithoutUniqueId: StateEntity[] = [];
+
+  // entities exposed to one or more voice assistants,
+  // including entities without unique id
+  @state() private _exposedEntities?: Record<string, ExposeEntitySettings>;
 
   @state()
   @storage({
@@ -248,7 +255,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     window.addEventListener("popstate", this._popState);
   }
 
-  disconnectedCallback(): void {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
@@ -528,7 +535,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       entities: StateEntity[],
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
-      stateEntities: StateEntity[],
+      entitiesWithoutUniqueId: StateEntity[],
       filters: DataTableFiltersValues,
       filteredItems: DataTableFiltersItems,
       entries?: ConfigEntry[],
@@ -555,7 +562,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       const showReadOnly =
         !stateFilters?.length || stateFilters.includes("readonly");
 
-      let filteredEntities = entities.concat(stateEntities);
+      // take both entities with and without unique id into account
+      let filteredEntities = entities.concat(entitiesWithoutUniqueId);
 
       let filteredConfigEntry: ConfigEntry | undefined;
       const filteredDomains = new Set<string>();
@@ -669,7 +677,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           filter.length
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            getEntityVoiceAssistantsIds(this._entities, entity.entity_id).some(
+            this._getExposedEntityVoiceAssistantIds(entity.entity_id).some(
               (va) => (filter as string[]).includes(va)
             )
           );
@@ -732,8 +740,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             ? `${deviceName} (${areaName})`
             : deviceName
           : undefined;
-        const assistants = getEntityVoiceAssistantsIds(
-          entities as EntityRegistryEntry[],
+        const assistants = this._getExposedEntityVoiceAssistantIds(
           entry.entity_id
         );
 
@@ -839,7 +846,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._entities,
         this.hass.devices,
         this.hass.areas,
-        this._stateEntities,
+        this._entitiesWithoutUniqueId,
         this._filters,
         this._filteredItems,
         this._entries,
@@ -1121,6 +1128,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   protected firstUpdated() {
     this._setFiltersFromUrl();
+    this._fetchExposedEntities();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
@@ -1162,6 +1170,40 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._filteredItems = {};
   }
 
+  private _fetchExposedEntities = async () => {
+    try {
+      this._exposedEntities = (
+        await listExposedEntities(this.hass)
+      ).exposed_entities;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch exposed entities", err);
+      this._exposedEntities = {};
+    }
+  };
+
+  // local variant of data/expose/getExposedEntityVoiceAssistantIds
+  // which works for both entities with and without unique id
+  private _getExposedEntityVoiceAssistantIds(entityId: string) {
+    return Object.keys(voiceAssistants).filter(
+      (vaId) => this._exposedEntities?.[entityId]?.[vaId]
+    );
+  }
+
+  private _getExposedEntitySettingsAsOptions(
+    entityId: string
+  ): EntityRegistryOptions {
+    const exposeSettings: ExposeEntitySettings | undefined =
+      this._exposedEntities?.[entityId];
+    const options: EntityRegistryOptions = {};
+    Object.keys(voiceAssistants).forEach((vaId) => {
+      options[vaId] = {
+        should_expose: exposeSettings?.[vaId],
+      };
+    });
+    return options;
+  }
+
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
@@ -1179,12 +1221,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       (changedProps.has("hass") &&
         (!oldHass || oldHass.states !== this.hass.states)) ||
       changedProps.has("_entities") ||
-      changedProps.has("_entitySources")
+      changedProps.has("_entitySources") ||
+      changedProps.has("_exposedEntities")
     ) {
-      const stateEntities: StateEntity[] = [];
+      // represent all entities without unique id
+      // (entities present in this.hass.states but not in fullEntitiesContext)
+      // as StateEntities, so this component can treat them the same as the
+      // entities with id
+      const entitiesWithoutUniqueId: StateEntity[] = [];
       const regEntityIds = new Set(
         this._entities.map((entity) => entity.entity_id)
       );
+
       for (const entityId of Object.keys(this.hass.states)) {
         if (regEntityIds.has(entityId)) {
           continue;
@@ -1195,7 +1243,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ) {
           changed = true;
         }
-        stateEntities.push({
+        entitiesWithoutUniqueId.push({
           name: computeStateName(this.hass.states[entityId]),
           entity_id: entityId,
           platform:
@@ -1211,7 +1259,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           selectable: false,
           entity_category: null,
           has_entity_name: false,
-          options: null,
+          options: this._getExposedEntitySettingsAsOptions(entityId),
           labels: [],
           categories: {},
           created_at: 0,
@@ -1219,7 +1267,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         });
       }
       if (changed) {
-        this._stateEntities = stateEntities;
+        this._entitiesWithoutUniqueId = entitiesWithoutUniqueId;
       }
     }
   }
@@ -1526,7 +1574,7 @@ ${rejected
         this._entities!,
         this.hass.devices,
         this.hass.areas,
-        this._stateEntities,
+        this._entitiesWithoutUniqueId,
         this._filters,
         this._filteredItems,
         this._entries,

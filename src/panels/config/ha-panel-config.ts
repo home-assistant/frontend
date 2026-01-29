@@ -9,6 +9,7 @@ import {
   mdiDatabase,
   mdiDevices,
   mdiFlask,
+  mdiHammer,
   mdiInformation,
   mdiInformationOutline,
   mdiLabel,
@@ -85,7 +86,7 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
     {
       path: "/config/apps",
-      translationKey: "supervisor",
+      translationKey: "apps",
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
       component: "hassio",
@@ -194,6 +195,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "system",
       iconPath: mdiCog,
       iconColor: "#301ABE",
+      core: true,
+    },
+    {
+      path: "/config/developer-tools",
+      translationKey: "developer_tools",
+      iconPath: mdiHammer,
+      iconColor: "#7A5AA6",
       core: true,
     },
     {
@@ -508,6 +516,11 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       system: {
         tag: "ha-config-system-navigation",
         load: () => import("./core/ha-config-system-navigation"),
+      },
+      "developer-tools": {
+        tag: "ha-panel-developer-tools",
+        load: () => import("./developer-tools/ha-panel-developer-tools"),
+        cache: true,
       },
       logs: {
         tag: "ha-config-logs",
