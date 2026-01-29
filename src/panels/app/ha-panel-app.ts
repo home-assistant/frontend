@@ -3,6 +3,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { createRef, ref } from "lit/directives/ref";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
@@ -116,7 +117,7 @@ class HaPanelApp extends LitElement {
       ${!this._kioskMode &&
       (this.narrow || this.hass.dockedSidebar === "always_hidden")
         ? html`
-            <div class="header">
+            <div class="header ${classMap({ narrow: this.narrow })}">
               <ha-icon-button
                 .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
                 .path=${mdiMenu}
@@ -452,9 +453,12 @@ class HaPanelApp extends LitElement {
     }
 
     .main-title {
-      margin: var(--margin-title);
+      margin-inline-start: var(--ha-space-6);
       line-height: var(--ha-line-height-condensed);
       flex-grow: 1;
+    }
+    .narrow .main-title {
+      margin-inline-start: var(--ha-space-2);
     }
 
     ha-icon-button {

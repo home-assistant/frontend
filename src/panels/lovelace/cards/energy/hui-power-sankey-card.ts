@@ -27,8 +27,9 @@ const DEFAULT_CONFIG: Partial<PowerSankeyCardConfig> = {
   group_by_area: true,
 };
 
-// Minimum power threshold in watts (W) to display a device node
-const MIN_POWER_THRESHOLD = 1;
+// Minimum power threshold as a fraction of total consumption to display a device node
+// Devices below this threshold will be grouped into an "Other" node
+const MIN_POWER_THRESHOLD_FACTOR = 0.001; // 0.1% of used_total
 
 interface PowerData {
   solar: number;
@@ -44,6 +45,14 @@ interface PowerData {
   used_grid: number;
   used_battery: number;
   used_total: number;
+}
+
+interface SmallConsumer {
+  statRate: string;
+  name: string | undefined;
+  value: number;
+  effectiveParent: string | undefined;
+  idx: number;
 }
 
 @customElement("hui-power-sankey-card")
@@ -131,6 +140,9 @@ class HuiPowerSankeyCard
     const prefs = this._data.prefs;
     const powerData = this._computePowerData(prefs);
     const computedStyle = getComputedStyle(this);
+
+    // Calculate dynamic threshold based on total consumption
+    const minPowerThreshold = powerData.used_total * MIN_POWER_THRESHOLD_FACTOR;
 
     const nodes: Node[] = [];
     const links: Link[] = [];
@@ -277,7 +289,7 @@ class HuiPowerSankeyCard
     prefs.device_consumption.forEach((device) => {
       if (device.stat_rate) {
         const value = this._getCurrentPower(device.stat_rate);
-        if (value >= MIN_POWER_THRESHOLD) {
+        if (value >= minPowerThreshold) {
           renderedStatRates.add(device.stat_rate);
         }
       }
@@ -307,18 +319,33 @@ class HuiPowerSankeyCard
       return undefined;
     };
 
+    // Collect small consumers by their effective parent
+    const smallConsumersByParent = new Map<string, SmallConsumer[]>();
+
     prefs.device_consumption.forEach((device, idx) => {
       if (!device.stat_rate) {
         return;
       }
       const value = this._getCurrentPower(device.stat_rate);
 
-      if (value < MIN_POWER_THRESHOLD) {
-        return;
-      }
-
       // Find the effective parent (may be different from direct parent if parent has no stat_rate)
       const effectiveParent = findEffectiveParent(device.included_in_stat);
+
+      if (value < minPowerThreshold) {
+        // Collect small consumers instead of skipping them
+        const parentKey = effectiveParent ?? "home";
+        if (!smallConsumersByParent.has(parentKey)) {
+          smallConsumersByParent.set(parentKey, []);
+        }
+        smallConsumersByParent.get(parentKey)!.push({
+          statRate: device.stat_rate,
+          name: device.name,
+          value,
+          effectiveParent,
+          idx,
+        });
+        return;
+      }
 
       const node = {
         id: device.stat_rate,
@@ -339,6 +366,65 @@ class HuiPowerSankeyCard
         untrackedConsumption -= value;
       }
       deviceNodes.push(node);
+    });
+
+    // Process small consumers - create "Other" nodes or show single entities
+    smallConsumersByParent.forEach((consumers, parentKey) => {
+      const totalValue = consumers.reduce((sum, c) => sum + c.value, 0);
+      if (totalValue <= 0) {
+        return;
+      }
+
+      if (consumers.length === 1) {
+        // Single entity - show it directly instead of grouping
+        const consumer = consumers[0];
+        const node = {
+          id: consumer.statRate,
+          label: consumer.name || this._getEntityLabel(consumer.statRate),
+          value: consumer.value,
+          color: getGraphColorByIndex(consumer.idx, computedStyle),
+          index: 4,
+          parent: consumer.effectiveParent,
+          entityId: consumer.statRate,
+        };
+        if (node.parent) {
+          parentLinks[node.id] = node.parent;
+          links.push({
+            source: node.parent,
+            target: node.id,
+          });
+        } else {
+          untrackedConsumption -= consumer.value;
+        }
+        deviceNodes.push(node);
+      } else {
+        // Multiple entities - create "Other" group
+        const otherNodeId = `other_${parentKey}`;
+        const otherNode: Node = {
+          id: otherNodeId,
+          label: this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.other"
+          ),
+          value: Math.ceil(totalValue),
+          color: computedStyle
+            .getPropertyValue("--state-unavailable-color")
+            .trim(),
+          index: 4,
+        };
+
+        if (parentKey !== "home") {
+          // Has a parent device
+          parentLinks[otherNodeId] = parentKey;
+          links.push({
+            source: parentKey,
+            target: otherNodeId,
+          });
+        } else {
+          // Top-level "Other" - will be linked to home/floor/area later
+          untrackedConsumption -= totalValue;
+        }
+        deviceNodes.push(otherNode);
+      }
     });
     const devicesWithoutParent = deviceNodes.filter(
       (node) => !parentLinks[node.id]

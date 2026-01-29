@@ -4,29 +4,37 @@ import {
   mdiChartBox,
   mdiClipboardList,
   mdiFormatListBulletedType,
-  mdiHammer,
   mdiLightningBolt,
   mdiPlayBoxMultiple,
   mdiTooltipAccount,
-  mdiViewDashboard,
 } from "@mdi/js";
 import type { HomeAssistant, PanelInfo } from "../types";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { LocalizeKeys } from "../common/translations/localize";
 
 /** Panel to show when no panel is picked. */
-export const DEFAULT_PANEL = "lovelace";
+export const DEFAULT_PANEL = "home";
+
+export const hasLegacyOverviewPanel = (hass: HomeAssistant): boolean =>
+  Boolean(hass.panels.lovelace?.config);
 
 export const getLegacyDefaultPanelUrlPath = (): string | null => {
   const defaultPanel = window.localStorage.getItem("defaultPanel");
   return defaultPanel ? JSON.parse(defaultPanel) : null;
 };
 
-export const getDefaultPanelUrlPath = (hass: HomeAssistant): string =>
-  hass.userData?.default_panel ||
-  hass.systemData?.default_panel ||
-  getLegacyDefaultPanelUrlPath() ||
-  DEFAULT_PANEL;
+export const getDefaultPanelUrlPath = (hass: HomeAssistant): string => {
+  const defaultPanel =
+    hass.userData?.default_panel ||
+    hass.systemData?.default_panel ||
+    getLegacyDefaultPanelUrlPath() ||
+    DEFAULT_PANEL;
+  // If default panel is lovelace and no old overview exists, fall back to home
+  if (defaultPanel === "lovelace" && !hasLegacyOverviewPanel(hass)) {
+    return DEFAULT_PANEL;
+  }
+  return defaultPanel;
+};
 
 export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
   const panel = getDefaultPanelUrlPath(hass);
@@ -35,10 +43,6 @@ export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
 };
 
 export const getPanelNameTranslationKey = (panel: PanelInfo) => {
-  if (panel.url_path === "lovelace") {
-    return "panel.states" as const;
-  }
-
   if (panel.url_path === "profile") {
     return "panel.profile" as const;
   }
@@ -113,8 +117,6 @@ export const getPanelIcon = (panel: PanelInfo): string | undefined => {
     switch (panel.component_name) {
       case "profile":
         return "mdi:account";
-      case "lovelace":
-        return "mdi:view-dashboard";
     }
   }
 
@@ -123,13 +125,11 @@ export const getPanelIcon = (panel: PanelInfo): string | undefined => {
 
 export const PANEL_ICON_PATHS = {
   calendar: mdiCalendar,
-  "developer-tools": mdiHammer,
   energy: mdiLightningBolt,
   history: mdiChartBox,
   logbook: mdiFormatListBulletedType,
-  lovelace: mdiViewDashboard,
-  profile: mdiAccount,
   map: mdiTooltipAccount,
+  profile: mdiAccount,
   "media-browser": mdiPlayBoxMultiple,
   todo: mdiClipboardList,
 };
@@ -138,4 +138,3 @@ export const getPanelIconPath = (panel: PanelInfo): string | undefined =>
   PANEL_ICON_PATHS[panel.url_path];
 
 export const FIXED_PANELS = ["profile", "config"];
-export const SHOW_AFTER_SPACER_PANELS = ["developer-tools"];
