@@ -373,18 +373,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _showQuickBar(): void {
-    showQuickBar(this, {
-      hint: this.hass.enableShortcuts
-        ? this.hass.localize("ui.tips.key_shortcut_quick_search", {
-            keyboard_shortcut: html`<a
-              href="#"
-              @click=${this._openShortcutDialog}
-              >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
-            >`,
-            modifier: isMac ? "⌘" : "Ctrl",
-          })
-        : undefined,
-    });
+    showQuickBar(this, { showHint: true });
   }
 
   private async _handleMenuAction(

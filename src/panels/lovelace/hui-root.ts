@@ -72,12 +72,10 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
-import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import { isMac } from "../../util/is_mac";
 import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
@@ -864,18 +862,7 @@ class HUIRoot extends LitElement {
   };
 
   private _showQuickBar = () => {
-    showQuickBar(this, {
-      hint: this.hass.enableShortcuts
-        ? this.hass.localize("ui.tips.key_shortcut_quick_search", {
-            keyboard_shortcut: html`<a
-              href="#"
-              @click=${this._openShortcutDialog}
-              >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
-            >`,
-            modifier: isMac ? "⌘" : "Ctrl",
-          })
-        : undefined,
-    });
+    showQuickBar(this, { showHint: true });
   };
 
   private _goBack(): void {
@@ -1220,11 +1207,6 @@ class HUIRoot extends LitElement {
     view.narrow = this.narrow;
 
     root.appendChild(view);
-  }
-
-  private _openShortcutDialog(ev: Event) {
-    ev.preventDefault();
-    showShortcutsDialog(this);
   }
 
   private async _applyUndoRedo(item: UndoStackItem) {

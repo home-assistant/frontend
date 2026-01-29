@@ -52,6 +52,7 @@ import {
 } from "../../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
+import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
@@ -66,7 +67,7 @@ export class QuickBar extends LitElement {
 
   @state() private _loading = true;
 
-  @state() private _hint?: QuickBarParams["hint"];
+  @state() private _showHint = false;
 
   @state() private _selectedSection?: QuickBarSection;
 
@@ -96,7 +97,7 @@ export class QuickBar extends LitElement {
     }
     this._initialize();
     this._selectedSection = params.mode;
-    this._hint = params.hint;
+    this._showHint = params.showHint ?? false;
     this._open = true;
   }
 
@@ -256,9 +257,16 @@ export class QuickBar extends LitElement {
               clearable
             ></ha-picker-combo-box>`
           : nothing}
-        ${this._hint
+        ${this._showHint
           ? html`<ha-tip slot="footer" .hass=${this.hass}
-              >${this._hint}</ha-tip
+              >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
+                keyboard_shortcut: html`<a
+                  href="#"
+                  @click=${this._openShortcutDialog}
+                  >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
+                >`,
+                modifier: isMac ? "⌘" : "Ctrl",
+              })}</ha-tip
             >`
           : nothing}
       </ha-adaptive-dialog>
@@ -749,6 +757,11 @@ export class QuickBar extends LitElement {
         this._navigate(path, newTab);
       }
     }
+  }
+
+  private _openShortcutDialog(ev: Event): void {
+    ev.preventDefault();
+    showShortcutsDialog(this);
   }
 
   // #endregion interaction
