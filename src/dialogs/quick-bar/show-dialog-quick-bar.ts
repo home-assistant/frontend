@@ -1,3 +1,4 @@
+import type { TemplateResult } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
 import { closeDialog } from "../make-dialog-manager";
 
@@ -11,7 +12,7 @@ export type QuickBarSection =
 export interface QuickBarParams {
   entityFilter?: string;
   mode?: QuickBarSection;
-  hint?: string;
+  hint?: string | TemplateResult;
 }
 
 export const loadQuickBar = () => import("./ha-quick-bar");

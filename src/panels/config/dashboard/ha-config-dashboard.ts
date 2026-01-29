@@ -39,6 +39,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { isMac } from "../../../util/is_mac";
 import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -364,15 +365,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _showQuickBar(): void {
-    const params = {
-      keyboard_shortcut: html`<a href="#" @click=${this._openShortcutDialog}
-        >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
-      >`,
-    };
-
     showQuickBar(this, {
       hint: this.hass.enableShortcuts
-        ? this.hass.localize("ui.dialogs.quick-bar.key_c_tip", params)
+        ? this.hass.localize("ui.tips.key_shortcut_quick_search", {
+            keyboard_shortcut: html`<a
+              href="#"
+              @click=${this._openShortcutDialog}
+              >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
+            >`,
+            modifier: isMac ? "⌘" : "Ctrl",
+          })
         : undefined,
     });
   }

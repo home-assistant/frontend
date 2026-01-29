@@ -66,7 +66,7 @@ export class QuickBar extends LitElement {
 
   @state() private _loading = true;
 
-  @state() private _hint?: string;
+  @state() private _hint?: QuickBarParams["hint"];
 
   @state() private _selectedSection?: QuickBarSection;
 
