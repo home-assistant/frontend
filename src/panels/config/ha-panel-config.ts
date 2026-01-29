@@ -251,7 +251,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       path: "/config/helpers",
       translationKey: "ui.panel.config.helpers.caption",
       iconPath: mdiTools,
-      iconColor: "var(--config-icon-helpers-color, )",
+      iconColor: "var(--config-icon-helpers-color, #4D2EA4)",
       core: true,
     },
   ],
