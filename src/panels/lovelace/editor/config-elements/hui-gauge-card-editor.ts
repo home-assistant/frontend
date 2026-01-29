@@ -20,7 +20,10 @@ import { NON_NUMERIC_ATTRIBUTES } from "../../../../data/entity/entity_attribute
 import type { HomeAssistant } from "../../../../types";
 import { DEFAULT_MAX, DEFAULT_MIN } from "../../cards/hui-gauge-card";
 import type { GaugeCardConfig } from "../../cards/types";
-import type { UiAction } from "../../components/hui-action-editor";
+import {
+  ACTION_RELATED_CONTEXT,
+  type UiAction,
+} from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -167,6 +170,7 @@ export class HuiGaugeCardEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -181,6 +185,7 @@ export class HuiGaugeCardEditor
                       default_action: "none" as const,
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 })
               ),
             },

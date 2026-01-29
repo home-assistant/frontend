@@ -125,9 +125,26 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
-    const showUnit = this._config.attribute
-      ? this._config.attribute in stateObj.attributes
-      : !isUnavailableState(stateObj.state);
+
+    let unit;
+    if (
+      !isUnavailableState(stateObj.state) &&
+      (this._config.attribute ||
+        stateObj.attributes.device_class !== "duration")
+    ) {
+      unit = this._config.unit;
+      if (!unit) {
+        if (!this._config.attribute)
+          unit = stateObj.attributes.unit_of_measurement;
+        else {
+          const parts = this.hass.formatEntityAttributeValueToParts(
+            stateObj,
+            this._config.attribute
+          );
+          unit = parts.find((part) => part.type === "unit")?.value;
+        }
+      }
+    }
 
     const name = computeLovelaceEntityName(
       this.hass,
@@ -199,17 +216,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                     )
                   )
                 : this.hass.formatEntityState(stateObj)}</span
-          >${showUnit
-            ? html`
-                <span class="measurement"
-                  >${this._config.unit ||
-                  (this._config.attribute ||
-                  stateObj.attributes.device_class === "duration"
-                    ? ""
-                    : stateObj.attributes.unit_of_measurement)}</span
-                >
-              `
-            : ""}
+          >
+          ${unit ? html`<span class="measurement">${unit}</span>` : nothing}
         </div>
         <div
           class="footer"

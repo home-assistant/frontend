@@ -205,6 +205,11 @@ export interface Context {
   user_id?: string | null;
 }
 
+export interface ValuePart {
+  type: "value" | "literal" | "unit";
+  value: string;
+}
+
 export interface ServiceCallResponse<T = any> {
   context: Context;
   response?: T;
@@ -292,6 +297,11 @@ export interface HomeAssistant {
     attribute: string,
     value?: any
   ): string;
+  formatEntityAttributeValueToParts(
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
+  ): ValuePart[];
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,

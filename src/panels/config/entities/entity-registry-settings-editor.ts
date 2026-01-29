@@ -21,6 +21,7 @@ import type {
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
+import "../../../components/ha-color-picker";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
@@ -53,6 +54,7 @@ import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
 import type {
   AlarmControlPanelEntityOptions,
+  CalendarEntityOptions,
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
@@ -195,6 +197,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _defaultCode?: string | null;
 
+  @state() private _calendarColor?: string | null;
+
   @state() private _noDeviceArea?: boolean;
 
   private _origEntityId!: string;
@@ -251,6 +255,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     if (domain === "alarm_control_panel") {
       this._defaultCode = this.entry.options?.alarm_control_panel?.default_code;
+    }
+
+    if (domain === "calendar") {
+      this._calendarColor = this.entry.options?.calendar?.color;
     }
 
     if (domain === "weather") {
@@ -594,6 +602,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
               .disabled=${this.disabled}
               @input=${this._defaultcodeChanged}
             ></ha-textfield>
+          `
+        : ""}
+      ${domain === "calendar"
+        ? html`
+            <ha-color-picker
+              .hass=${this.hass}
+              .value=${this._calendarColor ?? ""}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.calendar_color"
+              )}
+              .disabled=${this.disabled}
+              @value-changed=${this._calendarColorChanged}
+            ></ha-color-picker>
           `
         : ""}
       ${domain === "sensor" &&
@@ -1097,6 +1118,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
       (params.options as AlarmControlPanelEntityOptions).default_code =
         this._defaultCode;
     }
+    if (domain === "calendar") {
+      const currentColor = this.entry.options?.calendar?.color ?? null;
+      const newColor = this._calendarColor ?? null;
+      if (currentColor !== newColor) {
+        params.options_domain = domain;
+        params.options = this.entry.options?.calendar || {};
+        (params.options as CalendarEntityOptions).color = this._calendarColor;
+      }
+    }
     if (
       domain === "weather" &&
       (stateObj?.attributes?.precipitation_unit !== this._precipitation_unit ||
@@ -1326,6 +1356,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _defaultcodeChanged(ev): void {
     fireEvent(this, "change");
     this._defaultCode = ev.target.value === "" ? null : ev.target.value;
+  }
+
+  private _calendarColorChanged(ev: CustomEvent): void {
+    fireEvent(this, "change");
+    this._calendarColor = ev.detail.value || null;
   }
 
   private _precipitationUnitChanged(ev): void {

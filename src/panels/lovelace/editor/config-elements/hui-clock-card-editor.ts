@@ -237,33 +237,13 @@ export class HuiClockCardEditor
                   : []),
               ] as const satisfies readonly HaFormSchema[])
             : []),
-        {
-          name: "time_zone",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: [
-                [
-                  "auto",
-                  localize(
-                    `ui.panel.lovelace.editor.card.clock.time_zones.auto`
-                  ),
-                ],
-                ...Object.entries(timezones as Record<string, string>),
-              ].map(([key, value]) => ({
-                value: key,
-                label: value,
-              })),
-            },
-          },
-        },
+        { name: "time_zone", selector: { timezone: {} } },
       ] as const satisfies readonly HaFormSchema[]
   );
 
   private _data = memoizeOne((config) => ({
     clock_style: "digital",
     clock_size: "small",
-    time_zone: "auto",
     time_format: "auto",
     show_seconds: false,
     no_background: false,
@@ -302,9 +282,6 @@ export class HuiClockCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    if (ev.detail.value.time_zone === "auto") {
-      delete ev.detail.value.time_zone;
-    }
     if (ev.detail.value.time_format === "auto") {
       delete ev.detail.value.time_format;
     }

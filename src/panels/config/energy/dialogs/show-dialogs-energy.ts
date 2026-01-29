@@ -8,6 +8,7 @@ import type {
   FlowToGridSourceEnergyPreference,
   GasSourceTypeEnergyPreference,
   GridPowerSourceEnergyPreference,
+  GridPowerSourceInput,
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
@@ -45,7 +46,7 @@ export interface EnergySettingsGridFlowToDialogParams {
 export interface EnergySettingsGridPowerDialogParams {
   source?: GridPowerSourceEnergyPreference;
   grid_source?: GridSourceTypeEnergyPreference;
-  saveCallback: (source: GridPowerSourceEnergyPreference) => Promise<void>;
+  saveCallback: (source: GridPowerSourceInput) => Promise<void>;
 }
 
 export interface EnergySettingsSolarDialogParams {

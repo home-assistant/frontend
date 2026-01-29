@@ -164,6 +164,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         }
         if (redirect.redirect === "/config/integrations/integration") {
           myParams.append("domain", targetPath.split("/")[4]);
+        } else if (redirect.redirect === "/config/app") {
+          myParams.append("app", targetPath.split("/")[3]);
         } else if (redirect.redirect === "/hassio/addon") {
           myParams.append("addon", targetPath.split("/")[3]);
         }
