@@ -292,6 +292,7 @@ export interface HomeAssistant {
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
   formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
