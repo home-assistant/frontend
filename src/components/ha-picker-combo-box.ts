@@ -561,6 +561,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (typeof this.virtualizerElement.items[index] === "string") {
       index += 1;
     }
+    // Bounds check: ensure index is valid after skipping section title
+    if (index >= this.virtualizerElement.items.length) {
+      return;
+    }
     this._selectedItemIndex = index;
     this._scrollToSelectedItem();
   }
