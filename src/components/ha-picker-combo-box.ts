@@ -284,6 +284,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           section === "separator"
             ? html`<div class="separator"></div>`
             : html`<ha-filter-chip
+                @mousedown=${this._preventBlur}
                 @click=${this._toggleSection}
                 .section-id=${section.id}
                 .selected=${this._selectedSection === section.id}
@@ -505,6 +506,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._selectedItemIndex = -1;
     this._valuePinned = true;
   };
+
+  private _preventBlur(ev: MouseEvent) {
+    // Prevent the mousedown from stealing focus from the search field
+    ev.preventDefault();
+  }
 
   private _toggleSection(ev: Event) {
     ev.stopPropagation();
