@@ -523,9 +523,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._items = this._getItems();
 
     // Reset scroll position when filter changes
-    if (this.virtualizerElement) {
-      this.virtualizerElement.scrollToIndex(0);
-    }
+    this.virtualizerElement?.element(0)?.scrollIntoView();
   }
 
   private _registerKeyboardShortcuts() {
@@ -654,7 +652,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       ?.querySelector(".selected")
       ?.classList.remove("selected");
 
-    this.virtualizerElement?.scrollToIndex(this._selectedItemIndex, "nearest");
+    this.virtualizerElement
+      ?.element(this._selectedItemIndex)
+      ?.scrollIntoView({ block: "nearest" });
 
     requestAnimationFrame(() => {
       this.virtualizerElement
