@@ -706,7 +706,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
 
     if (this._selectedItemIndex === -1) {
-      return;
+      this._initializeSelectedIndex();
     }
 
     // if filter button is focused
