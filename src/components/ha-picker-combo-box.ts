@@ -545,11 +545,19 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   /**
    * Initialize keyboard selection to the currently selected value,
-   * or fall back to the first item.
+   * or fall back to the first item (skipping section titles).
    */
   private _initializeSelectedIndex(): void {
+    if (!this.virtualizerElement?.items?.length) {
+      return;
+    }
     const initialIndex = this._getInitialSelectedIndex();
-    this._selectedItemIndex = initialIndex > 0 ? initialIndex : 0;
+    let index = initialIndex > 0 ? initialIndex : 0;
+    // Skip section titles (strings)
+    if (typeof this.virtualizerElement.items[index] === "string") {
+      index += 1;
+    }
+    this._selectedItemIndex = index;
     this._scrollToSelectedItem();
   }
 
