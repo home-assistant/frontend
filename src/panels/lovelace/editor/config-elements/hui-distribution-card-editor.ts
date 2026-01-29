@@ -31,7 +31,6 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     title: optional(string()),
-    theme: optional(string()),
     entities: array(union([string(), entitiesConfigStruct])),
   })
 );
@@ -47,10 +46,7 @@ const SUB_SCHEMA = [
   },
 ] as const;
 
-const SCHEMA = [
-  { name: "title", selector: { text: {} } },
-  { name: "theme", selector: { theme: {} } },
-] as const;
+const SCHEMA = [{ name: "title", selector: { text: {} } }] as const;
 
 @customElement("hui-distribution-card-editor")
 export class HuiDistributionCardEditor
@@ -196,12 +192,6 @@ export class HuiDistributionCardEditor
       case "title":
         return `${this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.title"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.optional"
-        )})`;
-      case "theme":
-        return `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.theme"
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
