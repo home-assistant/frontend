@@ -282,6 +282,9 @@ export class QuickBar extends LitElement {
                     slot="start"
                     alt=${item.primary ?? "Unknown"}
                     .src=${item.image}
+                    style=${"iconColor" in item && item.iconColor
+                      ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                      : ""}
                   />
                 `
               : item.icon

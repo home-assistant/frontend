@@ -86,7 +86,7 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
     {
       path: "/config/apps",
-      translationKey: "supervisor",
+      translationKey: "apps",
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
       component: "hassio",

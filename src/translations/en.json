@@ -1402,15 +1402,16 @@
             "rpi_gpio": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::rpi_gpio%]",
             "themes": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::themes%]"
           },
-          "server_control": {
-            "perform_action": "{action} server",
+          "home_assistant_control": {
+            "perform_action": "{action} Home Assistant",
             "restart": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::server_management::restart%]",
             "stop": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::server_management::stop%]"
           },
           "types": {
             "reload": "Reload",
             "navigation": "Navigate",
-            "server_control": "Server"
+            "app_settings": "App settings",
+            "home_assistant_control": "Interrupts all running automations and scripts"
           },
           "navigation": {
             "logs": "[%key:ui::panel::config::logs::caption%]",
@@ -1441,11 +1442,12 @@
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
             "server_control": "[%key:ui::panel::config::developer-tools::tabs::yaml::title%]",
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
-            "app_dashboard": "App dashboard",
+            "apps": "Apps",
             "app_store": "App store",
             "app_info": "{app} info",
             "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
-            "labs": "[%key:ui::panel::config::labs::caption%]"
+            "labs": "[%key:ui::panel::config::labs::caption%]",
+            "developer-tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -2336,7 +2338,7 @@
             "main": "Backup",
             "secondary": "Generate backups of your Home Assistant configuration"
           },
-          "supervisor": {
+          "apps": {
             "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
           },
