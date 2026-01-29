@@ -117,14 +117,6 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
-import { configSections } from "../ha-panel-config";
-import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
-import "../integrations/ha-integration-overflow-menu";
-import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { isHelperDomain, type HelperDomain } from "./const";
-import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import {
   getEntityIdTableColumn,
   getAreaTableColumn,
@@ -132,8 +124,12 @@ import {
   getLabelsTableColumn,
   getEditableTableColumn,
 } from "../common/data-table-columns";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import { configSections } from "../ha-panel-config";
+import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
+import "../integrations/ha-integration-overflow-menu";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
