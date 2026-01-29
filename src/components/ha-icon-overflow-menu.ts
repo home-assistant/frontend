@@ -3,6 +3,7 @@ import { mdiDotsVertical } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-dropdown";
@@ -39,7 +40,10 @@ export class HaIconOverflowMenu extends LitElement {
     return html`
       ${this.narrow
         ? html` <!-- Collapsed representation for small screens -->
-            <ha-dropdown @wa-show=${this._handleIconOverflowMenuOpened}>
+            <ha-dropdown
+              @wa-show=${this._handleIconOverflowMenuOpened}
+              @click=${stopPropagation}
+            >
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.overflow_menu")}
                 .path=${mdiDotsVertical}
