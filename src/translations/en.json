@@ -8143,7 +8143,6 @@
         },
         "editor": {
           "header": "Edit UI",
-          "default_view_title": "Home",
           "yaml_unsupported": "The edit UI is not available when in YAML mode.",
           "undo_redo_failed_to_apply_changes": "Unable to apply changes: {error}",
           "menu": {
