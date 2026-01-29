@@ -10,7 +10,7 @@ import { saveFabStyles } from "../automation/styles";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 
 @customElement("blueprint-script-editor")
-export class BlueprintScriptEditor extends HaBlueprintGenericEditor {
+export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
   @property({ attribute: false }) public config!: BlueprintScriptConfig;
 
   @property({ type: Boolean }) public saving = false;
@@ -73,6 +73,6 @@ export class BlueprintScriptEditor extends HaBlueprintGenericEditor {
 }
 declare global {
   interface HTMLElementTagNameMap {
-    "blueprint-script-editor": BlueprintScriptEditor;
+    "blueprint-script-editor": HaBlueprintScriptEditor;
   }
 }

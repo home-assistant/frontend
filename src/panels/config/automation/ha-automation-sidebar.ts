@@ -73,7 +73,7 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _renderContent() {
     // get config type
-    const type = this.getType();
+    const type = this._getType();
 
     if (type === "trigger") {
       return html`
@@ -216,7 +216,7 @@ export default class HaAutomationSidebar extends LitElement {
     `;
   }
 
-  public getType() {
+  private _getType() {
     if (
       (this.config as TriggerSidebarConfig)?.config &&
       (isTrigger((this.config as TriggerSidebarConfig)?.config) ||
