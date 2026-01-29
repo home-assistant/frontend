@@ -112,12 +112,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route, ServiceCallResponse } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
-import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
-import { configSections } from "../ha-panel-config";
-import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { showNewAutomationDialog } from "./show-dialog-new-automation";
 import {
   getEntityIdHiddenTableColumn,
   getAreaTableColumn,
@@ -125,12 +119,17 @@ import {
   getLabelsTableColumn,
   getTriggeredAtTableColumn,
 } from "../common/data-table-columns";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { configSections } from "../ha-panel-config";
+import { showNewAutomationDialog } from "./show-dialog-new-automation";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -441,8 +440,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               Object.values(filter.value).some((val) =>
                 Array.isArray(val) ? val.length : val
               )
-          ).length
-        }
+        ).length}
         .columns=${this._columns(this.narrow, this.hass.localize, automations)}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
