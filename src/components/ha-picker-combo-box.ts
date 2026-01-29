@@ -539,20 +539,24 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _focusList() {
     if (this._selectedItemIndex === -1) {
-      this._selectNextItem();
+      this._initializeSelectedIndex();
     }
   }
 
   /**
    * Initialize keyboard selection to the currently selected value,
-   * or fall back to the first item (skipping section titles).
+   * or fall back to the first item when searching (skipping section titles).
    */
   private _initializeSelectedIndex(): void {
     if (!this.virtualizerElement?.items?.length) {
       return;
     }
     const initialIndex = this._getInitialSelectedIndex();
-    let index = initialIndex > 0 ? initialIndex : 0;
+    // Only initialize to first item if searching, otherwise require a selected value
+    if (initialIndex === 0 && !this._search) {
+      return;
+    }
+    let index = initialIndex;
     // Skip section titles (strings)
     if (typeof this.virtualizerElement.items[index] === "string") {
       index += 1;
@@ -582,7 +586,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     // If no item is selected yet, start from the currently selected value
     if (this._selectedItemIndex === -1) {
       this._initializeSelectedIndex();
-      return;
+      if (this._selectedItemIndex !== -1) {
+        return;
+      }
     }
 
     const nextIndex =
@@ -715,6 +721,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     if (this._selectedItemIndex === -1) {
       this._initializeSelectedIndex();
+      if (this._selectedItemIndex === -1) {
+        return;
+      }
     }
 
     // if filter button is focused
