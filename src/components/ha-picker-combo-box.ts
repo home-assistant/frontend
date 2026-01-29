@@ -654,7 +654,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       ?.querySelector(".selected")
       ?.classList.remove("selected");
 
-    this.virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
+    this.virtualizerElement?.scrollToIndex(this._selectedItemIndex, "nearest");
 
     requestAnimationFrame(() => {
       this.virtualizerElement
