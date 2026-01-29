@@ -49,7 +49,10 @@ const generateNavigationPanelCommands = (
 ): BaseNavigationCommand[] =>
   Object.entries(panels)
     .filter(
-      ([panelKey]) => panelKey !== "_my_redirect" && panelKey !== "hassio"
+      ([panelKey]) =>
+        panelKey !== "_my_redirect" &&
+        panelKey !== "hassio" &&
+        panelKey !== "app"
     )
     .map(([_panelKey, panel]) => {
       const translationKey = getPanelNameTranslationKey(panel);
