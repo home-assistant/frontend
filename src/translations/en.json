@@ -9551,7 +9551,9 @@
                 "delete": "Delete",
                 "duplicate": "Duplicate",
                 "pick": "Pick a blueprint",
-                "reset": "Reset"
+                "reset": "Reset",
+                "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+                "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]"
               },
               "inputs": {
                 "header": "Inputs",

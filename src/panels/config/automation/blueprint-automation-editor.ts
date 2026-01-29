@@ -9,11 +9,11 @@ import "../../../components/ha-markdown";
 import "../../../components/ha-fab";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
-import { BlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
+import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 import { saveFabStyles } from "./styles";
 
 @customElement("blueprint-automation-editor")
-export class BlueprintAutomationEditor extends BlueprintGenericEditor {
+export class BlueprintAutomationEditor extends HaBlueprintGenericEditor {
   @property({ attribute: false }) public config!: BlueprintAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
@@ -88,7 +88,7 @@ export class BlueprintAutomationEditor extends BlueprintGenericEditor {
 
   static get styles(): CSSResultGroup {
     return [
-      BlueprintGenericEditor.styles,
+      HaBlueprintGenericEditor.styles,
       saveFabStyles,
       css`
         :host {

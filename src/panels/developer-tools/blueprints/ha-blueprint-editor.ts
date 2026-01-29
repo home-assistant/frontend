@@ -2,20 +2,17 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, css, nothing, LitElement } from "lit";
 import { mdiHelpCircle } from "@mdi/js";
 import { property, state, customElement, query } from "lit/decorators";
-import "../../../layouts/hass-subpage";
 import { classMap } from "lit/directives/class-map";
 import type { HomeAssistant, Route } from "../../../types";
-import "../../../components/ha-fab";
-import "../../../components/ha-list-item";
 import type {
   Blueprint,
   BlueprintDomain,
   BlueprintInput,
-  BlueprintMetaDataEditorSchema,
+  BlueprintMetaDataEditorSchema
 } from "../../../data/blueprint";
 import {
+  BlueprintYamlSchema,
   DefaultBlueprintMetadata,
-  isValidBlueprint,
 } from "../../../data/blueprint";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
@@ -27,12 +24,16 @@ import { manualEditorStyles } from "../../config/automation/styles";
 import type { SidebarConfig } from "../../../data/automation";
 import { SIDEBAR_DEFAULT_WIDTH } from "../../config/automation/manual-automation-editor";
 import { storage } from "../../../common/decorators/storage";
+import type HaAutomationSidebar from "../../config/automation/ha-automation-sidebar";
 import "../../../components/ha-button";
+import "../../../components/ha-fab";
+import "../../../components/ha-list-item";
+import "../../../components/ha-yaml-editor";
+import "../../../layouts/hass-subpage";
 import "../../config/script/manual-script-editor";
 import "./input/ha-blueprint-input";
 import "./blueprint-metadata-editor";
 import "./double-sidebar-padding-fix";
-import type HaAutomationSidebar from "../../config/automation/ha-automation-sidebar";
 
 @customElement("ha-blueprint-editor")
 export class HaBlueprintEditor extends PreventUnsavedMixin(
@@ -53,6 +54,8 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
   @property({ attribute: false }) public domain?: BlueprintDomain;
 
   @property({ attribute: false }) public dirty!: boolean;
+
+  @property({ attribute: false }) public yamlMode = false;
 
   @state() private _sidebarConfig?: SidebarConfig;
 
@@ -98,11 +101,11 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
     );
     const blueprint = {
       ...this.blueprint,
-      metadata: {
-        ...this.blueprint.metadata,
+      blueprint: {
+        ...this.blueprint.blueprint,
         input,
       },
-    };
+    } satisfies Blueprint;
     fireEvent(this, "value-changed", { value: blueprint });
   }
 
@@ -124,12 +127,12 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
     ev: CustomEvent<{ value: BlueprintMetaDataEditorSchema }>
   ) {
     ev.stopPropagation();
-    if (!this.blueprint || !isValidBlueprint(this.blueprint)) {
+    if (!this.blueprint) {
       return;
     }
 
     const metadata = {
-      ...this.blueprint.metadata,
+      ...this.blueprint.blueprint,
       domain: this.domain,
       name: ev.detail.value.name,
       author: ev.detail.value.author,
@@ -140,13 +143,12 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
     };
     const blueprint = {
       ...this.blueprint,
-      metadata,
       blueprint: metadata,
     };
 
     if (
       !this.blueprintPath ||
-      this.blueprintPath === this.blueprint.metadata.name
+      this.blueprintPath === this.blueprint.blueprint.name
     ) {
       fireEvent(this, "path-changed", { value: ev.detail.value.name });
     } else {
@@ -232,16 +234,26 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
   }
 
   protected render() {
-    const blueprintMetadata =
-      !this.blueprint || !isValidBlueprint(this.blueprint)
-        ? DefaultBlueprintMetadata
-        : ({
-            name: this.blueprint.metadata.name,
-            description: this.blueprint.metadata.description,
-            min_version: this.blueprint.metadata.homeassistant?.min_version,
-            path: this.blueprintPath,
-            author: this.blueprint.metadata.author,
-          } as BlueprintMetaDataEditorSchema);
+    if (this.yamlMode) {
+      return html`
+        <ha-yaml-editor
+          .hass=${this.hass}
+          .yamlSchema=${BlueprintYamlSchema}
+          .defaultValue=${this.blueprint}
+        >
+        </ha-yaml-editor>
+      `;
+    }
+
+    const blueprintMetadata = !this.blueprint
+      ? DefaultBlueprintMetadata
+      : ({
+          name: this.blueprint.blueprint.name,
+          description: this.blueprint.blueprint.description,
+          min_version: this.blueprint.blueprint.homeassistant?.min_version,
+          path: this.blueprintPath,
+          author: this.blueprint.blueprint.author,
+        } as BlueprintMetaDataEditorSchema);
 
     return html`
       <div
@@ -277,7 +289,7 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
               ></ha-icon-button>
             </a>
           </div>
-          ${!Object.entries(this.blueprint?.metadata?.input || {})?.length
+          ${!Object.entries(this.blueprint?.blueprint?.input || {})?.length
             ? html`<p class="section-description">
                 ${this.hass.localize(
                   "ui.panel.developer-tools.tabs.blueprints.editor.inputs.section_description"
@@ -289,7 +301,7 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
             role="region"
             aria-labelledby="inputs-heading"
             .hass=${this.hass}
-            .inputs=${Object.entries(this.blueprint.metadata?.input || {})}
+            .inputs=${Object.entries(this.blueprint.blueprint?.input || {})}
             @value-changed=${this._inputChanged}
             @resize-sidebar=${this._resizeSidebar}
             @open-sidebar=${this._openBlueprintSidebar}

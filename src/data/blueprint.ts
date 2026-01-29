@@ -46,12 +46,25 @@ export type BlueprintDomain = "automation" | "script";
 
 export type Blueprints = Record<string, BlueprintOrError>;
 
-export type BlueprintOrError = Blueprint | { error: string };
+export type BlueprintOrError = ServerBlueprint | { error: string };
 
 export interface BlueprintBase {
-  blueprint?: BlueprintMetaData;
+  blueprint: BlueprintMetaData;
+}
+
+/*
+ * The server returns blueprints in a schema not consistent with the
+ * documentation where the metadata is under the key "metadata" instead of
+ * "blueprint". This was kept the same to not make unintentional bugs, but
+ * migrating it would be a great tech debt issue!
+ */
+export interface ServerBlueprintBase {
   metadata: BlueprintMetaData;
 }
+
+export interface ServerAutomationBlueprint extends ManualAutomationConfig, ServerBlueprintBase {}
+export interface ServerScriptBlueprint extends ManualScriptConfig, ServerBlueprintBase {}
+export type ServerBlueprint = ServerAutomationBlueprint | ServerScriptBlueprint;
 
 export interface AutomationBlueprint
   extends ManualAutomationConfig, BlueprintBase {}
@@ -95,7 +108,7 @@ export interface BlueprintImportResult {
   suggested_filename: string;
   raw_data: string;
   exists?: boolean;
-  blueprint: Blueprint;
+  blueprint: ServerBlueprint;
   validation_errors: string[] | null;
 }
 
@@ -153,7 +166,7 @@ export type BlueprintSourceType = "local" | "community" | "homeassistant";
 export const getBlueprintSourceType = (
   blueprint: Blueprint
 ): BlueprintSourceType => {
-  const sourceUrl = blueprint.metadata.source_url;
+  const sourceUrl = blueprint.blueprint.source_url;
 
   if (!sourceUrl) {
     return "local";
@@ -239,7 +252,7 @@ export const BlueprintYamlSchema = yaml.DEFAULT_SCHEMA.extend([inputTag]);
 
 export function isValidBlueprint(
   blueprint: BlueprintOrError
-): blueprint is Blueprint {
+): blueprint is ServerBlueprint {
   return !("error" in blueprint);
 }
 
@@ -259,15 +272,11 @@ export function normalizeBlueprint(blueprint: Blueprint): Blueprint {
     }
   }
 
-  if (blueprint.blueprint) {
-    blueprint.metadata = blueprint.blueprint;
-  }
-
   return blueprint;
 }
 
 export const DefaultAutomationBlueprint: AutomationBlueprint = {
-  metadata: {
+  blueprint: {
     name: "",
     domain: "automation",
     input: {},
@@ -278,7 +287,7 @@ export const DefaultAutomationBlueprint: AutomationBlueprint = {
 };
 
 export const DefaultScriptBlueprint: ScriptBlueprint = {
-  metadata: {
+  blueprint: {
     name: "",
     domain: "script",
     input: {},

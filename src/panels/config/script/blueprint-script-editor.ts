@@ -7,10 +7,10 @@ import "../../../components/ha-markdown";
 import { fetchBlueprints } from "../../../data/blueprint";
 import type { BlueprintScriptConfig } from "../../../data/script";
 import { saveFabStyles } from "../automation/styles";
-import { BlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
+import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 
 @customElement("blueprint-script-editor")
-export class BlueprintScriptEditor extends BlueprintGenericEditor {
+export class BlueprintScriptEditor extends HaBlueprintGenericEditor {
   @property({ attribute: false }) public config!: BlueprintScriptConfig;
 
   @property({ type: Boolean }) public saving = false;
@@ -55,7 +55,7 @@ export class BlueprintScriptEditor extends BlueprintGenericEditor {
 
   static get styles(): CSSResultGroup {
     return [
-      BlueprintGenericEditor.styles,
+      HaBlueprintGenericEditor.styles,
       saveFabStyles,
       css`
         :host {
