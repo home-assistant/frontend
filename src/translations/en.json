@@ -2306,10 +2306,10 @@
       },
       "home": {
         "editor": {
-          "title": "Edit home page",
-          "description": "Configure your home page display preferences.",
+          "title": "Edit Overview page",
+          "description": "Configure your Overview page display preferences.",
           "favorite_entities_helper": "Display your favorite entities. Home Assistant will still suggest based on commonly used up to 8 slots.",
-          "save_failed": "Failed to save home page configuration",
+          "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page"
         }
