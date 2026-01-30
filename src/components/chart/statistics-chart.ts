@@ -605,6 +605,57 @@ export class StatisticsChart extends LitElement {
         }
       });
 
+      // Append current state if viewing recent data
+      const now = new Date();
+      // allow 10m of leeway for "now", because stats are 5 minute aggregated
+      const isUpToNow = now.getTime() - endTime.getTime() <= 600000;
+      if (isUpToNow) {
+        // Skip external statistics (they have ":" in the ID)
+        if (!statistic_id.includes(":")) {
+          const stateObj = this.hass.states[statistic_id];
+          if (stateObj) {
+            const currentValue = parseFloat(stateObj.state);
+            if (
+              isFinite(currentValue) &&
+              !this._hiddenStats.has(statistic_id)
+            ) {
+              // First, close out the last stat segment at prevEndTime
+              const lastEndTime = prevEndTime;
+              const lastValues = prevValues;
+              if (lastEndTime && lastValues) {
+                statDataSets.forEach((d, i) => {
+                  d.data!.push(
+                    this._transformDataValue([lastEndTime, ...lastValues[i]!])
+                  );
+                });
+              }
+              // Then push the current state at now
+              statTypes.forEach((type, i) => {
+                const val: (number | null)[] = [];
+                if (type === "sum" || type === "change") {
+                  // Skip cumulative types - need special calculation
+                  val.push(null);
+                } else if (
+                  type === bandTop &&
+                  this.chartType === "line" &&
+                  drawBands &&
+                  !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
+                ) {
+                  // For band chart, current value is both min and max, so diff is 0
+                  val.push(0);
+                  val.push(currentValue);
+                } else {
+                  val.push(currentValue);
+                }
+                statDataSets[i].data!.push(
+                  this._transformDataValue([now, ...val])
+                );
+              });
+            }
+          }
+        }
+      }
+
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
       Array.prototype.push.apply(legendData, statLegendData);

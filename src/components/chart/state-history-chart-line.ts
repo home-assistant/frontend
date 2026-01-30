@@ -716,6 +716,18 @@ export class StateHistoryChartLine extends LitElement {
       // Add an entry for final values
       pushData(endTime, prevValues);
 
+      // For sensors, append current state if viewing recent data
+      const now = new Date();
+      // allow 1s of leeway for "now"
+      const isUpToNow = now.getTime() - endTime.getTime() <= 1000;
+      if (domain === "sensor" && isUpToNow && data.length === 1) {
+        const stateObj = this.hass.states[states.entity_id];
+        const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
+        if (currentValue !== null) {
+          data[0].data!.push([now, currentValue]);
+        }
+      }
+
       // Concat two arrays
       Array.prototype.push.apply(datasets, data);
     });
