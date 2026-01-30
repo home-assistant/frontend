@@ -150,7 +150,7 @@ ${typeof this._templateResult.result === "object"
     await this._unsubscribeTemplate();
 
     const template = `
-    ${this.context?.variables ? Object.entries(this.context?.variables).map(([key, val]) => `{% set ${key} = ${JSON.stringify(val)} %}`) : ""}
+    ${this.context?.variables ? Object.entries(this.context.variables).map(([key, val]) => `{% set ${key} = ${JSON.stringify(val)} %}`).join('\n') : ""}
     ${this.value || ""}
     `;
     try {
