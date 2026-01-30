@@ -3,6 +3,7 @@ import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
@@ -45,7 +46,6 @@ import {
   type ActionCommandComboBoxItem,
   type NavigationComboBoxItem,
 } from "../../data/quick_bar";
-import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import {
   multiTermSortedSearch,
   type FuseWeightedKey,
@@ -85,6 +85,8 @@ export class QuickBar extends LitElement {
   private _navigationFilterOptions: NavigationFilterOptions = {};
 
   private _translationsLoaded = false;
+
+  private _itemSelected = false;
 
   // #region lifecycle
   public async showDialog(params: QuickBarParams) {
@@ -162,6 +164,7 @@ export class QuickBar extends LitElement {
     this._selectedSection = undefined;
     this._opened = false;
     this._open = false;
+    this._itemSelected = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   };
 
@@ -655,11 +658,17 @@ export class QuickBar extends LitElement {
   private async _handleItemSelected(
     ev: CustomEvent<PickerComboBoxIndexSelectedDetail>
   ) {
-    if (this._comboBox && this._comboBox.virtualizerElement) {
+    if (
+      !this._itemSelected &&
+      this._comboBox &&
+      this._comboBox.virtualizerElement
+    ) {
       const { index, newTab } = ev.detail;
       const item = this._comboBox.virtualizerElement.items[
         index
       ] as PickerComboBoxItem;
+
+      this._itemSelected = true;
 
       // entity selected
       if (item && "stateObj" in item) {
