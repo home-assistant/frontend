@@ -1402,15 +1402,16 @@
             "rpi_gpio": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::rpi_gpio%]",
             "themes": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::themes%]"
           },
-          "server_control": {
-            "perform_action": "{action} server",
+          "home_assistant_control": {
+            "perform_action": "{action} Home Assistant",
             "restart": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::server_management::restart%]",
             "stop": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::server_management::stop%]"
           },
           "types": {
             "reload": "Reload",
             "navigation": "Navigate",
-            "server_control": "Server"
+            "app_settings": "App settings",
+            "home_assistant_control": "Interrupts all running automations and scripts"
           },
           "navigation": {
             "logs": "[%key:ui::panel::config::logs::caption%]",
@@ -1441,11 +1442,19 @@
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
             "server_control": "[%key:ui::panel::config::developer-tools::tabs::yaml::title%]",
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
-            "app_dashboard": "App dashboard",
+            "apps": "Apps",
             "app_store": "App store",
             "app_info": "{app} info",
             "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
-            "labs": "[%key:ui::panel::config::labs::caption%]"
+            "labs": "[%key:ui::panel::config::labs::caption%]",
+            "developer-tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+            "matter": "[%key:ui::panel::config::dashboard::matter::main%]",
+            "zha": "[%key:ui::panel::config::dashboard::zha::main%]",
+            "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
+            "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
+            "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
+            "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
+            "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -2336,7 +2345,7 @@
             "main": "Backup",
             "secondary": "Generate backups of your Home Assistant configuration"
           },
-          "supervisor": {
+          "apps": {
             "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
           },
@@ -2384,24 +2393,31 @@
             "secondary": "Loading..."
           },
           "zwave_js": {
+            "main": "Z-Wave",
             "secondary": "Sub-GHz mesh protocol"
           },
           "zha": {
+            "main": "Zigbee",
             "secondary": "Low-power mesh network"
           },
           "matter": {
+            "main": "Matter",
             "secondary": "Cross-vendor smart home standard"
           },
           "thread": {
+            "main": "Thread",
             "secondary": "Mesh network often used for Matter devices"
           },
           "bluetooth": {
+            "main": "Bluetooth",
             "secondary": "Local device connectivity"
           },
           "knx": {
+            "main": "KNX",
             "secondary": "Building automation standard"
           },
           "insteon": {
+            "main": "Insteon",
             "secondary": "Dual-mesh home automation"
           }
         },
@@ -4233,7 +4249,7 @@
             "confirm_delete_text": "{url} will be permanently deleted.",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
-            "cant_edit_yaml": "You are using your dashboard in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
+            "cant_edit_yaml": "Your resources are in YAML mode, therefore you cannot manage them through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
               "edit_resource": "Edit resource",
@@ -8127,7 +8143,6 @@
         },
         "editor": {
           "header": "Edit UI",
-          "default_view_title": "Home",
           "yaml_unsupported": "The edit UI is not available when in YAML mode.",
           "undo_redo_failed_to_apply_changes": "Unable to apply changes: {error}",
           "menu": {
