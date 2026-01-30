@@ -18,12 +18,12 @@ const SECONDARY_INFO_VALUES = {
   "last-changed": {},
   "last-updated": {},
   "last-triggered": { domains: ["automation", "script"] },
+  area: {},
+  "area-with-floor": {},
   position: { domains: ["cover"] },
   state: {},
   "tilt-position": { domains: ["cover"] },
   brightness: { domains: ["light"] },
-  area: {},
-  area_with_floor: {},
 };
 
 @customElement("hui-generic-entity-row-editor")
