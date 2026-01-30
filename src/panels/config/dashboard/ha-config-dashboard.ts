@@ -550,6 +550,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           ha-config-section {
             margin-top: -42px;
           }
+          ha-config-section.grid-view {
+            margin-top: 0;
+          }
         }
 
         ha-tip {

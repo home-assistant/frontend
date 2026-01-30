@@ -231,6 +231,17 @@ class HaConfigUpdatesGrid extends SubscribeMixin(LitElement) {
           justify-content: start;
         }
 
+        @media (max-width: 623px) {
+          .heading {
+            text-align: center;
+            padding-left: 0;
+            padding-inline-start: 0;
+          }
+          .card-group {
+            justify-content: center;
+          }
+        }
+
         ha-card {
           cursor: pointer;
           overflow: hidden;
