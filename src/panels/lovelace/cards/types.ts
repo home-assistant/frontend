@@ -97,7 +97,9 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "position"
     | "state"
     | "tilt-position"
-    | "brightness";
+    | "brightness"
+    | "area"
+    | "area_with_floor";
   action_name?: string;
   action?: string;
   /** @deprecated use "action" instead */
