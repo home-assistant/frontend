@@ -400,7 +400,7 @@ export class MatterConfigDashboard extends LitElement {
         }
 
         .dev-tools-content {
-          padding: 0 0 var(--ha-space-4);
+          padding: var(--ha-space-3) 0;
         }
 
         .dev-tools-content p {
