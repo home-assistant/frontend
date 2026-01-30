@@ -1,5 +1,6 @@
 import { mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -50,6 +51,7 @@ import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../../resources/fuseMultiTerm";
+import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
 import { isMac } from "../../util/is_mac";
@@ -260,11 +262,12 @@ export class QuickBar extends LitElement {
         ${this._showHint
           ? html`<ha-tip slot="footer" .hass=${this.hass}
               >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
-                keyboard_shortcut: html`<a
-                  href="#"
+                keyboard_shortcut: html`<button
+                  class="link"
                   @click=${this._openShortcutDialog}
-                  >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
-                >`,
+                >
+                  ${this.hass.localize("ui.tips.keyboard_shortcut")}
+                </button>`,
                 modifier: isMac ? "⌘" : "Ctrl",
               })}</ha-tip
             >`
@@ -768,44 +771,49 @@ export class QuickBar extends LitElement {
 
   // #region styles
 
-  static styles = css`
-    :host {
-      --dialog-surface-margin-top: var(--ha-space-10);
-      --ha-dialog-min-height: 620px;
-      --ha-bottom-sheet-height: calc(
-        100vh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-height: calc(
-        100dvh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-max-height: calc(
-        100vh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-max-height: calc(
-        100dvh - max(var(--safe-area-inset-top), 48px)
-      );
-      --dialog-content-padding: 0;
-      --safe-area-inset-bottom: 0px;
-    }
+  static get styles(): CSSResultGroup {
+    return [
+      buttonLinkStyle,
+      css`
+        :host {
+          --dialog-surface-margin-top: var(--ha-space-10);
+          --ha-dialog-min-height: 620px;
+          --ha-bottom-sheet-height: calc(
+            100vh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-height: calc(
+            100dvh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-max-height: calc(
+            100vh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-max-height: calc(
+            100dvh - max(var(--safe-area-inset-top), 48px)
+          );
+          --dialog-content-padding: 0;
+          --safe-area-inset-bottom: 0px;
+        }
 
-    ha-tip {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--secondary-text-color);
-      gap: var(--ha-space-1);
-    }
+        ha-tip {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: var(--secondary-text-color);
+          gap: var(--ha-space-1);
+        }
 
-    ha-tip a {
-      color: var(--primary-color);
-    }
+        ha-tip a {
+          color: var(--primary-color);
+        }
 
-    @media all and (max-width: 450px), all and (max-height: 690px) {
-      ha-tip {
-        display: none;
-      }
-    }
-  `;
+        @media all and (max-width: 450px), all and (max-height: 690px) {
+          ha-tip {
+            display: none;
+          }
+        }
+      `,
+    ];
+  }
 
   // #endregion styles
 }
