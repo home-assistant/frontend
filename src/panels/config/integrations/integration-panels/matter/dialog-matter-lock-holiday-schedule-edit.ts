@@ -3,11 +3,12 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-wa-dialog";
 import type { MatterHolidayOperatingMode } from "../../../../../data/matter-lock";
 import { setMatterLockHolidaySchedule } from "../../../../../data/matter-lock";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
@@ -37,10 +38,13 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
 
   @state() private _saving = false;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: MatterLockHolidayScheduleEditDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
 
     if (params.schedule) {
       this._startDateTime = this._epochToDateTimeLocal(
@@ -92,10 +96,11 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
         );
 
     return html`
-      <ha-dialog
-        open
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
         @closed=${this._dialogClosed}
-        .heading=${createCloseHeading(this.hass, title)}
       >
         <div class="form">
           <ha-textfield
@@ -136,17 +141,23 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
           </ha-select>
         </div>
 
-        <ha-button
-          slot="primaryAction"
-          @click=${this._save}
-          .disabled=${this._saving || !this._isValid()}
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${this._saving || !this._isValid()}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -204,13 +215,11 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
     }
   }
 
-  private _dialogClosed(ev: Event): void {
-    if ((ev.target as HTMLElement).tagName === "HA-DIALOG") {
-      this.closeDialog();
-    }
+  public closeDialog(): void {
+    this._open = false;
   }
 
-  public closeDialog(): void {
+  private _dialogClosed(): void {
     this._params = undefined;
     this._startDateTime = "";
     this._endDateTime = "";
@@ -226,8 +235,7 @@ class DialogMatterLockHolidayScheduleEdit extends LitElement {
         .form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          padding: 16px 24px;
+          gap: var(--ha-space-4);
         }
       `,
     ];

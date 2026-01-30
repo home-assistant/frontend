@@ -3,6 +3,7 @@ import {
   mdiCalendarRange,
   mdiCalendarWeek,
   mdiDelete,
+  mdiLock,
   mdiPartyPopper,
   mdiPlus,
 } from "@mdi/js";
@@ -10,14 +11,15 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-button-toggle-group";
+import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-list";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-wa-dialog";
 import type {
   MatterLockInfo,
   MatterLockUser,
@@ -67,9 +69,12 @@ class DialogMatterLockManage extends LitElement {
 
   @state() private _activeTab: TabId = "users";
 
+  @state() private _open = false;
+
   public async showDialog(params: MatterLockManageDialogParams): Promise<void> {
     this._deviceId = params.device_id;
     this._loading = true;
+    this._open = true;
     await this._fetchData();
   }
 
@@ -252,14 +257,13 @@ class DialogMatterLockManage extends LitElement {
     const tabButtons = this._getTabButtons();
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.matter.lock.dialog_title")
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.matter.lock.dialog_title"
         )}
+        @closed=${this._dialogClosed}
       >
         ${this._loading
           ? html`<div class="center">
@@ -281,7 +285,7 @@ class DialogMatterLockManage extends LitElement {
 
               <div class="content">${this._renderTabContent()}</div>
             `}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -314,36 +318,38 @@ class DialogMatterLockManage extends LitElement {
               )}
             </p>`
           : html`
-              <ha-list>
+              <ha-md-list>
                 ${occupiedUsers.map(
                   (user) => html`
-                    <ha-list-item
-                      twoline
-                      hasMeta
+                    <ha-md-list-item
+                      type="button"
                       .user=${user}
                       @click=${this._handleUserClick}
                     >
-                      <span
-                        >${user.user_name || `User ${user.user_index}`}</span
-                      >
-                      <span slot="secondary">
+                      <div slot="start" class="icon-background user">
+                        <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
+                      </div>
+                      <div slot="headline">
+                        ${user.user_name || `User ${user.user_index}`}
+                      </div>
+                      <div slot="supporting-text">
                         ${this.hass.localize(
                           `ui.panel.config.matter.lock.users.user_type.${user.user_type}`
                         )}
                         ${user.credentials.length > 0
                           ? ` - ${user.credentials.length} ${this.hass.localize("ui.panel.config.matter.lock.users.credentials").toLowerCase()}`
                           : ""}
-                      </span>
+                      </div>
                       <ha-icon-button
-                        slot="meta"
+                        slot="end"
                         .path=${mdiDelete}
                         .user=${user}
                         @click=${this._handleDeleteUserClick}
                       ></ha-icon-button>
-                    </ha-list-item>
+                    </ha-md-list-item>
                   `
                 )}
-              </ha-list>
+              </ha-md-list>
             `}
         <div class="actions">
           <ha-button @click=${this._addUser}>
@@ -365,20 +371,22 @@ class DialogMatterLockManage extends LitElement {
               )}
             </p>`
           : html`
-              <ha-list>
+              <ha-md-list>
                 ${this._weekDaySchedules.map((schedule) => {
                   const user = this._users.find(
                     (u) => u.user_index === schedule.user_index
                   );
                   return html`
-                    <ha-list-item
-                      twoline
-                      hasMeta
+                    <ha-md-list-item
+                      type="button"
                       .schedule=${schedule}
                       @click=${this._handleWeekDayScheduleClick}
                     >
-                      <span>${schedule.days.join(", ")}</span>
-                      <span slot="secondary">
+                      <div slot="start" class="icon-background schedule">
+                        <ha-svg-icon .path=${mdiCalendarWeek}></ha-svg-icon>
+                      </div>
+                      <div slot="headline">${schedule.days.join(", ")}</div>
+                      <div slot="supporting-text">
                         ${user?.user_name || `User ${schedule.user_index}`} -
                         ${String(schedule.start_hour).padStart(
                           2,
@@ -388,11 +396,11 @@ class DialogMatterLockManage extends LitElement {
                         ${String(schedule.end_hour).padStart(2, "0")}:${String(
                           schedule.end_minute
                         ).padStart(2, "0")}
-                      </span>
-                    </ha-list-item>
+                      </div>
+                    </ha-md-list-item>
                   `;
                 })}
-              </ha-list>
+              </ha-md-list>
             `}
         <div class="actions">
           <ha-button @click=${this._addWeekDaySchedule}>
@@ -416,7 +424,7 @@ class DialogMatterLockManage extends LitElement {
               )}
             </p>`
           : html`
-              <ha-list>
+              <ha-md-list>
                 ${this._yearDaySchedules.map((schedule) => {
                   const user = this._users.find(
                     (u) => u.user_index === schedule.user_index
@@ -424,24 +432,25 @@ class DialogMatterLockManage extends LitElement {
                   const startDate = new Date(schedule.local_start_time * 1000);
                   const endDate = new Date(schedule.local_end_time * 1000);
                   return html`
-                    <ha-list-item
-                      twoline
-                      hasMeta
+                    <ha-md-list-item
+                      type="button"
                       .schedule=${schedule}
                       @click=${this._handleYearDayScheduleClick}
                     >
-                      <span
-                        >${user?.user_name ||
-                        `User ${schedule.user_index}`}</span
-                      >
-                      <span slot="secondary">
+                      <div slot="start" class="icon-background schedule">
+                        <ha-svg-icon .path=${mdiCalendarRange}></ha-svg-icon>
+                      </div>
+                      <div slot="headline">
+                        ${user?.user_name || `User ${schedule.user_index}`}
+                      </div>
+                      <div slot="supporting-text">
                         ${startDate.toLocaleDateString()} -
                         ${endDate.toLocaleDateString()}
-                      </span>
-                    </ha-list-item>
+                      </div>
+                    </ha-md-list-item>
                   `;
                 })}
-              </ha-list>
+              </ha-md-list>
             `}
         <div class="actions">
           <ha-button @click=${this._addYearDaySchedule}>
@@ -465,30 +474,32 @@ class DialogMatterLockManage extends LitElement {
               )}
             </p>`
           : html`
-              <ha-list>
+              <ha-md-list>
                 ${this._holidaySchedules.map((schedule) => {
                   const startDate = new Date(schedule.local_start_time * 1000);
                   const endDate = new Date(schedule.local_end_time * 1000);
                   return html`
-                    <ha-list-item
-                      twoline
-                      hasMeta
+                    <ha-md-list-item
+                      type="button"
                       .schedule=${schedule}
                       @click=${this._handleHolidayScheduleClick}
                     >
-                      <span>
+                      <div slot="start" class="icon-background holiday">
+                        <ha-svg-icon .path=${mdiPartyPopper}></ha-svg-icon>
+                      </div>
+                      <div slot="headline">
                         ${this.hass.localize(
                           `ui.panel.config.matter.lock.schedules.holiday.modes.${schedule.operating_mode}`
                         )}
-                      </span>
-                      <span slot="secondary">
+                      </div>
+                      <div slot="supporting-text">
                         ${startDate.toLocaleDateString()} -
                         ${endDate.toLocaleDateString()}
-                      </span>
-                    </ha-list-item>
+                      </div>
+                    </ha-md-list-item>
                   `;
                 })}
-              </ha-list>
+              </ha-md-list>
             `}
         <div class="actions">
           <ha-button @click=${this._addHolidaySchedule}>
@@ -643,6 +654,10 @@ class DialogMatterLockManage extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._deviceId = undefined;
     this._lockInfo = undefined;
     this._users = [];
@@ -658,39 +673,52 @@ class DialogMatterLockManage extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
-          --mdc-list-side-padding: 24px;
-          --mdc-list-side-padding-right: 16px;
         }
         .center {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: var(--ha-space-6);
         }
         .tab-bar {
-          padding: 8px 24px;
+          padding: var(--ha-space-2) var(--ha-space-6);
           border-bottom: 1px solid var(--divider-color);
         }
         .content {
           min-height: 300px;
         }
         .tab-content {
-          padding: 16px 0;
+          padding: var(--ha-space-4) 0;
         }
         .empty {
           text-align: center;
           color: var(--secondary-text-color);
-          padding: 24px;
+          padding: var(--ha-space-6);
         }
         .actions {
-          padding: 8px 24px;
+          padding: var(--ha-space-2) var(--ha-space-6);
           display: flex;
           justify-content: flex-end;
         }
-        ha-list-item {
-          cursor: pointer;
+        .icon-background {
+          border-radius: var(--ha-border-radius-circle);
+          color: #fff;
+          display: flex;
+          width: 40px;
+          height: 40px;
+          align-items: center;
+          justify-content: center;
+        }
+        .icon-background.user {
+          background-color: var(--primary-color);
+        }
+        .icon-background.schedule {
+          background-color: #5f8a49;
+        }
+        .icon-background.holiday {
+          background-color: #e48629;
         }
       `,
     ];

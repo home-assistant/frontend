@@ -2,11 +2,12 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-wa-dialog";
 import type { MatterLockCredentialType } from "../../../../../data/matter-lock";
 import { setMatterLockCredential } from "../../../../../data/matter-lock";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
@@ -26,10 +27,13 @@ class DialogMatterLockCredentialEdit extends LitElement {
 
   @state() private _saving = false;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: MatterLockCredentialEditDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
 
     if (params.credential) {
       this._credentialType = params.credential.credential_type;
@@ -55,10 +59,11 @@ class DialogMatterLockCredentialEdit extends LitElement {
     const supportedTypes = this._params.lockInfo.supported_credential_types;
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, title)}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
       >
         <div class="form">
           <ha-select
@@ -100,17 +105,23 @@ class DialogMatterLockCredentialEdit extends LitElement {
             : nothing}
         </div>
 
-        <ha-button
-          slot="primaryAction"
-          @click=${this._save}
-          .disabled=${this._saving || !this._isValid()}
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${this._saving || !this._isValid()}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -164,6 +175,10 @@ class DialogMatterLockCredentialEdit extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._credentialType = "pin";
     this._credentialData = "";
@@ -178,8 +193,7 @@ class DialogMatterLockCredentialEdit extends LitElement {
         .form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          padding: 16px 24px;
+          gap: var(--ha-space-4);
         }
       `,
     ];

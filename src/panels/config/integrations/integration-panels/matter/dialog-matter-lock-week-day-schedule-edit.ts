@@ -2,12 +2,13 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-wa-dialog";
 import {
   maskFromDays,
   setMatterLockWeekDaySchedule,
@@ -47,10 +48,13 @@ class DialogMatterLockWeekDayScheduleEdit extends LitElement {
 
   @state() private _saving = false;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: MatterLockWeekDayScheduleEditDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
 
     if (params.schedule) {
       this._userIndex = params.schedule.user_index;
@@ -88,10 +92,11 @@ class DialogMatterLockWeekDayScheduleEdit extends LitElement {
         );
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, title)}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
       >
         <div class="form">
           <ha-select
@@ -159,17 +164,23 @@ class DialogMatterLockWeekDayScheduleEdit extends LitElement {
           </div>
         </div>
 
-        <ha-button
-          slot="primaryAction"
-          @click=${this._save}
-          .disabled=${this._saving || !this._isValid()}
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${this._saving || !this._isValid()}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -250,6 +261,10 @@ class DialogMatterLockWeekDayScheduleEdit extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._userIndex = 0;
     this._selectedDays = [];
@@ -268,28 +283,27 @@ class DialogMatterLockWeekDayScheduleEdit extends LitElement {
         .form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          padding: 16px 24px;
+          gap: var(--ha-space-4);
         }
         .days-section label {
           display: block;
-          margin-bottom: 8px;
+          margin-bottom: var(--ha-space-2);
           font-weight: 500;
         }
         .days-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
         .day-checkbox {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--ha-space-2);
           cursor: pointer;
         }
         .time-section {
           display: flex;
-          gap: 16px;
+          gap: var(--ha-space-4);
         }
         .time-row {
           flex: 1;

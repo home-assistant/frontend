@@ -2,12 +2,13 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-alert";
-import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-textfield";
+import "../../../../../components/ha-wa-dialog";
 import {
   setMatterLockCredential,
   setMatterLockWeekDaySchedule,
@@ -68,6 +69,8 @@ class DialogMatterLockUserEdit extends LitElement {
 
   @state() private _error = "";
 
+  @state() private _open = false;
+
   // Schedule fields
   @state() private _scheduleDays: string[] = [
     "monday",
@@ -87,6 +90,7 @@ class DialogMatterLockUserEdit extends LitElement {
     this._params = params;
     this._error = "";
     this._pinCode = "";
+    this._open = true;
 
     if (params.user) {
       this._userName = params.user.user_name || "";
@@ -143,10 +147,11 @@ class DialogMatterLockUserEdit extends LitElement {
     );
 
     return html`
-      <ha-dialog
-        open
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
         @closed=${this._dialogClosed}
-        .heading=${createCloseHeading(this.hass, title)}
       >
         <div class="form">
           ${this._error
@@ -248,17 +253,23 @@ class DialogMatterLockUserEdit extends LitElement {
             : nothing}
         </div>
 
-        <ha-button
-          slot="primaryAction"
-          @click=${this._save}
-          .disabled=${this._saving}
-        >
-          ${this._saving ? "Saving..." : isNew ? "Add user" : "Save"}
-        </ha-button>
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
-          Cancel
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            Cancel
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${this._saving}
+          >
+            ${this._saving ? "Saving..." : isNew ? "Add user" : "Save"}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -295,10 +306,23 @@ class DialogMatterLockUserEdit extends LitElement {
     this._scheduleEndTime = (ev.target as HTMLInputElement).value;
   }
 
-  private _dialogClosed(ev: Event): void {
-    if ((ev.target as HTMLElement).tagName === "HA-DIALOG") {
-      this.closeDialog();
-    }
+  private _dialogClosed(): void {
+    this._params = undefined;
+    this._userName = "";
+    this._userType = "unrestricted_user";
+    this._pinCode = "";
+    this._saving = false;
+    this._error = "";
+    this._scheduleDays = [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+    ];
+    this._scheduleStartTime = "09:00";
+    this._scheduleEndTime = "17:00";
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private async _save(): Promise<void> {
@@ -424,22 +448,7 @@ class DialogMatterLockUserEdit extends LitElement {
   }
 
   public closeDialog(): void {
-    this._params = undefined;
-    this._userName = "";
-    this._userType = "unrestricted_user";
-    this._pinCode = "";
-    this._saving = false;
-    this._error = "";
-    this._scheduleDays = [
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-    ];
-    this._scheduleStartTime = "09:00";
-    this._scheduleEndTime = "17:00";
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._open = false;
   }
 
   static get styles(): CSSResultGroup {
@@ -449,20 +458,19 @@ class DialogMatterLockUserEdit extends LitElement {
         .form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          padding: 16px 24px;
+          gap: var(--ha-space-4);
         }
 
         .hint {
-          margin: -8px 0 0 0;
-          font-size: 12px;
+          margin: calc(-1 * var(--ha-space-2)) 0 0 0;
+          font-size: var(--ha-font-size-s, 12px);
           color: var(--secondary-text-color);
         }
 
         .user-type-section {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: var(--ha-space-2);
         }
 
         .user-type-section > label,
@@ -472,9 +480,9 @@ class DialogMatterLockUserEdit extends LitElement {
         }
 
         .user-type-option {
-          padding: 12px 16px;
+          padding: var(--ha-space-3) var(--ha-space-4);
           border: 1px solid var(--divider-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
           cursor: pointer;
           transition: all 0.2s ease;
         }
@@ -494,7 +502,7 @@ class DialogMatterLockUserEdit extends LitElement {
         }
 
         .user-type-description {
-          font-size: 12px;
+          font-size: var(--ha-font-size-s, 12px);
           color: var(--secondary-text-color);
           margin-top: 2px;
         }
@@ -502,22 +510,22 @@ class DialogMatterLockUserEdit extends LitElement {
         .schedule-section {
           display: flex;
           flex-direction: column;
-          gap: 12px;
-          padding: 16px;
+          gap: var(--ha-space-3);
+          padding: var(--ha-space-4);
           background: var(--secondary-background-color);
-          border-radius: 8px;
+          border-radius: var(--ha-border-radius-md);
         }
 
         .days-row {
           display: flex;
-          gap: 6px;
+          gap: var(--ha-space-1-5, 6px);
           flex-wrap: wrap;
         }
 
         .day-chip {
-          padding: 8px 12px;
+          padding: var(--ha-space-2) var(--ha-space-3);
           border: 1px solid var(--divider-color);
-          border-radius: 16px;
+          border-radius: var(--ha-border-radius-pill);
           cursor: pointer;
           font-size: 13px;
           transition: all 0.2s ease;
@@ -537,7 +545,7 @@ class DialogMatterLockUserEdit extends LitElement {
         .time-row {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: var(--ha-space-3);
         }
 
         .time-row ha-textfield {
