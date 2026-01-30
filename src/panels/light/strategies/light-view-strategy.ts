@@ -45,19 +45,15 @@ const processAreasForLight = (
     }
 
     if (areaCards.length > 0) {
-      // Visibility condition: show "turn on" when all lights are off
-      const allOffConditions = areaLights.map((entityId) => ({
-        condition: "state" as const,
-        entity: entityId,
-        state_not: "on",
-      }));
-
-      // Visibility condition: show "turn off" when any light is on
-      const anyOnConditions = areaLights.map((entityId) => ({
-        condition: "state" as const,
-        entity: entityId,
-        state: "on",
-      }));
+      // Visibility condition: any light is on
+      const anyOnCondition = {
+        condition: "or" as const,
+        conditions: areaLights.map((entityId) => ({
+          condition: "state" as const,
+          entity: entityId,
+          state: "on",
+        })),
+      };
 
       cards.push({
         heading_style: "subtitle",
@@ -78,7 +74,12 @@ const processAreasForLight = (
                 area_id: area.area_id,
               },
             },
-            visibility: allOffConditions,
+            visibility: [
+              {
+                condition: "not",
+                conditions: [anyOnCondition],
+              },
+            ],
           },
           {
             type: "button",
@@ -91,14 +92,9 @@ const processAreasForLight = (
                 area_id: area.area_id,
               },
             },
-            visibility: [
-              {
-                condition: "or",
-                conditions: anyOnConditions,
-              },
-            ],
+            visibility: [anyOnCondition],
           },
-        ],
+        ] satisfies LovelaceCardConfig[],
       });
       cards.push(...areaCards);
     }
