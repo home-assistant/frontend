@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import {
   DOMAINS_INPUT_ROW,
   STRINGS_SEPARATOR_DOT,
 } from "../../../common/const";
