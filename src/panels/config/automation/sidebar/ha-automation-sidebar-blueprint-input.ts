@@ -2,8 +2,11 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
   mdiChevronRight,
+  mdiContentCopy,
+  mdiContentCut,
   mdiDelete,
   mdiPlaylistEdit,
+  mdiPlusCircleMultipleOutline,
   mdiRenameBox,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
@@ -62,6 +65,13 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
 
       if (changedProperties.get("config")?.id !== this.config?.id) {
         this._path = [];
+      }
+
+      if (
+        changedProperties.get("config")?.path !== this.config?.path &&
+        this.config.path
+      ) {
+        this._path = this.config.path;
       }
     }
   }
@@ -134,6 +144,66 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
         </ha-dropdown-item>
 
         <wa-divider slot="menu-items"></wa-divider>
+        <ha-dropdown-item slot="menu-items" value="duplicate">
+          <ha-svg-icon
+            slot="icon"
+            .path=${mdiPlusCircleMultipleOutline}
+          ></ha-svg-icon>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.actions.duplicate"
+            )}
+            <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+          </div>
+        </ha-dropdown-item>
+
+        <ha-dropdown-item slot="menu-items" value="copy">
+          <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.copy"
+            )}
+            ${!this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${isMac
+                      ? html`<ha-svg-icon
+                          .path=${mdiAppleKeyboardCommand}
+                        ></ha-svg-icon>`
+                      : this.hass.localize(
+                          "ui.panel.config.automation.editor.ctrl"
+                        )}</span
+                  >
+                  <span>+</span>
+                  <span>C</span>
+                </span>`
+              : nothing}
+          </div>
+        </ha-dropdown-item>
+
+        <ha-dropdown-item slot="menu-items" value="cut">
+          <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
+          <div class="overflow-label">
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.cut"
+            )}
+            ${!this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${isMac
+                      ? html`<ha-svg-icon
+                          .path=${mdiAppleKeyboardCommand}
+                        ></ha-svg-icon>`
+                      : this.hass.localize(
+                          "ui.panel.config.automation.editor.ctrl"
+                        )}</span
+                  >
+                  <span>+</span>
+                  <span>X</span>
+                </span>`
+              : nothing}
+          </div>
+        </ha-dropdown-item>
         <ha-dropdown-item
           slot="menu-items"
           value="toggle_yaml_mode"
@@ -189,7 +259,7 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
                       appearance="plain"
                       @click=${this._openInputGroup(i)}
                     >
-                      ${pathPartName ?? pathPart}
+                      ${pathPartName || pathPart}
                     </ha-button>
                   `;
                 }),
@@ -258,13 +328,25 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
 
     switch (action) {
       case "rename":
-        this.config.rename();
+        this.config.rename(this._path);
+        break;
+      case "duplicate":
+        this.config.duplicate(this._path);
+        if (this._path && this._path.length > 0) {
+          this._path = this._path.slice(0, this._path.length - 1);
+        }
+        break;
+      case "cut":
+        this.config.cut(this._path);
+        break;
+      case "copy":
+        this.config.copy(this._path);
         break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();
         break;
       case "delete":
-        this.config.delete();
+        this.config.deleteAtPath(this._path);
         break;
     }
   }

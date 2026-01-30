@@ -30,7 +30,11 @@ import type {
   BlueprintClipboard,
   BlueprintInput,
 } from "../../../../data/blueprint";
-import { INPUT_ICONS } from "../../../../data/blueprint";
+import {
+  getContainingSection,
+  isInputSection,
+  INPUT_ICONS,
+} from "../../../../data/blueprint";
 import {
   showConfirmationDialog,
   showPromptDialog,
@@ -39,8 +43,6 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-blueprint-input-editor";
 import type { BlueprintInputSidebarConfig } from "../../../../data/automation";
-
-const preventDefault = (ev) => ev.preventDefault();
 
 @customElement("ha-blueprint-input-row")
 export default class HaBlueprintInputRow extends LitElement {
@@ -81,10 +83,6 @@ export default class HaBlueprintInputRow extends LitElement {
 
   @state() private _selected = false;
 
-  private _inputIsSection(x: any): x is BlueprintInputSection {
-    return "input" in x;
-  }
-
   private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
 
@@ -93,10 +91,10 @@ export default class HaBlueprintInputRow extends LitElement {
       fireEvent(this, "close-sidebar");
       return;
     }
-    this.openSidebar();
+    this.openSidebar(undefined);
   }
 
-  public openSidebar(): void {
+  public openSidebar(path: string[] | undefined): void {
     if (!this.input[1]) {
       return;
     }
@@ -112,9 +110,16 @@ export default class HaBlueprintInputRow extends LitElement {
       save: this._handleChangeEvent.bind(this),
       toggleYamlMode: this._toggleYamlMode.bind(this),
       close: this._closeSidebar.bind(this),
-      delete: this._onDelete.bind(this),
+      delete: () => {
+        /* this isn't used for the blueprint input sidebar */
+      },
+      deleteAtPath: this._onDelete.bind(this),
+      duplicate: this._onDuplicate.bind(this),
+      cut: this._onCut.bind(this),
+      copy: this._onCopy.bind(this),
       yamlMode: this._yamlMode,
       rename: this._renameInput.bind(this),
+      path,
     } satisfies BlueprintInputSidebarConfig);
     this._selected = true;
 
@@ -133,10 +138,10 @@ export default class HaBlueprintInputRow extends LitElement {
       return nothing;
     }
 
-    const icon = this._inputIsSection(this.input[1])
+    const icon = isInputSection(this.input[1])
       ? mdiGroup
       : INPUT_ICONS[Object.keys(this.input[1].selector!)[0]];
-    const label = this.input[1]?.name ?? this.input[0];
+    const label = this.input[1]?.name || this.input[0];
 
     return html`
       <ha-card outlined>
@@ -151,7 +156,7 @@ export default class HaBlueprintInputRow extends LitElement {
           <ha-button-menu
             slot="icons"
             @action=${this._handleAction}
-            @click=${preventDefault}
+            @click=${stopPropagation}
             @closed=${stopPropagation}
             fixed
           >
@@ -274,7 +279,7 @@ export default class HaBlueprintInputRow extends LitElement {
     } else {
       this._switchYamlMode();
     }
-    this.openSidebar();
+    this.openSidebar(undefined);
   }
 
   private _closeSidebar() {
@@ -285,17 +290,16 @@ export default class HaBlueprintInputRow extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        await this._renameInput();
+        await this._renameInput([]);
         break;
       case 1:
-        fireEvent(this, "duplicate");
+        this._onDuplicate([]);
         break;
       case 2:
-        this._setClipboard();
+        this._onCopy([]);
         break;
       case 3:
-        this._setClipboard();
-        fireEvent(this, "value-changed", { value: null });
+        this._onCut([]);
         break;
       case 4:
         fireEvent(this, "move-up");
@@ -304,27 +308,65 @@ export default class HaBlueprintInputRow extends LitElement {
         fireEvent(this, "move-down");
         break;
       case 6:
-        if (this._yamlMode) {
-          this._switchUiMode();
-        } else {
-          this._switchYamlMode();
-        }
-        this.openSidebar();
+        this._toggleYamlMode();
         break;
       case 7:
-        this._onDelete();
+        this._onDelete([]);
         break;
     }
   }
 
-  private _setClipboard() {
-    this._clipboard = {
-      ...this._clipboard,
-      input: deepClone(this.input),
-    };
+  private _setClipboard(path: string[] | undefined) {
+    if (!path || path.length === 0) {
+      this._clipboard = {
+        ...this._clipboard,
+        input: deepClone(this.input),
+      };
+    } else {
+      const containingSection = getContainingSection(
+        this.input[1] as BlueprintInputSection,
+        path
+      );
+      const lastPathKey = path[path.length - 1]!;
+      const input = (containingSection as BlueprintInputSection).input[
+        lastPathKey
+      ];
+      this._clipboard = {
+        ...this._clipboard,
+        input: deepClone(input),
+      };
+    }
   }
 
-  private _onDelete() {
+  private _onDuplicate(path: string[] | undefined) {
+    fireEvent(this, "duplicate-at-path", path);
+  }
+
+  private _onCut(path: string[] | undefined) {
+    this._setClipboard(path);
+    if (
+      !path ||
+      path?.length === 0 ||
+      !this.input[1] ||
+      !isInputSection(this.input[1])
+    ) {
+      fireEvent(this, "value-changed", { value: null });
+    } else {
+      const value = deepClone(this.input);
+
+      const containingSection = getContainingSection(value[1], path);
+      const lastPathKey = path[path.length - 1]!;
+      delete (containingSection as BlueprintInputSection).input[lastPathKey];
+
+      fireEvent(this, "value-changed", { value });
+    }
+  }
+
+  private _onCopy(path: string[] | undefined) {
+    this._setClipboard(path);
+  }
+
+  private _onDelete(path: string[] | undefined): void {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.developer-tools.tabs.blueprints.editor.inputs.delete_confirm_title"
@@ -336,7 +378,11 @@ export default class HaBlueprintInputRow extends LitElement {
       confirmText: this.hass.localize("ui.common.delete"),
       destructive: true,
       confirm: () => {
-        fireEvent(this, "value-changed", { value: null });
+        if (!path || path.length === 0) {
+          fireEvent(this, "value-changed", { value: null });
+        } else {
+          fireEvent(this, "value-changed-at-path", { path, value: null });
+        }
       },
     });
   }
@@ -351,28 +397,56 @@ export default class HaBlueprintInputRow extends LitElement {
     this._yamlMode = true;
   }
 
-  private async _renameInput(): Promise<void> {
-    const id = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.developer-tools.tabs.blueprints.editor.inputs.change_id"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.developer-tools.tabs.blueprints.editor.inputs.id"
-      ),
-      inputType: "string",
-      placeholder: this.input[0],
-      defaultValue: this.input[0],
-      confirmText: this.hass.localize("ui.common.submit"),
-    });
-    if (!id) {
-      // This shouldn't be possible
-      return;
-    }
+  private async _renameInput(path: string[] | undefined): Promise<void> {
+    if (!path || path.length === 0) {
+      const id = await showPromptDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.inputs.change_id"
+        ),
+        inputLabel: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.inputs.id"
+        ),
+        inputType: "string",
+        placeholder: this.input[0],
+        defaultValue: this.input[0],
+        confirmText: this.hass.localize("ui.common.submit"),
+      });
+      if (!id) {
+        // This shouldn't be possible
+        return;
+      }
 
-    const value = [id, this.input[1]];
-    fireEvent(this, "value-changed", {
-      value,
-    });
+      const value = [id, this.input[1]];
+      fireEvent(this, "value-changed", { value });
+    } else {
+      const containingSection = getContainingSection(
+        this.input[1] as BlueprintInputSection,
+        path
+      );
+      const lastPathKey = path[path.length - 1]!;
+
+      const id = await showPromptDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.inputs.change_id"
+        ),
+        inputLabel: this.hass.localize(
+          "ui.panel.developer-tools.tabs.blueprints.editor.inputs.id"
+        ),
+        inputType: "string",
+        placeholder: lastPathKey,
+        defaultValue: lastPathKey,
+        confirmText: this.hass.localize("ui.common.submit"),
+      });
+      if (!id) {
+        // This shouldn't be possible
+        return;
+      }
+
+      containingSection.input[id] = containingSection.input[lastPathKey];
+      delete containingSection.input[lastPathKey];
+      fireEvent(this, "value-changed", { value: this.input });
+      this.openSidebar(path.splice(0, this.input.length - 1, id));
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -476,5 +550,10 @@ declare global {
 
   interface HASSDomEvents {
     "open-input-group-path": string[];
+    "duplicate-at-path": string[] | undefined;
+    "value-changed-at-path": {
+      path: string[];
+      value: BlueprintInput | BlueprintInputSection | null;
+    };
   }
 }

@@ -62,8 +62,10 @@ export interface ServerBlueprintBase {
   metadata: BlueprintMetaData;
 }
 
-export interface ServerAutomationBlueprint extends ManualAutomationConfig, ServerBlueprintBase {}
-export interface ServerScriptBlueprint extends ManualScriptConfig, ServerBlueprintBase {}
+export interface ServerAutomationBlueprint
+  extends ManualAutomationConfig, ServerBlueprintBase {}
+export interface ServerScriptBlueprint
+  extends ManualScriptConfig, ServerBlueprintBase {}
 export type ServerBlueprint = ServerAutomationBlueprint | ServerScriptBlueprint;
 
 export interface AutomationBlueprint
@@ -260,6 +262,18 @@ export function isInputSection(
   input: BlueprintInput | BlueprintInputSection
 ): input is BlueprintInputSection {
   return "input" in input;
+}
+
+export function getContainingSection(
+  input: BlueprintInputSection,
+  path: string[]
+): BlueprintInputSection {
+  let innerInput = input;
+  for (let i = 0; i < path.length - 1; i++) {
+    innerInput = innerInput.input[path[i]]! as BlueprintInputSection;
+  }
+
+  return innerInput;
 }
 
 export function normalizeBlueprint(blueprint: Blueprint): Blueprint {

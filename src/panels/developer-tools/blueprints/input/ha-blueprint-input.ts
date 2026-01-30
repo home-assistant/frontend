@@ -8,6 +8,7 @@ import type {
   BlueprintInput,
   BlueprintInputSection,
 } from "../../../../data/blueprint";
+import { getContainingSection } from "../../../../data/blueprint";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
@@ -120,12 +121,51 @@ export class HaBlueprintInput extends LitElement {
     fireEvent(this, "value-changed", { value: inputs });
   }
 
-  private _duplicateInput(ev: CustomEvent) {
+  private _inputChangedAtPath(ev: CustomEvent) {
+    ev.stopPropagation();
+    const inputs = [...this.inputs];
+    const newValue = ev.detail.value;
+    const path = ev.detail.path;
+    const index = (ev.target as any).index;
+    const containingSection = getContainingSection(
+      inputs[index][1] as BlueprintInputSection,
+      path
+    );
+    const lastPathPart = path[path.length - 1];
+    if (newValue === null) {
+      delete containingSection.input[lastPathPart];
+    } else {
+      containingSection.input[lastPathPart] = newValue;
+    }
+
+    this.inputs = inputs;
+
+    fireEvent(this, "value-changed", { value: inputs });
+  }
+
+  private _duplicateInputAtPath(ev: CustomEvent) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
-    fireEvent(this, "value-changed", {
-      value: this.inputs.concat(deepClone(this.inputs[index])),
-    });
+    const path = ev.detail;
+
+    if (!path || path.length === 0) {
+      const clonedInput = deepClone(this.inputs[index][1]);
+      const newValue = [`${this.inputs[index][0]}_copy`, clonedInput];
+      fireEvent(this, "value-changed", {
+        value: [...this.inputs, newValue],
+      });
+    } else {
+      const inputs = [...this.inputs];
+      const containingSection = getContainingSection(
+        inputs[index][1] as BlueprintInputSection,
+        path
+      );
+      const lastPathPart = path[path.length - 1];
+      const clonedInput = deepClone(containingSection.input[lastPathPart]);
+      containingSection.input[`${lastPathPart}_copy`] = clonedInput;
+
+      fireEvent(this, "value-changed", { value: inputs });
+    }
   }
 
   private async _addInput(id: string, type: "input" | "section") {
@@ -194,10 +234,11 @@ export class HaBlueprintInput extends LitElement {
                 .input=${inputPair}
                 .path=${this.path}
                 .disabled=${this.disabled}
-                @duplicate=${this._duplicateInput}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._inputChanged}
+                @duplicate-at-path=${this._duplicateInputAtPath}
+                @value-changed-at-path=${this._inputChangedAtPath}
                 .hass=${this.hass}
                 .narrow=${this.narrow}
               >

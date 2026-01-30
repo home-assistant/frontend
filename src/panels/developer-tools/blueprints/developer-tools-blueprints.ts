@@ -110,23 +110,7 @@ class HaPanelDevBlueprints extends LitElement {
 
   private _onBlueprintContentChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
-    if (!this._selectedBlueprint) {
-      this._selectedBlueprint = ev.detail.value;
-    } else {
-      this._selectedBlueprint = {
-        ...this._selectedBlueprint,
-        ...ev.detail.value,
-        blueprint: {
-          ...this._selectedBlueprint.blueprint,
-          ...ev.detail.value.blueprint,
-          input: {
-            ...this._selectedBlueprint.blueprint.input,
-            ...ev.detail.value.blueprint.input,
-          },
-        },
-      };
-    }
-
+    this._selectedBlueprint = ev.detail.value;
     this._dirty = true;
   }
 
@@ -304,8 +288,8 @@ class HaPanelDevBlueprints extends LitElement {
               "ui.panel.developer-tools.tabs.blueprints.editor.actions.pick"
             )}
           </ha-button>
-          <ha-button 
-            @click=${this._toggleYamlMode} 
+          <ha-button
+            @click=${this._toggleYamlMode}
             .disabled=${!this._selectedBlueprint}
           >
             ${this._yamlMode

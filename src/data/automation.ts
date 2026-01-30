@@ -661,12 +661,17 @@ export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface BlueprintInputSidebarConfig extends BaseSidebarConfig {
-  rename: () => void;
+  rename: (path: string[] | undefined) => void;
   save: (value: BlueprintInput | BlueprintInputSection) => void;
+  duplicate: (path: string[] | undefined) => void;
+  cut: (path: string[] | undefined) => void;
+  copy: (path: string[] | undefined) => void;
+  deleteAtPath: (path: string[] | undefined) => void;
   id: string;
   config: BlueprintInput | BlueprintInputSection;
   toggleYamlMode: () => void;
   yamlMode: boolean;
+  path: string[] | undefined;
 }
 
 export type SidebarConfig =
