@@ -379,8 +379,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                                     "ui.panel.config.updates.more_updates",
                                     {
                                       count:
-                                        totalUpdates -
-                                        canInstallUpdates.length,
+                                        totalUpdates - canInstallUpdates.length,
                                     }
                                   )}
                                 >
