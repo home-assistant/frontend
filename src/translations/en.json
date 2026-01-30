@@ -2419,6 +2419,16 @@
           "insteon": {
             "main": "Insteon",
             "secondary": "Dual-mesh home automation"
+          },
+          "view": {
+            "list": "List view",
+            "grid": "Grid view"
+          },
+          "groups": {
+            "home_assistant": "Home Assistant",
+            "external_settings": "External settings",
+            "connections": "Connections",
+            "system": "System"
           }
         },
         "common": {

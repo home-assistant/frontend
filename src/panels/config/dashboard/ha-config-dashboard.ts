@@ -4,11 +4,14 @@ import {
   mdiMagnify,
   mdiPower,
   mdiRefresh,
+  mdiViewGrid,
+  mdiViewList,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/chips/ha-assist-chip";
@@ -22,6 +25,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import "../../../components/ha-top-app-bar-fixed";
 import type { CloudStatus } from "../../../data/cloud";
+import { saveFrontendUserData } from "../../../data/frontend";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
   severitySort,
@@ -44,7 +48,9 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
+import "./ha-config-navigation-grid";
 import "./ha-config-updates";
+import "./ha-config-updates-grid";
 
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
@@ -152,6 +158,8 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _tip?: string;
 
+  @state() private _view: "list" | "grid" = "list";
+
   @state() private _repairsIssues: { issues: RepairsIssue[]; total: number } = {
     issues: [],
     total: 0,
@@ -201,6 +209,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    const isGridView = this._view === "grid";
     const { updates: canInstallUpdates, total: totalUpdates } =
       this._filterUpdateEntitiesParameterized(
         this.hass.states,
@@ -209,6 +218,19 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
     const { issues: repairsIssues, total: totalRepairIssues } =
       this._repairsIssues;
+
+    const categoryPages = this._pages(
+      this.cloudStatus,
+      isComponentLoaded(this.hass, "cloud"),
+      this.hass.auth.external?.config.hasSettingsScreen
+    );
+
+    const groupTitles = [
+      this.hass.localize("ui.panel.config.dashboard.groups.home_assistant"),
+      this.hass.localize("ui.panel.config.dashboard.groups.external_settings"),
+      this.hass.localize("ui.panel.config.dashboard.groups.connections"),
+      this.hass.localize("ui.panel.config.dashboard.groups.system"),
+    ];
 
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
@@ -243,87 +265,154 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             )}
             <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
           </ha-dropdown-item>
+          <wa-divider></wa-divider>
+          <ha-dropdown-item
+            value="list-view"
+            class=${this._view === "list" ? "selected" : ""}
+          >
+            ${this.hass.localize("ui.panel.config.dashboard.view.list")}
+            <ha-svg-icon slot="icon" .path=${mdiViewList}></ha-svg-icon>
+          </ha-dropdown-item>
+          <ha-dropdown-item
+            value="grid-view"
+            class=${this._view === "grid" ? "selected" : ""}
+          >
+            ${this.hass.localize("ui.panel.config.dashboard.view.grid")}
+            <ha-svg-icon slot="icon" .path=${mdiViewGrid}></ha-svg-icon>
+          </ha-dropdown-item>
         </ha-dropdown>
 
         <ha-config-section
           .narrow=${this.narrow}
           .isWide=${this.isWide}
           full-width
+          class=${classMap({ "grid-view": isGridView })}
         >
           ${repairsIssues.length || canInstallUpdates.length
-            ? html`<ha-card outlined>
-                ${repairsIssues.length
-                  ? html`
-                      <ha-config-repairs
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .total=${totalRepairIssues}
-                        .repairsIssues=${repairsIssues}
-                      ></ha-config-repairs>
-                      ${totalRepairIssues > repairsIssues.length
-                        ? html`
-                            <ha-assist-chip
-                              href="/config/repairs"
-                              .label=${this.hass.localize(
-                                "ui.panel.config.repairs.more_repairs",
-                                {
-                                  count:
-                                    totalRepairIssues - repairsIssues.length,
-                                }
-                              )}
-                            >
-                            </ha-assist-chip>
-                          `
-                        : ""}
-                    `
-                  : ""}
-                ${repairsIssues.length && canInstallUpdates.length
-                  ? html`<hr />`
-                  : ""}
-                ${canInstallUpdates.length
-                  ? html`
-                      <ha-config-updates
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .total=${totalUpdates}
-                        .updateEntities=${canInstallUpdates}
-                        .isInstallable=${true}
-                      ></ha-config-updates>
-                      ${totalUpdates > canInstallUpdates.length
-                        ? html`
-                            <ha-assist-chip
-                              href="/config/updates"
-                              label=${this.hass.localize(
-                                "ui.panel.config.updates.more_updates",
-                                {
-                                  count:
-                                    totalUpdates - canInstallUpdates.length,
-                                }
-                              )}
-                            >
-                            </ha-assist-chip>
-                          `
-                        : ""}
-                    `
-                  : ""}
-              </ha-card>`
-            : ""}
-          ${this._pages(
-            this.cloudStatus,
-            isComponentLoaded(this.hass, "cloud"),
-            this.hass.auth.external?.config.hasSettingsScreen
-          ).map((categoryPages) =>
-            categoryPages.length === 0
-              ? nothing
+            ? isGridView
+              ? html`
+                  ${repairsIssues.length
+                    ? html`
+                        <ha-card outlined>
+                          <ha-config-repairs
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .total=${totalRepairIssues}
+                            .repairsIssues=${repairsIssues}
+                          ></ha-config-repairs>
+                          ${totalRepairIssues > repairsIssues.length
+                            ? html`
+                                <ha-assist-chip
+                                  href="/config/repairs"
+                                  .label=${this.hass.localize(
+                                    "ui.panel.config.repairs.more_repairs",
+                                    {
+                                      count:
+                                        totalRepairIssues -
+                                        repairsIssues.length,
+                                    }
+                                  )}
+                                >
+                                </ha-assist-chip>
+                              `
+                            : ""}
+                        </ha-card>
+                      `
+                    : ""}
+                  ${canInstallUpdates.length
+                    ? html`
+                        <ha-config-updates-grid
+                          .hass=${this.hass}
+                          .narrow=${this.narrow}
+                          .total=${totalUpdates}
+                          .updateEntities=${canInstallUpdates}
+                          .isInstallable=${true}
+                        ></ha-config-updates-grid>
+                      `
+                    : ""}
+                `
               : html`
                   <ha-card outlined>
-                    <ha-config-navigation
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .pages=${categoryPages}
-                    ></ha-config-navigation>
+                    ${repairsIssues.length
+                      ? html`
+                          <ha-config-repairs
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .total=${totalRepairIssues}
+                            .repairsIssues=${repairsIssues}
+                          ></ha-config-repairs>
+                          ${totalRepairIssues > repairsIssues.length
+                            ? html`
+                                <ha-assist-chip
+                                  href="/config/repairs"
+                                  .label=${this.hass.localize(
+                                    "ui.panel.config.repairs.more_repairs",
+                                    {
+                                      count:
+                                        totalRepairIssues -
+                                        repairsIssues.length,
+                                    }
+                                  )}
+                                >
+                                </ha-assist-chip>
+                              `
+                            : ""}
+                        `
+                      : ""}
+                    ${repairsIssues.length && canInstallUpdates.length
+                      ? html`<hr />`
+                      : ""}
+                    ${canInstallUpdates.length
+                      ? html`
+                          <ha-config-updates
+                            .hass=${this.hass}
+                            .narrow=${this.narrow}
+                            .total=${totalUpdates}
+                            .updateEntities=${canInstallUpdates}
+                            .isInstallable=${true}
+                          ></ha-config-updates>
+                          ${totalUpdates > canInstallUpdates.length
+                            ? html`
+                                <ha-assist-chip
+                                  href="/config/updates"
+                                  label=${this.hass.localize(
+                                    "ui.panel.config.updates.more_updates",
+                                    {
+                                      count:
+                                        totalUpdates -
+                                        canInstallUpdates.length,
+                                    }
+                                  )}
+                                >
+                                </ha-assist-chip>
+                              `
+                            : ""}
+                        `
+                      : ""}
                   </ha-card>
                 `
+            : ""}
+          ${categoryPages.map((group, index) =>
+            group.length === 0
+              ? nothing
+              : isGridView
+                ? html`
+                    <ha-config-navigation-grid
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .pages=${group}
+                      .heading=${groupTitles[index]}
+                    ></ha-config-navigation-grid>
+                  `
+                : html`
+                    <ha-card outlined>
+                      <ha-config-navigation
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .pages=${group}
+                      ></ha-config-navigation>
+                    </ha-card>
+                  `
           )}
           <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
         </ha-config-section>
@@ -336,6 +425,14 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
     if (!this._tip && changedProps.has("hass")) {
       this._tip = randomTip(this._openShortcutDialog, this.hass, this.narrow);
+    }
+
+    if (changedProps.has("hass")) {
+      const storedView =
+        this.hass.userData?.config_dashboard_view ?? ("list" as const);
+      if (this._view !== storedView) {
+        this._view = storedView;
+      }
     }
   }
 
@@ -388,7 +485,24 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
       case "restart":
         showRestartDialog(this);
         break;
+      case "list-view":
+        this._setView("list");
+        break;
+      case "grid-view":
+        this._setView("grid");
+        break;
     }
+  }
+
+  private _setView(view: "list" | "grid") {
+    if (this._view === view) {
+      return;
+    }
+    this._view = view;
+    saveFrontendUserData(this.hass.connection, "core", {
+      ...this.hass.userData,
+      config_dashboard_view: view,
+    });
   }
 
   static get styles(): CSSResultGroup {
@@ -403,6 +517,10 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           margin: auto;
           margin-top: -32px;
           max-width: 600px;
+        }
+
+        ha-config-section.grid-view {
+          max-width: 1600px;
         }
 
         ha-card {
@@ -454,6 +572,13 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           );
           border: none;
           margin-top: 0;
+        }
+
+        ha-dropdown-item.selected {
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--primary-color);
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+          --icon-primary-color: var(--primary-color);
         }
       `,
     ];

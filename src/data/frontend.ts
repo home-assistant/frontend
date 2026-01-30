@@ -4,6 +4,7 @@ export interface CoreFrontendUserData {
   showAdvanced?: boolean;
   showEntityIdPicker?: boolean;
   default_panel?: string;
+  config_dashboard_view?: "list" | "grid";
 }
 
 export interface SidebarFrontendUserData {
