@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDotsVertical,
   mdiLocationEnter,
@@ -11,6 +12,8 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
   HassioSupervisorInfo,
@@ -30,9 +33,6 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import "@home-assistant/webawesome/dist/components/divider/divider";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -107,11 +107,6 @@ class HaConfigSectionUpdates extends LitElement {
                     ${this.hass.localize(
                       `ui.panel.config.updates.${this._supervisorInfo.channel === "stable" ? "join" : "leave"}_beta`
                     )}
-                    ${this._supervisorInfo.channel === "stable"
-                      ? this.hass.localize("ui.panel.config.updates.join_beta")
-                      : this.hass.localize(
-                          "ui.panel.config.updates.leave_beta"
-                        )}
                   </ha-dropdown-item>
                 `
               : nothing}
