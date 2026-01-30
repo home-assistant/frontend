@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { STRINGS_SEPARATOR_DOT } from "../common/strings-separator";
+import { STRINGS_SEPARATOR_DOT } from "../common/const";
 import "../components/ha-relative-time";
 import { isUnavailableState } from "../data/entity/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
