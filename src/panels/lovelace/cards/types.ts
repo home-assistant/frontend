@@ -94,12 +94,12 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "last-changed"
     | "last-triggered"
     | "last-updated"
+    | "area"
+    | "area-with-floor"
     | "position"
     | "state"
     | "tilt-position"
-    | "brightness"
-    | "area"
-    | "area_with_floor";
+    | "brightness";
   action_name?: string;
   action?: string;
   /** @deprecated use "action" instead */
