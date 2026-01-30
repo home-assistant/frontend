@@ -8603,7 +8603,9 @@
                 "tilt-position": "Tilt position",
                 "brightness": "Brightness",
                 "last-updated": "Last updated",
-                "state": "State"
+                "state": "State",
+                "area": "Area",
+                "area_with_floor": "Area & floor"
               },
               "entity_row": {
                 "divider": "Divider",
