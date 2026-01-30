@@ -12,7 +12,7 @@ import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { getEntityContext } from "../../../common/entity/context/get_entity_context";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { STRINGS_SEPARATOR_DOT } from "../../../common/strings-separator";
+import { STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-tooltip";
