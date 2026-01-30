@@ -16,7 +16,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
-import { STRINGS_SEPARATOR_DOT } from "../../../common/strings-separator";
+import { STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
