@@ -1002,9 +1002,8 @@ export class HaConfigDevicePage extends LitElement {
       this._diagnosticDownloadLinks = (
         links as { link: string; domain: string }[]
       ).map((link) => ({
-        href: link.link,
         icon: mdiDownload,
-        action: (ev) => this._signUrl(ev),
+        action: () => this._signUrl(link.link),
         label:
           links.length > 1
             ? this.hass.localize(
@@ -1477,12 +1476,8 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  private async _signUrl(ev) {
-    const a = ev.currentTarget.getAttribute("href")
-      ? ev.currentTarget
-      : ev.currentTarget.closest("a");
-
-    const signedUrl = await getSignedPath(this.hass, a.getAttribute("href"));
+  private async _signUrl(link: string) {
+    const signedUrl = await getSignedPath(this.hass, link);
     fileDownload(signedUrl.path);
   }
 
