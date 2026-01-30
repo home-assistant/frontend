@@ -1432,6 +1432,7 @@
             "info": "[%key:ui::panel::config::info::caption%]",
             "network": "[%key:ui::panel::config::network::caption%]",
             "updates": "[%key:ui::panel::config::updates::caption%]",
+            "repairs": "[%key:ui::panel::config::repairs::caption%]",
             "hardware": "[%key:ui::panel::config::hardware::caption%]",
             "storage": "[%key:ui::panel::config::storage::caption%]",
             "general": "[%key:ui::panel::config::core::caption%]",
