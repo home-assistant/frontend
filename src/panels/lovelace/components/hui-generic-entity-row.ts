@@ -224,7 +224,7 @@ export class HuiGenericEntityRow extends LitElement {
                                           ? html`${areaPart}`
                                           : nothing
                                         : this.config.secondary_info ===
-                                            "area_with_floor"
+                                            "area-with-floor"
                                           ? composedAreaWithFloor
                                             ? html`${composedAreaWithFloor}`
                                             : nothing
