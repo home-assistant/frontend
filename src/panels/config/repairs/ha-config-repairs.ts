@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
-import { STRINGS_SEPARATOR_DOT } from "../../../common/strings-separator";
+import { STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import { domainToName } from "../../../data/integration";
