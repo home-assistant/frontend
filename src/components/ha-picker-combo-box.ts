@@ -529,9 +529,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._items = this._getItems();
 
     // Reset scroll position when filter changes
-    if (this.virtualizerElement) {
-      this.virtualizerElement.scrollToIndex(0);
-    }
+    this.virtualizerElement?.element(0)?.scrollIntoView();
   }
 
   private _registerKeyboardShortcuts() {
@@ -547,8 +545,34 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _focusList() {
     if (this._selectedItemIndex === -1) {
-      this._selectNextItem();
+      this._initializeSelectedIndex();
     }
+  }
+
+  /**
+   * Initialize keyboard selection to the currently selected value,
+   * or fall back to the first item when searching (skipping section titles).
+   */
+  private _initializeSelectedIndex(): void {
+    if (!this.virtualizerElement?.items?.length) {
+      return;
+    }
+    const initialIndex = this._getInitialSelectedIndex();
+    // Only initialize to first item if searching, otherwise require a selected value
+    if (initialIndex === 0 && !this._search) {
+      return;
+    }
+    let index = initialIndex;
+    // Skip section titles (strings)
+    if (typeof this.virtualizerElement.items[index] === "string") {
+      index += 1;
+    }
+    // Bounds check: ensure index is valid after skipping section title
+    if (index >= this.virtualizerElement.items.length) {
+      return;
+    }
+    this._selectedItemIndex = index;
+    this._scrollToSelectedItem();
   }
 
   private _selectNextItem = (ev?: KeyboardEvent) => {
@@ -567,6 +591,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (maxItems === -1) {
       this._resetSelectedItem();
       return;
+    }
+
+    // If no item is selected yet, start from the currently selected value
+    if (this._selectedItemIndex === -1) {
+      this._initializeSelectedIndex();
+      if (this._selectedItemIndex !== -1) {
+        return;
+      }
     }
 
     const nextIndex =
@@ -660,7 +692,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       ?.querySelector(".selected")
       ?.classList.remove("selected");
 
-    this.virtualizerElement?.scrollToIndex(this._selectedItemIndex, "end");
+    this.virtualizerElement
+      ?.element(this._selectedItemIndex)
+      ?.scrollIntoView({ block: "nearest" });
 
     requestAnimationFrame(() => {
       this.virtualizerElement
@@ -696,7 +730,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
 
     if (this._selectedItemIndex === -1) {
-      return;
+      this._initializeSelectedIndex();
+      if (this._selectedItemIndex === -1) {
+        return;
+      }
     }
 
     // if filter button is focused

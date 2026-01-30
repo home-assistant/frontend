@@ -333,9 +333,9 @@ export class MatterConfigDashboard extends LitElement {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "matter",
     });
-    if (configEntries.length) {
-      this._configEntry = configEntries[0];
-    }
+    this._configEntry = configEntries.find(
+      (entry) => entry.disabled_by === null && entry.source !== "ignore"
+    );
   }
 
   static get styles(): CSSResultGroup {

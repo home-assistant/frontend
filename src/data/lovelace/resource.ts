@@ -1,6 +1,10 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../types";
 
+export interface LovelaceInfo {
+  resource_mode: "yaml" | "storage";
+}
+
 export interface LovelaceResource {
   id: string;
   type: "css" | "js" | "module" | "html";
@@ -41,4 +45,9 @@ export const deleteResource = (hass: HomeAssistant, id: string) =>
   hass.callWS({
     type: "lovelace/resources/delete",
     resource_id: id,
+  });
+
+export const fetchLovelaceInfo = (hass: HomeAssistant): Promise<LovelaceInfo> =>
+  hass.callWS({
+    type: "lovelace/info",
   });

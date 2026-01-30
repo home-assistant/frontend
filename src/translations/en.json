@@ -1432,6 +1432,7 @@
             "info": "[%key:ui::panel::config::info::caption%]",
             "network": "[%key:ui::panel::config::network::caption%]",
             "updates": "[%key:ui::panel::config::updates::caption%]",
+            "repairs": "[%key:ui::panel::config::repairs::caption%]",
             "hardware": "[%key:ui::panel::config::hardware::caption%]",
             "storage": "[%key:ui::panel::config::storage::caption%]",
             "general": "[%key:ui::panel::config::core::caption%]",
@@ -1447,7 +1448,15 @@
             "app_info": "{app} info",
             "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
             "labs": "[%key:ui::panel::config::labs::caption%]",
-            "developer-tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]"
+            "developer-tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+            "matter": "[%key:ui::panel::config::dashboard::matter::main%]",
+            "zha": "[%key:ui::panel::config::dashboard::zha::main%]",
+            "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
+            "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
+            "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
+            "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
+            "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
+            "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -2386,24 +2395,31 @@
             "secondary": "Loading..."
           },
           "zwave_js": {
+            "main": "Z-Wave",
             "secondary": "Sub-GHz mesh protocol"
           },
           "zha": {
+            "main": "Zigbee",
             "secondary": "Low-power mesh network"
           },
           "matter": {
+            "main": "Matter",
             "secondary": "Cross-vendor smart home standard"
           },
           "thread": {
+            "main": "Thread",
             "secondary": "Mesh network often used for Matter devices"
           },
           "bluetooth": {
+            "main": "Bluetooth",
             "secondary": "Local device connectivity"
           },
           "knx": {
+            "main": "KNX",
             "secondary": "Building automation standard"
           },
           "insteon": {
+            "main": "Insteon",
             "secondary": "Dual-mesh home automation"
           }
         },
@@ -4235,7 +4251,7 @@
             "confirm_delete_text": "{url} will be permanently deleted.",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
-            "cant_edit_yaml": "You are using your dashboard in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
+            "cant_edit_yaml": "Your resources are in YAML mode, therefore you cannot manage them through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
               "edit_resource": "Edit resource",
@@ -8129,7 +8145,6 @@
         },
         "editor": {
           "header": "Edit UI",
-          "default_view_title": "Home",
           "yaml_unsupported": "The edit UI is not available when in YAML mode.",
           "undo_redo_failed_to_apply_changes": "Unable to apply changes: {error}",
           "menu": {
@@ -10165,7 +10180,8 @@
       "key_c_tip": "Press {keyboard_shortcut} 'c' on any page to open the command dialog",
       "key_e_tip": "Press {keyboard_shortcut} 'e' on any page to open the entity search dialog",
       "key_m_tip": "Press {keyboard_shortcut} 'm' on any page to get the My Home Assistant link",
-      "key_a_tip": "Press {keyboard_shortcut} 'a' on any page to open the Assist dialog"
+      "key_a_tip": "Press {keyboard_shortcut} 'a' on any page to open the Assist dialog",
+      "key_shortcut_quick_search": "Press {keyboard_shortcut} ''{modifier}+k'' on any page to open quick search"
     }
   },
   "landing-page": {
