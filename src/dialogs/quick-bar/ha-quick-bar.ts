@@ -765,6 +765,7 @@ export class QuickBar extends LitElement {
   private _openShortcutDialog(ev: Event): void {
     ev.preventDefault();
     showShortcutsDialog(this);
+    this.closeDialog();
   }
 
   // #endregion interaction
