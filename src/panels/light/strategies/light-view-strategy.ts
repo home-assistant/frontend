@@ -45,6 +45,20 @@ const processAreasForLight = (
     }
 
     if (areaCards.length > 0) {
+      // Visibility condition: show "turn on" when all lights are off
+      const allOffConditions = areaLights.map((entityId) => ({
+        condition: "state" as const,
+        entity: entityId,
+        state_not: "on",
+      }));
+
+      // Visibility condition: show "turn off" when any light is on
+      const anyOnConditions = areaLights.map((entityId) => ({
+        condition: "state" as const,
+        entity: entityId,
+        state: "on",
+      }));
+
       cards.push({
         heading_style: "subtitle",
         type: "heading",
@@ -53,6 +67,38 @@ const processAreasForLight = (
           action: "navigate",
           navigation_path: `/home/areas-${area.area_id}`,
         },
+        badges: [
+          {
+            type: "button",
+            icon: "mdi:power",
+            tap_action: {
+              action: "perform-action",
+              perform_action: "light.turn_on",
+              target: {
+                area_id: area.area_id,
+              },
+            },
+            visibility: allOffConditions,
+          },
+          {
+            type: "button",
+            icon: "mdi:power",
+            color: "orange",
+            tap_action: {
+              action: "perform-action",
+              perform_action: "light.turn_off",
+              target: {
+                area_id: area.area_id,
+              },
+            },
+            visibility: [
+              {
+                condition: "or",
+                conditions: anyOnConditions,
+              },
+            ],
+          },
+        ],
       });
       cards.push(...areaCards);
     }
