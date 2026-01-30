@@ -3,7 +3,9 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { DOMAINS_INPUT_ROW } from "../../../common/const";
+  DOMAINS_INPUT_ROW,
+  STRINGS_SEPARATOR_DOT,
+} from "../../../common/const";
 import { uid } from "../../../common/util/uid";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
@@ -12,7 +14,6 @@ import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { getEntityContext } from "../../../common/entity/context/get_entity_context";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-tooltip";
