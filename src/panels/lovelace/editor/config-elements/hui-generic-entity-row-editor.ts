@@ -22,6 +22,8 @@ const SECONDARY_INFO_VALUES = {
   state: {},
   "tilt-position": { domains: ["cover"] },
   brightness: { domains: ["light"] },
+  area: {},
+  area_with_floor: {},
 };
 
 @customElement("hui-generic-entity-row-editor")
