@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/ha-textfield";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import { setValue } from "../../../data/input_text";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -78,7 +78,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
               <div class="flex">
                 <ha-slider
                   labeled
-                  .disabled=${isUnavailableState(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
@@ -93,7 +93,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
           : html`
               <div class="flex state">
                 <ha-textfield
-                  .disabled=${isUnavailableState(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   pattern="[0-9]+([\\.][0-9]+)?"
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}

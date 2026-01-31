@@ -6,7 +6,7 @@ import { debounce } from "../common/util/debounce";
 import "../components/entity/state-info";
 import "../components/ha-slider";
 import "../components/ha-textfield";
-import { isUnavailableState } from "../data/entity/entity";
+import { UNAVAILABLE } from "../data/entity/entity";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
@@ -60,7 +60,7 @@ class StateCardNumber extends LitElement {
             <div class="flex">
               <ha-slider
                 labeled
-                .disabled=${isUnavailableState(this.stateObj.state)}
+                .disabled=${this.stateObj.state === UNAVAILABLE}
                 .step=${Number(this.stateObj.attributes.step)}
                 .min=${Number(this.stateObj.attributes.min)}
                 .max=${Number(this.stateObj.attributes.max)}
@@ -75,7 +75,7 @@ class StateCardNumber extends LitElement {
           `
         : html` <div class="flex state">
             <ha-textfield
-              .disabled=${isUnavailableState(this.stateObj.state)}
+              .disabled=${this.stateObj.state === UNAVAILABLE}
               pattern="[0-9]+([\\.][0-9]+)?"
               .step=${Number(this.stateObj.attributes.step)}
               .min=${Number(this.stateObj.attributes.min)}

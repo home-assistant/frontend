@@ -18,7 +18,7 @@ import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-time-input";
 import { isTiltOnly } from "../../../data/cover";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
@@ -263,7 +263,7 @@ class EntityPreviewRow extends LitElement {
               <div class="numberflex">
                 <ha-slider
                   labeled
-                  .disabled=${isUnavailableState(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
@@ -277,7 +277,7 @@ class EntityPreviewRow extends LitElement {
           : html` <div class="numberflex numberstate">
               <ha-textfield
                 autoValidate
-                .disabled=${isUnavailableState(stateObj.state)}
+                .disabled=${stateObj.state === UNAVAILABLE}
                 pattern="[0-9]+([\\.][0-9]+)?"
                 .step=${Number(stateObj.attributes.step)}
                 .min=${Number(stateObj.attributes.min)}
@@ -295,7 +295,7 @@ class EntityPreviewRow extends LitElement {
         <ha-select
           .label=${computeStateName(stateObj)}
           .value=${stateObj.state}
-          .disabled=${isUnavailableState(stateObj.state)}
+          .disabled=${stateObj.state === UNAVAILABLE}
           naturalMenuWidth
         >
           ${stateObj.attributes.options

@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
-import { isUnavailableState, UNKNOWN } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import {
   setInputDateTimeValue,
   stateToIsoDateString,
@@ -27,7 +27,7 @@ class MoreInfoInputDatetime extends LitElement {
             <ha-date-input
               .locale=${this.hass.locale}
               .value=${stateToIsoDateString(this.stateObj)}
-              .disabled=${isUnavailableState(this.stateObj.state)}
+              .disabled=${this.stateObj.state === UNAVAILABLE}
               @value-changed=${this._dateChanged}
             >
             </ha-date-input>
@@ -42,7 +42,7 @@ class MoreInfoInputDatetime extends LitElement {
                   ? this.stateObj.state.split(" ")[1]
                   : this.stateObj.state}
               .locale=${this.hass.locale}
-              .disabled=${isUnavailableState(this.stateObj.state)}
+              .disabled=${this.stateObj.state === UNAVAILABLE}
               @value-changed=${this._timeChanged}
               @click=${this._stopEventPropagation}
             ></ha-time-input>

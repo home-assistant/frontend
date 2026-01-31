@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
-import { isUnavailableState, UNKNOWN } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import {
   setInputDateTimeValue,
   stateToIsoDateString,
@@ -70,7 +70,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                 <ha-date-input
                   .label=${stateObj.attributes.has_time ? name : undefined}
                   .locale=${this.hass.locale}
-                  .disabled=${isUnavailableState(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   .value=${stateToIsoDateString(stateObj)}
                   @value-changed=${this._dateChanged}
                 >
@@ -86,7 +86,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                       ? stateObj.state.split(" ")[1]
                       : stateObj.state}
                   .locale=${this.hass.locale}
-                  .disabled=${isUnavailableState(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   @value-changed=${this._timeChanged}
                   @click=${this._stopEventPropagation}
                 ></ha-time-input>
