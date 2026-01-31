@@ -23,7 +23,9 @@ import type {
   EmptyStateCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
+  RepairsCardConfig,
   TileCardConfig,
+  UpdatesCardConfig,
 } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
@@ -257,6 +259,24 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         type: "discovered-devices",
         hide_empty: true,
       } satisfies DiscoveredDevicesCardConfig,
+      // Repairs card - only visible to admins, hides when empty
+      {
+        type: "repairs",
+        hide_empty: true,
+        tap_action: {
+          action: "navigate",
+          navigation_path: "/config/repairs",
+        },
+      } satisfies RepairsCardConfig,
+      // Updates card - only visible to admins, hides when empty
+      {
+        type: "updates",
+        hide_empty: true,
+        tap_action: {
+          action: "navigate",
+          navigation_path: "/config/updates",
+        },
+      } satisfies UpdatesCardConfig,
       hasLights &&
         ({
           type: "home-summary",
