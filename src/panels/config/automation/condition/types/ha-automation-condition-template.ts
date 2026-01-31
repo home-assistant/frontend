@@ -1,9 +1,15 @@
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-textarea";
 import type { TemplateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import { handleChangeEvent } from "../ha-automation-condition-row";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-form/ha-form";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+
+const SCHEMA = [
+  { name: "value_template", required: true, selector: { template: {} } },
+] as const;
 
 @customElement("ha-automation-condition-template")
 export class HaTemplateCondition extends LitElement {
@@ -18,36 +24,30 @@ export class HaTemplateCondition extends LitElement {
   }
 
   protected render() {
-    const { value_template } = this.condition;
     return html`
-      <p>
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.type.template.value_template"
-        )}
-        *
-      </p>
-      <ha-code-editor
-        .name=${"value_template"}
-        mode="jinja2"
+      <ha-form
         .hass=${this.hass}
-        .value=${value_template}
-        .readOnly=${this.disabled}
-        autocomplete-entities
+        .data=${this.condition}
+        .schema=${SCHEMA}
         @value-changed=${this._valueChanged}
-        dir="ltr"
-      ></ha-code-editor>
+        .computeLabel=${this._computeLabelCallback}
+        .disabled=${this.disabled}
+      ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    handleChangeEvent(this, ev);
+    ev.stopPropagation();
+    const newCondition = ev.detail.value;
+    fireEvent(this, "value-changed", { value: newCondition });
   }
 
-  static styles = css`
-    p {
-      margin-top: 0;
-    }
-  `;
+  private _computeLabelCallback = (
+    schema: SchemaUnion<typeof SCHEMA>
+  ): string =>
+    this.hass.localize(
+      `ui.panel.config.automation.editor.conditions.type.template.${schema.name}`
+    );
 }
 
 declare global {
