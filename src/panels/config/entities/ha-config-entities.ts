@@ -253,12 +253,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
+    window.addEventListener(
+      "exposed-entities-changed",
+      this._fetchExposedEntities
+    );
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
+    window.removeEventListener(
+      "exposed-entities-changed",
+      this._fetchExposedEntities
+    );
   }
 
   private _locationChanged = () => {
