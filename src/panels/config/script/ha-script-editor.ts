@@ -814,6 +814,7 @@ export class HaScriptEditor extends SubscribeMixin(
   private _backTapped = async () => {
     const result = await this._confirmUnsavedChanged();
     if (result) {
+      this.exitConfirmed = true;
       afterNextRender(() => goBack("/config"));
     }
   };

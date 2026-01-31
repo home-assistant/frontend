@@ -960,6 +960,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     if (this._mode === "live") {
       applyScene(this.hass, this._storedStates);
     }
+    this.exitConfirmed = true;
     afterNextRender(() => goBack("/config"));
   }
 

@@ -1,11 +1,15 @@
 import type { LitElement, PropertyValues } from "lit";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
+import { goBack } from "../common/navigate";
 import type { Constructor } from "../types";
+import { mainWindow } from "../common/dom/get_main_window";
 
 export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) =>
   class extends superClass {
+    private exitConfirmed = false;
+
     private _handleClick = async (e: MouseEvent) => {
       // get the right target, otherwise the composedPath would return <home-assistant> in the new event
       const target = e.composedPath()[0];
@@ -19,6 +23,24 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
         if (target) {
           const newEvent = new MouseEvent(e.type, e);
           target.dispatchEvent(newEvent);
+        }
+      }
+    };
+
+    private _handlePopState = async (e: PopStateEvent) => {
+      if (
+        e.state?.preventUnsavedNeedsConfirmation &&
+        (this.exitConfirmed || !this.isDirty)
+      ) {
+        goBack("/config");
+      } else if (e.state?.preventUnsavedNeedsConfirmation && this.isDirty) {
+        const result = await this.promptDiscardChanges();
+
+        if (result) {
+          this.exitConfirmed = true;
+        } else {
+          // Re-push state to "neutralize" the back button press and stay on page.
+          mainWindow.history.pushState(null, "");
         }
       }
     };
@@ -41,10 +63,24 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
       }
     }
 
+    public connectedCallback(): void {
+      super.connectedCallback();
+      // Tag the current history entry so we know this component owns the "unsaved changes" logic.
+      mainWindow.history.replaceState(
+        { ...mainWindow.history.state, preventUnsavedNeedsConfirmation: true },
+        ""
+      );
+      // Create a "buffer" state so the first back-button press triggers popstate without leaving the page.
+      mainWindow.history.pushState(null, "");
+
+      window.addEventListener("popstate", this._handlePopState);
+    }
+
     public disconnectedCallback(): void {
       super.disconnectedCallback();
 
       this._removeListeners();
+      window.removeEventListener("popstate", this._handlePopState);
     }
 
     // eslint-disable-next-line @typescript-eslint/class-literal-property-style
