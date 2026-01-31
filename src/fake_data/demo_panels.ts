@@ -8,6 +8,14 @@ export const demoPanels: Panels = {
     config: { mode: "storage" },
     url_path: "lovelace",
   },
+  home: {
+    component_name: "home",
+    icon: "mdi:home",
+    title: "home",
+    default_visible: false,
+    config: null,
+    url_path: "home",
+  },
   "dev-state": {
     component_name: "dev-state",
     icon: null,
