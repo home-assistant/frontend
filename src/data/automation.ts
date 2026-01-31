@@ -635,7 +635,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   insertAfter: (value: Action | Action[]) => boolean;
   run: () => void;
   toggleYamlMode: () => void;
-  contextVariables: any;
+  contextVariables: Record<string, any>;
   config: {
     action: Action;
   };

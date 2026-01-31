@@ -33,7 +33,7 @@ export class HaTemplateSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
-  @property({ attribute: false }) public context?: any;
+  @property({ attribute: false }) public context?: Record<string, any>;
 
   @state() private warn: string | undefined = undefined;
 

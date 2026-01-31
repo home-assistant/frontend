@@ -98,7 +98,7 @@ export class HaServiceControl extends LitElement {
   @property({ attribute: "hide-description", type: Boolean })
   public hideDescription = false;
 
-  @property({ attribute: false }) contextVariables?;
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
 
   @state() private _value!: this["value"];
 

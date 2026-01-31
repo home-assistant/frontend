@@ -20,7 +20,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false }) contextVariables?;
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
 
   @state() private _action?: ServiceAction;
 

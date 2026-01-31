@@ -793,8 +793,8 @@ declare global {
 
   interface HASSDomEvents {
     "open-sidebar": SidebarConfig;
-    "update-sidebar": any;
-    "update-variables": any;
+    "update-sidebar": { contextVariables: Record<string, any> };
+    "update-variables": Record<string, any>;
     "request-close-sidebar": undefined;
     "close-sidebar": undefined;
   }

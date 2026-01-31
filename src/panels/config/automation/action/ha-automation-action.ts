@@ -46,7 +46,7 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ attribute: false }) public highlightedActions?: Action[];
 
-  @property({ attribute: false }) public contextVariables?;
+  @property({ attribute: false }) public contextVariables?: Record<string, any>;
 
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
