@@ -17,6 +17,8 @@ export class HaMoreInfoStateHeader extends LitElement {
 
   @property({ attribute: false }) public stateOverride?: string;
 
+  @property({ attribute: false }) public secondaryOverride?: string;
+
   @property({ attribute: false }) public changedOverride?: number;
 
   @state() private _absoluteTime = false;
@@ -40,6 +42,9 @@ export class HaMoreInfoStateHeader extends LitElement {
   }
 
   private _toggleAbsolute() {
+    if (this.secondaryOverride != null) {
+      return;
+    }
     this._absoluteTime = !this._absoluteTime;
   }
 
@@ -49,20 +54,24 @@ export class HaMoreInfoStateHeader extends LitElement {
     return html`
       <p class="state">${stateDisplay}</p>
       <p class="last-changed" @click=${this._toggleAbsolute}>
-        ${this._absoluteTime
-          ? html`
-              <ha-absolute-time
-                .hass=${this.hass}
-                .datetime=${this.changedOverride ?? this.stateObj.last_changed}
-              ></ha-absolute-time>
-            `
-          : html`
-              <ha-relative-time
-                .hass=${this.hass}
-                .datetime=${this.changedOverride ?? this.stateObj.last_changed}
-                capitalize
-              ></ha-relative-time>
-            `}
+        ${this.secondaryOverride != null
+          ? html`${this.secondaryOverride}`
+          : this._absoluteTime
+            ? html`
+                <ha-absolute-time
+                  .hass=${this.hass}
+                  .datetime=${this.changedOverride ??
+                  this.stateObj.last_changed}
+                ></ha-absolute-time>
+              `
+            : html`
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${this.changedOverride ??
+                  this.stateObj.last_changed}
+                  capitalize
+                ></ha-relative-time>
+              `}
       </p>
     `;
   }
