@@ -864,7 +864,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   public updateSidebar() {
     fireEvent(this, "update-sidebar", {
-      contextVariables: this.contextVariables,
+      contextVariables: this.contextVariables || {},
     });
   }
 
