@@ -122,7 +122,7 @@
     "luxon": "3.7.2",
     "marked": "17.0.1",
     "memoize-one": "6.0.0",
-    "node-vibrant": "4.0.3",
+    "node-vibrant": "4.0.4",
     "object-hash": "3.0.0",
     "punycode": "2.3.1",
     "qr-scanner": "1.4.2",
