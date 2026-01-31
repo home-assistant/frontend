@@ -92,7 +92,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _applyTheme(darkPreferred: boolean) {
-      if (!this.hass) {
+      if (!this.hass?.config) {
         return;
       }
 
