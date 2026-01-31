@@ -28,6 +28,7 @@ import { VolumeSliderController } from "../../../common/util/volume-slider";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-group";
+import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
 import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-slider";
