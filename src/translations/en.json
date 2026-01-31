@@ -3844,7 +3844,7 @@
               "energy_out_of_battery": "Energy discharged from the battery",
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
-              "sensor_type": "Power sensor type",
+              "sensor_type": "Type of power measurement",
               "type_none": "No power sensor",
               "type_standard": "Standard",
               "type_inverted": "Inverted",
