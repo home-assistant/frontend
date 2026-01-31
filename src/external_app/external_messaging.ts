@@ -43,6 +43,10 @@ interface EMOutgoingMessageEntityAddToGetActions extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageForYouGetSuggestion extends EMMessage {
+  type: "for_you/get_suggestion";
+}
+
 interface EMOutgoingMessageBarCodeScan extends EMMessage {
   type: "bar_code/scan";
   payload: {
@@ -85,6 +89,10 @@ interface EMOutgoingMessageWithAnswer {
   "entity/add_to/get_actions": {
     request: EMOutgoingMessageEntityAddToGetActions;
     response: ExternalEntityAddToActions;
+  };
+  "for_you/get_suggestion": {
+    request: EMOutgoingMessageForYouGetSuggestion;
+    response: ExternalForYouSuggestion | null;
   };
 }
 
@@ -176,6 +184,13 @@ interface EMOutgoingMessageAddEntityTo extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageForYouSuggestionSelected extends EMMessage {
+  type: "for_you/suggestion_selected";
+  payload: {
+    app_payload?: string; // Opaque string received from get_suggestion
+  };
+}
+
 interface EMOutgoingMessageFocusElement extends EMMessage {
   type: "focus_element";
   payload: {
@@ -205,7 +220,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImprovScan
   | EMOutgoingMessageImprovConfigureDevice
   | EMOutgoingMessageAddEntityTo
-  | EMOutgoingMessageFocusElement;
+  | EMOutgoingMessageFocusElement
+  | EMOutgoingMessageForYouSuggestionSelected;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -343,6 +359,7 @@ export interface ExternalConfig {
   canSetupImprov?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
+  hasForYouSuggestion?: boolean; // Supports "For you" suggestions on the home page
 }
 
 export interface ExternalEntityAddToAction {
@@ -355,6 +372,12 @@ export interface ExternalEntityAddToAction {
 
 export interface ExternalEntityAddToActions {
   actions: ExternalEntityAddToAction[];
+}
+
+export interface ExternalForYouSuggestion {
+  text: string; // The text to be displayed in the UI
+  mdi_icon?: string; // Optional MDI icon name (e.g., "mdi:lightbulb")
+  app_payload?: string; // Optional opaque string to be sent back when the suggestion is tapped
 }
 
 export class ExternalMessaging {

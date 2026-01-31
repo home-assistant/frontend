@@ -679,3 +679,7 @@ export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
+
+export interface ForYouExternalCardConfig extends LovelaceCardConfig {
+  type: "for-you-external";
+}

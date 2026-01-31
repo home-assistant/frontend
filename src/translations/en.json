@@ -219,6 +219,9 @@
         "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
         "no_devices": "No devices to add"
       },
+      "for-you-external": {
+        "title": "For you"
+      },
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",

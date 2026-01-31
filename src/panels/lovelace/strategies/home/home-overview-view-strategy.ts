@@ -21,6 +21,7 @@ import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
   EmptyStateCardConfig,
+  ForYouExternalCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
   TileCardConfig,
@@ -257,6 +258,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         type: "discovered-devices",
         hide_empty: true,
       } satisfies DiscoveredDevicesCardConfig,
+      // For you card - external app suggestions, hides when no suggestion available
+      {
+        type: "for-you-external",
+      } satisfies ForYouExternalCardConfig,
       hasLights &&
         ({
           type: "home-summary",
