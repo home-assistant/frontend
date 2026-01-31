@@ -13,10 +13,14 @@ import type {
 import "../../../../components/ha-card";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
-import type { LovelaceResource } from "../../../../data/lovelace/resource";
+import type {
+  LovelaceInfo,
+  LovelaceResource,
+} from "../../../../data/lovelace/resource";
 import {
   createResource,
   deleteResource,
+  fetchLovelaceInfo,
   fetchResources,
   updateResource,
 } from "../../../../data/lovelace/resource";
@@ -45,6 +49,8 @@ export class HaConfigLovelaceResources extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _resources: LovelaceResource[] = [];
+
+  @state() private _lovelaceInfo?: LovelaceInfo;
 
   @state()
   @storage({
@@ -197,15 +203,20 @@ export class HaConfigLovelaceResources extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._getResources();
+    this._fetchData();
   }
 
-  private async _getResources() {
-    this._resources = await fetchResources(this.hass.connection);
+  private async _fetchData() {
+    const [resources, lovelaceInfo] = await Promise.all([
+      fetchResources(this.hass.connection),
+      fetchLovelaceInfo(this.hass),
+    ]);
+    this._resources = resources;
+    this._lovelaceInfo = lovelaceInfo;
   }
 
   private _editResource(ev: CustomEvent) {
-    if ((this.hass.panels.lovelace?.config as any)?.mode !== "storage") {
+    if (this._lovelaceInfo?.resource_mode !== "storage") {
       showAlertDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.lovelace.resources.cant_edit_yaml"
@@ -219,7 +230,7 @@ export class HaConfigLovelaceResources extends LitElement {
   }
 
   private _addResource() {
-    if ((this.hass.panels.lovelace?.config as any)?.mode !== "storage") {
+    if (this._lovelaceInfo?.resource_mode !== "storage") {
       showAlertDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.lovelace.resources.cant_edit_yaml"
