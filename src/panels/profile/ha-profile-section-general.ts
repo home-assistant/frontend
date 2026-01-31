@@ -6,7 +6,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-card";
-import "../../components/ha-divider";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
@@ -178,31 +177,6 @@ class HaProfileSectionGeneral extends LitElement {
                   ></ha-entity-id-picker-row>
                 `
               : ""}
-            <ha-divider></ha-divider>
-            <ha-pick-language-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-language-row>
-            <ha-pick-number-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-number-format-row>
-            <ha-pick-time-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-time-format-row>
-            <ha-pick-date-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-date-format-row>
-            <ha-pick-time-zone-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-time-zone-row>
-            <ha-pick-first-weekday-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-first-weekday-row>
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
@@ -251,6 +225,39 @@ class HaProfileSectionGeneral extends LitElement {
                   ></ha-enable-shortcuts-row>
                 `
               : ""}
+          </ha-card>
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.profile.localization_header"
+            )}
+          >
+            <div class="card-content">
+              ${this.hass.localize("ui.panel.profile.localization_detail")}
+            </div>
+            <ha-pick-language-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-language-row>
+            <ha-pick-number-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-number-format-row>
+            <ha-pick-time-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-time-format-row>
+            <ha-pick-date-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-date-format-row>
+            <ha-pick-time-zone-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-time-zone-row>
+            <ha-pick-first-weekday-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-first-weekday-row>
           </ha-card>
         </div>
       </hass-tabs-subpage>
