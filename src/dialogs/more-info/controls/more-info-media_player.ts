@@ -178,15 +178,10 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  // ─────────────────────────────────────────────────────────────
-  // new-style helpers for bottom row [group][browse][sources][shuffle]
-  // ─────────────────────────────────────────────────────────────
-
   private get _sourceList(): string[] {
     return this.stateObj?.attributes.source_list ?? [];
   }
 
-  // Option B: alias handler for Browse (no template arrows)
   private _handleBrowse = (ev: Event) => {
     ev.stopPropagation();
     this._showBrowseMedia();
@@ -220,10 +215,6 @@ class MoreInfoMediaPlayer extends LitElement {
       shuffle: newVal,
     });
   };
-
-  // ─────────────────────────────────────────────────────────────
-  // UI helpers
-  // ─────────────────────────────────────────────────────────────
 
   private _renderEmptyCover(title: string, icon?: string) {
     return html`
