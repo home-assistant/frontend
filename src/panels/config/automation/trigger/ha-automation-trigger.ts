@@ -53,6 +53,8 @@ export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public root = false;
 
+  @property({ attribute: false }) public contextVariables?: Record<string, any>;
+
   @state() private _rowSortSelected?: number;
 
   @state()
@@ -157,6 +159,7 @@ export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
                 .hass=${this.hass}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
+                .contextVariables=${this.contextVariables}
                 .highlight=${this.highlightedTriggers?.includes(trg)}
                 .optionsInSidebar=${this.optionsInSidebar}
                 .sortSelected=${this._rowSortSelected === idx}

@@ -35,6 +35,8 @@ export default class HaAutomationTriggerEditor extends LitElement {
 
   @property({ attribute: false }) public description?: TriggerDescription;
 
+  @property({ attribute: false }) contextVariables: Record<string, any> = {};
+
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   protected render() {
@@ -102,6 +104,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
                       hass: this.hass,
                       trigger: this.trigger,
                       disabled: this.disabled,
+                      contextVariables: this.contextVariables,
                     })}
               </div>
             `}

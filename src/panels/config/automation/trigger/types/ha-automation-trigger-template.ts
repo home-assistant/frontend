@@ -11,7 +11,12 @@ import { hasTemplate } from "../../../../../common/string/has-template";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const SCHEMA = [
-  { name: "value_template", required: true, selector: { template: {} } },
+  {
+    name: "value_template",
+    required: true,
+    selector: { template: {} },
+    context: { variables: "variables" },
+  },
   { name: "for", selector: { duration: {} } },
 ] as const;
 
@@ -22,6 +27,8 @@ export class HaTemplateTrigger extends LitElement {
   @property({ attribute: false }) public trigger!: TemplateTrigger;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
 
   public static get defaultConfig(): TemplateTrigger {
     return { trigger: "template", value_template: "" };
@@ -57,6 +64,7 @@ export class HaTemplateTrigger extends LitElement {
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
         .disabled=${this.disabled}
+        .extraContext=${{ variables: this.contextVariables }}
       ></ha-form>
     `;
   }

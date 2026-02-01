@@ -137,6 +137,8 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @state() private _yamlMode = false;
 
   @state() private _triggered?: Record<string, unknown>;
@@ -413,6 +415,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
               .uiSupported=${this._uiSupported}
+              .contextVariables=${this.contextVariables}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-trigger-editor>`
         : nothing}
@@ -502,6 +505,14 @@ export default class HaAutomationTriggerRow extends LitElement {
     ) {
       // update sidebar if uiSupported changed
       this.openSidebar();
+    }
+    if (
+      changedProps.has("contextVariables") &&
+      this._selected &&
+      this.optionsInSidebar
+    ) {
+      // update sidebar if variables changed
+      this.updateSidebar();
     }
   }
 
@@ -619,6 +630,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       duplicate: this._duplicateTrigger,
       cut: this._cutTrigger,
       insertAfter: this._insertAfter,
+      contextVariables: this.contextVariables,
       config: trigger,
       uiSupported: this._uiSupported,
       description:
@@ -799,6 +811,12 @@ export default class HaAutomationTriggerRow extends LitElement {
       this.openSidebar();
     }
   };
+
+  public updateSidebar() {
+    fireEvent(this, "update-sidebar", {
+      contextVariables: this.contextVariables || {},
+    });
+  }
 
   public expand() {
     this.updateComplete.then(() => {

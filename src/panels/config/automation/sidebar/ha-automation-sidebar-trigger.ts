@@ -281,6 +281,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             @value-changed=${this._valueChangedSidebar}
             @yaml-changed=${this._yamlChangedSidebar}
             .uiSupported=${this.config.uiSupported}
+            .contextVariables=${this.config.contextVariables}
             .showId=${this._requestShowId}
             .yamlMode=${this.yamlMode}
             .disabled=${this.disabled}

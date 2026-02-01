@@ -15,6 +15,8 @@ export class HaTriggerList extends LitElement implements TriggerElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   public static get defaultConfig(): TriggerList {
     return {
       triggers: [],
@@ -31,6 +33,7 @@ export class HaTriggerList extends LitElement implements TriggerElement {
         .disabled=${this.disabled}
         .name=${"triggers"}
         @value-changed=${this._valueChanged}
+        .contextVariables=${this.contextVariables}
       ></ha-automation-trigger>
     `;
   }

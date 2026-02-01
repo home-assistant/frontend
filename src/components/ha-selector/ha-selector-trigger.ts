@@ -21,6 +21,8 @@ export class HaTriggerSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ attribute: false }) public context?: Record<string, any>;
+
   private _triggers = memoizeOne((trigger: Trigger | undefined) => {
     if (!trigger) {
       return [];
@@ -36,6 +38,7 @@ export class HaTriggerSelector extends LitElement {
         .triggers=${this._triggers(this.value)}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .contextVariables=${this.context?.variables}
       ></ha-automation-trigger>
     `;
   }
