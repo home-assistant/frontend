@@ -332,6 +332,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         calcDateDifferenceProperty(
           endDate,
           startDate,
+          differenceInCalendarYears,
+          locale,
+          config
+        ) === 0 &&
+        calcDateDifferenceProperty(
+          endDate,
+          startDate,
           differenceInMonths,
           locale,
           config
