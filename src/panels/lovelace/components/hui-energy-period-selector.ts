@@ -211,15 +211,23 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                     this.hass.locale,
                     this.hass.config
                   )
-                : `${formatStartDateRange(
-                    this._startDate,
-                    this.hass.locale,
-                    this.hass.config
-                  )} – ${formatEndDateRange(
-                    this._endDate || new Date(),
-                    this.hass.locale,
-                    this.hass.config
-                  )}`}
+                : html`<p>
+                    <span class="label-break"
+                      >${formatStartDateRange(
+                        this._startDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )}
+                      –</span
+                    >
+                    <span class="label-break"
+                      >${formatEndDateRange(
+                        this._endDate || new Date(),
+                        this.hass.locale,
+                        this.hass.config
+                      )}</span
+                    >
+                  </p>`}
         </div>
         <div class="time-handle">
           <ha-icon-button-prev
@@ -545,6 +553,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-left: auto;
       margin-inline-start: auto;
       margin-inline-end: initial;
+    }
+    .label-break {
+      display: inline-block;
     }
     :host([narrow]) .label,
     :host([fixed]) .label {
