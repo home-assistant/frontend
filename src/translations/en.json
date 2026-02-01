@@ -3763,7 +3763,7 @@
             "delete_power": "Delete power sensor",
             "power_dialog": {
               "header": "Configure grid power",
-              "sensor_type": "Sensor type",
+              "sensor_type": "Type of power measurement",
               "type_standard": "Standard",
               "type_inverted": "Inverted",
               "type_inverted_description": "Positive values indicate exporting to the grid, negative values indicate importing from the grid.",
