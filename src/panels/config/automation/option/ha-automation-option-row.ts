@@ -73,6 +73,8 @@ export default class HaAutomationOptionRow extends LitElement {
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @state() private _expanded = false;
 
   @state() private _selected = false;
@@ -281,6 +283,7 @@ export default class HaAutomationOptionRow extends LitElement {
               .disabled=${this.disabled}
               .hass=${this.hass}
               .narrow=${this.narrow}
+              .contextVariables=${this.contextVariables}
               @value-changed=${this._conditionChanged}
               .optionsInSidebar=${this.optionsInSidebar}
             ></ha-automation-condition>
@@ -300,6 +303,7 @@ export default class HaAutomationOptionRow extends LitElement {
         .disabled=${this.disabled}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .contextVariables=${this.contextVariables}
         @value-changed=${this._actionChanged}
         .optionsInSidebar=${this.optionsInSidebar}
       ></ha-automation-action>

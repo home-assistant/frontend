@@ -30,6 +30,8 @@ export class HaWaitForTriggerAction
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   public static get defaultConfig(): WaitForTriggerAction {
     return { wait_for_trigger: [] };
   }
@@ -72,6 +74,7 @@ export class HaWaitForTriggerAction
             .name=${"wait_for_trigger"}
             @value-changed=${this._valueChanged}
             .optionsInSidebar=${this.indent}
+            .contextVariables=${this.contextVariables}
             .narrow=${this.narrow}
           ></ha-automation-trigger>`
         : nothing}

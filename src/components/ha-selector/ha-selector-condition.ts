@@ -20,6 +20,8 @@ export class HaConditionSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ attribute: false }) public context?: Record<string, any>;
+
   @query("ha-automation-condition")
   private _conditionElement?: HaAutomationCondition;
 
@@ -32,6 +34,7 @@ export class HaConditionSelector extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .optionsInSidebar=${!!this.selector.condition?.optionsInSidebar}
+        .contextVariables=${this.context?.variables}
       ></ha-automation-condition>
     `;
   }

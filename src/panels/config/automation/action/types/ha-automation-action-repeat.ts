@@ -41,6 +41,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @query("ha-form")
   private _formElement?: HaForm;
 
@@ -64,6 +66,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                 selector: template
                   ? { template: {} }
                   : { number: { mode: "box", min: 1 } },
+                context: { variables: "variables" },
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
@@ -77,6 +80,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                     optionsInSidebar: indent,
                   },
                 },
+                context: { variables: "variables" },
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
@@ -98,6 +102,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
                     optionsInSidebar: indent,
                   },
                 },
+                context: { variables: "variables" },
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
@@ -122,6 +127,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       .data=${data}
       .schema=${schema}
       .disabled=${this.disabled}
+      .extraContext=${{ variables: this.contextVariables }}
       @value-changed=${this._valueChanged}
       .computeLabel=${this._computeLabelCallback}
       .narrow=${this.narrow}

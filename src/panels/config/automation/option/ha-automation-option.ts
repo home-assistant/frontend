@@ -34,6 +34,8 @@ export default class HaAutomationOption extends LitElement {
   @property({ type: Boolean, attribute: "show-default" })
   public showDefaultActions = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @state() private _rowSortSelected?: number;
 
   @state()
@@ -86,6 +88,7 @@ export default class HaAutomationOption extends LitElement {
                 .hass=${this.hass}
                 .optionsInSidebar=${this.optionsInSidebar}
                 .sortSelected=${this._rowSortSelected === idx}
+                .contextVariables=${this.contextVariables}
                 @stop-sort-selection=${this._stopSortSelection}
               >
                 ${!this.disabled

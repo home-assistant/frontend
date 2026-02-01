@@ -22,6 +22,8 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public indent = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @query("ha-automation-action")
   private _actionElement?: HaAutomationAction;
 
@@ -42,6 +44,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
         .optionsInSidebar=${this.indent}
+        .contextVariables=${this.contextVariables}
       ></ha-automation-action>
     `;
   }

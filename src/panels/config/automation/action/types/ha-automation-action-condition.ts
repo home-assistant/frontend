@@ -56,6 +56,8 @@ export class HaConditionAction
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @state() private _conditionDescriptions: ConditionDescriptions = {};
 
   @query("ha-automation-condition-editor")
@@ -134,6 +136,7 @@ export class HaConditionAction
                 this._getType(this.action, this._conditionDescriptions)
               )}
               .indent=${this.indent}
+              .contextVariables=${this.contextVariables}
               action
             ></ha-automation-condition-editor>
           `

@@ -30,6 +30,8 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ attribute: false }) public context?: Record<string, any>;
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] | undefined;
@@ -82,6 +84,7 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .optionsInSidebar=${!!this.selector.action?.optionsInSidebar}
+        .contextVariables=${this.context?.variables}
       ></ha-automation-action>
     `;
   }

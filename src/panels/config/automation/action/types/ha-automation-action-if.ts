@@ -24,6 +24,8 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public indent = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @query("ha-automation-condition")
   private _conditionElement?: HaAutomationCondition;
 
@@ -67,6 +69,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .optionsInSidebar=${this.indent}
+        .contextVariables=${this.contextVariables}
       ></ha-automation-action>
       <h4>
         ${this.hass.localize(
@@ -80,6 +83,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .optionsInSidebar=${this.indent}
+        .contextVariables=${this.contextVariables}
       ></ha-automation-action>
     `;
   }

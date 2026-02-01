@@ -40,6 +40,8 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public schema!: readonly HaFormSchema[];
 
+  @property({ attribute: false }) public extraContext?: Record<string, any>;
+
   @property({ attribute: false }) public error?: Record<
     string,
     string | string[]
@@ -187,7 +189,8 @@ export class HaForm extends LitElement implements HaFormElement {
 
     const context = {};
     for (const [context_key, data_key] of Object.entries(schema.context)) {
-      context[context_key] = this.data[data_key];
+      context[context_key] =
+        this.data[data_key] || this.extraContext?.[data_key];
     }
     return context;
   }

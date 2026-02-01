@@ -12,6 +12,9 @@ const SCHEMA = [
     selector: {
       template: {},
     },
+    context: {
+      variables: "variables",
+    },
   },
   {
     name: "timeout",
@@ -32,6 +35,8 @@ export class HaWaitAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: WaitAction;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): WaitAction {
@@ -44,6 +49,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .data=${this.action}
         .schema=${SCHEMA}
+        .extraContext=${{ variables: this.contextVariables }}
         .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>
