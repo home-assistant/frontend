@@ -190,7 +190,7 @@ export class HaForm extends LitElement implements HaFormElement {
     const context = {};
     for (const [context_key, data_key] of Object.entries(schema.context)) {
       context[context_key] =
-        this.data[data_key] || this.extraContext?.[data_key];
+        this.data[data_key] ?? this.extraContext?.[data_key];
     }
     return context;
   }
