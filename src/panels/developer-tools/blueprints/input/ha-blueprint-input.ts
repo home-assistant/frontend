@@ -174,7 +174,7 @@ export class HaBlueprintInput extends LitElement {
     ) as CustomElementConstructor & {
       defaultConfig: BlueprintInput | HaBlueprintInputSection | null;
     };
-    const inputs = [...(this.inputs || []), [id, { ...elClass.defaultConfig }]];
+    const inputs = [...this.inputs, [id, { ...elClass.defaultConfig }]];
     this._focusLastInputOnChange = true;
     fireEvent(this, "value-changed", { value: inputs });
   }
@@ -203,7 +203,7 @@ export class HaBlueprintInput extends LitElement {
         "ha-blueprint-input-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.openSidebar();
+        row.openSidebar(this.path);
         row.scrollIntoView();
         row.focus();
       });

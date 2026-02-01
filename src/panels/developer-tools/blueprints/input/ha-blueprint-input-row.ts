@@ -12,7 +12,7 @@ import {
   mdiRenameBox,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -43,6 +43,7 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-blueprint-input-editor";
 import type { BlueprintInputSidebarConfig } from "../../../../data/automation";
+import { deepEqual } from "../../../../common/util/deep-equal";
 
 @customElement("ha-blueprint-input-row")
 export default class HaBlueprintInputRow extends LitElement {
@@ -130,6 +131,30 @@ export default class HaBlueprintInputRow extends LitElement {
           behavior: "smooth",
         });
       }, 180);
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+
+    if (
+      !changedProperties ||
+      !changedProperties.has("input") ||
+      !changedProperties.get("input") ||
+      this.path || // We are in a section in the sidebar
+      !this.input[1] ||
+      !isInputSection(this.input[1]) ||
+      !isInputSection(changedProperties.get("input")[1])
+    ) {
+      return;
+    }
+
+    const oldKeys = Object.keys(changedProperties.get("input")[1].input);
+    const newKeys = Object.keys(this.input[1].input);
+    oldKeys.sort();
+    newKeys.sort();
+    if (!deepEqual(oldKeys, newKeys)) {
+      this.openSidebar([]);
     }
   }
 

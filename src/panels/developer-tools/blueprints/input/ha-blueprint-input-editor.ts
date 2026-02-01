@@ -10,7 +10,6 @@ import type {
 import { isInputSection } from "../../../../data/blueprint";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import "../../../../components/ha-yaml-editor";
 
 @customElement("ha-blueprint-input-editor")
 export default class HaBlueprintInputEditor extends LitElement {
