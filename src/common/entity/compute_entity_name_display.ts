@@ -21,6 +21,10 @@ export type EntityNameItem =
   | {
       type: "text";
       text: string;
+    }
+  | {
+      type: "attribute";
+      attribute: string;
     };
 
 export interface EntityNameOptions {
@@ -100,6 +104,8 @@ export const computeEntityNameList = (
         return floor ? computeFloorName(floor) : undefined;
       case "text":
         return item.text;
+      case "attribute":
+        return stateObj.attributes[item.attribute];
       default:
         return "";
     }

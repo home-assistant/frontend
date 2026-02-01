@@ -320,6 +320,66 @@ describe("computeEntityNameDisplay", () => {
 
     expect(result).toBe("Kitchen - Light");
   });
+
+  it("returns an attribute", () => {
+    const stateObj = mockStateObj({
+      entity_id: "light.kitchen",
+      attributes: { color_mode: "HSL" },
+    });
+    const hass = {
+      entities: {
+        "light.kitchen": mockEntity({
+          entity_id: "light.kitchen",
+          name: "Kitchen Light",
+        }),
+      },
+      devices: {},
+      areas: {},
+      floors: {},
+    } as unknown as HomeAssistant;
+
+    const result = computeEntityNameDisplay(
+      stateObj,
+      [{ type: "attribute", attribute: "color_mode" }],
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
+    expect(result).toBe("HSL");
+  });
+
+  it("mixes attributes with entity types", () => {
+    const stateObj = mockStateObj({
+      entity_id: "light.kitchen",
+      attributes: { color_mode: "HSL" },
+    });
+    const hass = {
+      entities: {
+        "light.kitchen": mockEntity({
+          entity_id: "light.kitchen",
+          name: "Kitchen Light",
+        }),
+      },
+      devices: {},
+      areas: {},
+      floors: {},
+    } as unknown as HomeAssistant;
+
+    const result = computeEntityNameDisplay(
+      stateObj,
+      [
+        { type: "entity" },
+        { type: "text", text: "-" },
+        { type: "attribute", attribute: "color_mode" },
+      ],
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
+    expect(result).toBe("Kitchen Light - HSL");
+  });
 });
 
 describe("computeEntityNameList", () => {

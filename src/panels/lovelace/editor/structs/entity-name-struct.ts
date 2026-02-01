@@ -6,6 +6,10 @@ const entityNameItemStruct = union([
     text: string(),
   }),
   object({
+    type: literal("attribute"),
+    attribute: string(),
+  }),
+  object({
     type: union([
       literal("entity"),
       literal("device"),
