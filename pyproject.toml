@@ -12,7 +12,7 @@ readme       = "README.md"
 authors      = [
     {name = "The Home Assistant Authors", email = "hello@home-assistant.io"}
 ]
-requires-python = ">=3.13.0"
+requires-python = ">=3.14.0"
 
 [project.urls]
 "Homepage" = "https://github.com/home-assistant/frontend"
