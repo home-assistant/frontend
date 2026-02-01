@@ -3770,7 +3770,7 @@
             "delete_power": "Delete power sensor",
             "power_dialog": {
               "header": "Configure grid power",
-              "sensor_type": "Sensor type",
+              "sensor_type": "Type of power measurement",
               "type_standard": "Standard",
               "type_inverted": "Inverted",
               "type_inverted_description": "Positive values indicate exporting to the grid, negative values indicate importing from the grid.",
@@ -3851,7 +3851,7 @@
               "energy_out_of_battery": "Energy discharged from the battery",
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
-              "sensor_type": "Power sensor type",
+              "sensor_type": "Type of power measurement",
               "type_none": "No power sensor",
               "type_standard": "Standard",
               "type_inverted": "Inverted",
