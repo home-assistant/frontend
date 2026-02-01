@@ -54,7 +54,7 @@ export const waColorStyles = css`
 
     --wa-color-text-quiet: var(--ha-color-text-secondary);
 
-    --wa-color-text-normal: var(--ha-color-text-primary);
+    --wa-color-text-normal: var(--primary-text-color);
     --wa-color-surface-default: var(--card-background-color);
     --wa-color-surface-raised: var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff));
     --wa-panel-border-radius: var(--ha-border-radius-3xl);
@@ -64,7 +64,5 @@ export const waColorStyles = css`
 
     --wa-focus-ring-color: var(--ha-color-neutral-60);
     --wa-shadow-l: 4px 8px 12px 0 rgba(0, 0, 0, 0.3);
-
-    --wa-color-text-normal: var(--ha-color-text-primary);
   }
 `;

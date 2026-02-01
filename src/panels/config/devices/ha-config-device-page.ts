@@ -27,6 +27,7 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
@@ -569,7 +570,9 @@ export class HaConfigDevicePage extends LitElement {
                               </ha-list-item>
                               <ha-tooltip
                                 .for="scene-${slugify(entityState.entity_id)}"
-                                placement="left"
+                                placement=${computeRTL(this.hass)
+                                  ? "left"
+                                  : "right"}
                               >
                                 ${this.hass.localize(
                                   "ui.panel.config.devices.cant_edit"
@@ -1002,9 +1005,8 @@ export class HaConfigDevicePage extends LitElement {
       this._diagnosticDownloadLinks = (
         links as { link: string; domain: string }[]
       ).map((link) => ({
-        href: link.link,
         icon: mdiDownload,
-        action: (ev) => this._signUrl(ev),
+        action: () => this._signUrl(link.link),
         label:
           links.length > 1
             ? this.hass.localize(
@@ -1477,12 +1479,8 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  private async _signUrl(ev) {
-    const a = ev.currentTarget.getAttribute("href")
-      ? ev.currentTarget
-      : ev.currentTarget.closest("a");
-
-    const signedUrl = await getSignedPath(this.hass, a.getAttribute("href"));
+  private async _signUrl(link: string) {
+    const signedUrl = await getSignedPath(this.hass, link);
     fileDownload(signedUrl.path);
   }
 
