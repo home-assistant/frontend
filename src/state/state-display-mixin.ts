@@ -6,6 +6,15 @@ import type { HassBaseEl } from "./hass-base-mixin";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
   class StateDisplayMixin extends superClass {
+    private _updateFormatFunctionsIteration = 0;
+
+    protected firstUpdated(changedProps) {
+      super.firstUpdated(changedProps);
+      this.addEventListener("translations-updated", () =>
+        this._updateFormatFunctions()
+      );
+    }
+
     protected hassConnected() {
       super.hassConnected();
       this._updateFormatFunctions();
@@ -34,10 +43,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
       }
     }
 
-    private _updateFormatFunctions = async () => {
-      if (!this.hass || !this.hass.config) {
+    private async _updateFormatFunctions() {
+      if (!this.hass?.config) {
         return;
       }
+
+      const iteration = ++this._updateFormatFunctionsIteration;
 
       let sensorNumericDeviceClasses: string[] = [];
 
@@ -49,6 +60,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
         } catch (_err: any) {
           // ignore
         }
+      }
+
+      if (this._updateFormatFunctionsIteration !== iteration) {
+        return;
       }
 
       const {
@@ -67,6 +82,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
         this.hass.floors,
         sensorNumericDeviceClasses
       );
+
+      if (this._updateFormatFunctionsIteration !== iteration) {
+        return;
+      }
+
       this._updateHass({
         formatEntityState,
         formatEntityAttributeName,
@@ -74,7 +94,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
         formatEntityAttributeValueToParts,
         formatEntityName,
       });
-    };
+    }
   }
   return StateDisplayMixin;
 };
