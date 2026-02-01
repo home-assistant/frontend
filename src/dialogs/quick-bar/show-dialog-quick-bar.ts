@@ -11,7 +11,7 @@ export type QuickBarSection =
 export interface QuickBarParams {
   entityFilter?: string;
   mode?: QuickBarSection;
-  hint?: string;
+  showHint?: boolean;
 }
 
 export const loadQuickBar = () => import("./ha-quick-bar");

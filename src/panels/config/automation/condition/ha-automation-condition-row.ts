@@ -84,31 +84,6 @@ export interface ConditionElement extends LitElement {
   collapseAll?: () => void;
 }
 
-export const handleChangeEvent = (
-  element: ConditionElement,
-  ev: CustomEvent
-) => {
-  ev.stopPropagation();
-  const name = (ev.currentTarget as any)?.name;
-  if (!name) {
-    return;
-  }
-  const newVal = ev.detail?.value || (ev.currentTarget as any)?.value;
-
-  if ((element.condition[name] || "") === newVal) {
-    return;
-  }
-
-  let newCondition: Condition;
-  if (!newVal) {
-    newCondition = { ...element.condition };
-    delete newCondition[name];
-  } else {
-    newCondition = { ...element.condition, [name]: newVal };
-  }
-  fireEvent(element, "value-changed", { value: newCondition });
-};
-
 @customElement("ha-automation-condition-row")
 export default class HaAutomationConditionRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
