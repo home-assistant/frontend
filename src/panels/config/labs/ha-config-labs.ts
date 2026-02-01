@@ -393,6 +393,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
     css`
       :host {
         display: block;
+        height: 100%;
       }
 
       a[slot="toolbar-icon"] {
@@ -403,7 +404,6 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         max-width: 800px;
         margin: 0 auto;
         padding: var(--ha-space-4);
-        min-height: calc(100vh - 64px);
         display: flex;
         flex-direction: column;
       }

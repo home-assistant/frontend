@@ -1,4 +1,5 @@
 import { fireEvent } from "../../common/dom/fire_event";
+import { closeDialog } from "../make-dialog-manager";
 
 export type QuickBarSection =
   | "entity"
@@ -10,7 +11,7 @@ export type QuickBarSection =
 export interface QuickBarParams {
   entityFilter?: string;
   mode?: QuickBarSection;
-  hint?: string;
+  showHint?: boolean;
 }
 
 export const loadQuickBar = () => import("./ha-quick-bar");
@@ -25,4 +26,8 @@ export const showQuickBar = (
     dialogParams,
     addHistory: false,
   });
+};
+
+export const closeQuickBar = (): void => {
+  closeDialog("ha-quick-bar");
 };

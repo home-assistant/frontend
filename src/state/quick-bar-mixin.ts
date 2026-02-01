@@ -9,7 +9,10 @@ import type {
   QuickBarParams,
   QuickBarSection,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { showQuickBar } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import {
+  closeQuickBar,
+  showQuickBar,
+} from "../dialogs/quick-bar/show-dialog-quick-bar";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { Constructor, HomeAssistant } from "../types";
@@ -27,12 +30,36 @@ declare global {
 
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
+    private _quickBarOpen = false;
+
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
 
       this.addEventListener("hass-enable-shortcuts", (ev) => {
         this._updateHass({ enableShortcuts: ev.detail });
         storeState(this.hass!);
+      });
+
+      this.addEventListener(
+        "show-dialog",
+        (ev) => {
+          if ((ev as CustomEvent).detail.dialogTag === "ha-quick-bar") {
+            // If quick bar is already open, prevent opening it again
+            if (this._quickBarOpen) {
+              ev.stopPropagation();
+              ev.preventDefault();
+              return;
+            }
+            this._quickBarOpen = true;
+          }
+        },
+        { capture: true }
+      );
+
+      this.addEventListener("dialog-closed", (ev) => {
+        if ((ev as CustomEvent).detail.dialog === "ha-quick-bar") {
+          this._quickBarOpen = false;
+        }
       });
 
       mainWindow.addEventListener("hass-quick-bar-trigger", (ev) => {
@@ -69,7 +96,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         m: { handler: (ev) => this._createMyLink(ev) },
         a: { handler: (ev) => this._showVoiceCommandDialog(ev) },
         d: { handler: (ev) => this._showQuickBar(ev, "device") },
-        "$mod+k": { handler: (ev) => this._showQuickBar(ev) },
+        "$mod+k": {
+          handler: (ev) => this._toggleQuickBar(ev),
+          allowWhenTextSelected: true,
+          allowInInput: true,
+        },
         // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
         "Shift+?": { handler: (ev) => this._showShortcutDialog(ev) },
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
@@ -78,7 +109,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         KeyM: { handler: (ev) => this._createMyLink(ev) },
         KeyA: { handler: (ev) => this._showVoiceCommandDialog(ev) },
         KeyD: { handler: (ev) => this._showQuickBar(ev, "device") },
-        "$mod+KeyK": { handler: (ev) => this._showQuickBar(ev) },
+        "$mod+KeyK": {
+          handler: (ev) => this._toggleQuickBar(ev),
+          allowWhenTextSelected: true,
+          allowInInput: true,
+        },
       });
     }
 
@@ -114,6 +149,23 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       e.preventDefault();
 
       showQuickBar(this, { mode });
+    }
+
+    private _toggleQuickBar(e: KeyboardEvent, mode?: QuickBarSection) {
+      if (!this._canToggleQuickBar()) {
+        return;
+      }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
+      if (!this._quickBarOpen) {
+        showQuickBar(this, { mode });
+        return;
+      }
+      closeQuickBar();
     }
 
     private _showShortcutDialog(e: KeyboardEvent) {
@@ -187,9 +239,14 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
 
     private _canShowQuickBar(e: KeyboardEvent) {
       return (
+        !this._quickBarOpen &&
         this.hass?.user?.is_admin &&
         this.hass.enableShortcuts &&
         canOverrideAlphanumericInput(e.composedPath())
       );
+    }
+
+    private _canToggleQuickBar() {
+      return this.hass?.user?.is_admin && this.hass.enableShortcuts;
     }
   };

@@ -107,11 +107,6 @@ class HaConfigSectionUpdates extends LitElement {
                     ${this.hass.localize(
                       `ui.panel.config.updates.${this._supervisorInfo.channel === "stable" ? "join" : "leave"}_beta`
                     )}
-                    ${this._supervisorInfo.channel === "stable"
-                      ? this.hass.localize("ui.panel.config.updates.join_beta")
-                      : this.hass.localize(
-                          "ui.panel.config.updates.leave_beta"
-                        )}
                   </ha-dropdown-item>
                 `
               : nothing}

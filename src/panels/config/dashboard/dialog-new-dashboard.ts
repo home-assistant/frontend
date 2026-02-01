@@ -28,15 +28,15 @@ interface Strategy {
 
 const STRATEGIES = [
   {
-    type: "overview",
+    type: "original-states",
     images: {
       light:
-        "/static/images/dashboard-options/light/icon-dashboard-overview.svg",
-      dark: "/static/images/dashboard-options/dark/icon-dashboard-overview.svg",
+        "/static/images/dashboard-options/light/icon-dashboard-overview-legacy.svg",
+      dark: "/static/images/dashboard-options/dark/icon-dashboard-overview-legacy.svg",
     },
-    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.title",
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview-legacy.title",
     description:
-      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.description",
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview-legacy.description",
   },
   {
     type: "map",
@@ -244,11 +244,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     if (target.config) {
       config = target.config;
     } else if (target.strategy) {
-      if (target.strategy === "overview") {
-        config = null;
-      } else {
-        config = this._generateStrategyConfig(target.strategy);
-      }
+      config = this._generateStrategyConfig(target.strategy);
     }
 
     this._params?.selectConfig(config);

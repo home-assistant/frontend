@@ -333,9 +333,9 @@ export class MatterConfigDashboard extends LitElement {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "matter",
     });
-    if (configEntries.length) {
-      this._configEntry = configEntries[0];
-    }
+    this._configEntry = configEntries.find(
+      (entry) => entry.disabled_by === null && entry.source !== "ignore"
+    );
   }
 
   static get styles(): CSSResultGroup {
@@ -400,7 +400,7 @@ export class MatterConfigDashboard extends LitElement {
         }
 
         .dev-tools-content {
-          padding: 0 0 var(--ha-space-4);
+          padding: var(--ha-space-3) 0;
         }
 
         .dev-tools-content p {

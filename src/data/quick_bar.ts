@@ -1,22 +1,24 @@
 import {
   mdiKeyboard,
   mdiNavigationVariant,
-  mdiPuzzle,
   mdiReload,
   mdiServerNetwork,
   mdiStorePlus,
 } from "@mdi/js";
-import { canShowPage } from "../common/config/can_show_page";
+import {
+  filterNavigationPages,
+  type NavigationFilterOptions,
+} from "../common/config/filter_navigation_pages";
 import { componentsWithService } from "../common/config/components_with_service";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import { configSections } from "../panels/config/ha-panel-config";
+import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import type { HassioAddonInfo } from "./hassio/addon";
 import { domainToName } from "./integration";
 import { getPanelIcon, getPanelNameTranslationKey } from "./panel";
-import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 
 export interface NavigationComboBoxItem extends PickerComboBoxItem {
   path: string;
@@ -27,6 +29,7 @@ export interface NavigationComboBoxItem extends PickerComboBoxItem {
 export interface BaseNavigationCommand {
   path: string;
   primary: string;
+  secondary?: string;
   icon_path?: string;
   iconPath?: string;
   iconColor?: string;
@@ -45,11 +48,14 @@ export interface NavigationInfo extends PageNavigation {
 const generateNavigationPanelCommands = (
   localize: HomeAssistant["localize"],
   panels: HomeAssistant["panels"],
-  addons?: HassioAddonInfo[]
+  apps?: HassioAddonInfo[]
 ): BaseNavigationCommand[] =>
   Object.entries(panels)
     .filter(
-      ([panelKey]) => panelKey !== "_my_redirect" && panelKey !== "hassio"
+      ([panelKey]) =>
+        panelKey !== "_my_redirect" &&
+        panelKey !== "hassio" &&
+        panelKey !== "app"
     )
     .map(([_panelKey, panel]) => {
       const translationKey = getPanelNameTranslationKey(panel);
@@ -59,12 +65,10 @@ const generateNavigationPanelCommands = (
 
       let image: string | undefined;
 
-      if (addons) {
-        const addon = addons.find(({ slug }) => slug === panel.url_path);
-        if (addon) {
-          image = addon.icon
-            ? `/api/hassio/addons/${addon.slug}/icon`
-            : undefined;
+      if (apps) {
+        const app = apps.find(({ slug }) => slug === panel.url_path);
+        if (app) {
+          image = app.icon ? `/api/hassio/addons/${app.slug}/icon` : undefined;
         }
       }
 
@@ -98,33 +102,30 @@ const getNavigationInfoFromConfig = (
 };
 
 const generateNavigationConfigSectionCommands = (
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  filterOptions: NavigationFilterOptions = {}
 ): BaseNavigationCommand[] => {
   if (!hass.user?.is_admin) {
     return [];
   }
 
   const items: NavigationInfo[] = [];
+  const allPages = Object.values(configSections).flat();
+  const visiblePages = filterNavigationPages(hass, allPages, filterOptions);
 
-  Object.values(configSections).forEach((sectionPages) => {
-    sectionPages.forEach((page) => {
-      if (!canShowPage(hass, page)) {
-        return;
-      }
+  for (const page of visiblePages) {
+    const info = getNavigationInfoFromConfig(hass.localize, page);
 
-      const info = getNavigationInfoFromConfig(hass.localize, page);
+    if (!info) {
+      continue;
+    }
+    // Add to list, but only if we do not already have an entry for the same path and component
+    if (items.some((e) => e.path === info.path)) {
+      continue;
+    }
 
-      if (!info) {
-        return;
-      }
-      // Add to list, but only if we do not already have an entry for the same path and component
-      if (items.some((e) => e.path === info.path)) {
-        return;
-      }
-
-      items.push(info);
-    });
-  });
+    items.push(info);
+  }
 
   return items;
 };
@@ -140,7 +141,7 @@ const finalizeNavigationCommands = (
     return {
       id: `navigation_${index}_${item.path}`,
       icon_path: item.iconPath || mdiNavigationVariant,
-      secondary,
+      secondary: item.secondary || secondary,
       sorting_label: `${item.primary}_${secondary}`,
       ...item,
     };
@@ -148,41 +149,42 @@ const finalizeNavigationCommands = (
 
 export const generateNavigationCommands = (
   hass: HomeAssistant,
-  addons?: HassioAddonInfo[]
+  apps?: HassioAddonInfo[],
+  filterOptions: NavigationFilterOptions = {}
 ): NavigationComboBoxItem[] => {
   const panelItems = generateNavigationPanelCommands(
     hass.localize,
     hass.panels,
-    addons
+    apps
   );
-  const sectionItems = generateNavigationConfigSectionCommands(hass);
-  const supervisorItems: BaseNavigationCommand[] = [];
+
+  const sectionItems = generateNavigationConfigSectionCommands(
+    hass,
+    filterOptions
+  );
+  const appItems: BaseNavigationCommand[] = [];
   if (hass.user?.is_admin && isComponentLoaded(hass, "hassio")) {
-    supervisorItems.push({
-      path: "/hassio/store",
+    appItems.push({
+      path: "/config/apps/available",
       icon_path: mdiStorePlus,
       primary: hass.localize(
-        "ui.dialogs.quick-bar.commands.navigation.addon_store"
+        "ui.dialogs.quick-bar.commands.navigation.app_store"
       ),
+      iconColor: "#F1C447",
     });
-    supervisorItems.push({
-      path: "/hassio/dashboard",
-      icon_path: mdiPuzzle,
-      primary: hass.localize(
-        "ui.dialogs.quick-bar.commands.navigation.addon_dashboard"
-      ),
-    });
-    if (addons) {
-      for (const addon of addons.filter((a) => a.version)) {
-        supervisorItems.push({
-          path: `/hassio/addon/${addon.slug}`,
-          image: addon.icon
-            ? `/api/hassio/addons/${addon.slug}/icon`
-            : undefined,
+    if (apps) {
+      for (const app of apps.filter((a) => a.version)) {
+        appItems.push({
+          path: `/config/app/${app.slug}`,
+          image: app.icon ? `/api/hassio/addons/${app.slug}/icon` : undefined,
           primary: hass.localize(
-            "ui.dialogs.quick-bar.commands.navigation.addon_info",
-            { addon: addon.name }
+            "ui.dialogs.quick-bar.commands.navigation.app_info",
+            { app: app.name }
           ),
+          secondary: hass.localize(
+            "ui.dialogs.quick-bar.commands.types.app_settings"
+          ),
+          iconColor: "#F1C447",
         });
       }
     }
@@ -201,7 +203,7 @@ export const generateNavigationCommands = (
   return finalizeNavigationCommands(hass.localize, [
     ...panelItems,
     ...sectionItems,
-    ...supervisorItems,
+    ...appItems,
     ...additionalItems,
   ]);
 };
@@ -265,16 +267,16 @@ const generateServerControlCommands = (
 
   return serverActions.map((action, index) => {
     const primary = hass.localize(
-      "ui.dialogs.quick-bar.commands.server_control.perform_action",
+      "ui.dialogs.quick-bar.commands.home_assistant_control.perform_action",
       {
         action: hass.localize(
-          `ui.dialogs.quick-bar.commands.server_control.${action}`
+          `ui.dialogs.quick-bar.commands.home_assistant_control.${action}`
         ),
       }
     );
 
     const secondary = hass.localize(
-      "ui.dialogs.quick-bar.commands.types.server_control"
+      "ui.dialogs.quick-bar.commands.types.home_assistant_control"
     );
 
     return {

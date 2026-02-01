@@ -131,10 +131,29 @@ export interface FlowToGridSourceEnergyPreference {
   number_energy_price: number | null;
 }
 
-export interface GridPowerSourceEnergyPreference {
-  // W meter
-  stat_rate: string;
+export interface PowerConfig {
+  stat_rate?: string; // Standard single sensor
+  stat_rate_inverted?: string; // Inverted single sensor
+  stat_rate_from?: string; // Battery: discharge / Grid: consumption
+  stat_rate_to?: string; // Battery: charge / Grid: return
 }
+
+export interface GridPowerSourceEnergyPreference {
+  stat_rate: string;
+  power_config?: PowerConfig;
+}
+
+/**
+ * Input type for saving grid power sources.
+ * Core requires EITHER stat_rate (legacy) OR power_config (new format).
+ * When reading from backend, stat_rate is always populated.
+ */
+export type GridPowerSourceInput = Omit<
+  GridPowerSourceEnergyPreference,
+  "stat_rate"
+> & {
+  stat_rate?: string;
+};
 
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
@@ -159,6 +178,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_energy_from: string;
   stat_energy_to: string;
   stat_rate?: string;
+  power_config?: PowerConfig;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
