@@ -672,6 +672,7 @@ export interface BlueprintInputSidebarConfig extends BaseSidebarConfig {
   toggleYamlMode: () => void;
   yamlMode: boolean;
   path: string[] | undefined;
+  pathOpened: (path: string[]) => void;
 }
 
 export type SidebarConfig =

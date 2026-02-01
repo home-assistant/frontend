@@ -107,7 +107,7 @@ export class HaBlueprintInput extends LitElement {
 
   private _inputChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const inputs = [...this.inputs];
+    const inputs = deepClone(this.inputs);
     const newValue = ev.detail.value;
     const index = (ev.target as any).index;
     if (newValue === null) {
@@ -123,7 +123,7 @@ export class HaBlueprintInput extends LitElement {
 
   private _inputChangedAtPath(ev: CustomEvent) {
     ev.stopPropagation();
-    const inputs = [...this.inputs];
+    const inputs = deepClone(this.inputs);
     const newValue = ev.detail.value;
     const path = ev.detail.path;
     const index = (ev.target as any).index;

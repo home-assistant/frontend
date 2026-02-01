@@ -13,6 +13,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { join } from "lit/directives/join";
+import deepClone from "deep-clone-simple";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { isMac } from "../../../../util/is_mac";
@@ -21,7 +22,10 @@ import type {
   BlueprintInput,
   BlueprintInputSection,
 } from "../../../../data/blueprint";
-import { isInputSection } from "../../../../data/blueprint";
+import {
+  getContainingSection,
+  isInputSection,
+} from "../../../../data/blueprint";
 import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type { BlueprintInputSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
@@ -103,11 +107,14 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
       return;
     }
 
-    this._path = this._path.slice(0, i);
+    const newPath = this._path.slice(0, i);
+    this._path = newPath;
+    this.config.pathOpened(newPath);
   };
 
   private _openInputGroupPath(ev: CustomEvent<string[]>) {
     this._path = ev.detail;
+    this.config.pathOpened(ev.detail);
   }
 
   private _getInputSectionChild(path: string[]): BlueprintInputSection {
@@ -298,14 +305,8 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     ev.stopPropagation();
 
     if (this._path && this._path.length > 0) {
-      const config = { ...this.config.config };
-      let innerConfig = config;
-      for (let i = 0; i < this._path.length - 1; i++) {
-        innerConfig = (innerConfig as BlueprintInputSection).input[
-          this._path[i]
-        ]!;
-      }
-
+      const config = deepClone(this.config.config);
+      const innerConfig = getContainingSection(config, this._path);
       const lastPathKey = this._path[this._path.length - 1]!;
       (innerConfig as BlueprintInputSection).input[lastPathKey] =
         ev.detail.value;
@@ -333,7 +334,9 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
       case "duplicate":
         this.config.duplicate(this._path);
         if (this._path && this._path.length > 0) {
-          this._path = this._path.slice(0, this._path.length - 1);
+          const newPath = this._path.slice(0, this._path.length - 1);
+          this._path = newPath;
+          this.config.pathOpened(newPath);
         }
         break;
       case "cut":

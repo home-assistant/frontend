@@ -31,6 +31,7 @@ import type {
   BlueprintInput,
 } from "../../../../data/blueprint";
 import {
+  getInputAtPath,
   getContainingSection,
   isInputSection,
   INPUT_ICONS,
@@ -84,6 +85,8 @@ export default class HaBlueprintInputRow extends LitElement {
 
   @state() private _selected = false;
 
+  @state() private _openedSidebarPath: string[] = [];
+
   private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
 
@@ -93,6 +96,10 @@ export default class HaBlueprintInputRow extends LitElement {
       return;
     }
     this.openSidebar(undefined);
+  }
+
+  private _pathOpened(path: string[]) {
+    this._openedSidebarPath = path;
   }
 
   public openSidebar(path: string[] | undefined): void {
@@ -120,6 +127,7 @@ export default class HaBlueprintInputRow extends LitElement {
       copy: this._onCopy.bind(this),
       yamlMode: this._yamlMode,
       rename: this._renameInput.bind(this),
+      pathOpened: this._pathOpened.bind(this),
       path,
     } satisfies BlueprintInputSidebarConfig);
     this._selected = true;
@@ -137,24 +145,48 @@ export default class HaBlueprintInputRow extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
 
+    /*
+     * If this is a section, and the input list has changed, we need to reopen
+     * the sidebar. This is because when editing form elements, the HTML elements
+     * have internal state, so the user can see what they're typing, even if
+     * the sidebar state doesn't reflect it.
+     *
+     * However, the same is not true of ha-blueprint-input, so we have to update
+     * the props being passed down to the sidebar.
+     */
     if (
       !changedProperties ||
       !changedProperties.has("input") ||
       !changedProperties.get("input") ||
-      this.path || // We are in a section in the sidebar
-      !this.input[1] ||
-      !isInputSection(this.input[1]) ||
-      !isInputSection(changedProperties.get("input")[1])
+      this.path ||
+      !this.input[1]
     ) {
       return;
     }
 
-    const oldKeys = Object.keys(changedProperties.get("input")[1].input);
-    const newKeys = Object.keys(this.input[1].input);
+    const oldInput = changedProperties.get("input");
+    if (!isInputSection(this.input[1]) || !isInputSection(oldInput[1])) {
+      return;
+    }
+
+    const oldInputSection = getInputAtPath(
+      oldInput[1],
+      this._openedSidebarPath
+    );
+    const newInputSection = getInputAtPath(
+      this.input[1],
+      this._openedSidebarPath
+    );
+    if (!isInputSection(newInputSection) || !isInputSection(oldInputSection)) {
+      return;
+    }
+
+    const oldKeys = Object.keys(oldInputSection.input);
+    const newKeys = Object.keys(newInputSection.input);
     oldKeys.sort();
     newKeys.sort();
     if (!deepEqual(oldKeys, newKeys)) {
-      this.openSidebar([]);
+      this.openSidebar(this.path);
     }
   }
 

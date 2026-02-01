@@ -276,6 +276,18 @@ export function getContainingSection(
   return innerInput;
 }
 
+export function getInputAtPath(
+  input: BlueprintInputSection,
+  path: string[]
+): BlueprintInput | BlueprintInputSection {
+  let innerInput = input;
+  for (const item of path) {
+    innerInput = innerInput.input[item]! as BlueprintInputSection;
+  }
+
+  return innerInput;
+}
+
 export function normalizeBlueprint(blueprint: Blueprint): Blueprint {
   // Normalize data: ensure triggers, actions and conditions are lists
   // Happens when people copy paste their automations into the config
