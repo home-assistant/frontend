@@ -651,7 +651,7 @@ const getEnergyData = async (
       if (powerId in powerStatsHour) {
         // If we have extra hourly power statistics for an ID, we may need to
         // insert data into statistics
-        if (powerId in powerStats) {
+        if (powerId in powerStats && powerStats[powerId].length) {
           // We have 5-minute data. Only insert hourly values for time periods
           // before the first 5-minute value.
           const powerStatFirst = powerStats[powerId][0];
