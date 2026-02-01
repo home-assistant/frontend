@@ -55,6 +55,8 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
 
+  @property({ attribute: false }) public contextVariables?: Record<string, any>;
+
   @state() private _rowSortSelected?: number;
 
   @state() private _conditionDescriptions: ConditionDescriptions = {};
@@ -235,6 +237,7 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
                 .conditionDescriptions=${this._conditionDescriptions}
+                .contextVariables=${this.contextVariables}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 @duplicate=${this._duplicateCondition}

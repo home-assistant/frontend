@@ -39,6 +39,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ attribute: false }) public description?: ConditionDescription;
 
+  @property({ attribute: false }) contextVariables: Record<string, any> = {};
+
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
@@ -102,6 +104,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                         disabled: this.disabled,
                         optionsInSidebar: this.indent,
                         narrow: this.narrow,
+                        contextVariables: this.contextVariables,
                       }
                     )}
               </div>

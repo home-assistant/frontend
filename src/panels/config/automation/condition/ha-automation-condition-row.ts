@@ -105,6 +105,8 @@ export default class HaAutomationConditionRow extends LitElement {
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @state() private _collapsed = true;
 
   @state() private _warnings?: string[];
@@ -374,6 +376,7 @@ export default class HaAutomationConditionRow extends LitElement {
               .yamlMode=${this._yamlMode}
               .uiSupported=${this._uiSupported}
               .narrow=${this.narrow}
+              .contextVariables=${this.contextVariables}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-condition-editor>`
         : nothing}
@@ -455,6 +458,7 @@ export default class HaAutomationConditionRow extends LitElement {
             indent
             .selected=${this._selected}
             .narrow=${this.narrow}
+            .contextVariables=${this.contextVariables}
             @value-changed=${this._onValueChange}
           ></ha-automation-condition-editor>`
         : nothing}
@@ -502,6 +506,14 @@ export default class HaAutomationConditionRow extends LitElement {
     ) {
       // update sidebar if uiSupported changed
       this.openSidebar();
+    }
+    if (
+      changedProps.has("contextVariables") &&
+      this._selected &&
+      this.optionsInSidebar
+    ) {
+      // update sidebar if variables changed
+      this.updateSidebar();
     }
   }
 
@@ -718,6 +730,12 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   };
 
+  public updateSidebar() {
+    fireEvent(this, "update-sidebar", {
+      contextVariables: this.contextVariables || {},
+    });
+  }
+
   public expand() {
     if (this.optionsInSidebar) {
       this._collapsed = false;
@@ -789,6 +807,7 @@ export default class HaAutomationConditionRow extends LitElement {
       copy: this._copyCondition,
       cut: this._cutCondition,
       test: this._testCondition,
+      contextVariables: this.contextVariables,
       config: sidebarCondition,
       uiSupported: this._uiSupported,
       description: this.conditionDescriptions[sidebarCondition.condition],

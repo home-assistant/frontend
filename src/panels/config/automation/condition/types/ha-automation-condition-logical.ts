@@ -20,6 +20,8 @@ export abstract class HaLogicalCondition
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
+
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
 
@@ -35,6 +37,7 @@ export abstract class HaLogicalCondition
         .disabled=${this.disabled}
         .optionsInSidebar=${this.optionsInSidebar}
         .narrow=${this.narrow}
+        .contextVariables=${this.contextVariables}
       ></ha-automation-condition>
     `;
   }

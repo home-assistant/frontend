@@ -8,7 +8,12 @@ import "../../../../../components/ha-form/ha-form";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const SCHEMA = [
-  { name: "value_template", required: true, selector: { template: {} } },
+  {
+    name: "value_template",
+    required: true,
+    selector: { template: {} },
+    context: { variables: "variables" },
+  },
 ] as const;
 
 @customElement("ha-automation-condition-template")
@@ -18,6 +23,8 @@ export class HaTemplateCondition extends LitElement {
   @property({ attribute: false }) public condition!: TemplateCondition;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ attribute: false }) contextVariables?: Record<string, any>;
 
   public static get defaultConfig(): TemplateCondition {
     return { condition: "template", value_template: "" };
@@ -32,6 +39,7 @@ export class HaTemplateCondition extends LitElement {
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
         .disabled=${this.disabled}
+        .extraContext=${{ variables: this.contextVariables }}
       ></ha-form>
     `;
   }

@@ -55,6 +55,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .optionsInSidebar=${this.indent}
+        .contextVariables=${this.contextVariables}
       ></ha-automation-condition>
 
       <h4>

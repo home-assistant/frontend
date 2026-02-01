@@ -603,6 +603,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   copy: () => void;
   insertAfter: (value: Trigger | Trigger[]) => boolean;
   toggleYamlMode: () => void;
+  contextVariables?: Record<string, any>;
   config: Trigger;
   description?: TriggerDescription;
   yamlMode: boolean;
@@ -619,6 +620,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   copy: () => void;
   insertAfter: (value: Condition | Condition[]) => boolean;
   toggleYamlMode: () => void;
+  contextVariables?: Record<string, any>;
   config: Condition;
   description?: ConditionDescription;
   yamlMode: boolean;

@@ -295,6 +295,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
               .description=${this.config.description}
               .yamlMode=${this.yamlMode}
               .uiSupported=${this.config.uiSupported}
+              .contextVariables=${this.config.contextVariables}
               @value-changed=${this._valueChangedSidebar}
               @yaml-changed=${this._yamlChangedSidebar}
               .disabled=${this.disabled}
