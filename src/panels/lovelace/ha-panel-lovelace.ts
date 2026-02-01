@@ -368,13 +368,11 @@ export class LovelacePanel extends LitElement {
         this._ignoreNextUpdateEvent = true;
       }
 
-      // Keep lovelace yaml path for backward compatibility (until 2026.8)
-      const urlPath =
-        confMode === "yaml" && this.urlPath === "lovelace"
-          ? null
-          : this.urlPath;
-
-      confProm = fetchConfig(this.hass!.connection, urlPath, forceDiskRefresh);
+      confProm = fetchConfig(
+        this.hass!.connection,
+        this.urlPath,
+        forceDiskRefresh
+      );
     }
 
     try {

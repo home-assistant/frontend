@@ -9,11 +9,14 @@ import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
 import { mockConfigEntries } from "./stubs/config_entries";
+import { mockDeviceRegistry } from "./stubs/device_registry";
 import { mockEnergy } from "./stubs/energy";
 import { energyEntities } from "./stubs/entities";
 import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
+import { mockFloorRegistry } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
+import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
 import { mockLovelace } from "./stubs/lovelace";
@@ -60,6 +63,9 @@ export class HaDemo extends HomeAssistantAppEl {
     mockPersistentNotification(hass);
     mockConfigEntries(hass);
     mockAreaRegistry(hass);
+    mockDeviceRegistry(hass);
+    mockFloorRegistry(hass);
+    mockLabelRegistry(hass);
     mockEntityRegistry(hass, [
       {
         config_entry_id: "co2signal",
