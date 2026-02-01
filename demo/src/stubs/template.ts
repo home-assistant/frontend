@@ -7,8 +7,18 @@ export const mockTemplate = (hass: MockHomeAssistant) => {
     })
   );
   hass.mockWS("render_template", (msg, _hass, onChange) => {
+    let result = msg.template;
+    // Simple variable substitution for demo purposes
+    if (msg.variables) {
+      for (const [key, value] of Object.entries(msg.variables)) {
+        result = result.replace(
+          new RegExp(`\\{\\{\\s*${key}\\s*\\}\\}`, "g"),
+          String(value)
+        );
+      }
+    }
     onChange!({
-      result: msg.template,
+      result,
       listeners: { all: false, domains: [], entities: [], time: false },
     });
     // eslint-disable-next-line @typescript-eslint/no-empty-function

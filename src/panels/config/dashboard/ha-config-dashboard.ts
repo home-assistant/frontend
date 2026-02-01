@@ -39,6 +39,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { isMac } from "../../../util/is_mac";
 import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
@@ -121,6 +122,14 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
       },
       {
         content: hass.localize("ui.tips.key_a_tip", localizeParam),
+        weight: 1,
+        narrow: false,
+      },
+      {
+        content: hass.localize("ui.tips.key_shortcut_quick_search", {
+          ...localizeParam,
+          modifier: isMac ? "⌘" : "Ctrl",
+        }),
         weight: 1,
         narrow: false,
       }
@@ -364,17 +373,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _showQuickBar(): void {
-    const params = {
-      keyboard_shortcut: html`<a href="#" @click=${this._openShortcutDialog}
-        >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
-      >`,
-    };
-
-    showQuickBar(this, {
-      hint: this.hass.enableShortcuts
-        ? this.hass.localize("ui.dialogs.quick-bar.key_c_tip", params)
-        : undefined,
-    });
+    showQuickBar(this, { showHint: true });
   }
 
   private async _handleMenuAction(

@@ -1,8 +1,10 @@
 import { mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
@@ -49,8 +51,10 @@ import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../../resources/fuseMultiTerm";
+import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
+import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
@@ -65,7 +69,7 @@ export class QuickBar extends LitElement {
 
   @state() private _loading = true;
 
-  @state() private _hint?: string;
+  @state() private _showHint = false;
 
   @state() private _selectedSection?: QuickBarSection;
 
@@ -81,7 +85,11 @@ export class QuickBar extends LitElement {
 
   private _addons?: HassioAddonInfo[];
 
+  private _navigationFilterOptions: NavigationFilterOptions = {};
+
   private _translationsLoaded = false;
+
+  private _itemSelected = false;
 
   // #region lifecycle
   public async showDialog(params: QuickBarParams) {
@@ -91,7 +99,7 @@ export class QuickBar extends LitElement {
     }
     this._initialize();
     this._selectedSection = params.mode;
-    this._hint = params.hint;
+    this._showHint = params.showHint ?? false;
     this._open = true;
   }
 
@@ -105,6 +113,12 @@ export class QuickBar extends LitElement {
       this._configEntryLookup = Object.fromEntries(
         configEntries.map((entry) => [entry.entry_id, entry])
       );
+      // Derive Bluetooth config entries status for navigation filtering
+      this._navigationFilterOptions = {
+        hasBluetoothConfigEntries: configEntries.some(
+          (entry) => entry.domain === "bluetooth"
+        ),
+      };
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Error fetching config entries for quick bar", err);
@@ -153,7 +167,20 @@ export class QuickBar extends LitElement {
     this._selectedSection = undefined;
     this._opened = false;
     this._open = false;
+    this._itemSelected = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  };
+
+  // fallback in case the closed event is not fired
+  private _dialogCloseStarted = () => {
+    setTimeout(
+      () => {
+        if (this._opened) {
+          this._dialogClosed();
+        }
+      },
+      350 // close animation timeout is 300ms
+    );
   };
 
   // #endregion lifecycle
@@ -161,7 +188,7 @@ export class QuickBar extends LitElement {
   // #region render
 
   protected render() {
-    if (!this._open) {
+    if (!this._open && !this._opened) {
       return nothing;
     }
 
@@ -211,6 +238,7 @@ export class QuickBar extends LitElement {
         hideActions
         @wa-show=${this._showTriggered}
         @wa-after-show=${this._dialogOpened}
+        @wa-hide=${this._dialogCloseStarted}
         @closed=${this._dialogClosed}
       >
         ${!this._loading && this._opened
@@ -231,9 +259,17 @@ export class QuickBar extends LitElement {
               clearable
             ></ha-picker-combo-box>`
           : nothing}
-        ${this._hint
+        ${this._showHint
           ? html`<ha-tip slot="footer" .hass=${this.hass}
-              >${this._hint}</ha-tip
+              >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
+                keyboard_shortcut: html`<button
+                  class="link"
+                  @click=${this._openShortcutDialog}
+                >
+                  ${this.hass.localize("ui.tips.keyboard_shortcut")}
+                </button>`,
+                modifier: isMac ? "⌘" : "Ctrl",
+              })}</ha-tip
             >`
           : nothing}
       </ha-adaptive-dialog>
@@ -282,6 +318,9 @@ export class QuickBar extends LitElement {
                     slot="start"
                     alt=${item.primary ?? "Unknown"}
                     .src=${item.image}
+                    style=${"iconColor" in item && item.iconColor
+                      ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                      : ""}
                   />
                 `
               : item.icon
@@ -394,7 +433,8 @@ export class QuickBar extends LitElement {
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
           this.hass,
-          this._addons
+          this._addons,
+          this._navigationFilterOptions
         ).sort(this._sortBySortingLabel);
 
         if (filter) {
@@ -560,7 +600,11 @@ export class QuickBar extends LitElement {
   );
 
   private _generateNavigationCommandsMemoized = memoizeOne(
-    generateNavigationCommands
+    (
+      hass: HomeAssistant,
+      apps: HassioAddonInfo[] | undefined,
+      filterOptions: NavigationFilterOptions
+    ) => generateNavigationCommands(hass, apps, filterOptions)
   );
 
   private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);
@@ -625,11 +669,17 @@ export class QuickBar extends LitElement {
   private async _handleItemSelected(
     ev: CustomEvent<PickerComboBoxIndexSelectedDetail>
   ) {
-    if (this._comboBox && this._comboBox.virtualizerElement) {
+    if (
+      !this._itemSelected &&
+      this._comboBox &&
+      this._comboBox.virtualizerElement
+    ) {
       const { index, newTab } = ev.detail;
       const item = this._comboBox.virtualizerElement.items[
         index
       ] as PickerComboBoxItem;
+
+      this._itemSelected = true;
 
       // entity selected
       if (item && "stateObj" in item) {
@@ -712,48 +762,59 @@ export class QuickBar extends LitElement {
     }
   }
 
+  private _openShortcutDialog(ev: Event): void {
+    ev.preventDefault();
+    showShortcutsDialog(this);
+    this.closeDialog();
+  }
+
   // #endregion interaction
 
   // #region styles
 
-  static styles = css`
-    :host {
-      --dialog-surface-margin-top: var(--ha-space-10);
-      --ha-dialog-min-height: 620px;
-      --ha-bottom-sheet-height: calc(
-        100vh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-height: calc(
-        100dvh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-max-height: calc(
-        100vh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-max-height: calc(
-        100dvh - max(var(--safe-area-inset-top), 48px)
-      );
-      --dialog-content-padding: 0;
-      --safe-area-inset-bottom: 0px;
-    }
+  static get styles(): CSSResultGroup {
+    return [
+      buttonLinkStyle,
+      css`
+        :host {
+          --dialog-surface-margin-top: var(--ha-space-10);
+          --ha-dialog-min-height: 620px;
+          --ha-bottom-sheet-height: calc(
+            100vh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-height: calc(
+            100dvh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-max-height: calc(
+            100vh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-max-height: calc(
+            100dvh - max(var(--safe-area-inset-top), 48px)
+          );
+          --dialog-content-padding: 0;
+          --safe-area-inset-bottom: 0px;
+        }
 
-    ha-tip {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--secondary-text-color);
-      gap: var(--ha-space-1);
-    }
+        ha-tip {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: var(--secondary-text-color);
+          gap: var(--ha-space-1);
+        }
 
-    ha-tip a {
-      color: var(--primary-color);
-    }
+        ha-tip a {
+          color: var(--primary-color);
+        }
 
-    @media all and (max-width: 450px), all and (max-height: 690px) {
-      ha-tip {
-        display: none;
-      }
-    }
-  `;
+        @media all and (max-width: 450px), all and (max-height: 690px) {
+          ha-tip {
+            display: none;
+          }
+        }
+      `,
+    ];
+  }
 
   // #endregion styles
 }

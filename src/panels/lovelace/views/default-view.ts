@@ -8,6 +8,5 @@ export const generateDefaultView = (
 ) =>
   ({
     type: "sections",
-    title: localize("ui.panel.lovelace.editor.default_view_title"),
     sections: [generateDefaultSection(localize, includeHeading)],
   }) as LovelaceViewConfig;
