@@ -1,5 +1,6 @@
 import { mdiCheck, mdiDotsVertical } from "@mdi/js";
 import {
+  differenceInCalendarYears,
   differenceInDays,
   differenceInMonths,
   endOfDay,
@@ -158,6 +159,29 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       this.hass.config
     );
 
+    const today = new Date();
+    const formatStartDateRange =
+      calcDateDifferenceProperty(
+        today,
+        this._startDate,
+        differenceInCalendarYears,
+        this.hass.locale,
+        this.hass.config
+      ) === 0
+        ? formatDateVeryShort
+        : formatDateShort;
+    const formatEndDateRange =
+      !this._endDate ||
+      calcDateDifferenceProperty(
+        this._endDate,
+        today,
+        differenceInCalendarYears,
+        this.hass.locale,
+        this.hass.config
+      ) === 0
+        ? formatDateVeryShort
+        : formatDateShort;
+
     return html`
       <div
         class=${classMap({
@@ -187,11 +211,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                     this.hass.locale,
                     this.hass.config
                   )
-                : `${formatDateVeryShort(
+                : `${formatStartDateRange(
                     this._startDate,
                     this.hass.locale,
                     this.hass.config
-                  )} – ${formatDateVeryShort(
+                  )} – ${formatEndDateRange(
                     this._endDate || new Date(),
                     this.hass.locale,
                     this.hass.config
@@ -510,7 +534,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      font-size: var(--ha-font-size-xl);
+      font-size: var(--ha-font-size-l);
       margin-left: auto;
       margin-inline-start: auto;
       margin-inline-end: initial;
