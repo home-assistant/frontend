@@ -27,4 +27,25 @@ export const mockFrontend = (hass: MockHomeAssistant) => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
   });
+  hass.mockWS(
+    "frontend/subscribe_system_data",
+    (_msg, currentHass, onChange) => {
+      onChange?.({
+        value: currentHass.systemData,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      return () => {};
+    }
+  );
+  hass.mockWS("labs/subscribe", (_msg, _currentHass, onChange) => {
+    onChange?.({
+      preview_feature: _msg.preview_feature,
+      domain: _msg.domain,
+      enabled: false,
+      is_built_in: true,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    return () => {};
+  });
+  hass.mockWS("repairs/list_issues", () => ({ issues: [] }));
 };

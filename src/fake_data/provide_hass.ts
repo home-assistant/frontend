@@ -7,7 +7,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
-import { DEFAULT_PANEL } from "../data/panel";
 import {
   DateFormat,
   FirstWeekday,
@@ -268,7 +267,9 @@ export const provideHass = (
       name: "Demo User",
     },
     panelUrl: "lovelace",
-    defaultPanel: DEFAULT_PANEL,
+    systemData: {
+      default_panel: "lovelace",
+    },
     language: localLanguage,
     selectedLanguage: localLanguage,
     locale: {
@@ -367,6 +368,7 @@ export const provideHass = (
     areas: {},
     devices: {},
     entities: {},
+    floors: {},
     formatEntityState: (stateObj, state) =>
       (state !== null ? state : stateObj.state) ?? "",
     formatEntityAttributeName: (_stateObj, attribute) => attribute,
