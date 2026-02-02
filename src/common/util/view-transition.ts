@@ -1,9 +1,13 @@
-const isViewTransitionDisabled = (): boolean => {
-  try {
-    return window.localStorage.getItem("disableViewTransition") === "true";
-  } catch {
-    return false;
-  }
+let isViewTransitionDisabled = false;
+try {
+  isViewTransitionDisabled =
+    window.localStorage.getItem("disableViewTransition") === "true";
+} catch {
+  // ignore
+}
+
+export const setViewTransitionDisabled = (disabled: boolean): void => {
+  isViewTransitionDisabled = disabled;
 };
 
 /**
@@ -22,7 +26,7 @@ const isViewTransitionDisabled = (): boolean => {
 export const withViewTransition = (
   callback: (viewTransitionAvailable: boolean) => void
 ): Promise<void> => {
-  if (!document.startViewTransition || isViewTransitionDisabled()) {
+  if (!document.startViewTransition || isViewTransitionDisabled) {
     callback(false);
     return Promise.resolve();
   }
