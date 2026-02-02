@@ -862,7 +862,7 @@ class HUIRoot extends LitElement {
   };
 
   private _showQuickBar = () => {
-    showQuickBar(this, { showHint: true });
+    showQuickBar(this, { showHint: this.hass.enableShortcuts });
   };
 
   private _goBack(): void {

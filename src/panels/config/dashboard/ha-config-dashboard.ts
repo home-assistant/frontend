@@ -373,7 +373,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _showQuickBar(): void {
-    showQuickBar(this, { showHint: true });
+    showQuickBar(this, { showHint: this.hass.enableShortcuts });
   }
 
   private async _handleMenuAction(
