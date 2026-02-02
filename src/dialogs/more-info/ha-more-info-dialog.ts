@@ -811,9 +811,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       css`
         ha-dialog {
           --dialog-content-padding: 0;
-          --ha-dialog-surface-transition:
-            min-width var(--ha-animation-base-duration) ease,
-            max-width var(--ha-animation-base-duration) ease;
         }
 
         .content-wrapper {
