@@ -217,9 +217,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                         this._startDate,
                         this.hass.locale,
                         this.hass.config
-                      )}
-                      –</span
+                      )}</span
                     >
+                    &ndash;
                     <span class="label-break"
                       >${formatEndDateRange(
                         this._endDate || new Date(),
