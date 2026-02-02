@@ -262,6 +262,15 @@ export class HaConfigLovelaceResources extends LitElement {
   }
 
   private _removeResource = async (event: any) => {
+    if (this._lovelaceInfo?.resource_mode !== "storage") {
+      showAlertDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.cant_edit_yaml"
+        ),
+      });
+      return false;
+    }
+
     const resource = event.currentTarget.resource as LovelaceResource;
 
     if (

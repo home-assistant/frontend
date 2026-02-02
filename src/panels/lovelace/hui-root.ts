@@ -51,7 +51,6 @@ import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
 import "../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../data/area/area_registry";
-import type { LovelacePanelConfig } from "../../data/lovelace";
 import type {
   LovelaceConfig,
   LovelaceRawConfig,
@@ -334,10 +333,7 @@ class HUIRoot extends LitElement {
         icon: mdiRefresh,
         key: "ui.panel.lovelace.menu.reload_resources",
         overflowAction: this._handleReloadResources,
-        visible:
-          !this._editMode &&
-          (this.hass.panels.lovelace?.config as LovelacePanelConfig)?.mode ===
-            "yaml",
+        visible: !this._editMode && this.lovelace?.resourceMode === "yaml",
         overflow: true,
       },
       {

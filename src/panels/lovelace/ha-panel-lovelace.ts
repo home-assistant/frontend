@@ -25,7 +25,10 @@ import {
   isStrategyDashboard,
   saveConfig,
 } from "../../data/lovelace/config/types";
-import { fetchResources } from "../../data/lovelace/resource";
+import {
+  fetchLovelaceInfo,
+  fetchResources,
+} from "../../data/lovelace/resource";
 import type { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
@@ -82,6 +85,8 @@ export class LovelacePanel extends LitElement {
   private _unsubUpdates?: Promise<UnsubscribeFunc>;
 
   private _loading = false;
+
+  private _resourceMode?: "yaml" | "storage";
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -359,6 +364,14 @@ export class LovelacePanel extends LitElement {
         (resources) => loadLovelaceResources(resources, this.hass!)
       );
     }
+    if (this._resourceMode === undefined) {
+      fetchLovelaceInfo(this.hass!).then((info) => {
+        this._resourceMode = info.resource_mode;
+        if (this.lovelace) {
+          this._updateLovelace({ resourceMode: info.resource_mode });
+        }
+      });
+    }
 
     if (this.urlPath !== null || !confProm) {
       // Refreshing a YAML config can trigger an update event. We will ignore
@@ -440,6 +453,7 @@ export class LovelacePanel extends LitElement {
       config,
       rawConfig,
       mode,
+      resourceMode: this._resourceMode,
       urlPath: this.urlPath,
       editMode: this.lovelace ? this.lovelace.editMode : false,
       locale: this.hass!.locale,

@@ -34,6 +34,7 @@ export interface Lovelace {
   editMode: boolean;
   urlPath: string | null;
   mode: "generated" | "yaml" | "storage";
+  resourceMode?: "yaml" | "storage";
   locale: FrontendLocaleData;
   enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
