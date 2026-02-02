@@ -62,6 +62,7 @@ import {
   fetchDashboards,
   updateDashboard,
 } from "../../data/lovelace/dashboard";
+import { fetchLovelaceInfo } from "../../data/lovelace/resource";
 import { getPanelTitle } from "../../data/panel";
 import { createPerson } from "../../data/person";
 import { showListItemsDialog } from "../../dialogs/dialog-list-items/show-list-items-dialog";
@@ -149,6 +150,8 @@ class HUIRoot extends LitElement {
   @property({ attribute: false }) public backPath?: string;
 
   @state() private _curView?: number | "hass-unused-entities";
+
+  @state() private _resourceMode: "yaml" | "storage" = "storage";
 
   private _configChangedByUndo = false;
 
@@ -333,7 +336,7 @@ class HUIRoot extends LitElement {
         icon: mdiRefresh,
         key: "ui.panel.lovelace.menu.reload_resources",
         overflowAction: this._handleReloadResources,
-        visible: !this._editMode && this.lovelace?.resourceMode === "yaml",
+        visible: !this._editMode && this._resourceMode === "yaml",
         overflow: true,
       },
       {
@@ -662,6 +665,9 @@ class HUIRoot extends LitElement {
       passive: true,
     });
     this._handleUrlChanged();
+    fetchLovelaceInfo(this.hass).then((info) => {
+      this._resourceMode = info.resource_mode;
+    });
   }
 
   public connectedCallback(): void {
