@@ -65,6 +65,9 @@ export class HaDateRangePicker extends LitElement {
   @property({ attribute: "time-picker", type: Boolean })
   public timePicker = false;
 
+  @property({ type: Boolean, attribute: "open-picker" })
+  public openPicker = false;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public minimal = false;
@@ -114,6 +117,10 @@ export class HaDateRangePicker extends LitElement {
       if (!oldHass || oldHass.locale !== this.hass.locale) {
         this._hour24format = !useAmPm(this.hass.locale);
       }
+    }
+    if (changedProps.has("openPicker") && this.openPicker) {
+      this.openPicker = false;
+      this._openPicker();
     }
   }
 
@@ -304,6 +311,15 @@ export class HaDateRangePicker extends LitElement {
       "date-range-picker"
     ) as any;
     return dateRangePicker.vueComponent.$children[0];
+  }
+
+  private _openPicker() {
+    if (!this._dateRangePicker.open) {
+      const datePicker = this.shadowRoot!.querySelector(
+        "date-range-picker div.date-range-inputs"
+      ) as any;
+      datePicker?.click();
+    }
   }
 
   private _handleInputClick() {
