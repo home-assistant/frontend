@@ -4,7 +4,7 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
-import { goBack } from "../common/navigate";
+import { goBack, navigate } from "../common/navigate";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
@@ -72,7 +72,8 @@ class HassTabsSubpage extends LitElement {
       _language,
       _userData,
       _narrow,
-      localizeFunc
+      localizeFunc,
+      tabTappedHandler
     ) => {
       const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
 
@@ -88,7 +89,7 @@ class HassTabsSubpage extends LitElement {
 
       return shownTabs.map(
         (page) => html`
-          <a href=${page.path}>
+          <a href=${page.path} @click=${tabTappedHandler}>
             <ha-tab
               .hass=${this.hass}
               .active=${page.path === activeTab?.path}
@@ -127,7 +128,8 @@ class HassTabsSubpage extends LitElement {
       this.hass.language,
       this.hass.userData,
       this.narrow,
-      this.localizeFunc || this.hass.localize
+      this.localizeFunc || this.hass.localize,
+      this._tabTapped
     );
     const showTabs = tabs.length > 1;
     return html`
@@ -208,6 +210,12 @@ class HassTabsSubpage extends LitElement {
       return;
     }
     goBack();
+  }
+
+  private _tabTapped(ev: Event): void {
+    ev.preventDefault();
+    const anchor = ev.currentTarget as HTMLAnchorElement;
+    navigate(anchor.href, { replace: true });
   }
 
   static get styles(): CSSResultGroup {
