@@ -43,6 +43,8 @@ export class HaDialogHeader extends LitElement {
       css`
         :host {
           display: block;
+          --ha-dialog-header-title-font-size: var(--ha-font-size-xl);
+          --ha-dialog-header-subtitle-font-size: var(--ha-font-size-m);
         }
         :host([show-border]) {
           border-bottom: 1px solid
@@ -70,15 +72,15 @@ export class HaDialogHeader extends LitElement {
         .header-title {
           height: var(
             --ha-dialog-header-title-height,
-            calc(var(--ha-font-size-xl) + var(--ha-space-1))
+            calc(var(--ha-dialog-header-title-font-size) + var(--ha-space-1))
           );
-          font-size: var(--ha-font-size-xl);
+          font-size: var(--ha-dialog-header-title-font-size);
           line-height: var(--ha-line-height-condensed);
           font-weight: var(--ha-font-weight-medium);
           color: var(--ha-dialog-header-title-color, var(--primary-text-color));
         }
         .header-subtitle {
-          font-size: var(--ha-font-size-m);
+          font-size: var(--ha-dialog-header-subtitle-font-size);
           line-height: var(--ha-line-height-normal);
           color: var(
             --ha-dialog-header-subtitle-color,
