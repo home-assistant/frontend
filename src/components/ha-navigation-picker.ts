@@ -460,7 +460,10 @@ export class HaNavigationPicker extends LitElement {
       const path = `/config/areas/area/${areaId}`;
       relatedItems.push({
         id: path,
-        primary: this.hass.localize("ui.components.navigation-picker.area_settings", { area: primary }),
+        primary: this.hass.localize(
+          "ui.components.navigation-picker.area_settings",
+          { area: primary }
+        ),
         secondary: path,
         icon: area?.icon ?? undefined,
         icon_path: area?.icon ? undefined : mdiTextureBox,
