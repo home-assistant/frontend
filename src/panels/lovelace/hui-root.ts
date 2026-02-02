@@ -188,6 +188,7 @@ class HUIRoot extends LitElement {
 
   private _renderActionItems(): TemplateResult {
     const result: TemplateResult[] = [];
+
     if (this._editMode) {
       result.push(
         html`<ha-icon-button
@@ -233,6 +234,8 @@ class HUIRoot extends LitElement {
           </a>`
       );
     }
+
+    const isLovelaceDashboard = this.panel?.component_name === "lovelace";
 
     const items: ActionItem[] = [
       {
@@ -336,7 +339,10 @@ class HUIRoot extends LitElement {
         icon: mdiRefresh,
         key: "ui.panel.lovelace.menu.reload_resources",
         overflowAction: this._handleReloadResources,
-        visible: !this._editMode && this._resourceMode === "yaml",
+        visible:
+          !this._editMode &&
+          this._resourceMode === "yaml" &&
+          isLovelaceDashboard,
         overflow: true,
       },
       {
