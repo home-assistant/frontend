@@ -212,11 +212,11 @@ class HassTabsSubpage extends LitElement {
     goBack();
   }
 
-  private _tabTapped(ev: Event): void {
+  private _tabTapped = (ev: Event): void => {
     ev.preventDefault();
     const anchor = ev.currentTarget as HTMLAnchorElement;
     navigate(anchor.href, { replace: true });
-  }
+  };
 
   static get styles(): CSSResultGroup {
     return [
