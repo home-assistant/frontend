@@ -530,6 +530,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   static styles = css`
+    :host {
+      display: block;
+    }
     .row {
       display: flex;
       align-items: center;
