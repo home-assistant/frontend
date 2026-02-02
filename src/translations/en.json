@@ -3471,6 +3471,10 @@
                 "title": "Debug connection",
                 "description": "Observe requests to the server and responses from the server in browser console."
               },
+              "disable_view_transition": {
+                "title": "Disable view transitions",
+                "description": "Disable animated view transitions to prevent browser crash when using browser dev tools."
+              },
               "entity_diagnostic": {
                 "title": "Entity diagnostic",
                 "description": "Select an entity to copy diagnostic details.",

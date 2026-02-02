@@ -7,6 +7,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-debug-connection-row";
+import "./ha-debug-view-transition-row";
 import {
   getStatisticMetadata,
   validateStatistics,
@@ -36,6 +37,10 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
             .hass=${this.hass}
             .narrow=${this.narrow}
           ></ha-debug-connection-row>
+          <ha-debug-view-transition-row
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-debug-view-transition-row>
         </ha-card>
         <ha-card
           .header=${this.hass.localize(
