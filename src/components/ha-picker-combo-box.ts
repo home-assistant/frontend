@@ -22,6 +22,7 @@ import {
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
+import { isTouch } from "../util/is_touch";
 import "./chips/ha-chip-set";
 import "./chips/ha-filter-chip";
 import "./ha-combo-box-item";
@@ -284,7 +285,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           section === "separator"
             ? html`<div class="separator"></div>`
             : html`<ha-filter-chip
-                @mousedown=${this._preventBlur}
+                @mousedown=${isTouch ? undefined : this._preventBlur}
                 @click=${this._toggleSection}
                 .section-id=${section.id}
                 .selected=${this._selectedSection === section.id}
@@ -507,8 +508,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._valuePinned = true;
   };
 
-  private _preventBlur(ev: MouseEvent) {
-    // Prevent the mousedown from stealing focus from the search field
+  private _preventBlur(ev: Event) {
     ev.preventDefault();
   }
 
