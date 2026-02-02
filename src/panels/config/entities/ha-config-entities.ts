@@ -90,6 +90,8 @@ import type {
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import { listExposedEntities, voiceAssistants } from "../../../data/expose";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
@@ -119,13 +121,11 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import type { ExposeEntitySettings } from "../../../data/expose";
-import { listExposedEntities, voiceAssistants } from "../../../data/expose";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -1723,6 +1723,10 @@ ${rejected
 
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

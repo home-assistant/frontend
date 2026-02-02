@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
@@ -45,16 +46,15 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
-import "@home-assistant/webawesome/dist/components/divider/divider";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
@@ -84,6 +84,7 @@ import type {
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
@@ -98,7 +99,6 @@ import {
   saveScene,
   showSceneEditor,
 } from "../../../data/scene";
-import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -115,12 +115,12 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
-  getAssistantsTableColumn,
   getAssistantsSortableKey,
+  getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -1366,6 +1366,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
