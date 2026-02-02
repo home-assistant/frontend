@@ -572,6 +572,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           this._triggerColor = false;
         }
         this._triggered = result;
+        fireEvent(this, "update-variables", result.variables);
         untriggerTimeout = window.setTimeout(() => {
           this._triggered = undefined;
           untriggerTimeout = undefined;

@@ -203,6 +203,7 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
         @open-sidebar=${this._openSidebar}
         @request-close-sidebar=${this.triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
+        @update-variables=${this._updateVariables}
         root
         sidebar
       ></ha-automation-trigger>
@@ -247,6 +248,7 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
+        .contextVariables=${this._contextVariables}
         @open-sidebar=${this._openSidebar}
         @request-close-sidebar=${this.triggerCloseSidebar}
         @close-sidebar=${this._handleCloseSidebar}
