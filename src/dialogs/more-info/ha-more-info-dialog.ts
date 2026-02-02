@@ -37,7 +37,7 @@ import {
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
-import { uid } from "../../common/util/uid";
+import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-dropdown";
@@ -46,7 +46,6 @@ import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
-import "../../components/ha-tooltip";
 import {
   STATE_ATTRIBUTES,
   STATE_ATTRIBUTES_DOMAIN_CLASS,
@@ -116,8 +115,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
-
-  private _titleId = `more-info-dialog-title-${uid()}`;
 
   @state() private _parentEntityIds: string[] = [];
 
@@ -473,11 +470,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         flexContent
       >
         <ha-dialog-header slot="heading">
-          <ha-tooltip .for=${this._titleId} placement="bottom">
-            ${this.large
-              ? this.hass.localize("ui.dialogs.more_info_control.compact_dialog")
-              : this.hass.localize("ui.dialogs.more_info_control.expand_dialog")}
-          </ha-tooltip>
           ${showCloseIcon
             ? html`
                 <ha-icon-button
@@ -496,19 +488,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span
-            slot="title"
-            .id=${this._titleId}
-            role="button"
-            tabindex="0"
-            aria-pressed=${String(this.large)}
-            aria-label=${this.large
-              ? this.hass.localize("ui.dialogs.more_info_control.compact_dialog")
-              : this.hass.localize("ui.dialogs.more_info_control.expand_dialog")}
-            @click=${this._enlarge}
-            @keydown=${this._handleTitleKeydown}
-            class="title"
-          >
+          <span slot="title" @click=${this._enlarge} class="title">
             ${breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
                 ? html`
@@ -791,15 +771,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _enlarge() {
-    this.large = !this.large;
-  }
-
-  private _handleTitleKeydown(ev: KeyboardEvent) {
-    if (ev.key !== "Enter" && ev.key !== " ") {
-      return;
-    }
-    ev.preventDefault();
-    this._enlarge();
+    withViewTransition(() => {
+      this.large = !this.large;
+    });
   }
 
   private _handleOpened() {
@@ -896,17 +870,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          padding: var(--ha-space-1);
-          margin: calc(var(--ha-space-1) * -1);
-          margin-bottom: calc(var(--ha-space-2) * -1);
-          border-radius: var(--ha-border-radius-md);
-          cursor: pointer;
-          transition: background-color 180ms ease-in-out;
-        }
-
-        .title:focus-visible,
-        .title:hover {
-          background-color: rgba(var(--rgb-secondary-text-color), 0.08);
+          margin: 0 0 calc(var(--ha-space-2) * -1) 0;
         }
 
         .title p {
