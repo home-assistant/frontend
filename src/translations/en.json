@@ -1354,6 +1354,7 @@
         "dashboards": "[%key:ui::panel::config::dashboard::dashboards::main%]",
         "related": "Related",
         "views": "Views",
+        "area_settings": "{area} - Settings",
         "other_routes": "Other routes"
       }
     },

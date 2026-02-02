@@ -27,8 +27,8 @@ type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
 
 const RELATED_SORT_PREFIX = {
   area_view: "0_area_view",
-  area: "0_area_settings",
-  device: "1_device",
+  area: "1_area_settings",
+  device: "2_device",
 } as const;
 
 interface NavigationItem extends PickerComboBoxItem {
@@ -460,7 +460,7 @@ export class HaNavigationPicker extends LitElement {
       const path = `/config/areas/area/${areaId}`;
       relatedItems.push({
         id: path,
-        primary,
+        primary: this.hass.localize("ui.components.navigation-picker.area_settings", { area: primary }),
         secondary: path,
         icon: area?.icon ?? undefined,
         icon_path: area?.icon ? undefined : mdiTextureBox,
