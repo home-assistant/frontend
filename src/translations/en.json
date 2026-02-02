@@ -4252,6 +4252,9 @@
             "confirm_delete_text": "{url} will be permanently deleted.",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
+            "reload_resources": "[%key:ui::panel::lovelace::menu::reload_resources%]",
+            "reload_refresh_header": "[%key:ui::panel::lovelace::reload_resources::refresh_header%]",
+            "reload_refresh_body": "[%key:ui::panel::lovelace::reload_resources::refresh_body%]",
             "cant_edit_yaml": "Your resources are in YAML mode, therefore you cannot manage them through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
