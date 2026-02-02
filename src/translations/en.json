@@ -1375,6 +1375,9 @@
       }
     },
     "dialogs": {
+      "vacuum_segment_mapping": {
+        "title": "Map vacuum segments to areas"
+      },
       "safe_mode": {
         "title": "Safe mode",
         "text": "Home Assistant is running in safe mode, custom integrations and frontend modules are not available. Restart Home Assistant to exit safe mode."
