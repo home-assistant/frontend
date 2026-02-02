@@ -1504,6 +1504,8 @@
         "info": "Information",
         "related": "Related",
         "add_entity_to": "Add to",
+        "expand_dialog": "Expand dialog",
+        "compact_dialog": "Compact dialog",
         "attributes": "Attributes",
         "history": "History",
         "aggregate": "5-minute aggregated",
