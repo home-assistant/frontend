@@ -15,6 +15,7 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { showToast } from "../../../../util/toast";
 import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 
 @customElement("developer-tools-debug")
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {
@@ -82,8 +83,12 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
         };
       }
     }
-
-    const entity = await getExtendedEntityRegistryEntry(this.hass, id);
+    let entity: ExtEntityRegistryEntry | undefined;
+    try {
+      entity = await getExtendedEntityRegistryEntry(this.hass, id);
+    } catch {
+      // not in the registry
+    }
     const device = entity?.device_id && this.hass.devices[entity.device_id];
 
     const data = {
