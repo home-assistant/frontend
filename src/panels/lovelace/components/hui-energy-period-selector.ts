@@ -35,7 +35,10 @@ import {
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
 import "../../../components/ha-date-range-picker";
-import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
+import type {
+  DateRangePickerRanges,
+  HaDateRangePicker,
+} from "../../../components/ha-date-range-picker";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
@@ -375,14 +378,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
   );
 
-  private get _datePicker() {
-    const datePicker = this.shadowRoot!.querySelector(
-      "ha-date-range-picker"
-    ) as any;
-    return datePicker ?? undefined;
+  private get _datePicker(): HaDateRangePicker | undefined {
+    return this.shadowRoot!.querySelector("ha-date-range-picker") ?? undefined;
   }
 
-  private _openDatePicker(ev) {
+  private _openDatePicker(ev: Event) {
     const datePicker = this._datePicker;
     if (datePicker) datePicker.openPicker = true;
     ev.stopPropagation();
