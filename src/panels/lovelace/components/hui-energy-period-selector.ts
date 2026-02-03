@@ -122,7 +122,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _measure() {
     this.narrow = this.offsetWidth < 450;
-    this._collapseButtons = this.offsetWidth < 290;
+    this._collapseButtons = this.offsetWidth < 300;
   }
 
   private async _attachObserver(): Promise<void> {
