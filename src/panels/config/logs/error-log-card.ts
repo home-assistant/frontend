@@ -276,6 +276,7 @@ class ErrorLogCard extends LitElement {
                 </div>`
               : nothing}
             <ha-ansi-to-html
+              overflow-disabled
               ?wrap-disabled=${!this._wrapLines}
             ></ha-ansi-to-html>
             <div id="scroll-bottom-marker"></div>
@@ -766,6 +767,7 @@ class ErrorLogCard extends LitElement {
       padding-top: 16px;
       padding-bottom: 16px;
       overflow-y: scroll;
+      overflow-x: auto;
       min-height: var(--error-log-card-height, calc(100vh - 244px));
       max-height: var(--error-log-card-height, calc(100vh - 244px));
       border-top: 1px solid var(--divider-color);
