@@ -61,6 +61,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const NUMBER_OF_LINES = 100;
 
@@ -684,7 +685,7 @@ class ErrorLogCard extends LitElement {
     this._loadLogs();
   }
 
-  private _handleOverflowAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleOverflowAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "switch-log-view":

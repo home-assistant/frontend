@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { WaterHeaterEntity } from "../../../data/water_heater";
@@ -123,9 +124,7 @@ class MoreInfoWaterHeater extends LitElement {
     `;
   }
 
-  private _handleOperationModeChanged(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private _handleOperationModeChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     this._callServiceHelper(
       this.stateObj!.state,
@@ -137,7 +136,7 @@ class MoreInfoWaterHeater extends LitElement {
     );
   }
 
-  private _handleAwayModeChanged(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleAwayModeChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value === "on";
     const oldVal = this.stateObj!.attributes.away_mode === "on";
 

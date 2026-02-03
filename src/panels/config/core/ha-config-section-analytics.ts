@@ -11,6 +11,7 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import "./ha-config-analytics";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-section-analytics")
 class HaConfigSectionAnalytics extends LitElement {
@@ -49,7 +50,7 @@ class HaConfigSectionAnalytics extends LitElement {
   }
 
   private async _handleOverflowAction(
-    ev: CustomEvent<{ item: { value: string } }>
+    ev: HaDropdownSelectEvent
   ): Promise<void> {
     if (ev.detail.item.value === "download_device_info") {
       const signedPath = await getSignedPath(

@@ -13,6 +13,7 @@ import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("more-info-humidifier")
 class MoreInfoHumidifier extends LitElement {
@@ -122,7 +123,7 @@ class MoreInfoHumidifier extends LitElement {
     `;
   }
 
-  private _handleStateChanged(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleStateChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value || null;
     this._callServiceHelper(
       this.stateObj!.state,
@@ -132,7 +133,7 @@ class MoreInfoHumidifier extends LitElement {
     );
   }
 
-  private _handleModeChanged(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleModeChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     this._mode = newVal;
     this._callServiceHelper(

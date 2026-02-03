@@ -16,7 +16,6 @@ import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
@@ -31,6 +30,7 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("hui-badge-edit-mode")
 export class HuiBadgeEditMode extends LitElement {
@@ -185,7 +185,7 @@ export class HuiBadgeEditMode extends LitElement {
     this._editBadge();
   }
 
-  private _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     switch (value) {
       case "edit":

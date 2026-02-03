@@ -40,7 +40,6 @@ import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-next";
@@ -94,6 +93,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 interface ActionItem {
   icon: string;
@@ -1239,7 +1239,7 @@ class HUIRoot extends LitElement {
     this._undoRedoController.redo();
   }
 
-  private _handleSubItemSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSubItemSelect(ev: HaDropdownSelectEvent) {
     const subItem = (ev.detail?.item as any)?.data as SubActionItem;
     if (subItem?.action) {
       subItem.action();
@@ -1248,7 +1248,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _handleOverflowItemSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleOverflowItemSelect(ev: HaDropdownSelectEvent) {
     const item = (ev.detail?.item as any)?.data as ActionItem;
     if (item?.subItems) {
       const title = [this.hass!.localize(item.key), item.suffix].join(" ");

@@ -60,7 +60,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -126,6 +125,7 @@ import {
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -1414,7 +1414,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._clearSelection();
   };
 
-  private async _handleBulkLabel(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleBulkLabel(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // Prevent the dropdown from closing
 
     const label = ev.detail.item.value;
@@ -1622,7 +1622,7 @@ ${rejected
     this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
-  private _handleBulkAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleBulkAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {

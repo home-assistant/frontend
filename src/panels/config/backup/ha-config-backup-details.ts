@@ -43,6 +43,7 @@ import "./components/ha-backup-details-restore";
 import "./components/ha-backup-details-summary";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { downloadBackup } from "./helper/download_backup";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface Agent extends BackupContentAgent {
   id: string;
@@ -311,7 +312,7 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private _handleAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "download":
@@ -323,7 +324,7 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private _handleAgentAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleAgentAction(ev: HaDropdownSelectEvent) {
     const button = ev.currentTarget;
     const agentId = (button as any).agent;
     this._downloadBackup(agentId);

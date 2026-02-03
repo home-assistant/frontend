@@ -46,6 +46,7 @@ import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
@@ -376,9 +377,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     showQuickBar(this, { showHint: this.hass.enableShortcuts });
   }
 
-  private async _handleMenuAction(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "check-updates":

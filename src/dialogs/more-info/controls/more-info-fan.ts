@@ -30,6 +30,7 @@ import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("more-info-fan")
 class MoreInfoFan extends LitElement {
@@ -47,7 +48,7 @@ class MoreInfoFan extends LitElement {
     });
   };
 
-  private _handleDirection(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleDirection(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     const oldVal = this.stateObj?.attributes.direction;
 
@@ -59,7 +60,7 @@ class MoreInfoFan extends LitElement {
     });
   }
 
-  private _handlePresetMode(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handlePresetMode(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     const oldVal = this._presetMode;
 
@@ -72,7 +73,7 @@ class MoreInfoFan extends LitElement {
     });
   }
 
-  private _handleOscillating(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleOscillating(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value === "true";
     const oldVal = this.stateObj?.attributes.oscillating;
 

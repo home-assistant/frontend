@@ -52,7 +52,6 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
@@ -127,6 +126,7 @@ import {
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -1140,7 +1140,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleBulkCategory = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkCategory = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "category_create") {
       this._bulkCreateCategory();

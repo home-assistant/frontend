@@ -16,6 +16,7 @@ import type {
   LovelaceCardFeatureContext,
   SelectOptionsCardFeatureConfig,
 } from "./types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export const supportsSelectOptionsCardFeature = (
   hass: HomeAssistant,
@@ -84,7 +85,7 @@ class HuiSelectOptionsCardFeature
     }
   }
 
-  private async _valueChanged(ev: CustomEvent<{ item: { value: string } }>) {
+  private async _valueChanged(ev: HaDropdownSelectEvent) {
     const option = ev.detail.item?.value;
 
     const oldOption = this._stateObj!.state;

@@ -48,7 +48,6 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -121,6 +120,7 @@ import {
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -907,7 +907,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleBulkCategory = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkCategory = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "category_create") {
       this._bulkCreateCategory();
@@ -947,7 +947,7 @@ ${rejected
     }
   }
 
-  private _handleBulkLabel = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkLabel = (ev: HaDropdownSelectEvent) => {
     ev.preventDefault();
     const value = ev.detail.item.value;
     if (value === "label_create") {
@@ -990,7 +990,7 @@ ${rejected
     }
   }
 
-  private _handleBulkArea = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkArea = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "area_create") {
       this._bulkCreateArea();

@@ -37,6 +37,7 @@ import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type MainControl = "brightness" | "color_temp" | "color";
 
@@ -304,7 +305,7 @@ class MoreInfoLight extends LitElement {
     });
   };
 
-  private _handleEffect(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleEffect(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     const oldVal = this._effect;
 

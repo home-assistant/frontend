@@ -27,6 +27,7 @@ import "../../../state-control/climate/ha-state-control-climate-temperature";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type MainControl = "temperature" | "humidity";
 
@@ -320,7 +321,7 @@ class MoreInfoClimate extends LitElement {
     this._mainControl = ev.currentTarget.control;
   }
 
-  private _handleFanModeChanged(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleFanModeChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     this._callServiceHelper(
       this.stateObj!.attributes.fan_mode,
@@ -330,18 +331,14 @@ class MoreInfoClimate extends LitElement {
     );
   }
 
-  private _handleOperationModeChanged(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private _handleOperationModeChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     this._callServiceHelper(this.stateObj!.state, newVal, "set_hvac_mode", {
       hvac_mode: newVal,
     });
   }
 
-  private _handleSwingmodeChanged(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private _handleSwingmodeChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     this._callServiceHelper(
       this.stateObj!.attributes.swing_mode,
@@ -351,9 +348,7 @@ class MoreInfoClimate extends LitElement {
     );
   }
 
-  private _handleSwingHorizontalmodeChanged(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private _handleSwingHorizontalmodeChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value;
     this._callServiceHelper(
       this.stateObj!.attributes.swing_horizontal_mode,
@@ -363,9 +358,7 @@ class MoreInfoClimate extends LitElement {
     );
   }
 
-  private _handlePresetmodeChanged(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private _handlePresetmodeChanged(ev: HaDropdownSelectEvent) {
     const newVal = ev.detail.item.value || null;
     if (newVal) {
       this._callServiceHelper(

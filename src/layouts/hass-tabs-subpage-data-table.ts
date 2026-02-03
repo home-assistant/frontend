@@ -30,8 +30,8 @@ import { showDataTableSettingsDialog } from "../components/data-table/show-dialo
 import "../components/ha-dialog";
 import "../components/ha-dialog-header";
 import "../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
 import "../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../components/ha-dropdown-item";
 import "../components/search-input-outlined";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
@@ -590,7 +590,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._sortColumn = this._sortDirection ? ev.detail.column : undefined;
   }
 
-  private _handleSortBy(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSortBy(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // keep the dropdown open
 
     const columnId = ev.detail.item.value;
@@ -609,7 +609,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _handleGroupBy(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleGroupBy(ev: HaDropdownSelectEvent) {
     const group = ev.detail.item.value;
 
     if (group === "reset") {
@@ -662,7 +662,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._selectMode = true;
   }
 
-  private _handleSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {
