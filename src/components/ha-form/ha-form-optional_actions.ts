@@ -17,6 +17,7 @@ import type {
   HaFormOptionalActionsSchema,
   HaFormSchema,
 } from "./types";
+import type { HaDropdownSelectEvent } from "../ha-dropdown";
 
 const NO_ACTIONS = [];
 
@@ -142,7 +143,7 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     `;
   }
 
-  private _handleAddAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleAddAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     this._displayActions = [...(this._displayActions ?? []), action];
   }

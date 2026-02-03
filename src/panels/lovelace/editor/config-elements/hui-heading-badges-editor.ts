@@ -15,7 +15,6 @@ import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
@@ -26,6 +25,7 @@ import type {
   EntityHeadingBadgeConfig,
   LovelaceHeadingBadgeConfig,
 } from "../../heading-badges/types";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const UI_BADGE_TYPES = ["entity", "button"] as const;
 
@@ -219,7 +219,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     `;
   }
 
-  private async _addBadge(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _addBadge(ev: HaDropdownSelectEvent) {
     const type = ev.detail.item.value;
     if (!type) {
       return;

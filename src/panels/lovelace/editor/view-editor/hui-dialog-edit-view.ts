@@ -18,7 +18,6 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
@@ -58,6 +57,7 @@ import "./hui-view-background-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -324,7 +324,7 @@ export class HuiDialogEditView extends LitElement {
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {

@@ -23,8 +23,8 @@ import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-markdown-element";
@@ -394,7 +394,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                                     "ui.panel.lovelace.cards.todo-list.clear_items"
                                   )}
                                   <ha-svg-icon
-                                    class="warning"
                                     slot="icon"
                                     .path=${mdiDeleteSweep}
                                   >
@@ -636,9 +635,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handleCompletedMenuSelect(
-    ev: CustomEvent<{ item: HaDropdownItem }>
-  ) {
+  private _handleCompletedMenuSelect(ev: HaDropdownSelectEvent) {
     if (ev.detail?.item?.value === "clear") {
       this._clearCompletedItems();
     }
@@ -699,7 +696,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handlePrimaryMenuSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handlePrimaryMenuSelect(ev: HaDropdownSelectEvent) {
     if (ev.detail?.item?.value === "reorder") {
       this._toggleReorder();
     }

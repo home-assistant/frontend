@@ -61,7 +61,7 @@ export class HaBackupDataPicker extends LitElement {
     | "page-onboarding.restore"
     | "config.backup" = "config.backup";
 
-  @property({ type: Boolean, attribute: false }) public addonsDisabled = false;
+  @property({ attribute: false }) public addonsDisabled = false;
 
   @state() public _addonIcons: Record<string, boolean> = {};
 
