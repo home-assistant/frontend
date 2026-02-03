@@ -365,7 +365,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "empty-state",
-            icon: "mdi:sofa-outline",
+            icon: area.icon || "mdi:sofa-outline",
             icon_color: "primary",
             content_only: true,
             title: hass.localize(
