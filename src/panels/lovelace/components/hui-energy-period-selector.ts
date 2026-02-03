@@ -250,7 +250,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         <div class="backdrop"></div>
         <ha-dialog-header
           subtitle-position="below"
-          no-padding
           class="label"
           @click=${this._openDatePicker}
         >

@@ -9,9 +9,6 @@ export class HaDialogHeader extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "show-border" })
   public showBorder = false;
 
-  @property({ type: Boolean, reflect: true, attribute: "no-padding" })
-  public noPadding = false;
-
   protected render() {
     const titleSlot = html`<div class="header-title">
       <slot name="title"></slot>
@@ -94,9 +91,6 @@ export class HaDialogHeader extends LitElement {
           .header-bar {
             padding: 0 var(--ha-space-2);
           }
-        }
-        :host([no-padding]) .header-bar {
-          padding: 0;
         }
         .header-navigation-icon {
           flex: none;
