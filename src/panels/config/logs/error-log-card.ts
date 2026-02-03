@@ -276,7 +276,6 @@ class ErrorLogCard extends LitElement {
                 </div>`
               : nothing}
             <ha-ansi-to-html
-              overflow-disabled
               ?wrap-disabled=${!this._wrapLines}
             ></ha-ansi-to-html>
             <div id="scroll-bottom-marker"></div>
