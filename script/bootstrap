@@ -18,7 +18,7 @@ if [[ -n "$DEVCONTAINER" ]]; then
     fi
 
     # install yarn
-    npm install -g corepack -Y
+    npm install -g corepack
     yes | yarn
 fi
 
