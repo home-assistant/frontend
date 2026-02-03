@@ -2,11 +2,11 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-control-slider";
+import "../../../components/ha-control-number-input";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HumidifierEntity } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
@@ -50,7 +50,13 @@ class HuiTargetHumidityCardFeature
   static getStubConfig(): TargetHumidityCardFeatureConfig {
     return {
       type: "target-humidity",
+      style: "slider",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-numeric-input-card-feature-editor");
+    return document.createElement("hui-numeric-input-card-feature-editor");
   }
 
   public setConfig(config: TargetHumidityCardFeatureConfig): void {
@@ -110,7 +116,8 @@ class HuiTargetHumidityCardFeature
     }
 
     return html`
-      <ha-control-slider
+      <ha-control-number-input
+        .inputStyle=${this._config.style ?? "slider"}
         .value=${this._stateObj.attributes.humidity}
         .min=${this._min}
         .max=${this._max}
@@ -123,7 +130,7 @@ class HuiTargetHumidityCardFeature
         )}
         unit="%"
         .locale=${this.hass.locale}
-      ></ha-control-slider>
+      ></ha-control-number-input>
     `;
   }
 

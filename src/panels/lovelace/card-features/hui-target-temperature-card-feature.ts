@@ -9,14 +9,14 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-control-button-group";
-import "../../../components/ha-control-number-buttons";
+import "../../../components/ha-control-number-input";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { WaterHeaterEntity } from "../../../data/water_heater";
 import { WaterHeaterEntityFeature } from "../../../data/water_heater";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
@@ -72,7 +72,13 @@ class HuiTargetTemperatureCardFeature
   static getStubConfig(): TargetTemperatureCardFeatureConfig {
     return {
       type: "target-temperature",
+      style: "buttons",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-numeric-input-card-feature-editor");
+    return document.createElement("hui-numeric-input-card-feature-editor");
   }
 
   public setConfig(config: TargetTemperatureCardFeatureConfig): void {
@@ -200,6 +206,8 @@ class HuiTargetTemperatureCardFeature
       minimumFractionDigits: digits,
     };
 
+    const inputStyle = this._config.style ?? "buttons";
+
     if (
       this._supportsTarget() &&
       this._targetTemperature.value != null &&
@@ -207,7 +215,8 @@ class HuiTargetTemperatureCardFeature
     ) {
       return html`
         <ha-control-button-group>
-          <ha-control-number-buttons
+          <ha-control-number-input
+            .inputStyle=${inputStyle}
             .formatOptions=${options}
             .target=${"value"}
             .value=${this._stateObj.attributes.temperature}
@@ -226,7 +235,7 @@ class HuiTargetTemperatureCardFeature
             .disabled=${this._stateObj!.state === UNAVAILABLE}
             .locale=${this.hass.locale}
           >
-          </ha-control-number-buttons>
+          </ha-control-number-input>
         </ha-control-button-group>
       `;
     }
@@ -239,7 +248,8 @@ class HuiTargetTemperatureCardFeature
     ) {
       return html`
         <ha-control-button-group>
-          <ha-control-number-buttons
+          <ha-control-number-input
+            .inputStyle=${inputStyle}
             .formatOptions=${options}
             .target=${"low"}
             .value=${this._targetTemperature.low}
@@ -261,8 +271,9 @@ class HuiTargetTemperatureCardFeature
             .disabled=${this._stateObj!.state === UNAVAILABLE}
             .locale=${this.hass.locale}
           >
-          </ha-control-number-buttons>
-          <ha-control-number-buttons
+          </ha-control-number-input>
+          <ha-control-number-input
+            .input-style=${inputStyle}
             .formatOptions=${options}
             .target=${"high"}
             .value=${this._targetTemperature.high}
@@ -284,14 +295,15 @@ class HuiTargetTemperatureCardFeature
             .disabled=${this._stateObj!.state === UNAVAILABLE}
             .locale=${this.hass.locale}
           >
-          </ha-control-number-buttons>
+          </ha-control-number-input>
         </ha-control-button-group>
       `;
     }
 
     return html`
       <ha-control-button-group>
-        <ha-control-number-buttons
+        <ha-control-number-input
+          .inputStyle=${inputStyle}
           .disabled=${this._stateObj!.state === UNAVAILABLE}
           .unit=${this.hass.config.unit_system.temperature}
           .label=${this.hass.formatEntityAttributeName(
@@ -303,7 +315,7 @@ class HuiTargetTemperatureCardFeature
           })}
           .locale=${this.hass.locale}
         >
-        </ha-control-number-buttons>
+        </ha-control-number-input>
       </ha-control-button-group>
     `;
   }

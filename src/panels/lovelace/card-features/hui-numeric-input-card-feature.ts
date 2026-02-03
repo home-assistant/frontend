@@ -3,11 +3,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
-import "../../../components/ha-control-number-buttons";
-import "../../../components/ha-control-slider";
-import "../../../components/ha-icon";
+import "../../../components/ha-control-number-input";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -109,22 +105,9 @@ class HuiNumericInputCardFeature
     const parsedState = Number(stateObj.state);
     const value = !isNaN(parsedState) ? parsedState : undefined;
 
-    if (this._config.style === "buttons") {
-      return html`
-        <ha-control-number-buttons
-          .value=${value}
-          .min=${stateObj.attributes.min}
-          .max=${stateObj.attributes.max}
-          .step=${stateObj.attributes.step}
-          @value-changed=${this._setValue}
-          .disabled=${isUnavailableState(stateObj.state)}
-          .unit=${stateObj.attributes.unit_of_measurement}
-          .locale=${this.hass.locale}
-        ></ha-control-number-buttons>
-      `;
-    }
     return html`
-      <ha-control-slider
+      <ha-control-number-input
+        .inputStyle=${this._config.style}
         .value=${value}
         .min=${stateObj.attributes.min}
         .max=${stateObj.attributes.max}
@@ -133,7 +116,7 @@ class HuiNumericInputCardFeature
         .disabled=${isUnavailableState(stateObj.state)}
         .unit=${stateObj.attributes.unit_of_measurement}
         .locale=${this.hass.locale}
-      ></ha-control-slider>
+      ></ha-control-number-input>
     `;
   }
 

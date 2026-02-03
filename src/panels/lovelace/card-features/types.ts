@@ -4,6 +4,10 @@ import type { OperationMode } from "../../../data/water_heater";
 
 export type ButtonCardData = Record<string, any>;
 
+export interface NumberInput {
+  style?: "buttons" | "slider";
+}
+
 export interface ButtonCardFeatureConfig {
   type: "button";
   action_name?: string;
@@ -126,16 +130,15 @@ export interface SelectOptionsCardFeatureConfig {
   options?: string[];
 }
 
-export interface NumericInputCardFeatureConfig {
+export interface NumericInputCardFeatureConfig extends NumberInput {
   type: "numeric-input";
-  style?: "buttons" | "slider";
 }
 
-export interface TargetHumidityCardFeatureConfig {
+export interface TargetHumidityCardFeatureConfig extends NumberInput {
   type: "target-humidity";
 }
 
-export interface TargetTemperatureCardFeatureConfig {
+export interface TargetTemperatureCardFeatureConfig extends NumberInput {
   type: "target-temperature";
 }
 
