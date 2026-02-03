@@ -87,6 +87,7 @@ export class HaDialog extends DialogBase {
         height: 100%;
         top: 0;
         left: 0;
+        pointer-events: none;
         -webkit-backdrop-filter: var(
           --ha-dialog-scrim-backdrop-filter,
           var(--dialog-backdrop-filter, none)
