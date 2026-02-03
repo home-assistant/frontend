@@ -139,7 +139,11 @@ class MoreInfoSirenAdvancedControls extends LitElement {
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          <ha-button @click=${this.closeDialog}>
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
             ${this.hass.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
