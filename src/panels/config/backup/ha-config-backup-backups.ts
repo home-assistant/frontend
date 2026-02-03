@@ -251,6 +251,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         },
       },
       actions: {
+        last_fixed: true,
         title: "",
         label: localize("ui.panel.config.generic.headers.actions"),
         showNarrow: true,

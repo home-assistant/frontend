@@ -379,6 +379,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               : nothing,
         },
         actions: {
+          last_fixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
