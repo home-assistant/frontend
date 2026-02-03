@@ -27,6 +27,7 @@ import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
+import { afterNextRender } from "../../common/util/render-status";
 import { filterXSS } from "../../common/util/xss";
 import { formatTimeLabel } from "./axis-label";
 import { downSampleLineData } from "./down-sample";
@@ -113,8 +114,11 @@ export class HaChartBase extends LitElement {
 
   private _originalZrFlush?: () => void;
 
+  private _pendingSetup = false;
+
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._pendingSetup = false;
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
@@ -126,7 +130,13 @@ export class HaChartBase extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._setupChart();
+      this._pendingSetup = true;
+      afterNextRender(() => {
+        if (this.isConnected && this._pendingSetup) {
+          this._pendingSetup = false;
+          this._setupChart();
+        }
+      });
     }
 
     this._listeners.push(
