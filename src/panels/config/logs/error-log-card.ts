@@ -759,6 +759,10 @@ class ErrorLogCard extends LitElement {
       float: right;
     }
 
+    .card-content {
+      margin-top: -8px;
+    }
+
     .error-log {
       position: relative;
       font-family: var(--ha-font-family-code);
