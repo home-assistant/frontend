@@ -787,8 +787,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     let filteredEntityIds = this.scenes.map((scene) => scene.entity_id);
     for (const [key, filter] of filters) {
       if (
-        // these 4 filters actually apply any selected options, and expose
-        // the list of automations that match these options as filter.items
+        // these 3 filters actually apply any selected options, and expose
+        // the list of scenes that match these options as filter.items
         isRelatedItemsFilterUsed(key, filter, [
           "ha-filter-floor-areas",
           "ha-filter-devices",
