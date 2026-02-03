@@ -124,6 +124,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${bluetoothTabs}
+        back-path="/config"
       >
         <ha-network-graph
           .hass=${this.hass}

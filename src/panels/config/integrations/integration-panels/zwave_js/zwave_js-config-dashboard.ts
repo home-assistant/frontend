@@ -151,6 +151,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${configTabs}
+        back-path="/config"
         has-fab
       >
         <ha-icon-button

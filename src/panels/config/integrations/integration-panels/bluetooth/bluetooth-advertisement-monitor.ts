@@ -222,6 +222,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         filter=${this.address || ""}
         clickable
         .tabs=${bluetoothTabs}
+        back-path="/config"
       ></hass-tabs-subpage-data-table>
     `;
   }

@@ -67,6 +67,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${configTabs}
+        back-path="/config"
       >
         <div class="container">
           <ha-card>

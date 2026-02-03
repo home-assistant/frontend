@@ -77,6 +77,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${configTabs}
+        back-path="/config"
       >
         <ha-network-graph
           .hass=${this.hass}

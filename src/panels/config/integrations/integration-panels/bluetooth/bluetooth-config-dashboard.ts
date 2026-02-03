@@ -161,6 +161,7 @@ export class BluetoothConfigDashboard extends LitElement {
         .hass=${this.hass}
         .route=${this.route}
         .tabs=${bluetoothTabs}
+        back-path="/config"
       >
         <div class="content">
           <ha-card

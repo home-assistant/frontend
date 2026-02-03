@@ -225,6 +225,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        back-path="/config"
       ></hass-tabs-subpage-data-table>
     `;
   }

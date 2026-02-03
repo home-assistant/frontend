@@ -101,6 +101,7 @@ export class ZHAGroupsDashboard extends LitElement {
     return html`
       <hass-tabs-subpage-data-table
         .tabs=${zhaTabs}
+        back-path="/config"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}

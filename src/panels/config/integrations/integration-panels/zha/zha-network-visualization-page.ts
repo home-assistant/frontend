@@ -54,6 +54,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return html`
       <hass-tabs-subpage
         .tabs=${zhaTabs}
+        back-path="/config"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
