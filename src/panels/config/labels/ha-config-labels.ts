@@ -46,7 +46,6 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
-import { renderLabelColorBadge } from "../../../components/ha-label-picker";
 import {
   getCreatedAtTableColumn,
   getModifiedAtTableColumn,
