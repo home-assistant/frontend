@@ -757,7 +757,7 @@
       "config-entry-picker": {
         "config_entry": "Integration"
       },
-      "coversation-agent-picker": {
+      "conversation-agent-picker": {
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
