@@ -274,8 +274,7 @@ export class HaControlSelectMenu extends LitElement {
       }
 
       ha-dropdown::part(menu) {
-        width: 100vw;
-        --auto-size-available-width: var(--control-select-menu-width);
+        min-width: var(--control-select-menu-width);
       }
     `,
   ];
