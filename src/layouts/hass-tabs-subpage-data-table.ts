@@ -134,7 +134,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    * String to show when there are no records in the data table.
    * @type {String}
    */
-  @property({ attribute: false, type: String }) public noDataText?: string;
+  @property({ attribute: false }) public noDataText?: string;
 
   /**
    * Hides the data table and show an empty message.

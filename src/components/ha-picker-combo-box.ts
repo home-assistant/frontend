@@ -119,7 +119,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     section?: string
   ) => PickerComboBoxItem[] | undefined;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
 
   @property({ attribute: false })
