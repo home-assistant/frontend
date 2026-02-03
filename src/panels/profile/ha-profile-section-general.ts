@@ -32,6 +32,7 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -230,7 +231,7 @@ class HaProfileSectionGeneral extends LitElement {
                   ></ha-set-vibrate-row>
                 `
               : ""}
-            ${!isExternal
+            ${!isExternal && isComponentLoaded(this.hass, "html5.notify")
               ? html`
                   <ha-push-notifications-row
                     .narrow=${this.narrow}

@@ -11,7 +11,6 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
   severitySort,
@@ -23,6 +22,7 @@ import type { HomeAssistant } from "../../../types";
 import "./ha-config-repairs";
 import { showIntegrationStartupDialog } from "./show-integration-startup-dialog";
 import { showSystemInformationDialog } from "./show-system-information-dialog";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-repairs-dashboard")
 class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
@@ -149,7 +149,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
     this._showIgnored = !this._showIgnored;
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     switch (action) {

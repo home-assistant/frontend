@@ -35,7 +35,7 @@ export const deserializeFilters = (value: DataTableFilters) => {
 
 // returns true when this filter has *selected* options and the filter's name
 // equals the given filterName
-export const isUsedFilter = (
+export const isFilterUsed = (
   key: string,
   filter: DataTableFilter,
   filterName: string
@@ -49,7 +49,7 @@ export const isUsedFilter = (
 // which has resulted in a list of items that match these selected opions
 // (this list can be empty),
 // and the filter's name equals (one of) the given filterName(s)
-export const isUsedRelatedItemsFilter = (
+export const isRelatedItemsFilterUsed = (
   key: string,
   filter: DataTableFilter,
   filterName: string | string[]

@@ -757,7 +757,7 @@
       "config-entry-picker": {
         "config_entry": "Integration"
       },
-      "coversation-agent-picker": {
+      "conversation-agent-picker": {
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
@@ -1354,6 +1354,7 @@
         "dashboards": "[%key:ui::panel::config::dashboard::dashboards::main%]",
         "related": "Related",
         "views": "Views",
+        "area_settings": "{area} - Settings",
         "other_routes": "Other routes"
       }
     },
@@ -2190,7 +2191,7 @@
           "on_any_page": "On any page",
           "on_pages_with_tables": "On pages with tables",
           "search": "Quick search",
-          "search_command": "search command",
+          "search_command": "search commands",
           "search_entities": "search entities",
           "search_devices": "search devices",
           "search_in_table": "to search in tables"
@@ -3477,6 +3478,10 @@
                 "title": "Debug connection",
                 "description": "Observe requests to the server and responses from the server in browser console."
               },
+              "disable_view_transition": {
+                "title": "Disable view transitions",
+                "description": "Disable animated view transitions to prevent browser crash when using browser dev tools."
+              },
               "entity_diagnostic": {
                 "title": "Entity diagnostic",
                 "description": "Select an entity to copy diagnostic details.",
@@ -4254,6 +4259,9 @@
             "confirm_delete_text": "{url} will be permanently deleted.",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
+            "reload_resources": "[%key:ui::panel::lovelace::menu::reload_resources%]",
+            "reload_refresh_header": "[%key:ui::panel::lovelace::reload_resources::refresh_header%]",
+            "reload_refresh_body": "[%key:ui::panel::lovelace::reload_resources::refresh_body%]",
             "cant_edit_yaml": "Your resources are in YAML mode, therefore you cannot manage them through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
@@ -7873,7 +7881,7 @@
             "areas": "Areas",
             "other_areas": "Other areas",
             "devices": "Devices",
-            "unamed_device": "Unnamed device",
+            "unnamed_device": "Unnamed device",
             "others": "Others",
             "scenes": "Scenes",
             "automations": "Automations",

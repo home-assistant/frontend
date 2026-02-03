@@ -45,7 +45,6 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -137,6 +136,7 @@ import {
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface HelperItem {
   id: string;
@@ -1015,7 +1015,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleBulkCategory = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkCategory = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "category_create") {
       this._bulkCreateCategory();
@@ -1055,7 +1055,7 @@ ${rejected
     }
   }
 
-  private _handleBulkLabel = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkLabel = (ev: HaDropdownSelectEvent) => {
     ev.preventDefault();
     const value = ev.detail.item.value;
     if (value === "label_create") {
@@ -1536,6 +1536,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

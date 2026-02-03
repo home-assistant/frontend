@@ -24,10 +24,10 @@ export class HaControlSwitch extends LitElement {
   @property({ type: Boolean }) public checked = false;
 
   // SVG icon path (if you need a non SVG icon instead, use the provided on icon slot to pass an <ha-icon slot="icon-on"> in)
-  @property({ attribute: false, type: String }) pathOn?: string;
+  @property({ attribute: false }) pathOn?: string;
 
   // SVG icon path (if you need a non SVG icon instead, use the provided off icon slot to pass an <ha-icon slot="icon-off"> in)
-  @property({ attribute: false, type: String }) pathOff?: string;
+  @property({ attribute: false }) pathOff?: string;
 
   @property({ type: String })
   public label?: string;

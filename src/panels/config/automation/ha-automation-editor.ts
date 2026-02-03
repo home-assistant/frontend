@@ -35,7 +35,6 @@ import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-icon";
@@ -91,6 +90,7 @@ import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialo
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -1212,7 +1212,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     this._undoRedoController.redo();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {

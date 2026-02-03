@@ -44,7 +44,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
@@ -103,6 +102,7 @@ import {
   getCreatedAtTableColumn,
   getModifiedAtTableColumn,
 } from "../common/data-table-columns";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -1036,7 +1036,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _handleBulkArea(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleBulkArea(ev: HaDropdownSelectEvent) {
     const area = ev.detail.item.value;
 
     if (area === "area_create") {
@@ -1086,7 +1086,7 @@ ${rejected
     });
   };
 
-  private async _handleBulkLabel(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleBulkLabel(ev: HaDropdownSelectEvent) {
     const label = ev.detail.item.value;
 
     if (label === "label_create") {
@@ -1213,7 +1213,7 @@ ${rejected
     this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
-  private _handleBulkAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleBulkAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {
@@ -1255,6 +1255,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

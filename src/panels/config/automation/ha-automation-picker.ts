@@ -48,7 +48,6 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
@@ -85,9 +84,9 @@ import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
-  isUsedFilter as isFilterUsed,
-  isUsedRelatedItemsFilter as isRelatedItemsFilterUsed,
   serializeFilters,
+  isFilterUsed,
+  isRelatedItemsFilterUsed,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
@@ -130,6 +129,7 @@ import {
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { configSections } from "../ha-panel-config";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -835,9 +835,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
 
         // the filters below only expose the selected options (as filter.value);
-        // category filter only allows a single selected option
         // applying the filter must be done here
       } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
+        // category filter only allows a single selected option
         filteredEntityIds = filteredEntityIds.filter(
           (entityId) =>
             filter.value![0] ===
@@ -1091,7 +1091,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleBulkCategory = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkCategory = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "category_create") {
       this._bulkCreateCategory();
@@ -1478,6 +1478,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

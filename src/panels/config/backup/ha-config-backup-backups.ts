@@ -27,7 +27,6 @@ import type {
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
@@ -74,6 +73,7 @@ import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup"
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { downloadBackup } from "./helper/download_backup";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -631,7 +631,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item.value;
 
     if (action === "upload_backup") {

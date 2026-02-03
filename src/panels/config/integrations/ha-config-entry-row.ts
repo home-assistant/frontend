@@ -26,6 +26,8 @@ import memoizeOne from "memoize-one";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -60,9 +62,6 @@ import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entr
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -76,6 +75,7 @@ import {
 import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-entry-row")
 class HaConfigEntryRow extends LitElement {
@@ -541,7 +541,7 @@ class HaConfigEntryRow extends LitElement {
     this._devicesExpanded = !this._devicesExpanded;
   }
 
-  private _handleMenuAction = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleMenuAction = (ev: HaDropdownSelectEvent) => {
     ev.stopPropagation();
     const value = ev.detail.item.value;
     if (value === "reload") {
