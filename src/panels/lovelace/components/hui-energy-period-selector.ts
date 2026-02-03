@@ -336,14 +336,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               : html`<ha-tooltip
                     .disabled=${!item.tooltip}
                     .for="icon-button-${index}"
-                    >${item.tooltip ?? ""} </ha-tooltip
+                    >${item.tooltip ?? ""}</ha-tooltip
                   ><ha-icon-button
                     .id="icon-button-${index}"
                     @click=${item.action}
                     .label=${item.label}
                     .path=${item.path}
                     ?disabled=${item.disabled}
-                  ></ha-icon-button> `
+                  ></ha-icon-button>`
           )}
           ${this._collapseButtons || buttons.some((x) => x.alwaysCollapse)
             ? html`<ha-dropdown
