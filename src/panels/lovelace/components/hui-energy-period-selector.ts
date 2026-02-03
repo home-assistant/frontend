@@ -450,7 +450,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _openDatePicker(ev: Event) {
     const datePicker = this._datePicker;
-    if (datePicker) datePicker.openPicker = true;
+    if (datePicker) datePicker.open();
     ev.stopPropagation();
   }
 

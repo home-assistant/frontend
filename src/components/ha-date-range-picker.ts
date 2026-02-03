@@ -65,8 +65,9 @@ export class HaDateRangePicker extends LitElement {
   @property({ attribute: "time-picker", type: Boolean })
   public timePicker = false;
 
-  @property({ type: Boolean, attribute: "open-picker" })
-  public openPicker = false;
+  public open(): void {
+    this._openPicker();
+  }
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -117,10 +118,6 @@ export class HaDateRangePicker extends LitElement {
       if (!oldHass || oldHass.locale !== this.hass.locale) {
         this._hour24format = !useAmPm(this.hass.locale);
       }
-    }
-    if (changedProps.has("openPicker") && this.openPicker) {
-      this.openPicker = false;
-      this._openPicker();
     }
   }
 
