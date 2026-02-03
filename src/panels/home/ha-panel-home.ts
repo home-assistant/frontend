@@ -267,7 +267,7 @@ class PanelHome extends LitElement {
   }
 
   private _renderBanner() {
-    if (this._showBanner) {
+    if (!this._showBanner) {
       return nothing;
     }
 
