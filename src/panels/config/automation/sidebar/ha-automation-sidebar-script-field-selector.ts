@@ -5,7 +5,6 @@ import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
@@ -13,6 +12,7 @@ import "../../script/ha-script-field-selector-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-sidebar-script-field-selector")
 export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
@@ -162,7 +162,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {

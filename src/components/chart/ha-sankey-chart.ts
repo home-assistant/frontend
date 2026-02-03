@@ -58,7 +58,7 @@ export class HaSankeyChart extends LitElement {
 
   @property({ type: Boolean }) public vertical = false;
 
-  @property({ type: String, attribute: false }) public valueFormatter?: (
+  @property({ attribute: false }) public valueFormatter?: (
     value: number
   ) => string;
 

@@ -14,6 +14,7 @@ import "../../../components/ha-tab-group-tab";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "./developer-tools-router";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-panel-developer-tools")
 class PanelDeveloperTools extends LitElement {
@@ -135,9 +136,7 @@ class PanelDeveloperTools extends LitElement {
     }
   }
 
-  private async _handleMenuAction(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     if (action === "debug") {
       navigate(`/config/developer-tools/debug`);

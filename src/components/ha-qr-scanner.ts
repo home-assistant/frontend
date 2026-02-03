@@ -14,8 +14,8 @@ import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-button";
 import "./ha-dropdown";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
-import type { HaDropdownItem } from "./ha-dropdown-item";
 import "./ha-spinner";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
@@ -259,7 +259,7 @@ class HaQrScanner extends LitElement {
     this._qrCodeScanned(this._manualInput!.value);
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const cameraId = ev.detail?.item?.value;
     if (cameraId) {
       this._selectedCamera = cameraId;

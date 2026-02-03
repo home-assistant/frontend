@@ -9,7 +9,6 @@ import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
@@ -20,6 +19,7 @@ import type {
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
 const DEFAULT_METHODS = ["POST", "PUT"];
@@ -208,7 +208,7 @@ export class HaWebhookTrigger extends LitElement {
     });
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // don't close the dropdown to select multiple options
     const action = ev.detail?.item?.value;
 

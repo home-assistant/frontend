@@ -17,8 +17,8 @@ import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-next";
 import "../../components/ha-spinner";
@@ -215,7 +215,7 @@ export class HaVoiceCommandDialog extends LitElement {
     this._preferredPipeline = preferred_pipeline || undefined;
   }
 
-  private async _selectPipeline(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _selectPipeline(ev: HaDropdownSelectEvent) {
     const pipelineId = ev.detail?.item?.value;
     if (pipelineId) {
       this._pipelineId = pipelineId;

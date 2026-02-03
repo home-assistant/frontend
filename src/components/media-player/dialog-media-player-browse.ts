@@ -21,8 +21,8 @@ import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog-header";
 import "../ha-dropdown";
+import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
-import type { HaDropdownItem } from "../ha-dropdown-item";
 import "../ha-icon-button-arrow-prev";
 import "../ha-wa-dialog";
 import "./ha-media-manage-button";
@@ -177,7 +177,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     this.classList.add("opened");
   }
 
-  private async _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     switch (action) {
       case "auto":

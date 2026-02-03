@@ -40,7 +40,6 @@ import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-next";
@@ -51,7 +50,6 @@ import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
 import "../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../data/area/area_registry";
-import type { LovelacePanelConfig } from "../../data/lovelace";
 import type {
   LovelaceConfig,
   LovelaceRawConfig,
@@ -63,6 +61,7 @@ import {
   fetchDashboards,
   updateDashboard,
 } from "../../data/lovelace/dashboard";
+import { fetchLovelaceInfo } from "../../data/lovelace/resource";
 import { getPanelTitle } from "../../data/panel";
 import { createPerson } from "../../data/person";
 import { showListItemsDialog } from "../../dialogs/dialog-list-items/show-list-items-dialog";
@@ -94,6 +93,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 interface ActionItem {
   icon: string;
@@ -151,6 +151,8 @@ class HUIRoot extends LitElement {
 
   @state() private _curView?: number | "hass-unused-entities";
 
+  @state() private _resourceMode: "yaml" | "storage" = "storage";
+
   private _configChangedByUndo = false;
 
   private _viewCache?: Record<string, HUIView>;
@@ -186,6 +188,7 @@ class HUIRoot extends LitElement {
 
   private _renderActionItems(): TemplateResult {
     const result: TemplateResult[] = [];
+
     if (this._editMode) {
       result.push(
         html`<ha-icon-button
@@ -231,6 +234,8 @@ class HUIRoot extends LitElement {
           </a>`
       );
     }
+
+    const isLovelaceDashboard = this.panel?.component_name === "lovelace";
 
     const items: ActionItem[] = [
       {
@@ -336,8 +341,8 @@ class HUIRoot extends LitElement {
         overflowAction: this._handleReloadResources,
         visible:
           !this._editMode &&
-          (this.hass.panels.lovelace?.config as LovelacePanelConfig)?.mode ===
-            "yaml",
+          this._resourceMode === "yaml" &&
+          isLovelaceDashboard,
         overflow: true,
       },
       {
@@ -666,6 +671,9 @@ class HUIRoot extends LitElement {
       passive: true,
     });
     this._handleUrlChanged();
+    fetchLovelaceInfo(this.hass).then((info) => {
+      this._resourceMode = info.resource_mode;
+    });
   }
 
   public connectedCallback(): void {
@@ -862,7 +870,7 @@ class HUIRoot extends LitElement {
   };
 
   private _showQuickBar = () => {
-    showQuickBar(this, { showHint: true });
+    showQuickBar(this, { showHint: this.hass.enableShortcuts });
   };
 
   private _goBack(): void {
@@ -1239,7 +1247,7 @@ class HUIRoot extends LitElement {
     this._undoRedoController.redo();
   }
 
-  private _handleSubItemSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSubItemSelect(ev: HaDropdownSelectEvent) {
     const subItem = (ev.detail?.item as any)?.data as SubActionItem;
     if (subItem?.action) {
       subItem.action();
@@ -1248,7 +1256,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _handleOverflowItemSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleOverflowItemSelect(ev: HaDropdownSelectEvent) {
     const item = (ev.detail?.item as any)?.data as ActionItem;
     if (item?.subItems) {
       const title = [this.hass!.localize(item.key), item.suffix].join(" ");

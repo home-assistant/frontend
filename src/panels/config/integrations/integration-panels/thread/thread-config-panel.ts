@@ -49,6 +49,7 @@ import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 export interface ThreadNetwork {
   name: string;
@@ -483,7 +484,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleRouterAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleRouterAction(ev: HaDropdownSelectEvent) {
     const network = (ev.currentTarget as any).network as ThreadNetwork;
     const router = (ev.currentTarget as any).router as ThreadRouter;
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
