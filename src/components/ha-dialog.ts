@@ -76,6 +76,18 @@ export class HaDialog extends DialogBase {
           var(--divider-color)
         );
         z-index: var(--dialog-z-index, 8);
+        --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
+        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
+        --mdc-typography-headline6-font-size: 1.574rem;
+      }
+      .mdc-dialog::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
         -webkit-backdrop-filter: var(
           --ha-dialog-scrim-backdrop-filter,
           var(--dialog-backdrop-filter, none)
@@ -84,9 +96,6 @@ export class HaDialog extends DialogBase {
           --ha-dialog-scrim-backdrop-filter,
           var(--dialog-backdrop-filter, none)
         );
-        --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
-        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
-        --mdc-typography-headline6-font-size: 1.574rem;
       }
       .mdc-dialog .mdc-dialog__scrim {
         background-color: var(--mdc-dialog-scrim-color, none);

@@ -14,6 +14,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isHelperDomain } from "../../../config/helpers/const";
 import type {
   EmptyStateCardConfig,
+  EntitiesCardConfig,
   HeadingCardConfig,
 } from "../../cards/types";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
@@ -78,16 +79,6 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
       return !isHelperDomain(domain);
     });
 
-    const batteryFilter = generateEntityFilter(hass, {
-      domain: "sensor",
-      device_class: "battery",
-    });
-
-    const energyFilter = generateEntityFilter(hass, {
-      domain: "sensor",
-      device_class: ["energy", "power"],
-    });
-
     const primaryFilter = generateEntityFilter(hass, {
       entity_category: "none",
     });
@@ -95,12 +86,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
     for (const deviceEntities of devicesEntities) {
       if (deviceEntities.entities.length === 0) continue;
 
-      const batteryEntities = deviceEntities.entities.filter((e) =>
-        batteryFilter(e)
-      );
-      const entities = deviceEntities.entities.filter(
-        (e) => !batteryFilter(e) && !energyFilter(e) && primaryFilter(e)
-      );
+      const entities = deviceEntities.entities.filter((e) => primaryFilter(e));
 
       if (entities.length === 0) {
         continue;
@@ -129,13 +115,6 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
                   }
                 : { action: "none" },
             badges: [
-              ...batteryEntities.slice(0, 1).map((e) => ({
-                entity: e,
-                type: "entity",
-                tap_action: {
-                  action: "more-info",
-                },
-              })),
               ...(config.home_panel && device && hass.user?.is_admin
                 ? [
                     {
@@ -156,13 +135,13 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
                 : []),
             ],
           } satisfies HeadingCardConfig,
-          ...entities.map((e) => ({
-            type: "tile",
-            entity: e,
-            name: {
-              type: "entity",
-            },
-          })),
+          {
+            type: "entities",
+            entities: entities.map((e) => ({
+              entity: e,
+              name: { type: "entity" },
+            })),
+          } satisfies EntitiesCardConfig,
         ],
       });
     }

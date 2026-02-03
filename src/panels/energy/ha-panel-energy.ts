@@ -699,6 +699,11 @@ class PanelEnergy extends LitElement {
             var(--safe-area-inset-left, 0px)
           );
           inset-inline-end: var(--safe-area-inset-right, 0);
+          transition:
+            left var(--ha-animation-duration-normal) ease,
+            right var(--ha-animation-duration-normal) ease,
+            inset-inline-start var(--ha-animation-duration-normal) ease,
+            inset-inline-end var(--ha-animation-duration-normal) ease;
           margin: 0 auto;
           max-width: calc(min(470px, 100% - var(--ha-space-4)));
           box-sizing: border-box;

@@ -545,7 +545,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       );
       pointer-events: none;
       opacity: 0;
-      transition: opacity var(--ha-animation-base-duration) ease-in-out;
+      transition: opacity var(--ha-animation-duration-slow) ease-in-out;
     }
     .datepicker-open .backdrop {
       opacity: 1;

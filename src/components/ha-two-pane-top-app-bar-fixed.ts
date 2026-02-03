@@ -288,9 +288,18 @@ export class TopAppBarBaseBase extends BaseElement {
         );
         padding-top: var(--safe-area-inset-top);
         padding-right: var(--safe-area-inset-right);
+        transition:
+          width var(--ha-animation-duration-normal) ease,
+          padding-left var(--ha-animation-duration-normal) ease,
+          padding-right var(--ha-animation-duration-normal) ease;
       }
       :host([narrow]) .mdc-top-app-bar {
         padding-left: var(--safe-area-inset-left);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mdc-top-app-bar {
+          transition: none;
+        }
       }
       .mdc-top-app-bar--pane.mdc-top-app-bar--fixed-scrolled {
         box-shadow: none;

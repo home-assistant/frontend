@@ -492,19 +492,22 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         @mouseleave=${this._itemMouseLeave}
       >
         <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-        ${!this.alwaysExpand &&
-        (this._updatesCount > 0 || this._issuesCount > 0)
-          ? html`<span class="badge" slot="start"
-              >${this._updatesCount + this._issuesCount}</span
-            >`
+        ${this._updatesCount > 0 || this._issuesCount > 0
+          ? html`
+              <span class="badge" slot="start">
+                ${this._updatesCount + this._issuesCount}
+              </span>
+            `
           : nothing}
         <span class="item-text" slot="headline"
           >${this.hass.localize("panel.config")}</span
         >
-        ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
-          ? html`<span class="badge" slot="end"
-              >${this._updatesCount + this._issuesCount}</span
-            >`
+        ${this._updatesCount > 0 || this._issuesCount > 0
+          ? html`
+              <span class="badge" slot="end"
+                >${this._updatesCount + this._issuesCount}</span
+              >
+            `
           : nothing}
       </ha-md-list-item>
     `;
@@ -524,13 +527,15 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         type="button"
       >
         <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
-        ${!this.alwaysExpand && notificationCount > 0
-          ? html`<span class="badge" slot="start">${notificationCount}</span>`
+        ${notificationCount > 0
+          ? html`
+              <span class="badge" slot="start"> ${notificationCount} </span>
+            `
           : nothing}
         <span class="item-text" slot="headline"
           >${this.hass.localize("ui.notification_drawer.title")}</span
         >
-        ${this.alwaysExpand && notificationCount > 0
+        ${notificationCount > 0
           ? html`<span class="badge" slot="end">${notificationCount}</span>`
           : nothing}
       </ha-md-list-item>
@@ -739,6 +744,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           );
           font-size: var(--ha-font-size-xl);
           align-items: center;
+          overflow: hidden;
+          width: calc(56px + var(--safe-area-inset-left, 0px));
           padding-left: calc(
             var(--ha-space-1) + var(--safe-area-inset-left, 0px)
           );
@@ -747,6 +754,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           );
           padding-inline-end: initial;
           padding-top: var(--safe-area-inset-top, 0px);
+          transition: width var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) .menu {
           width: calc(256px + var(--safe-area-inset-left, 0px));
@@ -761,15 +769,22 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           margin-left: 3px;
           margin-inline-start: 3px;
           margin-inline-end: initial;
-          width: 100%;
-          display: none;
+          flex: 1;
+          min-width: 0;
+          max-width: 0;
+          opacity: 0;
+          transition:
+            max-width var(--ha-animation-duration-normal) ease,
+            opacity var(--ha-animation-duration-normal) ease;
         }
         :host([narrow]) .title {
           margin: 0;
           padding: 0 var(--ha-space-4);
         }
         :host([expanded]) .title {
-          display: initial;
+          max-width: 100%;
+          opacity: 1;
+          transition-delay: 0ms, 80ms;
         }
 
         .panels-list {
@@ -827,6 +842,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           --md-list-item-leading-space: var(--ha-space-3);
           --md-list-item-trailing-space: var(--ha-space-3);
           --md-list-item-leading-icon-size: var(--ha-space-6);
+          transition: width var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) ha-md-list-item {
           width: 248px;
@@ -867,11 +883,22 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         }
 
         ha-md-list-item .item-text {
-          display: none;
+          display: block;
+          max-width: 0;
+          opacity: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
           font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);
+          transition:
+            max-width var(--ha-animation-duration-normal) ease,
+            opacity var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) ha-md-list-item .item-text {
+          max-width: 100%;
+          opacity: 1;
+          transition-delay: 0ms, 80ms;
           display: block;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -889,6 +916,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           background-color: var(--accent-color);
           padding: 2px 6px;
           color: var(--text-accent-color, var(--text-primary-color));
+          transition:
+            opacity var(--ha-animation-duration-normal) ease,
+            transform var(--ha-animation-duration-normal) ease;
         }
 
         ha-svg-icon + .badge {
@@ -899,6 +929,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           font-size: 0.65em;
           line-height: var(--ha-line-height-expanded);
           padding: 0 var(--ha-space-1);
+        }
+        :host([expanded]) .badge[slot="start"],
+        :host(:not([expanded])) .badge[slot="end"] {
+          opacity: 0;
+          transform: scale(0.8);
+          pointer-events: none;
         }
 
         ha-md-list-item.user {
@@ -937,6 +973,15 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         .menu ha-icon-button {
           -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .menu,
+          ha-md-list-item,
+          ha-md-list-item .item-text,
+          .title {
+            transition: none;
+          }
         }
       `,
     ];
