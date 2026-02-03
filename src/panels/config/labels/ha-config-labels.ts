@@ -24,7 +24,10 @@ import type {
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import { renderLabelColorBadge } from "../../../components/ha-label-picker";
+import "../../../components/ha-md-menu";
 import type { HaMdMenu } from "../../../components/ha-md-menu";
+import "../../../components/ha-md-menu-item";
 import "../../../components/ha-svg-icon";
 import type {
   LabelRegistryEntry,
@@ -44,7 +47,6 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
-import { renderLabelColorBadge } from "../../../components/ha-label-picker";
 
 @customElement("ha-config-labels")
 export class HaConfigLabels extends LitElement {

@@ -1,4 +1,4 @@
-import { mdiDelete, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiPlus, mdiRefresh } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,6 +12,7 @@ import type {
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-card";
 import "../../../../components/ha-fab";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import type {
   LovelaceInfo,
@@ -165,6 +166,8 @@ export class HaConfigLovelaceResources extends LitElement {
       `;
     }
 
+    const isYamlMode = this._lovelaceInfo?.resource_mode === "yaml";
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -187,6 +190,18 @@ export class HaConfigLovelaceResources extends LitElement {
         has-fab
         clickable
       >
+        ${isYamlMode
+          ? html`
+              <ha-icon-button
+                slot="toolbar-icon"
+                .label=${this.hass.localize(
+                  "ui.panel.config.lovelace.resources.reload_resources"
+                )}
+                .path=${mdiRefresh}
+                @click=${this._handleReloadResources}
+              ></ha-icon-button>
+            `
+          : ""}
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -262,6 +277,15 @@ export class HaConfigLovelaceResources extends LitElement {
   }
 
   private _removeResource = async (event: any) => {
+    if (this._lovelaceInfo?.resource_mode !== "storage") {
+      showAlertDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.cant_edit_yaml"
+        ),
+      });
+      return false;
+    }
+
     const resource = event.currentTarget.resource as LovelaceResource;
 
     if (
@@ -312,6 +336,21 @@ export class HaConfigLovelaceResources extends LitElement {
   private _handleColumnsChanged(ev: CustomEvent) {
     this._activeColumnOrder = ev.detail.columnOrder;
     this._activeHiddenColumns = ev.detail.hiddenColumns;
+  }
+
+  private _handleReloadResources() {
+    this.hass.callService("lovelace", "reload_resources");
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.lovelace.resources.reload_refresh_header"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.lovelace.resources.reload_refresh_body"
+      ),
+      confirmText: this.hass.localize("ui.common.refresh"),
+      dismissText: this.hass.localize("ui.common.not_now"),
+      confirm: () => location.reload(),
+    });
   }
 
   static get styles(): CSSResultGroup {

@@ -9,7 +9,6 @@ import {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
@@ -38,6 +37,7 @@ import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type MainControl = "brightness" | "color_temp" | "color";
 
@@ -253,47 +253,35 @@ class MoreInfoLight extends LitElement {
           ${supportsEffects && this.stateObj.attributes.effect_list
             ? html`
                 <ha-control-select-menu
+                  .hass=${this.hass}
                   .label=${this.hass.formatEntityAttributeName(
                     this.stateObj,
                     "effect"
                   )}
                   .value=${this.stateObj.attributes.effect}
                   .disabled=${this.stateObj.state === UNAVAILABLE}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @selected=${this._handleEffect}
-                  @closed=${stopPropagation}
-                >
-                  ${this.stateObj.attributes.effect
-                    ? html`<ha-attribute-icon
-                        slot="icon"
-                        .hass=${this.hass}
-                        .stateObj=${this.stateObj}
-                        attribute="effect"
-                        .attributeValue=${this.stateObj.attributes.effect}
-                      ></ha-attribute-icon>`
-                    : html`<ha-svg-icon
-                        slot="icon"
-                        .path=${mdiCreation}
-                      ></ha-svg-icon>`}
-                  ${this.stateObj.attributes.effect_list?.map(
-                    (effect) => html`
-                      <ha-list-item .value=${effect} graphic="icon">
-                        <ha-attribute-icon
-                          slot="graphic"
-                          .hass=${this.hass}
-                          .stateObj=${this.stateObj}
-                          attribute="effect"
-                          .attributeValue=${effect}
-                        ></ha-attribute-icon>
-                        ${this.hass.formatEntityAttributeValue(
-                          this.stateObj!,
-                          "effect",
-                          effect
-                        )}
-                      </ha-list-item>
-                    `
+                  @wa-select=${this._handleEffect}
+                  .options=${this.stateObj.attributes.effect_list.map(
+                    (effect) => ({
+                      value: effect,
+                      label: this.stateObj
+                        ? this.hass.formatEntityAttributeValue(
+                            this.stateObj,
+                            "effect",
+                            effect
+                          )
+                        : effect,
+                      attributeIcon: this.stateObj
+                        ? {
+                            stateObj: this.stateObj,
+                            attribute: "effect",
+                            attributeValue: effect,
+                          }
+                        : undefined,
+                    })
                   )}
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
                 </ha-control-select-menu>
               `
             : nothing}
@@ -317,8 +305,8 @@ class MoreInfoLight extends LitElement {
     });
   };
 
-  private _handleEffect(ev) {
-    const newVal = ev.target.value;
+  private _handleEffect(ev: HaDropdownSelectEvent) {
+    const newVal = ev.detail.item.value;
     const oldVal = this._effect;
 
     if (!newVal || oldVal === newVal) return;

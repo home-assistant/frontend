@@ -130,9 +130,9 @@ export class HaDataTable extends LitElement {
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: String }) public id = "id";
 
-  @property({ attribute: false, type: String }) public noDataText?: string;
+  @property({ attribute: false }) public noDataText?: string;
 
-  @property({ attribute: false, type: String }) public searchLabel?: string;
+  @property({ attribute: false }) public searchLabel?: string;
 
   @property({ type: Boolean, attribute: "no-label-float" })
   public noLabelFloat? = false;

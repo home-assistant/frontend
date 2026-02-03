@@ -68,6 +68,7 @@ import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -780,7 +781,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     });
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "show-ignored":

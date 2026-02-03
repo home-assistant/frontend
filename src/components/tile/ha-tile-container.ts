@@ -15,7 +15,7 @@ export class HaTileContainer extends LitElement {
   @property({ type: Boolean })
   public vertical = false;
 
-  @property({ type: Boolean, attribute: false })
+  @property({ attribute: false })
   public interactive = false;
 
   @property({ attribute: false })

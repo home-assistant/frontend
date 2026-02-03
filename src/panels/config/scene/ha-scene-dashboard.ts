@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
@@ -45,16 +46,14 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
-import "@home-assistant/webawesome/dist/components/divider/divider";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
@@ -76,6 +75,8 @@ import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
+  isFilterUsed,
+  isRelatedItemsFilterUsed,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { isUnavailableState } from "../../../data/entity/entity";
@@ -84,6 +85,7 @@ import type {
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
@@ -98,7 +100,6 @@ import {
   saveScene,
   showSceneEditor,
 } from "../../../data/scene";
-import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -115,12 +116,13 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
-  getAssistantsTableColumn,
   getAssistantsSortableKey,
+  getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type SceneItem = SceneEntity & {
   name: string;
@@ -151,7 +153,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  @state() private _filteredScenes?: string[] | null;
+  @state() private _filteredSceneEntityIds?: string[] | null;
 
   @state()
   @storage({
@@ -494,7 +496,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       this.hass.areas,
       this._categories,
       this._labels,
-      this._filteredScenes
+      this._filteredSceneEntityIds
     );
 
     return html`
@@ -782,89 +784,46 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _applyFilters() {
     const filters = Object.entries(this._filters);
-    let items: Set<string> | undefined;
+    let filteredEntityIds = this.scenes.map((scene) => scene.entity_id);
     for (const [key, filter] of filters) {
-      if (filter.items) {
-        if (!items) {
-          items = filter.items;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(filter.items)
-            : new Set([...items].filter((x) => filter.items!.has(x)));
-      }
       if (
-        key === "ha-filter-categories" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
+        // these 3 filters actually apply any selected options, and expose
+        // the list of scenes that match these options as filter.items
+        isRelatedItemsFilterUsed(key, filter, [
+          "ha-filter-floor-areas",
+          "ha-filter-devices",
+          "ha-filter-entities",
+        ])
       ) {
-        const categoryItems = new Set<string>();
-        this.scenes
-          .filter(
-            (scene) =>
-              filter.value![0] ===
-              this._entityReg.find((reg) => reg.entity_id === scene.entity_id)
-                ?.categories.scene
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          filter.items!.has(entityId)
+        );
+
+        // the filters below only expose the selected options (as filter.value);
+        // applying the filter must be done here
+      } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
+        // category filter only allows a single selected option
+        filteredEntityIds = filteredEntityIds.filter(
+          (entityId) =>
+            filter.value![0] ===
+            this._entityReg.find((reg) => reg.entity_id === entityId)
+              ?.categories.scene
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          this._entityReg
+            .find((reg) => reg.entity_id === entityId)
+            ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
+            (filter.value as string[]).includes(va)
           )
-          .forEach((scene) => categoryItems.add(scene.entity_id));
-        if (!items) {
-          items = categoryItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(categoryItems)
-            : new Set([...items].filter((x) => categoryItems!.has(x)));
-      } else if (
-        key === "ha-filter-labels" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const labelItems = new Set<string>();
-        this.scenes
-          .filter((scene) =>
-            this._entityReg
-              .find((reg) => reg.entity_id === scene.entity_id)
-              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
-          )
-          .forEach((scene) => labelItems.add(scene.entity_id));
-        if (!items) {
-          items = labelItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(labelItems)
-            : new Set([...items].filter((x) => labelItems!.has(x)));
-      } else if (
-        key === "ha-filter-voice-assistants" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const assistItems = new Set<string>();
-        this.scenes
-          .filter((scene) =>
-            getEntityVoiceAssistantsIds(this._entityReg, scene.entity_id).some(
-              (va) => (filter.value as string[]).includes(va)
-            )
-          )
-          .forEach((scene) => assistItems.add(scene.entity_id));
-        if (!items) {
-          items = assistItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(assistItems)
-            : new Set([...items].filter((x) => assistItems!.has(x)));
+        );
       }
     }
-    this._filteredScenes = items ? [...items] : undefined;
+    this._filteredSceneEntityIds = filteredEntityIds;
   }
 
   private _clearFilter() {
@@ -907,7 +866,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleBulkCategory = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkCategory = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "category_create") {
       this._bulkCreateCategory();
@@ -947,7 +906,7 @@ ${rejected
     }
   }
 
-  private _handleBulkLabel = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkLabel = (ev: HaDropdownSelectEvent) => {
     ev.preventDefault();
     const value = ev.detail.item.value;
     if (value === "label_create") {
@@ -990,7 +949,7 @@ ${rejected
     }
   }
 
-  private _handleBulkArea = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkArea = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "area_create") {
       this._bulkCreateArea();
@@ -1366,6 +1325,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

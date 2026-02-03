@@ -37,7 +37,6 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import type {
@@ -77,6 +76,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -130,8 +130,6 @@ export default class HaAutomationConditionRow extends LitElement {
   @state() private _testingResult?: boolean;
 
   @state() private _selected = false;
-
-  @state() private _uiSupported = false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -372,7 +370,9 @@ export default class HaAutomationConditionRow extends LitElement {
               ]}
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
-              .uiSupported=${this._uiSupported}
+              .uiSupported=${this._uiSupported(
+                this._getType(this.condition, this.conditionDescriptions)
+              )}
               .narrow=${this.narrow}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-condition-editor>`
@@ -451,7 +451,9 @@ export default class HaAutomationConditionRow extends LitElement {
             .hass=${this.hass}
             .condition=${this.condition}
             .disabled=${this.disabled}
-            .uiSupported=${this._uiSupported}
+            .uiSupported=${this._uiSupported(
+              this._getType(this.condition, this.conditionDescriptions)
+            )}
             indent
             .selected=${this._selected}
             .narrow=${this.narrow}
@@ -481,27 +483,6 @@ export default class HaAutomationConditionRow extends LitElement {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
-    }
-
-    if (changedProperties.has("condition") || !this.hasUpdated) {
-      const type = this._getType(this.condition, this.conditionDescriptions);
-      const uiSupported = this._checkUiSupport(type);
-      if (uiSupported !== this._uiSupported || !this.hasUpdated) {
-        this._uiSupported = uiSupported;
-      }
-    }
-  }
-
-  protected override updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-
-    if (
-      changedProps.has("_uiSupported") &&
-      this._selected &&
-      this.optionsInSidebar
-    ) {
-      // update sidebar if uiSupported changed
-      this.openSidebar();
     }
   }
 
@@ -790,7 +771,9 @@ export default class HaAutomationConditionRow extends LitElement {
       cut: this._cutCondition,
       test: this._testCondition,
       config: sidebarCondition,
-      uiSupported: this._uiSupported,
+      uiSupported: this._uiSupported(
+        this._getType(sidebarCondition, this.conditionDescriptions)
+      ),
       description: this.conditionDescriptions[sidebarCondition.condition],
       yamlMode: this._yamlMode,
     } satisfies ConditionSidebarConfig);
@@ -817,7 +800,7 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   );
 
-  private _checkUiSupport = memoizeOne(
+  private _uiSupported = memoizeOne(
     (type: string) =>
       customElements.get(`ha-automation-condition-${type}`) !== undefined
   );
@@ -830,7 +813,7 @@ export default class HaAutomationConditionRow extends LitElement {
     this._automationRowElement?.focus();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     ev.stopPropagation();
     const action = ev.detail?.item?.value;
 
