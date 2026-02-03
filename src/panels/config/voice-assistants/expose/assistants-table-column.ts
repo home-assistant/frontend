@@ -16,9 +16,7 @@ export function getAssistantsTableColumn<T>(
   visible?: boolean
 ): DataTableColumnData<T> {
   return {
-    title: localize(
-      "ui.panel.config.voice_assistants.expose.headers.assistants"
-    ),
+    title: localize("ui.panel.config.generic.headers.assistants"),
     type: "flex",
     defaultHidden: !visible,
     sortable: true,
