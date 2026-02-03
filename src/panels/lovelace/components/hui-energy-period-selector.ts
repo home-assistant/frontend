@@ -73,14 +73,13 @@ const RANGE_KEYS: DateRange[] = [
 ];
 
 interface OverflowMenuItem {
-  [key: string]: any;
   path: string;
   label: string;
   tooltip?: string;
   disabled?: boolean;
   alwaysCollapse?: boolean;
   hidden?: boolean;
-  action: () => any;
+  action: () => void;
 }
 
 @customElement("hui-energy-period-selector")
@@ -331,15 +330,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 )}
               </ha-button>`
             : nothing}
-          ${buttons.map((item) =>
+          ${buttons.map((item, index) =>
             this._collapseButtons || item.alwaysCollapse
               ? nothing
               : html`<ha-tooltip
                     .disabled=${!item.tooltip}
-                    .for="icon-button-${item.label}"
+                    .for="icon-button-${index}"
                     >${item.tooltip ?? ""} </ha-tooltip
                   ><ha-icon-button
-                    .id="icon-button-${item.label}"
+                    .id="icon-button-${index}"
                     @click=${item.action}
                     .label=${item.label}
                     .path=${item.path}
