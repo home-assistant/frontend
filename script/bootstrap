@@ -16,6 +16,10 @@ if [[ -n "$DEVCONTAINER" ]]; then
         nvm install --reinstall-packages-from="$nodeCurrent" --default
         nvm uninstall "$nodeCurrent"
     fi
+
+    # install yarn
+    npm install -g corepack -Y
+    yes | yarn
 fi
 
 if ! command -v yarn &> /dev/null; then
