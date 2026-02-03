@@ -221,6 +221,7 @@ class DialogJoinMediaPlayers extends LitElement {
         .content {
           display: flex;
           flex-direction: column;
+          padding-top: var(--ha-space-6);
           row-gap: var(--ha-space-4);
         }
 
