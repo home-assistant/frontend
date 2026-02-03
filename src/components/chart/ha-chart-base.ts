@@ -375,6 +375,10 @@ export class HaChartBase extends LitElement {
       }
 
       const style = getComputedStyle(this);
+      const rootStyle = getComputedStyle(document.documentElement);
+      const getVar = (name: string) =>
+        style.getPropertyValue(name).trim() ||
+        rootStyle.getPropertyValue(name).trim();
       echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(container, "custom");
@@ -421,7 +425,7 @@ export class HaChartBase extends LitElement {
                       ...axis.axisPointer,
                       status: "show",
                       handle: {
-                        color: style.getPropertyValue("--primary-color"),
+                        color: getVar("--primary-color"),
                         margin: 0,
                         size: 20,
                         ...axis.axisPointer?.handle,
@@ -634,21 +638,24 @@ export class HaChartBase extends LitElement {
   }
 
   private _createTheme(style: CSSStyleDeclaration) {
+    const rootStyle = getComputedStyle(document.documentElement);
+    const getVar = (name: string) =>
+      style.getPropertyValue(name).trim() ||
+      rootStyle.getPropertyValue(name).trim();
     const textBorderColor =
-      style.getPropertyValue("--ha-card-background") ||
-      style.getPropertyValue("--card-background-color");
+      getVar("--ha-card-background") || getVar("--card-background-color");
     const textBorderWidth = 2;
     return {
       color: getAllGraphColors(style),
       backgroundColor: "transparent",
       textStyle: {
-        color: style.getPropertyValue("--primary-text-color"),
+        color: getVar("--primary-text-color"),
         fontFamily: "Roboto, Noto, sans-serif",
       },
       title: {
-        textStyle: { color: style.getPropertyValue("--primary-text-color") },
+        textStyle: { color: getVar("--primary-text-color") },
         subtextStyle: {
-          color: style.getPropertyValue("--secondary-text-color"),
+          color: getVar("--secondary-text-color"),
         },
       },
       line: {
@@ -684,18 +691,18 @@ export class HaChartBase extends LitElement {
         axisTick: { show: false },
         axisLabel: {
           show: true,
-          color: style.getPropertyValue("--primary-text-color"),
+          color: getVar("--primary-text-color"),
         },
         splitLine: {
           show: false,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         splitArea: {
           show: false,
           areaStyle: {
             color: [
-              style.getPropertyValue("--divider-color") + "3F",
-              style.getPropertyValue("--divider-color") + "7F",
+              getVar("--divider-color") + "3F",
+              getVar("--divider-color") + "7F",
             ],
           },
         },
@@ -703,26 +710,26 @@ export class HaChartBase extends LitElement {
       valueAxis: {
         axisLine: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         axisTick: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         axisLabel: {
           show: true,
-          color: style.getPropertyValue("--primary-text-color"),
+          color: getVar("--primary-text-color"),
         },
         splitLine: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         splitArea: {
           show: false,
           areaStyle: {
             color: [
-              style.getPropertyValue("--divider-color") + "3F",
-              style.getPropertyValue("--divider-color") + "7F",
+              getVar("--divider-color") + "3F",
+              getVar("--divider-color") + "7F",
             ],
           },
         },
@@ -730,26 +737,26 @@ export class HaChartBase extends LitElement {
       logAxis: {
         axisLine: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         axisTick: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         axisLabel: {
           show: true,
-          color: style.getPropertyValue("--primary-text-color"),
+          color: getVar("--primary-text-color"),
         },
         splitLine: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         splitArea: {
           show: false,
           areaStyle: {
             color: [
-              style.getPropertyValue("--divider-color") + "3F",
-              style.getPropertyValue("--divider-color") + "7F",
+              getVar("--divider-color") + "3F",
+              getVar("--divider-color") + "7F",
             ],
           },
         },
@@ -757,53 +764,53 @@ export class HaChartBase extends LitElement {
       timeAxis: {
         axisLine: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         axisTick: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         axisLabel: {
           show: true,
-          color: style.getPropertyValue("--primary-text-color"),
+          color: getVar("--primary-text-color"),
         },
         splitLine: {
           show: true,
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: getVar("--divider-color") },
         },
         splitArea: {
           show: false,
           areaStyle: {
             color: [
-              style.getPropertyValue("--divider-color") + "3F",
-              style.getPropertyValue("--divider-color") + "7F",
+              getVar("--divider-color") + "3F",
+              getVar("--divider-color") + "7F",
             ],
           },
         },
       },
       legend: {
-        textStyle: { color: style.getPropertyValue("--primary-text-color") },
-        inactiveColor: style.getPropertyValue("--disabled-text-color"),
-        pageIconColor: style.getPropertyValue("--primary-text-color"),
-        pageIconInactiveColor: style.getPropertyValue("--disabled-text-color"),
+        textStyle: { color: getVar("--primary-text-color") },
+        inactiveColor: getVar("--disabled-text-color"),
+        pageIconColor: getVar("--primary-text-color"),
+        pageIconInactiveColor: getVar("--disabled-text-color"),
         pageTextStyle: {
-          color: style.getPropertyValue("--secondary-text-color"),
+          color: getVar("--secondary-text-color"),
         },
       },
       tooltip: {
-        backgroundColor: style.getPropertyValue("--card-background-color"),
-        borderColor: style.getPropertyValue("--divider-color"),
+        backgroundColor: getVar("--card-background-color"),
+        borderColor: getVar("--divider-color"),
         textStyle: {
-          color: style.getPropertyValue("--primary-text-color"),
+          color: getVar("--primary-text-color"),
           fontSize: 12,
         },
         axisPointer: {
-          lineStyle: { color: style.getPropertyValue("--info-color") },
-          crossStyle: { color: style.getPropertyValue("--info-color") },
+          lineStyle: { color: getVar("--info-color") },
+          crossStyle: { color: getVar("--info-color") },
         },
         extraCssText:
           "direction:" +
-          style.getPropertyValue("--direction") +
+          getVar("--direction") +
           ";margin-inline-start:3px;margin-inline-end:8px;",
       },
       timeline: {},
