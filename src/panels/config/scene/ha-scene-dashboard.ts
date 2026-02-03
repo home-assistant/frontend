@@ -117,8 +117,6 @@ import {
   getEditableTableColumn,
   renderRelativeTimeColumn,
 } from "../common/data-table-columns";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
