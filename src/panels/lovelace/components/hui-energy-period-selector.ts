@@ -1,4 +1,11 @@
-import { mdiCheck, mdiDotsVertical } from "@mdi/js";
+import {
+  mdiChevronLeft,
+  mdiChevronRight,
+  mdiDotsVertical,
+  mdiCheckboxBlankOutline,
+  mdiCheckboxOutline,
+  mdiHomeClock,
+} from "@mdi/js";
 import {
   differenceInCalendarYears,
   differenceInDays,
@@ -18,6 +25,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import {
   calcDate,
   calcDateDifferenceProperty,
@@ -41,7 +50,6 @@ import type {
 } from "../../../components/ha-date-range-picker";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
@@ -50,6 +58,7 @@ import type { EnergyData } from "../../../data/energy";
 import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-icon-overflow-menu";
 
 const RANGE_KEYS: DateRange[] = [
   "today",
@@ -62,6 +71,17 @@ const RANGE_KEYS: DateRange[] = [
   "now-30d",
   "now-12m",
 ];
+
+interface OverflowMenuItem {
+  [key: string]: any;
+  path: string;
+  label: string;
+  tooltip?: string;
+  disabled?: boolean;
+  alwaysCollapse?: boolean;
+  hidden?: boolean;
+  action: () => any;
+}
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -89,6 +109,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @state() private _compare = false;
 
+  @state() private _collapseButtons = false;
+
   private _resizeObserver?: ResizeObserver;
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -101,6 +123,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _measure() {
     this.narrow = this.offsetWidth < 450;
+    this._collapseButtons = this.offsetWidth < 290;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -179,6 +202,43 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         this.hass.locale,
         this.hass.config
       ) !== 0;
+
+    const buttons = [
+      {
+        path:
+          mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft,
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.previous"
+        ),
+        action: () => this._pickPrevious(),
+      },
+      {
+        path:
+          mainWindow.document.dir === "rtl" ? mdiChevronLeft : mdiChevronRight,
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.next"
+        ),
+        action: () => this._pickNext(),
+      },
+      {
+        path: mdiHomeClock,
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.now"
+        ),
+        alwaysCollapse: true,
+        hidden: !this.narrow,
+        action: () => this._pickNow(),
+      },
+      {
+        path: this._compare ? mdiCheckboxOutline : mdiCheckboxBlankOutline,
+        disabled: !this.allowCompare,
+        alwaysCollapse: true,
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.compare"
+        ),
+        action: () => this._toggleCompare(),
+      },
+    ] as OverflowMenuItem[];
 
     return html`
       <div
@@ -260,20 +320,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}`}
           <slot name="headerActionItems" slot="actionItems"></slot>
         </ha-dialog-header>
-        <div class="time-handle">
-          <ha-icon-button-prev
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.components.energy_period_selector.previous"
-            )}
-            @click=${this._pickPrevious}
-          ></ha-icon-button-prev>
-          <ha-icon-button-next
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.components.energy_period_selector.next"
-            )}
-            @click=${this._pickNext}
-          ></ha-icon-button-next>
-        </div>
         <div class="overflow">
           ${!this.narrow
             ? html`<ha-button
@@ -286,31 +332,47 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 )}
               </ha-button>`
             : nothing}
-
-          <ha-dropdown
-            placement="bottom-end"
-            @wa-select=${this._handleMenuAction}
-          >
-            <ha-icon-button
-              slot="trigger"
-              .label=${this.hass.localize("ui.common.menu")}
-              .path=${mdiDotsVertical}
-            ></ha-icon-button>
-            ${this.allowCompare
-              ? html`<ha-dropdown-item value="toggle-compare">
-                  ${this._compare
-                    ? html`<ha-svg-icon
-                        slot="icon"
-                        .path=${mdiCheck}
-                      ></ha-svg-icon>`
-                    : nothing}
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.components.energy_period_selector.compare"
-                  )}
-                </ha-dropdown-item>`
-              : nothing}
-            <slot name="overflow-menu"></slot>
-          </ha-dropdown>
+          ${buttons.map((item) =>
+            this._collapseButtons || item.alwaysCollapse
+              ? nothing
+              : html`<ha-tooltip
+                    .disabled=${!item.tooltip}
+                    .for="icon-button-${item.label}"
+                    >${item.tooltip ?? ""} </ha-tooltip
+                  ><ha-icon-button
+                    .id="icon-button-${item.label}"
+                    @click=${item.action}
+                    .label=${item.label}
+                    .path=${item.path}
+                    ?disabled=${item.disabled}
+                  ></ha-icon-button> `
+          )}
+          ${this._collapseButtons || buttons.some((x) => x.alwaysCollapse)
+            ? html`<ha-dropdown
+                @wa-show=${this._handleIconOverflowMenuOpened}
+                @click=${stopPropagation}
+              >
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.common.overflow_menu")}
+                  .path=${mdiDotsVertical}
+                  slot="trigger"
+                ></ha-icon-button>
+                ${buttons.map((item) =>
+                  (this._collapseButtons || item.alwaysCollapse) && !item.hidden
+                    ? html`<ha-dropdown-item
+                        ?disabled=${item.disabled}
+                        @click=${item.action}
+                      >
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${item.path}
+                        ></ha-svg-icon>
+                        ${item.label}
+                      </ha-dropdown-item>`
+                    : nothing
+                )}
+              </ha-dropdown>`
+            : nothing}
         </div>
       </div>
     `;
@@ -380,6 +442,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private get _datePicker(): HaDateRangePicker | undefined {
     return this.shadowRoot!.querySelector("ha-date-range-picker") ?? undefined;
+  }
+
+  protected _handleIconOverflowMenuOpened(ev: Event) {
+    ev.stopPropagation();
   }
 
   private _openDatePicker(ev: Event) {
@@ -541,13 +607,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._datepickerOpen = ev.detail.open;
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
-    const value = ev.detail.item.value;
-    if (value === "toggle-compare") {
-      this._toggleCompare();
-    }
-  }
-
   private _toggleCompare() {
     this._compare = !this._compare;
     const energyCollection = getEnergyDataCollection(this.hass, {
@@ -574,12 +633,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       justify-content: flex-end;
       align-items: center;
     }
-    :host .time-handle {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-    }
-    :host([narrow]) .time-handle {
+    :host([narrow]) .overflow {
       margin-left: auto;
       margin-inline-start: auto;
       margin-inline-end: initial;
