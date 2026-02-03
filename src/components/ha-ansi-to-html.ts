@@ -29,12 +29,20 @@ export class HaAnsiToHtml extends LitElement {
   @property({ type: Boolean, attribute: "wrap-disabled" }) public wrapDisabled =
     false;
 
+  @property({ type: Boolean, attribute: "overflow-disabled" })
+  public overflowDisabled = false;
+
   @query("pre") private _pre?: HTMLPreElement;
 
   @litState() private _filter = "";
 
   protected render(): TemplateResult {
-    return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
+    return html`<pre
+      class=${classMap({
+        wrap: !this.wrapDisabled,
+        overflow: !this.overflowDisabled,
+      })}
+    ></pre>`;
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -48,8 +56,10 @@ export class HaAnsiToHtml extends LitElement {
 
   static styles = css`
     pre {
-      overflow-x: auto;
       margin: 0;
+    }
+    pre.overflow {
+      overflow-x: auto;
     }
     pre.wrap {
       white-space: pre-wrap;
