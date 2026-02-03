@@ -239,9 +239,8 @@ class HaConfigAreaPage extends LitElement {
             ${this.hass.localize("ui.panel.config.areas.edit_settings")}
           </ha-dropdown-item>
 
-          <ha-dropdown-item value="delete">
-            <ha-svg-icon class="warning" slot="icon" .path=${mdiDelete}>
-            </ha-svg-icon>
+          <ha-dropdown-item value="delete" variant="danger">
+            <ha-svg-icon slot="icon" .path=${mdiDelete}> </ha-svg-icon>
             ${this.hass.localize("ui.panel.config.areas.editor.delete")}
           </ha-dropdown-item>
         </ha-dropdown>

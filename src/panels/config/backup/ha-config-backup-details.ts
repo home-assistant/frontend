@@ -123,7 +123,7 @@ class HaConfigBackupDetails extends LitElement {
             <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
             ${this.hass.localize("ui.common.download")}
           </ha-dropdown-item>
-          <ha-dropdown-item value="delete" class="warning">
+          <ha-dropdown-item value="delete" variant="danger">
             <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
             ${this.hass.localize("ui.common.delete")}
           </ha-dropdown-item>
@@ -384,12 +384,6 @@ class HaConfigBackupDetails extends LitElement {
     ha-md-list-item ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
-    }
-    .warning {
-      color: var(--error-color);
-    }
-    .warning ha-svg-icon {
-      color: var(--error-color);
     }
     ha-button.danger {
       --mdc-theme-primary: var(--error-color);

@@ -152,13 +152,9 @@ export class HuiBadgeEditMode extends LitElement {
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
           </ha-dropdown-item>
           <wa-divider></wa-divider>
-          <ha-dropdown-item value="delete" class="warning">
+          <ha-dropdown-item value="delete" variant="danger">
             ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
-            <ha-svg-icon
-              class="warning"
-              slot="icon"
-              .path=${mdiDelete}
-            ></ha-svg-icon>
+            <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
           </ha-dropdown-item>
         </ha-dropdown>
       </div>

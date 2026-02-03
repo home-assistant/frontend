@@ -394,7 +394,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                                     "ui.panel.lovelace.cards.todo-list.clear_items"
                                   )}
                                   <ha-svg-icon
-                                    class="warning"
                                     slot="icon"
                                     .path=${mdiDeleteSweep}
                                   >

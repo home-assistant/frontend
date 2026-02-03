@@ -224,9 +224,8 @@ export class HaConfigAreasDashboard extends LitElement {
                             "ui.panel.config.areas.picker.floor.edit_floor"
                           )}</ha-dropdown-item
                         >
-                        <ha-dropdown-item value="delete" class="warning"
+                        <ha-dropdown-item value="delete" variant="danger"
                           ><ha-svg-icon
-                            class="warning"
                             .path=${mdiDelete}
                             slot="icon"
                           ></ha-svg-icon
@@ -726,9 +725,6 @@ export class HaConfigAreasDashboard extends LitElement {
       justify-content: space-between;
       align-items: center;
       overflow-wrap: anywhere;
-    }
-    .warning {
-      color: var(--error-color);
     }
   `;
 }
