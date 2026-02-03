@@ -206,7 +206,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             ></ha-date-range-picker>
           </slot>
           ${simpleRange === "year"
-            ? html`<span slot="title" class="title" id="ha-wa-dialog-title"
+            ? html`<span slot="title" class="title"
                   >${formatDateYear(
                     this._startDate,
                     this.hass.locale,
@@ -214,7 +214,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                   )}</span
                 ><slot name="headerSubtitle" slot="subtitle"></slot>`
             : html`${simpleRange === "month"
-                ? html`<span slot="title" class="title" id="ha-wa-dialog-title"
+                ? html`<span slot="title" class="title"
                     >${formatDateMonth(
                       this._startDate,
                       this.hass.locale,
@@ -222,20 +222,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                     )}</span
                   >`
                 : simpleRange === "day"
-                  ? html`<span
-                      slot="title"
-                      class="title"
-                      id="ha-wa-dialog-title"
+                  ? html`<span slot="title" class="title"
                       >${formatDateVeryShort(
                         this._startDate,
                         this.hass.locale,
                         this.hass.config
                       )}</span
                     >`
-                  : html`<span
-                      slot="title"
-                      class="title"
-                      id="ha-wa-dialog-title"
+                  : html`<span slot="title" class="title"
                       >${formatDateVeryShort(
                         this._startDate,
                         this.hass.locale,
