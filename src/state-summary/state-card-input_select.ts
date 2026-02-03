@@ -25,14 +25,14 @@ class StateCardInputSelect extends LitElement {
     return html`
       <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
       <ha-control-select-menu
-        show-arrow
-        hide-label
         .label=${computeStateName(this.stateObj)}
         .value=${this.stateObj.state}
         .options=${options}
         .disabled=${
           this.stateObj.state === UNAVAILABLE /* UNKNOWN state is allowed */
         }
+        hide-label
+        show-arrow
         @wa-select=${this._selectedOptionChanged}
       ></ha-control-select-menu>
     `;
