@@ -9,8 +9,8 @@ import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-form/ha-form";
 import type {
   HaFormDataContainer,
@@ -347,7 +347,7 @@ class SupervisorAppConfig extends LitElement {
     }
   }
 
-  private _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {

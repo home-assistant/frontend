@@ -8,7 +8,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-settings-row";
@@ -29,6 +28,7 @@ import {
   migrateLayoutToGridOptions,
 } from "../../common/compute-card-grid-size";
 import type { LovelaceGridOptions } from "../../types";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("hui-card-layout-editor")
 export class HuiCardLayoutEditor extends LitElement {
@@ -238,7 +238,7 @@ export class HuiCardLayoutEditor extends LitElement {
     }
   }
 
-  private async _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (action === "toggle_yaml") {

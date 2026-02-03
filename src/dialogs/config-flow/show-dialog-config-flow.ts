@@ -91,9 +91,11 @@ export const showConfigFlowDialog = (
 
     renderShowFormStepFieldLabel(hass, step, field, options) {
       if (field.type === "expandable") {
-        return hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.sections.${field.name}.name`,
-          step.description_placeholders
+        return (
+          hass.localize(
+            `component.${step.handler}.config.step.${step.step_id}.sections.${field.name}.name`,
+            step.description_placeholders
+          ) || field.name
         );
       }
 

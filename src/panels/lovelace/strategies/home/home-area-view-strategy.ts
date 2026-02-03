@@ -282,7 +282,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       if (device) {
         heading =
           computeDeviceName(device) ||
-          hass.localize("ui.panel.lovelace.strategy.home.unamed_device");
+          hass.localize("ui.panel.lovelace.strategy.home.unnamed_device");
       } else {
         heading = hass.localize("ui.panel.lovelace.strategy.home.others");
       }

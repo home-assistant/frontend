@@ -11,7 +11,6 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-password-field";
@@ -36,6 +35,7 @@ import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -492,7 +492,7 @@ class HaConfigBackupSettings extends LitElement {
     fireEvent(this, "ha-refresh-backup-config");
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (action === "change_local_location") {

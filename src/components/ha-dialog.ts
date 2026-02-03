@@ -88,6 +88,9 @@ export class HaDialog extends DialogBase {
         --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
         --mdc-typography-headline6-font-size: 1.574rem;
       }
+      .mdc-dialog .mdc-dialog__scrim {
+        background-color: var(--mdc-dialog-scrim-color, none);
+      }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
         padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-4)

@@ -39,7 +39,6 @@ import "../../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-svg-icon";
@@ -47,6 +46,7 @@ import type { EnergyData } from "../../../data/energy";
 import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const RANGE_KEYS: DateRange[] = [
   "today",
@@ -472,7 +472,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._datepickerOpen = ev.detail.open;
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     if (value === "toggle-compare") {
       this._toggleCompare();

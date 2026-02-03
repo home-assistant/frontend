@@ -17,7 +17,6 @@ import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type {
   LegacyTrigger,
   TriggerSidebarConfig,
@@ -33,6 +32,7 @@ import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-sidebar-trigger")
 export default class HaAutomationSidebarTrigger extends LitElement {
@@ -328,7 +328,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     this._requestShowId = true;
   };
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {

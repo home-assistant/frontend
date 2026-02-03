@@ -112,7 +112,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
       if (device) {
         heading =
           computeDeviceName(device) ||
-          hass.localize("ui.panel.lovelace.strategy.home.unamed_device");
+          hass.localize("ui.panel.lovelace.strategy.home.unnamed_device");
       }
 
       sections.push({

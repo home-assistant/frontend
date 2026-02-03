@@ -78,7 +78,7 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public statisticIds?: StatisticsMetaData[];
 
   @property({ attribute: false }) public helpMissingEntityUrl =

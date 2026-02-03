@@ -48,7 +48,7 @@ export class TopAppBarBaseBase extends BaseElement {
 
   @query(".pane .ha-scrollbar") private _paneElement?: HTMLElement;
 
-  @property({ attribute: false, type: Object })
+  @property({ attribute: false })
   get scrollTarget() {
     return this._scrollTarget || window;
   }

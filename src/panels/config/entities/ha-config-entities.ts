@@ -59,7 +59,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -90,6 +89,8 @@ import type {
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import { listExposedEntities, voiceAssistants } from "../../../data/expose";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
@@ -119,13 +120,12 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import type { ExposeEntitySettings } from "../../../data/expose";
-import { listExposedEntities, voiceAssistants } from "../../../data/expose";
-import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
+import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -253,12 +253,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
+    window.addEventListener(
+      "exposed-entities-changed",
+      this._fetchExposedEntities
+    );
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
+    window.removeEventListener(
+      "exposed-entities-changed",
+      this._fetchExposedEntities
+    );
   }
 
   private _locationChanged = () => {
@@ -1405,7 +1413,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._clearSelection();
   };
 
-  private async _handleBulkLabel(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleBulkLabel(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // Prevent the dropdown from closing
 
     const label = ev.detail.item.value;
@@ -1613,7 +1621,7 @@ ${rejected
     this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
-  private _handleBulkAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleBulkAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {
@@ -1714,6 +1722,10 @@ ${rejected
 
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
