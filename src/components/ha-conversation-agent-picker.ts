@@ -83,7 +83,7 @@ export class HaConversationAgentPicker extends LitElement {
       options.unshift({
         value: NONE,
         label: this.hass.localize(
-          "ui.components.coversation-agent-picker.none"
+          "ui.components.conversation-agent-picker.none"
         ),
       });
     }
@@ -92,7 +92,7 @@ export class HaConversationAgentPicker extends LitElement {
       <ha-select
         .label=${this.label ||
         this.hass!.localize(
-          "ui.components.coversation-agent-picker.conversation_agent"
+          "ui.components.conversation-agent-picker.conversation_agent"
         )}
         .value=${value}
         .required=${this.required}

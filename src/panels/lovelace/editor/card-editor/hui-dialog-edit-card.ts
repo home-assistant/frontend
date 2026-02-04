@@ -36,6 +36,7 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import { withViewTransition } from "../../../../common/util/view-transition";
 
 declare global {
   // for fire event
@@ -267,7 +268,9 @@ export class HuiDialogEditCard
   }
 
   private _enlarge() {
-    this.large = !this.large;
+    withViewTransition(() => {
+      this.large = !this.large;
+    });
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {

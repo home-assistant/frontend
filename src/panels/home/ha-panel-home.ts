@@ -276,12 +276,12 @@ class PanelHome extends LitElement {
         <div class="banner-content">
           <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
           <span class="banner-text">
-            Welcome to the new overview dashboard.
+            ${this.hass.localize("ui.panel.home.banner.welcome_message")}
           </span>
         </div>
         <div class="banner-actions">
           <ha-button size="small" appearance="filled" @click=${this._learnMore}>
-            Learn more
+            ${this.hass.localize("ui.panel.home.banner.learn_more")}
           </ha-button>
         </div>
       </div>
