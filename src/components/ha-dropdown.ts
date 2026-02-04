@@ -7,9 +7,9 @@ import type { HaDropdownItem } from "./ha-dropdown-item";
  * Event type for the ha-dropdown component when an item is selected.
  * @param T - The type of the value of the selected item.
  */
-export type HaDropdownSelectEvent<T = string> = CustomEvent<
-  Omit<HaDropdownItem, "value"> & { value: T }
->;
+export type HaDropdownSelectEvent<T = string> = CustomEvent<{
+  item: Omit<HaDropdownItem, "value"> & { value: T };
+}>;
 
 /**
  * Home Assistant dropdown component
