@@ -8803,10 +8803,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:17.2.0":
-  version: 17.2.0
-  resolution: "globals@npm:17.2.0"
-  checksum: 10/2812d7ae9a2889da33cad5188e6fe7c2d1a615e62d8e2092fbaa76a016536c2fcd72aba25896d8c6112fa0f2d95f005f59bf1dfc81ee014fe1ba54326ce14e57
+"globals@npm:17.3.0":
+  version: 17.3.0
+  resolution: "globals@npm:17.3.0"
+  checksum: 10/44ba2b7db93eb6a2531dfba09219845e21f2e724a4f400eb59518b180b7d5bcf7f65580530e3d3023d7dc2bdbacf5d265fd87c393f567deb9a2b0472b51c9d5e
   languageName: node
   linkType: hard
 
