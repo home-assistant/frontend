@@ -50,7 +50,6 @@ import type {
 } from "../../../components/ha-date-range-picker";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-svg-icon";
@@ -122,7 +121,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _measure() {
     this.narrow = this.offsetWidth < 450;
-    this._collapseButtons = this.offsetWidth < 300;
+    this._collapseButtons = this.offsetWidth < 330;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -249,13 +248,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         })}
       >
         <div class="backdrop"></div>
-        <ha-dialog-header
-          subtitle-position="below"
-          class="label"
-          clickable-header
-          @header-click=${this._openDatePicker}
-        >
-          <slot name="headerNavigationIcon" slot="navigationIcon">
+        <div class="content">
+          <section class="date-picker-icon">
             <ha-date-range-picker
               .hass=${this.hass}
               .startDate=${this._startDate}
@@ -268,56 +262,58 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               header-position
               .verticalOpeningDirection=${this.verticalOpeningDirection}
             ></ha-date-range-picker>
-          </slot>
-          <slot name="headerSubtitle" slot="title"
-            ><span
-              >${simpleRange === "year"
-                ? html`${formatDateYear(
-                    this._startDate,
-                    this.hass.locale,
-                    this.hass.config
-                  )}`
-                : html`${simpleRange === "month"
-                    ? html`${formatDateMonth(
-                        this._startDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )}`
-                    : simpleRange === "day"
-                      ? html`${formatDateVeryShort(
+          </section>
+          <section class="date-range" @click=${this._openDatePicker}>
+            <div class="header-title">
+              <span
+                >${simpleRange === "year"
+                  ? html`${formatDateYear(
+                      this._startDate,
+                      this.hass.locale,
+                      this.hass.config
+                    )}`
+                  : html`${simpleRange === "month"
+                      ? html`${formatDateMonth(
                           this._startDate,
                           this.hass.locale,
                           this.hass.config
                         )}`
-                      : html`${formatDateVeryShort(
-                          this._startDate,
-                          this.hass.locale,
-                          this.hass.config
-                        )}&ndash;${formatDateVeryShort(
+                      : simpleRange === "day"
+                        ? html`${formatDateVeryShort(
+                            this._startDate,
+                            this.hass.locale,
+                            this.hass.config
+                          )}`
+                        : html`${formatDateVeryShort(
+                            this._startDate,
+                            this.hass.locale,
+                            this.hass.config
+                          )}&ndash;${formatDateVeryShort(
+                            this._endDate || new Date(),
+                            this.hass.locale,
+                            this.hass.config
+                          )} `} `}</span
+              >
+            </div>
+            <div class="header-subtitle">
+              ${showSubtitleYear
+                ? html`<span
+                    >${formatDateYear(
+                      this._startDate,
+                      this.hass.locale,
+                      this.hass.config
+                    )}${showBothYear
+                      ? html`&ndash;${formatDateYear(
                           this._endDate || new Date(),
                           this.hass.locale,
                           this.hass.config
-                        )} `} `}</span
-            ></slot
-          >
-          <slot name="headerSubtitle" slot="subtitle"
-            >${showSubtitleYear
-              ? html`<span
-                  >${formatDateYear(
-                    this._startDate,
-                    this.hass.locale,
-                    this.hass.config
-                  )}${showBothYear
-                    ? html`&ndash;${formatDateYear(
-                        this._endDate || new Date(),
-                        this.hass.locale,
-                        this.hass.config
-                      )}`
-                    : ``}</span
-                >`
-              : nothing}</slot
-          >
-          <slot name="headerActionItems" slot="actionItems">
+                        )}`
+                      : ``}</span
+                  >`
+                : nothing}
+            </div>
+          </section>
+          <section class="date-actions">
             <div class="overflow">
               ${!this.narrow
                 ? html`<ha-button
@@ -373,8 +369,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                   </ha-dropdown>`
                 : nothing}
             </div>
-          </slot>
-        </ha-dialog-header>
+          </section>
+        </div>
       </div>
     `;
   }
@@ -627,25 +623,69 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       justify-content: space-between;
       container-type: inline-size;
     }
-    :host .overflow {
+    .content {
       display: flex;
+      flex-direction: row;
       align-items: center;
+      padding: 0 var(--ha-space-1);
+      box-sizing: border-box;
     }
-    .label {
-      --ha-dialog-header-title-font-size: var(--ha-font-size-xl);
-      --ha-dialog-header-subtitle-font-size: var(--ha-font-size-m);
+    .date-picker-icon {
+      flex: none;
+      min-width: var(--ha-space-2);
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+    }
+    .date-range {
+      flex: 1;
+      padding: 0 var(--ha-space-1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: var(--ha-space-12);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .date-range:hover {
+      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      transition: background-color 0.15s ease-in-out;
+      -webkit-border-radius: var(--ha-border-radius-lg);
+      -moz-border-radius: var(--ha-border-radius-lg);
+      border-radius: var(--ha-border-radius-lg);
+    }
+    .header-title {
+      font-size: var(--ha-font-size-xl);
+      line-height: var(--ha-line-height-condensed);
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-text-color);
+    }
+    .header-subtitle {
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-normal);
+      color: var(--secondary-text-color);
     }
     @container (max-width: 360px) {
-      :host([narrow]) .label {
-        --ha-dialog-header-title-font-size: var(--ha-font-size-m);
-        --ha-dialog-header-subtitle-font-size: var(--ha-font-size-s);
+      :host([narrow]) .header-title {
+        font-size: var(--ha-font-size-m);
+      }
+      :host([narrow]) .header-subtitle {
+        font-size: var(--ha-font-size-s);
       }
     }
-    @container (max-width: 320px) {
-      :host([narrow]) .label {
-        --ha-dialog-header-title-font-size: var(--ha-font-size-s);
-        --ha-dialog-header-subtitle-font-size: var(--ha-font-size-s);
-      }
+    .date-actions {
+      flex: none;
+      min-width: var(--ha-space-2);
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+    }
+    .date-actions .overflow {
+      display: flex;
+      align-items: center;
     }
     ha-button {
       margin-left: 8px;
