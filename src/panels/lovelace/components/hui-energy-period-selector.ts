@@ -201,6 +201,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         this.hass.locale,
         this.hass.config
       ) !== 0;
+    const showSubtitleYear =
+      simpleRange !== "year" && (showStartYear || showBothYear);
 
     const buttons = [
       {
@@ -247,11 +249,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         })}
       >
         <div class="backdrop"></div>
-        <ha-dialog-header
-          subtitle-position="below"
-          class="label"
-          @click=${this._openDatePicker}
-        >
+        <ha-dialog-header subtitle-position="below" class="label">
           <slot name="headerNavigationIcon" slot="navigationIcon">
             <ha-date-range-picker
               .hass=${this.hass}
@@ -266,43 +264,43 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               .verticalOpeningDirection=${this.verticalOpeningDirection}
             ></ha-date-range-picker>
           </slot>
-          ${simpleRange === "year"
-            ? html`<span slot="title" class="title"
-                  >${formatDateYear(
-                    this._startDate,
-                    this.hass.locale,
-                    this.hass.config
-                  )}</span
-                ><slot name="headerSubtitle" slot="subtitle"></slot>`
-            : html`${simpleRange === "month"
-                ? html`<span slot="title" class="title"
-                    >${formatDateMonth(
+          <slot name="headerSubtitle" slot="title"
+            ><div class="date-hover" @click=${this._openDatePicker}>
+              <span
+                >${simpleRange === "year"
+                  ? html`${formatDateYear(
                       this._startDate,
                       this.hass.locale,
                       this.hass.config
-                    )}</span
-                  >`
-                : simpleRange === "day"
-                  ? html`<span slot="title" class="title"
-                      >${formatDateVeryShort(
-                        this._startDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )}</span
-                    >`
-                  : html`<span slot="title" class="title"
-                      >${formatDateVeryShort(
-                        this._startDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )}&ndash;${formatDateVeryShort(
-                        this._endDate || new Date(),
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                    </span>`}
-              ${showStartYear || showBothYear
-                ? html`<span slot="subtitle"
+                    )}`
+                  : html`${simpleRange === "month"
+                      ? html`${formatDateMonth(
+                          this._startDate,
+                          this.hass.locale,
+                          this.hass.config
+                        )}`
+                      : simpleRange === "day"
+                        ? html`${formatDateVeryShort(
+                            this._startDate,
+                            this.hass.locale,
+                            this.hass.config
+                          )}`
+                        : html`${formatDateVeryShort(
+                            this._startDate,
+                            this.hass.locale,
+                            this.hass.config
+                          )}&ndash;${formatDateVeryShort(
+                            this._endDate || new Date(),
+                            this.hass.locale,
+                            this.hass.config
+                          )} `} `}</span
+              >
+            </div></slot
+          >
+          <slot name="headerSubtitle" slot="subtitle"
+            >${showSubtitleYear
+              ? html`<div class="date-hover" @click=${this._openDatePicker}>
+                  <span
                     >${formatDateYear(
                       this._startDate,
                       this.hass.locale,
@@ -314,8 +312,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                           this.hass.config
                         )}`
                       : ``}</span
-                  >`
-                : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}`}
+                  >
+                </div>`
+              : nothing}</slot
+          >
           <slot name="headerActionItems" slot="actionItems">
             <div class="overflow">
               ${!this.narrow
@@ -652,6 +652,24 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-end: initial;
       flex-shrink: 0;
       --ha-button-theme-color: currentColor;
+    }
+    ha-dialog-header div.date-hover {
+      cursor: pointer;
+      margin: -4px;
+      padding: 4px;
+    }
+    @media (hover: hover) {
+      ha-dialog-header:not(.loading) div.date-hover:hover {
+        background-color: var(--ha-color-fill-primary-normal-hover);
+        transition: background-color 0.15s ease-in-out;
+        --ha-selector-dialog-border-radius: var(
+          --ha-button-border-radius,
+          var(--ha-border-radius-pill)
+        );
+        -webkit-border-radius: var(--ha-selector-dialog-border-radius);
+        -moz-border-radius: var(--ha-selector-dialog-border-radius);
+        border-radius: var(--ha-selector-dialog-border-radius);
+      }
     }
     .backdrop {
       position: fixed;
