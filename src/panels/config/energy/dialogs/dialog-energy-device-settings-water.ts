@@ -198,7 +198,7 @@ export class DialogEnergyDeviceSettingsWater
     `;
   }
 
-  private _statisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticChanged(ev: ValueChangedEvent<string>) {
     if (!ev.detail.value) {
       this._device = undefined;
       return;
