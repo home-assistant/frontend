@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import type { HaDropdownItem } from "./ha-dropdown-item";
 
 export type HaDropdownSelectEvent<T = string> = CustomEvent<{
-  item: HaDropdownItem & { value: T };
+  item: Omit<HaDropdownItem, "value"> & { value: T };
 }>;
 
 /**
