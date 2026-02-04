@@ -186,8 +186,6 @@ export class HaSelect extends LitElement {
     }
 
     ha-dropdown::part(menu) {
-      border-top-right-radius: 0;
-      border-top-left-radius: 0;
       min-width: var(--select-menu-width);
     }
 
