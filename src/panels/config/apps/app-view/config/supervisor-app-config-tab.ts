@@ -64,7 +64,7 @@ class SupervisorAppConfigDashboard extends LitElement {
                     ></supervisor-app-network>
                   `
                 : nothing}
-              ${this.addon.audio || true
+              ${this.addon.audio
                 ? html`
                     <supervisor-app-audio
                       .hass=${this.hass}
