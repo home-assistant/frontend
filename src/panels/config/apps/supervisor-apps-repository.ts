@@ -74,6 +74,7 @@ export class SupervisorAppsRepositoryEl extends LitElement {
                     .title=${addon.name}
                     .description=${addon.description}
                     .available=${addon.available}
+                    .filter=${this.filter}
                     .icon=${addon.installed && addon.update_available
                       ? mdiArrowUpBoldCircle
                       : mdiPuzzle}

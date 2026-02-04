@@ -2,7 +2,9 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { getHighlightRanges } from "../../../../common/string/highlight";
 import "../../../../components/ha-svg-icon";
+import { haStyleHighlight } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("supervisor-apps-card-content")
@@ -28,6 +30,8 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property({ attribute: false }) public iconImage?: string;
 
+  @property({ attribute: false }) public filter?: string;
+
   protected render(): TemplateResult {
     return html`
       ${this.showTopbar
@@ -52,9 +56,9 @@ class SupervisorAppsCardContent extends LitElement {
             ></ha-svg-icon>
           `}
       <div>
-        <div class="title">${this.title}</div>
+        <div class="title">${this._renderHighlightedText(this.title)}</div>
         <div class="addition">
-          ${this.description}
+          ${this._renderHighlightedText(this.description)}
           ${
             /* treat as available when undefined */
             this.available === false ? " (Not available)" : ""
@@ -64,84 +68,125 @@ class SupervisorAppsCardContent extends LitElement {
     `;
   }
 
-  static styles = css`
-    :host {
-      direction: ltr;
+  static styles = [
+    haStyleHighlight,
+    css`
+      :host {
+        direction: ltr;
+      }
+
+      ha-svg-icon {
+        margin-right: var(--ha-space-6);
+        margin-left: var(--ha-space-2);
+        margin-top: var(--ha-space-3);
+        float: left;
+        color: var(--secondary-text-color);
+      }
+      ha-svg-icon.update {
+        color: var(--warning-color);
+      }
+      ha-svg-icon.running,
+      ha-svg-icon.installed {
+        color: var(--success-color);
+      }
+      ha-svg-icon.hassupdate,
+      ha-svg-icon.backup {
+        color: var(--state-icon-color);
+      }
+      ha-svg-icon.not_available {
+        color: var(--error-color);
+      }
+      .title {
+        color: var(--primary-text-color);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .addition {
+        color: var(--secondary-text-color);
+        overflow: hidden;
+        position: relative;
+        height: 2.4em;
+        line-height: var(--ha-line-height-condensed);
+      }
+      .icon_image img {
+        max-height: 40px;
+        max-width: 40px;
+        margin-top: var(--ha-space-1);
+        margin-right: var(--ha-space-4);
+        float: left;
+      }
+      .icon_image.stopped,
+      .icon_image.not_available {
+        filter: grayscale(1);
+      }
+      .dot {
+        position: absolute;
+        background-color: var(--warning-color);
+        width: 12px;
+        height: 12px;
+        top: var(--ha-space-2);
+        right: var(--ha-space-2);
+        border-radius: var(--ha-border-radius-circle);
+      }
+      .topbar {
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        top: 0;
+        left: 0;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+      }
+      .topbar.installed {
+        background-color: var(--primary-color);
+      }
+      .topbar.update {
+        background-color: var(--accent-color);
+      }
+      .topbar.unavailable {
+        background-color: var(--error-color);
+      }
+    `,
+  ];
+
+  private _renderHighlightedText(text?: string) {
+    if (!text) {
+      return text;
     }
 
-    ha-svg-icon {
-      margin-right: var(--ha-space-6);
-      margin-left: var(--ha-space-2);
-      margin-top: var(--ha-space-3);
-      float: left;
-      color: var(--secondary-text-color);
+    const filter = this.filter?.trim();
+    if (!filter) {
+      return text;
     }
-    ha-svg-icon.update {
-      color: var(--warning-color);
+
+    const ranges = getHighlightRanges(text, filter, this.hass.locale.language);
+
+    if (!ranges.length) {
+      return text;
     }
-    ha-svg-icon.running,
-    ha-svg-icon.installed {
-      color: var(--success-color);
+
+    const parts: (string | TemplateResult)[] = [];
+    let lastIndex = 0;
+
+    for (const range of ranges) {
+      if (range.start > lastIndex) {
+        parts.push(text.slice(lastIndex, range.start));
+      }
+      parts.push(
+        html`<mark class="ha-highlight"
+          >${text.slice(range.start, range.end)}</mark
+        >`
+      );
+      lastIndex = range.end;
     }
-    ha-svg-icon.hassupdate,
-    ha-svg-icon.backup {
-      color: var(--state-icon-color);
+
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
     }
-    ha-svg-icon.not_available {
-      color: var(--error-color);
-    }
-    .title {
-      color: var(--primary-text-color);
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-    .addition {
-      color: var(--secondary-text-color);
-      overflow: hidden;
-      position: relative;
-      height: 2.4em;
-      line-height: var(--ha-line-height-condensed);
-    }
-    .icon_image img {
-      max-height: 40px;
-      max-width: 40px;
-      margin-top: var(--ha-space-1);
-      margin-right: var(--ha-space-4);
-      float: left;
-    }
-    .icon_image.stopped,
-    .icon_image.not_available {
-      filter: grayscale(1);
-    }
-    .dot {
-      position: absolute;
-      background-color: var(--warning-color);
-      width: 12px;
-      height: 12px;
-      top: var(--ha-space-2);
-      right: var(--ha-space-2);
-      border-radius: var(--ha-border-radius-circle);
-    }
-    .topbar {
-      position: absolute;
-      width: 100%;
-      height: 2px;
-      top: 0;
-      left: 0;
-      border-top-left-radius: 2px;
-      border-top-right-radius: 2px;
-    }
-    .topbar.installed {
-      background-color: var(--primary-color);
-    }
-    .topbar.update {
-      background-color: var(--accent-color);
-    }
-    .topbar.unavailable {
-      background-color: var(--error-color);
-    }
-  `;
+
+    return parts;
+  }
 }
 
 declare global {

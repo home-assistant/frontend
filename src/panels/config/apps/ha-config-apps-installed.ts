@@ -124,6 +124,7 @@ export class HaConfigAppsInstalled extends LitElement {
                           .hass=${this.hass}
                           .title=${addon.name}
                           .description=${addon.description}
+                          .filter=${this._filter}
                           available
                           .showTopbar=${addon.update_available}
                           topbarClass="update"

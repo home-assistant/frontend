@@ -195,7 +195,7 @@ export class HaConfigAppsAvailable extends LitElement {
                 .hass=${this.hass}
                 .repo=${repo}
                 .addons=${filteredAddons}
-                .filter=${filter!}
+                .filter=${filter}
               ></supervisor-apps-repository>
             `
           : nothing;
