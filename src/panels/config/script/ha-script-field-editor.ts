@@ -17,8 +17,7 @@ export default class HaScriptFieldEditor extends LitElement {
 
   @property() public key!: string;
 
-  @property({ attribute: false, type: Array }) public excludeKeys: string[] =
-    [];
+  @property({ attribute: false }) public excludeKeys: string[] = [];
 
   @property({ attribute: false }) public field!: Field;
 

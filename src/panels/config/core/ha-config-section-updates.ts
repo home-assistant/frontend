@@ -33,6 +33,7 @@ import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -161,9 +162,7 @@ class HaConfigSectionUpdates extends LitElement {
     this._supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
   }
 
-  private _handleOverflowAction(
-    ev: CustomEvent<{ item: { value: string } }>
-  ): void {
+  private _handleOverflowAction(ev: HaDropdownSelectEvent): void {
     if (ev.detail.item.value === "toggle_beta") {
       if (this._supervisorInfo!.channel === "stable") {
         showJoinBetaDialog(this, {

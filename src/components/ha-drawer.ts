@@ -4,6 +4,18 @@ import type { PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent } from "../common/dom/fire_event";
+
+declare global {
+  interface HASSDomEvents {
+    "hass-layout-transition": { active: boolean; reason?: string };
+  }
+  interface HTMLElementEventMap {
+    "hass-layout-transition": HASSDomEvent<
+      HASSDomEvents["hass-layout-transition"]
+    >;
+  }
+}
 
 const blockingElements = (document as any).$blockingElements;
 
@@ -14,6 +26,30 @@ export class HaDrawer extends DrawerBase {
   private _mc?: HammerManager;
 
   private _rtlStyle?: HTMLElement;
+
+  private _sidebarTransitionActive = false;
+
+  private _handleDrawerTransitionStart = (ev: TransitionEvent) => {
+    if (ev.propertyName !== "width" || this._sidebarTransitionActive) {
+      return;
+    }
+    this._sidebarTransitionActive = true;
+    fireEvent(window, "hass-layout-transition", {
+      active: true,
+      reason: "sidebar",
+    });
+  };
+
+  private _handleDrawerTransitionEnd = (ev: TransitionEvent) => {
+    if (ev.propertyName !== "width" || !this._sidebarTransitionActive) {
+      return;
+    }
+    this._sidebarTransitionActive = false;
+    fireEvent(window, "hass-layout-transition", {
+      active: false,
+      reason: "sidebar",
+    });
+  };
 
   protected createAdapter() {
     return {
@@ -63,6 +99,38 @@ export class HaDrawer extends DrawerBase {
     }
   }
 
+  protected firstUpdated() {
+    super.firstUpdated();
+    this.mdcRoot?.addEventListener(
+      "transitionstart",
+      this._handleDrawerTransitionStart
+    );
+    this.mdcRoot?.addEventListener(
+      "transitionend",
+      this._handleDrawerTransitionEnd
+    );
+    this.mdcRoot?.addEventListener(
+      "transitioncancel",
+      this._handleDrawerTransitionEnd
+    );
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.mdcRoot?.removeEventListener(
+      "transitionstart",
+      this._handleDrawerTransitionStart
+    );
+    this.mdcRoot?.removeEventListener(
+      "transitionend",
+      this._handleDrawerTransitionEnd
+    );
+    this.mdcRoot?.removeEventListener(
+      "transitioncancel",
+      this._handleDrawerTransitionEnd
+    );
+  }
+
   private async _setupSwipe() {
     const hammer = await import("../resources/hammer");
     this._mc = new hammer.Manager(document, {
@@ -90,6 +158,16 @@ export class HaDrawer extends DrawerBase {
         border-color: var(--divider-color, rgba(0, 0, 0, 0.12));
         inset-inline-start: 0 !important;
         inset-inline-end: initial !important;
+        transition-property: transform, width;
+        transition-duration:
+          var(--mdc-drawer-transition-duration, 0.2s),
+          var(--ha-animation-duration-normal);
+        transition-timing-function:
+          var(
+            --mdc-drawer-transition-timing-function,
+            cubic-bezier(0.4, 0, 0.2, 1)
+          ),
+          ease;
       }
       .mdc-drawer.mdc-drawer--modal.mdc-drawer--open {
         z-index: 200;
@@ -103,6 +181,15 @@ export class HaDrawer extends DrawerBase {
         direction: var(--direction);
         width: 100%;
         box-sizing: border-box;
+        transition:
+          padding-left var(--ha-animation-duration-normal) ease,
+          padding-inline-start var(--ha-animation-duration-normal) ease;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mdc-drawer,
+        .mdc-drawer-app-content {
+          transition: none;
+        }
       }
     `,
   ];

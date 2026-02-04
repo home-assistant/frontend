@@ -31,7 +31,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
 
   @property({ type: Boolean }) public selectable = false;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;

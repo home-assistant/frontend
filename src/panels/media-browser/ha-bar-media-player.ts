@@ -669,9 +669,18 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       );
       border-top: 1px solid var(--divider-color);
       margin-right: var(--safe-area-inset-right);
+      transition:
+        width var(--ha-animation-duration-normal) ease,
+        margin-left var(--ha-animation-duration-normal) ease,
+        margin-right var(--ha-animation-duration-normal) ease;
     }
     :host([narrow]) {
       margin-left: var(--safe-area-inset-left);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :host {
+        transition: none;
+      }
     }
 
     ha-slider {

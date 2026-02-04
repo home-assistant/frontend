@@ -1,24 +1,31 @@
-import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { mdiMenuDown } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { css, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
-import { debounce } from "../common/util/debounce";
-import { nextRender } from "../common/util/render-status";
+import memoizeOne from "memoize-one";
+import type { HomeAssistant } from "../types";
+import "./ha-attribute-icon";
+import "./ha-dropdown";
+import "./ha-dropdown-item";
 import "./ha-icon";
-import type { HaIcon } from "./ha-icon";
-import "./ha-ripple";
 import "./ha-svg-icon";
-import type { HaSvgIcon } from "./ha-svg-icon";
-import "./ha-menu";
+
+export interface SelectOption {
+  label: string;
+  value: string;
+  iconPath?: string;
+  icon?: string;
+  attributeIcon?: {
+    stateObj: HassEntity;
+    attribute: string;
+    attributeValue?: string;
+  };
+}
 
 @customElement("ha-control-select-menu")
-export class HaControlSelectMenu extends SelectBase {
-  @query(".select") protected mdcRoot!: HTMLElement;
-
-  @query(".select-anchor") protected anchorElement!: HTMLDivElement | null;
+export class HaControlSelectMenu extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, attribute: "show-arrow" })
   public showArrow = false;
@@ -26,95 +33,83 @@ export class HaControlSelectMenu extends SelectBase {
   @property({ type: Boolean, attribute: "hide-label" })
   public hideLabel = false;
 
-  @property() public options;
+  @property({ type: Boolean })
+  public disabled = false;
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (changedProps.get("options")) {
-      this.layoutOptions();
-      this.selectByValue(this.value);
-    }
-  }
+  @property({ type: Boolean })
+  public required = false;
+
+  @property()
+  public label?: string;
+
+  @property()
+  public value?: string;
+
+  @property({ attribute: false }) public options: SelectOption[] = [];
+
+  @query("button") private _triggerButton!: HTMLButtonElement;
 
   public override render() {
-    const classes = {
-      "select-disabled": this.disabled,
-      "select-required": this.required,
-      "select-invalid": !this.isUiValid,
-      "select-no-value": !this.selectedText,
-    };
-
-    const labelledby = this.label && !this.hideLabel ? "label" : undefined;
-    const labelAttribute =
-      this.label && this.hideLabel ? this.label : undefined;
+    if (this.disabled) {
+      return this._renderTrigger();
+    }
 
     return html`
-      <div class="select ${classMap(classes)}">
-        <input
-          class="formElement"
-          .name=${this.name}
-          .value=${this.value}
-          hidden
-          ?disabled=${this.disabled}
-          ?required=${this.required}
-        />
-        <!-- @ts-ignore -->
-        <div
-          class="select-anchor"
-          aria-autocomplete="none"
-          role="combobox"
-          aria-expanded=${this.menuOpen}
-          aria-invalid=${!this.isUiValid}
-          aria-haspopup="listbox"
-          aria-labelledby=${ifDefined(labelledby)}
-          aria-label=${ifDefined(labelAttribute)}
-          aria-required=${this.required}
-          aria-controls="listbox"
-          @focus=${this.onFocus}
-          @blur=${this.onBlur}
-          @click=${this.onClick}
-          @keydown=${this.onKeydown}
-        >
-          ${this._renderIcon()}
-          <div class="content">
-            ${this.hideLabel
-              ? nothing
-              : html`<p id="label" class="label">${this.label}</p>`}
-            ${this.selectedText
-              ? html`<p class="value">${this.selectedText}</p>`
-              : nothing}
-          </div>
-          ${this._renderArrow()}
-          <ha-ripple .disabled=${this.disabled}></ha-ripple>
-        </div>
-        ${this.renderMenu()}
-      </div>
+      <ha-dropdown placement="bottom" @wa-show=${this._showDropdown}>
+        ${this._renderTrigger()} ${this.options.map(this._renderOption)}
+      </ha-dropdown>
     `;
   }
 
-  protected override renderMenu() {
-    const classes = this.getMenuClasses();
-    return html`<ha-menu
-      innerRole="listbox"
-      wrapFocus
-      class=${classMap(classes)}
-      activatable
-      .fullwidth=${this.fixedMenuPosition ? false : !this.naturalMenuWidth}
-      .open=${this.menuOpen}
-      .anchor=${this.anchorElement}
-      .fixed=${this.fixedMenuPosition}
-      @selected=${this.onSelected}
-      @opened=${this.onOpened}
-      @closed=${this.onClosed}
-      @items-updated=${this.onItemsUpdated}
-      @keydown=${this.handleTypeahead}
+  private _renderTrigger() {
+    const selectedText = this.getValueObject(this.options, this.value)?.label;
+
+    const classes = {
+      "select-disabled": this.disabled,
+      "select-required": this.required,
+      "select-no-value": !selectedText,
+    };
+
+    return html`<button
+      ?disabled=${this.disabled}
+      slot="trigger"
+      class="select-anchor ${classMap(classes)}"
     >
-      ${this.renderMenuContent()}
-    </ha-menu>`;
+      ${this._renderIcon()}
+      <div class="content">
+        ${this.hideLabel
+          ? nothing
+          : html`<p id="label" class="label">${this.label}</p>`}
+        ${selectedText ? html`<p class="value">${selectedText}</p>` : nothing}
+      </div>
+      ${this._renderArrow()}
+    </button>`;
   }
 
+  private _renderOption = (option: SelectOption) =>
+    html`<ha-dropdown-item
+      .value=${option.value}
+      class=${this.value === option.value ? "selected" : ""}
+      >${option.iconPath
+        ? html`<ha-svg-icon slot="icon" .path=${option.iconPath}></ha-svg-icon>`
+        : option.icon
+          ? html`<ha-icon slot="icon" .icon=${option.icon}></ha-icon>`
+          : option.attributeIcon
+            ? html`<ha-attribute-icon
+                slot="icon"
+                .hass=${this.hass}
+                .stateObj=${option.attributeIcon.stateObj}
+                .attribute=${option.attributeIcon.attribute}
+                .attributeValue=${option.attributeIcon.attributeValue}
+              ></ha-attribute-icon>`
+            : nothing}
+      ${option.label}</ha-dropdown-item
+    >`;
+
   private _renderArrow() {
-    if (!this.showArrow) return nothing;
+    if (!this.showArrow) {
+      return nothing;
+    }
 
     return html`
       <div class="icon">
@@ -124,47 +119,42 @@ export class HaControlSelectMenu extends SelectBase {
   }
 
   private _renderIcon() {
-    const index = this.mdcFoundation?.getSelectedIndex();
-    const items = this.menuElement?.items ?? [];
-    const item = index != null ? items[index] : undefined;
+    const { iconPath, icon, attributeIcon } =
+      this.getValueObject(this.options, this.value) ?? {};
     const defaultIcon = this.querySelector("[slot='icon']");
-    const icon = (item?.querySelector("[slot='graphic']") ?? null) as
-      | HaSvgIcon
-      | HaIcon
-      | null;
-
-    if (!defaultIcon && !icon) {
-      return null;
-    }
 
     return html`
       <div class="icon">
-        ${icon && icon.localName === "ha-svg-icon" && "path" in icon
-          ? html`<ha-svg-icon .path=${icon.path}></ha-svg-icon>`
-          : icon && icon.localName === "ha-icon" && "icon" in icon
-            ? html`<ha-icon .path=${icon.icon}></ha-icon>`
-            : html`<slot name="icon"></slot>`}
+        ${iconPath
+          ? html`<ha-svg-icon slot="icon" .path=${iconPath}></ha-svg-icon>`
+          : icon
+            ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
+            : attributeIcon
+              ? html`<ha-attribute-icon
+                  slot="icon"
+                  .hass=${this.hass}
+                  .stateObj=${attributeIcon.stateObj}
+                  .attribute=${attributeIcon.attribute}
+                  .attributeValue=${attributeIcon.attributeValue}
+                ></ha-attribute-icon>`
+              : defaultIcon
+                ? html`<slot name="icon"></slot>`
+                : nothing}
       </div>
     `;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener("translations-updated", this._translationsUpdated);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener(
-      "translations-updated",
-      this._translationsUpdated
+  private _showDropdown() {
+    this.style.setProperty(
+      "--control-select-menu-width",
+      `${this._triggerButton.offsetWidth}px`
     );
   }
 
-  private _translationsUpdated = debounce(async () => {
-    await nextRender();
-    this.layoutOptions();
-  }, 500);
+  private getValueObject = memoizeOne(
+    (options: SelectOption[], value?: string) =>
+      options.find((option) => option.value === value)
+  );
 
   static override styles = [
     css`
@@ -186,6 +176,8 @@ export class HaControlSelectMenu extends SelectBase {
         -webkit-tap-highlight-color: transparent;
       }
       .select-anchor {
+        border: none;
+        text-align: left;
         height: var(--control-select-menu-height);
         padding: var(--control-select-menu-padding);
         overflow: hidden;
@@ -211,6 +203,12 @@ export class HaControlSelectMenu extends SelectBase {
         font-weight: var(--ha-font-weight-normal);
         letter-spacing: 0.25px;
       }
+      .select-anchor:hover {
+        --control-select-menu-background-color: var(
+          --ha-color-on-neutral-quiet
+        );
+      }
+
       .content {
         display: flex;
         flex-direction: column;
@@ -230,14 +228,17 @@ export class HaControlSelectMenu extends SelectBase {
       }
 
       .label {
-        font-size: 0.85em;
+        font-size: var(--ha-font-size-s);
         letter-spacing: 0.4px;
       }
-
       .select-no-value .label {
         font-size: inherit;
         line-height: inherit;
         letter-spacing: inherit;
+      }
+
+      .content .value {
+        font-size: var(--ha-font-size-m);
       }
 
       .select-anchor:focus-visible {
@@ -258,9 +259,22 @@ export class HaControlSelectMenu extends SelectBase {
         opacity: var(--control-select-menu-background-opacity);
       }
 
-      .select-disabled .select-anchor {
+      .select-disabled.select-anchor {
         cursor: not-allowed;
         color: var(--disabled-color);
+      }
+      ha-dropdown-item.selected {
+        font-weight: var(--ha-font-weight-medium);
+        color: var(--primary-color);
+        background-color: var(--ha-color-fill-primary-quiet-resting);
+        --icon-primary-color: var(--primary-color);
+      }
+      ha-dropdown-item.selected:hover {
+        background-color: var(--ha-color-fill-primary-quiet-hover);
+      }
+
+      ha-dropdown::part(menu) {
+        min-width: var(--control-select-menu-width);
       }
     `,
   ];

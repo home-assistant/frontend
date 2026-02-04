@@ -30,7 +30,7 @@ class HaPanelDevStateRenderer extends LitElement {
   @property({ type: Boolean, attribute: "virtualize", reflect: true })
   public virtualize = true;
 
-  @property({ type: Boolean, attribute: false })
+  @property({ attribute: false })
   public showAttributes = true;
 
   protected willUpdate(changedProps: PropertyValues<this>) {

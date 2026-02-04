@@ -18,7 +18,6 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { saveConfig } from "../../../data/lovelace/config/types";
@@ -45,6 +44,7 @@ import {
 } from "../editor/lovelace-path";
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import type { Lovelace, LovelaceCard } from "../types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -246,7 +246,7 @@ export class HuiCardOptions extends LitElement {
     ];
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {

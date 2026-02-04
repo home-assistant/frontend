@@ -80,7 +80,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         )}
       >
         <div>
-          ${this._params.dashboard && !this._params.dashboard.id
+          ${this._params.dashboard?.mode === "yaml"
             ? this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
               )
@@ -97,7 +97,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         </div>
         ${this._params.urlPath
           ? html`
-              ${this._params.dashboard?.id
+              ${this._params.dashboard?.mode === "storage"
                 ? html`
                     <ha-button
                       slot="secondaryAction"
@@ -123,7 +123,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           dialogInitialFocus
         >
           ${this._params.urlPath
-            ? this._params.dashboard?.id
+            ? this._params.dashboard?.mode === "storage"
               ? this.hass.localize(
                   "ui.panel.config.lovelace.dashboards.detail.update"
                 )
@@ -232,8 +232,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   private async _updateDashboard() {
-    if (this._params?.urlPath && !this._params.dashboard?.id) {
+    if (this._params?.urlPath && this._params.dashboard?.mode === "yaml") {
       this.closeDialog();
+      return;
     }
     this._submitting = true;
     try {

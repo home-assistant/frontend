@@ -16,7 +16,6 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
@@ -45,7 +44,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
@@ -97,13 +95,21 @@ import { configSections } from "../ha-panel-config";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import {
+  getAreaTableColumn,
+  getFloorTableColumn,
+  getLabelsTableColumn,
+  getCreatedAtTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
   battery_entity?: [string | undefined, string | undefined];
-  label_entries: EntityRegistryEntry[];
+  label_entries: LabelRegistryEntry[];
 }
 
 @customElement("ha-config-devices-dashboard")
@@ -450,7 +456,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           (lbl) => labelReg!.find((label) => label.label_id === lbl)!
         );
 
-        let floorName = "—";
+        let floorName;
         if (
           device.area_id &&
           areas[device.area_id]?.floor_id &&
@@ -556,22 +562,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : nothing}
         `,
       },
-      area: {
-        title: localize("ui.panel.config.devices.data_table.area"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        minWidth: "120px",
-        template: (device) => device.area || "—",
-      },
-      floor: {
-        title: localize("ui.panel.config.devices.data_table.floor"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        minWidth: "120px",
-        defaultHidden: true,
-      },
+      area: getAreaTableColumn(localize),
+      floor: getFloorTableColumn(localize),
       integration: {
         title: localize("ui.panel.config.devices.data_table.integration"),
         sortable: true,
@@ -629,34 +621,8 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : "—";
         },
       },
-      created_at: {
-        title: localize("ui.panel.config.generic.headers.created_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (entry) =>
-          entry.created_at
-            ? formatShortDateTime(
-                new Date(entry.created_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
-      modified_at: {
-        title: localize("ui.panel.config.generic.headers.modified_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (entry) =>
-          entry.modified_at
-            ? formatShortDateTime(
-                new Date(entry.modified_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
+      created_at: getCreatedAtTableColumn(localize, this.hass),
+      modified_at: getModifiedAtTableColumn(localize, this.hass),
       disabled_by: {
         title: localize("ui.panel.config.devices.picker.state"),
         type: "icon",
@@ -685,13 +651,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
               `
             : "—",
       },
-      labels: {
-        title: "",
-        hidden: true,
-        filterable: true,
-        template: (device) =>
-          device.label_entries.map((lbl) => lbl.name).join(" "),
-      },
+      labels: getLabelsTableColumn(),
     } as DataTableColumnContainer<DeviceItem>;
   });
 
@@ -1076,7 +1036,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _handleBulkArea(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleBulkArea(ev: HaDropdownSelectEvent) {
     const area = ev.detail.item.value;
 
     if (area === "area_create") {
@@ -1126,7 +1086,7 @@ ${rejected
     });
   };
 
-  private async _handleBulkLabel(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleBulkLabel(ev: HaDropdownSelectEvent) {
     const label = ev.detail.item.value;
 
     if (label === "label_create") {
@@ -1253,7 +1213,7 @@ ${rejected
     this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
-  private _handleBulkAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleBulkAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {
@@ -1295,6 +1255,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
