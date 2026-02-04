@@ -10,7 +10,6 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -23,6 +22,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import "./hui-view-header-settings-editor";
 import type { EditViewHeaderDialogParams } from "./show-edit-view-header-dialog";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("hui-dialog-edit-view-header")
 export class HuiDialogEditViewHeader extends LitElement {
@@ -144,7 +144,7 @@ export class HuiDialogEditViewHeader extends LitElement {
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (action === "toggle-mode") {

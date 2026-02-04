@@ -8,7 +8,6 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
@@ -25,6 +24,7 @@ import "../../ha-config-section";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
 import "./cloud-login";
 import type { CloudLogin } from "./cloud-login";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("cloud-login-panel")
 export class CloudLoginPanel extends LitElement {
@@ -167,7 +167,7 @@ export class CloudLoginPanel extends LitElement {
     fireEvent(this, "flash-message-changed", { value: "" });
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     switch (value) {
       case "reset":

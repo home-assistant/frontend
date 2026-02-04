@@ -8,7 +8,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-form/ha-form";
 import type {
   AssistPipeline,
@@ -24,6 +23,7 @@ import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./assist-pipeline-detail/assist-pipeline-detail-wakeword";
 import "./debug/assist-render-pipeline-events";
 import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
 export class DialogVoiceAssistantPipelineDetail extends LitElement {
@@ -241,7 +241,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
     `;
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (action === "show_wake_word") {

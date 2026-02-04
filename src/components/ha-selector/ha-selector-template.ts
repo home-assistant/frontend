@@ -224,6 +224,7 @@ ${typeof this._templateResult.result === "object"
       margin-bottom: 0;
       direction: ltr;
       border-radius: var(--ha-border-radius-sm);
+      overflow-wrap: break-word;
     }
   `;
 }

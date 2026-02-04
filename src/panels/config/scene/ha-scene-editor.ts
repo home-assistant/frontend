@@ -37,7 +37,6 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
@@ -67,19 +66,20 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import {
-  showSceneSaveDialog,
-  type EntityRegistryUpdate,
-} from "./scene-save-dialog/show-dialog-scene-save";
-import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
+import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "../ha-config-section";
+import {
+  showSceneSaveDialog,
+  type EntityRegistryUpdate,
+} from "./scene-save-dialog/show-dialog-scene-save";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface DeviceEntities {
   id: string;
@@ -654,7 +654,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     if (!action) {
       return;

@@ -58,6 +58,7 @@ import {
 } from "./show-dialog-area-registry-detail";
 import { showAreasFloorsOrderDialog } from "./show-dialog-areas-floors-order";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -224,9 +225,8 @@ export class HaConfigAreasDashboard extends LitElement {
                             "ui.panel.config.areas.picker.floor.edit_floor"
                           )}</ha-dropdown-item
                         >
-                        <ha-dropdown-item value="delete" class="warning"
+                        <ha-dropdown-item value="delete" variant="danger"
                           ><ha-svg-icon
-                            class="warning"
                             .path=${mdiDelete}
                             slot="icon"
                           ></ha-svg-icon
@@ -535,7 +535,7 @@ export class HaConfigAreasDashboard extends LitElement {
     }, time);
   }
 
-  private _handleFloorAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleFloorAction(ev: HaDropdownSelectEvent) {
     const floor = (ev.currentTarget as any).floor;
     const action = ev.detail.item.value;
     switch (action) {
@@ -551,9 +551,7 @@ export class HaConfigAreasDashboard extends LitElement {
     }
   }
 
-  private _handleUnassignedAreasAction(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private _handleUnassignedAreasAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     if (action === "reorder") {
       this._showReorderDialog();
@@ -726,9 +724,6 @@ export class HaConfigAreasDashboard extends LitElement {
       justify-content: space-between;
       align-items: center;
       overflow-wrap: anywhere;
-    }
-    .warning {
-      color: var(--error-color);
     }
   `;
 }

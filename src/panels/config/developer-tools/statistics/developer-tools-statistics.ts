@@ -35,6 +35,8 @@ import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import type { HaMdMenu } from "../../../../components/ha-md-menu";
 import "../../../../components/ha-md-menu-item";
+import "../../../../components/ha-md-menu";
+import "../../../../components/ha-md-divider";
 import "../../../../components/search-input-outlined";
 import type {
   StatisticsMetaData,

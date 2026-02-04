@@ -757,7 +757,7 @@
       "config-entry-picker": {
         "config_entry": "Integration"
       },
-      "coversation-agent-picker": {
+      "conversation-agent-picker": {
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
@@ -1354,6 +1354,7 @@
         "dashboards": "[%key:ui::panel::config::dashboard::dashboards::main%]",
         "related": "Related",
         "views": "Views",
+        "area_settings": "{area} - Settings",
         "other_routes": "Other routes"
       }
     },
@@ -2190,7 +2191,7 @@
           "on_any_page": "On any page",
           "on_pages_with_tables": "On pages with tables",
           "search": "Quick search",
-          "search_command": "search command",
+          "search_command": "search commands",
           "search_entities": "search entities",
           "search_devices": "search devices",
           "search_in_table": "to search in tables"
@@ -2312,6 +2313,23 @@
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page"
+        },
+        "new_overview_dialog": {
+          "title": "Welcome to your new overview",
+          "description": "The overview dashboard has been redesigned to give you a better experience managing your smart home.",
+          "whats_new": "What's new",
+          "automatic_organization": "Automatic organization",
+          "automatic_organization_description": "Your devices are now automatically organized by area and floor.",
+          "favorites": "Favorites",
+          "favorites_description": "Pin your most used entities to the top for quick access.",
+          "existing_dashboards": "Your existing dashboards",
+          "existing_dashboards_description": "Your manual dashboards are still available in the sidebar. Miss the old format? You can create a new dashboard using the \"Overview (legacy)\" template in {dashboard_settings} and set it as default.",
+          "dashboard_settings": "dashboard settings",
+          "ok_understood": "OK, understood"
+        },
+        "banner": {
+          "welcome_message": "Welcome to the new overview dashboard.",
+          "learn_more": "Learn more"
         }
       },
       "my": {
@@ -2328,6 +2346,13 @@
       "config": {
         "generic": {
           "headers": {
+            "entity_id": "Entity ID",
+            "domain": "Domain",
+            "area": "Area",
+            "floor": "Floor",
+            "category": "Category",
+            "assistants": "Assistants",
+            "editable": "Editable",
             "modified_at": "Modified",
             "created_at": "Created",
             "actions": "Actions"
@@ -3470,6 +3495,10 @@
                 "title": "Debug connection",
                 "description": "Observe requests to the server and responses from the server in browser console."
               },
+              "disable_view_transition": {
+                "title": "Disable view transitions",
+                "description": "Disable animated view transitions to prevent browser crash when using browser dev tools."
+              },
               "entity_diagnostic": {
                 "title": "Entity diagnostic",
                 "description": "Select an entity to copy diagnostic details.",
@@ -3959,11 +3988,7 @@
             "headers": {
               "icon": "Icon",
               "name": "Name",
-              "entity_id": "Entity ID",
-              "type": "Type",
-              "editable": "Editable",
-              "category": "Category",
-              "area": "Area"
+              "type": "Type"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -4251,6 +4276,9 @@
             "confirm_delete_text": "{url} will be permanently deleted.",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal. Do you want to refresh now?",
+            "reload_resources": "[%key:ui::panel::lovelace::menu::reload_resources%]",
+            "reload_refresh_header": "[%key:ui::panel::lovelace::reload_resources::refresh_header%]",
+            "reload_refresh_body": "[%key:ui::panel::lovelace::reload_resources::refresh_body%]",
             "cant_edit_yaml": "Your resources are in YAML mode, therefore you cannot manage them through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
@@ -4417,10 +4445,6 @@
             "headers": {
               "icon": "Icon",
               "name": "Name",
-              "entity_id": "Entity ID",
-              "area": "Area",
-              "domain": "Domain",
-              "assistants": "Assistants",
               "aliases": "Aliases",
               "remove": "[%key:ui::common::remove%]"
             },
@@ -4590,8 +4614,6 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State",
-              "category": "Category",
-              "area": "Area",
               "icon": "Icon"
             },
             "bulk_action": "Action",
@@ -5611,8 +5633,6 @@
             "headers": {
               "name": "Name",
               "state": "State",
-              "category": "Category",
-              "area": "Area",
               "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
@@ -5738,9 +5758,6 @@
               "state": "State",
               "name": "Name",
               "last_activated": "Last activated",
-              "category": "Category",
-              "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
-              "area": "Area",
               "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
@@ -6134,8 +6151,6 @@
             "device": "Device",
             "manufacturer": "Manufacturer",
             "model": "Model",
-            "area": "Area",
-            "floor": "Floor",
             "integration": "Integration",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -6193,10 +6208,8 @@
             "headers": {
               "state_icon": "State icon",
               "entity": "Entity",
-              "entity_id": "Entity ID",
               "device": "Device",
               "integration": "Integration",
-              "area": "Area",
               "disabled_by": "Disabled by",
               "status": "Status",
               "domain": "Domain",
@@ -7885,7 +7898,7 @@
             "areas": "Areas",
             "other_areas": "Other areas",
             "devices": "Devices",
-            "unamed_device": "Unnamed device",
+            "unnamed_device": "Unnamed device",
             "others": "Others",
             "scenes": "Scenes",
             "automations": "Automations",

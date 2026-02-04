@@ -50,6 +50,7 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 @customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
@@ -476,9 +477,7 @@ class HaPanelHistory extends LitElement {
     navigate(`/history?${createSearchParam(params)}`, { replace: true });
   }
 
-  private async _handleMenuAction(
-    ev: CustomEvent<{ item: { value: string } }>
-  ) {
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "download":

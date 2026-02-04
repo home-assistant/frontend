@@ -7,6 +7,7 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-debug-connection-row";
+import "./ha-debug-disable-view-transition-row";
 import {
   getStatisticMetadata,
   validateStatistics,
@@ -15,6 +16,7 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { showToast } from "../../../../util/toast";
 import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 
 @customElement("developer-tools-debug")
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {
@@ -36,6 +38,10 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
             .hass=${this.hass}
             .narrow=${this.narrow}
           ></ha-debug-connection-row>
+          <ha-debug-disable-view-transition-row
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-debug-disable-view-transition-row>
         </ha-card>
         <ha-card
           .header=${this.hass.localize(
@@ -82,8 +88,12 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
         };
       }
     }
-
-    const entity = await getExtendedEntityRegistryEntry(this.hass, id);
+    let entity: ExtEntityRegistryEntry | undefined;
+    try {
+      entity = await getExtendedEntityRegistryEntry(this.hass, id);
+    } catch {
+      // not in the registry
+    }
     const device = entity?.device_id && this.hass.devices[entity.device_id];
 
     const data = {

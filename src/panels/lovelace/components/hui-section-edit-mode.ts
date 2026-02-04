@@ -18,9 +18,9 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false, type: Number }) public index!: number;
+  @property({ attribute: false }) public index!: number;
 
-  @property({ attribute: false, type: Number }) public viewIndex!: number;
+  @property({ attribute: false }) public viewIndex!: number;
 
   protected render(): TemplateResult {
     return html`
