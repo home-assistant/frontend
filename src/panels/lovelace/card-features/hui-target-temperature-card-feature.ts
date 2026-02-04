@@ -273,7 +273,7 @@ class HuiTargetTemperatureCardFeature
           >
           </ha-control-number-input>
           <ha-control-number-input
-            .input-style=${inputStyle}
+            .inputStyle=${inputStyle}
             .formatOptions=${options}
             .target=${"high"}
             .value=${this._targetTemperature.high}

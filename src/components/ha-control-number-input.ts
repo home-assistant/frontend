@@ -1,7 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import "./ha-control-slider";
 import "./ha-control-number-buttons";
 import type { FrontendLocaleData } from "../data/translation";
@@ -24,6 +23,9 @@ export class HaControlNumberInput extends LitElement {
 
   @property() public unit?: string;
 
+  @property({ attribute: false })
+  public formatOptions: Intl.NumberFormatOptions = {};
+
   @property({ attribute: "input-style" })
   public inputStyle?: "buttons" | "slider";
 
@@ -35,8 +37,10 @@ export class HaControlNumberInput extends LitElement {
           .min=${this.min}
           .max=${this.max}
           .step=${this.step}
+          .formatOptions=${this.formatOptions}
           .disabled=${this.disabled}
           .unit=${this.unit}
+          .label=${this.label}
           .locale=${this.locale}
         ></ha-control-number-buttons>
       `;
@@ -49,6 +53,7 @@ export class HaControlNumberInput extends LitElement {
         .max=${this.max}
         .step=${this.step}
         .disabled=${this.disabled}
+        .label=${this.label}
         .unit=${this.unit}
         .locale=${this.locale}
       ></ha-control-slider>
