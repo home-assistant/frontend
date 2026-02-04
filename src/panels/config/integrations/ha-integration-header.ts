@@ -4,7 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import { getHighlightRanges } from "../../../common/string/highlight";
+import { renderHighlightedText } from "../../../common/string/highlight";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
 import { haStyleHighlight } from "../../../resources/styles";
@@ -52,7 +52,11 @@ export class HaIntegrationHeader extends LitElement {
             role="heading"
             aria-level="1"
           >
-            ${this._renderHighlightedText(domainName)}
+            ${renderHighlightedText(
+              domainName,
+              this.filter,
+              this.hass.locale.language
+            )}
           </div>
           ${this.error
             ? html`
@@ -86,39 +90,6 @@ export class HaIntegrationHeader extends LitElement {
 
   private _onImageError(ev) {
     ev.target.style.visibility = "hidden";
-  }
-
-  private _renderHighlightedText(text: string) {
-    const filter = this.filter?.trim();
-    if (!filter) {
-      return text;
-    }
-
-    const ranges = getHighlightRanges(text, filter, this.hass.locale.language);
-    if (!ranges.length) {
-      return text;
-    }
-
-    const parts: (string | TemplateResult)[] = [];
-    let lastIndex = 0;
-
-    for (const range of ranges) {
-      if (range.start > lastIndex) {
-        parts.push(text.slice(lastIndex, range.start));
-      }
-      parts.push(
-        html`<mark class="ha-highlight"
-          >${text.slice(range.start, range.end)}</mark
-        >`
-      );
-      lastIndex = range.end;
-    }
-
-    if (lastIndex < text.length) {
-      parts.push(text.slice(lastIndex));
-    }
-
-    return parts;
   }
 
   static styles = [

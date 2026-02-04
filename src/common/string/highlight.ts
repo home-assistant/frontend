@@ -1,3 +1,5 @@
+import type { TemplateResult } from "lit";
+import { html } from "lit";
 import { stripDiacritics } from "./strip-diacritics";
 
 export interface HighlightRange {
@@ -101,4 +103,53 @@ export const getHighlightRanges = (
   }
 
   return merged;
+};
+
+export type HighlightedText =
+  | string
+  | TemplateResult
+  | (string | TemplateResult)[]
+  | null
+  | undefined;
+
+export const renderHighlightedText = (
+  text: string | null | undefined,
+  query: string | null | undefined,
+  language?: string
+): HighlightedText => {
+  if (!text) {
+    return text;
+  }
+
+  const filter = (query ?? "").trim();
+  if (!filter) {
+    return text;
+  }
+
+  const ranges = getHighlightRanges(text, filter, language);
+
+  if (!ranges.length) {
+    return text;
+  }
+
+  const parts: (string | TemplateResult)[] = [];
+  let lastIndex = 0;
+
+  for (const range of ranges) {
+    if (range.start > lastIndex) {
+      parts.push(text.slice(lastIndex, range.start));
+    }
+    parts.push(
+      html`<mark class="ha-highlight"
+        >${text.slice(range.start, range.end)}</mark
+      >`
+    );
+    lastIndex = range.end;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
 };

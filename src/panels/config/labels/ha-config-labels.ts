@@ -8,13 +8,13 @@ import {
   mdiRobot,
   mdiShape,
 } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
-import { getHighlightRanges } from "../../../common/string/highlight";
+import { renderHighlightedText } from "../../../common/string/highlight";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -127,10 +127,20 @@ export class HaConfigLabels extends LitElement {
         template: narrow
           ? undefined
           : (label) => html`
-              <div>${this._renderHighlightedText(label.name)}</div>
+              <div>
+                ${renderHighlightedText(
+                  label.name,
+                  this._filter,
+                  this.hass.locale.language
+                )}
+              </div>
               ${label.description
                 ? html`<div class="secondary">
-                    ${this._renderHighlightedText(label.description)}
+                    ${renderHighlightedText(
+                      label.description,
+                      this._filter,
+                      this.hass.locale.language
+                    )}
                   </div>`
                 : nothing}
             `,
@@ -373,44 +383,6 @@ export class HaConfigLabels extends LitElement {
   private _handleColumnsChanged(ev: CustomEvent) {
     this._activeColumnOrder = ev.detail.columnOrder;
     this._activeHiddenColumns = ev.detail.hiddenColumns;
-  }
-
-  private _renderHighlightedText(text?: string | null) {
-    if (!text) {
-      return text;
-    }
-
-    const filter = this._filter.trim();
-    if (!filter) {
-      return text;
-    }
-
-    const ranges = getHighlightRanges(text, filter, this.hass.locale.language);
-
-    if (!ranges.length) {
-      return text;
-    }
-
-    const parts: (string | TemplateResult)[] = [];
-    let lastIndex = 0;
-
-    for (const range of ranges) {
-      if (range.start > lastIndex) {
-        parts.push(text.slice(lastIndex, range.start));
-      }
-      parts.push(
-        html`<mark class="ha-highlight"
-          >${text.slice(range.start, range.end)}</mark
-        >`
-      );
-      lastIndex = range.end;
-    }
-
-    if (lastIndex < text.length) {
-      parts.push(text.slice(lastIndex));
-    }
-
-    return parts;
   }
 }
 

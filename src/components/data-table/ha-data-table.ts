@@ -16,7 +16,7 @@ import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
-import { getHighlightRanges } from "../../common/string/highlight";
+import { renderHighlightedText } from "../../common/string/highlight";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
@@ -697,32 +697,7 @@ export class HaDataTable extends LitElement {
     }
 
     const text = String(value);
-    const ranges = getHighlightRanges(text, filter, this.hass.locale.language);
-
-    if (!ranges.length) {
-      return text;
-    }
-
-    const parts: Array<string | TemplateResult> = [];
-    let lastIndex = 0;
-
-    for (const range of ranges) {
-      if (range.start > lastIndex) {
-        parts.push(text.slice(lastIndex, range.start));
-      }
-      parts.push(
-        html`<mark class="ha-highlight"
-          >${text.slice(range.start, range.end)}</mark
-        >`
-      );
-      lastIndex = range.end;
-    }
-
-    if (lastIndex < text.length) {
-      parts.push(text.slice(lastIndex));
-    }
-
-    return parts;
+    return renderHighlightedText(text, filter, this.hass.locale.language);
   }
 
   private async _sortFilterData() {

@@ -1,7 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { getHighlightRanges } from "../../../common/string/highlight";
+import { renderHighlightedText } from "../../../common/string/highlight";
 import {
   domainToName,
   type IntegrationManifest,
@@ -44,11 +44,19 @@ export class HaIntegrationActionCard extends LitElement {
             @error=${this._onImageError}
             @load=${this._onImageLoad}
           />
-          <h2>${this._renderHighlightedText(this.label)}</h2>
+          <h2>
+            ${renderHighlightedText(
+              this.label,
+              this.filter,
+              this.hass.locale.language
+            )}
+          </h2>
           <h3>
-            ${this._renderHighlightedText(
+            ${renderHighlightedText(
               this.localizedDomainName ||
-                domainToName(this.hass.localize, this.domain, this.manifest)
+                domainToName(this.hass.localize, this.domain, this.manifest),
+              this.filter,
+              this.hass.locale.language
             )}
           </h3>
         </div>
@@ -65,39 +73,6 @@ export class HaIntegrationActionCard extends LitElement {
 
   private _onImageError(ev) {
     ev.target.style.visibility = "hidden";
-  }
-
-  private _renderHighlightedText(text: string) {
-    const filter = this.filter?.trim();
-    if (!filter) {
-      return text;
-    }
-
-    const ranges = getHighlightRanges(text, filter, this.hass.locale.language);
-    if (!ranges.length) {
-      return text;
-    }
-
-    const parts: (string | TemplateResult)[] = [];
-    let lastIndex = 0;
-
-    for (const range of ranges) {
-      if (range.start > lastIndex) {
-        parts.push(text.slice(lastIndex, range.start));
-      }
-      parts.push(
-        html`<mark class="ha-highlight"
-          >${text.slice(range.start, range.end)}</mark
-        >`
-      );
-      lastIndex = range.end;
-    }
-
-    if (lastIndex < text.length) {
-      parts.push(text.slice(lastIndex));
-    }
-
-    return parts;
   }
 
   static styles = [

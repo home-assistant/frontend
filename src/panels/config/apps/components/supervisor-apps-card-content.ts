@@ -2,7 +2,7 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { getHighlightRanges } from "../../../../common/string/highlight";
+import { renderHighlightedText } from "../../../../common/string/highlight";
 import "../../../../components/ha-svg-icon";
 import { haStyleHighlight } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -56,9 +56,19 @@ class SupervisorAppsCardContent extends LitElement {
             ></ha-svg-icon>
           `}
       <div>
-        <div class="title">${this._renderHighlightedText(this.title)}</div>
+        <div class="title">
+          ${renderHighlightedText(
+            this.title,
+            this.filter,
+            this.hass.locale.language
+          )}
+        </div>
         <div class="addition">
-          ${this._renderHighlightedText(this.description)}
+          ${renderHighlightedText(
+            this.description,
+            this.filter,
+            this.hass.locale.language
+          )}
           ${
             /* treat as available when undefined */
             this.available === false ? " (Not available)" : ""
@@ -149,44 +159,6 @@ class SupervisorAppsCardContent extends LitElement {
       }
     `,
   ];
-
-  private _renderHighlightedText(text?: string) {
-    if (!text) {
-      return text;
-    }
-
-    const filter = this.filter?.trim();
-    if (!filter) {
-      return text;
-    }
-
-    const ranges = getHighlightRanges(text, filter, this.hass.locale.language);
-
-    if (!ranges.length) {
-      return text;
-    }
-
-    const parts: (string | TemplateResult)[] = [];
-    let lastIndex = 0;
-
-    for (const range of ranges) {
-      if (range.start > lastIndex) {
-        parts.push(text.slice(lastIndex, range.start));
-      }
-      parts.push(
-        html`<mark class="ha-highlight"
-          >${text.slice(range.start, range.end)}</mark
-        >`
-      );
-      lastIndex = range.end;
-    }
-
-    if (lastIndex < text.length) {
-      parts.push(text.slice(lastIndex));
-    }
-
-    return parts;
-  }
 }
 
 declare global {
