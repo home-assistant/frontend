@@ -1,187 +1,209 @@
-import { SelectBase } from "@material/mwc-select/mwc-select-base";
-import { styles } from "@material/mwc-select/mwc-select.css";
-import { mdiClose } from "@mdi/js";
-import { css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { debounce } from "../common/util/debounce";
-import { nextRender } from "../common/util/render-status";
-import "./ha-icon-button";
-import "./ha-menu";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../common/dom/fire_event";
+import "./ha-dropdown";
+import "./ha-dropdown-item";
+import "./ha-picker-field";
+import type { HaPickerField } from "./ha-picker-field";
+import "./ha-svg-icon";
+
+export interface HaSelectOption {
+  value: string;
+  label?: string;
+  secondary?: string;
+  iconPath?: string;
+  disabled?: boolean;
+}
 
 @customElement("ha-select")
-export class HaSelect extends SelectBase {
-  // @ts-ignore
-  @property({ type: Boolean }) public icon = false;
+export class HaSelect extends LitElement {
+  @property({ type: Boolean }) public clearable = false;
 
-  @property({ type: Boolean, reflect: true }) public clearable = false;
+  @property({ attribute: false }) public options?: HaSelectOption[] | string[];
 
-  @property({ attribute: "inline-arrow", type: Boolean })
-  public inlineArrow = false;
+  @property() public label?: string;
 
-  @property() public options;
+  @property() public helper?: string;
+
+  @property() public value?: string;
+
+  @property({ type: Boolean }) public required = false;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @state() private _opened = false;
+
+  @query("ha-picker-field") private _triggerField!: HaPickerField;
+
+  private _getValueLabel = memoizeOne(
+    (
+      options: HaSelectOption[] | string[] | undefined,
+      value: string | undefined
+    ) => {
+      if (!options || !value) {
+        return value;
+      }
+
+      for (const option of options) {
+        if (
+          (typeof option === "string" && option === value) ||
+          (typeof option !== "string" && option.value === value)
+        ) {
+          return typeof option === "string"
+            ? option
+            : option.label || option.value;
+        }
+      }
+
+      return value;
+    }
+  );
 
   protected override render() {
+    if (this.disabled) {
+      return this._renderField();
+    }
+
     return html`
-      ${super.render()}
-      ${this.clearable && !this.required && !this.disabled && this.value
-        ? html`<ha-icon-button
-            label="clear"
-            @click=${this._clearValue}
-            .path=${mdiClose}
-          ></ha-icon-button>`
-        : nothing}
+      <ha-dropdown
+        placement="bottom"
+        @wa-select=${this._handleSelect}
+        @wa-show=${this._handleShow}
+        @wa-hide=${this._handleHide}
+      >
+        ${this._renderField()}
+        ${this.options
+          ? this.options.map(
+              (option) => html`
+                <ha-dropdown-item
+                  .value=${typeof option === "string" ? option : option.value}
+                  .disabled=${typeof option === "string"
+                    ? false
+                    : (option.disabled ?? false)}
+                  class=${this.value ===
+                  (typeof option === "string" ? option : option.value)
+                    ? "selected"
+                    : ""}
+                >
+                  ${option.iconPath
+                    ? html`<ha-svg-icon
+                        slot="icon"
+                        .path=${option.iconPath}
+                      ></ha-svg-icon>`
+                    : nothing}
+                  <div class="content">
+                    ${typeof option === "string"
+                      ? option
+                      : option.label || option.value}
+                    ${option.secondary
+                      ? html`<div class="secondary">${option.secondary}</div>`
+                      : nothing}
+                  </div>
+                </ha-dropdown-item>
+              `
+            )
+          : html`<slot></slot>`}
+      </ha-dropdown>
     `;
   }
 
-  protected override renderMenu() {
-    const classes = this.getMenuClasses();
-    return html`<ha-menu
-      innerRole="listbox"
-      wrapFocus
-      class=${classMap(classes)}
-      activatable
-      .fullwidth=${this.fixedMenuPosition ? false : !this.naturalMenuWidth}
-      .open=${this.menuOpen}
-      .anchor=${this.anchorElement}
-      .fixed=${this.fixedMenuPosition}
-      @selected=${this.onSelected}
-      @opened=${this.onOpened}
-      @closed=${this.onClosed}
-      @items-updated=${this.onItemsUpdated}
-      @keydown=${this.handleTypeahead}
-    >
-      ${this.renderMenuContent()}
-    </ha-menu>`;
+  private _renderField() {
+    const valueLabel = this._getValueLabel(this.options, this.value);
+
+    return html`
+      <ha-picker-field
+        slot="trigger"
+        type="button"
+        class=${this._opened ? "opened" : ""}
+        compact
+        aria-label=${ifDefined(this.label)}
+        @clear=${this._clearValue}
+        .label=${this.label}
+        .helper=${this.helper}
+        .value=${valueLabel}
+        .required=${this.required}
+        .disabled=${this.disabled}
+        .hideClearIcon=${!this.clearable ||
+        this.required ||
+        this.disabled ||
+        !this.value}
+      >
+      </ha-picker-field>
+    `;
   }
 
-  protected override renderLeadingIcon() {
-    if (!this.icon) {
-      return nothing;
+  private _handleSelect(ev: CustomEvent<{ item: { value: string } }>) {
+    ev.stopPropagation();
+    const value = ev.detail.item.value;
+    if (value === this.value) {
+      return;
     }
-
-    return html`<span class="mdc-select__icon"
-      ><slot name="icon"></slot
-    ></span>`;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener("translations-updated", this._translationsUpdated);
-  }
-
-  protected async firstUpdated() {
-    super.firstUpdated();
-
-    if (this.inlineArrow) {
-      this.shadowRoot
-        ?.querySelector(".mdc-select__selected-text-container")
-        ?.classList.add("inline-arrow");
-    }
-  }
-
-  protected updated(changedProperties) {
-    super.updated(changedProperties);
-
-    if (changedProperties.has("inlineArrow")) {
-      const textContainerElement = this.shadowRoot?.querySelector(
-        ".mdc-select__selected-text-container"
-      );
-      if (this.inlineArrow) {
-        textContainerElement?.classList.add("inline-arrow");
-      } else {
-        textContainerElement?.classList.remove("inline-arrow");
-      }
-    }
-    if (changedProperties.get("options")) {
-      this.layoutOptions();
-      this.selectByValue(this.value);
-    }
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener(
-      "translations-updated",
-      this._translationsUpdated
-    );
+    fireEvent(this, "selected", { value });
   }
 
   private _clearValue(): void {
     if (this.disabled || !this.value) {
       return;
     }
-    this.valueSetDirectly = true;
-    this.select(-1);
-    this.mdcFoundation.handleChange();
+
+    fireEvent(this, "selected", { value: undefined });
   }
 
-  private _translationsUpdated = debounce(async () => {
-    await nextRender();
-    this.layoutOptions();
-  }, 500);
+  private _handleShow() {
+    this.style.setProperty(
+      "--select-menu-width",
+      `${this._triggerField.offsetWidth}px`
+    );
+    this._opened = true;
+  }
 
-  static override styles = [
-    styles,
-    css`
-      :host([clearable]) {
-        position: relative;
-      }
-      .mdc-select:not(.mdc-select--disabled) .mdc-select__icon {
-        color: var(--secondary-text-color);
-      }
-      .mdc-select__anchor {
-        width: var(--ha-select-min-width, 200px);
-      }
-      .mdc-select--filled .mdc-select__anchor {
-        height: var(--ha-select-height, 56px);
-      }
-      .mdc-select--filled .mdc-floating-label {
-        inset-inline-start: var(--ha-space-4);
-        inset-inline-end: initial;
-        direction: var(--direction);
-      }
-      .mdc-select--filled.mdc-select--with-leading-icon .mdc-floating-label {
-        inset-inline-start: 48px;
-        inset-inline-end: initial;
-        direction: var(--direction);
-      }
-      .mdc-select .mdc-select__anchor {
-        padding-inline-start: var(--ha-space-4);
-        padding-inline-end: 0px;
-        direction: var(--direction);
-      }
-      .mdc-select__anchor .mdc-floating-label--float-above {
-        transform-origin: var(--float-start);
-      }
-      .mdc-select__selected-text-container {
-        padding-inline-end: var(--select-selected-text-padding-end, 0px);
-      }
-      :host([clearable]) .mdc-select__selected-text-container {
-        padding-inline-end: var(
-          --select-selected-text-padding-end,
-          var(--ha-space-4)
-        );
-      }
-      ha-icon-button {
-        position: absolute;
-        top: 10px;
-        right: 28px;
-        --mdc-icon-button-size: 36px;
-        --mdc-icon-size: 20px;
-        color: var(--secondary-text-color);
-        inset-inline-start: initial;
-        inset-inline-end: 28px;
-        direction: var(--direction);
-      }
-      .inline-arrow {
-        flex-grow: 0;
-      }
-    `,
-  ];
+  private _handleHide() {
+    this._opened = false;
+  }
+
+  static styles = css`
+    :host {
+      position: relative;
+    }
+    ha-picker-field.opened {
+      --mdc-text-field-idle-line-color: var(--primary-color);
+    }
+    ha-dropdown-item.selected:hover {
+      background-color: var(--ha-color-fill-primary-quiet-hover);
+    }
+
+    ha-dropdown-item .content {
+      display: flex;
+      gap: var(--ha-space-1);
+      flex-direction: column;
+    }
+
+    ha-dropdown-item .secondary {
+      font-size: var(--ha-font-size-s);
+      color: var(--ha-color-text-secondary);
+    }
+
+    ha-dropdown::part(menu) {
+      min-width: var(--select-menu-width);
+    }
+
+    :host ::slotted(ha-dropdown-item.selected),
+    ha-dropdown-item.selected {
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-color);
+      background-color: var(--ha-color-fill-primary-quiet-resting);
+      --icon-primary-color: var(--primary-color);
+    }
+  `;
 }
 declare global {
   interface HTMLElementTagNameMap {
     "ha-select": HaSelect;
+  }
+
+  interface HASSDomEvents {
+    selected: { value: string | undefined };
   }
 }
