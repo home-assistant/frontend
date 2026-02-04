@@ -19,7 +19,7 @@ import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
-import { haStyleScrollbar } from "../resources/styles";
+import { haStyleHighlight, haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
 import { isTouch } from "../util/is_touch";
@@ -778,6 +778,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   static get styles() {
     return [
       ...super.styles,
+      haStyleHighlight,
       haStyleScrollbar,
       css`
         :host {

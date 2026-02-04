@@ -16,11 +16,12 @@ import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
+import { getHighlightRanges } from "../../common/string/highlight";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
 import { nextRender } from "../../common/util/render-status";
-import { haStyleScrollbar } from "../../resources/styles";
+import { haStyleHighlight, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
@@ -619,7 +620,12 @@ export class HaDataTable extends LitElement {
               ${column.template
                 ? column.template(row)
                 : narrow && column.main
-                  ? html`<div class="primary">${row[key]}</div>
+                  ? html`<div class="primary">
+                        ${this._renderValueWithHighlight(
+                          row[key],
+                          column.filterable
+                        )}
+                      </div>
                       <div class="secondary">
                         ${Object.entries(columns)
                           .filter(
@@ -637,15 +643,21 @@ export class HaDataTable extends LitElement {
                             ([key2, column2], i) =>
                               html`${i !== 0
                                 ? " · "
-                                : nothing}${column2.template
-                                ? column2.template(row)
-                                : row[key2]}`
+                                : nothing}${this._renderCellValue(
+                                column2,
+                                key2,
+                                row
+                              )}`
                           )}
                       </div>
                       ${column.extraTemplate
                         ? column.extraTemplate(row)
                         : nothing}`
-                  : html`${row[key]}${column.extraTemplate
+                  : html`${this._renderCellValue(
+                      column,
+                      key,
+                      row
+                    )}${column.extraTemplate
                       ? column.extraTemplate(row)
                       : nothing}`}
             </div>
@@ -654,6 +666,64 @@ export class HaDataTable extends LitElement {
       </div>
     `;
   };
+
+  private _renderCellValue(
+    column: DataTableColumnData,
+    key: string,
+    row: DataTableRowData
+  ) {
+    if (column.template) {
+      return column.template(row);
+    }
+
+    return this._renderValueWithHighlight(row[key], column.filterable);
+  }
+
+  private _renderValueWithHighlight(
+    value: unknown,
+    filterable?: boolean
+  ): unknown {
+    if (!filterable) {
+      return value;
+    }
+
+    const filter = this._filter.trim();
+    if (!filter) {
+      return value;
+    }
+
+    if (typeof value !== "string" && typeof value !== "number") {
+      return value;
+    }
+
+    const text = String(value);
+    const ranges = getHighlightRanges(text, filter, this.hass.locale.language);
+
+    if (!ranges.length) {
+      return text;
+    }
+
+    const parts: Array<string | TemplateResult> = [];
+    let lastIndex = 0;
+
+    for (const range of ranges) {
+      if (range.start > lastIndex) {
+        parts.push(text.slice(lastIndex, range.start));
+      }
+      parts.push(
+        html`<mark class="ha-highlight"
+          >${text.slice(range.start, range.end)}</mark
+        >`
+      );
+      lastIndex = range.end;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+
+    return parts;
+  }
 
   private async _sortFilterData() {
     const startTime = new Date().getTime();
@@ -1045,6 +1115,7 @@ export class HaDataTable extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleHighlight,
       haStyleScrollbar,
       css`
         /* default mdc styles, colors changed, without checkbox styles */

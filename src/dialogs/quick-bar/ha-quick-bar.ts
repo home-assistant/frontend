@@ -1,6 +1,6 @@
 import { mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -9,6 +9,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { getHighlightRanges } from "../../common/string/highlight";
 import "../../components/entity/state-badge";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-combo-box-item";
@@ -76,6 +77,8 @@ export class QuickBar extends LitElement {
   @state() private _opened = false;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
+
+  @state() private _search = "";
 
   private get _showEntityId() {
     return this.hass.userData?.showEntityIdPicker;
@@ -340,14 +343,18 @@ export class QuickBar extends LitElement {
                   : html`
                       <ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>
                     `}
-        <span slot="headline">${item.primary}</span>
+        <span slot="headline"
+          >${this._renderHighlightedText(item.primary)}</span
+        >
         ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          ? html`<span slot="supporting-text"
+              >${this._renderHighlightedText(item.secondary)}</span
+            >`
           : nothing}
         ${"stateObj" in item && !!this._showEntityId
           ? html`
               <span slot="supporting-text" class="code">
-                ${item.stateObj?.entity_id}
+                ${this._renderHighlightedText(item.stateObj?.entity_id)}
               </span>
             `
           : nothing}
@@ -355,7 +362,9 @@ export class QuickBar extends LitElement {
         (!("stateObj" in item) || !this._showEntityId)
           ? html`
               <div slot="trailing-supporting-text" class="domain">
-                ${(item as EntityComboBoxItem).domain_name}
+                ${this._renderHighlightedText(
+                  (item as EntityComboBoxItem).domain_name
+                )}
               </div>
             `
           : nothing}
@@ -415,6 +424,7 @@ export class QuickBar extends LitElement {
 
   private _getItems = (searchString: string, section: string) => {
     this._selectedSection = section as QuickBarSection | undefined;
+    this._search = searchString || "";
     return this._getItemsMemoized(
       this._configEntryLookup,
       searchString,
@@ -653,6 +663,43 @@ export class QuickBar extends LitElement {
       (entityB as PickerComboBoxItem).sorting_label!,
       this.hass.locale.language
     );
+
+  private _renderHighlightedText(text?: string | null) {
+    if (!text) {
+      return text;
+    }
+
+    const search = this._search.trim();
+    if (!search) {
+      return text;
+    }
+
+    const ranges = getHighlightRanges(text, search, this.hass.locale.language);
+    if (!ranges.length) {
+      return text;
+    }
+
+    const parts: Array<string | TemplateResult> = [];
+    let lastIndex = 0;
+
+    for (const range of ranges) {
+      if (range.start > lastIndex) {
+        parts.push(text.slice(lastIndex, range.start));
+      }
+      parts.push(
+        html`<mark class="ha-highlight"
+          >${text.slice(range.start, range.end)}</mark
+        >`
+      );
+      lastIndex = range.end;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+
+    return parts;
+  }
 
   // #endregion data
 
