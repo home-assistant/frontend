@@ -6,8 +6,8 @@ import { formatLanguageCode } from "../common/language/format_language";
 import type { AssistPipeline } from "../data/assist_pipeline";
 import { listAssistPipelines } from "../data/assist_pipeline";
 import type { HomeAssistant } from "../types";
+import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
-import type { HaSelectOption } from "./ha-select";
 
 const PREFERRED = "preferred";
 const LAST_USED = "last_used";
@@ -94,7 +94,7 @@ export class HaAssistPipelinePicker extends LitElement {
     }
   `;
 
-  private _changed(ev: CustomEvent<{ value: string }>): void {
+  private _changed(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (
       !this.hass ||

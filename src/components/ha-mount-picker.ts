@@ -14,9 +14,9 @@ import {
 } from "../data/supervisor/mounts";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
+import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 import "./ha-list-item";
 import "./ha-select";
-import type { HaSelectOption } from "./ha-select";
 
 const _BACKUP_DATA_DISK_ = "/backup";
 
@@ -146,10 +146,10 @@ class HaMountPicker extends LitElement {
     }
   }
 
-  private _mountChanged(ev: CustomEvent<{ value: string }>) {
+  private _mountChanged(ev: HaSelectSelectEvent) {
     const newValue = ev.detail.value;
 
-    if (newValue !== this.value) {
+    if (newValue && newValue !== this.value) {
       this._setValue(newValue);
     }
   }

@@ -15,6 +15,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
+import type { HaSelectSelectEvent } from "./ha-select";
 import {
   areaFloorComboBoxKeys,
   getAreasAndFloors,
@@ -403,15 +404,18 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _targetPicked(ev: CustomEvent<{ value: string }>) {
+  private _targetPicked(ev: HaSelectSelectEvent) {
     ev.stopPropagation();
     const value = ev.detail.value;
+    if (!value) {
+      return;
+    }
     if (value.startsWith(CREATE_ID)) {
       this._createNewDomainElement(value.substring(CREATE_ID.length));
       return;
     }
 
-    const [type, id] = ev.detail.value.split(SEPARATOR);
+    const [type, id] = value.split(SEPARATOR);
     this._addTarget(id, type as TargetType);
   }
 

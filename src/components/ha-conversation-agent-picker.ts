@@ -13,8 +13,7 @@ import { fetchIntegrationManifest } from "../data/integration";
 import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "../dialogs/config-flow/show-dialog-sub-config-flow";
 import type { HomeAssistant } from "../types";
-import "./ha-select";
-import type { HaSelectOption } from "./ha-select";
+import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
 
@@ -234,7 +233,7 @@ export class HaConversationAgentPicker extends LitElement {
     }
   `;
 
-  private _changed(ev: CustomEvent<{ value: string }>): void {
+  private _changed(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (
       !this.hass ||

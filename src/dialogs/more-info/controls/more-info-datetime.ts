@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateTimeValue } from "../../../data/datetime";
@@ -45,7 +46,7 @@ class MoreInfoDatetime extends LitElement {
     ev.stopPropagation();
   }
 
-  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
+  private _timeChanged(ev: HaSelectSelectEvent): void {
     if (ev.detail.value) {
       const dateObj = new Date(this.stateObj!.state);
       const newTime = ev.detail.value.split(":").map(Number);
@@ -55,7 +56,7 @@ class MoreInfoDatetime extends LitElement {
     }
   }
 
-  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
+  private _dateChanged(ev: HaSelectSelectEvent): void {
     if (ev.detail.value) {
       const dateObj = new Date(this.stateObj!.state);
       const newDate = ev.detail.value.split("-").map(Number);

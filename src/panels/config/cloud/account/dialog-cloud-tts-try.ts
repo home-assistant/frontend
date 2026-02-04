@@ -10,7 +10,10 @@ import { supportsFeature } from "../../../../common/entity/supports-feature";
 import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-select";
-import type { HaSelectOption } from "../../../../components/ha-select";
+import type {
+  HaSelectOption,
+  HaSelectSelectEvent,
+} from "../../../../components/ha-select";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
 import { showAutomationEditor } from "../../../../data/automation";
@@ -138,9 +141,11 @@ export class DialogTryTts extends LitElement {
     `;
   }
 
-  private _handleTargetChanged(ev: CustomEvent<{ value: string }>) {
-    this._target = ev.detail.value;
-    this.requestUpdate("_target");
+  private _handleTargetChanged(ev: HaSelectSelectEvent) {
+    if (ev.detail.value !== undefined) {
+      this._target = ev.detail.value;
+      this.requestUpdate("_target");
+    }
   }
 
   private async _playExample() {

@@ -11,6 +11,7 @@ import "../../components/chips/ha-chip-set";
 import "../../components/chips/ha-filter-chip";
 import "../../components/ha-date-input";
 import "../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-textfield";
 import type { HomeAssistant } from "../../types";
 import type {
@@ -311,7 +312,7 @@ export class RecurrenceRuleEditor extends LitElement {
     this._interval = (e.target! as any).value;
   }
 
-  private _onRepeatSelected(e: CustomEvent<{ value: string }>) {
+  private _onRepeatSelected(e: HaSelectSelectEvent) {
     this._freq = e.detail.value as RepeatFrequency;
 
     if (this._freq === "yearly") {
@@ -323,7 +324,7 @@ export class RecurrenceRuleEditor extends LitElement {
     }
   }
 
-  private _onMonthlyDetailSelected(e: CustomEvent<{ value: string }>) {
+  private _onMonthlyDetailSelected(e: HaSelectSelectEvent) {
     const selectedItem = this._monthlyRepeatItems.find(
       (item) => item.value === e.detail.value
     );
@@ -346,7 +347,7 @@ export class RecurrenceRuleEditor extends LitElement {
     this.requestUpdate("_weekday");
   }
 
-  private _onEndSelected(e: CustomEvent<{ value: string }>) {
+  private _onEndSelected(e: HaSelectSelectEvent) {
     const end = e.detail.value as RepeatEnd;
     if (end === this._end) {
       return;

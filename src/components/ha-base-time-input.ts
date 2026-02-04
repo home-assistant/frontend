@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HaSelectSelectEvent } from "./ha-select";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-select";
@@ -276,11 +277,11 @@ export class HaBaseTimeInput extends LitElement {
     fireEvent(this, "value-changed");
   }
 
-  private _valueChanged(ev: InputEvent | CustomEvent<{ value: string }>): void {
+  private _valueChanged(ev: InputEvent | HaSelectSelectEvent): void {
     const textField = ev.currentTarget as HaTextField;
     this[textField.name] =
       textField.name === "amPm"
-        ? (ev as CustomEvent<{ value: string }>).detail.value
+        ? (ev as HaSelectSelectEvent).detail.value
         : Number(textField.value);
     const value: TimeChangedEvent = {
       hours: this.hours,

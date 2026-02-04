@@ -5,6 +5,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
 import type {
@@ -213,9 +214,7 @@ export class ZHAClusterAttributes extends LitElement {
     }
   }
 
-  private _selectedAttributeChanged(
-    event: CustomEvent<{ value: string }>
-  ): void {
+  private _selectedAttributeChanged(event: HaSelectSelectEvent): void {
     this._selectedAttributeId = Number(event.detail.value);
     this._attributeValue = "";
   }

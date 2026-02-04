@@ -7,6 +7,7 @@ import "../../components/ha-button";
 import "../../components/ha-formfield";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-textfield";
@@ -259,7 +260,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     fireEvent(this, "settheme", { dark });
   }
 
-  private _handleThemeSelection(ev: CustomEvent<{ value: string }>) {
+  private _handleThemeSelection(ev: HaSelectSelectEvent) {
     const theme = ev.detail.value;
     if (theme === this.hass.selectedTheme?.theme) {
       return;
