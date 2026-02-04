@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-textfield";
 import {
@@ -132,7 +133,7 @@ class ZWaveJSCustomParam extends LitElement {
     );
   }
 
-  private _customValueSizeChanged(ev: CustomEvent<{ value: string }>) {
+  private _customValueSizeChanged(ev: HaSelectSelectEvent) {
     this._valueSize = this._tryParseNumber(ev.detail.value) ?? 1;
   }
 
@@ -140,7 +141,7 @@ class ZWaveJSCustomParam extends LitElement {
     this._value = this._tryParseNumber((ev.target as HTMLInputElement).value);
   }
 
-  private _customValueFormatChanged(ev: CustomEvent<{ value: string }>) {
+  private _customValueFormatChanged(ev: HaSelectSelectEvent) {
     this._valueFormat = this._tryParseNumber(ev.detail.value) ?? 0;
   }
 

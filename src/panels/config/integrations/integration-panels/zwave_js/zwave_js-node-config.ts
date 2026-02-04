@@ -19,6 +19,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-generic-picker";
 import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
@@ -456,7 +457,7 @@ class ZWaveJSNodeConfig extends LitElement {
     this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
   }
 
-  private _dropdownSelected(ev: CustomEvent<{ value: string }>) {
+  private _dropdownSelected(ev: HaSelectSelectEvent) {
     this._handleEnumeratedPickerValueChanged(ev, ev.detail.value);
   }
 
