@@ -262,12 +262,7 @@ export class HaNavigationPicker extends LitElement {
 
     const viewConfigs = await Promise.all(
       lovelacePanels.map((panel) =>
-        fetchConfig(
-          this.hass!.connection,
-          // path should be null to fetch default lovelace panel
-          panel.url_path === "lovelace" ? null : panel.url_path,
-          true
-        )
+        fetchConfig(this.hass!.connection, panel.url_path, true)
           .then((config) => [panel.id, config] as [string, typeof config])
           .catch((_) => [panel.id, undefined] as [string, undefined])
       )

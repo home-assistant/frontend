@@ -2903,7 +2903,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-menu@npm:0.27.0, @material/mwc-menu@npm:^0.27.0":
+"@material/mwc-menu@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-menu@npm:0.27.0"
   dependencies:
@@ -9103,7 +9103,6 @@ __metadata:
     "@material/mwc-icon-button": "npm:0.27.0"
     "@material/mwc-linear-progress": "npm:0.27.0"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
-    "@material/mwc-menu": "npm:0.27.0"
     "@material/mwc-radio": "npm:0.27.0"
     "@material/mwc-select": "npm:0.27.0"
     "@material/mwc-snackbar": "npm:0.27.0"

@@ -5,7 +5,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import type { ZWaveJSLogConfig } from "../../../../../data/zwave_js";
 import {
@@ -84,13 +83,18 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
                       )}
                       .value=${this._logConfig.level}
                       @selected=${this._dropdownSelected}
+                      .options=${[
+                        "error",
+                        "warn",
+                        "info",
+                        "verbose",
+                        "debug",
+                        "silly",
+                      ].map((level) => ({
+                        value: level,
+                        label: capitalizeFirstLetter(level),
+                      }))}
                     >
-                      <ha-list-item value="error">Error</ha-list-item>
-                      <ha-list-item value="warn">Warn</ha-list-item>
-                      <ha-list-item value="info">Info</ha-list-item>
-                      <ha-list-item value="verbose">Verbose</ha-list-item>
-                      <ha-list-item value="debug">Debug</ha-list-item>
-                      <ha-list-item value="silly">Silly</ha-list-item>
                     </ha-select>
                   `
                 : ""}
@@ -133,11 +137,11 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     );
   }
 
-  private _dropdownSelected(ev) {
+  private _dropdownSelected(ev: CustomEvent<{ value: string }>) {
     if (ev.target === undefined || this._logConfig === undefined) {
       return;
     }
-    const selected = ev.target.value;
+    const selected = ev.detail.value;
     if (this._logConfig.level === selected) {
       return;
     }

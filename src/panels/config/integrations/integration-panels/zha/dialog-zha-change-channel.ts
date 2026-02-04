@@ -2,12 +2,10 @@ import type { TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import { changeZHANetworkChannel } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
@@ -96,22 +94,18 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
             .label=${this.hass.localize(
               "ui.panel.config.zha.change_channel_dialog.new_channel"
             )}
-            fixedMenuPosition
-            naturalMenuWidth
             @selected=${this._newChannelChosen}
-            @closed=${stopPropagation}
             .value=${String(this._newChannel)}
+            .options=${VALID_CHANNELS.map((channel) => ({
+              value: String(channel),
+              label:
+                channel === "auto"
+                  ? this.hass.localize(
+                      "ui.panel.config.zha.change_channel_dialog.channel_auto"
+                    )
+                  : String(channel),
+            }))}
           >
-            ${VALID_CHANNELS.map(
-              (newChannel) =>
-                html`<ha-list-item .value=${String(newChannel)}
-                  >${newChannel === "auto"
-                    ? this.hass.localize(
-                        "ui.panel.config.zha.change_channel_dialog.channel_auto"
-                      )
-                    : newChannel}</ha-list-item
-                >`
-            )}
           </ha-select>
         </p>
 
@@ -137,8 +131,8 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
     `;
   }
 
-  private _newChannelChosen(evt: Event): void {
-    const value: string = (evt.target! as HTMLSelectElement).value;
+  private _newChannelChosen(ev: CustomEvent<{ value: string }>): void {
+    const value: string = ev.detail.value;
     this._newChannel = value === "auto" ? "auto" : parseInt(value, 10);
   }
 

@@ -2,13 +2,11 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-radio-list-item";
 import "../../../../components/ha-select";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -82,29 +80,23 @@ export class HuiDialogSelectView extends LitElement {
               .disabled=${!this._dashboards.length}
               .value=${this._urlPath || defaultPanel}
               @selected=${this._dashboardChanged}
-              @closed=${stopPropagation}
-              fixedMenuPosition
-              naturalMenuWidth
+              .options=${this._dashboards
+                .map((dashboard) => ({
+                  value: dashboard.url_path,
+                  label: `${dashboard.title}${dashboard.id === "lovelace" ? ` (${this.hass.localize("ui.common.default")})` : ""}`,
+                  disabled: dashboard.mode !== "storage",
+                }))
+                .sort((a, b) =>
+                  a.value === "lovelace"
+                    ? -1
+                    : b.value === "lovelace"
+                      ? 1
+                      : a.label.localeCompare(b.label)
+                )}
               dialogInitialFocus
             >
-              <ha-list-item
-                value="lovelace"
-                .disabled=${(this.hass.panels.lovelace?.config as any)?.mode ===
-                "yaml"}
-              >
-                Default
-              </ha-list-item>
-              ${this._dashboards.map(
-                (dashboard) => html`
-                  <ha-list-item
-                    .disabled=${dashboard.mode !== "storage"}
-                    .value=${dashboard.url_path}
-                    >${dashboard.title}</ha-list-item
-                  >
-                `
-              )}
             </ha-select>`
-          : ""}
+          : nothing}
         ${!this._config || (this._config.views || []).length < 1
           ? html`<ha-alert alert-type="error"
               >${this.hass.localize(
@@ -142,7 +134,7 @@ export class HuiDialogSelectView extends LitElement {
                   })}
                 </ha-list>
               `
-            : ""}
+            : nothing}
         <ha-button
           slot="primaryAction"
           @click=${this.closeDialog}
@@ -167,8 +159,8 @@ export class HuiDialogSelectView extends LitElement {
       this._params!.dashboards || (await fetchDashboards(this.hass));
   }
 
-  private async _dashboardChanged(ev) {
-    let urlPath: string | null = ev.target.value;
+  private async _dashboardChanged(ev: CustomEvent<{ value: string }>) {
+    let urlPath: string | null = ev.detail.value;
     if (urlPath === this._urlPath) {
       return;
     }
