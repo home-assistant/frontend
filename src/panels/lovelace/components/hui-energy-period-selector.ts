@@ -249,7 +249,12 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         })}
       >
         <div class="backdrop"></div>
-        <ha-dialog-header subtitle-position="below" class="label">
+        <ha-dialog-header
+          subtitle-position="below"
+          class="label"
+          clickable-header
+          @header-click=${this._openDatePicker}
+        >
           <slot name="headerNavigationIcon" slot="navigationIcon">
             <ha-date-range-picker
               .hass=${this.hass}
@@ -265,55 +270,51 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             ></ha-date-range-picker>
           </slot>
           <slot name="headerSubtitle" slot="title"
-            ><div class="date-hover" @click=${this._openDatePicker}>
-              <span
-                >${simpleRange === "year"
-                  ? html`${formatDateYear(
-                      this._startDate,
-                      this.hass.locale,
-                      this.hass.config
-                    )}`
-                  : html`${simpleRange === "month"
-                      ? html`${formatDateMonth(
+            ><span
+              >${simpleRange === "year"
+                ? html`${formatDateYear(
+                    this._startDate,
+                    this.hass.locale,
+                    this.hass.config
+                  )}`
+                : html`${simpleRange === "month"
+                    ? html`${formatDateMonth(
+                        this._startDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )}`
+                    : simpleRange === "day"
+                      ? html`${formatDateVeryShort(
                           this._startDate,
                           this.hass.locale,
                           this.hass.config
                         )}`
-                      : simpleRange === "day"
-                        ? html`${formatDateVeryShort(
-                            this._startDate,
-                            this.hass.locale,
-                            this.hass.config
-                          )}`
-                        : html`${formatDateVeryShort(
-                            this._startDate,
-                            this.hass.locale,
-                            this.hass.config
-                          )}&ndash;${formatDateVeryShort(
-                            this._endDate || new Date(),
-                            this.hass.locale,
-                            this.hass.config
-                          )} `} `}</span
-              >
-            </div></slot
-          >
-          <slot name="headerSubtitle" slot="subtitle"
-            >${showSubtitleYear
-              ? html`<div class="date-hover" @click=${this._openDatePicker}>
-                  <span
-                    >${formatDateYear(
-                      this._startDate,
-                      this.hass.locale,
-                      this.hass.config
-                    )}${showBothYear
-                      ? html`&ndash;${formatDateYear(
+                      : html`${formatDateVeryShort(
+                          this._startDate,
+                          this.hass.locale,
+                          this.hass.config
+                        )}&ndash;${formatDateVeryShort(
                           this._endDate || new Date(),
                           this.hass.locale,
                           this.hass.config
-                        )}`
-                      : ``}</span
-                  >
-                </div>`
+                        )} `} `}</span
+            ></slot
+          >
+          <slot name="headerSubtitle" slot="subtitle"
+            >${showSubtitleYear
+              ? html`<span
+                  >${formatDateYear(
+                    this._startDate,
+                    this.hass.locale,
+                    this.hass.config
+                  )}${showBothYear
+                    ? html`&ndash;${formatDateYear(
+                        this._endDate || new Date(),
+                        this.hass.locale,
+                        this.hass.config
+                      )}`
+                    : ``}</span
+                >`
               : nothing}</slot
           >
           <slot name="headerActionItems" slot="actionItems">
@@ -652,24 +653,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-end: initial;
       flex-shrink: 0;
       --ha-button-theme-color: currentColor;
-    }
-    ha-dialog-header div.date-hover {
-      cursor: pointer;
-      margin: -4px;
-      padding: 4px;
-    }
-    @media (hover: hover) {
-      ha-dialog-header:not(.loading) div.date-hover:hover {
-        background-color: var(--ha-color-fill-primary-normal-hover);
-        transition: background-color 0.15s ease-in-out;
-        --ha-selector-dialog-border-radius: var(
-          --ha-button-border-radius,
-          var(--ha-border-radius-pill)
-        );
-        -webkit-border-radius: var(--ha-selector-dialog-border-radius);
-        -moz-border-radius: var(--ha-selector-dialog-border-radius);
-        border-radius: var(--ha-selector-dialog-border-radius);
-      }
     }
     .backdrop {
       position: fixed;
