@@ -3,10 +3,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-dialog";
 import "../../../components/ha-button";
-import "../../../components/ha-list-item";
+import "../../../components/ha-dialog";
 import "../../../components/ha-select";
 import "../../../components/ha-spinner";
 import {
@@ -132,26 +130,18 @@ class MoveDatadiskDialog extends LitElement {
                   "ui.panel.config.storage.datadisk.select_device"
                 )}
                 @selected=${this._selectDevice}
-                @closed=${stopPropagation}
-                dialogInitialFocus
-                fixedMenuPosition
-              >
-                ${this._disks.map(
-                  (disk) =>
-                    html`<ha-list-item twoline .value=${disk.id}>
-                      <span>${disk.vendor} ${disk.model}</span>
-                      <span slot="secondary">
-                        ${this.hass.localize(
-                          "ui.panel.config.storage.datadisk.extra_information",
-                          {
-                            size: bytesToString(disk.size),
-                            serial: disk.serial,
-                          }
-                        )}
-                      </span>
-                    </ha-list-item>`
-                )}
-              </ha-select>
+                .options=${this._disks.map((disk) => ({
+                  value: disk.id,
+                  label: `${disk.vendor} ${disk.model}`,
+                  secondary: this.hass.localize(
+                    "ui.panel.config.storage.datadisk.extra_information",
+                    {
+                      size: bytesToString(disk.size),
+                      serial: disk.serial,
+                    }
+                  ),
+                }))}
+              ></ha-select>
 
               <ha-button
                 slot="primaryAction"
@@ -174,8 +164,8 @@ class MoveDatadiskDialog extends LitElement {
     `;
   }
 
-  private _selectDevice(ev) {
-    this._selectedDevice = ev.target.value;
+  private _selectDevice(ev: CustomEvent<{ value: string }>): void {
+    this._selectedDevice = ev.detail.value;
   }
 
   private async _moveDatadisk() {

@@ -758,6 +758,10 @@ class ErrorLogCard extends LitElement {
       float: right;
     }
 
+    .card-content {
+      margin-top: -8px;
+    }
+
     .error-log {
       position: relative;
       font-family: var(--ha-font-family-code);
@@ -765,7 +769,7 @@ class ErrorLogCard extends LitElement {
       text-align: start;
       padding-top: 16px;
       padding-bottom: 16px;
-      overflow-y: scroll;
+      overflow: auto;
       min-height: var(--error-log-card-height, calc(100vh - 244px));
       max-height: var(--error-log-card-height, calc(100vh - 244px));
       border-top: 1px solid var(--divider-color);
