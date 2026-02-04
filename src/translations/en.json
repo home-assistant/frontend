@@ -757,7 +757,7 @@
       "config-entry-picker": {
         "config_entry": "Integration"
       },
-      "coversation-agent-picker": {
+      "conversation-agent-picker": {
         "conversation_agent": "Conversation agent",
         "none": "None"
       },
@@ -2313,6 +2313,23 @@
           "save_failed": "Failed to save Overview page configuration",
           "areas_hint": "You can rearrange your floors and areas in the order that best represents your house on the {areas_page}.",
           "areas_page": "areas page"
+        },
+        "new_overview_dialog": {
+          "title": "Welcome to your new overview",
+          "description": "The overview dashboard has been redesigned to give you a better experience managing your smart home.",
+          "whats_new": "What's new",
+          "automatic_organization": "Automatic organization",
+          "automatic_organization_description": "Your devices are now automatically organized by area and floor.",
+          "favorites": "Favorites",
+          "favorites_description": "Pin your most used entities to the top for quick access.",
+          "existing_dashboards": "Your existing dashboards",
+          "existing_dashboards_description": "Your manual dashboards are still available in the sidebar. Miss the old format? You can create a new dashboard using the \"Overview (legacy)\" template in {dashboard_settings} and set it as default.",
+          "dashboard_settings": "dashboard settings",
+          "ok_understood": "OK, understood"
+        },
+        "banner": {
+          "welcome_message": "Welcome to the new overview dashboard.",
+          "learn_more": "Learn more"
         }
       },
       "my": {
@@ -2329,6 +2346,13 @@
       "config": {
         "generic": {
           "headers": {
+            "entity_id": "Entity ID",
+            "domain": "Domain",
+            "area": "Area",
+            "floor": "Floor",
+            "category": "Category",
+            "assistants": "Assistants",
+            "editable": "Editable",
             "modified_at": "Modified",
             "created_at": "Created",
             "actions": "Actions"
@@ -3964,11 +3988,7 @@
             "headers": {
               "icon": "Icon",
               "name": "Name",
-              "entity_id": "Entity ID",
-              "type": "Type",
-              "editable": "Editable",
-              "category": "Category",
-              "area": "Area"
+              "type": "Type"
             },
             "create_helper": "Create helper",
             "no_helpers": "Looks like you don't have any helpers yet!",
@@ -4425,10 +4445,6 @@
             "headers": {
               "icon": "Icon",
               "name": "Name",
-              "entity_id": "Entity ID",
-              "area": "Area",
-              "domain": "Domain",
-              "assistants": "Assistants",
               "aliases": "Aliases",
               "remove": "[%key:ui::common::remove%]"
             },
@@ -4598,8 +4614,6 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State",
-              "category": "Category",
-              "area": "Area",
               "icon": "Icon"
             },
             "bulk_action": "Action",
@@ -5619,8 +5633,6 @@
             "headers": {
               "name": "Name",
               "state": "State",
-              "category": "Category",
-              "area": "Area",
               "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
@@ -5746,9 +5758,6 @@
               "state": "State",
               "name": "Name",
               "last_activated": "Last activated",
-              "category": "Category",
-              "editable": "[%key:ui::panel::config::helpers::picker::headers::editable%]",
-              "area": "Area",
               "icon": "Icon"
             },
             "edit_category": "[%key:ui::panel::config::automation::picker::edit_category%]",
@@ -6142,8 +6151,6 @@
             "device": "Device",
             "manufacturer": "Manufacturer",
             "model": "Model",
-            "area": "Area",
-            "floor": "Floor",
             "integration": "Integration",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -6201,10 +6208,8 @@
             "headers": {
               "state_icon": "State icon",
               "entity": "Entity",
-              "entity_id": "Entity ID",
               "device": "Device",
               "integration": "Integration",
-              "area": "Area",
               "disabled_by": "Disabled by",
               "status": "Status",
               "domain": "Domain",
