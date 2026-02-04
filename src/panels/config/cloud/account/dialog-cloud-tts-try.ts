@@ -142,10 +142,8 @@ export class DialogTryTts extends LitElement {
   }
 
   private _handleTargetChanged(ev: HaSelectSelectEvent) {
-    if (ev.detail.value !== undefined) {
-      this._target = ev.detail.value;
-      this.requestUpdate("_target");
-    }
+    this._target = ev.detail.value;
+    this.requestUpdate("_target");
   }
 
   private async _playExample() {
