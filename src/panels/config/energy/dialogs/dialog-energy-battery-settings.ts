@@ -19,11 +19,12 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "./ha-energy-power-config";
-import type { HaEnergyPowerConfig, PowerType } from "./ha-energy-power-config";
 import {
   buildPowerExcludeList,
   getInitialPowerConfig,
   getPowerTypeFromConfig,
+  type HaEnergyPowerConfig,
+  type PowerType,
 } from "./ha-energy-power-config";
 import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 
