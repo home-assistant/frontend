@@ -25,6 +25,7 @@ import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
@@ -222,7 +223,7 @@ export class SystemLogCard extends LitElement {
     }
   }
 
-  private _handleOverflowAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleOverflowAction(ev: HaDropdownSelectEvent) {
     if (ev.detail.item.value === "show-full-logs") {
       // @ts-ignore
       fireEvent(this, "switch-log-view");

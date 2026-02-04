@@ -13,7 +13,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -42,6 +41,7 @@ import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
 import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
@@ -172,7 +172,7 @@ class PanelMediaBrowser extends LitElement {
     `;
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
 
     if (["auto", "grid", "list"].includes(value)) {

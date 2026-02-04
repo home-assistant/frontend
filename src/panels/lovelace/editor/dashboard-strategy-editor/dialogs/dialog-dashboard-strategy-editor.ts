@@ -14,7 +14,6 @@ import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
 import {
@@ -29,6 +28,7 @@ import type { GUIModeChangedEvent } from "../../types";
 import "../hui-dashboard-strategy-element-editor";
 import type { HuiDashboardStrategyElementEditor } from "../hui-dashboard-strategy-element-editor";
 import type { DashboardStrategyEditorDialogParams } from "./show-dialog-dashboard-strategy-editor";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 @customElement("dialog-dashboard-strategy-editor")
 class DialogDashboardStrategyEditor extends LitElement {
@@ -98,7 +98,7 @@ class DialogDashboardStrategyEditor extends LitElement {
     this.closeDialog();
   }
 
-  private _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {

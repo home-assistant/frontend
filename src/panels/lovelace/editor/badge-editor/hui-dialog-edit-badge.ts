@@ -37,6 +37,7 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-badge-element-editor";
 import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
 import type { EditBadgeDialogParams } from "./show-edit-badge-dialog";
+import { withViewTransition } from "../../../../common/util/view-transition";
 
 declare global {
   // for fire event
@@ -299,7 +300,9 @@ export class HuiDialogEditBadge
   }
 
   private _enlarge() {
-    this.large = !this.large;
+    withViewTransition(() => {
+      this.large = !this.large;
+    });
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {

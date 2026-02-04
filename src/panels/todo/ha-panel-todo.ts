@@ -50,6 +50,7 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/cards/hui-card";
 import { showTodoItemEditDialog } from "./show-dialog-todo-item-editor";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 @customElement("ha-panel-todo")
 class PanelTodo extends LitElement {
@@ -338,7 +339,7 @@ class PanelTodo extends LitElement {
     showTodoItemEditDialog(this, { entity: this._entityId! });
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {
