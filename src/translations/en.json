@@ -3910,8 +3910,6 @@
               "type_inverted": "Inverted",
               "type_inverted_description": "Positive values indicate charging, negative values indicate discharging.",
               "type_two_sensors": "Two sensors",
-              "power_discharge": "Discharge power",
-              "power_charge": "Charge power",
               "power_from": "Discharge power",
               "power_to": "Charge power"
             }
