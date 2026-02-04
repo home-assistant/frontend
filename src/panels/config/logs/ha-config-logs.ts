@@ -18,7 +18,7 @@ import { stringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button";
 import "../../../components/ha-generic-picker";
-import type { HaSelectSelectEvent } from "../../../components/ha-select";
+
 import type { HaGenericPicker } from "../../../components/ha-generic-picker";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/search-input";
@@ -202,7 +202,7 @@ export class HaConfigLogs extends LitElement {
     this.providerPicker?.open();
   }
 
-  private _handleDropdownSelect(ev: HaSelectSelectEvent) {
+  private _handleDropdownSelect(ev: CustomEvent<{ value: string }>) {
     const provider = ev.detail?.value;
     if (!provider) {
       return;
