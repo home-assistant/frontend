@@ -3461,7 +3461,8 @@
             "icon": "Icon",
             "name": "Name",
             "last_scanned": "Last scanned",
-            "write": "Write"
+            "write": "Write",
+            "tag_id": "Tag ID"
           },
           "detail": {
             "new_tag": "New tag",

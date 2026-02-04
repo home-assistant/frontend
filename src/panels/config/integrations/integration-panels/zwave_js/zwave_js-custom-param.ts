@@ -1,17 +1,16 @@
-import { LitElement, html, css, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import { mdiCloseCircle } from "@mdi/js";
-import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-select";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-list-item";
-import type { HomeAssistant } from "../../../../../types";
+import "../../../../../components/ha-textfield";
 import {
   getZwaveNodeRawConfigParameter,
   setZwaveNodeRawConfigParameter,
 } from "../../../../../data/zwave_js";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("zwave_js-custom-param")
 class ZWaveJSCustomParam extends LitElement {
@@ -48,10 +47,8 @@ class ZWaveJSCustomParam extends LitElement {
           )}
           .value=${String(this._valueSize)}
           @selected=${this._customValueSizeChanged}
+          .options=${["1", "2", "4"]}
         >
-          <ha-list-item value="1">1</ha-list-item>
-          <ha-list-item value="2">2</ha-list-item>
-          <ha-list-item value="4">4</ha-list-item>
         </ha-select>
         <ha-textfield
           .label=${this.hass.localize(
@@ -67,27 +64,33 @@ class ZWaveJSCustomParam extends LitElement {
           )}
           .value=${String(this._valueFormat)}
           @selected=${this._customValueFormatChanged}
+          .options=${[
+            {
+              value: "0",
+              label: this.hass.localize(
+                "ui.panel.config.zwave_js.node_config.signed"
+              ),
+            },
+            {
+              value: "1",
+              label: this.hass.localize(
+                "ui.panel.config.zwave_js.node_config.unsigned"
+              ),
+            },
+            {
+              value: "2",
+              label: this.hass.localize(
+                "ui.panel.config.zwave_js.node_config.enumerated"
+              ),
+            },
+            {
+              value: "3",
+              label: this.hass.localize(
+                "ui.panel.config.zwave_js.node_config.bitfield"
+              ),
+            },
+          ]}
         >
-          <ha-list-item value="0"
-            >${this.hass.localize(
-              "ui.panel.config.zwave_js.node_config.signed"
-            )}</ha-list-item
-          >
-          <ha-list-item value="1"
-            >${this.hass.localize(
-              "ui.panel.config.zwave_js.node_config.unsigned"
-            )}</ha-list-item
-          >
-          <ha-list-item value="2"
-            >${this.hass.localize(
-              "ui.panel.config.zwave_js.node_config.enumerated"
-            )}</ha-list-item
-          >
-          <ha-list-item value="3"
-            >${this.hass.localize(
-              "ui.panel.config.zwave_js.node_config.bitfield"
-            )}</ha-list-item
-          >
         </ha-select>
       </div>
       <div class="custom-config-buttons">
@@ -129,18 +132,16 @@ class ZWaveJSCustomParam extends LitElement {
     );
   }
 
-  private _customValueSizeChanged(ev: Event) {
-    this._valueSize =
-      this._tryParseNumber((ev.target as HTMLSelectElement).value) ?? 1;
+  private _customValueSizeChanged(ev: CustomEvent<{ value: string }>) {
+    this._valueSize = this._tryParseNumber(ev.detail.value) ?? 1;
   }
 
   private _customValueChanged(ev: Event) {
     this._value = this._tryParseNumber((ev.target as HTMLInputElement).value);
   }
 
-  private _customValueFormatChanged(ev: Event) {
-    this._valueFormat =
-      this._tryParseNumber((ev.target as HTMLSelectElement).value) ?? 0;
+  private _customValueFormatChanged(ev: CustomEvent<{ value: string }>) {
+    this._valueFormat = this._tryParseNumber(ev.detail.value) ?? 0;
   }
 
   private async _getCustomConfigValue() {

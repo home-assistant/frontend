@@ -1,8 +1,6 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { forwardHaptic } from "../../../data/haptics";
@@ -21,6 +19,8 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EntitiesCardEntityConfig;
+
+  @state() private _selectedEntityRow?: string;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config || !config.entity) {
@@ -65,23 +65,14 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       >
         <ha-select
           .label=${name}
-          .value=${stateObj.state}
-          .options=${stateObj.attributes.options}
+          .value=${this._selectedEntityRow || stateObj.state}
+          .options=${stateObj.attributes.options?.map((option) => ({
+            value: option,
+            label: this.hass!.formatEntityState(stateObj, option),
+          }))}
           .disabled=${stateObj.state === UNAVAILABLE}
-          naturalMenuWidth
-          @action=${this._handleAction}
-          @click=${stopPropagation}
-          @closed=${stopPropagation}
+          @selected=${this._handleAction}
         >
-          ${stateObj.attributes.options
-            ? stateObj.attributes.options.map(
-                (option) => html`
-                  <ha-list-item .value=${option}>
-                    ${this.hass!.formatEntityState(stateObj, option)}
-                  </ha-list-item>
-                `
-              )
-            : ""}
         </ha-select>
       </hui-generic-entity-row>
     `;
@@ -98,10 +89,10 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
     }
   `;
 
-  private _handleAction(ev): void {
+  private _handleAction(ev: CustomEvent<{ value: string }>): void {
     const stateObj = this.hass!.states[this._config!.entity] as SelectEntity;
 
-    const option = ev.target.value;
+    const option = ev.detail.value;
 
     if (
       option === stateObj.state ||
@@ -120,9 +111,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         setTimeout(() => {
           const newStateObj = this.hass!.states[this._config!.entity];
           if (newStateObj === stateObj) {
-            const select = this.shadowRoot?.querySelector("ha-select");
-            const index = select?.options.indexOf(stateObj.state) ?? -1;
-            select?.select(index);
+            this._selectedEntityRow = stateObj.state;
           }
         }, 2000)
       );
