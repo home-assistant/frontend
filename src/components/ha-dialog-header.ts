@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 @customElement("ha-dialog-header")
 export class HaDialogHeader extends LitElement {
@@ -8,6 +9,9 @@ export class HaDialogHeader extends LitElement {
 
   @property({ type: Boolean, reflect: true, attribute: "show-border" })
   public showBorder = false;
+
+  @property({ type: Boolean, attribute: "clickable-header" })
+  public clickableHeader = false;
 
   protected render() {
     const titleSlot = html`<div class="header-title">
@@ -24,7 +28,13 @@ export class HaDialogHeader extends LitElement {
           <section class="header-navigation-icon">
             <slot name="navigationIcon"></slot>
           </section>
-          <section class="header-content">
+          <section
+            class=${classMap({
+              "header-content": true,
+              "header-clickable": this.clickableHeader,
+            })}
+            @click=${this._headerClicked}
+          >
             ${this.subtitlePosition === "above"
               ? html`${subtitleSlot}${titleSlot}`
               : html`${titleSlot}${subtitleSlot}`}
@@ -38,6 +48,13 @@ export class HaDialogHeader extends LitElement {
     `;
   }
 
+  private _headerClicked(e: Event) {
+    if (this.clickableHeader) {
+      e.stopPropagation();
+      this.dispatchEvent(new CustomEvent("header-click"));
+    }
+  }
+
   static get styles() {
     return [
       css`
@@ -45,6 +62,9 @@ export class HaDialogHeader extends LitElement {
           display: block;
           --ha-dialog-header-title-font-size: var(--ha-font-size-xl);
           --ha-dialog-header-subtitle-font-size: var(--ha-font-size-m);
+          --ha-dialog-header-click-color: var(
+            --ha-color-fill-neutral-quiet-resting
+          );
         }
         :host([show-border]) {
           border-bottom: 1px solid
@@ -68,6 +88,21 @@ export class HaDialogHeader extends LitElement {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+        }
+        .header-content.header-clickable {
+          cursor: pointer;
+          padding: 0 var(--ha-space-1);
+        }
+        @media (hover: hover) {
+          .header-content.header-clickable:hover {
+            cursor: pointer;
+            background-color: var(--ha-dialog-header-click-color);
+            transition: background-color 0.15s ease-in-out;
+            --ha-dialog-header-click-border-radius: var(--ha-border-radius-lg);
+            -webkit-border-radius: var(--ha-dialog-header-click-border-radius);
+            -moz-border-radius: var(--ha-dialog-header-click-border-radius);
+            border-radius: var(--ha-dialog-header-click-border-radius);
+          }
         }
         .header-title {
           height: var(
