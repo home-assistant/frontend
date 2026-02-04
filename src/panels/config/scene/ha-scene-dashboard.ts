@@ -12,13 +12,11 @@ import {
   mdiOpenInNew,
   mdiPalette,
   mdiPencil,
-  mdiPencilOff,
   mdiPlay,
   mdiPlus,
   mdiTag,
   mdiTextureBox,
 } from "@mdi/js";
-import { differenceInDays } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -31,7 +29,6 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -79,7 +76,6 @@ import {
   isRelatedItemsFilterUsed,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import { isUnavailableState } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
@@ -117,6 +113,13 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getLabelsTableColumn,
+  getEditableTableColumn,
+  renderRelativeTimeColumn,
+} from "../common/data-table-columns";
+import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
@@ -128,9 +131,10 @@ type SceneItem = SceneEntity & {
   name: string;
   area: string | undefined;
   category: string | undefined;
-  labels: LabelRegistryEntry[];
+  label_entries: LabelRegistryEntry[];
   assistants: string[];
   assistants_sortable_key: string | undefined;
+  editable: boolean;
 };
 
 @customElement("ha-scene-dashboard")
@@ -257,12 +261,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          labels: (labels || []).map(
+          label_entries: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
+          editable: Boolean(scene.attributes.id),
         };
       });
     }
@@ -295,89 +300,34 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           direction: "asc",
           flex: 2,
           extraTemplate: (scene) =>
-            scene.labels.length
+            scene.label_entries.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
-                  .labels=${scene.labels}
+                  .labels=${scene.label_entries}
                 ></ha-data-table-labels>`
               : nothing,
         },
-        area: {
-          title: localize("ui.panel.config.scene.picker.headers.area"),
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        category: {
-          title: localize("ui.panel.config.scene.picker.headers.category"),
-          defaultHidden: true,
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        labels: {
-          title: "",
-          hidden: true,
-          filterable: true,
-          template: (scene) => scene.labels.map((lbl) => lbl.name).join(" "),
-        },
+        area: getAreaTableColumn(localize),
+        category: getCategoryTableColumn(localize),
+        labels: getLabelsTableColumn(),
         state: {
           title: localize(
             "ui.panel.config.scene.picker.headers.last_activated"
           ),
           sortable: true,
-          template: (scene) => {
-            const lastActivated = scene.state;
-            if (!lastActivated || isUnavailableState(lastActivated)) {
-              return localize("ui.components.relative_time.never");
-            }
-            const date = new Date(scene.state);
-            const now = new Date();
-            const dayDifference = differenceInDays(now, date);
-            const formattedTime = formatShortDateTimeWithConditionalYear(
-              date,
-              this.hass.locale,
-              this.hass.config
-            );
-            const elementId = "last-activated-" + slugify(scene.entity_id);
-            return html`
-              ${dayDifference > 3
-                ? formattedTime
-                : html`
-                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
-                    <span id=${elementId}
-                      >${relativeTime(date, this.hass.locale)}</span
-                    >
-                  `}
-            `;
-          },
-        },
-        only_editable: {
-          title: "",
-          label: this.hass.localize(
-            "ui.panel.config.scene.picker.headers.editable"
-          ),
-          type: "icon",
-          showNarrow: true,
           template: (scene) =>
-            !scene.attributes.id
-              ? html`
-                  <ha-svg-icon
-                    .id="svg-icon-${slugify(scene.entity_id)}"
-                    .path=${mdiPencilOff}
-                    style="color: var(--secondary-text-color)"
-                  ></ha-svg-icon>
-                  <ha-tooltip
-                    .for="svg-icon-${slugify(scene.entity_id)}"
-                    placement="left"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.scene.picker.only_editable"
-                    )}
-                  </ha-tooltip>
-                `
-              : nothing,
+            renderRelativeTimeColumn(
+              scene.state,
+              "last-activated",
+              scene.entity_id,
+              localize,
+              this.hass
+            ),
         },
+        only_editable: getEditableTableColumn(
+          localize,
+          localize("ui.panel.config.scene.picker.only_editable")
+        ),
         actions: {
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
@@ -424,7 +374,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                     "ui.panel.config.scene.editor.rename"
                   ),
                   action: () => this._rename(scene),
-                  disabled: !scene.attributes.id,
+                  disabled: !scene.editable,
                 },
                 {
                   divider: true,
@@ -435,7 +385,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                     "ui.panel.config.scene.picker.duplicate"
                   ),
                   action: () => this._duplicate(scene),
-                  disabled: !scene.attributes.id,
+                  disabled: !scene.editable,
                 },
                 {
                   label: this.hass.localize(
@@ -443,8 +393,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                   ),
                   path: mdiDelete,
                   action: () => this._deleteConfirm(scene),
-                  warning: scene.attributes.id,
-                  disabled: !scene.attributes.id,
+                  warning: scene.editable,
+                  disabled: !scene.editable,
                 },
               ]}
             >
@@ -1066,7 +1016,7 @@ ${rejected
     }
   }
 
-  private async _duplicate(scene) {
+  private async _duplicate(scene: SceneEntity) {
     if (scene.attributes.id) {
       const config = await getSceneConfig(this.hass, scene.attributes.id);
       const entityRegEntry = this._entityReg.find(

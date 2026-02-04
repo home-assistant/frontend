@@ -121,6 +121,14 @@ import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
+  getEntityIdTableColumn,
+  getDomainTableColumn,
+  getAreaTableColumn,
+  getLabelsTableColumn,
+  getCreatedAtTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
+import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
@@ -376,32 +384,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         groupable: true,
         hidden: true,
       },
-      area: {
-        title: localize("ui.panel.config.entities.picker.headers.area"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        template: (entry) => entry.area || "—",
-      },
-      entity_id: {
-        title: localize("ui.panel.config.entities.picker.headers.entity_id"),
-        sortable: true,
-        filterable: true,
-        defaultHidden: true,
-      },
+      area: getAreaTableColumn(localize),
+      entity_id: getEntityIdTableColumn(localize, true),
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
         sortable: true,
         groupable: true,
         filterable: true,
       },
-      domain: {
-        title: localize("ui.panel.config.entities.picker.headers.domain"),
-        sortable: false,
-        hidden: true,
-        filterable: true,
-        groupable: true,
-      },
+      domain: getDomainTableColumn(localize),
       disabled_by: {
         title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
         hidden: true,
@@ -475,34 +466,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               `
             : "—",
       },
-      created_at: {
-        title: localize("ui.panel.config.generic.headers.created_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (entry) =>
-          entry.created_at
-            ? formatShortDateTimeWithConditionalYear(
-                new Date(entry.created_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
-      modified_at: {
-        title: localize("ui.panel.config.generic.headers.modified_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (entry) =>
-          entry.modified_at
-            ? formatShortDateTimeWithConditionalYear(
-                new Date(entry.modified_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
+      created_at: getCreatedAtTableColumn(localize, this.hass),
+      modified_at: getModifiedAtTableColumn(localize, this.hass),
       available: {
         title: localize("ui.panel.config.entities.picker.headers.availability"),
         sortable: true,
@@ -521,13 +486,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         groupable: true,
         hidden: true,
       },
-      labels: {
-        title: "",
-        hidden: true,
-        filterable: true,
-        template: (entry) =>
-          entry.label_entries.map((lbl) => lbl.name).join(" "),
-      },
+      labels: getLabelsTableColumn(),
       assistants: getAssistantsTableColumn(
         localize,
         this.hass,
