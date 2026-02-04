@@ -1,9 +1,9 @@
 import DropdownItem from "@home-assistant/webawesome/dist/components/dropdown-item/dropdown-item";
 import "@home-assistant/webawesome/dist/components/icon/icon";
+import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from "@mdi/js";
 import { css, type CSSResultGroup, html } from "lit";
 import { customElement } from "lit/decorators";
 import "./ha-svg-icon";
-import { mdiCheckboxBlankOutline, mdiCheckboxMarked } from "@mdi/js";
 
 /**
  * Home Assistant dropdown item component

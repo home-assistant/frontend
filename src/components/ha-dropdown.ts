@@ -1,6 +1,9 @@
 import Dropdown from "@home-assistant/webawesome/dist/components/dropdown/dropdown";
 import { css, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { HaDropdownItem } from "./ha-dropdown-item";
+
+export type HaDropdownSelectEvent = CustomEvent<{ item: HaDropdownItem }>;
 
 /**
  * Home Assistant dropdown component

@@ -25,11 +25,11 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   computeEntityEntryName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   getEntityContext,
   getEntityEntryContext,
@@ -37,11 +37,12 @@ import {
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
@@ -328,7 +329,7 @@ export class MoreInfoDialog extends DialogEnlargeMixin(
     this._setView("related");
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     switch (action) {
       case "device":

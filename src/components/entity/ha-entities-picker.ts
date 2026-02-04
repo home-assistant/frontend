@@ -76,7 +76,7 @@ class HaEntitiesPicker extends LitElement {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
-  @property({ attribute: false, type: Array }) public createDomains?: string[];
+  @property({ attribute: false }) public createDomains?: string[];
 
   @property({ type: Boolean })
   public reorder = false;

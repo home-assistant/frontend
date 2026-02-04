@@ -58,7 +58,7 @@ export class HaEntityPicker extends LitElement {
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
 
-  @property({ attribute: false, type: Array }) public createDomains?: string[];
+  @property({ attribute: false }) public createDomains?: string[];
 
   /**
    * Show entities from specific domains.
