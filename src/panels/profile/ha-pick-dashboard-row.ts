@@ -1,4 +1,3 @@
-import { mdiViewDashboard } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -58,16 +57,6 @@ class HaPickDashboardRow extends LitElement {
                   ${this.hass.localize("ui.panel.profile.dashboard.system")}
                 </ha-dropdown-item>
                 <ha-divider></ha-divider>
-                <ha-dropdown-item
-                  value="lovelace"
-                  class=${value === "lovelace" ? "selected" : ""}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiViewDashboard}
-                  ></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.profile.dashboard.lovelace")}
-                </ha-dropdown-item>
                 ${PANEL_DASHBOARDS.map((panel) => {
                   const panelInfo = this.hass.panels[panel] as
                     | PanelInfo
