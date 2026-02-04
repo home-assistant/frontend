@@ -2,13 +2,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { CONDITION_ICONS } from "../../../../../components/ha-condition-icon";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-select";
-import type { HaSelect } from "../../../../../components/ha-select";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -85,37 +83,47 @@ export class HaConditionAction
       this.action.condition
     );
 
+    const value =
+      this.action.condition in this._conditionDescriptions
+        ? `${DYNAMIC_PREFIX}${this.action.condition}`
+        : this.action.condition;
+
+    let valueLabel = value;
+
+    const items = html`${this._processedTypes(
+      this._conditionDescriptions,
+      this.hass.localize
+    ).map(([opt, label, condition]) => {
+      const selected = value === opt;
+
+      if (selected) {
+        valueLabel = label;
+      }
+
+      return html`
+        <ha-dropdown-item .value=${opt} class=${selected ? "selected" : ""}>
+          <ha-condition-icon
+            .hass=${this.hass}
+            slot="icon"
+            .condition=${condition}
+          ></ha-condition-icon>
+          ${label}
+        </ha-dropdown-item>
+      `;
+    })}`;
+
     return html`
       ${this.inSidebar || (!this.inSidebar && !this.indent)
         ? html`
             <ha-select
-              fixedMenuPosition
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.type_select"
               )}
               .disabled=${this.disabled}
-              .value=${this.action.condition in this._conditionDescriptions
-                ? `${DYNAMIC_PREFIX}${this.action.condition}`
-                : this.action.condition}
-              naturalMenuWidth
+              .value=${valueLabel}
               @selected=${this._typeChanged}
-              @closed=${stopPropagation}
             >
-              ${this._processedTypes(
-                this._conditionDescriptions,
-                this.hass.localize
-              ).map(
-                ([opt, label, condition]) => html`
-                  <ha-list-item .value=${opt} graphic="icon">
-                    ${label}
-                    <ha-condition-icon
-                      .hass=${this.hass}
-                      slot="graphic"
-                      .condition=${condition}
-                    ></ha-condition-icon>
-                  </ha-list-item>
-                `
-              )}
+              ${items}
             </ha-select>
           `
         : nothing}
@@ -192,8 +200,8 @@ export class HaConditionAction
     });
   }
 
-  private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as HaSelect).value;
+  private _typeChanged(ev: CustomEvent<{ value: string }>) {
+    const type = ev.detail.value;
 
     if (!type) {
       return;
@@ -242,6 +250,7 @@ export class HaConditionAction
   static styles = css`
     ha-select {
       margin-bottom: 24px;
+      display: block;
     }
   `;
 }

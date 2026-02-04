@@ -4,14 +4,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-list-item";
-import "../../../../components/ha-select";
 import "../../../../components/ha-button";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-select";
+import type { HaSelectOption } from "../../../../components/ha-select";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
 import { showAutomationEditor } from "../../../../data/automation";
@@ -60,6 +59,25 @@ export class DialogTryTts extends LitElement {
       return nothing;
     }
     const target = this._target || "browser";
+
+    const targetOptions: HaSelectOption[] = Object.values(this.hass.states)
+      .filter(
+        (entity) =>
+          computeStateDomain(entity) === "media_player" &&
+          supportsFeature(entity, MediaPlayerEntityFeature.PLAY_MEDIA)
+      )
+      .map((entity) => ({
+        value: entity.entity_id,
+        label: computeStateName(entity),
+      }));
+
+    targetOptions.unshift({
+      value: "browser",
+      label: this.hass.localize(
+        "ui.panel.config.cloud.account.tts.dialog.target_browser"
+      ),
+    });
+
     return html`
       <ha-dialog
         open
@@ -93,28 +111,8 @@ export class DialogTryTts extends LitElement {
             id="target"
             .value=${target}
             @selected=${this._handleTargetChanged}
-            fixedMenuPosition
-            naturalMenuWidth
-            @closed=${stopPropagation}
+            .options=${targetOptions}
           >
-            <ha-list-item value="browser">
-              ${this.hass.localize(
-                "ui.panel.config.cloud.account.tts.dialog.target_browser"
-              )}
-            </ha-list-item>
-            ${Object.values(this.hass.states)
-              .filter(
-                (entity) =>
-                  computeStateDomain(entity) === "media_player" &&
-                  supportsFeature(entity, MediaPlayerEntityFeature.PLAY_MEDIA)
-              )
-              .map(
-                (entity) => html`
-                  <ha-list-item .value=${entity.entity_id}>
-                    ${computeStateName(entity)}
-                  </ha-list-item>
-                `
-              )}
           </ha-select>
         </div>
         <ha-button
@@ -140,8 +138,8 @@ export class DialogTryTts extends LitElement {
     `;
   }
 
-  private _handleTargetChanged(ev) {
-    this._target = ev.target.value;
+  private _handleTargetChanged(ev: CustomEvent<{ value: string }>) {
+    this._target = ev.detail.value;
     this.requestUpdate("_target");
   }
 
@@ -227,10 +225,9 @@ export class DialogTryTts extends LitElement {
         }
         ha-textarea,
         ha-select {
-          width: 100%;
-        }
-        ha-select {
+          display: block;
           margin-top: 8px;
+          width: 100%;
         }
       `,
     ];

@@ -1,10 +1,8 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
-import "../components/ha-list-item";
 import "../components/ha-select";
 import { UNAVAILABLE } from "../data/entity/entity";
 import type { SelectEntity } from "../data/select";
@@ -23,26 +21,19 @@ class StateCardSelect extends LitElement {
       <ha-select
         .value=${this.stateObj.state}
         .label=${computeStateName(this.stateObj)}
-        .options=${this.stateObj.attributes.options}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        naturalMenuWidth
-        fixedMenuPosition
         @selected=${this._selectedOptionChanged}
-        @closed=${stopPropagation}
+        .options=${this.stateObj.attributes.options.map((option) => ({
+          value: option,
+          label: this.hass.formatEntityState(this.stateObj, option),
+        }))}
       >
-        ${this.stateObj.attributes.options.map(
-          (option) => html`
-            <ha-list-item .value=${option}>
-              ${this.hass.formatEntityState(this.stateObj, option)}
-            </ha-list-item>
-          `
-        )}
       </ha-select>
     `;
   }
 
-  private _selectedOptionChanged(ev) {
-    const option = ev.target.value;
+  private _selectedOptionChanged(ev: CustomEvent<{ value: string }>) {
+    const option = ev.detail.value;
     if (option === this.stateObj.state) {
       return;
     }

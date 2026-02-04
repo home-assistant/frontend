@@ -11,13 +11,11 @@ import {
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
@@ -172,21 +170,17 @@ class MoreInfoVacuum extends LitElement {
                   .disabled=${stateObj.state === UNAVAILABLE}
                   .value=${stateObj.attributes.fan_speed}
                   @selected=${this._handleFanSpeedChanged}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @closed=${stopPropagation}
-                >
-                  ${stateObj.attributes.fan_speed_list!.map(
-                    (mode) => html`
-                      <ha-list-item .value=${mode}>
-                        ${this.hass.formatEntityAttributeValue(
-                          stateObj,
-                          "fan_speed",
-                          mode
-                        )}
-                      </ha-list-item>
-                    `
+                  .options=${stateObj.attributes.fan_speed_list!.map(
+                    (mode) => ({
+                      value: mode,
+                      label: this.hass!.formatEntityAttributeValue(
+                        stateObj,
+                        "fan_speed",
+                        mode
+                      ),
+                    })
                   )}
+                >
                 </ha-select>
                 <div
                   style="justify-content: center; align-self: center; padding-top: 1.3em"
@@ -291,9 +285,9 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  private _handleFanSpeedChanged(ev) {
+  private _handleFanSpeedChanged(ev: CustomEvent<{ value: string }>) {
     const oldVal = this.stateObj!.attributes.fan_speed;
-    const newVal = ev.target.value;
+    const newVal = ev.detail.value;
 
     if (!newVal || oldVal === newVal) {
       return;

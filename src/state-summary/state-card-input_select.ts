@@ -1,7 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
 import "../components/ha-list-item";
@@ -27,10 +26,7 @@ class StateCardInputSelect extends LitElement {
         .disabled=${
           this.stateObj.state === UNAVAILABLE /* UNKNOWN state is allowed */
         }
-        naturalMenuWidth
-        fixedMenuPosition
         @selected=${this._selectedOptionChanged}
-        @closed=${stopPropagation}
       >
         ${this.stateObj.attributes.options.map(
           (option) =>
@@ -40,8 +36,8 @@ class StateCardInputSelect extends LitElement {
     `;
   }
 
-  private async _selectedOptionChanged(ev) {
-    const option = ev.target.value;
+  private async _selectedOptionChanged(ev: CustomEvent<{ value: string }>) {
+    const option = ev.detail.value;
     if (option === this.stateObj.state) {
       return;
     }

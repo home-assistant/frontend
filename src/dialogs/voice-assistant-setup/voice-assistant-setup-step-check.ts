@@ -5,8 +5,8 @@ import "../../components/ha-button";
 import "../../components/ha-spinner";
 import { testAssistSatelliteConnection } from "../../data/assist_satellite";
 import type { HomeAssistant } from "../../types";
-import { AssistantSetupStyles } from "./styles";
 import { documentationUrl } from "../../util/documentation-url";
+import { AssistantSetupStyles } from "./styles";
 
 @customElement("ha-voice-assistant-setup-step-check")
 export class HaVoiceAssistantSetupStepCheck extends LitElement {
@@ -58,7 +58,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
                   "/voice_control/troubleshooting/#i-dont-get-a-voice-response"
                 )}
               >
-                >${this.hass.localize(
+                ${this.hass.localize(
                   "ui.panel.config.voice_assistants.satellite_wizard.check.help"
                 )}</ha-button
               >

@@ -4,13 +4,11 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import "../../../../components/ha-button";
 import "../../../../components/ha-control-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import {
   getMobileCloseToBottomAnimation,
@@ -91,24 +89,19 @@ class MoreInfoSirenAdvancedControls extends LitElement {
               ? html`
                   <ha-select
                     .label=${this.hass.localize("ui.components.siren.tone")}
-                    @closed=${stopPropagation}
-                    @change=${this._handleToneChange}
+                    @selected=${this._handleToneChange}
                     .value=${this._tone}
+                    .options=${Object.entries(
+                      this._stateObj!.attributes.available_tones
+                    ).map(([toneId, toneName]) => ({
+                      value: Array.isArray(
+                        this._stateObj!.attributes.available_tones
+                      )
+                        ? toneName
+                        : toneId,
+                      label: toneName,
+                    }))}
                   >
-                    ${Object.entries(
-                      this._stateObj.attributes.available_tones
-                    ).map(
-                      ([toneId, toneName]) => html`
-                        <ha-list-item
-                          .value=${Array.isArray(
-                            this._stateObj!.attributes.available_tones
-                          )
-                            ? toneName
-                            : toneId}
-                          >${toneName}</ha-list-item
-                        >
-                      `
-                    )}
                   </ha-select>
                 `
               : nothing}
@@ -162,8 +155,8 @@ class MoreInfoSirenAdvancedControls extends LitElement {
     `;
   }
 
-  private _handleToneChange(ev) {
-    this._tone = ev.target.value;
+  private _handleToneChange(ev: CustomEvent<{ value: string }>) {
+    this._tone = ev.detail.value;
   }
 
   private _handleVolumeChange(ev) {
