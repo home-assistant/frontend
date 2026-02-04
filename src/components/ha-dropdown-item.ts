@@ -37,6 +37,7 @@ export class HaDropdownItem extends DropdownItem {
 
         #check {
           visibility: visible;
+          flex-shrink: 0;
         }
 
         #icon ::slotted(*) {
