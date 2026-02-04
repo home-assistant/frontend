@@ -1321,7 +1321,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._entityId = `${computeDomain(this._origEntityId)}.${ev.target.value}`;
   }
 
-  private _deviceClassChanged(ev: HaSelectSelectEvent): void {
+  private _deviceClassChanged(ev: HaSelectSelectEvent<string, true>): void {
     fireEvent(this, "change");
     this._deviceClass = ev.detail.value;
   }

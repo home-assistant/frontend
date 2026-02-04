@@ -9,7 +9,10 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-select";
-import type { HaSelectOption } from "../../../../components/ha-select";
+import type {
+  HaSelectOption,
+  HaSelectSelectEvent,
+} from "../../../../components/ha-select";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -256,7 +259,7 @@ export class DialogEnergyDeviceSettings
     this._device = newDevice;
   }
 
-  private _parentSelected(ev: CustomEvent<{ value: string }>) {
+  private _parentSelected(ev: HaSelectSelectEvent<string, true>) {
     const newDevice = {
       ...this._device!,
       included_in_stat: ev.detail.value,
