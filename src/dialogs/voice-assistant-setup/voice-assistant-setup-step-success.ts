@@ -234,9 +234,6 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
 
   private async _wakeWordPicked(ev: HaSelectSelectEvent) {
     const option = ev.detail.value;
-    if (!option) {
-      return;
-    }
     if (this.assistConfiguration) {
       this.assistConfiguration.active_wake_words = [option];
     }
