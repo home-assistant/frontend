@@ -2,8 +2,8 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../../../common/datetime/format_time";
-import "../../../../../components/ha-card";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import type { MQTTMessage } from "../../../../../data/mqtt";
@@ -12,7 +12,6 @@ import type { HomeAssistant } from "../../../../../types";
 
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-switch";
 
 const qosLevel = ["0", "1", "2"];
@@ -96,9 +95,8 @@ class MqttSubscribeCard extends LitElement {
               .disabled=${this._subscribed !== undefined}
               .value=${this._qos}
               @selected=${this._handleQos}
-              >${qosLevel.map(
-                (qos) => html`<ha-list-item .value=${qos}>${qos}</ha-list-item>`
-              )}
+              .options=${qosLevel}
+            >
             </ha-select>
             <ha-button
               appearance="plain"
@@ -142,9 +140,9 @@ class MqttSubscribeCard extends LitElement {
     this._topic = ev.target.value;
   }
 
-  private _handleQos(ev: CustomEvent): void {
-    const newValue = (ev.target! as any).value;
-    if (newValue >= 0 && newValue !== this._qos) {
+  private _handleQos(ev: CustomEvent<{ value: string }>): void {
+    const newValue = ev.detail.value;
+    if (Number(newValue) >= 0 && newValue !== this._qos) {
       this._qos = newValue;
     }
   }
@@ -193,8 +191,8 @@ class MqttSubscribeCard extends LitElement {
 
   static styles = css`
     form {
-      display: block;
-      padding: 16px;
+      padding: var(--ha-space-4);
+      padding-bottom: var(--ha-space-8);
     }
     .events {
       margin: -16px 0;
@@ -229,6 +227,7 @@ class MqttSubscribeCard extends LitElement {
     }
     @media screen and (max-width: 600px) {
       ha-select {
+        display: block;
         margin-left: 0px;
         margin-top: 8px;
         margin-inline-start: 0px;

@@ -202,12 +202,11 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
-    return html`<ha-dropdown>
+    return html`<ha-dropdown @wa-select=${this._handleSourceChange}>
       <ha-icon-button
         slot="trigger"
         .label=${this.hass.localize(`ui.card.media_player.source`)}
         .path=${mdiLoginVariant}
-        @wa-select=${this._handleSourceChange}
       >
       </ha-icon-button>
       ${this.stateObj.attributes.source_list!.map(

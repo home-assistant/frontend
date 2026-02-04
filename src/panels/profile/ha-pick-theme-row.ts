@@ -3,23 +3,22 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { normalizeLuminance } from "../../common/color/palette";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-formfield";
-import "../../components/ha-list-item";
-import "../../components/ha-radio";
 import "../../components/ha-button";
+import "../../components/ha-formfield";
+import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-textfield";
 import {
-  DefaultAccentColor,
-  DefaultPrimaryColor,
-} from "../../resources/theme/color/color.globals";
-import {
   saveThemePreferences,
   subscribeThemePreferences,
 } from "../../data/theme";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import {
+  DefaultAccentColor,
+  DefaultPrimaryColor,
+} from "../../resources/theme/color/color.globals";
 import type { HomeAssistant, ThemeSettings } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { clearSelectedThemeState } from "../../util/ha-pref-storage";
@@ -93,19 +92,18 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
           .disabled=${!hasThemes}
           .value=${this.hass.selectedTheme?.theme || USE_DEFAULT_THEME}
           @selected=${this._handleThemeSelection}
-          naturalMenuWidth
+          .options=${[
+            {
+              value: USE_DEFAULT_THEME,
+              label: this.hass.localize("ui.panel.profile.themes.use_default"),
+            },
+            { value: HOME_ASSISTANT_THEME, label: "Home Assistant" },
+            ...this._themeNames.map((theme) => ({
+              value: theme,
+              label: theme,
+            })),
+          ]}
         >
-          <ha-list-item .value=${USE_DEFAULT_THEME}>
-            ${this.hass.localize("ui.panel.profile.themes.use_default")}
-          </ha-list-item>
-          <ha-list-item .value=${HOME_ASSISTANT_THEME}>
-            Home Assistant
-          </ha-list-item>
-          ${this._themeNames.map(
-            (theme) => html`
-              <ha-list-item .value=${theme}>${theme}</ha-list-item>
-            `
-          )}
         </ha-select>
       </ha-settings-row>
       ${curTheme === HOME_ASSISTANT_THEME ||
@@ -261,8 +259,8 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     fireEvent(this, "settheme", { dark });
   }
 
-  private _handleThemeSelection(ev) {
-    const theme = ev.target.value;
+  private _handleThemeSelection(ev: CustomEvent<{ value: string }>) {
+    const theme = ev.detail.value;
     if (theme === this.hass.selectedTheme?.theme) {
       return;
     }
@@ -333,6 +331,11 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       min-width: 75px;
       flex-grow: 1;
       margin: 0 4px;
+    }
+
+    ha-select {
+      display: block;
+      width: 100%;
     }
   `;
 }

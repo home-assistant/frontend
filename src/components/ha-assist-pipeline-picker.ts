@@ -2,14 +2,12 @@ import type { PropertyValueMap } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { formatLanguageCode } from "../common/language/format_language";
 import type { AssistPipeline } from "../data/assist_pipeline";
 import { listAssistPipelines } from "../data/assist_pipeline";
 import type { HomeAssistant } from "../types";
-import "./ha-list-item";
 import "./ha-select";
-import type { HaSelect } from "./ha-select";
+import type { HaSelectOption } from "./ha-select";
 
 const PREFERRED = "preferred";
 const LAST_USED = "last_used";
@@ -41,6 +39,31 @@ export class HaAssistPipelinePicker extends LitElement {
       return nothing;
     }
     const value = this.value ?? this._default;
+    const options: HaSelectOption[] = [
+      {
+        value: PREFERRED,
+        label: this.hass.localize("ui.components.pipeline-picker.preferred", {
+          preferred: this._pipelines.find(
+            (pipeline) => pipeline.id === this._preferredPipeline
+          )?.name,
+        }),
+      },
+    ];
+
+    if (this.includeLastUsed) {
+      options.unshift({
+        value: LAST_USED,
+        label: this.hass.localize("ui.components.pipeline-picker.last_used"),
+      });
+    }
+
+    options.push(
+      ...this._pipelines.map((pipeline) => ({
+        value: pipeline.id,
+        label: `${pipeline.name} (${formatLanguageCode(pipeline.language, this.hass.locale)})`,
+      }))
+    );
+
     return html`
       <ha-select
         .label=${this.label ||
@@ -49,33 +72,8 @@ export class HaAssistPipelinePicker extends LitElement {
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
+        .options=${options}
       >
-        ${this.includeLastUsed
-          ? html`
-              <ha-list-item .value=${LAST_USED}>
-                ${this.hass!.localize(
-                  "ui.components.pipeline-picker.last_used"
-                )}
-              </ha-list-item>
-            `
-          : null}
-        <ha-list-item .value=${PREFERRED}>
-          ${this.hass!.localize("ui.components.pipeline-picker.preferred", {
-            preferred: this._pipelines.find(
-              (pipeline) => pipeline.id === this._preferredPipeline
-            )?.name,
-          })}
-        </ha-list-item>
-        ${this._pipelines.map(
-          (pipeline) =>
-            html`<ha-list-item .value=${pipeline.id}>
-              ${pipeline.name}
-              (${formatLanguageCode(pipeline.language, this.hass.locale)})
-            </ha-list-item>`
-        )}
       </ha-select>
     `;
   }
@@ -96,17 +94,17 @@ export class HaAssistPipelinePicker extends LitElement {
     }
   `;
 
-  private _changed(ev): void {
-    const target = ev.target as HaSelect;
+  private _changed(ev: CustomEvent<{ value: string }>): void {
+    const value = ev.detail.value;
     if (
       !this.hass ||
-      target.value === "" ||
-      target.value === this.value ||
-      (this.value === undefined && target.value === this._default)
+      value === "" ||
+      value === this.value ||
+      (this.value === undefined && value === this._default)
     ) {
       return;
     }
-    this.value = target.value === this._default ? undefined : target.value;
+    this.value = value === this._default ? undefined : value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }

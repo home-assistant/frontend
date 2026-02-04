@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { SupervisorMounts } from "../data/supervisor/mounts";
 import {
@@ -17,7 +16,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-list-item";
 import "./ha-select";
-import type { HaSelect } from "./ha-select";
+import type { HaSelectOption } from "./ha-select";
 
 const _BACKUP_DATA_DISK_ = "/backup";
 
@@ -52,60 +51,54 @@ class HaMountPicker extends LitElement {
     if (!this._mounts) {
       return nothing;
     }
-    const dataDiskOption = html`<ha-list-item
-      graphic="icon"
-      .value=${_BACKUP_DATA_DISK_}
-    >
-      <span>
-        ${this.hass.localize("ui.components.mount-picker.use_datadisk") ||
-        "Use data disk for backup"}
-      </span>
-      <ha-svg-icon slot="graphic" .path=${mdiHarddisk}></ha-svg-icon>
-    </ha-list-item>`;
+
+    const options: HaSelectOption[] = this._filterMounts(
+      this._mounts,
+      this.usage
+    ).map((mount) => ({
+      value: mount.name,
+      label: mount.name,
+      secondary: `${mount.server}${mount.port ? `:${mount.port}` : ""}${
+        mount.type === SupervisorMountType.NFS ? mount.path : `:${mount.share}`
+      }`,
+      iconPath:
+        mount.usage === SupervisorMountUsage.MEDIA
+          ? mdiPlayBox
+          : mount.usage === SupervisorMountUsage.SHARE
+            ? mdiFolder
+            : mdiBackupRestore,
+    }));
+
+    if (this.usage === SupervisorMountUsage.BACKUP) {
+      const dataDiskOption = {
+        value: _BACKUP_DATA_DISK_,
+        iconPath: mdiHarddisk,
+        label:
+          this.hass.localize("ui.components.mount-picker.use_datadisk") ||
+          "Use data disk for backup",
+      };
+      if (
+        !this._mounts.default_backup_mount ||
+        this._mounts.default_backup_mount === _BACKUP_DATA_DISK_
+      ) {
+        options.unshift(dataDiskOption);
+      } else {
+        options.push(dataDiskOption);
+      }
+    }
+
     return html`
       <ha-select
         .label=${this.label === undefined && this.hass
           ? this.hass.localize("ui.components.mount-picker.mount")
           : this.label}
-        .value=${this._value}
+        .value=${this.value}
         .required=${this.required}
         .disabled=${this.disabled}
         .helper=${this.helper}
         @selected=${this._mountChanged}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
+        .options=${options}
       >
-        ${this.usage === SupervisorMountUsage.BACKUP &&
-        (!this._mounts.default_backup_mount ||
-          this._mounts.default_backup_mount === _BACKUP_DATA_DISK_)
-          ? dataDiskOption
-          : nothing}
-        ${this._filterMounts(this._mounts, this.usage).map(
-          (mount) =>
-            html`<ha-list-item twoline graphic="icon" .value=${mount.name}>
-              <span>${mount.name}</span>
-              <span slot="secondary"
-                >${mount.server}${mount.port
-                  ? `:${mount.port}`
-                  : nothing}${mount.type === SupervisorMountType.NFS
-                  ? mount.path
-                  : `:${mount.share}`}</span
-              >
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mount.usage === SupervisorMountUsage.MEDIA
-                  ? mdiPlayBox
-                  : mount.usage === SupervisorMountUsage.SHARE
-                    ? mdiFolder
-                    : mdiBackupRestore}
-              ></ha-svg-icon>
-            </ha-list-item>`
-        )}
-        ${this.usage === SupervisorMountUsage.BACKUP &&
-        this._mounts.default_backup_mount
-          ? dataDiskOption
-          : nothing}
       </ha-select>
     `;
   }
@@ -153,16 +146,10 @@ class HaMountPicker extends LitElement {
     }
   }
 
-  private get _value() {
-    return this.value || "";
-  }
+  private _mountChanged(ev: CustomEvent<{ value: string }>) {
+    const newValue = ev.detail.value;
 
-  private _mountChanged(ev: Event) {
-    ev.stopPropagation();
-    const target = ev.target as HaSelect;
-    const newValue = target.value;
-
-    if (newValue !== this._value) {
+    if (newValue !== this.value) {
       this._setValue(newValue);
     }
   }

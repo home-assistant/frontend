@@ -1,11 +1,10 @@
 import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTimeNumeric } from "../../common/datetime/format_date_time";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
-import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { TimeZone } from "../../data/translation";
@@ -34,40 +33,42 @@ class TimeZoneRow extends LitElement {
           .disabled=${this.hass.locale === undefined}
           .value=${this.hass.locale.time_zone}
           @selected=${this._handleFormatSelection}
-          naturalMenuWidth
-        >
-          ${Object.values(TimeZone).map((format) => {
-            const formattedTime = formatDateTimeNumeric(
+          .options=${Object.values(TimeZone).map((format) => ({
+            value: format.toString(),
+            label: this.hass.localize(
+              `ui.panel.profile.time_zone.options.${format}`,
+              {
+                timezone: resolveTimeZone(
+                  format,
+                  this.hass.config.time_zone
+                ).replace("_", " "),
+              }
+            ),
+            secondary: formatDateTimeNumeric(
               date,
               {
                 ...this.hass.locale,
                 time_zone: format,
               },
               this.hass.config
-            );
-            return html`<ha-list-item .value=${format} twoline>
-              <span
-                >${this.hass.localize(
-                  `ui.panel.profile.time_zone.options.${format}`,
-                  {
-                    timezone: resolveTimeZone(
-                      format,
-                      this.hass.config.time_zone
-                    ).replace("_", " "),
-                  }
-                )}</span
-              >
-              <span slot="secondary">${formattedTime}</span>
-            </ha-list-item>`;
-          })}
+            ),
+          }))}
+        >
         </ha-select>
       </ha-settings-row>
     `;
   }
 
-  private async _handleFormatSelection(ev) {
-    fireEvent(this, "hass-time-zone-select", ev.target.value);
+  private async _handleFormatSelection(ev: CustomEvent<{ value: string }>) {
+    fireEvent(this, "hass-time-zone-select", ev.detail.value as TimeZone);
   }
+
+  static styles = css`
+    ha-select {
+      display: block;
+      width: 100%;
+    }
+  `;
 }
 
 declare global {
