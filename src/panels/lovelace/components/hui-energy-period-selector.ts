@@ -316,62 +316,64 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                       : ``}</span
                   >`
                 : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}`}
-          <slot name="headerActionItems" slot="actionItems"></slot>
-        </ha-dialog-header>
-        <div class="overflow">
-          ${!this.narrow
-            ? html`<ha-button
-                appearance="filled"
-                size="small"
-                @click=${this._pickNow}
-              >
-                ${this.hass.localize(
-                  "ui.panel.lovelace.components.energy_period_selector.now"
-                )}
-              </ha-button>`
-            : nothing}
-          ${buttons.map((item, index) =>
-            this._collapseButtons || item.alwaysCollapse
-              ? nothing
-              : html`<ha-tooltip
-                    .disabled=${!item.tooltip}
-                    .for="icon-button-${index}"
-                    >${item.tooltip ?? ""}</ha-tooltip
-                  ><ha-icon-button
-                    .id="icon-button-${index}"
-                    @click=${item.action}
-                    .label=${item.label}
-                    .path=${item.path}
-                    ?disabled=${item.disabled}
-                  ></ha-icon-button>`
-          )}
-          ${this._collapseButtons || buttons.some((x) => x.alwaysCollapse)
-            ? html`<ha-dropdown
-                @wa-show=${this._handleIconOverflowMenuOpened}
-                @click=${stopPropagation}
-              >
-                <ha-icon-button
-                  .label=${this.hass.localize("ui.common.overflow_menu")}
-                  .path=${mdiDotsVertical}
-                  slot="trigger"
-                ></ha-icon-button>
-                ${buttons.map((item) =>
-                  (this._collapseButtons || item.alwaysCollapse) && !item.hidden
-                    ? html`<ha-dropdown-item
-                        ?disabled=${item.disabled}
+          <slot name="headerActionItems" slot="actionItems">
+            <div class="overflow">
+              ${!this.narrow
+                ? html`<ha-button
+                    appearance="filled"
+                    size="small"
+                    @click=${this._pickNow}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.components.energy_period_selector.now"
+                    )}
+                  </ha-button>`
+                : nothing}
+              ${buttons.map((item, index) =>
+                this._collapseButtons || item.alwaysCollapse
+                  ? nothing
+                  : html`<ha-tooltip
+                        .disabled=${!item.tooltip}
+                        .for="icon-button-${index}"
+                        >${item.tooltip ?? ""}</ha-tooltip
+                      ><ha-icon-button
+                        .id="icon-button-${index}"
                         @click=${item.action}
-                      >
-                        <ha-svg-icon
-                          slot="icon"
-                          .path=${item.path}
-                        ></ha-svg-icon>
-                        ${item.label}
-                      </ha-dropdown-item>`
-                    : nothing
-                )}
-              </ha-dropdown>`
-            : nothing}
-        </div>
+                        .label=${item.label}
+                        .path=${item.path}
+                        ?disabled=${item.disabled}
+                      ></ha-icon-button>`
+              )}
+              ${this._collapseButtons || buttons.some((x) => x.alwaysCollapse)
+                ? html`<ha-dropdown
+                    @wa-show=${this._handleIconOverflowMenuOpened}
+                    @click=${stopPropagation}
+                  >
+                    <ha-icon-button
+                      .label=${this.hass.localize("ui.common.overflow_menu")}
+                      .path=${mdiDotsVertical}
+                      slot="trigger"
+                    ></ha-icon-button>
+                    ${buttons.map((item) =>
+                      (this._collapseButtons || item.alwaysCollapse) &&
+                      !item.hidden
+                        ? html`<ha-dropdown-item
+                            ?disabled=${item.disabled}
+                            @click=${item.action}
+                          >
+                            <ha-svg-icon
+                              slot="icon"
+                              .path=${item.path}
+                            ></ha-svg-icon>
+                            ${item.label}
+                          </ha-dropdown-item>`
+                        : nothing
+                    )}
+                  </ha-dropdown>`
+                : nothing}
+            </div>
+          </slot>
+        </ha-dialog-header>
       </div>
     `;
   }
@@ -621,35 +623,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       display: block;
     }
     .row {
-      display: flex;
-      align-items: center;
       justify-content: space-between;
       container-type: inline-size;
     }
     :host .overflow {
       display: flex;
-      justify-content: flex-end;
       align-items: center;
-    }
-    :host([narrow]) .overflow {
-      margin-left: auto;
-      margin-inline-start: auto;
-      margin-inline-end: initial;
     }
     .label {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      flex-grow: 1;
-      font-size: var(--ha-font-size-l);
-      margin-left: auto;
-      margin-inline-start: auto;
-      margin-inline-end: initial;
       --ha-dialog-header-title-font-size: var(--ha-font-size-xl);
-      --ha-dialog-header-subtitle-font-size: var(--ha-font-size-m);
-    }
-    :host([narrow]) .label {
-      --ha-dialog-header-title-font-size: var(--ha-font-size-l);
       --ha-dialog-header-subtitle-font-size: var(--ha-font-size-m);
     }
     @container (max-width: 360px) {
@@ -663,12 +645,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         --ha-dialog-header-title-font-size: var(--ha-font-size-s);
         --ha-dialog-header-subtitle-font-size: var(--ha-font-size-s);
       }
-    }
-    :host([narrow]) .label,
-    :host([fixed]) .label {
-      margin-left: unset;
-      margin-inline-start: unset;
-      margin-inline-end: initial;
     }
     ha-button {
       margin-left: 8px;
