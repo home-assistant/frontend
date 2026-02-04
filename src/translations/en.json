@@ -3844,8 +3844,6 @@
               "type_two_sensors": "[%key:ui::panel::config::energy::battery::dialog::type_two_sensors%]",
               "power_stat": "Power sensor",
               "power_helper": "Pick a sensor which measures grid power in either of {unit}.",
-              "power_from_grid": "Power imported from grid",
-              "power_to_grid": "Power exported to grid",
               "power_from": "Power imported from grid",
               "power_to": "Power exported to grid"
             },
