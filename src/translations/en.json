@@ -3837,7 +3837,7 @@
               "compensation_number_label": "Rate",
               "power": "Power measurement",
               "sensor_type": "[%key:ui::panel::config::energy::battery::dialog::sensor_type%]",
-              "type_none": "No power sensor",
+              "type_none": "[%key:ui::panel::config::energy::battery::dialog::type_none%]",
               "type_standard": "[%key:ui::panel::config::energy::battery::dialog::type_standard%]",
               "type_inverted": "[%key:ui::panel::config::energy::battery::dialog::type_inverted%]",
               "type_inverted_description": "Positive values indicate exporting to the grid, negative values indicate importing from the grid.",
