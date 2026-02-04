@@ -186,7 +186,6 @@ class PanelLight extends LitElement {
           );
           padding-top: var(--safe-area-inset-top);
           z-index: 4;
-          transition: box-shadow 200ms linear;
           display: flex;
           flex-direction: row;
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);

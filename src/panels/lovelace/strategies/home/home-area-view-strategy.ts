@@ -253,11 +253,6 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       device_class: "battery",
     });
 
-    const energyFilter = generateEntityFilter(hass, {
-      domain: "sensor",
-      device_class: ["energy", "power"],
-    });
-
     const primaryFilter = generateEntityFilter(hass, {
       entity_category: "none",
     });
@@ -269,7 +264,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         batteryFilter(e)
       );
       const entities = deviceEntities.entities.filter(
-        (e) => !batteryFilter(e) && !energyFilter(e) && primaryFilter(e)
+        (e) => !batteryFilter(e) && primaryFilter(e)
       );
 
       if (entities.length === 0) {
@@ -365,7 +360,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "empty-state",
-            icon: "mdi:sofa-outline",
+            icon: area.icon || "mdi:shape-square-rounded-plus",
             icon_color: "primary",
             content_only: true,
             title: hass.localize(

@@ -17,7 +17,6 @@ import type { HaProgressButton } from "../../../../../components/buttons/ha-prog
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-generic-picker";
-import "../../../../../components/ha-list-item";
 import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
@@ -374,7 +373,6 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <ha-select
-          fixedMenuPosition
           .disabled=${!item.metadata.writeable}
           .value=${item.value?.toString()}
           .key=${id}
@@ -383,12 +381,13 @@ class ZWaveJSNodeConfig extends LitElement {
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
           .helper=${defaultLabel}
-        >
-          ${Object.entries(item.metadata.states).map(
-            ([key, entityState]) => html`
-              <ha-list-item .value=${key}>${entityState}</ha-list-item>
-            `
+          .options=${Object.entries(item.metadata.states).map(
+            ([key, entityState]) => ({
+              value: key,
+              label: entityState,
+            })
           )}
+        >
         </ha-select>
       `;
     }
@@ -457,8 +456,8 @@ class ZWaveJSNodeConfig extends LitElement {
     this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
   }
 
-  private _dropdownSelected(ev) {
-    this._handleEnumeratedPickerValueChanged(ev, ev.target.value);
+  private _dropdownSelected(ev: CustomEvent<{ value: string }>) {
+    this._handleEnumeratedPickerValueChanged(ev, ev.detail.value);
   }
 
   private _pickerValueChanged(ev) {
@@ -469,7 +468,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config![ev.target.key].value?.toString() === value) {
+    if (this._config![ev.target.key].value === value) {
       return;
     }
     this._setResult(ev.target.key, undefined);

@@ -1,15 +1,13 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
 import type { TTSVoice } from "../data/tts";
 import { listTTSVoices } from "../data/tts";
 import type { HomeAssistant } from "../types";
-import "./ha-list-item";
 import "./ha-select";
-import type { HaSelect } from "./ha-select";
+import type { HaSelectOption } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
 
@@ -31,14 +29,25 @@ export class HaTTSVoicePicker extends LitElement {
 
   @state() _voices?: TTSVoice[] | null;
 
-  @query("ha-select") private _select?: HaSelect;
-
   protected render() {
     if (!this._voices) {
       return nothing;
     }
     const value =
       this.value ?? (this.required ? this._voices[0]?.voice_id : NONE);
+
+    const options: HaSelectOption[] = (this._voices || []).map((voice) => ({
+      value: voice.voice_id,
+      label: voice.name,
+    }));
+
+    if (!this.required || !this.value) {
+      options.unshift({
+        value: NONE,
+        label: this.hass!.localize("ui.components.tts-voice-picker.none"),
+      });
+    }
+
     return html`
       <ha-select
         .label=${this.label ||
@@ -47,21 +56,8 @@ export class HaTTSVoicePicker extends LitElement {
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
+        .options=${options}
       >
-        ${!this.required
-          ? html`<ha-list-item .value=${NONE}>
-              ${this.hass!.localize("ui.components.tts-voice-picker.none")}
-            </ha-list-item>`
-          : nothing}
-        ${this._voices.map(
-          (voice) =>
-            html`<ha-list-item .value=${voice.voice_id}>
-              ${voice.name}
-            </ha-list-item>`
-        )}
       </ha-select>
     `;
   }
@@ -102,34 +98,25 @@ export class HaTTSVoicePicker extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    if (
-      changedProperties.has("_voices") &&
-      this._select?.value !== this.value
-    ) {
-      this._select?.layoutOptions();
-      fireEvent(this, "value-changed", { value: this._select?.value });
-    }
-  }
-
   static styles = css`
     ha-select {
       width: 100%;
+      text-align: start;
+      display: block;
     }
   `;
 
-  private _changed(ev): void {
-    const target = ev.target as HaSelect;
+  private _changed(ev: CustomEvent<{ value: string }>): void {
+    const value = ev.detail.value;
     if (
       !this.hass ||
-      target.value === "" ||
-      target.value === this.value ||
-      (this.value === undefined && target.value === NONE)
+      value === "" ||
+      value === this.value ||
+      (this.value === undefined && value === NONE)
     ) {
       return;
     }
-    this.value = target.value === NONE ? undefined : target.value;
+    this.value = value === NONE ? undefined : value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }

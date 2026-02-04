@@ -1,13 +1,11 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-progress-button";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
-import "../../../../../components/ha-list-item";
 import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import {
   bindDeviceToGroup,
@@ -16,7 +14,6 @@ import {
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import type { ItemSelectedEvent } from "./types";
 import "./zha-clusters-data-table";
 import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
 
@@ -64,16 +61,11 @@ export class ZHAGroupBindingControl extends LitElement {
               class="menu"
               .value=${String(this._bindTargetIndex)}
               @selected=${this._bindTargetIndexChanged}
-              @closed=${stopPropagation}
-              fixedMenuPosition
-              naturalMenuWidth
+              .options=${this.groups.map((group, idx) => ({
+                value: String(idx),
+                label: group.name,
+              }))}
             >
-              ${this.groups.map(
-                (group, idx) =>
-                  html`<ha-list-item .value=${String(idx)}
-                    >${group.name}</ha-list-item
-                  > `
-              )}
             </ha-select>
           </div>
           <div class="command-picker">
@@ -109,8 +101,8 @@ export class ZHAGroupBindingControl extends LitElement {
     `;
   }
 
-  private _bindTargetIndexChanged(event: ItemSelectedEvent): void {
-    this._bindTargetIndex = Number(event.target!.value);
+  private _bindTargetIndexChanged(event: CustomEvent<{ value: string }>): void {
+    this._bindTargetIndex = Number(event.detail.value);
     this._groupToBind =
       this._bindTargetIndex === -1
         ? undefined

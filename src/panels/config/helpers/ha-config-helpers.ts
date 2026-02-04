@@ -9,7 +9,6 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiMenuDown,
-  mdiPencilOff,
   mdiPlus,
   mdiProgressHelper,
   mdiTag,
@@ -27,7 +26,6 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
-import { slugify } from "../../../common/string/slugify";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -118,6 +116,13 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
+import {
+  getEntityIdTableColumn,
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getLabelsTableColumn,
+  getEditableTableColumn,
+} from "../common/data-table-columns";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
@@ -360,68 +365,20 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               `
             : nothing,
       },
-      entity_id: {
-        title: localize("ui.panel.config.helpers.picker.headers.entity_id"),
-        sortable: true,
-        filterable: true,
-      },
-      category: {
-        title: localize("ui.panel.config.helpers.picker.headers.category"),
-        hidden: true,
-        groupable: true,
-        filterable: true,
-        sortable: true,
-      },
-      area: {
-        title: localize("ui.panel.config.helpers.picker.headers.area"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        template: (helper) => helper.area || "—",
-      },
-      labels: {
-        title: "",
-        hidden: true,
-        filterable: true,
-        template: (helper) =>
-          helper.label_entries.map((lbl) => lbl.name).join(" "),
-      },
+      entity_id: getEntityIdTableColumn(localize),
+      category: getCategoryTableColumn(localize),
+      area: getAreaTableColumn(localize),
+      labels: getLabelsTableColumn(),
       localized_type: {
         title: localize("ui.panel.config.helpers.picker.headers.type"),
         sortable: true,
         filterable: true,
         groupable: true,
       },
-      editable: {
-        title: localize("ui.panel.config.helpers.picker.headers.editable"),
-        type: "icon",
-        sortable: true,
-        minWidth: "88px",
-        maxWidth: "88px",
-        showNarrow: true,
-        template: (helper) => html`
-          ${!helper.editable
-            ? html`
-                <div
-                  tabindex="0"
-                  style="display:inline-block; position: relative;"
-                >
-                  <ha-svg-icon
-                    .id="icon-edit-${slugify(helper.entity_id)}"
-                    .path=${mdiPencilOff}
-                  ></ha-svg-icon>
-                  <ha-tooltip
-                    .for="icon-edit-${slugify(helper.entity_id)}"
-                    placement="left"
-                    >${this.hass.localize(
-                      "ui.panel.config.entities.picker.status.unmanageable"
-                    )}
-                  </ha-tooltip>
-                </div>
-              `
-            : ""}
-        `,
-      },
+      editable: getEditableTableColumn(
+        localize,
+        localize("ui.panel.config.entities.picker.status.unmanageable")
+      ),
       actions: {
         title: "",
         label: this.hass.localize("ui.panel.config.generic.headers.actions"),

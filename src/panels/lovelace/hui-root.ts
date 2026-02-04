@@ -1299,7 +1299,6 @@ class HUIRoot extends LitElement {
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
           z-index: 4;
-          transition: box-shadow 200ms linear;
         }
         .narrow .header {
           width: calc(

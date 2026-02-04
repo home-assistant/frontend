@@ -1,8 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { forwardHaptic } from "../../../data/haptics";
@@ -70,17 +68,8 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
           .disabled=${
             stateObj.state === UNAVAILABLE /* UNKNOWN state is allowed */
           }
-          naturalMenuWidth
           @selected=${this._selectedChanged}
-          @click=${stopPropagation}
-          @closed=${stopPropagation}
         >
-          ${stateObj.attributes.options
-            ? stateObj.attributes.options.map(
-                (option) =>
-                  html`<ha-list-item .value=${option}>${option}</ha-list-item>`
-              )
-            : ""}
         </ha-select>
       </hui-generic-entity-row>
     `;
@@ -97,11 +86,11 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     }
   `;
 
-  private _selectedChanged(ev): void {
+  private _selectedChanged(ev: CustomEvent<{ value: string }>): void {
     const stateObj = this.hass!.states[
       this._config!.entity
     ] as InputSelectEntity;
-    const option = ev.target.value;
+    const option = ev.detail.value;
     if (
       option === stateObj.state ||
       !stateObj.attributes.options.includes(option)
