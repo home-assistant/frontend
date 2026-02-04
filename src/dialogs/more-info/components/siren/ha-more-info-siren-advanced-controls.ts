@@ -65,6 +65,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
     return html`
       <ha-wa-dialog
         .open=${this._open}
+        .hass=${this.hass}
         header-title=${this.hass.localize(
           "ui.components.siren.advanced_controls"
         )}
