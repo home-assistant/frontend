@@ -42,7 +42,11 @@ import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
+import type {
+  HomeAssistant,
+  Route,
+  ValueChangedEvent,
+} from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
 import "./zwave_js-custom-param";
@@ -546,7 +550,7 @@ class ZWaveJSNodeConfig extends LitElement {
     id: string,
     item: ZWaveJSNodeConfigParam
   ) {
-    return (ev: CustomEvent<{ value: number }>) =>
+    return (ev: ValueChangedEvent<number>) =>
       this._numericInputChanged({
         ...ev,
         target: {

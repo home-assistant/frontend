@@ -1766,7 +1766,7 @@ class DialogAddAutomationElement
   }
 
   private _handleTargetSelected = (
-    ev: CustomEvent<{ value: SingleHassServiceTarget }>
+    ev: ValueChangedEvent<SingleHassServiceTarget>
   ) => {
     this._targetItems = undefined;
     this._loadItemsError = false;
