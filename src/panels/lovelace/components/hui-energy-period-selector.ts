@@ -265,53 +265,49 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           </section>
           <section class="date-range" @click=${this._openDatePicker}>
             <div class="header-title">
-              <span
-                >${simpleRange === "year"
-                  ? html`${formatDateYear(
-                      this._startDate,
-                      this.hass.locale,
-                      this.hass.config
-                    )}`
-                  : html`${simpleRange === "month"
-                      ? html`${formatDateMonth(
+              ${simpleRange === "year"
+                ? html`${formatDateYear(
+                    this._startDate,
+                    this.hass.locale,
+                    this.hass.config
+                  )}`
+                : html`${simpleRange === "month"
+                    ? html`${formatDateMonth(
+                        this._startDate,
+                        this.hass.locale,
+                        this.hass.config
+                      )}`
+                    : simpleRange === "day"
+                      ? html`${formatDateVeryShort(
                           this._startDate,
                           this.hass.locale,
                           this.hass.config
                         )}`
-                      : simpleRange === "day"
-                        ? html`${formatDateVeryShort(
-                            this._startDate,
-                            this.hass.locale,
-                            this.hass.config
-                          )}`
-                        : html`${formatDateVeryShort(
-                            this._startDate,
-                            this.hass.locale,
-                            this.hass.config
-                          )}&ndash;${formatDateVeryShort(
-                            this._endDate || new Date(),
-                            this.hass.locale,
-                            this.hass.config
-                          )} `} `}</span
-              >
-            </div>
-            <div class="header-subtitle">
-              ${showSubtitleYear
-                ? html`<span
-                    >${formatDateYear(
-                      this._startDate,
-                      this.hass.locale,
-                      this.hass.config
-                    )}${showBothYear
-                      ? html`&ndash;${formatDateYear(
+                      : html`${formatDateVeryShort(
+                          this._startDate,
+                          this.hass.locale,
+                          this.hass.config
+                        )}&ndash;${formatDateVeryShort(
                           this._endDate || new Date(),
                           this.hass.locale,
                           this.hass.config
-                        )}`
-                      : ``}</span
-                  >`
-                : nothing}
+                        )} `} `}
             </div>
+            ${showSubtitleYear
+              ? html`<div class="header-subtitle">
+                  ${formatDateYear(
+                    this._startDate,
+                    this.hass.locale,
+                    this.hass.config
+                  )}${showBothYear
+                    ? html`&ndash;${formatDateYear(
+                        this._endDate || new Date(),
+                        this.hass.locale,
+                        this.hass.config
+                      )}`
+                    : ``}
+                </div>`
+              : nothing}
           </section>
           <section class="date-actions">
             <div class="overflow">
@@ -639,23 +635,25 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     .date-range {
       flex: 1;
-      padding: 0 var(--ha-space-1);
+      background-color: var(--input-fill-color);
+      border-bottom: 1px solid var(--input-outlined-idle-border-color);
+      padding: 2px var(--ha-space-2) 1px;
+      margin: 4px 0px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      min-height: var(--ha-space-12);
+      min-height: var(--ha-space-10);
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       cursor: pointer;
     }
-    .date-range:hover {
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
-      transition: background-color 0.15s ease-in-out;
-      -webkit-border-radius: var(--ha-border-radius-lg);
-      -moz-border-radius: var(--ha-border-radius-lg);
-      border-radius: var(--ha-border-radius-lg);
+    @media (hover: hover) {
+      .date-range:hover {
+        border-color: var(--input-outlined-hover-border-color);
+        transition: background-color 0.15s ease-in-out;
+      }
     }
     .header-title {
       font-size: var(--ha-font-size-xl);
@@ -665,16 +663,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     .header-subtitle {
       font-size: var(--ha-font-size-m);
-      line-height: var(--ha-line-height-normal);
+      line-height: var(--ha-line-height-condensed);
       color: var(--secondary-text-color);
     }
-    @container (max-width: 360px) {
-      :host([narrow]) .header-title {
-        font-size: var(--ha-font-size-m);
-      }
-      :host([narrow]) .header-subtitle {
-        font-size: var(--ha-font-size-s);
-      }
+    :host([narrow]) .header-title {
+      font-size: var(--ha-font-size-m);
+    }
+    :host([narrow]) .header-subtitle {
+      font-size: var(--ha-font-size-s);
+      line-height: var(--ha-line-height-condensed);
     }
     .date-actions {
       flex: none;
