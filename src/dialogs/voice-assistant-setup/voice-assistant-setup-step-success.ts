@@ -249,7 +249,6 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     ] as InputSelectEntity;
     const option = ev.detail.value;
     if (
-      !option ||
       option === stateObj.state ||
       !stateObj.attributes.options.includes(option)
     ) {

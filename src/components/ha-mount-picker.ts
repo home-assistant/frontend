@@ -149,7 +149,7 @@ class HaMountPicker extends LitElement {
   private _mountChanged(ev: HaSelectSelectEvent) {
     const newValue = ev.detail.value;
 
-    if (newValue && newValue !== this.value) {
+    if (newValue !== this.value) {
       this._setValue(newValue);
     }
   }

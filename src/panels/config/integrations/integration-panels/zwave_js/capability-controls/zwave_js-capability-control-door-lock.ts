@@ -390,9 +390,6 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
   }
 
   private _doorLockModeChanged(ev: HaSelectSelectEvent<DoorLockMode>) {
-    if (ev.detail.value === undefined) {
-      return;
-    }
     this._currentDoorLockMode = ev.detail.value;
   }
 

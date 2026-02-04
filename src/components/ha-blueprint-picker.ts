@@ -80,7 +80,7 @@ class HaBluePrintPicker extends LitElement {
   private _blueprintChanged(ev: HaSelectSelectEvent) {
     const newValue = ev.detail.value;
 
-    if (newValue && newValue !== this.value) {
+    if (newValue !== this.value) {
       this.value = newValue;
       setTimeout(() => {
         fireEvent(this, "value-changed", { value: newValue });

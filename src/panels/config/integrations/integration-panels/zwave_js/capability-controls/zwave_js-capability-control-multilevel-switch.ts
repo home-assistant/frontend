@@ -150,9 +150,6 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
   }
 
   private _directionChanged(ev: HaSelectSelectEvent) {
-    if (ev.detail.value === undefined) {
-      return;
-    }
     this._direction = ev.detail.value;
   }
 

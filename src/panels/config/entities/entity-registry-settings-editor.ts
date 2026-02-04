@@ -1374,7 +1374,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _switchAsDomainChanged(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
-    if (!value) {
+    if (value === "") {
       return;
     }
 
