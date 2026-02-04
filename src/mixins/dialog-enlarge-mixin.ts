@@ -1,6 +1,7 @@
 import { property } from "lit/decorators";
 import { type LitElement, css, unsafeCSS } from "lit";
 import type { Constructor } from "../types";
+import { withViewTransition } from "../../common/util/view-transition";
 import { getInheritedStyles } from "./common";
 
 export interface DialogEnlargeConfig {
@@ -29,7 +30,9 @@ export const DialogEnlargeMixin = <T extends Constructor<LitElement>>(
     }
 
     protected enlarge() {
-      this.large = !this.large;
+      withViewTransition(() => {
+        this.large = !this.large;
+      });
     }
 
     static get styles() {
