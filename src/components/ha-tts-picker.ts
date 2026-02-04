@@ -2,16 +2,14 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
+import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
 import type { TTSEngine } from "../data/tts";
 import { listTTSEngines } from "../data/tts";
 import type { HomeAssistant } from "../types";
-import "./ha-list-item";
 import "./ha-select";
-import type { HaSelect } from "./ha-select";
-import { computeDomain } from "../common/entity/compute_domain";
+import type { HaSelectOption } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
 
@@ -61,6 +59,30 @@ export class HaTTSPicker extends LitElement {
       value = NONE;
     }
 
+    const options: HaSelectOption[] = this._engines
+      .filter((engine) => !engine.deprecated || engine.engine_id === value)
+      .map((engine) => {
+        let label: string;
+        if (engine.engine_id.includes(".")) {
+          const stateObj = this.hass.states[engine.engine_id];
+          label = stateObj ? computeStateName(stateObj) : engine.engine_id;
+        } else {
+          label = engine.name || engine.engine_id;
+        }
+        return {
+          value: engine.engine_id,
+          label,
+          disabled: engine.supported_languages?.length === 0,
+        };
+      });
+
+    if (!this.required || value === NONE) {
+      options.unshift({
+        value: NONE,
+        label: this.hass.localize("ui.components.tts-picker.none"),
+      });
+    }
+
     return html`
       <ha-select
         .label=${this.label ||
@@ -69,33 +91,8 @@ export class HaTTSPicker extends LitElement {
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
+        .options=${options}
       >
-        ${!this.required
-          ? html`<ha-list-item .value=${NONE}>
-              ${this.hass!.localize("ui.components.tts-picker.none")}
-            </ha-list-item>`
-          : nothing}
-        ${this._engines.map((engine) => {
-          if (engine.deprecated && engine.engine_id !== value) {
-            return nothing;
-          }
-          let label: string;
-          if (engine.engine_id.includes(".")) {
-            const stateObj = this.hass!.states[engine.engine_id];
-            label = stateObj ? computeStateName(stateObj) : engine.engine_id;
-          } else {
-            label = engine.name || engine.engine_id;
-          }
-          return html`<ha-list-item
-            .value=${engine.engine_id}
-            .disabled=${engine.supported_languages?.length === 0}
-          >
-            ${label}
-          </ha-list-item>`;
-        })}
       </ha-select>
     `;
   }
@@ -144,17 +141,17 @@ export class HaTTSPicker extends LitElement {
     }
   `;
 
-  private _changed(ev): void {
-    const target = ev.target as HaSelect;
+  private _changed(ev: CustomEvent<{ value: string }>): void {
+    const value = ev.detail.value;
     if (
       !this.hass ||
-      target.value === "" ||
-      target.value === this.value ||
-      (this.value === undefined && target.value === NONE)
+      value === "" ||
+      value === this.value ||
+      (this.value === undefined && value === NONE)
     ) {
       return;
     }
-    this.value = target.value === NONE ? undefined : target.value;
+    this.value = value === NONE ? undefined : value;
     fireEvent(this, "value-changed", { value: this.value });
     fireEvent(this, "supported-languages-changed", {
       value: this._engines!.find((engine) => engine.engine_id === this.value)
