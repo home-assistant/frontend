@@ -1,4 +1,3 @@
-import { mdiViewDashboard } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,8 +6,8 @@ import "../../components/ha-icon";
 import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
-import "../../components/ha-svg-icon";
 import "../../components/ha-spinner";
+import "../../components/ha-svg-icon";
 import { saveFrontendUserData } from "../../data/frontend";
 import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
@@ -55,13 +54,6 @@ class HaPickDashboardRow extends LitElement {
                   ${this.hass.localize("ui.panel.profile.dashboard.system")}
                 </ha-list-item>
                 <ha-divider></ha-divider>
-                <ha-list-item value="lovelace" graphic="icon">
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiViewDashboard}
-                  ></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.profile.dashboard.lovelace")}
-                </ha-list-item>
                 ${PANEL_DASHBOARDS.map((panel) => {
                   const panelInfo = this.hass.panels[panel] as
                     | PanelInfo
