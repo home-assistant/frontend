@@ -340,11 +340,11 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     );
   }
 
-  private _operationTypeChanged(ev: HaSelectSelectEvent<number>) {
+  private _operationTypeChanged(ev: HaSelectSelectEvent) {
     if (ev.detail.value === undefined) {
       return;
     }
-    const newType = ev.detail.value;
+    const newType = Number(ev.detail.value);
     if (this._configuration) {
       this._configuration = {
         ...this._configuration,

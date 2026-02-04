@@ -214,8 +214,8 @@ export class ZHAClusterAttributes extends LitElement {
     }
   }
 
-  private _selectedAttributeChanged(event: HaSelectSelectEvent<number>): void {
-    this._selectedAttributeId = event.detail.value;
+  private _selectedAttributeChanged(event: HaSelectSelectEvent): void {
+    this._selectedAttributeId = Number(event.detail.value);
     this._attributeValue = "";
   }
 
