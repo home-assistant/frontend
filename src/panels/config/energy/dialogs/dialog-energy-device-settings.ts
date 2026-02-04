@@ -16,7 +16,7 @@ import { getStatisticLabel } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsDeviceDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
@@ -222,7 +222,7 @@ export class DialogEnergyDeviceSettings
     `;
   }
 
-  private _statisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticChanged(ev: ValueChangedEvent<string>) {
     if (!ev.detail.value) {
       this._device = undefined;
       return;
@@ -231,7 +231,7 @@ export class DialogEnergyDeviceSettings
     this._computePossibleParents();
   }
 
-  private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _powerStatisticChanged(ev: ValueChangedEvent<string>) {
     if (!this._device) {
       return;
     }

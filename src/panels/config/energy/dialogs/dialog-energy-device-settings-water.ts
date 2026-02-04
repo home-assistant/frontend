@@ -15,7 +15,7 @@ import { getStatisticLabel } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsDeviceWaterDialogParams } from "./show-dialogs-energy";
 
 const volumeUnitClasses = ["volume"];
@@ -198,7 +198,7 @@ export class DialogEnergyDeviceSettingsWater
     `;
   }
 
-  private _statisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticChanged(ev: ValueChangedEvent<string>) {
     if (!ev.detail.value) {
       this._device = undefined;
       return;

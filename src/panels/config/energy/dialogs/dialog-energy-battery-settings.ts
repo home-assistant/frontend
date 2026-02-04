@@ -20,7 +20,7 @@ import {
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
@@ -361,11 +361,11 @@ export class DialogEnergyBatterySettings
     }
   }
 
-  private _statisticToChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticToChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_to: ev.detail.value };
   }
 
-  private _statisticFromChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticFromChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
   }
 
@@ -376,26 +376,26 @@ export class DialogEnergyBatterySettings
     this._powerConfig = {};
   }
 
-  private _standardPowerChanged(ev: CustomEvent<{ value: string }>) {
+  private _standardPowerChanged(ev: ValueChangedEvent<string>) {
     this._powerConfig = {
       stat_rate: ev.detail.value,
     };
   }
 
-  private _invertedPowerChanged(ev: CustomEvent<{ value: string }>) {
+  private _invertedPowerChanged(ev: ValueChangedEvent<string>) {
     this._powerConfig = {
       stat_rate_inverted: ev.detail.value,
     };
   }
 
-  private _dischargePowerChanged(ev: CustomEvent<{ value: string }>) {
+  private _dischargePowerChanged(ev: ValueChangedEvent<string>) {
     this._powerConfig = {
       ...this._powerConfig,
       stat_rate_from: ev.detail.value,
     };
   }
 
-  private _chargePowerChanged(ev: CustomEvent<{ value: string }>) {
+  private _chargePowerChanged(ev: ValueChangedEvent<string>) {
     this._powerConfig = {
       ...this._powerConfig,
       stat_rate_to: ev.detail.value,
