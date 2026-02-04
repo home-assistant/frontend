@@ -148,8 +148,8 @@ export class ZHAManageClusters extends LitElement {
     this._currTab = newTab;
   }
 
-  private _selectedClusterChanged(event: HaSelectSelectEvent): void {
-    this._selectedClusterIndex = Number(event.detail.value);
+  private _selectedClusterChanged(event: HaSelectSelectEvent<number>): void {
+    this._selectedClusterIndex = event.detail.value;
     this._selectedCluster = this._clusters[this._selectedClusterIndex];
   }
 

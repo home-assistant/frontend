@@ -172,8 +172,8 @@ export class ZHAClusterCommands extends LitElement {
       this._computeIssueClusterCommandServiceData();
   }
 
-  private _selectedCommandChanged(event: HaSelectSelectEvent): void {
-    this._selectedCommandId = Number(event.detail.value);
+  private _selectedCommandChanged(event: HaSelectSelectEvent<number>): void {
+    this._selectedCommandId = event.detail.value;
     this._issueClusterCommandServiceData =
       this._computeIssueClusterCommandServiceData();
   }

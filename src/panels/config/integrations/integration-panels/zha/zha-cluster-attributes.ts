@@ -67,10 +67,10 @@ export class ZHAClusterAttributes extends LitElement {
               "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
             )}
             class="menu"
-            .value=${String(this._selectedAttributeId)}
+            .value=${this._selectedAttributeId}
             @selected=${this._selectedAttributeChanged}
             .options=${this._attributes.map((entry) => ({
-              value: String(entry.id),
+              value: entry.id,
               label: `${entry.name} (id: ${formatAsPaddedHex(entry.id)})`,
             }))}
           >
@@ -214,8 +214,8 @@ export class ZHAClusterAttributes extends LitElement {
     }
   }
 
-  private _selectedAttributeChanged(event: HaSelectSelectEvent): void {
-    this._selectedAttributeId = Number(event.detail.value);
+  private _selectedAttributeChanged(event: HaSelectSelectEvent<number>): void {
+    this._selectedAttributeId = event.detail.value;
     this._attributeValue = "";
   }
 

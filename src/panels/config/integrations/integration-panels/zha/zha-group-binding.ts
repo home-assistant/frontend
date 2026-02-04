@@ -102,8 +102,8 @@ export class ZHAGroupBindingControl extends LitElement {
     `;
   }
 
-  private _bindTargetIndexChanged(event: HaSelectSelectEvent): void {
-    this._bindTargetIndex = Number(event.detail.value);
+  private _bindTargetIndexChanged(event: HaSelectSelectEvent<number>): void {
+    this._bindTargetIndex = event.detail.value;
     this._groupToBind =
       this._bindTargetIndex === -1
         ? undefined

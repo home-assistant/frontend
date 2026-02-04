@@ -312,8 +312,8 @@ export class RecurrenceRuleEditor extends LitElement {
     this._interval = (e.target! as any).value;
   }
 
-  private _onRepeatSelected(e: HaSelectSelectEvent) {
-    this._freq = e.detail.value as RepeatFrequency;
+  private _onRepeatSelected(e: HaSelectSelectEvent<RepeatFrequency>) {
+    this._freq = e.detail.value;
 
     if (this._freq === "yearly") {
       this._interval = 1;
@@ -324,7 +324,9 @@ export class RecurrenceRuleEditor extends LitElement {
     }
   }
 
-  private _onMonthlyDetailSelected(e: HaSelectSelectEvent) {
+  private _onMonthlyDetailSelected(
+    e: HaSelectSelectEvent<MonthlyRepeatItem["value"]>
+  ) {
     const selectedItem = this._monthlyRepeatItems.find(
       (item) => item.value === e.detail.value
     );
@@ -347,8 +349,8 @@ export class RecurrenceRuleEditor extends LitElement {
     this.requestUpdate("_weekday");
   }
 
-  private _onEndSelected(e: HaSelectSelectEvent) {
-    const end = e.detail.value as RepeatEnd;
+  private _onEndSelected(e: HaSelectSelectEvent<RepeatEnd>) {
+    const end = e.detail.value;
     if (end === this._end) {
       return;
     }

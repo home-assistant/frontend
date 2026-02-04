@@ -340,11 +340,11 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     );
   }
 
-  private _operationTypeChanged(ev: HaSelectSelectEvent) {
+  private _operationTypeChanged(ev: HaSelectSelectEvent<number>) {
     if (ev.detail.value === undefined) {
       return;
     }
-    const newType = parseInt(ev.detail.value);
+    const newType = ev.detail.value;
     if (this._configuration) {
       this._configuration = {
         ...this._configuration,
@@ -389,11 +389,11 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     }
   }
 
-  private _doorLockModeChanged(ev: HaSelectSelectEvent) {
+  private _doorLockModeChanged(ev: HaSelectSelectEvent<DoorLockMode>) {
     if (ev.detail.value === undefined) {
       return;
     }
-    this._currentDoorLockMode = parseInt(ev.detail.value) as DoorLockMode;
+    this._currentDoorLockMode = ev.detail.value;
   }
 
   private async _saveConfig(ev: CustomEvent) {
