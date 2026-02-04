@@ -1,7 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
@@ -36,7 +35,7 @@ class MoreInfoTime extends LitElement {
     ev.stopPropagation();
   }
 
-  private _timeChanged(ev: HaSelectSelectEvent): void {
+  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
     if (ev.detail.value) {
       setTimeValue(this.hass!, this.stateObj!.entity_id, ev.detail.value);
     }
