@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { getHighlightRanges } from "../../../common/string/highlight";
 import {
   domainToName,
   type IntegrationManifest,
@@ -9,7 +10,7 @@ import type { HomeAssistant } from "../../../types";
 import "./ha-integration-header";
 import "../../../components/ha-card";
 import { brandsUrl } from "../../../util/brands-url";
-import { haStyle } from "../../../resources/styles";
+import { haStyle, haStyleHighlight } from "../../../resources/styles";
 
 @customElement("ha-integration-action-card")
 export class HaIntegrationActionCard extends LitElement {
@@ -24,6 +25,8 @@ export class HaIntegrationActionCard extends LitElement {
   @property() public label!: string;
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
+
+  @property({ attribute: false }) public filter?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -41,10 +44,12 @@ export class HaIntegrationActionCard extends LitElement {
             @error=${this._onImageError}
             @load=${this._onImageLoad}
           />
-          <h2>${this.label}</h2>
+          <h2>${this._renderHighlightedText(this.label)}</h2>
           <h3>
-            ${this.localizedDomainName ||
-            domainToName(this.hass.localize, this.domain, this.manifest)}
+            ${this._renderHighlightedText(
+              this.localizedDomainName ||
+                domainToName(this.hass.localize, this.domain, this.manifest)
+            )}
           </h3>
         </div>
         <div class="filler"></div>
@@ -62,8 +67,42 @@ export class HaIntegrationActionCard extends LitElement {
     ev.target.style.visibility = "hidden";
   }
 
+  private _renderHighlightedText(text: string) {
+    const filter = this.filter?.trim();
+    if (!filter) {
+      return text;
+    }
+
+    const ranges = getHighlightRanges(text, filter, this.hass.locale.language);
+    if (!ranges.length) {
+      return text;
+    }
+
+    const parts: (string | TemplateResult)[] = [];
+    let lastIndex = 0;
+
+    for (const range of ranges) {
+      if (range.start > lastIndex) {
+        parts.push(text.slice(lastIndex, range.start));
+      }
+      parts.push(
+        html`<mark class="ha-highlight"
+          >${text.slice(range.start, range.end)}</mark
+        >`
+      );
+      lastIndex = range.end;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+
+    return parts;
+  }
+
   static styles = [
     haStyle,
+    haStyleHighlight,
     css`
       ha-card {
         display: flex;

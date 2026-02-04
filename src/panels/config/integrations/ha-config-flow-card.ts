@@ -44,6 +44,8 @@ export class HaConfigFlowCard extends LitElement {
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
+  @property({ attribute: false }) public filter?: string;
+
   protected render(): TemplateResult {
     const attention = ATTENTION_SOURCES.includes(this.flow.context.source);
     return html`
@@ -55,6 +57,7 @@ export class HaConfigFlowCard extends LitElement {
         .manifest=${this.manifest}
         .domain=${this.flow.handler}
         .label=${this.flow.localized_title ?? ""}
+        .filter=${this.filter}
       >
         ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
         this.flow.context.unique_id
