@@ -1,7 +1,7 @@
 import { property } from "lit/decorators";
 import { type LitElement, css, unsafeCSS } from "lit";
+import { withViewTransition } from "../common/util/view-transition";
 import type { Constructor } from "../types";
-import { withViewTransition } from "../../common/util/view-transition";
 import { getInheritedStyles } from "./common";
 
 export interface DialogEnlargeConfig {
