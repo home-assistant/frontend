@@ -1,11 +1,9 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
@@ -22,7 +20,7 @@ import {
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import type { ItemSelectedEvent, SetAttributeServiceData } from "./types";
+import type { SetAttributeServiceData } from "./types";
 
 @customElement("zha-cluster-attributes")
 export class ZHAClusterAttributes extends LitElement {
@@ -70,22 +68,16 @@ export class ZHAClusterAttributes extends LitElement {
             class="menu"
             .value=${String(this._selectedAttributeId)}
             @selected=${this._selectedAttributeChanged}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
+            .options=${this._attributes.map((entry) => ({
+              value: String(entry.id),
+              label: `${entry.name} (id: ${formatAsPaddedHex(entry.id)})`,
+            }))}
           >
-            ${this._attributes.map(
-              (entry) => html`
-                <ha-list-item .value=${String(entry.id)}>
-                  ${`${entry.name} (id: ${formatAsPaddedHex(entry.id)})`}
-                </ha-list-item>
-              `
-            )}
           </ha-select>
         </div>
         ${this._selectedAttributeId !== undefined
           ? this._renderAttributeInteractions()
-          : ""}
+          : nothing}
       </ha-card>
     `;
   }
@@ -221,8 +213,10 @@ export class ZHAClusterAttributes extends LitElement {
     }
   }
 
-  private _selectedAttributeChanged(event: ItemSelectedEvent): void {
-    this._selectedAttributeId = Number(event.target!.value);
+  private _selectedAttributeChanged(
+    event: CustomEvent<{ value: string }>
+  ): void {
+    this._selectedAttributeId = Number(event.detail.value);
     this._attributeValue = "";
   }
 

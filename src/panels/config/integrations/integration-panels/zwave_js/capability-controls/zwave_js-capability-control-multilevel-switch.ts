@@ -1,12 +1,10 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../../components/buttons/ha-progress-button";
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-formfield";
-import "../../../../../../components/ha-list-item";
 import "../../../../../../components/ha-select";
-import type { HaSelect } from "../../../../../../components/ha-select";
 import "../../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import "../../../../../../components/ha-textfield";
@@ -35,6 +33,8 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _direction = "up";
+
   protected render() {
     return html`
       <h3>
@@ -44,23 +44,28 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
       </h3>
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : ""}
+        : nothing}
       <ha-select
         .label=${this.hass.localize(
           "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.direction"
         )}
-        id="direction"
+        .value=${this._direction}
+        .options=${[
+          {
+            value: "up",
+            label: this.hass.localize(
+              "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.up"
+            ),
+          },
+          {
+            value: "down",
+            label: this.hass.localize(
+              "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.down"
+            ),
+          },
+        ]}
+        @selected=${this._directionChanged}
       >
-        <ha-list-item .value=${"up"} selected
-          >${this.hass.localize(
-            "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.up"
-          )}</ha-list-item
-        >
-        <ha-list-item .value=${"down"}
-          >${this.hass.localize(
-            "ui.panel.config.zwave_js.node_installer.capability_controls.multilevel_switch.down"
-          )}</ha-list-item
-        >
       </ha-select>
       <ha-formfield
         .label=${this.hass.localize(
@@ -103,9 +108,6 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
     const button = ev.currentTarget as HaProgressButton;
     button.progress = true;
 
-    const direction = (this.shadowRoot!.getElementById("direction") as HaSelect)
-      .value;
-
     const ignoreStartLevel = (
       this.shadowRoot!.getElementById("ignore_start_level") as HaSwitch
     ).checked;
@@ -115,7 +117,7 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
     );
 
     const options = {
-      direction,
+      direction: this._direction,
       ignoreStartLevel,
       startLevel,
     };
@@ -144,6 +146,10 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
     }
 
     button.progress = false;
+  }
+
+  private _directionChanged(ev: CustomEvent<{ value: string }>) {
+    this._direction = ev.detail.value;
   }
 
   static styles = css`

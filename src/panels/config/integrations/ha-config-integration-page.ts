@@ -168,6 +168,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("domain")) {
       this.hass.loadBackendTranslation("title", [this.domain]);
+      this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
       this._fetchManifest();

@@ -1,10 +1,9 @@
 import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
-import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { TimeFormat } from "../../data/translation";
@@ -33,33 +32,36 @@ class TimeFormatRow extends LitElement {
           .disabled=${this.hass.locale === undefined}
           .value=${this.hass.locale.time_format}
           @selected=${this._handleFormatSelection}
-          naturalMenuWidth
-        >
-          ${Object.values(TimeFormat).map((format) => {
-            const formattedTime = formatTime(
+          .options=${Object.values(TimeFormat).map((format) => ({
+            value: format.toString(),
+            label: this.hass.localize(
+              `ui.panel.profile.time_format.formats.${format}`
+            ),
+            secondary: formatTime(
               date,
               {
                 ...this.hass.locale,
                 time_format: format,
               },
               this.hass.config
-            );
-            const value = this.hass.localize(
-              `ui.panel.profile.time_format.formats.${format}`
-            );
-            return html`<ha-list-item .value=${format} twoline>
-              <span>${value}</span>
-              <span slot="secondary">${formattedTime}</span>
-            </ha-list-item>`;
-          })}
+            ),
+          }))}
+        >
         </ha-select>
       </ha-settings-row>
     `;
   }
 
-  private async _handleFormatSelection(ev) {
-    fireEvent(this, "hass-time-format-select", ev.target.value);
+  private async _handleFormatSelection(ev: CustomEvent<{ value: string }>) {
+    fireEvent(this, "hass-time-format-select", ev.detail.value as TimeFormat);
   }
+
+  static styles = css`
+    ha-select {
+      display: block;
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

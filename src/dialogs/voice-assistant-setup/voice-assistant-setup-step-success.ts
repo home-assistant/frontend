@@ -8,7 +8,6 @@ import {
   computeDeviceName,
   computeDeviceNameDisplay,
 } from "../../common/entity/compute_device_name";
-import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-tts-voice-picker";
 import type { AssistPipeline } from "../../data/assist_pipeline";
@@ -115,19 +114,15 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                   .label=${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.form.wake_word_id"
                   )}
-                  @closed=${stopPropagation}
-                  fixedMenuPosition
-                  naturalMenuWidth
                   .value=${this.assistConfiguration.active_wake_words[0]}
                   @selected=${this._wakeWordPicked}
-                >
-                  ${this.assistConfiguration.available_wake_words.map(
-                    (wakeword) =>
-                      html`<ha-list-item .value=${wakeword.id}>
-                        ${wakeword.wake_word}
-                      </ha-list-item>`
+                  .options=${this.assistConfiguration.available_wake_words.map(
+                    (wakeword) => ({
+                      value: wakeword.id,
+                      label: wakeword.wake_word,
+                    })
                   )}
-                </ha-select>
+                ></ha-select>
                 <ha-button
                   appearance="plain"
                   size="small"
@@ -151,16 +146,17 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                   )}
                   @closed=${stopPropagation}
                   .value=${pipelineEntity?.state}
-                  fixedMenuPosition
-                  naturalMenuWidth
                   @selected=${this._pipelinePicked}
-                >
-                  ${pipelineEntity?.attributes.options.map(
-                    (pipeline) =>
-                      html`<ha-list-item .value=${pipeline}>
-                        ${this.hass.formatEntityState(pipelineEntity, pipeline)}
-                      </ha-list-item>`
+                  .options=${pipelineEntity?.attributes.options.map(
+                    (pipeline) => ({
+                      value: pipeline,
+                      label: this.hass.formatEntityState(
+                        pipelineEntity,
+                        pipeline
+                      ),
+                    })
                   )}
+                >
                 </ha-select>
                 <ha-button
                   appearance="plain"
@@ -235,16 +231,19 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     this._deviceName = ev.target.value;
   }
 
-  private async _wakeWordPicked(ev) {
-    const option = ev.target.value;
+  private async _wakeWordPicked(ev: CustomEvent<{ value: string }>) {
+    const option = ev.detail.value;
+    if (this.assistConfiguration) {
+      this.assistConfiguration.active_wake_words = [option];
+    }
     await setWakeWords(this.hass, this.assistEntityId!, [option]);
   }
 
-  private _pipelinePicked(ev) {
+  private _pipelinePicked(ev: CustomEvent<{ value: string }>) {
     const stateObj = this.hass!.states[
       this.assistConfiguration!.pipeline_entity_id
     ] as InputSelectEntity;
-    const option = ev.target.value;
+    const option = ev.detail.value;
     if (
       option === stateObj.state ||
       !stateObj.attributes.options.includes(option)
@@ -383,6 +382,11 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       }
       .row ha-button {
         width: 82px;
+      }
+
+      ha-select {
+        display: block;
+        text-align: start;
       }
     `,
   ];

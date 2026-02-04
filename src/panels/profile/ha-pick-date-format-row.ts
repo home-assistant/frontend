@@ -1,10 +1,9 @@
 import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateNumeric } from "../../common/datetime/format_date";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
-import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { DateFormat } from "../../data/translation";
@@ -33,33 +32,36 @@ class DateFormatRow extends LitElement {
           .disabled=${this.hass.locale === undefined}
           .value=${this.hass.locale.date_format}
           @selected=${this._handleFormatSelection}
-          naturalMenuWidth
-        >
-          ${Object.values(DateFormat).map((format) => {
-            const formattedDate = formatDateNumeric(
+          .options=${Object.values(DateFormat).map((format) => ({
+            value: format.toString(),
+            label: this.hass.localize(
+              `ui.panel.profile.date_format.formats.${format}`
+            ),
+            secondary: formatDateNumeric(
               date,
               {
                 ...this.hass.locale,
                 date_format: format,
               },
               this.hass.config
-            );
-            const value = this.hass.localize(
-              `ui.panel.profile.date_format.formats.${format}`
-            );
-            return html`<ha-list-item .value=${format} twoline>
-              <span>${value}</span>
-              <span slot="secondary">${formattedDate}</span>
-            </ha-list-item>`;
-          })}
+            ),
+          }))}
+        >
         </ha-select>
       </ha-settings-row>
     `;
   }
 
-  private async _handleFormatSelection(ev) {
-    fireEvent(this, "hass-date-format-select", ev.target.value);
+  private async _handleFormatSelection(ev: CustomEvent<{ value: string }>) {
+    fireEvent(this, "hass-date-format-select", ev.detail.value as DateFormat);
   }
+
+  static styles = css`
+    ha-select {
+      display: block;
+      width: 100%;
+    }
+  `;
 }
 
 declare global {
