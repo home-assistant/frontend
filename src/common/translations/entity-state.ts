@@ -1,6 +1,6 @@
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../data/translation";
-import type { HomeAssistant, ValuePart, ValuePartsInfo } from "../../types";
+import type { HomeAssistant, ValuePart } from "../../types";
 import {
   computeEntityNameDisplay,
   type EntityNameItem,
@@ -15,7 +15,7 @@ export type FormatEntityStateFunc = (
 export type FormatEntityStateToPartsFunc = (
   stateObj: HassEntity,
   state?: string
-) => ValuePartsInfo;
+) => ValuePart[];
 export type FormatEntityAttributeValueFunc = (
   stateObj: HassEntity,
   attribute: string,
