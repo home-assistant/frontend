@@ -3,10 +3,10 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textfield";
 import "../../components/ha-button";
 import "../../components/ha-icon-button";
+import "../../components/ha-wa-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
@@ -24,11 +24,18 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
   @state() private _qrCode?: TemplateResult;
 
+  @state() private _open = false;
+
   public showDialog(params: LongLivedAccessTokenDialogParams): void {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     this._qrCode = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -40,15 +47,15 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     }
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        .heading=${createCloseHeading(this.hass, this._params.name)}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.name}
+        @closed=${this._dialogClosed}
       >
         <div>
           <ha-textfield
-            dialogInitialFocus
+            autofocus
             .value=${this._params.token}
             .label=${this.hass.localize(
               "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
@@ -79,7 +86,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
                 `}
           </div>
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
