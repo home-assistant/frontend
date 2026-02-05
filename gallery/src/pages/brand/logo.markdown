@@ -10,7 +10,9 @@ As a community, we are proud of our logo. Follow these guidelines to ensure it a
 
 ![Logo](/images/brand/logo.png)
 
+<ha-alert alert-type="info">
 This logo is trademarked and the property of the Open Home Foundation. This means it is not available for commercial use without express written permission from the foundation. We regard commercial use as anything designed to market or promote a product, software or service that is for sale. Please contact <a href="mailto:partner@openhomefoundation.org">partner@openhomefoundation.org</a> for further information
+</ha-alert>
 
 # Design
 
