@@ -1,14 +1,12 @@
-import { mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-dialog-header";
-import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button-arrow-prev";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-wa-dialog";
 import {
   commissionMatterDevice,
   redirectOnNewMatterDevice,
@@ -75,6 +73,9 @@ class DialogMatterAddDevice extends LitElement {
 
   public closeDialog(): void {
     this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._step = "main";
     this._pairingCode = "";
     this._unsub?.();
@@ -171,35 +172,28 @@ class DialogMatterAddDevice extends LitElement {
     const actions = this._renderActions();
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${title}
-        ?hideActions=${actions === nothing}
-        scrimClickAction
-        escapeKeyAction
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header slot="heading">
-          ${hasBackStep
-            ? html`
-                <ha-icon-button-arrow-prev
-                  slot="navigationIcon"
-                  .hass=${this.hass}
-                  @click=${this._back}
-                ></ha-icon-button-arrow-prev>
-              `
-            : html`
-                <ha-icon-button
-                  slot="navigationIcon"
-                  dialogAction="cancel"
-                  .label=${this.hass.localize("ui.common.close")}
-                  .path=${mdiClose}
-                ></ha-icon-button>
-              `}
-          <span slot="title">${title}</span>
-        </ha-dialog-header>
-        ${this._renderStep()} ${actions}
-      </ha-dialog>
+        ${hasBackStep
+          ? html`
+              <ha-icon-button-arrow-prev
+                slot="headerNavigationIcon"
+                .hass=${this.hass}
+                @click=${this._back}
+              ></ha-icon-button-arrow-prev>
+            `
+          : nothing}
+        ${this._renderStep()}
+        ${actions === nothing
+          ? nothing
+          : html`<ha-dialog-footer slot="footer">
+              ${actions}
+            </ha-dialog-footer>`}
+      </ha-wa-dialog>
     `;
   }
 
@@ -209,20 +203,12 @@ class DialogMatterAddDevice extends LitElement {
       :host {
         --horizontal-padding: 24px;
       }
-      ha-dialog {
+      ha-wa-dialog {
         --dialog-content-padding: 0;
-      }
-      ha-dialog {
-        --mdc-dialog-min-width: 450px;
-        --mdc-dialog-max-width: 450px;
       }
       @media all and (max-width: 450px), all and (max-height: 500px) {
         :host {
           --horizontal-padding: 16px;
-        }
-        ha-dialog {
-          --mdc-dialog-min-width: 100vw;
-          --mdc-dialog-max-width: 100vw;
         }
       }
       .loading {
