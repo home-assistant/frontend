@@ -1,4 +1,3 @@
-import { mdiClose } from "@mdi/js";
 import { dump } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,9 +5,9 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stringCompare } from "../../../common/string/compare";
-import "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHardwareInfo } from "../../../data/hassio/hardware";
@@ -48,9 +47,12 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
 
   @state() private _filter?: string;
 
+  @state() private _open = false;
+
   public async showDialog(): Promise<Promise<void>> {
     try {
       this._hardware = await fetchHassioHardwareInfo(this.hass);
+      this._open = true;
     } catch (err: any) {
       await showAlertDialog(this, {
         title: this.hass.localize(
@@ -61,10 +63,15 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     }
   }
 
-  public closeDialog() {
+  public closeDialog(): boolean {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
+    this._open = false;
     this._hardware = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -80,35 +87,24 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     );
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
           "ui.panel.config.hardware.available_hardware.title"
         )}
+        @closed=${this._dialogClosed}
       >
-        <div class="header" slot="heading">
-          <h2>
-            ${this.hass.localize(
-              "ui.panel.config.hardware.available_hardware.title"
-            )}
-          </h2>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-          ></ha-icon-button>
-          <search-input
-            .hass=${this.hass}
-            .filter=${this._filter}
-            @value-changed=${this._handleSearchChange}
-            .label=${this.hass.localize(
-              "ui.panel.config.hardware.available_hardware.search"
-            )}
-          >
-          </search-input>
-        </div>
+        <search-input
+          autofocus
+          .hass=${this.hass}
+          .filter=${this._filter}
+          @value-changed=${this._handleSearchChange}
+          .label=${this.hass.localize(
+            "ui.panel.config.hardware.available_hardware.search"
+          )}
+        >
+        </search-input>
         ${devices.map(
           (device) => html`
             <ha-expansion-panel
@@ -155,7 +151,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
             </ha-expansion-panel>
           `
         )}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -168,23 +164,6 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-icon-button {
-          position: absolute;
-          right: 16px;
-          inset-inline-end: 16px;
-          inset-inline-start: initial;
-          top: 10px;
-          inset-inline-end: 16px;
-          inset-inline-start: initial;
-          text-decoration: none;
-          color: var(--primary-text-color);
-        }
-        h2 {
-          margin: 18px 42px 0 18px;
-          margin-inline-start: 18px;
-          margin-inline-end: 42px;
-          color: var(--primary-text-color);
-        }
         ha-expansion-panel {
           margin: 4px 0;
         }
