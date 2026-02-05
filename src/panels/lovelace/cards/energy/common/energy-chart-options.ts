@@ -1,8 +1,9 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import {
-  differenceInMonths,
   subHours,
   differenceInDays,
+  differenceInMonths,
+  differenceInCalendarMonths,
   differenceInYears,
   startOfYear,
   addMilliseconds,
@@ -92,6 +93,11 @@ export function getCommonOptions(
       type: "time",
       min: start,
       max: getSuggestedMax(suggestedPeriod, end),
+      splitNumber:
+        suggestedPeriod === "month" &&
+        differenceInCalendarMonths(end, start) <= 3
+          ? 2
+          : undefined,
     },
     yAxis: {
       type: "value",
