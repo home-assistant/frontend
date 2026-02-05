@@ -72,6 +72,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           this._quickBarContextRelated = related;
         }
       } catch {
+        // eslint-disable-next-line no-console
+        console.warn("Error prefetching quick bar related items", err);
         if (this._contextMatches(context)) {
           this._quickBarContextRelated = undefined;
         }
