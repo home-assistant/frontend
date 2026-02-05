@@ -1,5 +1,6 @@
 {
   "panel": {
+    "demo": "Demo",
     "apps": "Apps",
     "energy": "Energy",
     "calendar": "Calendar",
