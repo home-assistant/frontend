@@ -6,12 +6,13 @@ import { documentationUrl } from "../../../util/documentation-url";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-code-editor";
-import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
+import "../../../components/ha-wa-dialog";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
@@ -25,6 +26,8 @@ class DialogImportBlueprint extends LitElement {
   @property({ type: Boolean, reflect: true }) public large = false;
 
   @state() private _params?;
+
+  @state() private _open = false;
 
   @state() private _importing = false;
 
@@ -43,9 +46,14 @@ class DialogImportBlueprint extends LitElement {
     this._error = undefined;
     this._url = this._params.url;
     this.large = false;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._error = undefined;
     this._result = undefined;
     this._params = undefined;
@@ -59,11 +67,16 @@ class DialogImportBlueprint extends LitElement {
     }
     const heading = this.hass.localize("ui.panel.config.blueprint.add.header");
     return html`
-      <ha-dialog open .heading=${heading} @closed=${this.closeDialog}>
-        <ha-dialog-header slot="heading">
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        width=${this.large ? "full" : "medium"}
+        @closed=${this._dialogClosed}
+      >
+        <ha-dialog-header slot="header">
           <ha-icon-button
             slot="navigationIcon"
-            dialogAction="cancel"
+            @click=${this.closeDialog}
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
@@ -104,6 +117,7 @@ class DialogImportBlueprint extends LitElement {
                         .label=${this.hass.localize(
                           "ui.panel.config.blueprint.add.file_name"
                         )}
+                        autofocus
                       ></ha-textfield>
                     `}
                 <ha-expansion-panel
@@ -157,54 +171,56 @@ class DialogImportBlueprint extends LitElement {
                     "ui.panel.config.blueprint.add.url"
                   )}
                   .value=${this._url || ""}
-                  dialogInitialFocus
+                  autofocus
                 ></ha-textfield>
               `}
         </div>
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-          .disabled=${this._saving}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        ${!this._result
-          ? html`
-              <ha-button
-                slot="primaryAction"
-                @click=${this._import}
-                .disabled=${this._importing}
-                .loading=${this._importing}
-                .ariaLabel=${this.hass.localize(
-                  `ui.panel.config.blueprint.add.${this._importing ? "importing" : "import_btn"}`
-                )}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.blueprint.add.import_btn"
-                )}
-              </ha-button>
-            `
-          : html`
-              <ha-button
-                slot="primaryAction"
-                @click=${this._save}
-                .disabled=${this._saving || !!this._result.validation_errors}
-                .loading=${this._saving}
-                .ariaLabel=${this.hass.localize(
-                  `ui.panel.config.blueprint.add.${this._saving ? "saving" : this._result.exists ? "save_btn_override" : "save_btn"}`
-                )}
-              >
-                ${this._result.exists
-                  ? this.hass.localize(
-                      "ui.panel.config.blueprint.add.save_btn_override"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.blueprint.add.save_btn"
-                    )}
-              </ha-button>
-            `}
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+            .disabled=${this._saving}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          ${!this._result
+            ? html`
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._import}
+                  .disabled=${this._importing}
+                  .loading=${this._importing}
+                  .ariaLabel=${this.hass.localize(
+                    `ui.panel.config.blueprint.add.${this._importing ? "importing" : "import_btn"}`
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.blueprint.add.import_btn"
+                  )}
+                </ha-button>
+              `
+            : html`
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._save}
+                  .disabled=${this._saving || !!this._result.validation_errors}
+                  .loading=${this._saving}
+                  .ariaLabel=${this.hass.localize(
+                    `ui.panel.config.blueprint.add.${this._saving ? "saving" : this._result.exists ? "save_btn_override" : "save_btn"}`
+                  )}
+                >
+                  ${this._result.exists
+                    ? this.hass.localize(
+                        "ui.panel.config.blueprint.add.save_btn_override"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.blueprint.add.save_btn"
+                      )}
+                </ha-button>
+              `}
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -272,10 +288,6 @@ class DialogImportBlueprint extends LitElement {
       }
       a ha-svg-icon {
         --mdc-icon-size: 16px;
-      }
-      :host([large]) ha-dialog {
-        --mdc-dialog-min-width: 90vw;
-        --mdc-dialog-max-width: 90vw;
       }
       ha-expansion-panel {
         --expansion-panel-content-padding: 0px;
