@@ -88,17 +88,36 @@ export function getCommonOptions(
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
 
-  const options: ECOption = {
+  const shortMonth = differenceInCalendarMonths(end, start) <= 2;
+  const monthTimeAxis: ECOption = {
+    xAxis: {
+      type: "time",
+      min: addDays(start, -5),
+      max: addDays(getSuggestedMax(suggestedPeriod, end), 5),
+      axisLabel: {
+        formatter: {
+          year: "{yearStyle|{MMMM} {yyyy}}",
+          month: "{monthStyle|{MMMM}}",
+        },
+        rich: {
+          yearStyle: {
+            fontWeight: "bold",
+          },
+        },
+      },
+      splitNumber: shortMonth ? 2 : 5,
+    },
+  };
+  const normalTimeAxis: ECOption = {
     xAxis: {
       type: "time",
       min: start,
       max: getSuggestedMax(suggestedPeriod, end),
-      splitNumber:
-        suggestedPeriod === "month" &&
-        differenceInCalendarMonths(end, start) <= 3
-          ? 2
-          : undefined,
     },
+  };
+
+  const options: ECOption = {
+    ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
     yAxis: {
       type: "value",
       name: unit,
