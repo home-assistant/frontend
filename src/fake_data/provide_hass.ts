@@ -15,7 +15,7 @@ import {
   TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant, ValuePart, ValuePartsInfo } from "../types";
+import type { HomeAssistant, ValuePart } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
@@ -52,10 +52,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockEvent(event);
   mockTheme(theme: Record<string, string> | null);
   formatEntityState(stateObj: HassEntity, state?: string): string;
-  formatEntityStateToParts(
-    stateObj: HassEntity,
-    state?: string
-  ): ValuePartsInfo;
+  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
@@ -381,14 +378,12 @@ export const provideHass = (
     floors: {},
     formatEntityState: (stateObj, state) =>
       (state !== null ? state : stateObj.state) ?? "",
-    formatEntityStateToParts: (stateObj, state) => ({
-      parts: [
-        {
-          type: "value",
-          value: (state !== null ? state : stateObj.state) ?? "",
-        },
-      ],
-    }),
+    formatEntityStateToParts: (stateObj, state) => [
+      {
+        type: "value",
+        value: (state !== null ? state : stateObj.state) ?? "",
+      },
+    ],
     formatEntityAttributeName: (_stateObj, attribute) => attribute,
     formatEntityAttributeValue: (stateObj, attribute, value) =>
       value !== null ? value : (stateObj.attributes[attribute] ?? ""),
