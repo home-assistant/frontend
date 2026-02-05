@@ -407,12 +407,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
   }
 
+  private _getScrollContainer(): Element | null {
+    // The scroll container is the hui-view-container parent
+    return this.closest("hui-view-container");
+  }
+
   private _toggleView() {
+    const scrollContainer = this._getScrollContainer();
+    const scrollTop = scrollContainer?.scrollTop ?? 0;
+
     // Save current scroll position
     if (this._sidebarTabActive) {
-      this._sidebarScrollTop = window.scrollY;
+      this._sidebarScrollTop = scrollTop;
     } else {
-      this._contentScrollTop = window.scrollY;
+      this._contentScrollTop = scrollTop;
     }
 
     this._sidebarTabActive = !this._sidebarTabActive;
@@ -428,7 +436,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       const scrollY = this._sidebarTabActive
         ? this._sidebarScrollTop
         : this._contentScrollTop;
-      window.scrollTo(0, scrollY);
+      scrollContainer?.scrollTo(0, scrollY);
     });
   }
 
