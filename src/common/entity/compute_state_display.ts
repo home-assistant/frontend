@@ -148,15 +148,13 @@ const computeStateToPartsFromEntityAttributes = (
       )?.value;
       const currency = parts.find((part) => part.type === "currency")?.value;
 
-      const order =
+      const reversedOrder =
         parts.findIndex((part) => part.type === "currency") <
-        parts.findIndex((part) => part.type === "integer")
-          ? "reverse"
-          : "direct";
+        parts.findIndex((part) => part.type === "integer");
 
       const valueParts: ValuePart[] = [];
 
-      if (order === "direct") {
+      if (!reversedOrder) {
         if (valueMonetary) {
           valueParts.push({ type: "value", value: valueMonetary });
         }
