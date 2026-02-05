@@ -30,7 +30,6 @@ import type {
 import { showDataTableSettingsDialog } from "../../../../components/data-table/show-dialog-data-table-settings";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import type { HaMdMenu } from "../../../../components/ha-md-menu";

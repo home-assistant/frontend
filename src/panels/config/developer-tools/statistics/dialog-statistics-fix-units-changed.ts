@@ -2,7 +2,8 @@ import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-button";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
@@ -21,20 +22,24 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
 
   @state() private _params?: DialogStatisticsUnitsChangedParams;
 
+  @state() private _open = false;
+
   @state() private _action?: "update" | "clear" | "change";
 
   public showDialog(params: DialogStatisticsUnitsChangedParams): void {
     this._params = params;
     this._action = "update";
+    this._open = true;
   }
 
   public closeDialog(): void {
-    this._cancel();
+    this._open = false;
   }
 
-  private _closeDialog(): void {
+  private _dialogClosed(): void {
     this._params = undefined;
     this._action = undefined;
+    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -44,14 +49,13 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
     }
 
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        @closed=${this._closeDialog}
-        .heading=${this.hass.localize(
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.title"
         )}
+        @closed=${this._dialogClosed}
       >
         <p>
           ${this.hass.localize(
@@ -91,7 +95,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             name="action"
             .checked=${this._action === "update"}
             @change=${this._handleActionChanged}
-            dialogInitialFocus
+            autofocus
           ></ha-radio>
         </ha-formfield>
         <ha-formfield
@@ -107,19 +111,21 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
           ></ha-radio>
         </ha-formfield>
 
-        <ha-button
-          appearance="plain"
-          slot="primaryAction"
-          @click=${this._cancel}
-        >
-          ${this.hass.localize("ui.common.close")}
-        </ha-button>
-        <ha-button slot="primaryAction" @click=${this._fixIssue}>
-          ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
-          )}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            @click=${this._cancel}
+          >
+            ${this.hass.localize("ui.common.close")}
+          </ha-button>
+          <ha-button slot="primaryAction" @click=${this._fixIssue}>
+            ${this.hass.localize(
+              "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
+            )}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -129,7 +135,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
 
   private _cancel(): void {
     this._params?.cancelCallback!();
-    this._closeDialog();
+    this.closeDialog();
   }
 
   private async _fixIssue(): Promise<void> {
@@ -144,7 +150,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
       );
     }
     this._params?.fixedCallback!();
-    this._closeDialog();
+    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {
