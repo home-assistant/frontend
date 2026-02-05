@@ -75,7 +75,6 @@ const RANGE_KEYS: DateRange[] = [
 interface OverflowMenuItem {
   path: string;
   label: string;
-  tooltip?: string;
   disabled?: boolean;
   alwaysCollapse?: boolean;
   hidden?: boolean;
@@ -293,7 +292,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                           this._endDate || new Date(),
                           this.hass.locale,
                           this.hass.config
-                        )} `} `}
+                        )}`}`}
             </div>
             ${showSubtitleYear
               ? html`<div class="header-subtitle">
@@ -324,20 +323,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                     )}
                   </ha-button>`
                 : nothing}
-              ${buttons.map((item, index) =>
+              ${buttons.map((item) =>
                 this._collapseButtons || item.alwaysCollapse
                   ? nothing
-                  : html`<ha-tooltip
-                        .disabled=${!item.tooltip}
-                        .for="icon-button-${index}"
-                        >${item.tooltip ?? ""}</ha-tooltip
-                      ><ha-icon-button
-                        .id="icon-button-${index}"
-                        @click=${item.action}
-                        .label=${item.label}
-                        .path=${item.path}
-                        ?disabled=${item.disabled}
-                      ></ha-icon-button>`
+                  : html`<ha-icon-button
+                      @click=${item.action}
+                      .label=${item.label}
+                      .path=${item.path}
+                      ?disabled=${item.disabled}
+                    ></ha-icon-button>`
               )}
               ${this._collapseButtons || buttons.some((x) => x.alwaysCollapse)
                 ? html`<ha-dropdown
@@ -663,7 +657,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     :host([narrow]) .header-subtitle {
       font-size: var(--ha-font-size-s);
-      line-height: var(--ha-line-height-condensed);
     }
     .date-actions {
       flex: none;
