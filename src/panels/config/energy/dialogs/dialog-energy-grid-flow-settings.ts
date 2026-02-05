@@ -1,15 +1,15 @@
-import { mdiTransmissionTower } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-markdown";
+import "../../../../components/ha-wa-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type {
   FlowFromGridSourceEnergyPreference,
@@ -37,6 +37,8 @@ export class DialogEnergyGridFlowSettings
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: EnergySettingsGridFlowDialogParams;
+
+  @state() private _open = false;
 
   @state() private _source?:
     | FlowFromGridSourceEnergyPreference
@@ -88,15 +90,21 @@ export class DialogEnergyGridFlowSettings
         (entry) => entry.stat_energy_to
       ) || []),
     ].filter((id) => id !== initialSourceId);
+
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     this._source = undefined;
     this._error = undefined;
     this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -121,16 +129,13 @@ export class DialogEnergyGridFlowSettings
       );
 
     return html`
-      <ha-dialog
-        open
-        .heading=${html`<ha-svg-icon
-            .path=${mdiTransmissionTower}
-            style="--mdc-icon-size: 32px;"
-          ></ha-svg-icon
-          >${this.hass.localize(
-            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.header`
-          )}`}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.header`
+        )}
+        @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
         <p>
@@ -157,7 +162,7 @@ export class DialogEnergyGridFlowSettings
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.entity_para`,
             { unit: this._energy_units?.join(", ") || "" }
           )}
-          dialogInitialFocus
+          autofocus
         ></ha-statistic-picker>
 
         <p>
@@ -265,25 +270,27 @@ export class DialogEnergyGridFlowSettings
             </ha-textfield>`
           : ""}
 
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          @click=${this._save}
-          .disabled=${!this._source[
-            this._params!.direction === "from"
-              ? "stat_energy_from"
-              : "stat_energy_to"
-          ]}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            slot="secondaryAction"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._save}
+            .disabled=${!this._source[
+              this._params!.direction === "from"
+                ? "stat_energy_from"
+                : "stat_energy_to"
+            ]}
+            slot="primaryAction"
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -359,9 +366,6 @@ export class DialogEnergyGridFlowSettings
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 430px;
-        }
         ha-statistic-picker {
           display: block;
           margin: var(--ha-space-4) 0;

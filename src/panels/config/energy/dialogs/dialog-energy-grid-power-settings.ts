@@ -1,13 +1,13 @@
-import { mdiTransmissionTower } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-wa-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type {
   GridPowerSourceInput,
@@ -32,6 +32,8 @@ export class DialogEnergyGridPowerSettings
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: EnergySettingsGridPowerDialogParams;
+
+  @state() private _open = false;
 
   @state() private _sensorType: SensorType = "standard";
 
@@ -100,16 +102,22 @@ export class DialogEnergyGridPowerSettings
     this._excludeListPower = excludeIds.filter(
       (id) => !currentIds.includes(id)
     );
+
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     this._powerConfig = {};
     this._sensorType = "standard";
     this._error = undefined;
     this._excludeListPower = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -118,16 +126,13 @@ export class DialogEnergyGridPowerSettings
     }
 
     return html`
-      <ha-dialog
-        open
-        .heading=${html`<ha-svg-icon
-            .path=${mdiTransmissionTower}
-            style="--mdc-icon-size: 32px;"
-          ></ha-svg-icon
-          >${this.hass.localize(
-            "ui.panel.config.energy.grid.power_dialog.header"
-          )}`}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.energy.grid.power_dialog.header"
+        )}
+        @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
 
@@ -190,7 +195,7 @@ export class DialogEnergyGridPowerSettings
                   "ui.panel.config.energy.grid.power_dialog.power_helper",
                   { unit: this._power_units?.join(", ") || "" }
                 )}
-                dialogInitialFocus
+                autofocus
               ></ha-statistic-picker>
             `
           : nothing}
@@ -209,7 +214,7 @@ export class DialogEnergyGridPowerSettings
                 .helper=${this.hass.localize(
                   "ui.panel.config.energy.grid.power_dialog.type_inverted_description"
                 )}
-                dialogInitialFocus
+                autofocus
               ></ha-statistic-picker>
             `
           : nothing}
@@ -228,7 +233,7 @@ export class DialogEnergyGridPowerSettings
                   this._powerConfig.stat_rate_to,
                 ].filter((id): id is string => Boolean(id))}
                 @value-changed=${this._fromStatisticChanged}
-                dialogInitialFocus
+                autofocus
               ></ha-statistic-picker>
               <ha-statistic-picker
                 .hass=${this.hass}
@@ -247,21 +252,23 @@ export class DialogEnergyGridPowerSettings
             `
           : nothing}
 
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          @click=${this._save}
-          .disabled=${!this._isValid()}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            slot="secondaryAction"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._save}
+            .disabled=${!this._isValid()}
+            slot="primaryAction"
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -329,9 +336,6 @@ export class DialogEnergyGridPowerSettings
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 430px;
-        }
         ha-formfield {
           display: block;
         }
