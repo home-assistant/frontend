@@ -49,8 +49,8 @@ export const emptyGridSourceEnergyPreference =
     stat_compensation: null,
     entity_energy_price: null,
     number_energy_price: null,
-    entity_energy_price_sell: null,
-    number_energy_price_sell: null,
+    entity_energy_price_export: null,
+    number_energy_price_export: null,
     cost_adjustment_day: 0,
   });
 
@@ -126,8 +126,8 @@ export interface GridSourceTypeEnergyPreference {
 
   // Export compensation tracking
   stat_compensation: string | null;
-  entity_energy_price_sell: string | null;
-  number_energy_price_sell: number | null;
+  entity_energy_price_export: string | null;
+  number_energy_price_export: number | null;
 
   // Power measurement (optional)
   stat_rate?: string;

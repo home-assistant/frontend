@@ -102,11 +102,11 @@ export class DialogEnergyGridSettings
     // Initialize export cost type
     if (params.source?.stat_compensation) {
       this._exportCostType = "stat";
-    } else if (params.source?.entity_energy_price_sell) {
+    } else if (params.source?.entity_energy_price_export) {
       this._exportCostType = "entity";
     } else if (
-      params.source?.number_energy_price_sell !== null &&
-      params.source?.number_energy_price_sell !== undefined
+      params.source?.number_energy_price_export !== null &&
+      params.source?.number_energy_price_export !== undefined
     ) {
       this._exportCostType = "number";
     } else {
@@ -403,7 +403,7 @@ export class DialogEnergyGridSettings
                 ? html`
                     <ha-entity-picker
                       .hass=${this.hass}
-                      .value=${this._source.entity_energy_price_sell}
+                      .value=${this._source.entity_energy_price_export}
                       .label=${this.hass.localize(
                         "ui.panel.config.energy.grid.dialog.compensation_entity_label"
                       )}
@@ -415,7 +415,7 @@ export class DialogEnergyGridSettings
               ${this._exportCostType === "number"
                 ? html`
                     <ha-textfield
-                      .value=${this._source.number_energy_price_sell ?? ""}
+                      .value=${this._source.number_energy_price_export ?? ""}
                       .label=${this.hass.localize(
                         "ui.panel.config.energy.grid.dialog.compensation_number_label"
                       )}
@@ -509,8 +509,8 @@ export class DialogEnergyGridSettings
       this._source = {
         ...this._source!,
         stat_compensation: null,
-        entity_energy_price_sell: null,
-        number_energy_price_sell: null,
+        entity_energy_price_export: null,
+        number_energy_price_export: null,
       };
     } else if (
       // Reset cost type if switching to external statistic with incompatible cost type
@@ -545,8 +545,8 @@ export class DialogEnergyGridSettings
     this._source = {
       ...this._source!,
       stat_compensation: null,
-      entity_energy_price_sell: null,
-      number_energy_price_sell: null,
+      entity_energy_price_export: null,
+      number_energy_price_export: null,
     };
   }
 
@@ -577,14 +577,14 @@ export class DialogEnergyGridSettings
   private _entityCompensationChanged(ev: CustomEvent<{ value: string }>) {
     this._source = {
       ...this._source!,
-      entity_energy_price_sell: ev.detail.value || null,
+      entity_energy_price_export: ev.detail.value || null,
     };
   }
 
   private _numberCompensationChanged(ev: Event) {
     const input = ev.currentTarget as HTMLInputElement;
     const value = input.value ? parseFloat(input.value) : null;
-    this._source = { ...this._source!, number_energy_price_sell: value };
+    this._source = { ...this._source!, number_energy_price_export: value };
   }
 
   private _handlePowerConfigChanged(
@@ -604,8 +604,8 @@ export class DialogEnergyGridSettings
         stat_compensation: this._source!.stat_compensation,
         entity_energy_price: this._source!.entity_energy_price,
         number_energy_price: this._source!.number_energy_price,
-        entity_energy_price_sell: this._source!.entity_energy_price_sell,
-        number_energy_price_sell: this._source!.number_energy_price_sell,
+        entity_energy_price_export: this._source!.entity_energy_price_export,
+        number_energy_price_export: this._source!.number_energy_price_export,
         cost_adjustment_day: this._source!.cost_adjustment_day,
       };
 

@@ -285,8 +285,8 @@ export class HuiEnergySourcesTableCard
         source.entity_energy_price ||
         source.number_energy_price ||
         source.stat_compensation ||
-        source.entity_energy_price_sell ||
-        source.number_energy_price_sell
+        source.entity_energy_price_export ||
+        source.number_energy_price_export
     );
 
     const showCosts = !!(
