@@ -4,7 +4,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-wa-dialog";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
@@ -16,16 +17,22 @@ class DialogZeroconfDiscoveryInfo extends LitElement implements HassDialog {
 
   @state() private _params?: ZeroconfDiscoveryInfoDialogParams;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: ZeroconfDiscoveryInfoDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
   }
 
-  public closeDialog(): boolean {
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   private async _copyToClipboard(): Promise<void> {
@@ -45,13 +52,13 @@ class DialogZeroconfDiscoveryInfo extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.zeroconf.discovery_information")
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.zeroconf.discovery_information"
         )}
+        @closed=${this._dialogClosed}
       >
         <p>
           <b>${this.hass.localize("ui.panel.config.zeroconf.name")}</b>:
@@ -94,16 +101,16 @@ class DialogZeroconfDiscoveryInfo extends LitElement implements HassDialog {
             )}
           </tbody>
         </table>
-
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this._copyToClipboard}
-          >${this.hass.localize(
-            "ui.panel.config.zeroconf.copy_to_clipboard"
-          )}</ha-button
-        >
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="primaryAction"
+            appearance="plain"
+            @click=${this._copyToClipboard}
+          >
+            ${this.hass.localize("ui.panel.config.zeroconf.copy_to_clipboard")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 }
