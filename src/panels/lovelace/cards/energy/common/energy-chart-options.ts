@@ -13,6 +13,7 @@ import {
   addHours,
   startOfDay,
   addDays,
+  subDays,
 } from "date-fns";
 import type {
   BarSeriesOption,
@@ -83,6 +84,7 @@ export function getCommonOptions(
   detailedDailyData = false
 ): ECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
+  const suggestedMax = getSuggestedMax(suggestedPeriod, end);
 
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
@@ -92,8 +94,8 @@ export function getCommonOptions(
   const monthTimeAxis: ECOption = {
     xAxis: {
       type: "time",
-      min: addDays(start, -5),
-      max: addDays(getSuggestedMax(suggestedPeriod, end), 5),
+      min: subDays(start, 5),
+      max: addDays(suggestedMax, 5),
       axisLabel: {
         formatter: {
           year: "{yearStyle|{MMMM} {yyyy}}",
@@ -112,7 +114,7 @@ export function getCommonOptions(
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(suggestedPeriod, end),
+      max: suggestedMax,
     },
   };
 
