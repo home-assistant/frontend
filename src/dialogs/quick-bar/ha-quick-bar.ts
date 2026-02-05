@@ -104,11 +104,7 @@ export class QuickBar extends LitElement {
     this._selectedSection = params.mode;
     this._showHint = params.showHint ?? false;
 
-    this._relatedResult = params.related;
-
-    if (!params.contextItem) {
-      this._relatedResult = undefined;
-    }
+    this._relatedResult = params.contextItem ? params.related : undefined;
 
     this._open = true;
   }
