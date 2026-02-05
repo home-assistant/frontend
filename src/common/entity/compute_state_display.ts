@@ -3,7 +3,7 @@ import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
-import type { HomeAssistant, ValuePart, ValuePartsInfo } from "../../types";
+import type { HomeAssistant, ValuePart } from "../../types";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
@@ -52,7 +52,7 @@ export const computeStateDisplayFromEntityAttributes = (
   attributes: any,
   state: string
 ): string => {
-  const { parts, order } = computeStateToPartsFromEntityAttributes(
+  const parts = computeStateToPartsFromEntityAttributes(
     localize,
     locale,
     sensorNumericDeviceClasses,
@@ -62,9 +62,7 @@ export const computeStateDisplayFromEntityAttributes = (
     attributes,
     state
   );
-  const orderedParts = parts;
-  if (order === "reverse") orderedParts.reverse();
-  return orderedParts.map((part) => part.value).join("");
+  return parts.map((part) => part.value).join("");
 };
 
 const computeStateToPartsFromEntityAttributes = (
@@ -76,16 +74,14 @@ const computeStateToPartsFromEntityAttributes = (
   entityId: string,
   attributes: any,
   state: string
-): ValuePartsInfo => {
+): ValuePart[] => {
   if (state === UNKNOWN || state === UNAVAILABLE) {
-    return {
-      parts: [
-        {
-          type: "value",
-          value: localize(`state.default.${state}`),
-        },
-      ],
-    };
+    return [
+      {
+        type: "value",
+        value: localize(`state.default.${state}`),
+      },
+    ];
   }
 
   const domain = computeDomain(entityId);
@@ -106,19 +102,17 @@ const computeStateToPartsFromEntityAttributes = (
       DURATION_UNITS.includes(attributes.unit_of_measurement)
     ) {
       try {
-        return {
-          parts: [
-            {
-              type: "value",
-              value: formatDuration(
-                locale,
-                state,
-                attributes.unit_of_measurement,
-                entity?.display_precision
-              ),
-            },
-          ],
-        };
+        return [
+          {
+            type: "value",
+            value: formatDuration(
+              locale,
+              state,
+              attributes.unit_of_measurement,
+              entity?.display_precision
+            ),
+          },
+        ];
       } catch (_err) {
         // fallback to default
       }
@@ -161,20 +155,30 @@ const computeStateToPartsFromEntityAttributes = (
           : "direct";
 
       const valueParts: ValuePart[] = [];
-      if (valueMonetary) {
-        valueParts.push({ type: "value", value: valueMonetary });
-      }
-      if (literalMonetary) {
-        valueParts.push({ type: "literal", value: literalMonetary });
-      }
-      if (currency) {
-        valueParts.push({ type: "unit", value: currency });
+
+      if (order === "direct") {
+        if (valueMonetary) {
+          valueParts.push({ type: "value", value: valueMonetary });
+        }
+        if (literalMonetary) {
+          valueParts.push({ type: "literal", value: literalMonetary });
+        }
+        if (currency) {
+          valueParts.push({ type: "unit", value: currency });
+        }
+      } else {
+        if (currency) {
+          valueParts.push({ type: "unit", value: currency });
+        }
+        if (literalMonetary) {
+          valueParts.push({ type: "literal", value: literalMonetary });
+        }
+        if (valueMonetary) {
+          valueParts.push({ type: "value", value: valueMonetary });
+        }
       }
 
-      return {
-        parts: valueParts,
-        order: order,
-      };
+      return valueParts;
     }
 
     // default processing of numeric values
@@ -192,16 +196,14 @@ const computeStateToPartsFromEntityAttributes = (
       attributes.unit_of_measurement;
 
     if (unit) {
-      return {
-        parts: [
-          { type: "value", value: value },
-          { type: "literal", value: blankBeforeUnit(unit, locale) },
-          { type: "unit", value: unit },
-        ],
-      };
+      return [
+        { type: "value", value: value },
+        { type: "literal", value: blankBeforeUnit(unit, locale) },
+        { type: "unit", value: unit },
+      ];
     }
 
-    return { parts: [{ type: "value", value: value }] };
+    return [{ type: "value", value: value }];
   }
 
   if (["date", "input_datetime", "time"].includes(domain)) {
@@ -213,57 +215,51 @@ const computeStateToPartsFromEntityAttributes = (
       const components = state.split(" ");
       if (components.length === 2) {
         // Date and time.
-        return {
-          parts: [
-            {
-              type: "value",
-              value: formatDateTime(
-                new Date(components.join("T")),
-                { ...locale, time_zone: TimeZone.local },
-                config
-              ),
-            },
-          ],
-        };
+        return [
+          {
+            type: "value",
+            value: formatDateTime(
+              new Date(components.join("T")),
+              { ...locale, time_zone: TimeZone.local },
+              config
+            ),
+          },
+        ];
       }
       if (components.length === 1) {
         if (state.includes("-")) {
           // Date only.
-          return {
-            parts: [
-              {
-                type: "value",
-                value: formatDate(
-                  new Date(`${state}T00:00`),
-                  { ...locale, time_zone: TimeZone.local },
-                  config
-                ),
-              },
-            ],
-          };
+          return [
+            {
+              type: "value",
+              value: formatDate(
+                new Date(`${state}T00:00`),
+                { ...locale, time_zone: TimeZone.local },
+                config
+              ),
+            },
+          ];
         }
         if (state.includes(":")) {
           // Time only.
           const now = new Date();
-          return {
-            parts: [
-              {
-                type: "value",
-                value: formatTime(
-                  new Date(`${now.toISOString().split("T")[0]}T${state}`),
-                  { ...locale, time_zone: TimeZone.local },
-                  config
-                ),
-              },
-            ],
-          };
+          return [
+            {
+              type: "value",
+              value: formatTime(
+                new Date(`${now.toISOString().split("T")[0]}T${state}`),
+                { ...locale, time_zone: TimeZone.local },
+                config
+              ),
+            },
+          ];
         }
       }
-      return { parts: [{ type: "value", value: state }] };
+      return [{ type: "value", value: state }];
     } catch (_e) {
       // Formatting methods may throw error if date parsing doesn't go well,
       // just return the state string in that case.
-      return { parts: [{ type: "value", value: state }] };
+      return [{ type: "value", value: state }];
     }
   }
 
@@ -287,40 +283,36 @@ const computeStateToPartsFromEntityAttributes = (
     (domain === "sensor" && attributes.device_class === "timestamp")
   ) {
     try {
-      return {
-        parts: [
-          {
-            type: "value",
-            value: formatDateTime(new Date(state), locale, config),
-          },
-        ],
-      };
+      return [
+        {
+          type: "value",
+          value: formatDateTime(new Date(state), locale, config),
+        },
+      ];
     } catch (_err) {
-      return { parts: [{ type: "value", value: state }] };
+      return [{ type: "value", value: state }];
     }
   }
 
-  return {
-    parts: [
-      {
-        type: "value",
-        value:
-          (entity?.translation_key &&
-            localize(
-              `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${state}`
-            )) ||
-          // Return device class translation
-          (attributes.device_class &&
-            localize(
-              `component.${domain}.entity_component.${attributes.device_class}.state.${state}`
-            )) ||
-          // Return default translation
-          localize(`component.${domain}.entity_component._.state.${state}`) ||
-          // We don't know! Return the raw state.
-          state,
-      },
-    ],
-  };
+  return [
+    {
+      type: "value",
+      value:
+        (entity?.translation_key &&
+          localize(
+            `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${state}`
+          )) ||
+        // Return device class translation
+        (attributes.device_class &&
+          localize(
+            `component.${domain}.entity_component.${attributes.device_class}.state.${state}`
+          )) ||
+        // Return default translation
+        localize(`component.${domain}.entity_component._.state.${state}`) ||
+        // We don't know! Return the raw state.
+        state,
+    },
+  ];
 };
 
 export const computeStateToParts = (
@@ -331,7 +323,7 @@ export const computeStateToParts = (
   config: HassConfig,
   entities: HomeAssistant["entities"],
   state?: string
-): ValuePartsInfo => {
+): ValuePart[] => {
   const entity = entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;
