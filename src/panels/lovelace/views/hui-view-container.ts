@@ -23,6 +23,7 @@ class HuiViewContainer extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    this.classList.add("ha-scrollbar");
     this._setUpMediaQuery();
     this._applyTheme();
   }
@@ -81,7 +82,6 @@ class HuiViewContainer extends LitElement {
       :host {
         display: block;
         height: 100%;
-        overflow: auto;
         -webkit-overflow-scrolling: touch;
       }
     `,
