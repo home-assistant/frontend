@@ -173,7 +173,7 @@ export class HaStateLabelBadge extends LitElement {
       default:
         return isUnavailableState(entityState.state)
           ? "—"
-          : this.hass!.formatEntityStateToParts(entityState).parts.find(
+          : this.hass!.formatEntityStateToParts(entityState).find(
               (part) => part.type === "value"
             )?.value;
     }
