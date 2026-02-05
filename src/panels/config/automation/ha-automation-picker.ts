@@ -232,7 +232,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     return getAvailableAssistants(this.cloudStatus, this.hass);
   }
 
-  private _showingOverflow = false;
+  private _openingOverflow = false;
 
   private _automations = memoizeOne(
     (
@@ -376,19 +376,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       this._overflowMenu.anchorElement = undefined;
       return;
     }
-    this._showingOverflow = true;
+    this._openingOverflow = true;
     this._overflowMenu.anchorElement = ev.target;
     this._overflowAutomation = ev.target.automation;
     this._overflowMenu.open = true;
   };
 
   private _overflowMenuOpened = () => {
-    this._showingOverflow = false;
+    this._openingOverflow = false;
   };
 
   private _overflowMenuClosed = () => {
     // changing the anchorElement triggers a close event, ignore it
-    if (this._showingOverflow) {
+    if (this._openingOverflow) {
       return;
     }
 
