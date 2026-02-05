@@ -24,14 +24,19 @@ import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { entitiesConfigStruct } from "../structs/entities-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+
+const distributionEntityConfigStruct = object({
+  entity: string(),
+  name: optional(string()),
+  color: optional(string()),
+});
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     title: optional(string()),
-    entities: array(union([string(), entitiesConfigStruct])),
+    entities: array(union([string(), distributionEntityConfigStruct])),
   })
 );
 
@@ -43,6 +48,10 @@ const SUB_SCHEMA = [
     context: {
       entity: "entity",
     },
+  },
+  {
+    name: "color",
+    selector: { ui_color: {} },
   },
 ] as const;
 
