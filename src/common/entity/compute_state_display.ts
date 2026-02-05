@@ -3,13 +3,14 @@ import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
 import { TimeZone } from "../../data/translation";
-import type { HomeAssistant, ValuePart } from "../../types";
+import type { HomeAssistant, ValuePart, ValuePartsInfo } from "../../types";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
 import { formatTime } from "../datetime/format_time";
 import {
   formatNumber,
+  formatNumberToParts,
   getNumberFormatOptions,
   isNumericFromAttributes,
 } from "../number/format_number";
@@ -51,7 +52,7 @@ export const computeStateDisplayFromEntityAttributes = (
   attributes: any,
   state: string
 ): string => {
-  const parts = computeStateToPartsFromEntityAttributes(
+  const { parts, order } = computeStateToPartsFromEntityAttributes(
     localize,
     locale,
     sensorNumericDeviceClasses,
@@ -61,7 +62,9 @@ export const computeStateDisplayFromEntityAttributes = (
     attributes,
     state
   );
-  return parts.map((part) => part.value).join("");
+  const orderedParts = parts;
+  if (order === "reverse") orderedParts.reverse();
+  return orderedParts.map((part) => part.value).join("");
 };
 
 const computeStateToPartsFromEntityAttributes = (
@@ -73,14 +76,16 @@ const computeStateToPartsFromEntityAttributes = (
   entityId: string,
   attributes: any,
   state: string
-): ValuePart[] => {
+): ValuePartsInfo => {
   if (state === UNKNOWN || state === UNAVAILABLE) {
-    return [
-      {
-        type: "value",
-        value: localize(`state.default.${state}`),
-      },
-    ];
+    return {
+      parts: [
+        {
+          type: "value",
+          value: localize(`state.default.${state}`),
+        },
+      ],
+    };
   }
 
   const domain = computeDomain(entityId);
@@ -101,43 +106,78 @@ const computeStateToPartsFromEntityAttributes = (
       DURATION_UNITS.includes(attributes.unit_of_measurement)
     ) {
       try {
-        return [
-          {
-            type: "value",
-            value: formatDuration(
-              locale,
-              state,
-              attributes.unit_of_measurement,
-              entity?.display_precision
-            ),
-          },
-        ];
-      } catch (_err) {
-        // fallback to default
-      }
-    }
-    if (attributes.device_class === "monetary") {
-      try {
-        return [
-          {
-            type: "value",
-            value: formatNumber(state, locale, {
-              style: "currency",
-              currency: attributes.unit_of_measurement,
-              minimumFractionDigits: 2,
-              // Override monetary options with number format
-              ...getNumberFormatOptions(
-                { state, attributes } as HassEntity,
-                entity
+        return {
+          parts: [
+            {
+              type: "value",
+              value: formatDuration(
+                locale,
+                state,
+                attributes.unit_of_measurement,
+                entity?.display_precision
               ),
-            }),
-          },
-        ];
+            },
+          ],
+        };
       } catch (_err) {
         // fallback to default
       }
     }
 
+    // state is monetary
+    if (attributes.device_class === "monetary") {
+      let parts: Record<string, string>[] = [];
+      try {
+        parts = formatNumberToParts(state, locale, {
+          style: "currency",
+          currency: attributes.unit_of_measurement,
+          minimumFractionDigits: 2,
+          // Override monetary options with number format
+          ...getNumberFormatOptions(
+            { state, attributes } as HassEntity,
+            entity
+          ),
+        });
+      } catch (_err) {
+        // fallback to default
+      }
+
+      const valueMonetary = parts
+        .map((part) =>
+          ["integer", "group", "decimal", "fraction"].includes(part.type)
+            ? part.value
+            : ""
+        )
+        .join("");
+      const literalMonetary = parts.find(
+        (part) => part.type === "literal"
+      )?.value;
+      const currency = parts.find((part) => part.type === "currency")?.value;
+
+      const order =
+        parts.findIndex((part) => part.type === "currency") <
+        parts.findIndex((part) => part.type === "integer")
+          ? "reverse"
+          : "direct";
+
+      const valueParts: ValuePart[] = [];
+      if (valueMonetary) {
+        valueParts.push({ type: "value", value: valueMonetary });
+      }
+      if (literalMonetary) {
+        valueParts.push({ type: "literal", value: literalMonetary });
+      }
+      if (currency) {
+        valueParts.push({ type: "unit", value: currency });
+      }
+
+      return {
+        parts: valueParts,
+        order: order,
+      };
+    }
+
+    // default processing of numeric values
     const value = formatNumber(
       state,
       locale,
@@ -152,14 +192,16 @@ const computeStateToPartsFromEntityAttributes = (
       attributes.unit_of_measurement;
 
     if (unit) {
-      return [
-        { type: "value", value: value },
-        { type: "literal", value: blankBeforeUnit(unit, locale) },
-        { type: "unit", value: unit },
-      ];
+      return {
+        parts: [
+          { type: "value", value: value },
+          { type: "literal", value: blankBeforeUnit(unit, locale) },
+          { type: "unit", value: unit },
+        ],
+      };
     }
 
-    return [{ type: "value", value: value }];
+    return { parts: [{ type: "value", value: value }] };
   }
 
   if (["date", "input_datetime", "time"].includes(domain)) {
@@ -171,51 +213,57 @@ const computeStateToPartsFromEntityAttributes = (
       const components = state.split(" ");
       if (components.length === 2) {
         // Date and time.
-        return [
-          {
-            type: "value",
-            value: formatDateTime(
-              new Date(components.join("T")),
-              { ...locale, time_zone: TimeZone.local },
-              config
-            ),
-          },
-        ];
+        return {
+          parts: [
+            {
+              type: "value",
+              value: formatDateTime(
+                new Date(components.join("T")),
+                { ...locale, time_zone: TimeZone.local },
+                config
+              ),
+            },
+          ],
+        };
       }
       if (components.length === 1) {
         if (state.includes("-")) {
           // Date only.
-          return [
-            {
-              type: "value",
-              value: formatDate(
-                new Date(`${state}T00:00`),
-                { ...locale, time_zone: TimeZone.local },
-                config
-              ),
-            },
-          ];
+          return {
+            parts: [
+              {
+                type: "value",
+                value: formatDate(
+                  new Date(`${state}T00:00`),
+                  { ...locale, time_zone: TimeZone.local },
+                  config
+                ),
+              },
+            ],
+          };
         }
         if (state.includes(":")) {
           // Time only.
           const now = new Date();
-          return [
-            {
-              type: "value",
-              value: formatTime(
-                new Date(`${now.toISOString().split("T")[0]}T${state}`),
-                { ...locale, time_zone: TimeZone.local },
-                config
-              ),
-            },
-          ];
+          return {
+            parts: [
+              {
+                type: "value",
+                value: formatTime(
+                  new Date(`${now.toISOString().split("T")[0]}T${state}`),
+                  { ...locale, time_zone: TimeZone.local },
+                  config
+                ),
+              },
+            ],
+          };
         }
       }
-      return [{ type: "value", value: state }];
+      return { parts: [{ type: "value", value: state }] };
     } catch (_e) {
       // Formatting methods may throw error if date parsing doesn't go well,
       // just return the state string in that case.
-      return [{ type: "value", value: state }];
+      return { parts: [{ type: "value", value: state }] };
     }
   }
 
@@ -239,36 +287,40 @@ const computeStateToPartsFromEntityAttributes = (
     (domain === "sensor" && attributes.device_class === "timestamp")
   ) {
     try {
-      return [
-        {
-          type: "value",
-          value: formatDateTime(new Date(state), locale, config),
-        },
-      ];
+      return {
+        parts: [
+          {
+            type: "value",
+            value: formatDateTime(new Date(state), locale, config),
+          },
+        ],
+      };
     } catch (_err) {
-      return [{ type: "value", value: state }];
+      return { parts: [{ type: "value", value: state }] };
     }
   }
 
-  return [
-    {
-      type: "value",
-      value:
-        (entity?.translation_key &&
-          localize(
-            `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${state}`
-          )) ||
-        // Return device class translation
-        (attributes.device_class &&
-          localize(
-            `component.${domain}.entity_component.${attributes.device_class}.state.${state}`
-          )) ||
-        // Return default translation
-        localize(`component.${domain}.entity_component._.state.${state}`) ||
-        // We don't know! Return the raw state.
-        state,
-    },
-  ];
+  return {
+    parts: [
+      {
+        type: "value",
+        value:
+          (entity?.translation_key &&
+            localize(
+              `component.${entity.platform}.entity.${domain}.${entity.translation_key}.state.${state}`
+            )) ||
+          // Return device class translation
+          (attributes.device_class &&
+            localize(
+              `component.${domain}.entity_component.${attributes.device_class}.state.${state}`
+            )) ||
+          // Return default translation
+          localize(`component.${domain}.entity_component._.state.${state}`) ||
+          // We don't know! Return the raw state.
+          state,
+      },
+    ],
+  };
 };
 
 export const computeStateToParts = (
@@ -279,7 +331,7 @@ export const computeStateToParts = (
   config: HassConfig,
   entities: HomeAssistant["entities"],
   state?: string
-): ValuePart[] => {
+): ValuePartsInfo => {
   const entity = entities?.[stateObj.entity_id] as
     | EntityRegistryDisplayEntry
     | undefined;

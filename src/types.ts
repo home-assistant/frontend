@@ -210,6 +210,11 @@ export interface ValuePart {
   value: string;
 }
 
+export interface ValuePartsInfo {
+  parts: ValuePart[];
+  order?: "direct" | "reverse";
+}
+
 export interface ServiceCallResponse<T = any> {
   context: Context;
   response?: T;
@@ -292,7 +297,10 @@ export interface HomeAssistant {
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
   formatEntityState(stateObj: HassEntity, state?: string): string;
-  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
+  formatEntityStateToParts(
+    stateObj: HassEntity,
+    state?: string
+  ): ValuePartsInfo;
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,

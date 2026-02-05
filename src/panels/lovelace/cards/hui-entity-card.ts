@@ -202,7 +202,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                 : this.hass.localize("state.default.unknown")
               : this.hass
                   .formatEntityStateToParts(stateObj)
-                  .find((part) => part.type === "value")?.value}</span
+                  .parts.find((part) => part.type === "value")?.value}</span
           >
           ${unit ? html`<span class="measurement">${unit}</span>` : nothing}
         </div>
