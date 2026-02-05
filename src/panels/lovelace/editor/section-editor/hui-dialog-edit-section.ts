@@ -11,9 +11,8 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
@@ -68,8 +67,6 @@ export class HuiDialogEditSection
 
   @state() private _currTab: (typeof TABS)[number] = TABS[0];
 
-  @state() private _open = false;
-
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
@@ -83,7 +80,6 @@ export class HuiDialogEditSection
 
   public async showDialog(params: EditSectionDialogParams): Promise<void> {
     this._params = params;
-    this._open = true;
 
     this.lovelace = params.lovelace;
 
@@ -97,16 +93,12 @@ export class HuiDialogEditSection
   }
 
   public closeDialog() {
-    this._open = false;
-    return true;
-  }
-
-  private _dialogClosed(): void {
     this._params = undefined;
     this._yamlMode = false;
     this._config = undefined;
     this._currTab = TABS[0];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {
@@ -124,7 +116,7 @@ export class HuiDialogEditSection
       content = html`
         <ha-yaml-editor
           .hass=${this.hass}
-          autofocus
+          dialogInitialFocus
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;
@@ -155,20 +147,20 @@ export class HuiDialogEditSection
     }
 
     return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        width="large"
+      <ha-dialog
+        open
+        scrimClickAction
         @keydown=${this._ignoreKeydown}
-        @closed=${this._dialogClosed}
+        @closed=${this._cancel}
+        .heading=${heading}
         class=${classMap({
           "yaml-mode": this._yamlMode,
         })}
       >
-        <ha-dialog-header show-border slot="header">
+        <ha-dialog-header show-border slot="heading">
           <ha-icon-button
             slot="navigationIcon"
-            @click=${this._cancel}
+            dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
@@ -221,20 +213,18 @@ export class HuiDialogEditSection
             : nothing}
         </ha-dialog-header>
         ${content}
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._cancel}
-          >
-            ${this.hass!.localize("ui.common.cancel")}
-          </ha-button>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this._cancel}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
 
-          <ha-button slot="primaryAction" @click=${this._save}>
-            ${this.hass!.localize("ui.common.save")}
-          </ha-button>
-        </ha-dialog-footer>
-      </ha-wa-dialog>
+        <ha-button slot="primaryAction" @click=${this._save}>
+          ${this.hass!.localize("ui.common.save")}
+        </ha-button>
+      </ha-dialog>
     `;
   }
 
@@ -427,7 +417,7 @@ export class HuiDialogEditSection
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-wa-dialog.yaml-mode {
+        ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
         ha-tab-group-tab {
@@ -436,6 +426,11 @@ export class HuiDialogEditSection
         ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
+        }
+        @media all and (min-width: 600px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 600px;
+          }
         }
       `,
     ];

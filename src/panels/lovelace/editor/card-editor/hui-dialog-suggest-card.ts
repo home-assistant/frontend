@@ -5,8 +5,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-yaml-editor";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
 
 import "../../../../components/ha-spinner";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -32,8 +30,6 @@ export class HuiDialogSuggestCard extends LitElement {
 
   @state() private _params?: SuggestCardDialogParams;
 
-  @state() private _open = false;
-
   @state() private _cardConfig?: LovelaceCardConfig[];
 
   @state() private _sectionConfig?: LovelaceSectionConfig;
@@ -46,7 +42,6 @@ export class HuiDialogSuggestCard extends LitElement {
     this._params = params;
     this._cardConfig = params.cardConfig;
     this._sectionConfig = params.sectionConfig;
-    this._open = true;
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
@@ -59,11 +54,6 @@ export class HuiDialogSuggestCard extends LitElement {
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._open = false;
     this._params = undefined;
     this._cardConfig = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -117,14 +107,13 @@ export class HuiDialogSuggestCard extends LitElement {
       return nothing;
     }
     return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        width="large"
-        header-title=${this.hass!.localize(
+      <ha-dialog
+        open
+        scrimClickAction
+        @closed=${this.closeDialog}
+        .heading=${this.hass!.localize(
           "ui.panel.lovelace.editor.suggest_card.header"
         )}
-        @closed=${this._dialogClosed}
       >
         <div>
           ${this._renderPreview()}
@@ -139,46 +128,44 @@ export class HuiDialogSuggestCard extends LitElement {
               `
             : nothing}
         </div>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            @click=${this.closeDialog}
-            appearance="plain"
-            autofocus
-          >
-            ${this._params.yaml
-              ? this.hass!.localize("ui.common.close")
-              : this.hass!.localize("ui.common.cancel")}
-          </ha-button>
-          ${!this._params.yaml
-            ? html`
-                ${!(this._sectionConfig && this._viewSupportsSection)
-                  ? html`
-                      <ha-button
-                        appearance="plain"
-                        slot="secondaryAction"
-                        @click=${this._pickCard}
-                      >
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.editor.suggest_card.create_own"
-                        )}
-                      </ha-button>
-                    `
-                  : nothing}
-                <ha-button
-                  slot="primaryAction"
-                  .disabled=${this._saving}
-                  @click=${this._save}
-                  .loading=${this._saving}
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.suggest_card.add"
-                  )}
-                </ha-button>
-              `
-            : nothing}
-        </ha-dialog-footer>
-      </ha-wa-dialog>
+        <ha-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          appearance="plain"
+          dialogInitialFocus
+        >
+          ${this._params.yaml
+            ? this.hass!.localize("ui.common.close")
+            : this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        ${!this._params.yaml
+          ? html`
+              ${!(this._sectionConfig && this._viewSupportsSection)
+                ? html`
+                    <ha-button
+                      appearance="plain"
+                      slot="primaryAction"
+                      @click=${this._pickCard}
+                    >
+                      ${this.hass!.localize(
+                        "ui.panel.lovelace.editor.suggest_card.create_own"
+                      )}
+                    </ha-button>
+                  `
+                : nothing}
+              <ha-button
+                slot="primaryAction"
+                .disabled=${this._saving}
+                @click=${this._save}
+                .loading=${this._saving}
+              >
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.suggest_card.add"
+                )}
+              </ha-button>
+            `
+          : nothing}
+      </ha-dialog>
     `;
   }
 
@@ -186,7 +173,20 @@ export class HuiDialogSuggestCard extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          /* overrule the ha-style-dialog max-height on small screens */
+          ha-dialog {
+            max-height: 100%;
+            height: 100%;
+          }
+        }
+        @media all and (min-width: 850px) {
+          ha-dialog {
+            width: 845px;
+          }
+        }
+        ha-dialog {
+          max-width: 845px;
           --dialog-z-index: 6;
         }
         .hidden {

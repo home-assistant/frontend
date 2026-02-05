@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -6,8 +6,8 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
@@ -40,8 +40,6 @@ export class HuiDialogEditViewHeader extends LitElement {
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
-  @state() private _open = false;
-
   protected updated(changedProperties: PropertyValues) {
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const config = {
@@ -56,14 +54,9 @@ export class HuiDialogEditViewHeader extends LitElement {
 
     this._dirty = false;
     this._config = this._params.config;
-    this._open = true;
   }
 
   public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
     this._params = undefined;
     this._config = undefined;
     this._yamlMode = false;
@@ -83,7 +76,7 @@ export class HuiDialogEditViewHeader extends LitElement {
       content = html`
         <ha-yaml-editor
           .hass=${this.hass}
-          autofocus
+          dialogInitialFocus
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;
@@ -102,45 +95,52 @@ export class HuiDialogEditViewHeader extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${title}
-        width="large"
-        @closed=${this._dialogClosed}
+      <ha-dialog
+        open
+        scrimClickAction
+        escapeKeyAction
+        @closed=${this.closeDialog}
+        .heading=${title}
         class=${classMap({
           "yaml-mode": this._yamlMode,
         })}
       >
-        <ha-dropdown
-          slot="headerActionItems"
-          placement="bottom-end"
-          @wa-select=${this._handleAction}
-        >
+        <ha-dialog-header show-border slot="heading">
           <ha-icon-button
-            slot="trigger"
-            .label=${this.hass!.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass!.localize("ui.common.close")}
+            .path=${mdiClose}
           ></ha-icon-button>
-          <ha-dropdown-item value="toggle-mode">
-            ${this.hass!.localize(
-              `ui.panel.lovelace.editor.edit_view_header.edit_${!this._yamlMode ? "yaml" : "ui"}`
-            )}
-            <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
-          </ha-dropdown-item>
-        </ha-dropdown>
+          <h2 slot="title">${title}</h2>
+          <ha-dropdown
+            slot="actionItems"
+            placement="bottom-end"
+            @wa-select=${this._handleAction}
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass!.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-dropdown-item value="toggle-mode">
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.edit_view_header.edit_${!this._yamlMode ? "yaml" : "ui"}`
+              )}
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            </ha-dropdown-item>
+          </ha-dropdown>
+        </ha-dialog-header>
         ${content}
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="primaryAction"
-            .disabled=${!this._config || this._saving || !this._dirty}
-            @click=${this._save}
-            .loading=${this._saving}
-          >
-            ${this.hass!.localize("ui.common.save")}</ha-button
-          >
-        </ha-dialog-footer>
-      </ha-wa-dialog>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${!this._config || this._saving || !this._dirty}
+          @click=${this._save}
+          .loading=${this._saving}
+        >
+          ${this.hass!.localize("ui.common.save")}</ha-button
+        >
+      </ha-dialog>
     `;
   }
 
@@ -198,8 +198,19 @@ export class HuiDialogEditViewHeader extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-wa-dialog.yaml-mode {
+        ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
+        }
+        h2 {
+          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;
+        }
+
+        @media all and (min-width: 600px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 600px;
+          }
         }
       `,
     ];

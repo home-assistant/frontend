@@ -4,13 +4,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
-import "../../../../components/ha-wa-dialog";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -51,8 +51,6 @@ export class HuiCreateDialogCard
 
   @state() private _params?: CreateCardDialogParams;
 
-  @state() private _open = false;
-
   @state() private _containerConfig!:
     | LovelaceViewConfig
     | LovelaceSectionConfig;
@@ -80,20 +78,14 @@ export class HuiCreateDialogCard
     }
 
     this._containerConfig = containerConfig;
-    this._open = true;
   }
 
   public closeDialog(): boolean {
-    this._open = false;
-    return true;
-  }
-
-  private _dialogClosed(): void {
-    this._open = false;
     this._params = undefined;
     this._currTab = "card";
     this._selectedEntities = [];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {
@@ -109,18 +101,18 @@ export class HuiCreateDialogCard
       : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
 
     return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        width="large"
+      <ha-dialog
+        open
+        scrimClickAction
         @keydown=${this._ignoreKeydown}
-        @closed=${this._dialogClosed}
+        @closed=${this._cancel}
+        .heading=${title}
         class=${classMap({ table: this._currTab === "entity" })}
       >
-        <ha-dialog-header show-border slot="header">
+        <ha-dialog-header show-border slot="heading">
           <ha-icon-button
             slot="navigationIcon"
-            @click=${this._cancel}
+            dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
@@ -131,7 +123,7 @@ export class HuiCreateDialogCard
               slot="nav"
               .active=${this._currTab === "card"}
               panel="card"
-              ?autofocus=${this._narrow}
+              dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
             >
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.by_card"
@@ -151,7 +143,7 @@ export class HuiCreateDialogCard
           this._currTab === "card"
             ? html`
                 <hui-card-picker
-                  ?autofocus=${!this._narrow}
+                  dialogInitialFocus=${ifDefined(this._narrow ? undefined : "")}
                   .suggestedCards=${this._params.suggestedCards}
                   .lovelace=${this._params.lovelaceConfig}
                   .hass=${this.hass}
@@ -168,23 +160,19 @@ export class HuiCreateDialogCard
               `
         )}
 
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._cancel}
-          >
+        <div slot="primaryAction">
+          <ha-button appearance="plain" @click=${this._cancel}>
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
           ${this._selectedEntities.length
             ? html`
-                <ha-button slot="primaryAction" @click=${this._suggestCards}>
+                <ha-button @click=${this._suggestCards}>
                   ${this.hass!.localize("ui.common.continue")}
                 </ha-button>
               `
             : ""}
-        </ha-dialog-footer>
-      </ha-wa-dialog>
+        </div>
+      </ha-dialog>
     `;
   }
 
@@ -196,13 +184,33 @@ export class HuiCreateDialogCard
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        @media all and (min-width: 850px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 845px;
+            --mdc-dialog-min-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
+            --mdc-dialog-max-height: calc(
+              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
+            );
+          }
+        }
+
+        ha-dialog {
+          --mdc-dialog-max-width: 845px;
           --dialog-content-padding: 0 24px 20px 24px;
           --dialog-z-index: 6;
         }
 
-        ha-wa-dialog.table {
+        ha-dialog.table {
           --dialog-content-padding: 0;
+        }
+
+        @media (min-width: 1200px) {
+          ha-dialog {
+            --mdc-dialog-max-width: calc(100vw - 32px);
+            --mdc-dialog-min-width: 1000px;
+          }
         }
         ha-tab-group-tab {
           flex: 1;

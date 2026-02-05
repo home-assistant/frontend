@@ -1,11 +1,11 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-footer";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-switch";
@@ -30,8 +30,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
 
   @state() private _saving: boolean;
 
-  @state() private _open = false;
-
   public constructor() {
     super();
     this._saving = false;
@@ -40,17 +38,12 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
   public showDialog(params: SaveDialogParams): void {
     this._params = params;
     this._emptyConfig = false;
-    this._open = true;
   }
 
   public closeDialog(): boolean {
-    this._open = false;
-    return true;
-  }
-
-  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {
@@ -62,25 +55,34 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
       "ui.panel.lovelace.editor.save_config.header"
     );
     return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${heading}
-        width="medium"
-        @closed=${this._dialogClosed}
+      <ha-dialog
+        open
+        scrimClickAction
+        escapeKeyAction
+        @closed=${this._close}
+        .heading=${heading}
       >
-        <a
-          href=${documentationUrl(this.hass!, "/lovelace/")}
-          title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-          target="_blank"
-          rel="noreferrer"
-          slot="headerActionItems"
-        >
+        <ha-dialog-header slot="heading">
           <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass!.localize("ui.common.help")}
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass!.localize("ui.common.close")}
+            .path=${mdiClose}
           ></ha-icon-button>
-        </a>
+          <span slot="title">${heading}</span>
+          <a
+            href=${documentationUrl(this.hass!, "/lovelace/")}
+            title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+            target="_blank"
+            rel="noreferrer"
+            slot="actionItems"
+          >
+            <ha-icon-button
+              .path=${mdiHelpCircle}
+              .label=${this.hass!.localize("ui.common.help")}
+            ></ha-icon-button>
+          </a>
+        </ha-dialog-header>
         <div>
           <p>
             ${this.hass!.localize("ui.panel.lovelace.editor.save_config.para")}
@@ -101,7 +103,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                   <ha-switch
                     .checked=${this._emptyConfig}
                     @change=${this._emptyConfigChanged}
-                    autofocus
+                    dialogInitialFocus
                   ></ha-switch
                 ></ha-formfield>
               `
@@ -124,42 +126,45 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 <ha-yaml-editor
                   .hass=${this.hass}
                   .defaultValue=${this._params!.lovelace.config}
-                  autofocus
+                  dialogInitialFocus
                 ></ha-yaml-editor>
               `}
         </div>
         ${this._params.mode === "storage"
           ? html`
-              <ha-dialog-footer slot="footer">
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this.closeDialog}
-                >
-                  ${this.hass!.localize("ui.common.cancel")}
-                </ha-button>
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._saveConfig}
-                  .loading=${this._saving}
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.save"
-                  )}
-                </ha-button>
-              </ha-dialog-footer>
+              <ha-button
+                appearance="plain"
+                slot="primaryAction"
+                @click=${this.closeDialog}
+              >
+                ${this.hass!.localize("ui.common.cancel")}
+              </ha-button>
+              <ha-button
+                slot="primaryAction"
+                @click=${this._saveConfig}
+                .loading=${this._saving}
+              >
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.save_config.save"
+                )}
+              </ha-button>
             `
           : html`
-              <ha-dialog-footer slot="footer">
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.close"
-                  )}
-                </ha-button>
-              </ha-dialog-footer>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.save_config.close"
+                )}</ha-button
+              >
             `}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
+  }
+
+  private _close(ev?: Event) {
+    if (ev) {
+      ev.stopPropagation();
+    }
+    this.closeDialog();
   }
 
   private _emptyConfigChanged(ev) {
@@ -191,11 +196,11 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0 24px 24px 24px;
         }
 
-        ha-wa-dialog [slot="headerActionItems"] {
+        ha-dialog-header a {
           color: inherit;
           text-decoration: none;
         }
