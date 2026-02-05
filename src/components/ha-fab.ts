@@ -37,7 +37,7 @@ export class HaFab extends FabBase {
         margin-inline-end: 12px;
         direction: var(--direction);
       }
-      :disabled {
+      .disabled {
         --mdc-theme-secondary: var(--disabled-text-color);
         pointer-events: none;
       }
