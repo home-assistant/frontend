@@ -9,7 +9,7 @@ import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
@@ -65,7 +65,7 @@ const STRATEGIES = [
 class DialogNewDashboard extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _params?: NewDashboardDialogParams;
 
@@ -77,7 +77,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   })[] = [];
 
   public showDialog(params: NewDashboardDialogParams): void {
-    this._opened = true;
+    this._open = true;
     this._params = params;
     this._localizedStrategies = STRATEGIES.map((strategy) => ({
       ...strategy,
@@ -89,12 +89,13 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   }
 
   public closeDialog() {
-    if (this._opened) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
-    }
-    this._opened = false;
-    this._params = undefined;
+    this._open = false;
     return true;
+  }
+
+  private _dialogClosed(): void {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _generateDefaultConfig = memoizeOne(
@@ -104,25 +105,24 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   );
 
   protected render() {
-    if (!this._opened) {
+    if (!this._params) {
       return nothing;
     }
 
     const defaultConfig = this._generateDefaultConfig(this.hass.localize);
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            `ui.panel.config.lovelace.dashboards.dialog_new.header`
-          )
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        width="large"
+        header-title=${this.hass.localize(
+          `ui.panel.config.lovelace.dashboards.dialog_new.header`
         )}
+        @closed=${this._dialogClosed}
       >
         <search-input
+          autofocus
           .hass=${this.hass}
           .label=${this.hass.localize(
             `ui.panel.config.lovelace.dashboards.dialog_new.search_dashboards`
@@ -195,7 +195,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                 </div>
               `}
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -256,28 +256,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* overrule the ha-style-dialog max-height on small screens */
-          ha-dialog {
-            --mdc-dialog-max-height: 100%;
-            height: 100%;
-          }
-        }
-
-        @media all and (min-width: 850px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 845px;
-            --mdc-dialog-min-height: calc(
-              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
-            );
-            --mdc-dialog-max-height: calc(
-              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
-            );
-          }
-        }
-
-        ha-dialog {
-          --mdc-dialog-max-width: 845px;
+        ha-wa-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
         }
