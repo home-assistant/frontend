@@ -682,7 +682,7 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       },
       "12"
     );
-    expect(result).toBe("$12");
+    expect(result).toBe("$12.00");
   });
 });
 
