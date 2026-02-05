@@ -696,8 +696,8 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  private _setBoot(ev: any) {
-    this._boot = ev.target.value;
+  private _setBoot(boot: number) {
+    this._boot = boot;
     this._loadLogs();
   }
 
