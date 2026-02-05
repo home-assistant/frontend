@@ -77,7 +77,12 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { Entries, HomeAssistant, Route } from "../../../types";
+import type {
+  Entries,
+  HomeAssistant,
+  Route,
+  ValueChangedEvent,
+} from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
@@ -753,7 +758,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     }
   }
 
-  private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
+  private _valueChanged(ev: ValueChangedEvent<AutomationConfig>) {
     ev.stopPropagation();
 
     if (this._config) {

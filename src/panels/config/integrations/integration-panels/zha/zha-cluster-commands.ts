@@ -5,6 +5,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import type { Cluster, Command, ZHADevice } from "../../../../../data/zha";
 import { fetchCommandsForCluster } from "../../../../../data/zha";
@@ -171,7 +172,7 @@ export class ZHAClusterCommands extends LitElement {
       this._computeIssueClusterCommandServiceData();
   }
 
-  private _selectedCommandChanged(event: CustomEvent<{ value: string }>): void {
+  private _selectedCommandChanged(event: HaSelectSelectEvent): void {
     this._selectedCommandId = Number(event.detail.value);
     this._issueClusterCommandServiceData =
       this._computeIssueClusterCommandServiceData();

@@ -35,6 +35,7 @@ import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import {
   CAMERA_ORIENTATIONS,
   CAMERA_SUPPORT_STREAM,
@@ -1320,12 +1321,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._entityId = `${computeDomain(this._origEntityId)}.${ev.target.value}`;
   }
 
-  private _deviceClassChanged(ev: CustomEvent<{ value: string }>): void {
+  private _deviceClassChanged(ev: HaSelectSelectEvent<string, true>): void {
     fireEvent(this, "change");
     this._deviceClass = ev.detail.value;
   }
 
-  private _unitChanged(ev: CustomEvent<{ value: string }>): void {
+  private _unitChanged(ev: HaSelectSelectEvent): void {
     fireEvent(this, "change");
     this._unit_of_measurement = ev.detail.value;
   }
@@ -1340,38 +1341,38 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._calendarColor = ev.detail.value || null;
   }
 
-  private _precipitationUnitChanged(ev: CustomEvent<{ value: string }>): void {
+  private _precipitationUnitChanged(ev: HaSelectSelectEvent): void {
     fireEvent(this, "change");
     this._precipitation_unit = ev.detail.value;
   }
 
-  private _precisionChanged(ev: CustomEvent<{ value: string }>): void {
+  private _precisionChanged(ev: HaSelectSelectEvent): void {
     fireEvent(this, "change");
     this._precision =
       ev.detail.value === "default" ? null : Number(ev.detail.value);
   }
 
-  private _pressureUnitChanged(ev: CustomEvent<{ value: string }>): void {
+  private _pressureUnitChanged(ev: HaSelectSelectEvent): void {
     fireEvent(this, "change");
     this._pressure_unit = ev.detail.value;
   }
 
-  private _temperatureUnitChanged(ev: CustomEvent<{ value: string }>): void {
+  private _temperatureUnitChanged(ev: HaSelectSelectEvent): void {
     fireEvent(this, "change");
     this._temperature_unit = ev.detail.value;
   }
 
-  private _visibilityUnitChanged(ev: CustomEvent<{ value: string }>): void {
+  private _visibilityUnitChanged(ev: HaSelectSelectEvent): void {
     fireEvent(this, "change");
     this._visibility_unit = ev.detail.value;
   }
 
-  private _windSpeedUnitChanged(ev: CustomEvent<{ value: string }>): void {
+  private _windSpeedUnitChanged(ev: HaSelectSelectEvent): void {
     fireEvent(this, "change");
     this._wind_speed_unit = ev.detail.value;
   }
 
-  private _switchAsDomainChanged(ev: CustomEvent<{ value: string }>): void {
+  private _switchAsDomainChanged(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (value === "") {
       return;
@@ -1443,9 +1444,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
   }
 
-  private async _handleCameraOrientationChanged(
-    ev: CustomEvent<{ value: string }>
-  ) {
+  private async _handleCameraOrientationChanged(ev: HaSelectSelectEvent) {
     try {
       this._cameraPrefs = await updateCameraPrefs(
         this.hass,

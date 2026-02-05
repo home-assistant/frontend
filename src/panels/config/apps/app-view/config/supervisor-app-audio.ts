@@ -5,6 +5,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
@@ -118,14 +119,14 @@ class SupervisorAppAudio extends LitElement {
     }
   }
 
-  private _setInputDevice(ev: CustomEvent<{ value: string }>): void {
+  private _setInputDevice(ev: HaSelectSelectEvent): void {
     const device = ev.detail.value;
-    this._selectedInput = device;
+    this._selectedInput = device ?? null;
   }
 
-  private _setOutputDevice(ev: CustomEvent<{ value: string }>): void {
+  private _setOutputDevice(ev: HaSelectSelectEvent): void {
     const device = ev.detail.value;
-    this._selectedOutput = device;
+    this._selectedOutput = device ?? null;
   }
 
   private async _addonChanged(): Promise<void> {
