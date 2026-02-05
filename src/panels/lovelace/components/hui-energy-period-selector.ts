@@ -94,8 +94,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: "vertical-opening-direction" })
   public verticalOpeningDirection?: "up" | "down";
 
-  @property({ attribute: "horizontal-opening-direction" })
-  public horizontalOpeningDirection?: "right" | "left" | "center" | "inline";
+  @property({ attribute: "opening-direction" })
+  public openingDirection?: "right" | "left" | "center" | "inline";
 
   @state() _datepickerOpen = false;
 
@@ -261,7 +261,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               minimal
               header-position
               .verticalOpeningDirection=${this.verticalOpeningDirection}
-              .openingDirection=${this.horizontalOpeningDirection}
+              .openingDirection=${this.openingDirection}
             ></ha-date-range-picker>
           </section>
           <section class="date-range" @click=${this._openDatePicker}>
