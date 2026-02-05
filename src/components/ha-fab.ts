@@ -8,7 +8,6 @@ import { mainWindow } from "../common/dom/get_main_window";
 export class HaFab extends FabBase {
   protected firstUpdated(changedProperties) {
     super.firstUpdated(changedProperties);
-    this.style.setProperty("--mdc-theme-secondary", "var(--primary-color)");
   }
 
   static override styles = [
@@ -19,6 +18,7 @@ export class HaFab extends FabBase {
         --mdc-typography-button-font-size: var(--ha-font-size-l);
         --mdc-typography-button-font-family: var(--ha-font-family-body);
         --mdc-typography-button-font-weight: var(--ha-font-weight-medium);
+        --mdc-theme-secondary: var(--primary-color);
       }
       :host .mdc-fab--extended {
         border-radius: var(
@@ -37,9 +37,10 @@ export class HaFab extends FabBase {
         margin-inline-end: 12px;
         direction: var(--direction);
       }
-      .disabled {
-        --mdc-theme-secondary: var(--disabled-text-color);
-        pointer-events: none;
+      :host([disabled]) button {
+        cursor: not-allowed !important;
+        --mdc-theme-secondary: var(--disabled-color);
+        --mdc-theme-on-secondary: var(--disabled-text-color);
       }
     `,
     // safari workaround - must be explicit
