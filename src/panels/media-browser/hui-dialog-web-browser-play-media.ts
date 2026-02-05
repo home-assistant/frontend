@@ -2,7 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-hls-player";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -14,17 +14,24 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
 
   @state() private _params?: WebBrowserPlayMediaDialogParams;
 
+  @state() private _open = false;
+
   public showDialog(params: WebBrowserPlayMediaDialogParams): void {
     this._params = params;
+    this._open = true;
   }
 
-  public closeDialog() {
-    this._params = undefined;
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     const img = this.renderRoot.querySelector("img");
     if (img) {
       // Unload streaming images so the connection can be closed
       img.src = "";
     }
+    this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -36,15 +43,13 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     const mediaType = this._params.sourceType.split("/", 1)[0];
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.title ||
-            this.hass.localize("ui.components.media-browser.media_player")
-        )}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        width="large"
+        header-title=${this._params.title ||
+        this.hass.localize("ui.components.media-browser.media_player")}
+        @closed=${this._dialogClosed}
       >
         ${mediaType === "audio"
           ? html`
@@ -88,7 +93,7 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
                 : html`${this.hass.localize(
                     "ui.components.media-browser.media_not_supported"
                   )}`}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -96,13 +101,6 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media (min-width: 800px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 800px;
-            --mdc-dialog-min-width: 400px;
-          }
-        }
-
         video,
         audio,
         img {
