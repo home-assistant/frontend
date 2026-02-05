@@ -90,7 +90,7 @@ class SupervisorAppConfigDashboard extends LitElement {
         .content {
           margin: auto;
           padding: var(--ha-space-2);
-          max-width: 1024px;
+          max-width: var(--ha-config-page-width-full);
         }
         supervisor-app-network,
         supervisor-app-audio,

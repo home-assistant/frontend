@@ -443,7 +443,7 @@ class ZHAConfigDashboard extends LitElement {
         ha-card {
           margin: auto;
           margin-top: 16px;
-          max-width: 500px;
+          max-width: var(--ha-config-page-width-standard);
         }
 
         ha-card .card-actions {

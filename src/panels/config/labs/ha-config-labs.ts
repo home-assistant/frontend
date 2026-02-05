@@ -401,7 +401,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       }
 
       .content {
-        max-width: 800px;
+        max-width: var(--ha-config-page-width-standard);
         margin: 0 auto;
         padding: var(--ha-space-4);
         display: flex;

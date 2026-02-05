@@ -918,7 +918,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: flex;
           flex-wrap: wrap;
           margin: auto;
-          max-width: 1000px;
+          max-width: var(--ha-config-page-width-full);
           padding: 32px;
         }
         :host([narrow]) .container {

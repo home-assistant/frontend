@@ -42,6 +42,10 @@ export const coreStyles = css`
     --ha-space-19: 76px;
     --ha-space-20: 80px;
 
+    /* Config page widths */
+    --ha-config-page-width-standard: 740px;
+    --ha-config-page-width-full: 1040px;
+
     --ha-shadow-offset-x-sm: 0;
     --ha-shadow-offset-x-md: 0;
     --ha-shadow-offset-x-lg: 0;
@@ -58,6 +62,13 @@ export const coreStyles = css`
     --ha-animation-duration-fast: 150ms;
     --ha-animation-duration-normal: 250ms;
     --ha-animation-duration-slow: 350ms;
+  }
+
+  @media (max-width: 600px) {
+    html {
+      --ha-config-page-width-standard: 100%;
+      --ha-config-page-width-full: 100%;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

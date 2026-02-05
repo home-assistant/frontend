@@ -345,7 +345,7 @@ export class MatterConfigDashboard extends LitElement {
         ha-card {
           margin: auto;
           margin-top: var(--ha-space-4);
-          max-width: 500px;
+          max-width: var(--ha-config-page-width-standard);
         }
 
         ha-card .card-actions {

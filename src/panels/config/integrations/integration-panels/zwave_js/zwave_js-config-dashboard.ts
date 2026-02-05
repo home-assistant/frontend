@@ -965,7 +965,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         ha-card {
           margin: 0px auto 24px;
-          max-width: 600px;
+          max-width: var(--ha-config-page-width-standard);
         }
 
         .card-actions {

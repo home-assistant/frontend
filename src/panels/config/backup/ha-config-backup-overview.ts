@@ -254,7 +254,7 @@ class HaConfigBackupOverview extends LitElement {
       css`
         .content {
           padding: 28px 20px 0;
-          max-width: 690px;
+          max-width: var(--ha-config-page-width-standard);
           margin: 0 auto;
           gap: var(--ha-space-6);
           display: flex;

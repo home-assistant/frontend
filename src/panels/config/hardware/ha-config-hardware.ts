@@ -482,13 +482,13 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     css`
       .content {
         padding: 28px 20px 0;
-        max-width: 1040px;
+        max-width: var(--ha-config-page-width-full);
         margin: 0 auto;
         --mdc-list-side-padding: 24px;
         --mdc-list-vertical-padding: 0;
       }
       ha-card {
-        max-width: 600px;
+        max-width: var(--ha-config-page-width-standard);
         margin: 0 auto;
         height: 100%;
         justify-content: space-between;
