@@ -52,6 +52,7 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { EnergyData } from "../../../data/energy";
@@ -121,7 +122,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _measure() {
     this.narrow = this.offsetWidth < 450;
-    this._collapseButtons = this.offsetWidth < 330;
+    this._collapseButtons = this.offsetWidth < 320;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -264,6 +265,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             ></ha-date-range-picker>
           </section>
           <section class="date-range" @click=${this._openDatePicker}>
+            <ha-ripple></ha-ripple>
             <div class="header-title">
               ${simpleRange === "year"
                 ? html`${formatDateYear(
@@ -623,7 +625,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       display: flex;
       flex-direction: row;
       align-items: center;
-      padding: 0 var(--ha-space-1);
       box-sizing: border-box;
     }
     .date-picker-icon {
@@ -635,10 +636,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     .date-range {
       flex: 1;
-      background-color: var(--input-fill-color);
-      border-bottom: 1px solid var(--input-outlined-idle-border-color);
-      padding: 2px var(--ha-space-2) 1px;
-      margin: 4px 0px;
+      padding: 2px var(--ha-space-2);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -648,12 +646,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       text-overflow: ellipsis;
       white-space: nowrap;
       cursor: pointer;
-    }
-    @media (hover: hover) {
-      .date-range:hover {
-        border-color: var(--input-outlined-hover-border-color);
-        transition: background-color 0.15s ease-in-out;
-      }
     }
     .header-title {
       font-size: var(--ha-font-size-xl);
