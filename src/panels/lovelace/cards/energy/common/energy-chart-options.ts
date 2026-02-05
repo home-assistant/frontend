@@ -33,15 +33,15 @@ import { filterXSS } from "../../../../../common/util/xss";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
-export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
+export function getSuggestedMax(period: StatisticPeriod, end: Date): Date {
   let suggestedMax = new Date(end);
 
   if (period === "5minute") {
-    return suggestedMax.getTime();
+    return suggestedMax;
   }
   suggestedMax.setMinutes(0, 0, 0);
   if (period === "hour") {
-    return suggestedMax.getTime();
+    return suggestedMax;
   }
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
   // Correct for this when showing days/months so we don't get an extra day.
@@ -50,11 +50,11 @@ export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
   }
   suggestedMax.setHours(0);
   if (period === "day" || period === "week") {
-    return suggestedMax.getTime();
+    return suggestedMax;
   }
   // period === month
   suggestedMax.setDate(1);
-  return suggestedMax.getTime();
+  return suggestedMax;
 }
 
 function createYAxisLabelFormatter(locale: FrontendLocaleData) {
