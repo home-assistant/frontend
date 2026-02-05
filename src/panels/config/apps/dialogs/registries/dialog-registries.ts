@@ -3,12 +3,12 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-button";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-wa-dialog";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import {
   addHassioDockerRegistry,
@@ -52,37 +52,32 @@ class AppsRegistriesDialog extends LitElement {
     password?: string;
   } = {};
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _addingRegistry = false;
 
   protected render(): TemplateResult {
     return html`
-      <ha-dialog
-        .open=${this._opened}
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        hideActions
-        .heading=${createCloseHeading(
-          this.hass,
-          this._addingRegistry
-            ? this.hass.localize(
-                "ui.panel.config.apps.dialog.registries.title_add"
-              )
-            : this.hass.localize(
-                "ui.panel.config.apps.dialog.registries.title_manage"
-              )
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+        header-title=${this._addingRegistry
+          ? this.hass.localize(
+              "ui.panel.config.apps.dialog.registries.title_add"
+            )
+          : this.hass.localize(
+              "ui.panel.config.apps.dialog.registries.title_manage"
+            )}
       >
         ${this._addingRegistry
           ? html`
               <ha-form
+                autofocus
                 .data=${this._input}
                 .schema=${SCHEMA}
                 @value-changed=${this._valueChanged}
                 .computeLabel=${this._computeLabel}
-                dialogInitialFocus
               ></ha-form>
               <div class="action">
                 <ha-button
@@ -134,7 +129,7 @@ class AppsRegistriesDialog extends LitElement {
               <div class="action">
                 <ha-button
                   @click=${this._addRegistry}
-                  dialogInitialFocus
+                  autofocus
                   appearance="filled"
                   size="small"
                 >
@@ -144,7 +139,7 @@ class AppsRegistriesDialog extends LitElement {
                   )}
                 </ha-button>
               </div> `}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -158,24 +153,20 @@ class AppsRegistriesDialog extends LitElement {
   }
 
   public async showDialog(): Promise<void> {
-    this._opened = true;
+    this._open = true;
     this._input = {};
     await this._loadRegistries();
     await this.updateComplete;
   }
 
   public closeDialog(): void {
-    this._addingRegistry = false;
-    this._opened = false;
-    this._input = {};
+    this._open = false;
   }
 
-  public focus(): void {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
-    );
+  private _dialogClosed(): void {
+    this._open = false;
+    this._addingRegistry = false;
+    this._input = {};
   }
 
   private async _loadRegistries(): Promise<void> {
