@@ -5,6 +5,7 @@ import type { HaProgressButton } from "../../../../../../components/buttons/ha-p
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../../components/ha-select";
 import "../../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../../components/ha-textfield";
 import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
@@ -157,7 +158,7 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
     this._loading = false;
   }
 
-  private _changeSpecialState(ev: CustomEvent<{ value: string }>) {
+  private _changeSpecialState(ev: HaSelectSelectEvent<string, true>) {
     this._disableSetbackState = !ev.detail.value;
     this._setbackSpecialType = ev.detail.value;
   }
@@ -201,7 +202,7 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
     this._loadSetback();
   }
 
-  private _setbackTypeChanged(ev: CustomEvent<{ value: string }>) {
+  private _setbackTypeChanged(ev: HaSelectSelectEvent) {
     this._setbackType = ev.detail.value;
   }
 

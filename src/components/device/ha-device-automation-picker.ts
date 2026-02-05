@@ -11,7 +11,7 @@ import {
   sortDeviceAutomations,
 } from "../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-generic-picker";
 import "../ha-md-select";
 import "../ha-md-select-option";
@@ -192,7 +192,7 @@ export abstract class HaDeviceAutomationPicker<
     this._renderEmpty = false;
   }
 
-  private _automationChanged(ev: CustomEvent<{ value: string }>) {
+  private _automationChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const value = ev.detail.value;
     if (!value || NO_AUTOMATION_KEY === value) {

@@ -3,8 +3,8 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
+import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
-import type { HaSelectOption } from "./ha-select";
 
 const DEFAULT_THEME = "default";
 
@@ -63,7 +63,7 @@ export class HaThemePicker extends LitElement {
     }
   `;
 
-  private _changed(ev: CustomEvent<{ value: string }>): void {
+  private _changed(ev: HaSelectSelectEvent): void {
     if (!this.hass || ev.detail.value === "") {
       return;
     }

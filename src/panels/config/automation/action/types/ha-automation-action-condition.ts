@@ -7,6 +7,7 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { CONDITION_ICONS } from "../../../../../components/ha-condition-icon";
 import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -200,7 +201,7 @@ export class HaConditionAction
     });
   }
 
-  private _typeChanged(ev: CustomEvent<{ value: string }>) {
+  private _typeChanged(ev: HaSelectSelectEvent) {
     const type = ev.detail.value;
 
     if (!type) {

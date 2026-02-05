@@ -5,7 +5,7 @@ import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
 import { setTimeValue } from "../../../data/time";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -64,7 +64,7 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
     ev.stopPropagation();
   }
 
-  private _timeChanged(ev: CustomEvent<{ value: string }>): void {
+  private _timeChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       const stateObj = this.hass!.states[this._config!.entity];
       setTimeValue(this.hass!, stateObj.entity_id, ev.detail.value);

@@ -1,15 +1,12 @@
-import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-header";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../components/ha-md-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-md-select";
 import "../../../components/ha-md-select-option";
+import "../../../components/ha-wa-dialog";
 import { getSignedPath } from "../../../data/auth";
 import { getHassioLogDownloadLinesUrl } from "../../../data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -25,17 +22,19 @@ class DownloadLogsDialog extends LitElement {
 
   @state() private _dialogParams?: DownloadLogsDialogParams;
 
-  @state() private _lineCount = DEFAULT_LINE_COUNT;
+  @state() private _open = false;
 
-  @query("ha-md-dialog") private _dialogElement!: HaMdDialog;
+  @state() private _lineCount = DEFAULT_LINE_COUNT;
 
   public showDialog(dialogParams: DownloadLogsDialogParams) {
     this._dialogParams = dialogParams;
-    this._lineCount = this._dialogParams?.defaultLineCount || 500;
+    this._lineCount =
+      this._dialogParams?.defaultLineCount || DEFAULT_LINE_COUNT;
+    this._open = true;
   }
 
   public closeDialog() {
-    this._dialogElement.close();
+    this._open = false;
   }
 
   private _dialogClosed() {
@@ -55,25 +54,28 @@ class DownloadLogsDialog extends LitElement {
       numberOfLinesOptions.sort((a, b) => a - b);
     }
 
+    const headerSubtitle = `${this._dialogParams.header}${
+      this._dialogParams.boot === 0
+        ? ""
+        : ` · ${
+            this._dialogParams.boot === -1
+              ? this.hass.localize("ui.panel.config.logs.previous")
+              : this.hass.localize("ui.panel.config.logs.startups_ago", {
+                  boot: this._dialogParams.boot * -1,
+                })
+          }`
+    }`;
+
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title" id="dialog-light-color-favorite-title">
-            ${this.hass.localize("ui.panel.config.logs.download_logs")}
-          </span>
-          <span slot="subtitle">
-            ${this._dialogParams.header}${this._dialogParams.boot === 0
-              ? ""
-              : ` · ${this._dialogParams.boot === -1 ? this.hass.localize("ui.panel.config.logs.previous") : this.hass.localize("ui.panel.config.logs.startups_ago", { boot: this._dialogParams.boot * -1 })}`}
-          </span>
-        </ha-dialog-header>
-        <div slot="content" class="content">
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize("ui.panel.config.logs.download_logs")}
+        header-subtitle=${headerSubtitle}
+        width="small"
+        @closed=${this._dialogClosed}
+      >
+        <div class="content">
           <div>
             ${this.hass.localize(
               "ui.panel.config.logs.select_number_of_lines"
@@ -93,15 +95,19 @@ class DownloadLogsDialog extends LitElement {
             )}
           </ha-md-select>
         </div>
-        <div slot="actions">
-          <ha-button appearance="plain" @click=${this.closeDialog}>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button @click=${this._downloadLogs}>
+          <ha-button slot="primaryAction" @click=${this._downloadLogs}>
             ${this.hass.localize("ui.common.download")}
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -135,7 +141,6 @@ class DownloadLogsDialog extends LitElement {
       css`
         :host {
           direction: var(--direction);
-          --dialog-content-overflow: visible;
         }
         .content {
           display: flex;

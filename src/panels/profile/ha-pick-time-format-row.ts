@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { TimeFormat } from "../../data/translation";
@@ -52,8 +53,8 @@ class TimeFormatRow extends LitElement {
     `;
   }
 
-  private async _handleFormatSelection(ev: CustomEvent<{ value: string }>) {
-    fireEvent(this, "hass-time-format-select", ev.detail.value as TimeFormat);
+  private async _handleFormatSelection(ev: HaSelectSelectEvent<TimeFormat>) {
+    fireEvent(this, "hass-time-format-select", ev.detail.value);
   }
 
   static styles = css`
