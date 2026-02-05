@@ -155,6 +155,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       align-items: center;
       overflow: visible;
       gap: var(--ha-space-2);
+      max-height: 100%;
     }
     .content:hover ha-icon-next {
       transform: translateX(calc(4px * var(--scale-direction)));
@@ -222,6 +223,9 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       align-items: center;
       justify-content: flex-end;
       gap: 4px 10px;
+      flex-wrap: wrap;
+      max-height: 100%;
+      overflow-y: clip;
     }
   `;
 }
