@@ -146,6 +146,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const reversedOrder =
+      this.hass.formatEntityStateToParts(stateObj).order === "reverse";
+
     const name = computeLovelaceEntityName(
       this.hass,
       stateObj,
@@ -194,7 +197,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="info">
-          <span class="value"
+          <span
+            class=${classMap({
+              value: true,
+              "first-part": !reversedOrder,
+            })}
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
                 ? html`<ha-attribute-value
@@ -216,8 +223,16 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                     )
                   )
                 : this.hass.formatEntityState(stateObj)}</span
-          >
-          ${unit ? html`<span class="measurement">${unit}</span>` : nothing}
+          >${unit
+            ? html`<span
+                class=${classMap({
+                  measurement: true,
+                  "first-part": reversedOrder,
+                })}
+                style=${reversedOrder ? `order: -1;` : ""}
+                >${unit}</span
+              >`
+            : nothing}
         </div>
         <div
           class="footer"
@@ -336,6 +351,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .info {
+          display: flex;
+          align-items: baseline;
           padding: 0px 16px 16px;
           margin-top: -4px;
           overflow: hidden;
@@ -346,14 +363,17 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
         .value {
           font-size: var(--ha-font-size-3xl);
-          margin-right: 4px;
-          margin-inline-end: 4px;
-          margin-inline-start: initial;
         }
 
         .measurement {
           font-size: var(--ha-font-size-l);
           color: var(--secondary-text-color);
+        }
+
+        .first-part {
+          margin-right: 4px;
+          margin-inline-end: 4px;
+          margin-inline-start: initial;
         }
 
         .with-fixed-footer {
