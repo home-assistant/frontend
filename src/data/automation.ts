@@ -673,6 +673,9 @@ export interface BlueprintInputSidebarConfig extends BaseSidebarConfig {
   yamlMode: boolean;
   path: string[] | undefined;
   pathOpened: (path: string[]) => void;
+  // `any` is actually actions, conditions, and triggers, but specifying this
+  // results in a type too complex for TypeScript to represent
+  insertAfter: (value: any) => boolean;
 }
 
 export type SidebarConfig =

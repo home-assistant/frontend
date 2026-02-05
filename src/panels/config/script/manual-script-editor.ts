@@ -65,7 +65,7 @@ import "./ha-script-fields";
 import type HaScriptFields from "./ha-script-fields";
 import type { ScriptBlueprint } from "../../../data/blueprint";
 
-const scriptConfigStruct = object({
+export const scriptConfigStruct = object({
   alias: optional(string()),
   description: optional(string()),
   sequence: optional(array(any())),
@@ -92,6 +92,8 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
     | ScriptBlueprint;
 
   @property({ attribute: false }) public dirty = false;
+
+  @property({ attribute: false }) public listenForPasteEvents = false;
 
   @state() private _pastedConfig?: ScriptConfig;
 
@@ -340,11 +342,15 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
 
   public connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("paste", this._handlePaste);
+    if (this.listenForPasteEvents) {
+      window.addEventListener("paste", this._handlePaste);
+    }
   }
 
   public disconnectedCallback() {
-    window.removeEventListener("paste", this._handlePaste);
+    if (this.listenForPasteEvents) {
+      window.removeEventListener("paste", this._handlePaste);
+    }
     super.disconnectedCallback();
   }
 

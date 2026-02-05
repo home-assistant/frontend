@@ -1,6 +1,7 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { AutomationConfig } from "../../../../data/automation";
 import type { ScriptConfig } from "../../../../data/script";
+import type { Blueprint } from "../../../../data/blueprint";
 
 export const loadPasteReplaceDialog = () => import("./dialog-paste-replace");
 
@@ -14,7 +15,8 @@ interface BasePasteReplaceDialogParams<D, T> {
 
 export type PasteReplaceDialogParams =
   | BasePasteReplaceDialogParams<"automation", AutomationConfig>
-  | BasePasteReplaceDialogParams<"script", ScriptConfig>;
+  | BasePasteReplaceDialogParams<"script", ScriptConfig>
+  | BasePasteReplaceDialogParams<"blueprint", Blueprint>;
 
 export const showPasteReplaceDialog = (
   element: HTMLElement,

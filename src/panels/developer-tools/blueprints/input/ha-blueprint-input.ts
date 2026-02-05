@@ -6,6 +6,7 @@ import deepClone from "deep-clone-simple";
 import type {
   BlueprintClipboard,
   BlueprintInput,
+  BlueprintInputEntry,
   BlueprintInputSection,
 } from "../../../../data/blueprint";
 import { getContainingSection } from "../../../../data/blueprint";
@@ -32,10 +33,9 @@ export class HaBlueprintInput extends LitElement {
 
   @property({ attribute: false }) public path?: string[];
 
-  @property({ attribute: false }) public inputs!: [
-    string,
-    BlueprintInput | BlueprintInputSection | null,
-  ][];
+  @property({ attribute: false }) public inputs!: BlueprintInputEntry[];
+
+  @property({ attribute: false }) public highlightedInputs!: BlueprintInputEntry[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -103,6 +103,17 @@ export class HaBlueprintInput extends LitElement {
     // Ensure input is removed even after update
     const inputs = this.inputs.filter((c) => c !== input);
     fireEvent(this, "value-changed", { value: inputs });
+  }
+
+  private _insertAfter(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    const inserted = Object.entries(ev.detail.value.input) as BlueprintInputEntry[];
+    this.highlightedInputs = inserted;
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.inputs.toSpliced(index + 1, 0, ...inserted),
+    });
   }
 
   private _inputChanged(ev: CustomEvent) {
@@ -232,13 +243,15 @@ export class HaBlueprintInput extends LitElement {
                 .last=${idx === this.inputs.length - 1}
                 .index=${idx}
                 .input=${inputPair}
-                .path=${this.path}
+                .path=${this.path ?? []}
                 .disabled=${this.disabled}
+                .highlight=${this.highlightedInputs.some(h => h[0] === inputPair[0])}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._inputChanged}
                 @duplicate-at-path=${this._duplicateInputAtPath}
                 @value-changed-at-path=${this._inputChangedAtPath}
+                @insert-after=${this._insertAfter}
                 .hass=${this.hass}
                 .narrow=${this.narrow}
               >

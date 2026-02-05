@@ -60,6 +60,7 @@ import {
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
+import type { BlueprintInputEntry } from "../../../data/blueprint";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { fullEntitiesContext } from "../../../data/context";
@@ -107,7 +108,15 @@ declare global {
     "move-up": undefined;
     duplicate: undefined;
     "insert-after": {
-      value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
+      value:
+        | Trigger
+        | Condition
+        | Action
+        | Trigger[]
+        | Condition[]
+        | Action[]
+        | BlueprintInputEntry
+        | BlueprintInputEntry[];
     };
     "save-automation": undefined;
   }

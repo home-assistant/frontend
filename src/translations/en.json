@@ -9518,6 +9518,8 @@
           },
           "blueprints": {
             "title": "Blueprints",
+            "paste_invalid_config": "Pasted blueprint is not editable in the visual editor",
+            "paste_toast_message": "Pasted blueprint from clipboard",
             "dialog_pick": {
               "header": "Pick a blueprint",
               "automation": "Automation",
@@ -9547,6 +9549,10 @@
               "abandon_changes_text": "Picking a new blueprint will cause your changes to be lost.",
               "abandon_changes_confirm_text": "Abandon changes",
               "reset_text": "You will lose all of the changes you've made so far.",
+              "paste_confirm": {
+                "title": "Pasted blueprint",
+                "text": "How do you want to paste your blueprint?"
+              },
               "actions": {
                 "delete": "Delete",
                 "duplicate": "Duplicate",

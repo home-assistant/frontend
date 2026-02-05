@@ -37,18 +37,22 @@ class DialogPasteReplace extends LitElement {
       return nothing;
     }
 
+    const localizationNamespace =
+      this._params.domain === "blueprint"
+        ? "ui.panel.developer-tools.tabs.blueprints"
+        : `ui.panel.config.${this._params.domain}`;
     return html`
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
         header-title=${this.hass.localize(
-          `ui.panel.config.${this._params.domain}.editor.paste_confirm.title`
+          `${localizationNamespace}.editor.paste_confirm.title`
         )}
       >
         <p>
           ${this.hass.localize(
-            `ui.panel.config.${this._params.domain}.editor.paste_confirm.text`
+            `${localizationNamespace}.editor.paste_confirm.text`
           )}
         </p>
 

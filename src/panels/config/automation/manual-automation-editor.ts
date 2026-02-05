@@ -79,7 +79,7 @@ const baseConfigStruct = object({
   id: optional(string()),
 });
 
-const automationConfigStruct = union([
+export const automationConfigStruct = union([
   assign(baseConfigStruct, object({ triggers: array(any()) })),
   assign(baseConfigStruct, object({ conditions: array(any()) })),
   assign(baseConfigStruct, object({ actions: array(any()) })),
@@ -106,6 +106,8 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false }) public dirty = false;
+
+  @property({ attribute: false }) public listenForPasteEvents = false;
 
   @state() private _pastedConfig?: ManualAutomationConfig;
 
@@ -136,7 +138,9 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
 
   public connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("paste", this._handlePaste);
+    if (this.listenForPasteEvents) {
+      window.addEventListener("paste", this._handlePaste);
+    }
   }
 
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
@@ -152,7 +156,9 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
   }
 
   public disconnectedCallback() {
-    window.removeEventListener("paste", this._handlePaste);
+    if (this.listenForPasteEvents) {
+      window.removeEventListener("paste", this._handlePaste);
+    }
     super.disconnectedCallback();
   }
 

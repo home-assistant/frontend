@@ -16,6 +16,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { dump } from "js-yaml";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -29,6 +30,7 @@ import type {
   BlueprintInputSection,
   BlueprintClipboard,
   BlueprintInput,
+  BlueprintInputEntry,
 } from "../../../../data/blueprint";
 import {
   getInputAtPath,
@@ -45,6 +47,7 @@ import type { HomeAssistant } from "../../../../types";
 import "./ha-blueprint-input-editor";
 import type { BlueprintInputSidebarConfig } from "../../../../data/automation";
 import { deepEqual } from "../../../../common/util/deep-equal";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 
 @customElement("ha-blueprint-input-row")
 export default class HaBlueprintInputRow extends LitElement {
@@ -60,6 +63,8 @@ export default class HaBlueprintInputRow extends LitElement {
   @property({ attribute: false }) public path!: string[];
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public highlight = false;
 
   @property({ type: Boolean }) public first?: boolean;
 
@@ -128,6 +133,7 @@ export default class HaBlueprintInputRow extends LitElement {
       yamlMode: this._yamlMode,
       rename: this._renameInput.bind(this),
       pathOpened: this._pathOpened.bind(this),
+      insertAfter: this._insertAfter.bind(this),
       path,
     } satisfies BlueprintInputSidebarConfig);
     this._selected = true;
@@ -202,7 +208,10 @@ export default class HaBlueprintInputRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        <ha-automation-row @click=${this._toggleSidebar}>
+        <ha-automation-row
+          @click=${this._toggleSidebar}
+          .highlight=${this.highlight}
+        >
           <h3 slot="header">
             <ha-svg-icon class="input-icon" .path=${icon}></ha-svg-icon>
             ${label}
@@ -374,26 +383,23 @@ export default class HaBlueprintInputRow extends LitElement {
   }
 
   private _setClipboard(path: string[] | undefined) {
-    if (!path || path.length === 0) {
-      this._clipboard = {
-        ...this._clipboard,
-        input: deepClone(this.input),
-      };
-    } else {
-      const containingSection = getContainingSection(
-        this.input[1] as BlueprintInputSection,
-        path
-      );
-      const lastPathKey = path[path.length - 1]!;
-      const input = (containingSection as BlueprintInputSection).input[
-        lastPathKey
-      ];
-      this._clipboard = {
-        ...this._clipboard,
-        input: deepClone(input),
-      };
-    }
+    const pathExists = path && path.length > 0;
+    const id = pathExists ? path[path.length - 1] : this.input[0];
+    const inputAtPath = pathExists
+      ? getInputAtPath(this.input[1] as BlueprintInputSection, path)
+      : this.input[1];
+    const input = deepClone({ [id]: inputAtPath });
+    this._clipboard = {
+      ...this._clipboard,
+      input,
+    };
+    copyToClipboard(dump(input));
   }
+
+  private _insertAfter = (value: BlueprintInputEntry | BlueprintInputEntry[]) => {
+    fireEvent(this, "insert-after", { value });
+    return true;
+  };
 
   private _onDuplicate(path: string[] | undefined) {
     fireEvent(this, "duplicate-at-path", path);
