@@ -35,10 +35,19 @@ import { filterXSS } from "../../../../../common/util/xss";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
-export function getSuggestedMax(period: StatisticPeriod, end: Date): Date {
+export function getSuggestedMax(
+  period: StatisticPeriod,
+  end: Date,
+  forLineChart: boolean
+): Date {
+  // Maximum period depends on whether plotting a line chart or discrete bars.
+  //  - For line charts we must be plotting all the way to end of a given period,
+  //    otherwise we cut off the last period of data.
+  //  - For bar charts we need to round down to the start of the final bars period
+  //    to avoid unnecessary padding of the chart.
   let suggestedMax = new Date(end);
 
-  if (period === "5minute") {
+  if (forLineChart || period === "5minute") {
     return suggestedMax;
   }
   suggestedMax.setMinutes(0, 0, 0);
@@ -84,7 +93,7 @@ export function getCommonOptions(
   detailedDailyData = false
 ): ECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
-  const suggestedMax = getSuggestedMax(suggestedPeriod, end);
+  const suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
 
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
