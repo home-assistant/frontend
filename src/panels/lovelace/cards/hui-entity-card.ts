@@ -218,8 +218,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                     )
                   )
                 : this.hass.formatEntityState(stateObj)}</span
-          >
-          ${unit ? html`<span class="measurement">${unit}</span>` : nothing}
+          >${unit ? html`<span class="measurement">${unit}</span>` : nothing}
         </div>
         <div
           class="footer"
