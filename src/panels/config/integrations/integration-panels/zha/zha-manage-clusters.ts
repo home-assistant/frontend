@@ -2,9 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-tab-group";
 import "../../../../../components/ha-tab-group-tab";
@@ -77,17 +75,11 @@ export class ZHAManageClusters extends LitElement {
             class="menu"
             .value=${String(this._selectedClusterIndex)}
             @selected=${this._selectedClusterChanged}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
+            .options=${this._clusters.map((entry, idx) => ({
+              value: String(idx),
+              label: computeClusterKey(entry),
+            }))}
           >
-            ${this._clusters.map(
-              (entry, idx) => html`
-                <ha-list-item .value=${String(idx)}
-                  >${computeClusterKey(entry)}</ha-list-item
-                >
-              `
-            )}
           </ha-select>
         </div>
         ${this._selectedCluster
@@ -155,8 +147,8 @@ export class ZHAManageClusters extends LitElement {
     this._currTab = newTab;
   }
 
-  private _selectedClusterChanged(event): void {
-    this._selectedClusterIndex = Number(event.target!.value);
+  private _selectedClusterChanged(event: CustomEvent<{ value: string }>): void {
+    this._selectedClusterIndex = Number(event.detail.value);
     this._selectedCluster = this._clusters[this._selectedClusterIndex];
   }
 

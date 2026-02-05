@@ -1,12 +1,10 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../../components/buttons/ha-progress-button";
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-button";
-import "../../../../../../components/ha-list-item";
 import "../../../../../../components/ha-select";
-import type { HaSelect } from "../../../../../../components/ha-select";
 import "../../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../../components/ha-textfield";
 import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
@@ -37,12 +35,11 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
 
   @state() private _disableSetbackState = false;
 
-  @query("#setback_type") private _setbackTypeInput!: HaSelect;
+  @state() private _setbackType = "0";
+
+  @state() private _setbackSpecialType?: string;
 
   @query("#setback_state") private _setbackStateInput!: HaTextField;
-
-  @query("#setback_special_state")
-  private _setbackSpecialStateSelect!: HaSelect;
 
   @state() private _error?: string;
 
@@ -57,23 +54,21 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
       </h3>
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : ""}
+        : nothing}
       <ha-select
         .label=${this.hass.localize(
           `ui.panel.config.zwave_js.node_installer.capability_controls.thermostat_setback.setback_type.label`
         )}
-        id="setback_type"
-        .value=${"0"}
+        @selected=${this._setbackTypeChanged}
+        .value=${this._setbackType}
         .disabled=${this._loading}
+        .options=${SETBACK_TYPE_OPTIONS.map((translationKey, index) => ({
+          value: String(index),
+          label: this.hass.localize(
+            `ui.panel.config.zwave_js.node_installer.capability_controls.thermostat_setback.setback_type.${translationKey}`
+          ),
+        }))}
       >
-        ${SETBACK_TYPE_OPTIONS.map(
-          (translationKey, index) =>
-            html`<ha-list-item .value=${String(index)}>
-              ${this.hass.localize(
-                `ui.panel.config.zwave_js.node_installer.capability_controls.thermostat_setback.setback_type.${translationKey}`
-              )}
-            </ha-list-item>`
-        )}
       </ha-select>
       <div class="setback-state">
         <ha-textfield
@@ -98,16 +93,17 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
           id="setback_special_state"
           @change=${this._changeSpecialState}
           .disabled=${this._loading}
-        >
-          <ha-list-item selected> </ha-list-item>
-          ${Object.entries(SpecialState).map(
-            ([translationKey, value]) =>
-              html`<ha-list-item .value=${value}>
-                ${this.hass.localize(
-                  `ui.panel.config.zwave_js.node_installer.capability_controls.thermostat_setback.setback_special_state.${translationKey}`
-                )}
-              </ha-list-item>`
+          .value=${this._setbackSpecialType}
+          clearable
+          .options=${Object.entries(SpecialState).map(
+            ([translationKey, value]) => ({
+              value: value,
+              label: this.hass.localize(
+                `ui.panel.config.zwave_js.node_installer.capability_controls.thermostat_setback.setback_special_state.${translationKey}`
+              ),
+            })
           )}
+        >
         </ha-select>
       </div>
       <div class="actions">
@@ -144,12 +140,12 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
         true
       )) as { setbackType: number; setbackState: number | SpecialState };
 
-      this._setbackTypeInput.value = String(setbackType);
+      this._setbackType = String(setbackType);
       if (typeof setbackState === "number") {
         this._setbackStateInput.value = String(setbackState);
-        this._setbackSpecialStateSelect.value = "";
+        this._setbackSpecialType = undefined;
       } else {
-        this._setbackSpecialStateSelect.value = setbackState;
+        this._setbackSpecialType = setbackState;
       }
     } catch (err) {
       this._error = this.hass.localize(
@@ -161,8 +157,9 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
     this._loading = false;
   }
 
-  private _changeSpecialState() {
-    this._disableSetbackState = !!this._setbackSpecialStateSelect.value;
+  private _changeSpecialState(ev: CustomEvent<{ value: string }>) {
+    this._disableSetbackState = !ev.detail.value;
+    this._setbackSpecialType = ev.detail.value;
   }
 
   private async _saveSetback(ev: CustomEvent) {
@@ -170,11 +167,11 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
     button.progress = true;
 
     this._error = undefined;
-    const setbackType = this._setbackTypeInput.value;
+    const setbackType = this._setbackType;
 
     let setbackState: number | string = Number(this._setbackStateInput.value);
-    if (this._setbackSpecialStateSelect.value) {
-      setbackState = this._setbackSpecialStateSelect.value;
+    if (this._setbackSpecialType) {
+      setbackState = this._setbackSpecialType;
     }
 
     try {
@@ -202,6 +199,10 @@ class ZWaveJSCapabilityThermostatSetback extends LitElement {
 
   private _clear() {
     this._loadSetback();
+  }
+
+  private _setbackTypeChanged(ev: CustomEvent<{ value: string }>) {
+    this._setbackType = ev.detail.value;
   }
 
   static styles = css`

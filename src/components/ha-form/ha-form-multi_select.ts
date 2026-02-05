@@ -11,8 +11,7 @@ import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-picker-field";
 
-import type { HaDropdown } from "../ha-dropdown";
-import type { HaDropdownItem } from "../ha-dropdown-item";
+import type { HaDropdown, HaDropdownSelectEvent } from "../ha-dropdown";
 import type {
   HaFormElement,
   HaFormMultiSelectData,
@@ -108,7 +107,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     `;
   }
 
-  protected _toggleItem(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  protected _toggleItem(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // keep the dropdown open
     const value = ev.detail.item.value;
     const action = (ev.detail.item as any).action;

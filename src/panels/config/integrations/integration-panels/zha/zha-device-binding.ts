@@ -1,16 +1,13 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
-import "../../../../../components/ha-list-item";
 import type { ZHADevice } from "../../../../../data/zha";
 import { bindDevices, unbindDevices } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import type { ItemSelectedEvent } from "./types";
 
 @customElement("zha-device-binding-control")
 export class ZHADeviceBindingControl extends LitElement {
@@ -44,19 +41,13 @@ export class ZHADeviceBindingControl extends LitElement {
             class="menu"
             .value=${String(this._bindTargetIndex)}
             @selected=${this._bindTargetIndexChanged}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
+            .options=${this.bindableDevices.map((device, idx) => ({
+              value: String(idx),
+              label: device.user_given_name
+                ? device.user_given_name
+                : device.name,
+            }))}
           >
-            ${this.bindableDevices.map(
-              (device, idx) => html`
-                <ha-list-item .value=${String(idx)}>
-                  ${device.user_given_name
-                    ? device.user_given_name
-                    : device.name}
-                </ha-list-item>
-              `
-            )}
           </ha-select>
         </div>
         <div class="card-actions">
@@ -81,8 +72,8 @@ export class ZHADeviceBindingControl extends LitElement {
     `;
   }
 
-  private _bindTargetIndexChanged(event: ItemSelectedEvent): void {
-    this._bindTargetIndex = Number(event.target!.value);
+  private _bindTargetIndexChanged(event: CustomEvent<{ value: string }>): void {
+    this._bindTargetIndex = Number(event.detail.value);
     this._deviceToBind =
       this._bindTargetIndex === -1
         ? undefined

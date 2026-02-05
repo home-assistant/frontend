@@ -1,19 +1,15 @@
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { refine } from "superstruct";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { refine } from "superstruct";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-assist-pipeline-picker";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../components/ha-form/types";
 import "../../../components/ha-help-tooltip";
-import "../../../components/ha-list-item";
 import "../../../components/ha-navigation-picker";
-import type { HaSelect } from "../../../components/ha-select";
 import "../../../components/ha-service-control";
 import type {
   ActionConfig,
@@ -92,8 +88,6 @@ export class HuiActionEditor extends LitElement {
   @property({ attribute: false })
   public context?: ActionRelatedContext;
 
-  @query("ha-select") private _select!: HaSelect;
-
   get _navigation_path(): string {
     const config = this.config as NavigateActionConfig | undefined;
     return config?.navigation_path || "";
@@ -136,15 +130,6 @@ export class HuiActionEditor extends LitElement {
     ]
   );
 
-  protected updated(changedProperties: PropertyValues<typeof this>) {
-    super.updated(changedProperties);
-    if (changedProperties.has("defaultAction")) {
-      if (changedProperties.get("defaultAction") !== this.defaultAction) {
-        this._select.layoutOptions();
-      }
-    }
-  }
-
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -165,29 +150,28 @@ export class HuiActionEditor extends LitElement {
           .configValue=${"action"}
           @selected=${this._actionPicked}
           .value=${action}
-          @closed=${stopPropagation}
-          fixedMenuPosition
-          naturalMenuWidth
+          .options=${[
+            {
+              value: "default",
+              label: `${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.actions.default_action"
+              )}
+            ${
+              this.defaultAction
+                ? ` (${this.hass!.localize(
+                    `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
+                  ).toLowerCase()})`
+                : ""
+            }`,
+            },
+            ...actions.map((actn) => ({
+              value: actn,
+              label: this.hass!.localize(
+                `ui.panel.lovelace.editor.action-editor.actions.${actn}`
+              ),
+            })),
+          ]}
         >
-          <ha-list-item value="default">
-            ${this.hass!.localize(
-              "ui.panel.lovelace.editor.action-editor.actions.default_action"
-            )}
-            ${this.defaultAction
-              ? ` (${this.hass!.localize(
-                  `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
-                ).toLowerCase()})`
-              : nothing}
-          </ha-list-item>
-          ${actions.map(
-            (actn) => html`
-              <ha-list-item .value=${actn}>
-                ${this.hass!.localize(
-                  `ui.panel.lovelace.editor.action-editor.actions.${actn}`
-                )}
-              </ha-list-item>
-            `
-          )}
         </ha-select>
         ${this.tooltipText
           ? html`
@@ -249,7 +233,7 @@ export class HuiActionEditor extends LitElement {
     `;
   }
 
-  private _actionPicked(ev): void {
+  private _actionPicked(ev: CustomEvent<{ value: string }>): void {
     ev.stopPropagation();
     if (!this.hass) {
       return;
@@ -260,7 +244,7 @@ export class HuiActionEditor extends LitElement {
       action = "perform-action";
     }
 
-    const value = ev.target.value;
+    const value = ev.detail.value;
 
     if (action === value) {
       return;

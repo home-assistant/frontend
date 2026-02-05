@@ -1,11 +1,9 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import type {
   HassioAddonDetails,
@@ -16,8 +14,8 @@ import type { HassioHardwareAudioDevice } from "../../../../../data/hassio/hardw
 import { fetchHassioHardwareAudio } from "../../../../../data/hassio/hardware";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
+import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 
 @customElement("supervisor-app-audio")
 class SupervisorAppAudio extends LitElement {
@@ -55,19 +53,13 @@ class SupervisorAppAudio extends LitElement {
               "ui.panel.config.apps.configuration.audio.input"
             )}
             @selected=${this._setInputDevice}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
             .value=${this._selectedInput!}
             .disabled=${this.disabled}
+            .options=${this._inputDevices.map((item) => ({
+              value: item.device || "",
+              label: item.name,
+            }))}
           >
-            ${this._inputDevices.map(
-              (item) => html`
-                <ha-list-item .value=${item.device || ""}>
-                  ${item.name}
-                </ha-list-item>
-              `
-            )}
           </ha-select>`}
           ${this._outputDevices &&
           html`<ha-select
@@ -75,19 +67,13 @@ class SupervisorAppAudio extends LitElement {
               "ui.panel.config.apps.configuration.audio.output"
             )}
             @selected=${this._setOutputDevice}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
             .value=${this._selectedOutput!}
             .disabled=${this.disabled}
+            .options=${this._outputDevices.map((item) => ({
+              value: item.device || "",
+              label: item.name,
+            }))}
           >
-            ${this._outputDevices.map(
-              (item) => html`
-                <ha-list-item .value=${item.device || ""}
-                  >${item.name}</ha-list-item
-                >
-              `
-            )}
           </ha-select>`}
         </div>
         <div class="card-actions">
@@ -116,6 +102,7 @@ class SupervisorAppAudio extends LitElement {
         }
         ha-select {
           width: 100%;
+          display: block;
         }
         ha-select:last-child {
           margin-top: var(--ha-space-2);
@@ -131,13 +118,13 @@ class SupervisorAppAudio extends LitElement {
     }
   }
 
-  private _setInputDevice(ev): void {
-    const device = ev.target.value;
+  private _setInputDevice(ev: CustomEvent<{ value: string }>): void {
+    const device = ev.detail.value;
     this._selectedInput = device;
   }
 
-  private _setOutputDevice(ev): void {
-    const device = ev.target.value;
+  private _setOutputDevice(ev: CustomEvent<{ value: string }>): void {
+    const device = ev.detail.value;
     this._selectedOutput = device;
   }
 

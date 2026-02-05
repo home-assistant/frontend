@@ -43,6 +43,7 @@ import "./components/ha-backup-details-restore";
 import "./components/ha-backup-details-summary";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { downloadBackup } from "./helper/download_backup";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface Agent extends BackupContentAgent {
   id: string;
@@ -123,7 +124,7 @@ class HaConfigBackupDetails extends LitElement {
             <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
             ${this.hass.localize("ui.common.download")}
           </ha-dropdown-item>
-          <ha-dropdown-item value="delete" class="warning">
+          <ha-dropdown-item value="delete" variant="danger">
             <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
             ${this.hass.localize("ui.common.delete")}
           </ha-dropdown-item>
@@ -311,7 +312,7 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private _handleAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "download":
@@ -323,7 +324,7 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private _handleAgentAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleAgentAction(ev: HaDropdownSelectEvent) {
     const button = ev.currentTarget;
     const agentId = (button as any).agent;
     this._downloadBackup(agentId);
@@ -384,12 +385,6 @@ class HaConfigBackupDetails extends LitElement {
     ha-md-list-item ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
-    }
-    .warning {
-      color: var(--error-color);
-    }
-    .warning ha-svg-icon {
-      color: var(--error-color);
     }
     ha-button.danger {
       --mdc-theme-primary: var(--error-color);

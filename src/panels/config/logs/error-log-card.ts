@@ -61,6 +61,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const NUMBER_OF_LINES = 100;
 
@@ -684,7 +685,7 @@ class ErrorLogCard extends LitElement {
     this._loadLogs();
   }
 
-  private _handleOverflowAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleOverflowAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     switch (action) {
       case "switch-log-view":
@@ -757,6 +758,10 @@ class ErrorLogCard extends LitElement {
       float: right;
     }
 
+    .card-content {
+      margin-top: -8px;
+    }
+
     .error-log {
       position: relative;
       font-family: var(--ha-font-family-code);
@@ -764,7 +769,7 @@ class ErrorLogCard extends LitElement {
       text-align: start;
       padding-top: 16px;
       padding-bottom: 16px;
-      overflow-y: scroll;
+      overflow: auto;
       min-height: var(--error-log-card-height, calc(100vh - 244px));
       max-height: var(--error-log-card-height, calc(100vh - 244px));
       border-top: 1px solid var(--divider-color);

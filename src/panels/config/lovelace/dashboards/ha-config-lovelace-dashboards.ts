@@ -281,7 +281,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 action: () => this._handleSetAsDefault(dashboard),
                 disabled: dashboard.default,
               },
-              ...(dashboard.type === "user_created"
+              ...(dashboard.type === "user_created" &&
+              dashboard.mode === "storage"
                 ? [
                     {
                       path: mdiPencil,
