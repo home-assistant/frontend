@@ -60,7 +60,7 @@ class OnboardingWelcomeLinks extends LitElement {
   }
 
   private _openApp(): void {
-    showAppDialog(this, { localize: this.localize });
+    showAppDialog(this, { localize: this.localize, hass: this.hass });
   }
 
   static styles = css`
