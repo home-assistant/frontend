@@ -40,7 +40,7 @@ export class HaFab extends FabBase {
       :host([disabled]) button {
         cursor: not-allowed !important;
         --mdc-theme-secondary: var(--disabled-color);
-        --mdc-theme-on-secondary: var(--disabled-text-color);
+        opacity: 0.2;
       }
     `,
     // safari workaround - must be explicit
