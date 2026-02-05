@@ -50,11 +50,8 @@ import type {
 } from "../../../components/ha-date-range-picker";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-icon-button-next";
-import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-tooltip";
 import type { EnergyData } from "../../../data/energy";
 import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -433,7 +430,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     return this.shadowRoot!.querySelector("ha-date-range-picker") ?? undefined;
   }
 
-  protected _handleIconOverflowMenuOpened(ev: Event) {
+  private _handleIconOverflowMenuOpened(ev: Event) {
     ev.stopPropagation();
   }
 
