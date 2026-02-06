@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-tab-group";
 import "../../../../../components/ha-tab-group-tab";
 import type { Cluster, ZHADevice } from "../../../../../data/zha";
@@ -147,7 +148,7 @@ export class ZHAManageClusters extends LitElement {
     this._currTab = newTab;
   }
 
-  private _selectedClusterChanged(event: CustomEvent<{ value: string }>): void {
+  private _selectedClusterChanged(event: HaSelectSelectEvent): void {
     this._selectedClusterIndex = Number(event.detail.value);
     this._selectedCluster = this._clusters[this._selectedClusterIndex];
   }

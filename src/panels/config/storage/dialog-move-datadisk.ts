@@ -6,6 +6,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-spinner";
 import {
   extractApiErrorMessage,
@@ -164,7 +165,7 @@ class MoveDatadiskDialog extends LitElement {
     `;
   }
 
-  private _selectDevice(ev: CustomEvent<{ value: string }>): void {
+  private _selectDevice(ev: HaSelectSelectEvent): void {
     this._selectedDevice = ev.detail.value;
   }
 

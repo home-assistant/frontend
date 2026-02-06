@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import "../../components/ha-divider";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-spinner";
@@ -117,7 +118,7 @@ class HaPickDashboardRow extends LitElement {
     this._dashboards = await fetchDashboards(this.hass);
   }
 
-  private _dashboardChanged(ev: CustomEvent<{ value: string }>): void {
+  private _dashboardChanged(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (!value) {
       return;

@@ -8,6 +8,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-language-picker";
 import "../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
@@ -182,13 +183,13 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  private async _handleVoiceChange(ev: CustomEvent<{ value: string }>) {
-    if (ev.detail.value === this.cloudStatus!.prefs.tts_default_voice[1]) {
+  private async _handleVoiceChange(ev: HaSelectSelectEvent) {
+    const voice = ev.detail.value;
+    if (!voice || voice === this.cloudStatus!.prefs.tts_default_voice[1]) {
       return;
     }
     this.savingPreferences = true;
     const language = this.cloudStatus!.prefs.tts_default_voice[0];
-    const voice = ev.detail.value;
 
     try {
       await updateCloudPref(this.hass, {

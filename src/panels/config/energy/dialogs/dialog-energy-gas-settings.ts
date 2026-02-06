@@ -25,7 +25,7 @@ import {
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
 
 const gasDeviceClasses = ["gas", "energy"];
@@ -331,7 +331,7 @@ export class DialogEnergyGasSettings
     };
   }
 
-  private async _statisticChanged(ev: CustomEvent<{ value: string }>) {
+  private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (ev.detail.value) {
       const metadata = await getStatisticMetadata(this.hass, [ev.detail.value]);
       this._pickedDisplayUnit = getDisplayUnit(

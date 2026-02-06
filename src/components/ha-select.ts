@@ -17,6 +17,18 @@ export interface HaSelectOption {
   disabled?: boolean;
 }
 
+/**
+ * Event type for the ha-select component when an item is selected.
+ * @param T - The type of the value of the selected item.
+ * @param Clearable - Whether the select is clearable (allows undefined values).
+ */
+export type HaSelectSelectEvent<
+  T = string,
+  Clearable extends boolean = false,
+> = CustomEvent<{
+  value: Clearable extends true ? T | undefined : T;
+}>;
+
 @customElement("ha-select")
 export class HaSelect extends LitElement {
   @property({ type: Boolean }) public clearable = false;

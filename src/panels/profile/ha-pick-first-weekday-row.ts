@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { firstWeekday } from "../../common/datetime/first_weekday";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { FirstWeekday } from "../../data/translation";
@@ -54,12 +55,8 @@ class FirstWeekdayRow extends LitElement {
     `;
   }
 
-  private async _handleFormatSelection(ev: CustomEvent<{ value: string }>) {
-    fireEvent(
-      this,
-      "hass-first-weekday-select",
-      ev.detail.value as FirstWeekday
-    );
+  private async _handleFormatSelection(ev: HaSelectSelectEvent<FirstWeekday>) {
+    fireEvent(this, "hass-first-weekday-select", ev.detail.value);
   }
 
   static styles = css`

@@ -8,8 +8,8 @@ import { debounce } from "../common/util/debounce";
 import type { STTEngine } from "../data/stt";
 import { listSTTEngines } from "../data/stt";
 import type { HomeAssistant } from "../types";
+import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
-import type { HaSelectOption } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
 
@@ -141,7 +141,7 @@ export class HaSTTPicker extends LitElement {
     }
   `;
 
-  private _changed(ev: CustomEvent<{ value: string }>): void {
+  private _changed(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (
       !this.hass ||

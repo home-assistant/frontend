@@ -256,6 +256,10 @@ export const provideHass = (
       darkMode: false,
       theme: "default",
     },
+    selectedTheme: {
+      theme: "default",
+      dark: false,
+    },
     panels: demoPanels,
     services: demoServices,
     user: {
@@ -348,7 +352,7 @@ export const provideHass = (
     mockTheme(theme) {
       invalidateThemeCache();
       hass().updateHass({
-        selectedTheme: { theme: theme ? "mock" : "default" },
+        selectedTheme: { theme: theme ? "mock" : "default", dark: false },
         themes: {
           ...hass().themes,
           themes: {
@@ -361,7 +365,7 @@ export const provideHass = (
         document.documentElement,
         themes,
         selectedTheme!.theme,
-        undefined,
+        { dark: false },
         true
       );
     },
