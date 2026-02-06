@@ -8,7 +8,7 @@ import "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-textfield";
 import type { WaitForTriggerAction } from "../../../../../data/script";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
 import type { ActionElement } from "../ha-automation-action-row";
 import { handleChangeEvent } from "../ha-automation-action-row";
@@ -78,7 +78,7 @@ export class HaWaitForTriggerAction
     `;
   }
 
-  private _timeoutChanged(ev: CustomEvent<{ value: TimeChangedEvent }>): void {
+  private _timeoutChanged(ev: ValueChangedEvent<TimeChangedEvent>): void {
     ev.stopPropagation();
     const value = ev.detail.value;
     fireEvent(this, "value-changed", {

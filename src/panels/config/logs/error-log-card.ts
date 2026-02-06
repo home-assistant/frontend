@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiArrowCollapseDown,
   mdiCircle,
@@ -33,9 +34,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 
@@ -46,7 +44,7 @@ import { atLeastVersion } from "../../../common/config/version";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
-import type { HaMdMenu } from "../../../components/ha-md-menu";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import type { ConnectionStatus } from "../../../data/connection-status";
 import { fetchErrorLog, getErrorLogDownloadUrl } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -61,7 +59,6 @@ import {
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const NUMBER_OF_LINES = 100;
 
@@ -88,8 +85,6 @@ class ErrorLogCard extends LitElement {
   private _scrollBottomMarkerElement?: HTMLElement;
 
   @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
-
-  @query("#boots-menu") private _bootsMenu?: HaMdMenu;
 
   @state() private _firstCursor?: string;
 
@@ -150,36 +145,31 @@ class ErrorLogCard extends LitElement {
             <div class="action-buttons">
               ${hasBoots && this._showBootsSelect
                 ? html`
-                    <ha-assist-chip
-                      .title=${localize(
-                        "ui.panel.config.logs.haos_boots_title"
-                      )}
-                      .label=${this._boot === 0
-                        ? localize("ui.panel.config.logs.current")
-                        : this._boot === -1
-                          ? localize("ui.panel.config.logs.previous")
-                          : localize("ui.panel.config.logs.startups_ago", {
-                              boot: this._boot * -1,
-                            })}
-                      id="boots-anchor"
-                      @click=${this._toggleBootsMenu}
-                    >
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiMenuDown}
-                      ></ha-svg-icon
-                    ></ha-assist-chip>
-                    <ha-md-menu
-                      anchor="boots-anchor"
-                      id="boots-menu"
-                      positioning="fixed"
-                    >
+                    <ha-dropdown @wa-select=${this._handleOverflowAction}>
+                      <ha-assist-chip
+                        slot="trigger"
+                        .title=${localize(
+                          "ui.panel.config.logs.haos_boots_title"
+                        )}
+                        .label=${this._boot === 0
+                          ? localize("ui.panel.config.logs.current")
+                          : this._boot === -1
+                            ? localize("ui.panel.config.logs.previous")
+                            : localize("ui.panel.config.logs.startups_ago", {
+                                boot: this._boot * -1,
+                              })}
+                      >
+                        <ha-svg-icon
+                          slot="trailing-icon"
+                          .path=${mdiMenuDown}
+                        ></ha-svg-icon
+                      ></ha-assist-chip>
+
                       ${this._boots!.map(
                         (boot) => html`
-                          <ha-md-menu-item
-                            .value=${boot}
-                            @click=${this._setBoot}
-                            .selected=${boot === this._boot}
+                          <ha-dropdown-item
+                            .value=${`boot_${boot}`}
+                            class=${boot === this._boot ? "selected" : ""}
                           >
                             ${boot === 0
                               ? localize("ui.panel.config.logs.current")
@@ -189,15 +179,13 @@ class ErrorLogCard extends LitElement {
                                     "ui.panel.config.logs.startups_ago",
                                     { boot: boot * -1 }
                                   )}
-                          </ha-md-menu-item>
+                          </ha-dropdown-item>
                           ${boot === 0
-                            ? html`<ha-md-divider
-                                role="separator"
-                              ></ha-md-divider>`
+                            ? html`<wa-divider></wa-divider>`
                             : nothing}
                         `
                       )}
-                    </ha-md-menu>
+                    </ha-dropdown>
                   `
                 : nothing}
               <ha-icon-button
@@ -687,6 +675,16 @@ class ErrorLogCard extends LitElement {
 
   private _handleOverflowAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
+
+    if (!action) {
+      return;
+    }
+
+    if (action.startsWith("boot_")) {
+      this._setBoot(Number(action.substring(5)));
+      return;
+    }
+
     switch (action) {
       case "switch-log-view":
         // @ts-ignore
@@ -698,14 +696,8 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  private _toggleBootsMenu() {
-    if (this._bootsMenu) {
-      this._bootsMenu.open = !this._bootsMenu.open;
-    }
-  }
-
-  private _setBoot(ev: any) {
-    this._boot = ev.target.value;
+  private _setBoot(boot: number) {
+    this._boot = boot;
     this._loadLogs();
   }
 
@@ -853,6 +845,12 @@ class ErrorLogCard extends LitElement {
 
     .download-link {
       color: var(--text-color);
+    }
+    ha-dropdown-item.selected {
+      font-weight: var(--ha-font-weight-medium);
+      color: var(--primary-color);
+      background-color: var(--ha-color-fill-primary-quiet-resting);
+      --icon-primary-color: var(--primary-color);
     }
   `;
 }

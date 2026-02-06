@@ -1,11 +1,9 @@
 import { mdiClose } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { extractApiErrorMessage } from "../../data/hassio/common";
@@ -19,8 +17,9 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-button";
-import "../ha-dialog";
+import "../ha-dialog-footer";
 import "../ha-dialog-header";
+import "../ha-wa-dialog";
 import "./ha-media-player-toggle";
 import type { JoinMediaPlayersDialogParams } from "./show-join-media-players-dialog";
 
@@ -38,8 +37,11 @@ class DialogJoinMediaPlayers extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _open = false;
+
   public showDialog(params: JoinMediaPlayersDialogParams): void {
     this._entityId = params.entityId;
+    this._open = true;
 
     const stateObj = this.hass.states[params.entityId] as
       | MediaPlayerEntity
@@ -54,6 +56,11 @@ class DialogJoinMediaPlayers extends LitElement {
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._open = false;
     this._entityId = undefined;
     this._selectedEntities = [];
     this._groupMembers = [];
@@ -68,23 +75,18 @@ class DialogJoinMediaPlayers extends LitElement {
     }
 
     const entityId = this._entityId;
-    const stateObj = this.hass.states[entityId] as HassEntity | undefined;
-    const name = (stateObj && computeStateName(stateObj)) || entityId;
-
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        flexContent
-        .heading=${name}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        flexcontent
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dialog-header show-border slot="header">
           <ha-icon-button
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
-            dialogAction="close"
+            data-dialog="close"
             slot="navigationIcon"
           ></ha-icon-button>
           <span slot="title"
@@ -118,21 +120,23 @@ class DialogJoinMediaPlayers extends LitElement {
               ></ha-media-player-toggle>`
           )}
         </div>
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          .disabled=${!!this._submitting}
-          slot="primaryAction"
-          @click=${this._submit}
-        >
-          ${this.hass.localize("ui.common.apply")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            .disabled=${!!this._submitting}
+            slot="primaryAction"
+            @click=${this._submit}
+          >
+            ${this.hass.localize("ui.common.apply")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -217,6 +221,7 @@ class DialogJoinMediaPlayers extends LitElement {
         .content {
           display: flex;
           flex-direction: column;
+          padding-top: var(--ha-space-6);
           row-gap: var(--ha-space-4);
         }
 
