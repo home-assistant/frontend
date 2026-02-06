@@ -107,11 +107,11 @@ export class HaEnergyPowerConfig extends LitElement {
   @property({ attribute: false }) public excludeList?: string[];
 
   /**
-   * Translation key prefix for labels.
+   * Base key for localization lookups.
    * Should include keys for: sensor_type, type_none, type_standard, type_inverted,
    * type_two_sensors, power, power_helper, type_inverted_description, power_from, power_to
    */
-  @property({ attribute: false }) public translationKeyPrefix =
+  @property({ attribute: false }) public localizeBaseKey =
     "ui.panel.config.energy.battery.dialog";
 
   @state() private _powerUnits?: string[];
@@ -130,18 +130,18 @@ export class HaEnergyPowerConfig extends LitElement {
     return html`
       <p class="power-section-label">
         ${this.hass.localize(
-          `${this.translationKeyPrefix}.sensor_type` as LocalizeKeys
+          `${this.localizeBaseKey}.sensor_type` as LocalizeKeys
         )}
       </p>
       <p class="power-section-description">
         ${this.hass.localize(
-          `${this.translationKeyPrefix}.sensor_type_para` as LocalizeKeys
+          `${this.localizeBaseKey}.sensor_type_para` as LocalizeKeys
         )}
       </p>
 
       <ha-formfield
         .label=${this.hass.localize(
-          `${this.translationKeyPrefix}.type_none` as LocalizeKeys
+          `${this.localizeBaseKey}.type_none` as LocalizeKeys
         )}
       >
         <ha-radio
@@ -153,7 +153,7 @@ export class HaEnergyPowerConfig extends LitElement {
       </ha-formfield>
       <ha-formfield
         .label=${this.hass.localize(
-          `${this.translationKeyPrefix}.type_standard` as LocalizeKeys
+          `${this.localizeBaseKey}.type_standard` as LocalizeKeys
         )}
       >
         <ha-radio
@@ -165,7 +165,7 @@ export class HaEnergyPowerConfig extends LitElement {
       </ha-formfield>
       <ha-formfield
         .label=${this.hass.localize(
-          `${this.translationKeyPrefix}.type_inverted` as LocalizeKeys
+          `${this.localizeBaseKey}.type_inverted` as LocalizeKeys
         )}
       >
         <ha-radio
@@ -177,7 +177,7 @@ export class HaEnergyPowerConfig extends LitElement {
       </ha-formfield>
       <ha-formfield
         .label=${this.hass.localize(
-          `${this.translationKeyPrefix}.type_two_sensors` as LocalizeKeys
+          `${this.localizeBaseKey}.type_two_sensors` as LocalizeKeys
         )}
       >
         <ha-radio
@@ -195,12 +195,12 @@ export class HaEnergyPowerConfig extends LitElement {
               .includeUnitClass=${powerUnitClasses}
               .value=${this.powerConfig.stat_rate}
               .label=${this.hass.localize(
-                `${this.translationKeyPrefix}.power` as LocalizeKeys
+                `${this.localizeBaseKey}.power` as LocalizeKeys
               )}
               .excludeStatistics=${this.excludeList}
               @value-changed=${this._standardPowerChanged}
               .helper=${this.hass.localize(
-                `${this.translationKeyPrefix}.power_helper` as LocalizeKeys,
+                `${this.localizeBaseKey}.power_helper` as LocalizeKeys,
                 { unit: this._powerUnits?.join(", ") || "" }
               )}
             ></ha-statistic-picker>
@@ -213,12 +213,12 @@ export class HaEnergyPowerConfig extends LitElement {
               .includeUnitClass=${powerUnitClasses}
               .value=${this.powerConfig.stat_rate_inverted}
               .label=${this.hass.localize(
-                `${this.translationKeyPrefix}.power` as LocalizeKeys
+                `${this.localizeBaseKey}.power` as LocalizeKeys
               )}
               .excludeStatistics=${this.excludeList}
               @value-changed=${this._invertedPowerChanged}
               .helper=${this.hass.localize(
-                `${this.translationKeyPrefix}.type_inverted_description` as LocalizeKeys
+                `${this.localizeBaseKey}.type_inverted_description` as LocalizeKeys
               )}
             ></ha-statistic-picker>
           `
@@ -230,7 +230,7 @@ export class HaEnergyPowerConfig extends LitElement {
               .includeUnitClass=${powerUnitClasses}
               .value=${this.powerConfig.stat_rate_from}
               .label=${this.hass.localize(
-                `${this.translationKeyPrefix}.power_from` as LocalizeKeys
+                `${this.localizeBaseKey}.power_from` as LocalizeKeys
               )}
               .excludeStatistics=${[
                 ...(this.excludeList || []),
@@ -243,7 +243,7 @@ export class HaEnergyPowerConfig extends LitElement {
               .includeUnitClass=${powerUnitClasses}
               .value=${this.powerConfig.stat_rate_to}
               .label=${this.hass.localize(
-                `${this.translationKeyPrefix}.power_to` as LocalizeKeys
+                `${this.localizeBaseKey}.power_to` as LocalizeKeys
               )}
               .excludeStatistics=${[
                 ...(this.excludeList || []),
