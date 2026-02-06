@@ -1,7 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { html, css, nothing, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { mdiHelpCircle } from "@mdi/js";
-import { property, state, customElement, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import deepClone from "deep-clone-simple";
 import {
@@ -22,12 +22,12 @@ import type {
   Blueprint,
   BlueprintDomain,
   BlueprintInput,
-  BlueprintMetaDataEditorSchema
+  BlueprintMetaDataEditorSchema,
 } from "../../../data/blueprint";
 import {
-  normalizeBlueprint,
   BlueprintYamlSchema,
-  DefaultBlueprintMetadata
+  DefaultBlueprintMetadata,
+  normalizeBlueprint,
 } from "../../../data/blueprint";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
@@ -66,13 +66,18 @@ const blueprintInputSectionStruct = object({
   icon: nullable(string()),
   description: nullable(string()),
   collapsed: nullable(boolean()),
-  input: record(string(), nullable(blueprintInputStruct))
+  input: record(string(), nullable(blueprintInputStruct)),
 });
 const blueprintMetadataStruct = object({
-  input: optional(record(
-    string(),
-    union([nullable(blueprintInputStruct), nullable(blueprintInputSectionStruct)])
-  )),
+  input: optional(
+    record(
+      string(),
+      union([
+        nullable(blueprintInputStruct),
+        nullable(blueprintInputSectionStruct),
+      ])
+    )
+  ),
 });
 
 /*
@@ -348,7 +353,9 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
 
     if (
       keysPresent.length === 1 &&
-      ["blueprint", "triggers", "conditions", "actions", "sequence"].includes(keysPresent[0])
+      ["input", "triggers", "conditions", "actions", "sequence"].includes(
+        keysPresent[0]
+      )
     ) {
       // if only one type of element is pasted, insert under the currently active item
       if (this._tryInsertAfterSelected(normalized[keysPresent[0]])) {
@@ -385,7 +392,16 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
     const workingCopy: Blueprint = deepClone(this.blueprint);
 
     // Blueprint fields
-    if ("input" in config.blueprint) {
+    if (config.blueprint.input) {
+      const workingCopyInput = workingCopy.blueprint.input || {};
+      for (const key of Object.keys(config.blueprint.input)) {
+        if (!(key in workingCopyInput)) {
+          continue;
+        }
+
+        config.blueprint.input[`${key}_copy`] = config.blueprint.input[key];
+        delete config.blueprint.input[key];
+      }
       workingCopy.blueprint.input = {
         ...workingCopy.blueprint.input,
         ...config.blueprint.input,
@@ -441,7 +457,8 @@ export class HaBlueprintEditor extends PreventUnsavedMixin(
   }
 
   private _tryInsertAfterSelected(config: any): boolean {
-    const sidebarConfig = this._sidebarConfig ?? this._manualEditorSidebarConfig;
+    const sidebarConfig =
+      this._sidebarConfig ?? this._manualEditorSidebarConfig;
     if (!sidebarConfig) {
       return false;
     }

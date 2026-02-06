@@ -388,15 +388,17 @@ export default class HaBlueprintInputRow extends LitElement {
     const inputAtPath = pathExists
       ? getInputAtPath(this.input[1] as BlueprintInputSection, path)
       : this.input[1];
-    const input = deepClone({ [id]: inputAtPath });
+    const input = { [id]: deepClone(inputAtPath) };
     this._clipboard = {
       ...this._clipboard,
-      input,
+      blueprint: { input },
     };
-    copyToClipboard(dump(input));
+    copyToClipboard(dump({ blueprint: { input } }));
   }
 
-  private _insertAfter = (value: BlueprintInputEntry | BlueprintInputEntry[]) => {
+  private _insertAfter = (
+    value: BlueprintInputEntry | BlueprintInputEntry[]
+  ) => {
     fireEvent(this, "insert-after", { value });
     return true;
   };

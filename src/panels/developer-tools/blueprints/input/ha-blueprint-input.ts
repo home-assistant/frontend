@@ -35,7 +35,8 @@ export class HaBlueprintInput extends LitElement {
 
   @property({ attribute: false }) public inputs!: BlueprintInputEntry[];
 
-  @property({ attribute: false }) public highlightedInputs!: BlueprintInputEntry[];
+  @property({ attribute: false })
+  public highlightedInputs!: BlueprintInputEntry[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -108,7 +109,16 @@ export class HaBlueprintInput extends LitElement {
   private _insertAfter(ev: CustomEvent) {
     ev.stopPropagation();
     const index = (ev.target as any).index;
-    const inserted = Object.entries(ev.detail.value.input) as BlueprintInputEntry[];
+    const input = Object.entries(
+      ev.detail.value.input
+    ) as BlueprintInputEntry[];
+    const inserted = input.map(
+      (e) =>
+        [
+          this.inputs.some((i) => i[0] === e[0]) ? `${e[0]}_copy` : e[0],
+          e[1],
+        ] as BlueprintInputEntry
+    );
     this.highlightedInputs = inserted;
     fireEvent(this, "value-changed", {
       // @ts-expect-error Requires library bump to ES2023
@@ -245,7 +255,9 @@ export class HaBlueprintInput extends LitElement {
                 .input=${inputPair}
                 .path=${this.path ?? []}
                 .disabled=${this.disabled}
-                .highlight=${this.highlightedInputs.some(h => h[0] === inputPair[0])}
+                .highlight=${this.highlightedInputs.some(
+                  (h) => h[0] === inputPair[0]
+                )}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._inputChanged}

@@ -81,7 +81,10 @@ export interface BlueprintMetaDataEditorSchema {
   min_version: string;
 }
 
-export type BlueprintInputEntry = [string, BlueprintInput | BlueprintInputSection | null];
+export type BlueprintInputEntry = [
+  string,
+  BlueprintInput | BlueprintInputSection | null,
+];
 
 export interface BlueprintMetaData {
   domain: BlueprintDomain;
@@ -205,7 +208,7 @@ export const getBlueprintEditorInitData = () => {
 };
 
 interface BlueprintClipboardBase {
-  input?: string;
+  blueprint?: Pick<BlueprintMetaData, "input">;
 }
 type AutomationBlueprintClipboard = BlueprintClipboardBase &
   AutomationClipboard;
@@ -298,11 +301,6 @@ export function normalizeBlueprint(blueprint: Blueprint): Blueprint {
     if (value && !Array.isArray(value)) {
       blueprint[key] = [value];
     }
-  }
-
-  if ("input" in blueprint) {
-    blueprint.blueprint.input = blueprint.input as Record<string, BlueprintInput | BlueprintInputSection>;
-    delete blueprint.input;
   }
 
   return blueprint;
