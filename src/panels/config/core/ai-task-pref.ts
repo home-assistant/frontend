@@ -14,7 +14,7 @@ import {
   saveAITaskPreferences,
   type AITaskPreferences,
 } from "../../../data/ai_task";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -137,7 +137,7 @@ export class AITaskPref extends LitElement {
     `;
   }
 
-  private _handlePrefChange(ev: CustomEvent<{ value: string | undefined }>) {
+  private _handlePrefChange(ev: ValueChangedEvent<string | undefined>) {
     const input = ev.target as HaEntityPicker;
     const key = input.dataset.name as keyof AITaskPreferences;
     const value = ev.detail.value || null;

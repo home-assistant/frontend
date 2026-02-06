@@ -263,6 +263,7 @@ class PanelEnergy extends LitElement {
               <hui-energy-period-selector
                 .hass=${this.hass}
                 .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
+                opening-direction="right"
                 vertical-opening-direction="up"
                 fixed
               ></hui-energy-period-selector>

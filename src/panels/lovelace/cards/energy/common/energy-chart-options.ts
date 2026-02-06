@@ -33,15 +33,15 @@ import { filterXSS } from "../../../../../common/util/xss";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
-export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
+export function getSuggestedMax(period: StatisticPeriod, end: Date): Date {
   let suggestedMax = new Date(end);
 
   if (period === "5minute") {
-    return suggestedMax.getTime();
+    return suggestedMax;
   }
   suggestedMax.setMinutes(0, 0, 0);
   if (period === "hour") {
-    return suggestedMax.getTime();
+    return suggestedMax;
   }
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
   // Correct for this when showing days/months so we don't get an extra day.
@@ -50,11 +50,11 @@ export function getSuggestedMax(period: StatisticPeriod, end: Date): number {
   }
   suggestedMax.setHours(0);
   if (period === "day" || period === "week") {
-    return suggestedMax.getTime();
+    return suggestedMax;
   }
   // period === month
   suggestedMax.setDate(1);
-  return suggestedMax.getTime();
+  return suggestedMax;
 }
 
 function createYAxisLabelFormatter(locale: FrontendLocaleData) {
@@ -81,7 +81,7 @@ export function getCommonOptions(
   formatTotal?: (total: number) => string,
   detailedDailyData = false
 ): ECOption {
-  const dayDifference = differenceInDays(end, start);
+  const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
 
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
@@ -91,10 +91,7 @@ export function getCommonOptions(
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(
-        getSuggestedPeriod(start, end, detailedDailyData),
-        end
-      ),
+      max: getSuggestedMax(suggestedPeriod, end),
     },
     yAxis: {
       type: "value",
@@ -137,7 +134,7 @@ export function getCommonOptions(
                 items,
                 locale,
                 config,
-                dayDifference,
+                suggestedPeriod,
                 compare,
                 showCompareYear,
                 unit,
@@ -151,7 +148,7 @@ export function getCommonOptions(
           [params],
           locale,
           config,
-          dayDifference,
+          suggestedPeriod,
           compare,
           showCompareYear,
           unit,
@@ -167,7 +164,7 @@ function formatTooltip(
   params: CallbackDataParams[],
   locale: FrontendLocaleData,
   config: HassConfig,
-  dayDifference: number,
+  suggestedPeriod: string,
   compare: boolean | null,
   showCompareYear: boolean,
   unit?: string,
@@ -181,9 +178,9 @@ function formatTooltip(
   const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
   let period: string;
 
-  if (dayDifference >= 89) {
+  if (suggestedPeriod === "month") {
     period = `${formatDateMonthYear(date, locale, config)}`;
-  } else if (dayDifference > 0) {
+  } else if (suggestedPeriod === "day") {
     period = `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}`;
   } else {
     period = `${

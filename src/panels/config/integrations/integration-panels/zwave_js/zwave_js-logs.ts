@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { ZWaveJSLogConfig } from "../../../../../data/zwave_js";
 import {
   fetchZWaveJSLogConfig,
@@ -137,7 +138,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     );
   }
 
-  private _dropdownSelected(ev: CustomEvent<{ value: string }>) {
+  private _dropdownSelected(ev: HaSelectSelectEvent) {
     if (ev.target === undefined || this._logConfig === undefined) {
       return;
     }

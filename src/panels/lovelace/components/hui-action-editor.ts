@@ -10,6 +10,7 @@ import type {
 } from "../../../components/ha-form/types";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-navigation-picker";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-service-control";
 import type {
   ActionConfig,
@@ -233,7 +234,7 @@ export class HuiActionEditor extends LitElement {
     `;
   }
 
-  private _actionPicked(ev: CustomEvent<{ value: string }>): void {
+  private _actionPicked(ev: HaSelectSelectEvent): void {
     ev.stopPropagation();
     if (!this.hass) {
       return;

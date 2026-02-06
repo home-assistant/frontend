@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { formatNumber } from "../../common/number/format_number";
 import "../../components/ha-card";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { NumberFormat } from "../../data/translation";
@@ -53,12 +54,8 @@ class NumberFormatRow extends LitElement {
     `;
   }
 
-  private async _handleFormatSelection(ev: CustomEvent<{ value: string }>) {
-    fireEvent(
-      this,
-      "hass-number-format-select",
-      ev.detail.value as NumberFormat
-    );
+  private async _handleFormatSelection(ev: HaSelectSelectEvent<NumberFormat>) {
+    fireEvent(this, "hass-number-format-select", ev.detail.value);
   }
 
   static styles = css`
