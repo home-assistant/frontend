@@ -253,7 +253,7 @@ export class HaBlueprintInput extends LitElement {
                 .last=${idx === this.inputs.length - 1}
                 .index=${idx}
                 .input=${inputPair}
-                .path=${this.path ?? []}
+                .path=${this.path}
                 .disabled=${this.disabled}
                 .highlight=${this.highlightedInputs.some(
                   (h) => h[0] === inputPair[0]

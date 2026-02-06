@@ -93,6 +93,7 @@ export class HaBlueprintInputSection extends LitElement {
       ></ha-form>
       <ha-blueprint-input
         .inputs=${Object.entries(this.input?.input || {})}
+        .highlightedInputs=${[]}
         .path=${this.path}
         @value-changed=${this._inputChanged}
         .hass=${this.hass}

@@ -60,7 +60,7 @@ export default class HaBlueprintInputRow extends LitElement {
     BlueprintInput | BlueprintInputSection | null,
   ];
 
-  @property({ attribute: false }) public path!: string[];
+  @property({ attribute: false }) public path?: string[];
 
   @property({ type: Boolean }) public disabled = false;
 
