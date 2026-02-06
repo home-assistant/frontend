@@ -125,6 +125,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
+    const stateParts = this.hass.formatEntityStateToParts(stateObj);
 
     let unit;
     if (
@@ -135,9 +136,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       unit = this._config.unit;
       if (!unit) {
         if (!this._config.attribute)
-          unit = this.hass
-            .formatEntityStateToParts(stateObj)
-            .parts.find((part) => part.type === "unit")?.value;
+          unit = stateParts.find((part) => part.type === "unit")?.value;
         else {
           const parts = this.hass.formatEntityAttributeValueToParts(
             stateObj,
