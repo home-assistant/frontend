@@ -23,7 +23,7 @@ import { isExternalStatistic } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "./ha-energy-power-config";
 import {
   buildPowerExcludeList,
@@ -481,7 +481,7 @@ export class DialogEnergyGridSettings
     return true;
   }
 
-  private _statisticFromChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticFromChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
     // Reset cost type if switching to external statistic with incompatible cost type
     if (
@@ -498,7 +498,7 @@ export class DialogEnergyGridSettings
     }
   }
 
-  private _statisticToChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticToChanged(ev: ValueChangedEvent<string>) {
     this._source = {
       ...this._source!,
       stat_energy_to: ev.detail.value || null,
@@ -550,11 +550,11 @@ export class DialogEnergyGridSettings
     };
   }
 
-  private _statCostChanged(ev: CustomEvent<{ value: string }>) {
+  private _statCostChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_cost: ev.detail.value || null };
   }
 
-  private _entityCostChanged(ev: CustomEvent<{ value: string }>) {
+  private _entityCostChanged(ev: ValueChangedEvent<string>) {
     this._source = {
       ...this._source!,
       entity_energy_price: ev.detail.value || null,
@@ -567,14 +567,14 @@ export class DialogEnergyGridSettings
     this._source = { ...this._source!, number_energy_price: value };
   }
 
-  private _statCompensationChanged(ev: CustomEvent<{ value: string }>) {
+  private _statCompensationChanged(ev: ValueChangedEvent<string>) {
     this._source = {
       ...this._source!,
       stat_compensation: ev.detail.value || null,
     };
   }
 
-  private _entityCompensationChanged(ev: CustomEvent<{ value: string }>) {
+  private _entityCompensationChanged(ev: ValueChangedEvent<string>) {
     this._source = {
       ...this._source!,
       entity_energy_price_export: ev.detail.value || null,

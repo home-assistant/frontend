@@ -9,7 +9,7 @@ import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type { PowerConfig } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 
 export type PowerType = "none" | "standard" | "inverted" | "two_sensors";
 
@@ -266,21 +266,21 @@ export class HaEnergyPowerConfig extends LitElement {
     });
   }
 
-  private _standardPowerChanged(ev: CustomEvent<{ value: string }>) {
+  private _standardPowerChanged(ev: ValueChangedEvent<string>) {
     fireEvent(this, "power-config-changed", {
       powerType: this.powerType,
       powerConfig: { stat_rate: ev.detail.value },
     });
   }
 
-  private _invertedPowerChanged(ev: CustomEvent<{ value: string }>) {
+  private _invertedPowerChanged(ev: ValueChangedEvent<string>) {
     fireEvent(this, "power-config-changed", {
       powerType: this.powerType,
       powerConfig: { stat_rate_inverted: ev.detail.value },
     });
   }
 
-  private _fromPowerChanged(ev: CustomEvent<{ value: string }>) {
+  private _fromPowerChanged(ev: ValueChangedEvent<string>) {
     fireEvent(this, "power-config-changed", {
       powerType: this.powerType,
       powerConfig: {
@@ -290,7 +290,7 @@ export class HaEnergyPowerConfig extends LitElement {
     });
   }
 
-  private _toPowerChanged(ev: CustomEvent<{ value: string }>) {
+  private _toPowerChanged(ev: ValueChangedEvent<string>) {
     fireEvent(this, "power-config-changed", {
       powerType: this.powerType,
       powerConfig: {
