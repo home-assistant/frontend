@@ -125,6 +125,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
+    const stateParts = this.hass.formatEntityStateToParts(stateObj);
 
     let unit;
     if (
@@ -146,8 +147,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       }
     }
 
-    const reversedOrder =
-      this.hass.formatEntityStateToParts(stateObj).order === "reverse";
+    const indexUnit = stateParts.findIndex((part) => part.type === "unit");
+    const indexValue = stateParts.findIndex((part) => part.type === "value");
+    const reversedOrder = indexUnit !== -1 && indexUnit < indexValue;
 
     const name = computeLovelaceEntityName(
       this.hass,
