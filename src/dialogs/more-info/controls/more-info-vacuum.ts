@@ -14,6 +14,7 @@ import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/entity/ha-battery-icon";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
@@ -285,7 +286,7 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  private _handleFanSpeedChanged(ev: CustomEvent<{ value: string }>) {
+  private _handleFanSpeedChanged(ev: HaSelectSelectEvent) {
     const oldVal = this.stateObj!.attributes.fan_speed;
     const newVal = ev.detail.value;
 

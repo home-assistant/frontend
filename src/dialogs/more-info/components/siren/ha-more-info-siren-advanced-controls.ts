@@ -7,6 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import "../../../../components/ha-button";
 import "../../../../components/ha-control-button";
+import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
@@ -146,7 +147,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
     `;
   }
 
-  private _handleToneChange(ev: CustomEvent<{ value: string }>) {
+  private _handleToneChange(ev: HaSelectSelectEvent) {
     this._tone = ev.detail.value;
   }
 

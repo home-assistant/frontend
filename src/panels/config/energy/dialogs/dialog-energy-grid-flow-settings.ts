@@ -24,7 +24,7 @@ import { isExternalStatistic } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGridFlowDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
@@ -325,7 +325,7 @@ export class DialogEnergyGridFlowSettings
     };
   }
 
-  private async _statisticChanged(ev: CustomEvent<{ value: string }>) {
+  private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (
       ev.detail.value &&
       isExternalStatistic(ev.detail.value) &&

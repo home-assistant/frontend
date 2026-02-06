@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { formatDateNumeric } from "../../common/datetime/format_date";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { DateFormat } from "../../data/translation";
@@ -52,8 +53,8 @@ class DateFormatRow extends LitElement {
     `;
   }
 
-  private async _handleFormatSelection(ev: CustomEvent<{ value: string }>) {
-    fireEvent(this, "hass-date-format-select", ev.detail.value as DateFormat);
+  private async _handleFormatSelection(ev: HaSelectSelectEvent<DateFormat>) {
+    fireEvent(this, "hass-date-format-select", ev.detail.value);
   }
 
   static styles = css`

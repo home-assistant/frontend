@@ -53,7 +53,7 @@ import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
@@ -403,7 +403,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _targetPicked(ev: CustomEvent<{ value: string }>) {
+  private _targetPicked(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const value = ev.detail.value;
     if (value.startsWith(CREATE_ID)) {
