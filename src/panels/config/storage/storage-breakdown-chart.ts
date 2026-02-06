@@ -15,6 +15,17 @@ import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
 import type { HomeAssistant } from "../../../types";
 import { roundWithOneDecimal } from "../../../util/calculate";
 
+const CATEGORY_GROUPS = {
+  apps: {
+    translationKey: "apps",
+    childIds: ["addons_data", "addons_config"],
+  },
+  homeassistant_settings: {
+    translationKey: "homeassistant_settings",
+    childIds: ["homeassistant", "ssl"],
+  },
+} as const;
+
 @customElement("storage-breakdown-chart")
 export class StorageBreakdownChart extends LitElement {
   @property({ attribute: false })
@@ -50,16 +61,14 @@ export class StorageBreakdownChart extends LitElement {
     const showBarChart = this._chartType === "bar" || !hasChildren;
 
     return html`
-      <div class="header">
-        <div class="heading-text">
-          <span class="heading">${heading}</span>
-          <span class="description">${description}</span>
+      <div class="heading">
+        <div class="title">
+          <span>${heading}</span>
+          ${this.storageInfo ? html`<span>${description}</span>` : nothing}
         </div>
         ${hasChildren
           ? html`<ha-icon-button
-              .path=${this._chartType === "sunburst"
-                ? mdiViewArray
-                : mdiChartDonutVariant}
+              .path=${showBarChart ? mdiChartDonutVariant : mdiViewArray}
               .label=${this.hass.localize(
                 "ui.panel.config.storage.change_chart_type"
               )}
@@ -67,32 +76,48 @@ export class StorageBreakdownChart extends LitElement {
             ></ha-icon-button>`
           : nothing}
       </div>
-
-      <div class="chart-container ${this._chartType}">
-        ${showBarChart
-          ? html`<ha-segmented-bar
-              .heading=${""}
-              .segments=${this._computeSegments(
-                this.storageInfo,
-                usedSpaceGB,
-                freeSpaceGB
-              )}
-            ></ha-segmented-bar>`
-          : html`<ha-sunburst-chart
-              .hass=${this.hass}
-              .data=${this._transformToSunburstData(this.storageInfo!)}
-              .valueFormatter=${this._formatBytes}
-            ></ha-sunburst-chart>`}
-      </div>
-
-      ${!this.storageInfo || this.storageInfo === null
-        ? html`<ha-alert alert-type="info">
-            <ha-spinner slot="icon"></ha-spinner>
-            ${this.hass.localize(
-              "ui.panel.config.storage.loading_detailed"
-            )}</ha-alert
-          >`
-        : nothing}
+      ${showBarChart
+        ? this.storageInfo
+          ? html`
+              <div class="chart-container bar">
+                <ha-segmented-bar
+                  .segments=${this._computeSegments(
+                    this.storageInfo,
+                    usedSpaceGB,
+                    freeSpaceGB
+                  )}
+                ></ha-segmented-bar>
+              </div>
+            `
+          : html`
+              <div class="chart-container bar">
+                <div class="skeleton-bar"></div>
+                <ul class="skeleton-legend">
+                  ${Array(6)
+                    .fill(0)
+                    .map(
+                      (_, i) => html`
+                        <li class="skeleton-legend-item">
+                          <div class="skeleton-dot"></div>
+                          <div
+                            class="skeleton-label"
+                            style="width: ${[120, 65, 100, 70, 95, 80][i]}px"
+                          ></div>
+                        </li>
+                      `
+                    )}
+                </ul>
+              </div>
+            `
+        : html`
+            <div class="chart-container sunburst">
+              <ha-sunburst-chart
+                .hass=${this.hass}
+                .data=${this._transformToSunburstData(this.storageInfo!)}
+                .valueFormatter=${this._formatBytes}
+              ></ha-sunburst-chart>
+            </div>
+          `}
     `;
   }
 
@@ -122,6 +147,63 @@ export class StorageBreakdownChart extends LitElement {
     }
   );
 
+  private _transformStorageCategories = memoizeOne(
+    (children: HostDisksUsage[] | undefined): HostDisksUsage[] => {
+      if (!children?.length) {
+        return [];
+      }
+
+      // Create a map to track which categories belong to which group
+      const categoryToGroup = new Map<string, string>();
+      Object.entries(CATEGORY_GROUPS).forEach(([groupId, group]) => {
+        group.childIds.forEach((childId) => {
+          categoryToGroup.set(childId, groupId);
+        });
+      });
+
+      // Group categories and create the transformed array
+      const groupedCategories = new Map<string, HostDisksUsage>();
+      const standaloneCategories: HostDisksUsage[] = [];
+
+      children.forEach((child) => {
+        const groupId = categoryToGroup.get(child.id);
+
+        if (groupId) {
+          // This category belongs to a group
+          if (!groupedCategories.has(groupId)) {
+            // Initialize the group
+            groupedCategories.set(groupId, {
+              id: groupId,
+              label:
+                CATEGORY_GROUPS[groupId as keyof typeof CATEGORY_GROUPS]
+                  .translationKey,
+              used_bytes: 0,
+              children: [],
+            });
+          }
+
+          const group = groupedCategories.get(groupId)!;
+          group.used_bytes += child.used_bytes;
+          group.children!.push(child);
+        } else {
+          // This is a standalone category
+          standaloneCategories.push(child);
+        }
+      });
+
+      // Combine grouped and standalone categories
+      const allCategories: HostDisksUsage[] = [
+        ...Array.from(groupedCategories.values()),
+        ...standaloneCategories,
+      ];
+
+      // Sort by used_bytes descending
+      allCategories.sort((a, b) => b.used_bytes - a.used_bytes);
+
+      return allCategories;
+    }
+  );
+
   private _computeSegments = memoizeOne(
     (
       storageInfo: HostDisksUsage | null | undefined,
@@ -132,7 +214,12 @@ export class StorageBreakdownChart extends LitElement {
       const segments: Segment[] = [];
 
       if (storageInfo) {
-        storageInfo.children?.forEach((child, index) => {
+        // Transform and sort categories
+        const transformedCategories = this._transformStorageCategories(
+          storageInfo.children
+        );
+
+        transformedCategories.forEach((child, index) => {
           if (child.used_bytes > 0) {
             const space = this._bytesToGB(child.used_bytes);
             segments.push({
@@ -211,28 +298,29 @@ export class StorageBreakdownChart extends LitElement {
   }
 
   static styles = css`
-    .header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: var(--ha-space-2);
-    }
-
-    .heading-text {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-1);
-    }
-
     .heading {
-      font-weight: 500;
-      font-size: var(--ha-font-size-m);
-      color: var(--primary-text-color);
+      display: flex;
+      flex-direction: row;
+      gap: var(--ha-space-2);
+      margin-bottom: var(--ha-space-1);
+      align-items: flex-end;
     }
 
-    .description {
-      font-size: var(--ha-font-size-s);
+    .heading .title {
+      flex: 1;
+      min-height: 36px;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .heading .title span {
       color: var(--secondary-text-color);
+      line-height: var(--ha-line-height-expanded);
+      margin-right: 8px;
+    }
+
+    .heading .title span:first-child {
+      color: var(--primary-text-color);
     }
 
     ha-icon-button {
@@ -241,13 +329,23 @@ export class StorageBreakdownChart extends LitElement {
       color: var(--secondary-text-color);
     }
 
+    ha-segmented-bar {
+      min-height: 36px;
+    }
+
+    ha-segmented-bar ha-icon-button {
+      align-self: flex-start;
+      margin-top: auto;
+    }
+
     .chart-container {
       transition: height var(--ha-animation-duration-slow) ease;
       overflow: hidden;
     }
 
     .chart-container.bar {
-      height: calc-size(auto, size);
+      min-height: 78px;
+      animation: fade-in var(--ha-animation-duration-slow) ease;
     }
 
     .chart-container.sunburst {
@@ -282,6 +380,88 @@ export class StorageBreakdownChart extends LitElement {
 
     ha-alert ha-spinner {
       --ha-spinner-size: 24px;
+    }
+
+    /* Skeleton loading animation */
+    @keyframes skeleton-shimmer {
+      0% {
+        background-position: -468px 0;
+      }
+      100% {
+        background-position: 468px 0;
+      }
+    }
+
+    .skeleton-bar,
+    .skeleton-dot,
+    .skeleton-label {
+      position: relative;
+      animation-fill-mode: forwards;
+      animation-iteration-count: infinite;
+      animation-name: skeleton-shimmer;
+      animation-timing-function: linear;
+      animation-duration: 1.2s;
+      border-radius: var(--ha-border-radius-sm);
+      background-color: var(
+        --ha-bar-background-color,
+        var(--secondary-background-color)
+      );
+      background-image: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0) 40%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 60%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      background-size: 936px 104px;
+      background-position: 0% 0%;
+    }
+
+    /* Respect reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      .skeleton-bar,
+      .skeleton-dot,
+      .skeleton-label {
+        animation: none;
+        background: var(
+          --ha-bar-background-color,
+          var(--secondary-background-color)
+        );
+      }
+    }
+
+    .skeleton-bar {
+      height: 12px;
+      width: 100%;
+      margin: 2px 0;
+    }
+
+    .skeleton-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--ha-space-3);
+      list-style: none;
+      margin: 12px 0;
+      padding: 0;
+    }
+
+    .skeleton-legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-1);
+    }
+
+    .skeleton-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--ha-border-radius-circle);
+      flex-shrink: 0;
+    }
+
+    .skeleton-label {
+      height: 14px;
+      border-radius: var(--ha-border-radius-sm);
     }
   `;
 }
