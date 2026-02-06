@@ -2007,12 +2007,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@isaacs/brace-expansion@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@isaacs/brace-expansion@npm:5.0.0"
+"@isaacs/brace-expansion@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@isaacs/brace-expansion@npm:5.0.1"
   dependencies:
     "@isaacs/balanced-match": "npm:^4.0.1"
-  checksum: 10/cf3b7f206aff12128214a1df764ac8cdbc517c110db85249b945282407e3dfc5c6e66286383a7c9391a059fc8e6e6a8ca82262fc9d2590bd615376141fbebd2d
+  checksum: 10/aec226065bc4285436a27379e08cc35bf94ef59f5098ac1c026495c9ba4ab33d851964082d3648d56d63eb90f2642867bd15a3e1b810b98beb1a8c14efce6a94
   languageName: node
   linkType: hard
 
@@ -4013,92 +4013,92 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-darwin-arm64@npm:1.7.4"
+"@rspack/binding-darwin-arm64@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-darwin-arm64@npm:1.7.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-x64@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-darwin-x64@npm:1.7.4"
+"@rspack/binding-darwin-x64@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-darwin-x64@npm:1.7.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.7.4"
+"@rspack/binding-linux-arm64-gnu@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.7.5"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-musl@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-linux-arm64-musl@npm:1.7.4"
+"@rspack/binding-linux-arm64-musl@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-linux-arm64-musl@npm:1.7.5"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-linux-x64-gnu@npm:1.7.4"
+"@rspack/binding-linux-x64-gnu@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-linux-x64-gnu@npm:1.7.5"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-musl@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-linux-x64-musl@npm:1.7.4"
+"@rspack/binding-linux-x64-musl@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-linux-x64-musl@npm:1.7.5"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-wasm32-wasi@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-wasm32-wasi@npm:1.7.4"
+"@rspack/binding-wasm32-wasi@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-wasm32-wasi@npm:1.7.5"
   dependencies:
     "@napi-rs/wasm-runtime": "npm:1.0.7"
   conditions: cpu=wasm32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-arm64-msvc@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.7.4"
+"@rspack/binding-win32-arm64-msvc@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.7.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.7.4"
+"@rspack/binding-win32-ia32-msvc@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.7.5"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-x64-msvc@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding-win32-x64-msvc@npm:1.7.4"
+"@rspack/binding-win32-x64-msvc@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding-win32-x64-msvc@npm:1.7.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/binding@npm:1.7.4"
+"@rspack/binding@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/binding@npm:1.7.5"
   dependencies:
-    "@rspack/binding-darwin-arm64": "npm:1.7.4"
-    "@rspack/binding-darwin-x64": "npm:1.7.4"
-    "@rspack/binding-linux-arm64-gnu": "npm:1.7.4"
-    "@rspack/binding-linux-arm64-musl": "npm:1.7.4"
-    "@rspack/binding-linux-x64-gnu": "npm:1.7.4"
-    "@rspack/binding-linux-x64-musl": "npm:1.7.4"
-    "@rspack/binding-wasm32-wasi": "npm:1.7.4"
-    "@rspack/binding-win32-arm64-msvc": "npm:1.7.4"
-    "@rspack/binding-win32-ia32-msvc": "npm:1.7.4"
-    "@rspack/binding-win32-x64-msvc": "npm:1.7.4"
+    "@rspack/binding-darwin-arm64": "npm:1.7.5"
+    "@rspack/binding-darwin-x64": "npm:1.7.5"
+    "@rspack/binding-linux-arm64-gnu": "npm:1.7.5"
+    "@rspack/binding-linux-arm64-musl": "npm:1.7.5"
+    "@rspack/binding-linux-x64-gnu": "npm:1.7.5"
+    "@rspack/binding-linux-x64-musl": "npm:1.7.5"
+    "@rspack/binding-wasm32-wasi": "npm:1.7.5"
+    "@rspack/binding-win32-arm64-msvc": "npm:1.7.5"
+    "@rspack/binding-win32-ia32-msvc": "npm:1.7.5"
+    "@rspack/binding-win32-x64-msvc": "npm:1.7.5"
   dependenciesMeta:
     "@rspack/binding-darwin-arm64":
       optional: true
@@ -4120,23 +4120,23 @@ __metadata:
       optional: true
     "@rspack/binding-win32-x64-msvc":
       optional: true
-  checksum: 10/0d082e962980ace986c546ac359e7d4b5fada21ce38980db792c70ef97257841257b64a0b65c5d3c2e2660d58ab05b1d7302defc752f325c616507f5837fb98d
+  checksum: 10/3e66805d4dae5f2051f10c5a9126e5bf25926d2a6ccb1c794af2aa49c15e4fdcb9e362bd015a9afef1e788a3272dfe7a28a3c866713badda34579896d736ed4f
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:1.7.4":
-  version: 1.7.4
-  resolution: "@rspack/core@npm:1.7.4"
+"@rspack/core@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@rspack/core@npm:1.7.5"
   dependencies:
     "@module-federation/runtime-tools": "npm:0.22.0"
-    "@rspack/binding": "npm:1.7.4"
+    "@rspack/binding": "npm:1.7.5"
     "@rspack/lite-tapable": "npm:1.1.0"
   peerDependencies:
     "@swc/helpers": ">=0.5.1"
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: 10/ecce39e64993ba9f5792c737b6d61960946c59399254f5903651a53b6e61761f8bc2a20dfdf81b1b819e1b0f1e26257456d902244485fd035e5a585b5a28a623
+  checksum: 10/c17d93ef1e7e0728b74bf527150642d9bf072cabb63964ebd32c82da94d6d2f9eac7ff2cc13031bbd376c0c03710899f549e61d2bcfc0a6638a9f3bc8620b7ce
   languageName: node
   linkType: hard
 
@@ -8754,14 +8754,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:13.0.0, glob@npm:^13.0.0":
-  version: 13.0.0
-  resolution: "glob@npm:13.0.0"
+"glob@npm:13.0.1, glob@npm:^13.0.0":
+  version: 13.0.1
+  resolution: "glob@npm:13.0.1"
   dependencies:
-    minimatch: "npm:^10.1.1"
+    minimatch: "npm:^10.1.2"
     minipass: "npm:^7.1.2"
     path-scurry: "npm:^2.0.0"
-  checksum: 10/de390721d29ee1c9ea41e40ec2aa0de2cabafa68022e237dc4297665a5e4d650776f2573191984ea1640aba1bf0ea34eddef2d8cbfbfc2ad24b5fb0af41d8846
+  checksum: 10/465e8cc269ab88d7415a3906cdc0f4543a2ae54df99207204af5bc28a944396d8d893822f546a8056a78ec714e608ab4f3502532c4d6b9cc5e113adf0fe5109e
   languageName: node
   linkType: hard
 
@@ -9120,7 +9120,7 @@ __metadata:
     "@octokit/rest": "npm:22.0.1"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rsdoctor/rspack-plugin": "npm:1.5.1"
-    "@rspack/core": "npm:1.7.4"
+    "@rspack/core": "npm:1.7.5"
     "@rspack/dev-server": "npm:1.2.1"
     "@swc/helpers": "npm:0.5.18"
     "@thomasloven/round-slider": "npm:0.6.0"
@@ -9178,7 +9178,7 @@ __metadata:
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.3.3"
     fuse.js: "npm:7.1.0"
-    glob: "npm:13.0.0"
+    glob: "npm:13.0.1"
     google-timezones-json: "npm:1.2.0"
     gulp: "npm:5.0.1"
     gulp-brotli: "npm:3.0.0"
@@ -9228,7 +9228,7 @@ __metadata:
     ts-lit-plugin: "npm:2.0.2"
     typescript: "npm:5.9.3"
     typescript-eslint: "npm:8.54.0"
-    ua-parser-js: "npm:2.0.8"
+    ua-parser-js: "npm:2.0.9"
     vite-tsconfig-paths: "npm:6.0.5"
     vitest: "npm:4.0.18"
     vue: "npm:2.7.16"
@@ -10973,12 +10973,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^10.1.1":
-  version: 10.1.1
-  resolution: "minimatch@npm:10.1.1"
+"minimatch@npm:^10.1.2":
+  version: 10.1.2
+  resolution: "minimatch@npm:10.1.2"
   dependencies:
-    "@isaacs/brace-expansion": "npm:^5.0.0"
-  checksum: 10/110f38921ea527022e90f7a5f43721838ac740d0a0c26881c03b57c261354fb9a0430e40b2c56dfcea2ef3c773768f27210d1106f1f2be19cde3eea93f26f45e
+    "@isaacs/brace-expansion": "npm:^5.0.1"
+  checksum: 10/6f0ef975463739207144e411bdd54f7205ce38770b162fa3bc4c9be4987a16cb20d0962a82f26c2372598cfba90faa97b327239d303b529b774f17681c163b46
   languageName: node
   linkType: hard
 
@@ -14155,16 +14155,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:2.0.8":
-  version: 2.0.8
-  resolution: "ua-parser-js@npm:2.0.8"
+"ua-parser-js@npm:2.0.9":
+  version: 2.0.9
+  resolution: "ua-parser-js@npm:2.0.9"
   dependencies:
     detect-europe-js: "npm:^0.1.2"
     is-standalone-pwa: "npm:^0.1.1"
     ua-is-frozen: "npm:^0.1.2"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10/862ad2e3b083d8ffbb325d6e7c78924aa86f751829301173457afdf44ff911c95c5478d8a1bd31cf80555dd6aae946b3194d20615a91550794f20dad7ac998b5
+  checksum: 10/63e3404e16ade8a7d1b45bf2a871410193ab63620ab02ffa5308a507a984d2698bd74651ce260ac3e0cb9f8df89c71fa55a6beefbe269c12849c6d6cf0974407
   languageName: node
   linkType: hard
 
