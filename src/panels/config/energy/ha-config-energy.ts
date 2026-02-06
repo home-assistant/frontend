@@ -100,7 +100,7 @@ class HaConfigEnergy extends LitElement {
         <ha-alert>
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
-        <div class="container">
+        <div class="content">
           <ha-energy-grid-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
@@ -235,15 +235,28 @@ class HaConfigEnergy extends LitElement {
     return [
       haStyle,
       css`
+        .content {
+          padding: 0 20px;
+          max-width: 1040px;
+          margin: 0 auto;
+        }
+
         ha-alert {
           display: block;
-          margin: 8px;
+          margin: 12px auto;
+          max-width: 600px;
         }
-        .container {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-          grid-gap: 8px 8px;
-          margin: 8px;
+
+        ha-energy-grid-settings,
+        ha-energy-solar-settings,
+        ha-energy-battery-settings,
+        ha-energy-gas-settings,
+        ha-energy-water-settings,
+        ha-energy-device-settings,
+        ha-energy-device-settings-water {
+          display: block;
+          max-width: 600px;
+          margin: 0 auto 12px;
         }
       `,
     ];

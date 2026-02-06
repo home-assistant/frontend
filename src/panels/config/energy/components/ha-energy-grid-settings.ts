@@ -93,7 +93,7 @@ export class EnergyGridSettings extends LitElement {
     }
 
     return html`
-      <ha-card outlined>
+      <ha-card>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.energy.grid.title")}
@@ -128,43 +128,48 @@ export class EnergyGridSettings extends LitElement {
               "ui.panel.config.energy.grid.grid_consumption"
             )}
           </h3>
-          ${gridSource.flow_from.map((flow) => {
-            const entityState = this.hass.states[flow.stat_energy_from];
-            return html`
-              <div class="row" .source=${flow}>
-                ${entityState?.attributes.icon
-                  ? html`<ha-icon
-                      .icon=${entityState?.attributes.icon}
-                    ></ha-icon>`
-                  : html`<ha-svg-icon
-                      .path=${mdiHomeImportOutline}
-                    ></ha-svg-icon>`}
-                <span class="content"
-                  >${getStatisticLabel(
-                    this.hass,
-                    flow.stat_energy_from,
-                    this.statsMetadata?.[flow.stat_energy_from]
-                  )}</span
-                >
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.edit_consumption"
-                  )}
-                  @click=${this._editFromSource}
-                  .path=${mdiPencil}
-                ></ha-icon-button>
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.delete_consumption"
-                  )}
-                  @click=${this._deleteFromSource}
-                  .path=${mdiDelete}
-                ></ha-icon-button>
-              </div>
-            `;
-          })}
-          <div class="row border-bottom">
-            <ha-svg-icon .path=${mdiHomeImportOutline}></ha-svg-icon>
+          ${gridSource.flow_from.length > 0
+            ? html`
+                <div class="items-container">
+                  ${gridSource.flow_from.map((flow) => {
+                    const entityState = this.hass.states[flow.stat_energy_from];
+                    return html`
+                      <div class="row" .source=${flow}>
+                        ${entityState?.attributes.icon
+                          ? html`<ha-icon
+                              .icon=${entityState?.attributes.icon}
+                            ></ha-icon>`
+                          : html`<ha-svg-icon
+                              .path=${mdiHomeImportOutline}
+                            ></ha-svg-icon>`}
+                        <span class="content"
+                          >${getStatisticLabel(
+                            this.hass,
+                            flow.stat_energy_from,
+                            this.statsMetadata?.[flow.stat_energy_from]
+                          )}</span
+                        >
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.edit_consumption"
+                          )}
+                          @click=${this._editFromSource}
+                          .path=${mdiPencil}
+                        ></ha-icon-button>
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.delete_consumption"
+                          )}
+                          @click=${this._deleteFromSource}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </div>
+                    `;
+                  })}
+                </div>
+              `
+            : ""}
+          <div class="row">
             <ha-button
               appearance="filled"
               size="small"
@@ -180,43 +185,48 @@ export class EnergyGridSettings extends LitElement {
           <h3>
             ${this.hass.localize("ui.panel.config.energy.grid.return_to_grid")}
           </h3>
-          ${gridSource.flow_to.map((flow) => {
-            const entityState = this.hass.states[flow.stat_energy_to];
-            return html`
-              <div class="row" .source=${flow}>
-                ${entityState?.attributes.icon
-                  ? html`<ha-icon
-                      .icon=${entityState.attributes.icon}
-                    ></ha-icon>`
-                  : html`<ha-svg-icon
-                      .path=${mdiHomeExportOutline}
-                    ></ha-svg-icon>`}
-                <span class="content"
-                  >${getStatisticLabel(
-                    this.hass,
-                    flow.stat_energy_to,
-                    this.statsMetadata?.[flow.stat_energy_to]
-                  )}</span
-                >
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.edit_return"
-                  )}
-                  @click=${this._editToSource}
-                  .path=${mdiPencil}
-                ></ha-icon-button>
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.delete_return"
-                  )}
-                  @click=${this._deleteToSource}
-                  .path=${mdiDelete}
-                ></ha-icon-button>
-              </div>
-            `;
-          })}
-          <div class="row border-bottom">
-            <ha-svg-icon .path=${mdiHomeExportOutline}></ha-svg-icon>
+          ${gridSource.flow_to.length > 0
+            ? html`
+                <div class="items-container">
+                  ${gridSource.flow_to.map((flow) => {
+                    const entityState = this.hass.states[flow.stat_energy_to];
+                    return html`
+                      <div class="row" .source=${flow}>
+                        ${entityState?.attributes.icon
+                          ? html`<ha-icon
+                              .icon=${entityState.attributes.icon}
+                            ></ha-icon>`
+                          : html`<ha-svg-icon
+                              .path=${mdiHomeExportOutline}
+                            ></ha-svg-icon>`}
+                        <span class="content"
+                          >${getStatisticLabel(
+                            this.hass,
+                            flow.stat_energy_to,
+                            this.statsMetadata?.[flow.stat_energy_to]
+                          )}</span
+                        >
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.edit_return"
+                          )}
+                          @click=${this._editToSource}
+                          .path=${mdiPencil}
+                        ></ha-icon-button>
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.delete_return"
+                          )}
+                          @click=${this._deleteToSource}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </div>
+                    `;
+                  })}
+                </div>
+              `
+            : ""}
+          <div class="row">
             <ha-button
               @click=${this._addToSource}
               appearance="filled"
@@ -232,43 +242,48 @@ export class EnergyGridSettings extends LitElement {
           <h3>
             ${this.hass.localize("ui.panel.config.energy.grid.grid_power")}
           </h3>
-          ${gridSource.power?.map((power) => {
-            const entityState = this.hass.states[power.stat_rate];
-            return html`
-              <div class="row" .source=${power}>
-                ${entityState?.attributes.icon
-                  ? html`<ha-icon
-                      .icon=${entityState.attributes.icon}
-                    ></ha-icon>`
-                  : html`<ha-svg-icon
-                      .path=${mdiTransmissionTower}
-                    ></ha-svg-icon>`}
-                <span class="content"
-                  >${getStatisticLabel(
-                    this.hass,
-                    power.stat_rate,
-                    this.statsMetadata?.[power.stat_rate]
-                  )}</span
-                >
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.edit_power"
-                  )}
-                  @click=${this._editPowerSource}
-                  .path=${mdiPencil}
-                ></ha-icon-button>
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.delete_power"
-                  )}
-                  @click=${this._deletePowerSource}
-                  .path=${mdiDelete}
-                ></ha-icon-button>
-              </div>
-            `;
-          })}
-          <div class="row border-bottom">
-            <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
+          ${gridSource.power && gridSource.power.length > 0
+            ? html`
+                <div class="items-container">
+                  ${gridSource.power.map((power) => {
+                    const entityState = this.hass.states[power.stat_rate];
+                    return html`
+                      <div class="row" .source=${power}>
+                        ${entityState?.attributes.icon
+                          ? html`<ha-icon
+                              .icon=${entityState.attributes.icon}
+                            ></ha-icon>`
+                          : html`<ha-svg-icon
+                              .path=${mdiTransmissionTower}
+                            ></ha-svg-icon>`}
+                        <span class="content"
+                          >${getStatisticLabel(
+                            this.hass,
+                            power.stat_rate,
+                            this.statsMetadata?.[power.stat_rate]
+                          )}</span
+                        >
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.edit_power"
+                          )}
+                          @click=${this._editPowerSource}
+                          .path=${mdiPencil}
+                        ></ha-icon-button>
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.delete_power"
+                          )}
+                          @click=${this._deletePowerSource}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </div>
+                    `;
+                  })}
+                </div>
+              `
+            : ""}
+          <div class="row">
             <ha-button
               @click=${this._addPowerSource}
               appearance="filled"
@@ -287,43 +302,37 @@ export class EnergyGridSettings extends LitElement {
             )}
           </h3>
           ${this._co2ConfigEntry
-            ? html`<div class="row" .entry=${this._co2ConfigEntry}>
-                <img
-                  alt=""
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${brandsUrl({
-                    domain: "co2signal",
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                />
-                <span class="content">${this._co2ConfigEntry.title}</span>
-                <a
-                  href=${`/config/integrations/integration/${this._co2ConfigEntry?.domain}`}
-                >
-                  <ha-icon-button .path=${mdiPencil}></ha-icon-button>
-                </a>
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.remove_co2_signal"
-                  )}
-                  @click=${this._removeCO2Sensor}
-                  .path=${mdiDelete}
-                ></ha-icon-button>
-              </div>`
+            ? html`
+                <div class="items-container">
+                  <div class="row" .entry=${this._co2ConfigEntry}>
+                    <img
+                      alt=""
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                      src=${brandsUrl({
+                        domain: "co2signal",
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      })}
+                    />
+                    <span class="content">${this._co2ConfigEntry.title}</span>
+                    <a
+                      href=${`/config/integrations/integration/${this._co2ConfigEntry?.domain}`}
+                    >
+                      <ha-icon-button .path=${mdiPencil}></ha-icon-button>
+                    </a>
+                    <ha-icon-button
+                      .label=${this.hass.localize(
+                        "ui.panel.config.energy.grid.remove_co2_signal"
+                      )}
+                      @click=${this._removeCO2Sensor}
+                      .path=${mdiDelete}
+                    ></ha-icon-button>
+                  </div>
+                </div>
+              `
             : html`
-                <div class="row border-bottom">
-                  <img
-                    alt=""
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    src=${brandsUrl({
-                      domain: "co2signal",
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                  />
+                <div class="row">
                   <ha-button
                     @click=${this._addCO2Sensor}
                     appearance="filled"
