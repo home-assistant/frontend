@@ -130,7 +130,7 @@ export interface GridSourceTypeEnergyPreference {
   number_energy_price_export: number | null;
 
   // Power measurement (optional)
-  stat_rate?: string;
+  stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 
   cost_adjustment_day: number;
@@ -148,7 +148,7 @@ export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
   stat_energy_to: string;
-  stat_rate?: string;
+  stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 }
 export interface GasSourceTypeEnergyPreference {
