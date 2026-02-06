@@ -520,8 +520,8 @@ export class DialogEnergyGridSettings
       this._exportCostType = "no_cost";
       this._source = {
         ...this._source!,
-        entity_energy_price_sell: null,
-        number_energy_price_sell: null,
+        entity_energy_price_export: null,
+        number_energy_price_export: null,
       };
     }
   }
