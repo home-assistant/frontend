@@ -3817,7 +3817,7 @@
               "cost_number": "Use a static price",
               "cost_number_label": "Price",
               "export_compensation": "Export compensation",
-              "export_compensation_para": "Do you get money back when you return energy to the grid?",
+              "export_compensation_para": "Do you get money back when you export energy to the grid?",
               "no_compensation_tracking": "Do not track compensation",
               "compensation_stat": "Use an entity tracking the total compensation",
               "compensation_stat_label": "Entity with the total compensation",
