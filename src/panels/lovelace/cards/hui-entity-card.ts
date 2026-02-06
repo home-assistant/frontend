@@ -120,6 +120,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
+    const stateParts = this.hass.formatEntityStateToParts(stateObj);
 
     let unit;
     if (
@@ -200,9 +201,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   >
                   </ha-attribute-value>`
                 : this.hass.localize("state.default.unknown")
-              : this.hass
-                  .formatEntityStateToParts(stateObj)
-                  .find((part) => part.type === "value")?.value}</span
+              : stateParts.find((part) => part.type === "value")?.value}</span
           >
           ${unit ? html`<span class="measurement">${unit}</span>` : nothing}
         </div>
