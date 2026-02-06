@@ -174,11 +174,6 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        :host {
-          display: block;
-          margin-bottom: var(--ha-space-6);
-        }
-
         .error {
           color: var(--error-color);
         }
