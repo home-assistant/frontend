@@ -79,6 +79,7 @@ export class ZWaveJsAddNodeSelectMethod extends LitElement {
     const selectedStrategy = Number(
       event.detail.value.strategy
     ) as InclusionStrategy;
+    this._inclusionStrategy = selectedStrategy;
     fireEvent(this, "z-wave-strategy-selected", {
       strategy: selectedStrategy,
     });
