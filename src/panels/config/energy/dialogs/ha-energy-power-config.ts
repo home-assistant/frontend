@@ -133,6 +133,11 @@ export class HaEnergyPowerConfig extends LitElement {
           `${this.translationKeyPrefix}.sensor_type` as LocalizeKeys
         )}
       </p>
+      <p class="power-section-description">
+        ${this.hass.localize(
+          `${this.translationKeyPrefix}.sensor_type_para` as LocalizeKeys
+        )}
+      </p>
 
       <ha-formfield
         .label=${this.hass.localize(
@@ -329,6 +334,12 @@ export class HaEnergyPowerConfig extends LitElement {
     .power-section-label {
       margin-top: var(--ha-space-4);
       margin-bottom: var(--ha-space-2);
+    }
+    .power-section-description {
+      margin-top: 0;
+      margin-bottom: var(--ha-space-2);
+      color: var(--secondary-text-color);
+      font-size: 0.875em;
     }
   `;
 }

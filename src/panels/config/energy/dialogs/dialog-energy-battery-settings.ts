@@ -224,7 +224,7 @@ export class DialogEnergyBatterySettings
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
   }
 
-private _handlePowerConfigChanged(
+  private _handlePowerConfigChanged(
     ev: CustomEvent<{ powerType: PowerType; powerConfig: PowerConfig }>
   ) {
     this._powerType = ev.detail.powerType;
