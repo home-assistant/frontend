@@ -730,7 +730,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _showTrace() {
     if (this.scriptId) {
-      const result = await this._confirmUnsavedChanged();
+      const result = await this.promptDiscardChanges();
       if (result) {
         navigate(`/config/script/trace/${this.scriptId}`);
       }
@@ -812,9 +812,8 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _backTapped = async () => {
-    const result = await this._confirmUnsavedChanged();
+    const result = await this.promptDiscardChanges();
     if (result) {
-      this.exitConfirmed = true;
       afterNextRender(() => goBack("/config"));
     }
   };
@@ -873,7 +872,7 @@ export class HaScriptEditor extends SubscribeMixin(
             "ui.panel.config.script.picker.migrate_script_description"
           ),
         })
-      : await this._confirmUnsavedChanged();
+      : await this.promptDiscardChanges();
     if (result) {
       this._entityId = undefined;
       showScriptEditor({
@@ -1080,10 +1079,6 @@ export class HaScriptEditor extends SubscribeMixin(
 
   protected get isDirty() {
     return this._dirty;
-  }
-
-  protected async promptDiscardChanges() {
-    return this._confirmUnsavedChanged();
   }
 
   // @ts-ignore

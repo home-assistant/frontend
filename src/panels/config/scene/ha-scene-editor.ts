@@ -950,7 +950,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   }
 
   private _backTapped = async (): Promise<void> => {
-    const result = await this._confirmUnsavedChanged();
+    const result = await this.promptDiscardChanges();
     if (result) {
       this._goBack();
     }
@@ -960,7 +960,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     if (this._mode === "live") {
       applyScene(this.hass, this._storedStates);
     }
-    this.exitConfirmed = true;
     afterNextRender(() => goBack("/config"));
   }
 
@@ -1009,7 +1008,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   }
 
   private async _duplicate() {
-    const result = await this._confirmUnsavedChanged();
+    const result = await this.promptDiscardChanges();
     if (result) {
       showSceneEditor(
         {
@@ -1244,10 +1243,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   protected get isDirty() {
     return this._dirty;
-  }
-
-  protected async promptDiscardChanges() {
-    return this._confirmUnsavedChanged();
   }
 
   static get styles(): CSSResultGroup {

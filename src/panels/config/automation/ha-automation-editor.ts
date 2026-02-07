@@ -802,7 +802,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private async _showTrace() {
     if (this._config?.id) {
-      const result = await this._confirmUnsavedChanged();
+      const result = await this.promptDiscardChanges();
       if (result) {
         navigate(
           `/config/automation/trace/${encodeURIComponent(this._config.id)}`
@@ -902,9 +902,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   }
 
   private _backTapped = async () => {
-    const result = await this._confirmUnsavedChanged();
+    const result = await this.promptDiscardChanges();
     if (result) {
-      this.exitConfirmed = true;
       afterNextRender(() => goBack("/config"));
     }
   };
@@ -964,7 +963,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             "ui.panel.config.automation.picker.migrate_automation_description"
           ),
         })
-      : await this._confirmUnsavedChanged();
+      : await this.promptDiscardChanges();
     if (result) {
       showAutomationEditor({
         ...this._config,
@@ -1171,10 +1170,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   protected get isDirty() {
     return this._dirty;
-  }
-
-  protected async promptDiscardChanges() {
-    return this._confirmUnsavedChanged();
   }
 
   // @ts-ignore

@@ -9,7 +9,7 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) =>
   class extends superClass {
-    protected exitConfirmed;
+    private _exitConfirmed;
 
     private _handleClick = async (e: MouseEvent) => {
       // get the right target, otherwise the composedPath would return <home-assistant> in the new event
@@ -31,7 +31,7 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
     private _handlePopState = async (e: PopStateEvent) => {
       if (!e.state?.preventUnsavedConfirming) return;
 
-      const canExit = !this.isDirty || this.exitConfirmed;
+      const canExit = !this.isDirty || this._exitConfirmed;
 
       if (canExit) {
         goBack("/config");
@@ -41,7 +41,6 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
 
         const result = await this.promptDiscardChanges();
         if (result) {
-          this.exitConfirmed = true;
           afterNextRender(() => goBack("/config"));
         }
       }
@@ -77,7 +76,7 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
 
       window.addEventListener("popstate", this._handlePopState);
 
-      this.exitConfirmed = false;
+      this._exitConfirmed = false;
     }
 
     public disconnectedCallback(): void {
@@ -92,7 +91,14 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
       return false;
     }
 
-    protected async promptDiscardChanges(): Promise<boolean> {
+    private async _confirmUnsavedChanged(): Promise<boolean> {
       return true;
+    }
+
+    protected async promptDiscardChanges(): Promise<boolean> {
+      return this._confirmUnsavedChanged().then((confimed) => {
+        this._exitConfirmed = confimed;
+        return confimed;
+      });
     }
   };
