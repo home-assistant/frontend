@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import type { MQTTMessage } from "../../../../../data/mqtt";
@@ -140,7 +141,7 @@ class MqttSubscribeCard extends LitElement {
     this._topic = ev.target.value;
   }
 
-  private _handleQos(ev: CustomEvent<{ value: string }>): void {
+  private _handleQos(ev: HaSelectSelectEvent): void {
     const newValue = ev.detail.value;
     if (Number(newValue) >= 0 && newValue !== this._qos) {
       this._qos = newValue;

@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import {
   computeDeviceName,
   computeDeviceNameDisplay,
@@ -231,7 +232,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     this._deviceName = ev.target.value;
   }
 
-  private async _wakeWordPicked(ev: CustomEvent<{ value: string }>) {
+  private async _wakeWordPicked(ev: HaSelectSelectEvent) {
     const option = ev.detail.value;
     if (this.assistConfiguration) {
       this.assistConfiguration.active_wake_words = [option];
@@ -239,7 +240,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     await setWakeWords(this.hass, this.assistEntityId!, [option]);
   }
 
-  private _pipelinePicked(ev: CustomEvent<{ value: string }>) {
+  private _pipelinePicked(ev: HaSelectSelectEvent) {
     const stateObj = this.hass!.states[
       this.assistConfiguration!.pipeline_entity_id
     ] as InputSelectEntity;

@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { forwardHaptic } from "../../../data/haptics";
@@ -86,7 +87,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     }
   `;
 
-  private _selectedChanged(ev: CustomEvent<{ value: string }>): void {
+  private _selectedChanged(ev: HaSelectSelectEvent): void {
     const stateObj = this.hass!.states[
       this._config!.entity
     ] as InputSelectEntity;

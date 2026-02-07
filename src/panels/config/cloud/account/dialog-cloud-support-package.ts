@@ -1,13 +1,11 @@
-import { mdiClose } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-markdown-element";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-textarea";
@@ -23,8 +21,6 @@ export class DialogSupportPackage extends LitElement {
 
   @state() private _supportPackage?: string;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
-
   public showDialog() {
     this._open = true;
     this._loadSupportPackage();
@@ -37,53 +33,50 @@ export class DialogSupportPackage extends LitElement {
   }
 
   public closeDialog() {
-    this._dialog?.close();
+    this._open = false;
     return true;
   }
 
   protected render() {
-    if (!this._open) {
-      return nothing;
-    }
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-          ></ha-icon-button>
-          <span slot="title">Download support package</span>
-        </ha-dialog-header>
-
-        <div slot="content">
-          ${this._supportPackage
-            ? html`<ha-markdown-element
-                .content=${this._supportPackage}
-                breaks
-              ></ha-markdown-element>`
-            : html`
-                <div class="progress-container">
-                  <ha-spinner></ha-spinner>
-                  Generating preview...
-                </div>
-              `}
-        </div>
-        <div class="footer" slot="actions">
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        width="full"
+        header-title="Download support package"
+        @closed=${this._dialogClosed}
+      >
+        ${this._supportPackage
+          ? html`<ha-markdown-element
+              .content=${this._supportPackage}
+              breaks
+            ></ha-markdown-element>`
+          : html`
+              <div class="progress-container">
+                <ha-spinner></ha-spinner>
+                Generating preview...
+              </div>
+            `}
+        <div slot="footer" class="footer">
           <ha-alert>
             This file may contain personal data about your home. Avoid sharing
             them with unverified or untrusted parties.
           </ha-alert>
           <hr />
-          <div class="actions">
-            <ha-button appearance="plain" @click=${this.closeDialog}
-              >Close</ha-button
+          <ha-dialog-footer>
+            <ha-button
+              slot="secondaryAction"
+              appearance="plain"
+              @click=${this.closeDialog}
             >
-            <ha-button @click=${this._download}>Download</ha-button>
-          </div>
+              Close
+            </ha-button>
+            <ha-button slot="primaryAction" @click=${this._download}>
+              Download
+            </ha-button>
+          </ha-dialog-footer>
         </div>
-      </ha-md-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -100,11 +93,6 @@ export class DialogSupportPackage extends LitElement {
   }
 
   static styles = css`
-    ha-md-dialog {
-      min-width: 90vw;
-      min-height: 90vh;
-    }
-
     .progress-container {
       display: flex;
       flex-direction: column;
@@ -114,30 +102,23 @@ export class DialogSupportPackage extends LitElement {
       width: 100%;
     }
 
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      ha-md-dialog {
-        min-width: 100vw;
-        min-height: 100vh;
-      }
-      .progress-container {
-        height: calc(100vh - 260px);
-      }
-    }
-
     .footer {
-      flex-direction: column;
-    }
-    .actions {
       display: flex;
-      gap: var(--ha-space-2);
-      justify-content: flex-end;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: var(--ha-space-3);
+      width: 100%;
+    }
+    ha-dialog-footer {
+      display: block;
+      width: 100%;
     }
     hr {
       border: none;
       border-top: 1px solid var(--divider-color);
-      width: calc(100% + 48px);
-      margin-right: -24px;
-      margin-left: -24px;
+      width: 100%;
+      margin: 0;
     }
     table,
     th,
