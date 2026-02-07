@@ -51,7 +51,7 @@ import {
   normalizeScriptConfig,
 } from "../../../data/script";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "../automation/action/ha-automation-action";
@@ -543,7 +543,7 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
     this._sidebarElement?.focus();
   }
 
-  private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
+  private _sidebarConfigChanged(ev: ValueChangedEvent<SidebarConfig>) {
     ev.stopPropagation();
     if (!this._sidebarConfig) {
       return;

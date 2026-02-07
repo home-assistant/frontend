@@ -5,7 +5,7 @@ import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateValue } from "../../../data/date";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 
 @customElement("more-info-date")
 class MoreInfoDate extends LitElement {
@@ -31,7 +31,7 @@ class MoreInfoDate extends LitElement {
     `;
   }
 
-  private _dateChanged(ev: CustomEvent<{ value: string }>): void {
+  private _dateChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       setDateValue(this.hass!, this.stateObj!.entity_id, ev.detail.value);
     }
