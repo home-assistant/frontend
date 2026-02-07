@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { ZHADevice } from "../../../../../data/zha";
 import { bindDevices, unbindDevices } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
@@ -72,7 +73,7 @@ export class ZHADeviceBindingControl extends LitElement {
     `;
   }
 
-  private _bindTargetIndexChanged(event: CustomEvent<{ value: string }>): void {
+  private _bindTargetIndexChanged(event: HaSelectSelectEvent): void {
     this._bindTargetIndex = Number(event.detail.value);
     this._deviceToBind =
       this._bindTargetIndex === -1

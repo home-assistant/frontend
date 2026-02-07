@@ -89,14 +89,6 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
             ({
               type: "tile",
               entity: entityId,
-              name: [
-                {
-                  type: "device",
-                },
-                {
-                  type: "entity",
-                },
-              ],
               state_content: ["state", "area_name"],
               show_entity_picture: true,
             }) satisfies TileCardConfig

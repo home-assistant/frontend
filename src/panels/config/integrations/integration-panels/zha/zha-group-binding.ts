@@ -6,6 +6,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import {
   bindDeviceToGroup,
@@ -101,7 +102,7 @@ export class ZHAGroupBindingControl extends LitElement {
     `;
   }
 
-  private _bindTargetIndexChanged(event: CustomEvent<{ value: string }>): void {
+  private _bindTargetIndexChanged(event: HaSelectSelectEvent): void {
     this._bindTargetIndex = Number(event.detail.value);
     this._groupToBind =
       this._bindTargetIndex === -1

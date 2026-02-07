@@ -5,6 +5,7 @@ import type { HaProgressButton } from "../../../../../../components/buttons/ha-p
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../../components/ha-select";
 import "../../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import "../../../../../../components/ha-textfield";
@@ -148,7 +149,7 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
     button.progress = false;
   }
 
-  private _directionChanged(ev: CustomEvent<{ value: string }>) {
+  private _directionChanged(ev: HaSelectSelectEvent) {
     this._direction = ev.detail.value;
   }
 

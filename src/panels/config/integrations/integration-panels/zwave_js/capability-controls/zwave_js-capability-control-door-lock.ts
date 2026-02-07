@@ -6,6 +6,7 @@ import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../../components/ha-select";
 import "../../../../../../components/ha-spinner";
 import "../../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
@@ -339,7 +340,7 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     );
   }
 
-  private _operationTypeChanged(ev: CustomEvent<{ value: string }>) {
+  private _operationTypeChanged(ev: HaSelectSelectEvent) {
     const newType = parseInt(ev.detail.value);
     if (this._configuration) {
       this._configuration = {
@@ -385,8 +386,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     }
   }
 
-  private _doorLockModeChanged(ev: CustomEvent<{ value: string }>) {
-    this._currentDoorLockMode = parseInt(ev.detail.value) as DoorLockMode;
+  private _doorLockModeChanged(ev: HaSelectSelectEvent<DoorLockMode>) {
+    this._currentDoorLockMode = ev.detail.value;
   }
 
   private async _saveConfig(ev: CustomEvent) {
