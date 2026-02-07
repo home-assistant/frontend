@@ -1,6 +1,7 @@
 import type { LitElement, PropertyValues } from "lit";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { goBack } from "../common/navigate";
+import { afterNextRender } from "../common/util/render-status";
 import type { Constructor } from "../types";
 import { mainWindow } from "../common/dom/get_main_window";
 
@@ -28,19 +29,20 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
     };
 
     private _handlePopState = async (e: PopStateEvent) => {
-      if (
-        e.state?.preventUnsavedNeedsConfirmation &&
-        (this.exitConfirmed || !this.isDirty)
-      ) {
-        goBack("/config");
-      } else if (e.state?.preventUnsavedNeedsConfirmation && this.isDirty) {
-        const result = await this.promptDiscardChanges();
+      if (!e.state?.preventUnsavedConfirming) return;
 
+      const canExit = !this.isDirty || this.exitConfirmed;
+
+      if (canExit) {
+        goBack("/config");
+      } else {
+        // Re-push state to "neutralize" the back button press and stay on page.
+        mainWindow.history.pushState(null, "");
+
+        const result = await this.promptDiscardChanges();
         if (result) {
           this.exitConfirmed = true;
-        } else {
-          // Re-push state to "neutralize" the back button press and stay on page.
-          mainWindow.history.pushState(null, "");
+          afterNextRender(() => goBack("/config"));
         }
       }
     };
@@ -67,7 +69,7 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
       super.connectedCallback();
       // Tag the current history entry so we know this component owns the "unsaved changes" logic.
       mainWindow.history.replaceState(
-        { ...mainWindow.history.state, preventUnsavedNeedsConfirmation: true },
+        { ...mainWindow.history.state, preventUnsavedConfirming: true },
         ""
       );
       // Create a "buffer" state so the first back-button press triggers popstate without leaving the page.
