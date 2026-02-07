@@ -38,7 +38,74 @@ import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { formatNumber } from "../common/number/format_number";
 
+export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
+
+// Collection keys used in user dashboards should have this prefix
+export const ENERGY_COLLECTION_KEY_UI_PREFIX = `${ENERGY_COLLECTION_KEY_PREFIX}ui_`;
+
+// All collection keys created this session
 const energyCollectionKeys: (string | undefined)[] = [];
+
+// Create an energy collection key.
+// This will add the required prefix if not already present.
+// If the supplied key has an valid non-user prefix, that will
+// remain unchanged to support dashboards made in YAML.
+export function createEnergyCollectionKey(key: string): string {
+  if (
+    !key.startsWith(ENERGY_COLLECTION_KEY_UI_PREFIX) &&
+    !key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)
+  ) {
+    key = ENERGY_COLLECTION_KEY_UI_PREFIX + key;
+  }
+  return key;
+}
+
+// Does the opposite of createEnergyCollectionKey, removing the collection key
+// prefix if present.
+export function stripEnergyCollectionKeyPrefix(key: string) {
+  if (key.startsWith(ENERGY_COLLECTION_KEY_UI_PREFIX)) {
+    return key.slice(ENERGY_COLLECTION_KEY_UI_PREFIX.length);
+  }
+  if (key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
+    return key.slice(ENERGY_COLLECTION_KEY_PREFIX.length);
+  }
+  return key;
+}
+
+// Validate that a string is a valid energy collection key.
+// By default allows any valid collection key. Can optionally can select that
+// the key has the UI prefix. Will throw an error if invalid.
+export function validateEnergyCollectionKey(
+  key: string | undefined,
+  requireUiKey = false
+) {
+  const prefix = requireUiKey
+    ? ENERGY_COLLECTION_KEY_UI_PREFIX
+    : ENERGY_COLLECTION_KEY_PREFIX;
+  if (!key?.startsWith(prefix)) {
+    throw new Error(`Collection keys must start with ${prefix}.`);
+  }
+}
+
+// Return all currently active energy collections, optionally selecting between
+// only ui keys, or all keys.
+export function getActiveEnergyCollectionKeys(
+  hass: HomeAssistant,
+  uiKeysOnly = true
+): string[] | undefined {
+  if (!energyCollectionKeys?.length) return undefined;
+  return energyCollectionKeys.filter((key) => {
+    if (
+      key !== null &&
+      key !== undefined &&
+      (!uiKeysOnly || key.startsWith(ENERGY_COLLECTION_KEY_UI_PREFIX))
+    ) {
+      const energyCollection = getEnergyDataCollection(hass, { key });
+      return !!energyCollection._active;
+    }
+    return false;
+  }) as string[];
+}
 
 export const emptyFlowFromGridSourceEnergyPreference =
   (): FlowFromGridSourceEnergyPreference => ({
@@ -753,9 +820,7 @@ export const getEnergyDataCollection = (
 ): EnergyCollection => {
   let key = "_energy";
   if (options.key) {
-    if (!options.key.startsWith("energy_")) {
-      throw new Error("Key need to start with energy_");
-    }
+    validateEnergyCollectionKey(options.key);
     key = `_${options.key}`;
   }
 
