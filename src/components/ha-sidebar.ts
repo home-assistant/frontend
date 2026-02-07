@@ -732,7 +732,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
             --sidebar-menu-button-text-color,
             var(--primary-text-color)
           );
-          border-bottom: 1px solid var(--divider-color);
+          border-bottom: 1px solid
+            color-mix(
+              in srgb,
+              var(--divider-color),
+              var(--primary-text-color) 15%
+            );
           background-color: var(
             --sidebar-menu-button-background-color,
             inherit

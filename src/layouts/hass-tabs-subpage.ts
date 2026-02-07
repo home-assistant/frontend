@@ -247,7 +247,12 @@ class HassTabsSubpage extends LitElement {
           padding-right: var(--safe-area-inset-right);
           background-color: var(--sidebar-background-color);
           font-weight: var(--ha-font-weight-normal);
-          border-bottom: 1px solid var(--divider-color);
+          border-bottom: 1px solid
+            color-mix(
+              in srgb,
+              var(--divider-color),
+              var(--primary-text-color) 15%
+            );
           box-sizing: border-box;
         }
         :host([narrow]) .toolbar {
