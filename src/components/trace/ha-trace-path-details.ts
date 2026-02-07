@@ -170,7 +170,7 @@ export class HaTracePathDetails extends LitElement {
                       ${describeTrigger(
                         migrateAutomationTrigger({
                           ...currentDetail,
-                        } as Trigger) as Trigger,
+                        }) as Trigger,
                         this.hass,
                         this._entityReg
                       )}
