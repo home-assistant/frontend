@@ -163,6 +163,12 @@ export interface TimePatternTrigger extends BaseTrigger {
   seconds?: number | string;
 }
 
+export interface TimerTrigger extends BaseTrigger {
+  trigger: "timer";
+  entity_id: string;
+  events: string[];
+}
+
 export interface WebhookTrigger extends BaseTrigger {
   trigger: "webhook";
   webhook_id: string;
@@ -229,6 +235,7 @@ export type LegacyTrigger =
   | ZoneTrigger
   | TagTrigger
   | TimeTrigger
+  | TimerTrigger
   | TemplateTrigger
   | EventTrigger
   | DeviceTrigger

@@ -23,6 +23,7 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
           sun: {},
           time: {},
           time_pattern: {},
+          timer: {},
           zone: {},
         },
       },

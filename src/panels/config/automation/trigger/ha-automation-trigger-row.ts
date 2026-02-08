@@ -87,6 +87,7 @@ import "./types/ha-automation-trigger-tag";
 import "./types/ha-automation-trigger-template";
 import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
+import "./types/ha-automation-trigger-timer";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";

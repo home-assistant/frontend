@@ -4995,6 +4995,22 @@
                     "ordinal": "{part, selectordinal, \none {#st}\ntwo {#nd}\nfew {#rd}\nother {#th}\n}"
                   }
                 },
+                "timer": {
+                  "label": "Timer",
+                  "events": "Events",
+                  "start": "[%key:ui::card::timer::actions::start%]",
+                  "pause": "[%key:ui::card::timer::actions::pause%]",
+                  "cancel": "[%key:ui::card::timer::actions::cancel%]",
+                  "finish": "[%key:ui::card::timer::actions::finish%]",
+                  "restart": "Restart",
+                  "description": {
+                    "picker": "For specific events of a timer",
+                    "initial": "When events of a timer fires",
+                    "missing_timer": "Missing events for {timer}",
+                    "missing_events": "Missing timer for events: {events}",
+                    "full": "When events of {timer} fires: {events}"
+                  }
+                },
                 "webhook": {
                   "copy_url": "Copy URL to clipboard",
                   "label": "Webhook",

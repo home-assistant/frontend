@@ -14,6 +14,7 @@ import {
   mdiNumeric,
   mdiStateMachine,
   mdiSwapHorizontal,
+  mdiTimerOutline,
   mdiWeatherSunny,
   mdiWebhook,
 } from "@mdi/js";
@@ -42,6 +43,7 @@ export const TRIGGER_ICONS = {
   template: mdiCodeBraces,
   time: mdiClockOutline,
   time_pattern: mdiAvTimer,
+  timer: mdiTimerOutline,
   webhook: mdiWebhook,
   persistent_notification: mdiMessageAlert,
   zone: mdiMapMarkerRadius,

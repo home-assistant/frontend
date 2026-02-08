@@ -841,6 +841,49 @@ const describeLegacyTrigger = (
       }
     );
   }
+
+  if (trigger.trigger === "timer") {
+    const timerEntity = hass.states[trigger.entity_id]
+      ? computeStateName(hass.states[trigger.entity_id])
+      : trigger.entity_id;
+
+    const eventsArray = trigger.events.map((event) =>
+      hass.localize(`${triggerTranslationBaseKey}.timer.${event}`)
+    );
+    const events = formatListWithOrs(hass.locale, eventsArray);
+
+    if (trigger.entity_id === "" && trigger.events.length === 0) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.timer.description.initial`
+      );
+    }
+
+    if (trigger.entity_id === "" && trigger.events.length !== 0) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.timer.description.missing_events`,
+        {
+          events: events,
+        }
+      );
+    }
+
+    if (trigger.entity_id !== "" && trigger.events.length === 0) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.timer.description.missing_timer`,
+        {
+          timer: timerEntity,
+        }
+      );
+    }
+
+    return hass.localize(
+      `${triggerTranslationBaseKey}.timer.description.full`,
+      {
+        events: events,
+        timer: timerEntity,
+      }
+    );
+  }
   return undefined;
 };
 
