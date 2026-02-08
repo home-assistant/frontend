@@ -26,21 +26,23 @@ export function getAssistantsTableColumn<T>(
     valueColumn: "assistants_sortable_key",
     template: (entry: any) =>
       html`${entry.assistants.length !== 0
-        ? availableAssistants.map((vaId) => {
-            const supported =
-              !supportedEntities?.[vaId] ||
-              supportedEntities[vaId].includes(entry.entity_id);
-            const manual = entry.manAssistants?.includes(vaId);
-            return getAssistantsTableColumnIcon(
-              entry.entity_id,
-              entry.assistants.includes(vaId),
-              vaId,
-              hass,
-              entitiesToCheck,
-              manual,
-              !supported
-            );
-          })
+        ? html`<div style="display: flex; gap: var(--ha-space-4);">
+            ${availableAssistants.map((vaId) => {
+              const supported =
+                !supportedEntities?.[vaId] ||
+                supportedEntities[vaId].includes(entry.entity_id);
+              const manual = entry.manAssistants?.includes(vaId);
+              return getAssistantsTableColumnIcon(
+                entry.entity_id,
+                entry.assistants.includes(vaId),
+                vaId,
+                hass,
+                entitiesToCheck,
+                manual,
+                !supported
+              );
+            })}
+          </div>`
         : nothing}`,
   };
 }
