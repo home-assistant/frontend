@@ -323,9 +323,9 @@ class ZHAConfigDashboard extends LitElement {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "zha",
     });
-    if (configEntries.length) {
-      this._configEntry = configEntries[0];
-    }
+    this._configEntry = configEntries.find(
+      (entry) => entry.disabled_by === null && entry.source !== "ignore"
+    );
   }
 
   private async _fetchConfiguration(): Promise<void> {
