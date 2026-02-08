@@ -8731,10 +8731,10 @@
               "fit_y_data": "Extend Y axis limits to fit data"
             },
             "energy-date-selection": {
-              "name": "Energy date selector",
-              "description": "Provides a date selection card which can control the time range of linked statistics graphs and other energy cards.",
+              "name": "Energy date picker",
+              "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
               "disable_compare": "Disable data comparison",
-              "vertical_opening_direction": "Vertical Direction",
+              "vertical_opening_direction": "Vertical Opening Direction",
               "vertical_opening_directions": {
                 "auto": "Automatic",
                 "up": "Up",
@@ -8742,36 +8742,36 @@
               }
             },
             "energy-distribution": {
-              "name": "Energy distribution card",
-              "description": "An distribution diagram for home energy as seen in the Energy Dashboard."
+              "name": "Energy distribution",
+              "description": "The energy distribution card shows how the energy flowed betweeen energy sources and the home."
             },
             "energy-usage-graph": {
-              "name": "Electrical energy usage graph",
-              "description": "A chart showing electrical energy usage as seen in the Energy Dashboard."
+              "name": "Energy usage graph",
+              "description": "The energy usage graph card shows the amount of energy your house has consumed, and from what source this energy came."
             },
             "energy-solar-graph": {
-              "name": "Solar generation chart",
-              "description": "A chart showing solar generation as seen in the Energy Dashboard."
+              "name": "Solar production graph",
+              "description": "The solar production graph card shows the amount of energy your solar panels have produced."
             },
             "energy-gas-graph": {
-              "name": "Gas usage chart",
-              "description": "A chart showing gas usage as seen in the Energy Dashboard."
+              "name": "Gas consumption graph",
+              "description": "The gas consumption graph card shows the amount of gas consumed per source."
             },
             "energy-water-graph": {
-              "name": "Water usage chart",
-              "description": "A chart showing water usage as seen in the Energy Dashboard."
+              "name": "Water consumption graph",
+              "description": "The water consumption graph card shows the amount of water consumed per source."
             },
             "power-sources-graph": {
               "name": "Power sources graph",
               "description": "The power sources graph shows historical power data."
             },
             "energy-sankey": {
-              "name": "Electrical energy sankey diagram",
-              "description": "An electrical energy sankey diagram as seen in the Energy Dashboard.",
-              "type": "Type of sankey diagram",
+              "name": "Electrical energy Sankey graph",
+              "description": "The Sankey energy graph shows the flow of energy in your home.",
+              "type": "Type of Sankey graph",
               "group_by_floor": "Group entities by floor",
               "group_by_area": "Group entities by area",
-              "layout": "Chart Direction",
+              "layout": "Graph Direction",
               "layout_directions": {
                 "auto": "Automatic",
                 "vertical": "Vertical",
@@ -8779,12 +8779,12 @@
               }
             },
             "power-sankey": {
-              "name": "Electrical power sankey diagram",
-              "description": "Current electrical power usage sankey diagram as seen in the Energy Dashboard."
+              "name": "Power Sankey graph",
+              "description": "The power Sankey graph shows the real-time flow of power in your home."
             },
             "water-sankey": {
-              "name": "Water usage sankey diagram",
-              "description": "An water usage sankey diagram as seen in the Energy Dashboard."
+              "name": "Water Sankey graph",
+              "description": "The water Sankey graph shows the flow of water consumption in your home."
             },
             "statistics-graph": {
               "name": "Statistics graph",
