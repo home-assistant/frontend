@@ -73,6 +73,8 @@ const cardConfigStruct = assign(
     min_y_axis: optional(number()),
     max_y_axis: optional(number()),
     fit_y_data: optional(boolean()),
+    energy_date_selection: optional(boolean()),
+    collection_key: optional(string()),
   })
 );
 
@@ -257,6 +259,22 @@ export class HuiStatisticsGraphCardEditor
             },
           ],
         },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "energy_date_selection",
+              required: false,
+              selector: { boolean: {} },
+            },
+            {
+              type: "string",
+              name: "collection_key",
+              required: false,
+            },
+          ],
+        },
       ];
 
       if (units.size > 1) {
@@ -314,6 +332,7 @@ export class HuiStatisticsGraphCardEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
         <ha-statistics-picker
@@ -383,6 +402,17 @@ export class HuiStatisticsGraphCardEditor
       config,
     });
   }
+
+  private _computeHelperCallback = (schema) => {
+    switch (schema.name) {
+      case "collection_key":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.collection_key_description`
+        );
+      default:
+        return undefined;
+    }
+  };
 
   private _computeLabelCallback = (schema) => {
     switch (schema.name) {

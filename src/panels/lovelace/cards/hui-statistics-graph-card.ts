@@ -11,6 +11,7 @@ import "../../../components/ha-tooltip";
 import {
   getEnergyDataCollection,
   getSuggestedPeriod,
+  validateEnergyCollectionKey,
 } from "../../../data/energy";
 import type {
   Statistics,
@@ -155,6 +156,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
     if (!config.entities.length) {
       throw new Error("You must include at least one entity");
+    }
+
+    if (config.energy_date_selection && config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
     }
 
     this._entities = config.entities
