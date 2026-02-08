@@ -1,12 +1,16 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { EnergyCardBaseConfig } from "../../cards/types";
+import type {
+  EnergyCardBaseConfig,
+  EnergyDistributionCardConfig,
+  PowerSourcesGraphCardConfig,
+} from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import {
@@ -20,9 +24,15 @@ const cardConfigStruct = assign(
   object({
     title: optional(string()),
     collection_key: optional(string()),
+    show_legend: optional(boolean()),
+    link_dashboard: optional(boolean()),
   })
 );
 
+type EnergyGraphCardConfig =
+  | EnergyCardBaseConfig
+  | EnergyDistributionCardConfig
+  | PowerSourcesGraphCardConfig;
 @customElement("hui-energy-graph-card-editor")
 export class HuiEnergyGraphCardEditor
   extends LitElement
@@ -30,9 +40,9 @@ export class HuiEnergyGraphCardEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: EnergyCardBaseConfig;
+  @state() private _config?: EnergyGraphCardConfig;
 
-  public setConfig(config: EnergyCardBaseConfig): void {
+  public setConfig(config: EnergyGraphCardConfig): void {
     assert(config, cardConfigStruct);
     if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key, true);
@@ -40,35 +50,58 @@ export class HuiEnergyGraphCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne((collectionKeys: string[] | undefined) => {
-    const schema: HaFormSchema[] = [
-      { name: "title", selector: { text: {} } },
-      {
-        name: "collection_key",
-        required: false,
-        disabled: !collectionKeys?.length,
-        selector: {
-          select: {
-            mode: "dropdown",
-            options: collectionKeys
-              ? collectionKeys.map((key) => ({
-                  value: key,
-                  label: stripEnergyCollectionKeyPrefix(key),
-                }))
-              : [""],
+  private _schema = memoizeOne(
+    (type: string, collectionKeys: string[] | undefined) => {
+      const schema: HaFormSchema[] = [
+        { name: "title", selector: { text: {} } },
+        {
+          name: "collection_key",
+          required: false,
+          disabled: !collectionKeys?.length,
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: collectionKeys
+                ? collectionKeys.map((key) => ({
+                    value: key,
+                    label: stripEnergyCollectionKeyPrefix(key),
+                  }))
+                : [""],
+            },
           },
         },
-      },
-    ];
-    return schema;
-  });
+        ...(type === "power-sources-graph"
+          ? [
+              {
+                name: "show_legend",
+                required: false,
+                selector: { boolean: {} },
+              },
+            ]
+          : []),
+        ...(type === "energy-distribution"
+          ? [
+              {
+                name: "link_dashboard",
+                required: false,
+                selector: { boolean: {} },
+              },
+            ]
+          : []),
+      ];
+      return schema;
+    }
+  );
 
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const schema = this._schema(getActiveEnergyCollectionKeys(this.hass));
+    const schema = this._schema(
+      this._config.type,
+      getActiveEnergyCollectionKeys(this.hass)
+    );
 
     const data = {
       ...this._config,
@@ -101,6 +134,14 @@ export class HuiEnergyGraphCardEditor
 
   private _computeLabelCallback = (schema) => {
     switch (schema.name) {
+      case "link_dashboard":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.energy-distribution.${schema.name}`
+        );
+      case "show_legend":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.power-sources-graph.${schema.name}`
+        );
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`

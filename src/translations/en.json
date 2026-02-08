@@ -8743,7 +8743,8 @@
             },
             "energy-distribution": {
               "name": "Energy distribution",
-              "description": "The energy distribution card shows how the energy flowed betweeen energy sources and the home."
+              "description": "The energy distribution card shows how the energy flowed betweeen energy sources and the home.",
+              "link_dashboard": "Link to energy dashboard"
             },
             "energy-usage-graph": {
               "name": "Energy usage graph",
@@ -8763,7 +8764,8 @@
             },
             "power-sources-graph": {
               "name": "Power sources graph",
-              "description": "The power sources graph shows historical power data."
+              "description": "The power sources graph shows historical power data.",
+              "show_legend": "Show legend"
             },
             "energy-devices-graph": {
               "name": "Devices energy graph",
