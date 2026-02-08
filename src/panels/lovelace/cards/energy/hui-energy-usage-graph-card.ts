@@ -24,6 +24,7 @@ import {
   computeConsumptionData,
   getEnergyDataCollection,
   getSummedData,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -54,6 +55,11 @@ export class HuiEnergyUsageGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyUsageGraphCardConfig;
@@ -85,6 +91,9 @@ export class HuiEnergyUsageGraphCard
   }
 
   public setConfig(config: EnergyUsageGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 

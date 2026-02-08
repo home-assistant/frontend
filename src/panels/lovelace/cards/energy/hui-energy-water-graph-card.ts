@@ -13,7 +13,10 @@ import type {
   EnergyData,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  validateEnergyCollectionKey,
+} from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -37,6 +40,11 @@ export class HuiEnergyWaterGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyWaterGraphCardConfig;
@@ -70,6 +78,9 @@ export class HuiEnergyWaterGraphCard
   }
 
   public setConfig(config: EnergyWaterGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 

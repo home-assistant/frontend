@@ -8741,6 +8741,26 @@
                 "down": "Down"
               }
             },
+            "energy-distribution": {
+              "name": "Energy distribution card",
+              "description": "An distribution diagram for home energy as seen in the Energy Dashboard."
+            },
+            "energy-usage-graph": {
+              "name": "Electrical energy usage graph",
+              "description": "A chart showing electrical energy usage as seen in the Energy Dashboard."
+            },
+            "energy-solar-graph": {
+              "name": "Solar generation chart",
+              "description": "A chart showing solar generation as seen in the Energy Dashboard."
+            },
+            "energy-gas-graph": {
+              "name": "Gas usage chart",
+              "description": "A chart showing gas usage as seen in the Energy Dashboard."
+            },
+            "energy-water-graph": {
+              "name": "Water usage chart",
+              "description": "A chart showing water usage as seen in the Energy Dashboard."
+            },
             "energy-sankey": {
               "name": "Electrical energy sankey diagram",
               "description": "An electrical energy sankey diagram as seen in the Energy Dashboard.",

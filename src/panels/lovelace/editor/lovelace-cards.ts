@@ -50,6 +50,26 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "energy-distribution",
+    showElement: true,
+  },
+  {
+    type: "energy-usage-graph",
+    showElement: true,
+  },
+  {
+    type: "energy-solar-graph",
+    showElement: true,
+  },
+  {
+    type: "energy-gas-graph",
+    showElement: true,
+  },
+  {
+    type: "energy-water-graph",
+    showElement: true,
+  },
+  {
     type: "energy-sankey",
     showElement: false,
   },
