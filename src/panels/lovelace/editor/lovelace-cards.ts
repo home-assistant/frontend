@@ -70,6 +70,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "power-sources-graph",
+    showElement: true,
+  },
+  {
     type: "energy-sankey",
     showElement: false,
   },

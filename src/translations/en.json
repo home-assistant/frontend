@@ -8761,6 +8761,10 @@
               "name": "Water usage chart",
               "description": "A chart showing water usage as seen in the Energy Dashboard."
             },
+            "power-sources-graph": {
+              "name": "Power sources graph",
+              "description": "The power sources graph shows historical power data."
+            },
             "energy-sankey": {
               "name": "Electrical energy sankey diagram",
               "description": "An electrical energy sankey diagram as seen in the Energy Dashboard.",

@@ -13,6 +13,7 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
   getPowerFromState,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -31,6 +32,11 @@ export class HuiPowerSourcesGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: PowerSourcesGraphCardConfig;
@@ -62,6 +68,9 @@ export class HuiPowerSourcesGraphCard
   }
 
   public setConfig(config: PowerSourcesGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
