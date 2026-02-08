@@ -13,6 +13,7 @@ import {
   computeConsumptionData,
   getEnergyDataCollection,
   getSummedData,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -30,6 +31,11 @@ class HuiEnergySelfSufficiencyGaugeCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergySelfSufficiencyGaugeCardConfig;
@@ -53,6 +59,9 @@ class HuiEnergySelfSufficiencyGaugeCard
   }
 
   public setConfig(config: EnergySelfSufficiencyGaugeCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 

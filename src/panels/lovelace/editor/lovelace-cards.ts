@@ -94,6 +94,22 @@ export const coreCards: Card[] = [
     showElement: false,
   },
   {
+    type: "energy-solar-consumed-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-self-sufficiency-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-grid-neutrality-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-carbon-consumed-gauge",
+    showElement: false,
+  },
+  {
     type: "statistic",
     showElement: true,
   },

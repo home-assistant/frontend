@@ -8803,6 +8803,22 @@
               "name": "Water Sankey graph",
               "description": "The water Sankey graph shows the flow of water consumption in your home."
             },
+            "energy-solar-consumed-gauge": {
+              "name": "Solar consumed gauge",
+              "description": "Represents how much of the solar energy was used by your home and was not returned to the grid."
+            },
+            "energy-self-sufficiency-gauge": {
+              "name": "Self-sufficiency gauge",
+              "description": "Represents how self-sufficient from the grid your home is."
+            },
+            "energy-grid-neutrality-gauge": {
+              "name": "Grid neutrality gauge",
+              "description": "Represents your energy dependency on the grid."
+            },
+            "energy-carbon-consumed-gauge": {
+              "name": "Carbon consumed gauge",
+              "description": "Represents how much of the energy consumed by your home was generated using non-fossil fuels."
+            },
             "statistics-graph": {
               "name": "Statistics graph",
               "description": "The Statistics graph card allows you to display a graph of the statistics for each of the entities listed.",
