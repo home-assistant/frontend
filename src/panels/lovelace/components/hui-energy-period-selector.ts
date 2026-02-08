@@ -349,7 +349,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                       !item.hidden
                         ? html`<ha-dropdown-item
                             ?disabled=${item.disabled}
-                            @click=${item.action}
+                            @click=${item.disabled ? undefined : item.action}
                           >
                             <ha-svg-icon
                               slot="icon"
@@ -676,6 +676,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-end: initial;
       flex-shrink: 0;
       --ha-button-theme-color: currentColor;
+    }
+    ha-ripple {
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .backdrop {
       position: fixed;
