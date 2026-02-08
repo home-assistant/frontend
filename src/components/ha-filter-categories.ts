@@ -315,7 +315,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         }
         ha-list {
           --mdc-list-item-meta-size: auto;
-          --mdc-list-side-padding-right: 4px;
+          --mdc-list-side-padding-right: var(--ha-space-1);
           --mdc-list-side-padding-left: var(--ha-space-4);
           --mdc-icon-button-size: 36px;
         }
