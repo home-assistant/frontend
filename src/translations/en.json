@@ -8765,6 +8765,21 @@
               "name": "Power sources graph",
               "description": "The power sources graph shows historical power data."
             },
+            "energy-devices-graph": {
+              "name": "Devices energy graph",
+              "description": "The devices energy graph show the energy usage per device, it is sorted by usage.",
+              "max_devices": "Maximum devices allowed",
+              "hide_compound_stats": "Hide higher level devices",
+              "modes": "Chart display mode",
+              "mode_options": {
+                "bar": "Bar",
+                "pie": "Pie"
+              }
+            },
+            "energy-devices-detail-graph": {
+              "name": "Detail devices energy graph",
+              "description": "Similar to the Devices energy graph card, but shows the individual usage on a time scale."
+            },
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
               "description": "The Sankey energy graph shows the flow of energy in your home.",

@@ -74,6 +74,14 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "energy-devices-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-devices-detail-graph",
+    showElement: false,
+  },
+  {
     type: "energy-sankey",
     showElement: false,
   },
