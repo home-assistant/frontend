@@ -199,6 +199,9 @@ export class HaFilterIntegrations extends LitElement {
           margin-inline-start: auto;
           margin-inline-end: 8px;
         }
+        ha-check-list-item {
+          --mdc-list-item-graphic-margin: 16px;
+        }
         .badge {
           display: inline-block;
           margin-left: 8px;
