@@ -46,6 +46,10 @@ export const coreCards: Card[] = [
     showElement: false,
   },
   {
+    type: "energy-date-selection",
+    showElement: true,
+  },
+  {
     type: "statistic",
     showElement: true,
   },

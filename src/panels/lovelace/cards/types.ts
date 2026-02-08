@@ -169,6 +169,11 @@ export interface EnergyCardBaseConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
+export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
+  vertical_opening_direction?: "auto" | "up" | "down";
+  disable_compare?: boolean;
+}
+
 export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
   type: "energy-distribution";
   title?: string;

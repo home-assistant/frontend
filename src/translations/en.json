@@ -8730,6 +8730,17 @@
               "max_y_axis": "Y axis maximum",
               "fit_y_data": "Extend Y axis limits to fit data"
             },
+            "energy-date-selection": {
+              "name": "Energy Date Selector",
+              "description": "Provides a date selection card which can control the time range of linked statistics graphs and other energy cards.",
+              "disable_compare": "Disable data comparison",
+              "vertical_opening_direction": "Vertical Direction",
+              "vertical_opening_directions": {
+                "auto": "Automatic",
+                "up": "Up",
+                "down": "Down"
+              }
+            },
             "statistics-graph": {
               "name": "Statistics graph",
               "description": "The Statistics graph card allows you to display a graph of the statistics for each of the entities listed.",
@@ -8822,6 +8833,9 @@
                 "auto": "Auto",
                 "live": "Live"
               },
+              "energy_date_selection": "Link to energy date selector",
+              "collection_key": "Energy Collection Name",
+              "collection_key_description": "Connect a collection of date selection, statistics graphs and energy cards. All cards with matching key will respond to the connected date selection card.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
