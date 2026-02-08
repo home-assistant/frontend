@@ -8731,7 +8731,7 @@
               "fit_y_data": "Extend Y axis limits to fit data"
             },
             "energy-date-selection": {
-              "name": "Energy Date Selector",
+              "name": "Energy date selector",
               "description": "Provides a date selection card which can control the time range of linked statistics graphs and other energy cards.",
               "disable_compare": "Disable data comparison",
               "vertical_opening_direction": "Vertical Direction",
@@ -8740,6 +8740,27 @@
                 "up": "Up",
                 "down": "Down"
               }
+            },
+            "energy-sankey": {
+              "name": "Electrical energy sankey diagram",
+              "description": "An electrical energy sankey diagram as seen in the Energy Dashboard.",
+              "type": "Type of sankey diagram",
+              "group_by_floor": "Group entities by floor",
+              "group_by_area": "Group entities by area",
+              "layout": "Chart Direction",
+              "layout_directions": {
+                "auto": "Automatic",
+                "vertical": "Vertical",
+                "horizontal": "Horizontal"
+              }
+            },
+            "power-sankey": {
+              "name": "Electrical power sankey diagram",
+              "description": "Current electrical power usage sankey diagram as seen in the Energy Dashboard."
+            },
+            "water-sankey": {
+              "name": "Water usage sankey diagram",
+              "description": "An water usage sankey diagram as seen in the Energy Dashboard."
             },
             "statistics-graph": {
               "name": "Statistics graph",

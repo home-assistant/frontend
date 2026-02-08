@@ -11,6 +11,7 @@ import {
   energySourcesByType,
   getEnergyDataCollection,
   getSummedData,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -37,6 +38,11 @@ class HuiEnergySankeyCard
   extends SubscribeMixin(MobileAwareMixin(LitElement))
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sankey-card-editor");
+    return document.createElement("hui-energy-sankey-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
@@ -48,6 +54,9 @@ class HuiEnergySankeyCard
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: EnergySankeyCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = { ...DEFAULT_CONFIG, ...config };
   }
 

@@ -50,6 +50,18 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "energy-sankey",
+    showElement: false,
+  },
+  {
+    type: "power-sankey",
+    showElement: false,
+  },
+  {
+    type: "water-sankey",
+    showElement: false,
+  },
+  {
     type: "statistic",
     showElement: true,
   },
