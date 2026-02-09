@@ -17,8 +17,6 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-language-picker";
 import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
-import "../../../components/ha-select";
-import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-timezone-picker";
@@ -127,6 +125,8 @@ class HaConfigSectionGeneral extends LitElement {
   }
 
   private _renderLocationCard(canEdit: boolean): TemplateResult {
+    const hasHomeZone = "zone.home" in this.hass.states;
+
     return html`
       <ha-card
         outlined
@@ -134,19 +134,23 @@ class HaConfigSectionGeneral extends LitElement {
           "ui.panel.config.core.section.core.location_card.header"
         )}
       >
-        <div class="card-content">
-          <ha-map
-            .hass=${this.hass}
-            .entities=${["zone.home"]}
-            .zoom=${14}
-            .autoFit=${true}
-            .fitZones=${true}
-            .themeMode=${"auto"}
-            .renderPassive=${false}
-            .interactiveZones=${false}
-            class="map-preview"
-          ></ha-map>
-        </div>
+        ${hasHomeZone
+          ? html`
+              <div class="card-content">
+                <ha-map
+                  .hass=${this.hass}
+                  .entities=${["zone.home"]}
+                  .zoom=${14}
+                  .autoFit=${true}
+                  .fitZones=${true}
+                  .themeMode=${"auto"}
+                  .renderPassive=${false}
+                  .interactiveZones=${false}
+                  class="map-preview"
+                ></ha-map>
+              </div>
+            `
+          : nothing}
         <div class="card-actions">
           <ha-button
             appearance="filled"
@@ -376,6 +380,7 @@ class HaConfigSectionGeneral extends LitElement {
     }
 
     button.progress = true;
+    this._submittingName = true;
     this._error = undefined;
 
     try {
@@ -388,6 +393,7 @@ class HaConfigSectionGeneral extends LitElement {
       this._error = err.message;
     } finally {
       button.progress = false;
+      this._submittingName = false;
     }
   }
 
@@ -416,6 +422,7 @@ class HaConfigSectionGeneral extends LitElement {
       }
     }
     button.progress = true;
+    this._submittingRegional = true;
 
     let locationConfig;
 
@@ -445,6 +452,7 @@ class HaConfigSectionGeneral extends LitElement {
       this._error = err.message;
     } finally {
       button.progress = false;
+      this._submittingRegional = false;
     }
   }
 
@@ -456,13 +464,13 @@ class HaConfigSectionGeneral extends LitElement {
     haStyle,
     css`
       .content {
-        padding: 28px 20px 0;
+        padding: var(--ha-space-7) var(--ha-space-5) 0;
         max-width: 1040px;
         margin: 0 auto;
       }
       ha-card {
         max-width: 600px;
-        margin: 0 auto 24px;
+        margin: 0 auto var(--ha-space-6);
       }
       .card-content {
         display: flex;
@@ -472,18 +480,15 @@ class HaConfigSectionGeneral extends LitElement {
         display: block;
       }
       .card-content > *:not(:first-child) {
-        margin-top: 16px;
+        margin-top: var(--ha-space-4);
       }
       .card-actions {
         display: flex;
         justify-content: flex-end;
       }
       a.find-value {
-        margin-top: 8px;
+        margin-top: var(--ha-space-2);
         display: inline-block;
-      }
-      ha-settings-row {
-        padding: 0;
       }
       .map-preview {
         height: 200px;

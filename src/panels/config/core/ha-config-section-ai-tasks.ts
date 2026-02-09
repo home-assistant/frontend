@@ -30,7 +30,7 @@ class HaConfigSectionAITasks extends LitElement {
 
   static styles = css`
     .content {
-      padding: 28px 20px 0;
+      padding: var(--ha-space-7) var(--ha-space-5) 0;
       max-width: 1040px;
       margin: 0 auto;
     }
