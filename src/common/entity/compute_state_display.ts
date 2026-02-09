@@ -136,43 +136,26 @@ const computeStateToPartsFromEntityAttributes = (
         // fallback to default
       }
 
-      const valueMonetary = parts
-        .map((part) =>
-          ["integer", "group", "decimal", "fraction"].includes(part.type)
-            ? part.value
-            : ""
-        )
-        .join("");
-      const literalMonetary = parts.find(
-        (part) => part.type === "literal"
-      )?.value;
-      const currency = parts.find((part) => part.type === "currency")?.value;
-
-      const reversedOrder =
-        parts.findIndex((part) => part.type === "currency") <
-        parts.findIndex((part) => part.type === "integer");
+      const TYPE_MAP: Record<string, ValuePart["type"]> = {
+        integer: "value",
+        group: "value",
+        decimal: "value",
+        fraction: "value",
+        literal: "literal",
+        currency: "unit",
+      };
 
       const valueParts: ValuePart[] = [];
 
-      if (!reversedOrder) {
-        if (valueMonetary) {
-          valueParts.push({ type: "value", value: valueMonetary });
-        }
-        if (literalMonetary) {
-          valueParts.push({ type: "literal", value: literalMonetary });
-        }
-        if (currency) {
-          valueParts.push({ type: "unit", value: currency });
-        }
-      } else {
-        if (currency) {
-          valueParts.push({ type: "unit", value: currency });
-        }
-        if (literalMonetary) {
-          valueParts.push({ type: "literal", value: literalMonetary });
-        }
-        if (valueMonetary) {
-          valueParts.push({ type: "value", value: valueMonetary });
+      for (const part of parts) {
+        const type = TYPE_MAP[part.type];
+        if (!type) continue;
+        const last = valueParts[valueParts.length - 1];
+        // Merge consecutive numeric parts (e.g. "1" + "," + "234" + "." + "56" → "1,234.56")
+        if (type === "value" && last?.type === "value") {
+          last.value += part.value;
+        } else {
+          valueParts.push({ type, value: part.value });
         }
       }
 
