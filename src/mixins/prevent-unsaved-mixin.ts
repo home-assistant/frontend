@@ -96,9 +96,9 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
     }
 
     protected async promptDiscardChanges(): Promise<boolean> {
-      return this._confirmUnsavedChanged().then((confimed) => {
-        this._exitConfirmed = confimed;
-        return confimed;
+      return this._confirmUnsavedChanged().then((confirmed) => {
+        this._exitConfirmed = confirmed;
+        return confirmed;
       });
     }
   };
