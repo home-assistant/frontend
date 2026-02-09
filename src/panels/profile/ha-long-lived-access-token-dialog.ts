@@ -248,7 +248,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
     const qrcode = await import("qrcode");
     const canvas = await qrcode.toCanvas(this._token, {
-      width: 180,
+      width: 512,
       errorCorrectionLevel: "Q",
     });
     const context = canvas.getContext("2d");
@@ -282,6 +282,12 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
       css`
         #qr {
           text-align: center;
+        }
+        #qr img {
+          width: 80%;
+          height: auto;
+          display: block;
+          margin: 0 auto;
         }
         .content {
           display: grid;
