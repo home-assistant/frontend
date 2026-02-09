@@ -7,6 +7,8 @@ import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-divider";
+import "../../components/ha-md-list";
+import "../../components/ha-md-list-item";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
