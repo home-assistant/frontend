@@ -98,8 +98,13 @@ class HaLongLivedTokens extends LitElement {
   }
 
   private _createToken(): void {
+    const accessTokens = this._accessTokens(this.refreshTokens!);
+
     showLongLivedAccessTokenDialog(this, {
       createdCallback: () => fireEvent(this, "hass-refresh-tokens"),
+      existingNames: accessTokens
+        .map((token) => token.client_name)
+        .filter((name): name is string => Boolean(name)),
     });
   }
 

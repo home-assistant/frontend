@@ -2,6 +2,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 
 export interface LongLivedAccessTokenDialogParams {
   createdCallback?: () => void;
+  existingNames?: string[];
 }
 
 export const showLongLivedAccessTokenDialog = (

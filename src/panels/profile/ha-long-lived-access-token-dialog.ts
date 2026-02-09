@@ -34,6 +34,8 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
   @state() private _createdCallback?: () => void;
 
+  private _existingNames = new Set<string>();
+
   @state() private _loading = false;
 
   @state() private _errorMessage?: string;
@@ -42,6 +44,9 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     this._name = "";
     this._token = undefined;
     this._createdCallback = params?.createdCallback;
+    this._existingNames = new Set(
+      (params?.existingNames || []).map((name) => this._normalizeName(name))
+    );
     this._errorMessage = undefined;
     this._qrCode = undefined;
     this._loading = false;
@@ -139,6 +144,10 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
                   .label=${this.hass.localize(
                     "ui.panel.profile.long_lived_access_tokens.name"
                   )}
+                  .invalid=${this._hasDuplicateName()}
+                  .errorMessage=${this.hass.localize(
+                    "ui.panel.profile.long_lived_access_tokens.name_exists"
+                  )}
                   required
                   @input=${this._nameChanged}
                 ></ha-textfield>
@@ -178,13 +187,17 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
   }
 
   private _isCreateDisabled() {
-    return this._loading || !this._name.trim();
+    return this._loading || !this._name.trim() || this._hasDuplicateName();
   }
 
   private async _createToken(): Promise<void> {
     const name = this._name.trim();
 
     if (!name || this._loading) {
+      return;
+    }
+
+    if (this._hasDuplicateName()) {
       return;
     }
 
@@ -222,6 +235,14 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
+  }
+
+  private _normalizeName(name: string): string {
+    return name.trim().toLowerCase();
+  }
+
+  private _hasDuplicateName(): boolean {
+    return this._existingNames.has(this._normalizeName(this._name));
   }
 
   private async _generateQR() {
