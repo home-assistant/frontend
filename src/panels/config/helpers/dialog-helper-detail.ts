@@ -27,6 +27,7 @@ import { createInputText } from "../../../data/input_text";
 import {
   domainToName,
   fetchIntegrationManifest,
+  type IntegrationManifest,
 } from "../../../data/integration";
 import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
@@ -117,6 +118,12 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _filter?: string;
 
+  private _pendingConfigFlow?: {
+    startFlowHandler: string;
+    manifest: IntegrationManifest;
+    dialogClosedCallback?: ShowDialogHelperDetailParams["dialogClosedCallback"];
+  };
+
   private _params?: ShowDialogHelperDetailParams;
 
   public async showDialog(params: ShowDialogHelperDetailParams): Promise<void> {
@@ -146,6 +153,16 @@ export class DialogHelperDetail extends LitElement {
     this._params = undefined;
     this._filter = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+
+    if (this._pendingConfigFlow) {
+      const pendingConfigFlow = this._pendingConfigFlow;
+      this._pendingConfigFlow = undefined;
+      showConfigFlowDialog(this, {
+        startFlowHandler: pendingConfigFlow.startFlowHandler,
+        manifest: pendingConfigFlow.manifest,
+        dialogClosedCallback: pendingConfigFlow.dialogClosedCallback,
+      });
+    }
   }
 
   protected render() {
@@ -385,11 +402,11 @@ export class DialogHelperDetail extends LitElement {
         this._loading = false;
       }
     } else {
-      showConfigFlowDialog(this, {
+      this._pendingConfigFlow = {
         startFlowHandler: domain,
         manifest: await fetchIntegrationManifest(this.hass, domain),
-        dialogClosedCallback: this._params!.dialogClosedCallback,
-      });
+        dialogClosedCallback: this._params?.dialogClosedCallback,
+      };
       this.closeDialog();
     }
   }
