@@ -74,6 +74,8 @@ export class HAFullCalendar extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ attribute: "add-fab", type: Boolean }) public addFab = false;
+
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
   @property({ attribute: false }) public calendars: CalendarData[] = [];
@@ -208,7 +210,7 @@ export class HAFullCalendar extends LitElement {
         : ""}
 
       <div id="calendar"></div>
-      ${this._hasMutableCalendars
+      ${this.addFab && this._hasMutableCalendars
         ? html`<ha-fab
             slot="fab"
             .label=${this.hass.localize("ui.components.calendar.event.add")}

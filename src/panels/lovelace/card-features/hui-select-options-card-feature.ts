@@ -1,11 +1,9 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-select-menu";
-import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { InputSelectEntity } from "../../../data/input_select";
@@ -18,6 +16,7 @@ import type {
   LovelaceCardFeatureContext,
   SelectOptionsCardFeatureConfig,
 } from "./types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export const supportsSelectOptionsCardFeature = (
   hass: HomeAssistant,
@@ -43,9 +42,6 @@ class HuiSelectOptionsCardFeature
   @state() private _config?: SelectOptionsCardFeatureConfig;
 
   @state() _currentOption?: string;
-
-  @query("ha-control-select-menu", true)
-  private _haSelect!: HaControlSelectMenu;
 
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
@@ -89,30 +85,17 @@ class HuiSelectOptionsCardFeature
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        this.hass &&
-        this.hass.formatEntityAttributeValue !==
-          oldHass?.formatEntityAttributeValue
-      ) {
-        this._haSelect.layoutOptions();
-      }
-    }
-  }
-
-  private async _valueChanged(ev: CustomEvent) {
-    const option = (ev.target as any).value as string;
+  private async _valueChanged(ev: HaDropdownSelectEvent) {
+    const option = ev.detail.item?.value;
 
     const oldOption = this._stateObj!.state;
 
     if (
       option === oldOption ||
       !this._stateObj!.attributes.options.includes(option)
-    )
+    ) {
       return;
+    }
 
     this._currentOption = option;
 
@@ -157,25 +140,18 @@ class HuiSelectOptionsCardFeature
         .value=${stateObj.state}
         .options=${options}
         .disabled=${this._stateObj.state === UNAVAILABLE}
-        fixedMenuPosition
-        naturalMenuWidth
-        @selected=${this._valueChanged}
-        @closed=${stopPropagation}
+        @wa-select=${this._valueChanged}
       >
-        ${options.map(
-          (option) => html`
-            <ha-list-item .value=${option}>
-              ${this.hass!.formatEntityState(stateObj, option)}
-            </ha-list-item>
-          `
-        )}
       </ha-control-select-menu>
     `;
   }
 
   private _getOptions = memoizeOne(
     (attributeOptions: string[], configOptions: string[] | undefined) =>
-      filterModes(attributeOptions, configOptions)
+      filterModes(attributeOptions, configOptions).map((option) => ({
+        value: option,
+        label: this.hass!.formatEntityState(this._stateObj!, option),
+      }))
   );
 
   static get styles() {

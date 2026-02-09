@@ -17,7 +17,6 @@ import {
   mdiTextureBox,
   mdiTransitConnection,
 } from "@mdi/js";
-import { differenceInDays } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -26,14 +25,11 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
-import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -48,7 +44,6 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
@@ -60,8 +55,6 @@ import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-md-divider";
-import "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -76,6 +69,8 @@ import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
+  isFilterUsed,
+  isRelatedItemsFilterUsed,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -115,6 +110,13 @@ import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry
 import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import {
+  getEntityIdHiddenTableColumn,
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getLabelsTableColumn,
+  getTriggeredAtTableColumn,
+} from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
@@ -122,13 +124,14 @@ import {
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type ScriptItem = ScriptEntity & {
   name: string;
   area: string | undefined;
   last_triggered: string | undefined;
   category: string | undefined;
-  labels: LabelRegistryEntry[];
+  label_entries: LabelRegistryEntry[];
   assistants: string[];
   assistants_sortable_key: string | undefined;
 };
@@ -155,7 +158,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @state() private _activeFilters?: string[];
 
-  @state() private _filteredScripts?: string[] | null;
+  @state() private _filteredEntityIds?: string[] | null;
 
   @state()
   @storage({
@@ -262,7 +265,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          labels: (labels || []).map(
+          label_entries: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
           assistants,
@@ -295,6 +298,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
               })}
             ></ha-state-icon>`,
         },
+        entity_id: getEntityIdHiddenTableColumn(),
         name: {
           title: localize("ui.panel.config.script.picker.headers.name"),
           main: true,
@@ -303,60 +307,17 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           direction: "asc",
           flex: 2,
           extraTemplate: (script) =>
-            script.labels.length
+            script.label_entries.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
-                  .labels=${script.labels}
+                  .labels=${script.label_entries}
                 ></ha-data-table-labels>`
               : nothing,
         },
-        area: {
-          title: localize("ui.panel.config.script.picker.headers.area"),
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        category: {
-          title: localize("ui.panel.config.script.picker.headers.category"),
-          defaultHidden: true,
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        labels: {
-          title: "",
-          hidden: true,
-          filterable: true,
-          template: (script) => script.labels.map((lbl) => lbl.name).join(" "),
-        },
-        last_triggered: {
-          sortable: true,
-          title: localize("ui.card.automation.last_triggered"),
-          template: (script) => {
-            if (!script.last_triggered) {
-              return this.hass.localize("ui.components.relative_time.never");
-            }
-            const date = new Date(script.last_triggered);
-            const now = new Date();
-            const dayDifference = differenceInDays(now, date);
-            const formattedTime = formatShortDateTimeWithConditionalYear(
-              date,
-              this.hass.locale,
-              this.hass.config
-            );
-            const elementId = "last-triggered-" + slugify(script.entity_id);
-            return html`
-              ${dayDifference > 3
-                ? formattedTime
-                : html`
-                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
-                    <span id=${elementId}
-                      >${relativeTime(date, this.hass.locale)}</span
-                    >
-                  `}
-            `;
-          },
-        },
+        area: getAreaTableColumn(localize),
+        category: getCategoryTableColumn(localize),
+        labels: getLabelsTableColumn(),
+        last_triggered: getTriggeredAtTableColumn(localize, this.hass),
         actions: {
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
@@ -468,7 +429,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       this.hass.areas,
       this._categories,
       this._labels,
-      this._filteredScripts
+      this._filteredEntityIds
     );
     return html`
       <hass-tabs-subpage-data-table
@@ -778,89 +739,47 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   private _applyFilters() {
     const filters = Object.entries(this._filters);
-    let items: Set<string> | undefined;
+    let filteredEntityIds = this.scripts.map((script) => script.entity_id);
     for (const [key, filter] of filters) {
-      if (filter.items) {
-        if (!items) {
-          items = filter.items;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(filter.items)
-            : new Set([...items].filter((x) => filter.items!.has(x)));
-      }
       if (
-        key === "ha-filter-categories" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
+        // these 4 filters actually apply any selected options, and expose
+        // the list of scripts that match these options as filter.items
+        isRelatedItemsFilterUsed(key, filter, [
+          "ha-filter-floor-areas",
+          "ha-filter-devices",
+          "ha-filter-entities",
+          "ha-filter-blueprints",
+        ])
       ) {
-        const categoryItems = new Set<string>();
-        this.scripts
-          .filter(
-            (script) =>
-              filter.value![0] ===
-              this._entityReg.find((reg) => reg.entity_id === script.entity_id)
-                ?.categories.script
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          filter.items!.has(entityId)
+        );
+
+        // the filters below only expose the selected options (as filter.value);
+        // applying the filter must be done here
+      } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
+        // category filter only allows a single selected option
+        filteredEntityIds = filteredEntityIds.filter(
+          (entityId) =>
+            filter.value![0] ===
+            this._entityReg.find((reg) => reg.entity_id === entityId)
+              ?.categories.script
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          this._entityReg
+            .find((reg) => reg.entity_id === entityId)
+            ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
+        );
+      } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
+        filteredEntityIds = filteredEntityIds.filter((entityId) =>
+          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
+            (filter.value as string[]).includes(va)
           )
-          .forEach((script) => categoryItems.add(script.entity_id));
-        if (!items) {
-          items = categoryItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(categoryItems)
-            : new Set([...items].filter((x) => categoryItems!.has(x)));
-      } else if (
-        key === "ha-filter-labels" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const labelItems = new Set<string>();
-        this.scripts
-          .filter((script) =>
-            this._entityReg
-              .find((reg) => reg.entity_id === script.entity_id)
-              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
-          )
-          .forEach((script) => labelItems.add(script.entity_id));
-        if (!items) {
-          items = labelItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(labelItems)
-            : new Set([...items].filter((x) => labelItems!.has(x)));
-      } else if (
-        key === "ha-filter-voice-assistants" &&
-        Array.isArray(filter.value) &&
-        filter.value.length
-      ) {
-        const assistItems = new Set<string>();
-        this.scripts
-          .filter((script) =>
-            getEntityVoiceAssistantsIds(this._entityReg, script.entity_id).some(
-              (va) => (filter.value as string[]).includes(va)
-            )
-          )
-          .forEach((script) => assistItems.add(script.entity_id));
-        if (!items) {
-          items = assistItems;
-          continue;
-        }
-        items =
-          "intersection" in items
-            ? // @ts-ignore
-              items.intersection(assistItems)
-            : new Set([...items].filter((x) => assistItems!.has(x)));
+        );
       }
     }
-    this._filteredScripts = items ? [...items] : undefined;
+    this._filteredEntityIds = filteredEntityIds;
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -937,7 +856,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _handleBulkCategory = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkCategory = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "category_create") {
       this._bulkCreateCategory();
@@ -977,7 +896,7 @@ ${rejected
     }
   }
 
-  private _handleBulkLabel = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkLabel = (ev: HaDropdownSelectEvent) => {
     ev.preventDefault();
     const value = ev.detail.item.value;
     if (value === "label_create") {
@@ -1194,7 +1113,7 @@ ${rejected
     });
   };
 
-  private _handleBulkArea = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkArea = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "area_create") {
       this._bulkCreateArea();
@@ -1416,6 +1335,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

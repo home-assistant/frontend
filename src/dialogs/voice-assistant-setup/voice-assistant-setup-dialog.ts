@@ -9,8 +9,8 @@ import { formatLanguageCode } from "../../common/language/format_language";
 import "../../components/chips/ha-assist-chip";
 import "../../components/ha-dialog";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import { getLanguageOptions } from "../../components/ha-language-picker";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
@@ -328,7 +328,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     }
   }
 
-  private _handlePickLanguage(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handlePickLanguage(ev: HaDropdownSelectEvent) {
     this._language = ev.detail.item.value;
   }
 

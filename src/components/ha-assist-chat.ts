@@ -36,7 +36,7 @@ export class HaAssistChat extends LitElement {
   @property({ type: Boolean, attribute: "disable-speech" })
   public disableSpeech = false;
 
-  @property({ type: Boolean, attribute: false })
+  @property({ attribute: false })
   public startListening?: boolean;
 
   @query("#message-input") private _messageInput!: HaTextField;

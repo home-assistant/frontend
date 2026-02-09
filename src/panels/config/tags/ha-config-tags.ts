@@ -88,6 +88,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         filterable: true,
         flex: 2,
       },
+      id: {
+        title: localize("ui.panel.config.tag.headers.tag_id"),
+        main: true,
+        sortable: true,
+        filterable: true,
+      },
       last_scanned_datetime: {
         title: localize("ui.panel.config.tag.headers.last_scanned"),
         sortable: true,

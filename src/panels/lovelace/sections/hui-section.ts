@@ -50,7 +50,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
 
   @property({ type: Number }) public index!: number;
 
-  @property({ attribute: false, type: Number }) public viewIndex!: number;
+  @property({ attribute: false }) public viewIndex!: number;
 
   @state() private _cards: HuiCard[] = [];
 
