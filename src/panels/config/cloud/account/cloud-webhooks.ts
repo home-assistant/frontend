@@ -5,7 +5,8 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import "../../../../components/ha-card";
 import "../../../../components/ha-button";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-settings-row";
+import "../../../../components/ha-md-list";
+import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn, CloudWebhook } from "../../../../data/cloud";
 import { createCloudhook, deleteCloudhook } from "../../../../data/cloud";
@@ -20,8 +21,6 @@ export class CloudWebhooks extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
-
-  @property({ type: Boolean }) public narrow = false;
 
   @state() private _cloudHooks?: Record<string, CloudWebhook>;
 
@@ -78,35 +77,39 @@ export class CloudWebhooks extends LitElement {
                 `
               : this._localHooks.map(
                   (entry) => html`
-                    <ha-settings-row .narrow=${this.narrow} .entry=${entry}>
-                      <span slot="heading">
-                        ${entry.name}
-                        ${entry.domain !== entry.name.toLowerCase()
-                          ? ` (${entry.domain})`
-                          : ""}
-                      </span>
-                      <span slot="description">${entry.webhook_id}</span>
-                      ${this._progress.includes(entry.webhook_id)
-                        ? html`
-                            <div class="progress">
-                              <ha-spinner></ha-spinner>
-                            </div>
-                          `
-                        : this._cloudHooks![entry.webhook_id]
+                    <ha-md-list>
+                      <ha-md-list-item .entry=${entry}>
+                        <span slot="headline"
+                          >${entry.name}
+                          ${entry.domain !== entry.name.toLowerCase()
+                            ? ` (${entry.domain})`
+                            : ""}</span
+                        >
+                        <span slot="supporting-text">${entry.webhook_id}</span>
+                        ${this._progress.includes(entry.webhook_id)
                           ? html`
-                              <ha-button
-                                appearance="plain"
-                                size="small"
-                                @click=${this._handleManageButton}
-                              >
-                                ${this.hass!.localize(
-                                  "ui.panel.config.cloud.account.webhooks.manage"
-                                )}
-                              </ha-button>
+                              <div class="progress">
+                                <ha-spinner></ha-spinner>
+                              </div>
                             `
-                          : html`<ha-switch @click=${this._enableWebhook}>
-                            </ha-switch>`}
-                    </ha-settings-row>
+                          : this._cloudHooks![entry.webhook_id]
+                            ? html`
+                                <ha-button
+                                  slot="end"
+                                  appearance="plain"
+                                  size="small"
+                                  @click=${this._handleManageButton}
+                                >
+                                  ${this.hass!.localize(
+                                    "ui.panel.config.cloud.account.webhooks.manage"
+                                  )}
+                                </ha-button>
+                              `
+                            : html`<ha-switch slot="end">
+                                @click=${this._enableWebhook}
+                              </ha-switch>`}
+                      </ha-md-list-item>
+                    </ha-md-list>
                   `
                 )}
           <div class="footer">
@@ -235,8 +238,17 @@ export class CloudWebhooks extends LitElement {
         .footer a {
           color: var(--primary-color);
         }
-        ha-settings-row {
-          padding: 0;
+        ha-md-list {
+          padding-top: 0;
+          padding-bottom: 0;
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+        }
+        ha-md-list-item {
+          --md-item-overflow: visible;
+        }
+        ha-md-list-item [slot="supporting-text"] {
+          word-break: break-all;
         }
       `,
     ];
