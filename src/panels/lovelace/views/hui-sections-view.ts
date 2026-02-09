@@ -407,13 +407,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
   }
 
-  private _getScrollContainer(): Element | null {
-    // The scroll container is the hui-view-container parent
-    return this.closest("hui-view-container");
-  }
-
   private _toggleView() {
-    const scrollContainer = this._getScrollContainer();
+    // The scroll container is the hui-view-container parent
+    const scrollContainer = this.closest("hui-view-container");
     const scrollTop = scrollContainer?.scrollTop ?? 0;
 
     // Save current scroll position
