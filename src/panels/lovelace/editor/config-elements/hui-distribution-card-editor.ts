@@ -18,16 +18,17 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity/entity";
 import type { HomeAssistant } from "../../../../types";
 import type { DistributionCardConfig } from "../../cards/types";
-import type { EntityConfig } from "../../entity-rows/types";
 import "../../components/hui-entity-editor";
+import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 
 const distributionEntityConfigStruct = object({
-  entity: string(),
+  entity: entityNameStruct,
   name: optional(string()),
   color: optional(string()),
 });
