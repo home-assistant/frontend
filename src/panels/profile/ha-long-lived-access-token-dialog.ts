@@ -32,7 +32,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
   @state() private _token?: string;
 
-  @state() private _createdCallback?: () => void;
+  @state() private _createdCallback: () => void = () => undefined;
 
   private _existingNames = new Set<string>();
 
@@ -40,10 +40,10 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
   @state() private _errorMessage?: string;
 
-  public showDialog(params?: LongLivedAccessTokenDialogParams): void {
-    this._createdCallback = params?.createdCallback;
+  public showDialog(params: LongLivedAccessTokenDialogParams): void {
+    this._createdCallback = params.createdCallback;
     this._existingNames = new Set(
-      (params?.existingNames || []).map((name) => this._normalizeName(name))
+      params.existingNames.map((name) => this._normalizeName(name))
     );
     this._renderDialog = true;
     this._open = true;
@@ -58,7 +58,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     this._renderDialog = false;
     this._name = "";
     this._token = undefined;
-    this._createdCallback = undefined;
+    this._createdCallback = () => undefined;
     this._existingNames = new Set();
     this._errorMessage = undefined;
     this._loading = false;
@@ -207,7 +207,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
         client_name: name,
       });
       this._name = name;
-      this._createdCallback?.();
+      this._createdCallback();
     } catch (err: any) {
       this._errorMessage = err.message;
       await showAlertDialog(this, {
