@@ -106,17 +106,17 @@ export interface PowerConfig {
 }
 
 /**
- * Grid source format (like batteries).
+ * Grid source format.
  * Each grid connection is a single object with import/export/power together.
  * Multiple grid sources are allowed.
  */
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 
-  // Import meter (can be null for legacy power-only or export-only grids)
+  // Import meter
   stat_energy_from: string | null;
 
-  // Export meter (optional - some users only import)
+  // Export meter
   stat_energy_to: string | null;
 
   // Import cost tracking
@@ -129,7 +129,7 @@ export interface GridSourceTypeEnergyPreference {
   entity_energy_price_export: string | null;
   number_energy_price_export: number | null;
 
-  // Power measurement (optional)
+  // Power measurement
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 
