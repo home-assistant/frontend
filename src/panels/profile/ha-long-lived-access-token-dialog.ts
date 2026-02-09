@@ -284,7 +284,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
           text-align: center;
         }
         #qr img {
-          width: 80%;
+          max-width: 90%;
           height: auto;
           display: block;
           margin: 0 auto;
