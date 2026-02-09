@@ -108,7 +108,7 @@ export function getCommonOptions(
       axisLabel: {
         formatter: {
           year: "{yearStyle|{MMMM} {yyyy}}",
-          month: "{monthStyle|{MMMM}}",
+          month: "{MMMM}",
         },
         rich: {
           yearStyle: {
