@@ -60,7 +60,7 @@ export const getContrastedColorHex = (themeColor: string): string => {
   // prettier-ignore
   colorHex = colorHex.startsWith("#") && colorHex.length === 7
     ? colorHex : blackColor;
-  const threshold = 150;
+  const threshold = 158;
   return hex2rgb(colorHex).filter((component) => component <= threshold)
     .length >= 2
     ? "#ffffff"
