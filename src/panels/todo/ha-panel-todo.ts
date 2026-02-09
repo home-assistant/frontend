@@ -109,7 +109,7 @@ class PanelTodo extends LitElement {
           this._entityId = undefined;
         }
         if (!this._entityId) {
-          this._entityId = getTodoLists(this.hass)[0]?.entity_id;
+          this._entityId = getTodoLists(this.hass, false)[0]?.entity_id;
         }
       }
     }
@@ -146,7 +146,7 @@ class PanelTodo extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
     const showPane = this._showPaneController.value ?? !this.narrow;
-    const listItems = getTodoLists(this.hass).map(
+    const listItems = getTodoLists(this.hass, false).map(
       (list) =>
         html`<ha-dropdown-item
           @click=${this._setEntityId}
@@ -321,7 +321,7 @@ class PanelTodo extends LitElement {
     }
     const result = await deleteConfigEntry(this.hass, entryId);
 
-    this._entityId = getTodoLists(this.hass)[0]?.entity_id;
+    this._entityId = getTodoLists(this.hass, false)[0]?.entity_id;
 
     if (result.require_restart) {
       showAlertDialog(this, {
