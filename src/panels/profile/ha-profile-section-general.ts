@@ -127,11 +127,11 @@ class HaProfileSectionGeneral extends LitElement {
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
-              "ui.panel.profile.user_settings_header"
+              "ui.panel.profile.user_preferences_header"
             )}
           >
             <div class="card-content">
-              ${this.hass.localize("ui.panel.profile.user_settings_detail")}
+              ${this.hass.localize("ui.panel.profile.user_preferences_detail")}
             </div>
             <ha-pick-theme-row
               .narrow=${this.narrow}
@@ -184,6 +184,35 @@ class HaProfileSectionGeneral extends LitElement {
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
+              "ui.panel.profile.localization_header"
+            )}
+          >
+            <div class="card-content">
+              ${this.hass.localize("ui.panel.profile.localization_detail")}
+            </div>
+            <ha-pick-time-zone-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-time-zone-row>
+            <ha-pick-number-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-number-format-row>
+            <ha-pick-time-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-time-format-row>
+            <ha-pick-date-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-date-format-row>
+            <ha-pick-first-weekday-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-first-weekday-row>
+          </ha-card>
+          <ha-card
+            .header=${this.hass.localize(
               isExternal
                 ? "ui.panel.profile.mobile_app_settings"
                 : "ui.panel.profile.browser_settings"
@@ -222,35 +251,6 @@ class HaProfileSectionGeneral extends LitElement {
                   `
                 : ""}
             </ha-md-list>
-          </ha-card>
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.profile.localization_header"
-            )}
-          >
-            <div class="card-content">
-              ${this.hass.localize("ui.panel.profile.localization_detail")}
-            </div>
-            <ha-pick-time-zone-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-time-zone-row>
-            <ha-pick-number-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-number-format-row>
-            <ha-pick-time-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-time-format-row>
-            <ha-pick-date-format-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-date-format-row>
-            <ha-pick-first-weekday-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-first-weekday-row>
           </ha-card>
         </div>
       </hass-tabs-subpage>
