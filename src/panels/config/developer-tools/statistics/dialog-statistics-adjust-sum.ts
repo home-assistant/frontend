@@ -520,6 +520,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           margin-bottom: var(--ha-space-5);
         }
         .stat-list {
+          margin-top: var(--ha-space-2);
           min-height: 360px;
           display: flex;
           flex-direction: column;
