@@ -195,6 +195,7 @@ class HaMfaModuleSetupFlow extends LitElement {
           background-color: transparent;
         }
         ha-form {
+          display: block;
           margin-top: var(--ha-space-4);
         }
         ha-markdown-element > *:last-child {
