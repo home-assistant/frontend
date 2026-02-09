@@ -95,7 +95,6 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "last-triggered"
     | "last-updated"
     | "area"
-    | "area-with-floor"
     | "position"
     | "state"
     | "tilt-position"
