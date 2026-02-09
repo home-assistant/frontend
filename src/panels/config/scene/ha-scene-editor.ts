@@ -990,7 +990,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     goBack("/config");
   }
 
-  private async _confirmUnsavedChanged(): Promise<boolean> {
+  protected async confirmUnsavedChanged(): Promise<boolean> {
     if (this._dirty) {
       return showConfirmationDialog(this, {
         title: this.hass!.localize(

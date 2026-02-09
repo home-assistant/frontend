@@ -766,7 +766,7 @@ export class HaScriptEditor extends SubscribeMixin(
     this._errors = undefined;
   }
 
-  private async _confirmUnsavedChanged(): Promise<boolean> {
+  protected async confirmUnsavedChanged(): Promise<boolean> {
     if (!this._dirty) {
       return true;
     }

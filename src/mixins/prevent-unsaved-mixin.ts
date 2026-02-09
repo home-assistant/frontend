@@ -9,7 +9,7 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) =>
   class extends superClass {
-    private _exitConfirmed;
+    private _exitConfirmed = false;
 
     private _handleClick = async (e: MouseEvent) => {
       // get the right target, otherwise the composedPath would return <home-assistant> in the new event
@@ -91,12 +91,12 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
       return false;
     }
 
-    private async _confirmUnsavedChanged(): Promise<boolean> {
+    protected async confirmUnsavedChanged(): Promise<boolean> {
       return true;
     }
 
     protected async promptDiscardChanges(): Promise<boolean> {
-      return this._confirmUnsavedChanged().then((confirmed) => {
+      return this.confirmUnsavedChanged().then((confirmed) => {
         this._exitConfirmed = confirmed;
         return confirmed;
       });
