@@ -133,6 +133,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
 
     ha-vacuum-segment-area-mapper {
       flex: 1;
+      padding-inline-start: var(--ha-space-2);
     }
 
     .footer {
