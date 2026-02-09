@@ -6,7 +6,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
@@ -151,35 +152,42 @@ export class DialogAddUser extends LitElement {
               "ui.panel.config.users.add_user.password_not_match"
             )}
           ></ha-password-field>
-          <ha-settings-row>
-            <span slot="heading">
-              ${this.hass.localize(
-                "ui.panel.config.users.editor.local_access_only"
-              )}
-            </span>
-            <span slot="description">
-              ${this.hass.localize(
-                "ui.panel.config.users.editor.local_access_only_description"
-              )}
-            </span>
-            <ha-switch
-              .checked=${this._localOnly}
-              @change=${this._localOnlyChanged}
-            >
-            </ha-switch>
-          </ha-settings-row>
-          <ha-settings-row>
-            <span slot="heading">
-              ${this.hass.localize("ui.panel.config.users.editor.admin")}
-            </span>
-            <span slot="description">
-              ${this.hass.localize(
-                "ui.panel.config.users.editor.admin_description"
-              )}
-            </span>
-            <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
-            </ha-switch>
-          </ha-settings-row>
+          <ha-md-list>
+            <ha-md-list-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.local_access_only"
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.local_access_only_description"
+                )}</span
+              >
+              <ha-switch
+                slot="end"
+                .checked=${this._localOnly}
+                @change=${this._localOnlyChanged}
+              ></ha-switch>
+            </ha-md-list-item>
+            <ha-md-list-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.admin"
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.admin_description"
+                )}</span
+              >
+              <ha-switch
+                slot="end"
+                .checked=${this._isAdmin}
+                @change=${this._adminChanged}
+              ></ha-switch>
+            </ha-md-list-item>
+          </ha-md-list>
           ${!this._isAdmin
             ? html`
                 <ha-alert alert-type="info">
@@ -310,8 +318,14 @@ export class DialogAddUser extends LitElement {
           display: block;
           margin-bottom: 8px;
         }
-        ha-settings-row {
-          padding: 0;
+        ha-md-list {
+          padding-top: 0;
+          padding-bottom: 0;
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+        }
+        ha-md-list-item {
+          --md-item-overflow: visible;
         }
       `,
     ];
