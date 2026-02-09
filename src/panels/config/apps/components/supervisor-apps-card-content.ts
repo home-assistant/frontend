@@ -2,7 +2,11 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { renderHighlightedText } from "../../../../common/string/highlight";
+import {
+  applyCustomHighlights,
+  clearCustomHighlights,
+  renderHighlightedText,
+} from "../../../../common/string/highlight";
 import "../../../../components/ha-svg-icon";
 import { haStyleHighlight } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -76,6 +80,15 @@ class SupervisorAppsCardContent extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  protected updated() {
+    applyCustomHighlights(this.renderRoot as ShadowRoot);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    clearCustomHighlights(this.renderRoot as ShadowRoot);
   }
 
   static styles = [

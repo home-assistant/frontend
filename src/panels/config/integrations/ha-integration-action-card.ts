@@ -1,7 +1,11 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { renderHighlightedText } from "../../../common/string/highlight";
+import {
+  applyCustomHighlights,
+  clearCustomHighlights,
+  renderHighlightedText,
+} from "../../../common/string/highlight";
 import {
   domainToName,
   type IntegrationManifest,
@@ -65,6 +69,15 @@ export class HaIntegrationActionCard extends LitElement {
         <div class="header-button"><slot name="header-button"></slot></div>
       </ha-card>
     `;
+  }
+
+  protected updated() {
+    applyCustomHighlights(this.renderRoot as ShadowRoot);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    clearCustomHighlights(this.renderRoot as ShadowRoot);
   }
 
   private _onImageLoad(ev) {

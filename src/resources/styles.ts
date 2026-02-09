@@ -25,6 +25,11 @@ export const haStyleHighlight = css`
     padding: 0;
     box-shadow: inset 0 0 0 1px transparent;
   }
+
+  :host([data-custom-highlight]) .ha-highlight {
+    background-color: transparent;
+    color: inherit;
+  }
 `;
 
 export const haStyle = css`

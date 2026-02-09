@@ -14,6 +14,10 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import {
+  applyCustomHighlights,
+  clearCustomHighlights,
+} from "../common/string/highlight";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
   multiTermSortedSearch,
@@ -208,6 +212,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     this._removeKeyboardShortcuts?.();
+    clearCustomHighlights(this.renderRoot as ShadowRoot);
   }
 
   protected render() {
@@ -272,6 +277,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         </lit-virtualizer>
         ${this.renderScrollableFades()}
       </div>`;
+  }
+
+  protected updated() {
+    applyCustomHighlights(this.renderRoot as ShadowRoot);
   }
 
   private _renderSectionButtons() {

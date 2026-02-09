@@ -16,7 +16,11 @@ import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
-import { renderHighlightedText } from "../../common/string/highlight";
+import {
+  applyCustomHighlights,
+  clearCustomHighlights,
+  renderHighlightedText,
+} from "../../common/string/highlight";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
@@ -236,20 +240,26 @@ export class HaDataTable extends LitElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    clearCustomHighlights(this.renderRoot as ShadowRoot);
+  }
+
   protected firstUpdated() {
     this.updateComplete.then(() => this._calcTableHeight());
   }
 
   protected updated() {
     const header = this.renderRoot.querySelector(".mdc-data-table__header-row");
-    if (!header) {
-      return;
+    if (header) {
+      if (header.scrollWidth > header.clientWidth) {
+        this.style.setProperty("--table-row-width", `${header.scrollWidth}px`);
+      } else {
+        this.style.removeProperty("--table-row-width");
+      }
     }
-    if (header.scrollWidth > header.clientWidth) {
-      this.style.setProperty("--table-row-width", `${header.scrollWidth}px`);
-    } else {
-      this.style.removeProperty("--table-row-width");
-    }
+
+    applyCustomHighlights(this.renderRoot as ShadowRoot);
   }
 
   public willUpdate(properties: PropertyValues) {

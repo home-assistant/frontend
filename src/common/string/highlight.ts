@@ -112,6 +112,85 @@ export type HighlightedText =
   | null
   | undefined;
 
+interface HighlightController {
+  apply: () => void;
+  clear: () => void;
+}
+
+const HIGHLIGHT_NAME_PREFIX = "ha-search";
+let highlightId = 0;
+const highlightControllers = new WeakMap<ShadowRoot, HighlightController>();
+
+const ensureHighlightStyle = (root: ShadowRoot, name: string) => {
+  const style = document.createElement("style");
+  style.textContent = `::highlight(${name}) {
+  background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
+  color: var(--ha-highlight-color, var(--primary-text-color));
+}`;
+  root.appendChild(style);
+};
+
+const getHighlightController = (root: ShadowRoot): HighlightController => {
+  const existing = highlightControllers.get(root);
+  if (existing) {
+    return existing;
+  }
+
+  const name = `${HIGHLIGHT_NAME_PREFIX}-${highlightId++}`;
+  if (CSS.highlights) {
+    ensureHighlightStyle(root, name);
+  }
+
+  const controller: HighlightController = {
+    apply: () => {
+      if (!CSS.highlights) {
+        return;
+      }
+
+      const marks = root.querySelectorAll("mark.ha-highlight");
+      const host = root.host as HTMLElement;
+      if (!marks.length) {
+        CSS.highlights.delete(name);
+        host.removeAttribute("data-custom-highlight");
+        return;
+      }
+
+      const ranges: Range[] = [];
+      marks.forEach((mark) => {
+        const textNode = mark.firstChild;
+        if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+          return;
+        }
+        const text = textNode.textContent;
+        if (!text) {
+          return;
+        }
+        const range = new Range();
+        range.setStart(textNode, 0);
+        range.setEnd(textNode, text.length);
+        ranges.push(range);
+      });
+
+      if (ranges.length) {
+        CSS.highlights.set(name, new Highlight(...ranges));
+        host.setAttribute("data-custom-highlight", "");
+      } else {
+        CSS.highlights.delete(name);
+        host.removeAttribute("data-custom-highlight");
+      }
+    },
+    clear: () => {
+      if (CSS.highlights) {
+        CSS.highlights.delete(name);
+      }
+      (root.host as HTMLElement).removeAttribute("data-custom-highlight");
+    },
+  };
+
+  highlightControllers.set(root, controller);
+  return controller;
+};
+
 export const renderHighlightedText = (
   text: string | null | undefined,
   query: string | null | undefined,
@@ -152,4 +231,18 @@ export const renderHighlightedText = (
   }
 
   return parts;
+};
+
+export const applyCustomHighlights = (root: ShadowRoot) => {
+  if (!CSS.highlights) {
+    return;
+  }
+
+  const controller = getHighlightController(root);
+  controller.apply();
+};
+
+export const clearCustomHighlights = (root: ShadowRoot) => {
+  const controller = highlightControllers.get(root);
+  controller?.clear();
 };

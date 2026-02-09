@@ -4,7 +4,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import { renderHighlightedText } from "../../../common/string/highlight";
+import {
+  applyCustomHighlights,
+  clearCustomHighlights,
+  renderHighlightedText,
+} from "../../../common/string/highlight";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
 import { haStyleHighlight } from "../../../resources/styles";
@@ -82,6 +86,15 @@ export class HaIntegrationHeader extends LitElement {
         ></ha-icon-next>
       </div>
     `;
+  }
+
+  protected updated() {
+    applyCustomHighlights(this.renderRoot as ShadowRoot);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    clearCustomHighlights(this.renderRoot as ShadowRoot);
   }
 
   private _onImageLoad(ev) {
