@@ -7,8 +7,8 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/search-input";
 import type {
@@ -202,7 +202,7 @@ export class HaConfigAppsAvailable extends LitElement {
       })
   );
 
-  private _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {

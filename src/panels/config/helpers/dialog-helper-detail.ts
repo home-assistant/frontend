@@ -37,6 +37,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 type HelperCreators = Record<
   HelperDomain,
@@ -214,7 +215,6 @@ export class DialogHelperDetail extends LitElement {
               !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
             return html`
               <ha-list-item
-                .disabled=${!isLoaded}
                 hasmeta
                 .domain=${domain}
                 @request-selected=${this._domainPicked}
@@ -235,7 +235,7 @@ export class DialogHelperDetail extends LitElement {
                 <span class="item-text"> ${label} </span>
                 ${isLoaded
                   ? html`<ha-icon-next slot="meta"></ha-icon-next>`
-                  : html` <ha-svg-icon
+                  : html`<ha-svg-icon
                         slot="meta"
                         .id="icon-${domain}"
                         path=${mdiAlertOutline}
@@ -361,6 +361,17 @@ export class DialogHelperDetail extends LitElement {
 
   private async _domainPicked(ev): Promise<void> {
     const domain = ev.target.closest("ha-list-item").domain;
+    const isLoaded =
+      !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
+    if (!isLoaded) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.dialogs.helper_settings.platform_not_loaded",
+          { platform: domain }
+        ),
+      });
+      return;
+    }
 
     if (domain in HELPERS) {
       this._loading = true;

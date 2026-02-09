@@ -7,7 +7,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
-import { DEFAULT_PANEL } from "../data/panel";
 import {
   DateFormat,
   FirstWeekday,
@@ -257,6 +256,10 @@ export const provideHass = (
       darkMode: false,
       theme: "default",
     },
+    selectedTheme: {
+      theme: "default",
+      dark: false,
+    },
     panels: demoPanels,
     services: demoServices,
     user: {
@@ -268,7 +271,9 @@ export const provideHass = (
       name: "Demo User",
     },
     panelUrl: "lovelace",
-    defaultPanel: DEFAULT_PANEL,
+    systemData: {
+      default_panel: "lovelace",
+    },
     language: localLanguage,
     selectedLanguage: localLanguage,
     locale: {
@@ -347,7 +352,7 @@ export const provideHass = (
     mockTheme(theme) {
       invalidateThemeCache();
       hass().updateHass({
-        selectedTheme: { theme: theme ? "mock" : "default" },
+        selectedTheme: { theme: theme ? "mock" : "default", dark: false },
         themes: {
           ...hass().themes,
           themes: {
@@ -360,13 +365,14 @@ export const provideHass = (
         document.documentElement,
         themes,
         selectedTheme!.theme,
-        undefined,
+        { dark: false },
         true
       );
     },
     areas: {},
     devices: {},
     entities: {},
+    floors: {},
     formatEntityState: (stateObj, state) =>
       (state !== null ? state : stateObj.state) ?? "",
     formatEntityAttributeName: (_stateObj, attribute) => attribute,

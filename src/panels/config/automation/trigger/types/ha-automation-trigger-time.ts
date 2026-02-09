@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { firstWeekdayIndex } from "../../../../../common/datetime/first_weekday";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
@@ -11,7 +12,6 @@ import type { TimeTrigger } from "../../../../../data/automation";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
-import { computeDomain } from "../../../../../common/entity/compute_domain";
 
 const MODE_TIME = "time";
 const MODE_ENTITY = "entity";

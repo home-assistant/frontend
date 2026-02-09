@@ -113,13 +113,13 @@ class HaHsColorPicker extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
-  @property({ type: Number, attribute: false })
+  @property({ attribute: false })
   public renderSize?: number;
 
   @property({ type: Array })
   public value?: [number, number];
 
-  @property({ attribute: false, type: Number })
+  @property({ attribute: false })
   public colorBrightness?: number;
 
   @property({ type: Number })
@@ -131,10 +131,10 @@ class HaHsColorPicker extends LitElement {
   @property({ type: Number })
   public ww?: number;
 
-  @property({ attribute: false, type: Number })
+  @property({ attribute: false })
   public minKelvin?: number;
 
-  @property({ attribute: false, type: Number })
+  @property({ attribute: false })
   public maxKelvin?: number;
 
   @query("#canvas") private _canvas!: HTMLCanvasElement;

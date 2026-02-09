@@ -39,9 +39,7 @@ export class HaFilterDomains extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize(
-            "ui.panel.config.entities.picker.headers.domain"
-          )}
+          ${this.hass.localize("ui.panel.config.domains.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button

@@ -156,6 +156,10 @@ export class HaIcon extends LitElement {
     );
     chunks[chunk] = iconPromise;
     this._setPath(iconPromise, iconName, requestedIcon);
+    // Remove chunk from cache on failure so next attempt retries
+    iconPromise.catch(() => {
+      delete chunks[chunk];
+    });
     debouncedWriteCache();
   }
 
@@ -177,11 +181,15 @@ export class HaIcon extends LitElement {
     iconName: string,
     requestedIcon: string
   ) {
-    const iconPack = await promise;
-    if (this.icon === requestedIcon) {
-      this._path = iconPack[iconName];
+    try {
+      const iconPack = await promise;
+      if (this.icon === requestedIcon) {
+        this._path = iconPack[iconName];
+      }
+      cachedIcons[iconName] = iconPack[iconName];
+    } catch (_err) {
+      // Chunk failed to load, already evicted from cache for retry
     }
-    cachedIcons[iconName] = iconPack[iconName];
   }
 
   static styles = css`

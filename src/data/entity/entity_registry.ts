@@ -103,6 +103,10 @@ export interface AlarmControlPanelEntityOptions {
   default_code?: string | null;
 }
 
+export interface CalendarEntityOptions {
+  color?: string | null;
+}
+
 export interface WeatherEntityOptions {
   precipitation_unit?: string | null;
   pressure_unit?: string | null;
@@ -120,6 +124,7 @@ export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
   alarm_control_panel?: AlarmControlPanelEntityOptions;
+  calendar?: CalendarEntityOptions;
   lock?: LockEntityOptions;
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
@@ -143,6 +148,7 @@ export interface EntityRegistryEntryUpdateParams {
     | NumberEntityOptions
     | LockEntityOptions
     | AlarmControlPanelEntityOptions
+    | CalendarEntityOptions
     | WeatherEntityOptions
     | LightEntityOptions;
   aliases?: string[];

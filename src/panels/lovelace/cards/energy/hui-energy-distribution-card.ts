@@ -65,6 +65,17 @@ class HuiEnergyDistrubutionCard
     ];
   }
 
+  private get _energyDashboardHref(): string {
+    const params = new URLSearchParams({
+      historyBack: "1",
+    });
+    const backPath = window.location.pathname;
+    if (backPath) {
+      params.append("backPath", backPath);
+    }
+    return `/energy?${params.toString()}`;
+  }
+
   public getCardSize(): Promise<number> | number {
     return 3;
   }
@@ -789,7 +800,11 @@ class HuiEnergyDistrubutionCard
         ${this._config.link_dashboard
           ? html`
               <div class="card-actions">
-                <ha-button appearance="plain" size="small" href="/energy">
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  href=${this._energyDashboardHref}
+                >
                   ${this.hass.localize(
                     "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
                   )}

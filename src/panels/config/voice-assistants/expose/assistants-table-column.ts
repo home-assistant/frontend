@@ -16,9 +16,7 @@ export function getAssistantsTableColumn<T>(
   visible?: boolean
 ): DataTableColumnData<T> {
   return {
-    title: localize(
-      "ui.panel.config.voice_assistants.expose.headers.assistants"
-    ),
+    title: localize("ui.panel.config.generic.headers.assistants"),
     type: "flex",
     defaultHidden: !visible,
     sortable: true,
@@ -34,6 +32,7 @@ export function getAssistantsTableColumn<T>(
               supportedEntities[vaId].includes(entry.entity_id);
             const manual = entry.manAssistants?.includes(vaId);
             return getAssistantsTableColumnIcon(
+              entry.entity_id,
               entry.assistants.includes(vaId),
               vaId,
               hass,
@@ -47,6 +46,7 @@ export function getAssistantsTableColumn<T>(
 }
 
 export const getAssistantsTableColumnIcon = (
+  id: string,
   show: boolean,
   vaId: string,
   hass: HomeAssistant,
@@ -59,6 +59,7 @@ export const getAssistantsTableColumnIcon = (
   );
   return show
     ? html`<voice-assistants-expose-assistant-icon
+        .id=${id}
         .assistant=${vaId}
         .hass=${hass}
         .manual=${manual ?? false}

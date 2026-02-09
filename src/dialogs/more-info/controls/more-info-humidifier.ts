@@ -2,7 +2,6 @@ import { mdiPower, mdiTuneVariant } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
@@ -14,6 +13,7 @@ import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("more-info-humidifier")
 class MoreInfoHumidifier extends LitElement {
@@ -74,68 +74,48 @@ class MoreInfoHumidifier extends LitElement {
 
       <ha-more-info-control-select-container>
         <ha-control-select-menu
+          .hass=${hass}
           .label=${this.hass.localize("ui.card.humidifier.state")}
           .value=${this.stateObj.state}
           .disabled=${this.stateObj.state === UNAVAILABLE}
-          fixedMenuPosition
-          naturalMenuWidth
-          @selected=${this._handleStateChanged}
-          @closed=${stopPropagation}
+          @wa-select=${this._handleStateChanged}
+          .options=${["off", "on"].map((fanState) => ({
+            value: fanState,
+            label: this.stateObj
+              ? this.hass.formatEntityState(this.stateObj, fanState)
+              : fanState,
+          }))}
         >
           <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
-          <ha-list-item value="off">
-            ${this.hass.formatEntityState(this.stateObj, "off")}
-          </ha-list-item>
-          <ha-list-item value="on">
-            ${this.hass.formatEntityState(this.stateObj, "on")}
-          </ha-list-item>
         </ha-control-select-menu>
 
         ${supportModes
           ? html`
               <ha-control-select-menu
+                .hass=${hass}
                 .label=${hass.localize("ui.card.humidifier.mode")}
                 .value=${stateObj.attributes.mode}
                 .disabled=${this.stateObj.state === UNAVAILABLE}
-                fixedMenuPosition
-                naturalMenuWidth
-                @selected=${this._handleModeChanged}
-                @closed=${stopPropagation}
-              >
-                ${stateObj.attributes.mode
-                  ? html`
-                      <ha-attribute-icon
-                        slot="icon"
-                        .hass=${this.hass}
-                        .stateObj=${stateObj}
-                        attribute="mode"
-                        .attributeValue=${stateObj.attributes.mode}
-                      ></ha-attribute-icon>
-                    `
-                  : html`
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiTuneVariant}
-                      ></ha-svg-icon>
-                    `}
-                ${stateObj.attributes.available_modes!.map(
-                  (mode) => html`
-                    <ha-list-item .value=${mode} graphic="icon">
-                      <ha-attribute-icon
-                        slot="graphic"
-                        .hass=${this.hass}
-                        .stateObj=${stateObj}
-                        attribute="mode"
-                        .attributeValue=${mode}
-                      ></ha-attribute-icon>
-                      ${this.hass.formatEntityAttributeValue(
-                        stateObj!,
+                @wa-select=${this._handleModeChanged}
+                .options=${stateObj.attributes.available_modes?.map((mode) => ({
+                  value: mode,
+                  label: stateObj
+                    ? this.hass.formatEntityAttributeValue(
+                        stateObj,
                         "mode",
                         mode
-                      )}
-                    </ha-list-item>
-                  `
-                )}
+                      )
+                    : mode,
+                  attributeIcon: stateObj
+                    ? {
+                        stateObj,
+                        attribute: "mode",
+                        attributeValue: mode,
+                      }
+                    : undefined,
+                })) || []}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
               </ha-control-select-menu>
             `
           : nothing}
@@ -143,8 +123,8 @@ class MoreInfoHumidifier extends LitElement {
     `;
   }
 
-  private _handleStateChanged(ev) {
-    const newVal = ev.target.value || null;
+  private _handleStateChanged(ev: HaDropdownSelectEvent) {
+    const newVal = ev.detail.item.value || null;
     this._callServiceHelper(
       this.stateObj!.state,
       newVal,
@@ -153,8 +133,8 @@ class MoreInfoHumidifier extends LitElement {
     );
   }
 
-  private _handleModeChanged(ev) {
-    const newVal = ev.target.value || null;
+  private _handleModeChanged(ev: HaDropdownSelectEvent) {
+    const newVal = ev.detail.item.value;
     this._mode = newVal;
     this._callServiceHelper(
       this.stateObj!.attributes.mode,

@@ -25,8 +25,8 @@ import { VolumeSliderController } from "../../../common/util/volume-slider";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-marquee-text";
@@ -202,12 +202,11 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
-    return html`<ha-dropdown>
+    return html`<ha-dropdown @wa-select=${this._handleSourceChange}>
       <ha-icon-button
         slot="trigger"
         .label=${this.hass.localize(`ui.card.media_player.source`)}
         .path=${mdiLoginVariant}
-        @wa-select=${this._handleSourceChange}
       >
       </ha-icon-button>
       ${this.stateObj.attributes.source_list!.map(
@@ -743,7 +742,7 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSourceChange(e: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSourceChange(e: HaDropdownSelectEvent) {
     const source = e.detail.item.value;
     if (!source || this.stateObj!.attributes.source === source) {
       return;
@@ -755,7 +754,7 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSoundModeChange(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSoundModeChange(ev: HaDropdownSelectEvent) {
     const soundMode = ev.detail.item.value;
     if (!soundMode || this.stateObj!.attributes.sound_mode === soundMode) {
       return;

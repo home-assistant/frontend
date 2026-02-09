@@ -37,7 +37,6 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import type {
@@ -52,6 +51,7 @@ import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
+import type { DeviceCondition } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import {
   showAlertDialog,
@@ -76,38 +76,13 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import type { DeviceCondition } from "../../../../data/device/device_automation";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
   expandAll?: () => void;
   collapseAll?: () => void;
 }
-
-export const handleChangeEvent = (
-  element: ConditionElement,
-  ev: CustomEvent
-) => {
-  ev.stopPropagation();
-  const name = (ev.currentTarget as any)?.name;
-  if (!name) {
-    return;
-  }
-  const newVal = ev.detail?.value || (ev.currentTarget as any)?.value;
-
-  if ((element.condition[name] || "") === newVal) {
-    return;
-  }
-
-  let newCondition: Condition;
-  if (!newVal) {
-    newCondition = { ...element.condition };
-    delete newCondition[name];
-  } else {
-    newCondition = { ...element.condition, [name]: newVal };
-  }
-  fireEvent(element, "value-changed", { value: newCondition });
-};
 
 @customElement("ha-automation-condition-row")
 export default class HaAutomationConditionRow extends LitElement {
@@ -838,7 +813,7 @@ export default class HaAutomationConditionRow extends LitElement {
     this._automationRowElement?.focus();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     ev.stopPropagation();
     const action = ev.detail?.item?.value;
 

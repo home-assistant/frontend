@@ -26,34 +26,34 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/application_credentials",
   },
   developer_assist: {
-    redirect: "/developer-tools/assist",
+    redirect: "/config/developer-tools/assist",
   },
   developer_debug: {
-    redirect: "/developer-tools/debug",
+    redirect: "/config/developer-tools/debug",
   },
   developer_states: {
-    redirect: "/developer-tools/state",
+    redirect: "/config/developer-tools/state",
   },
   developer_services: {
-    redirect: "/developer-tools/action",
+    redirect: "/config/developer-tools/action",
   },
   developer_call_service: {
-    redirect: "/developer-tools/action",
+    redirect: "/config/developer-tools/action",
     params: {
       service: "string",
     },
   },
   developer_template: {
-    redirect: "/developer-tools/template",
+    redirect: "/config/developer-tools/template",
   },
   developer_events: {
-    redirect: "/developer-tools/event",
+    redirect: "/config/developer-tools/event",
   },
   developer_statistics: {
-    redirect: "/developer-tools/statistics",
+    redirect: "/config/developer-tools/statistics",
   },
   server_controls: {
-    redirect: "/developer-tools/yaml",
+    redirect: "/config/developer-tools/yaml",
   },
   calendar: {
     component: "calendar",
@@ -330,6 +330,15 @@ export const getMyRedirects = (): Redirects => ({
   supervisor_addons: {
     redirect: "/config/apps",
   },
+  supervisor_app: {
+    redirect: "/config/app",
+    params: {
+      app: "string",
+    },
+    optional_params: {
+      repository_url: "url",
+    },
+  },
   supervisor_addon: {
     redirect: "/config/app",
     params: {
@@ -525,12 +534,16 @@ class HaPanelMy extends LitElement {
   private _createRedirectUrl(): string {
     const params = extractSearchParamsObject();
 
-    // Special case for supervisor_addon: use path-based URL
-    if (params.addon && this._redirect!.redirect === "/config/app") {
-      const addon = params.addon;
-      delete params.addon;
-      const optionalParams = this._createOptionalParams(params);
-      return `/config/app/${addon}/info${optionalParams}`;
+    // Special case for supervisor_app/supervisor_addon: use path-based URL
+    // Support both "app" (new) and "addon" (legacy) parameters
+    if (this._redirect!.redirect === "/config/app") {
+      const appSlug = params.app || params.addon;
+      if (appSlug) {
+        delete params.app;
+        delete params.addon;
+        const optionalParams = this._createOptionalParams(params);
+        return `/config/app/${appSlug}/info${optionalParams}`;
+      }
     }
 
     const resultParams = this._createRedirectParams();

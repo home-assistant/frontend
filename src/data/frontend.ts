@@ -13,10 +13,13 @@ export interface SidebarFrontendUserData {
 
 export interface CoreFrontendSystemData {
   default_panel?: string;
+  onboarded_version?: string;
+  onboarded_date?: string;
 }
 
 export interface HomeFrontendSystemData {
   favorite_entities?: string[];
+  welcome_banner_dismissed?: boolean;
 }
 
 declare global {

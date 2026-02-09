@@ -5,8 +5,8 @@ import type { HaProgressButton } from "../../../../../../components/buttons/ha-p
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-formfield";
-import "../../../../../../components/ha-list-item";
 import "../../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../../components/ha-select";
 import "../../../../../../components/ha-spinner";
 import "../../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
@@ -126,16 +126,13 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
           )}
           .value=${this._currentDoorLockMode?.toString() ?? ""}
           @selected=${this._doorLockModeChanged}
+          .options=${supportedDoorLockModes.map((mode) => ({
+            value: mode.toString(),
+            label: this.hass.localize(
+              `ui.panel.config.zwave_js.node_installer.capability_controls.door_lock.modes.${mode}`
+            ),
+          }))}
         >
-          ${supportedDoorLockModes.map(
-            (mode) => html`
-              <ha-list-item .value=${mode.toString()}>
-                ${this.hass.localize(
-                  `ui.panel.config.zwave_js.node_installer.capability_controls.door_lock.modes.${mode}`
-                )}
-              </ha-list-item>
-            `
-          )}
         </ha-select>
       </div>
       <div class="row">
@@ -145,16 +142,13 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
           )}
           .value=${this._configuration.operationType.toString()}
           @selected=${this._operationTypeChanged}
+          .options=${this._capabilities.supportedOperationTypes.map((type) => ({
+            value: type.toString(),
+            label: this.hass.localize(
+              `ui.panel.config.zwave_js.node_installer.capability_controls.door_lock.operation_types.${type}`
+            ),
+          }))}
         >
-          ${this._capabilities.supportedOperationTypes.map(
-            (type) => html`
-              <ha-list-item .value=${type.toString()}>
-                ${this.hass.localize(
-                  `ui.panel.config.zwave_js.node_installer.capability_controls.door_lock.operation_types.${type}`
-                )}
-              </ha-list-item>
-            `
-          )}
         </ha-select>
       </div>
 
@@ -346,9 +340,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     );
   }
 
-  private _operationTypeChanged(ev: CustomEvent) {
-    const target = ev.target as HTMLSelectElement;
-    const newType = parseInt(target.value);
+  private _operationTypeChanged(ev: HaSelectSelectEvent) {
+    const newType = parseInt(ev.detail.value);
     if (this._configuration) {
       this._configuration = {
         ...this._configuration,
@@ -393,9 +386,8 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
     }
   }
 
-  private _doorLockModeChanged(ev: CustomEvent) {
-    const target = ev.target as HTMLSelectElement;
-    this._currentDoorLockMode = parseInt(target.value) as DoorLockMode;
+  private _doorLockModeChanged(ev: HaSelectSelectEvent<DoorLockMode>) {
+    this._currentDoorLockMode = ev.detail.value;
   }
 
   private async _saveConfig(ev: CustomEvent) {

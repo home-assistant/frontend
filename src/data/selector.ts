@@ -7,7 +7,10 @@ import type { EntityNameItem } from "../common/entity/compute_entity_name_displa
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { isHelperDomain } from "../panels/config/helpers/const";
-import type { UiAction } from "../panels/lovelace/components/hui-action-editor";
+import type {
+  ActionRelatedContext,
+  UiAction,
+} from "../panels/lovelace/components/hui-action-editor";
 import type { HomeAssistant } from "../types";
 import {
   type DeviceRegistryEntry,
@@ -22,6 +25,7 @@ import type { EntitySources } from "./entity/entity_sources";
 export type Selector =
   | ActionSelector
   | AddonSelector
+  | AppSelector
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
@@ -65,6 +69,7 @@ export type Selector =
   | TemplateSelector
   | ThemeSelector
   | TimeSelector
+  | TimezoneSelector
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
@@ -80,7 +85,11 @@ export interface ActionSelector {
 }
 
 export interface AddonSelector {
-  addon: {
+  addon: AppSelector["app"];
+}
+
+export interface AppSelector {
+  app: {
     name?: string;
     slug?: string;
   } | null;
@@ -293,6 +302,10 @@ export interface LanguageSelector {
   } | null;
 }
 
+export interface TimezoneSelector {
+  timezone: {} | null;
+}
+
 export interface LocationSelector {
   location: {
     radius?: boolean;
@@ -332,7 +345,7 @@ export interface MediaSelectorValue {
 }
 
 export interface NavigationSelector {
-  navigation: {} | null;
+  navigation: ActionRelatedContext | null;
 }
 
 export interface NumberSelector {
@@ -460,7 +473,9 @@ export interface TargetSelector {
 }
 
 export interface TemplateSelector {
-  template: {} | null;
+  template: {
+    preview?: boolean;
+  } | null;
 }
 
 export interface ThemeSelector {

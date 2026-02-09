@@ -22,7 +22,6 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
@@ -52,6 +51,7 @@ import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/sh
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -278,7 +278,7 @@ export class AssistPref extends LitElement {
     }
   }
 
-  private _handlePipelineMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handlePipelineMenuAction(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     const id = (ev.detail.item as any).data as string;
     switch (value) {

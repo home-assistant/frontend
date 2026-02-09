@@ -670,7 +670,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
           .interactive=${Boolean(this._hasCardAction)}
-          .actionHandler=${actionHandler()}
           @action=${this._handleAction}
         >
           <ha-tile-icon

@@ -25,6 +25,7 @@ import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
 import type { AuthUrlSearchParams } from "../data/auth";
 import { hassUrl } from "../data/auth";
+import { saveFrontendSystemData } from "../data/frontend";
 import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
 import {
   fetchInstallationType,
@@ -143,7 +144,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           .label=${""}
           native-name
           @value-changed=${this._languageChanged}
-          inline-arrow
         ></ha-language-picker>
         <a
           href="https://www.home-assistant.io/getting-started/onboarding/"
@@ -405,6 +405,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
                 })
               ),
             };
+
+      await saveFrontendSystemData(this.hass!.connection, "core", {
+        onboarded_version: this.hass!.config.version,
+        onboarded_date: new Date().toISOString(),
+      });
 
       let result: OnboardingResponses["integration"];
 

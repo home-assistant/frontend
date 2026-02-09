@@ -131,10 +131,29 @@ export interface FlowToGridSourceEnergyPreference {
   number_energy_price: number | null;
 }
 
-export interface GridPowerSourceEnergyPreference {
-  // W meter
-  stat_rate: string;
+export interface PowerConfig {
+  stat_rate?: string; // Standard single sensor
+  stat_rate_inverted?: string; // Inverted single sensor
+  stat_rate_from?: string; // Battery: discharge / Grid: consumption
+  stat_rate_to?: string; // Battery: charge / Grid: return
 }
+
+export interface GridPowerSourceEnergyPreference {
+  stat_rate: string;
+  power_config?: PowerConfig;
+}
+
+/**
+ * Input type for saving grid power sources.
+ * Core requires EITHER stat_rate (legacy) OR power_config (new format).
+ * When reading from backend, stat_rate is always populated.
+ */
+export type GridPowerSourceInput = Omit<
+  GridPowerSourceEnergyPreference,
+  "stat_rate"
+> & {
+  stat_rate?: string;
+};
 
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
@@ -159,6 +178,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_energy_from: string;
   stat_energy_to: string;
   stat_rate?: string;
+  power_config?: PowerConfig;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
@@ -491,6 +511,15 @@ const getEnergyData = async (
         "mean",
       ])
     : {};
+  // If power stats 5 minute data is selected, then also fetch hourly data which
+  // will be used to back-fill any missing data points in the 5 minute data when
+  // the requested range is beyond the limit of short term statistics.
+  const _powerStatsHour: Statistics | Promise<Statistics> =
+    powerStatIds.length && finePeriod === "5minute"
+      ? fetchStatistics(hass!, start, end, powerStatIds, "hour", powerUnits, [
+          "mean",
+        ])
+      : {};
 
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
     ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
@@ -599,6 +628,7 @@ const getEnergyData = async (
   const [
     energyStats,
     powerStats,
+    powerStatsHour,
     waterStats,
     energyStatsCompare,
     waterStatsCompare,
@@ -607,12 +637,44 @@ const getEnergyData = async (
   ] = await Promise.all([
     _energyStats,
     _powerStats,
+    _powerStatsHour,
     _waterStats,
     _energyStatsCompare,
     _waterStatsCompare,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
+
+  // Back-fill any missing power statistics from hourly data if present
+  if (Object.keys(powerStatsHour).length) {
+    powerStatIds.forEach((powerId) => {
+      if (powerId in powerStatsHour) {
+        // If we have extra hourly power statistics for an ID, we may need to
+        // insert data into statistics
+        if (powerId in powerStats && powerStats[powerId].length) {
+          // We have 5-minute data. Only insert hourly values for time periods
+          // before the first 5-minute value.
+          const powerStatFirst = powerStats[powerId][0];
+          const powerStatHour = powerStatsHour[powerId];
+          let powerStatHourLast = 0;
+          for (const powerStat of powerStatHour) {
+            if (powerStat.end > powerStatFirst.start) {
+              break;
+            }
+            powerStatHourLast++;
+          }
+          powerStats[powerId] = [
+            ...powerStatHour.slice(0, powerStatHourLast),
+            ...powerStats[powerId],
+          ];
+        } else {
+          // There was no 5-minute data, so simply insert full hourly data
+          powerStats[powerId] = powerStatsHour[powerId];
+        }
+      }
+    });
+  }
+
   const stats = { ...energyStats, ...waterStats, ...powerStats };
   if (compare) {
     statsCompare = { ...energyStatsCompare, ...waterStatsCompare };

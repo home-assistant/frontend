@@ -15,13 +15,13 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {
@@ -193,7 +193,7 @@ export class HuiCardEditMode extends LitElement {
     this._editCard();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {

@@ -24,7 +24,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -60,7 +59,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -84,12 +82,14 @@ import type {
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
+  EntityRegistryOptions,
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
-import { getEntityVoiceAssistantsIds } from "../../../data/expose";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import { listExposedEntities, voiceAssistants } from "../../../data/expose";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
@@ -120,10 +120,19 @@ import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
+  getEntityIdTableColumn,
+  getDomainTableColumn,
+  getAreaTableColumn,
+  getLabelsTableColumn,
+  getCreatedAtTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
+import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -165,17 +174,22 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @state() private _stateEntities: StateEntity[] = [];
-
   @state() private _entries?: ConfigEntry[];
 
   @state() private _subEntries?: SubEntry[];
 
   @state() private _manifests?: IntegrationManifest[];
 
+  // does NOT contain the entities without unique id (e.g. Sun)
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
+
+  @state() private _entitiesWithoutUniqueId: StateEntity[] = [];
+
+  // entities exposed to one or more voice assistants,
+  // including entities without unique id
+  @state() private _exposedEntities?: Record<string, ExposeEntitySettings>;
 
   @state()
   @storage({
@@ -246,12 +260,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
+    window.addEventListener(
+      "exposed-entities-changed",
+      this._fetchExposedEntities
+    );
   }
 
-  disconnectedCallback(): void {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this._locationChanged);
     window.removeEventListener("popstate", this._popState);
+    window.removeEventListener(
+      "exposed-entities-changed",
+      this._fetchExposedEntities
+    );
   }
 
   private _locationChanged = () => {
@@ -361,32 +383,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         groupable: true,
         hidden: true,
       },
-      area: {
-        title: localize("ui.panel.config.entities.picker.headers.area"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        template: (entry) => entry.area || "—",
-      },
-      entity_id: {
-        title: localize("ui.panel.config.entities.picker.headers.entity_id"),
-        sortable: true,
-        filterable: true,
-        defaultHidden: true,
-      },
+      area: getAreaTableColumn(localize),
+      entity_id: getEntityIdTableColumn(localize, true),
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
         sortable: true,
         groupable: true,
         filterable: true,
       },
-      domain: {
-        title: localize("ui.panel.config.entities.picker.headers.domain"),
-        sortable: false,
-        hidden: true,
-        filterable: true,
-        groupable: true,
-      },
+      domain: getDomainTableColumn(localize),
       disabled_by: {
         title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
         hidden: true,
@@ -460,34 +465,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               `
             : "—",
       },
-      created_at: {
-        title: localize("ui.panel.config.generic.headers.created_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (entry) =>
-          entry.created_at
-            ? formatShortDateTimeWithConditionalYear(
-                new Date(entry.created_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
-      modified_at: {
-        title: localize("ui.panel.config.generic.headers.modified_at"),
-        defaultHidden: true,
-        sortable: true,
-        minWidth: "128px",
-        template: (entry) =>
-          entry.modified_at
-            ? formatShortDateTimeWithConditionalYear(
-                new Date(entry.modified_at * 1000),
-                this.hass.locale,
-                this.hass.config
-              )
-            : "—",
-      },
+      created_at: getCreatedAtTableColumn(localize, this.hass),
+      modified_at: getModifiedAtTableColumn(localize, this.hass),
       available: {
         title: localize("ui.panel.config.entities.picker.headers.availability"),
         sortable: true,
@@ -506,13 +485,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         groupable: true,
         hidden: true,
       },
-      labels: {
-        title: "",
-        hidden: true,
-        filterable: true,
-        template: (entry) =>
-          entry.label_entries.map((lbl) => lbl.name).join(" "),
-      },
+      labels: getLabelsTableColumn(),
       assistants: getAssistantsTableColumn(
         localize,
         this.hass,
@@ -528,7 +501,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       entities: StateEntity[],
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
-      stateEntities: StateEntity[],
+      entitiesWithoutUniqueId: StateEntity[],
       filters: DataTableFiltersValues,
       filteredItems: DataTableFiltersItems,
       entries?: ConfigEntry[],
@@ -555,7 +528,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       const showReadOnly =
         !stateFilters?.length || stateFilters.includes("readonly");
 
-      let filteredEntities = entities.concat(stateEntities);
+      // take both entities with and without unique id into account
+      let filteredEntities = entities.concat(entitiesWithoutUniqueId);
 
       let filteredConfigEntry: ConfigEntry | undefined;
       const filteredDomains = new Set<string>();
@@ -669,7 +643,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           filter.length
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            getEntityVoiceAssistantsIds(this._entities, entity.entity_id).some(
+            this._getExposedEntityVoiceAssistantIds(entity.entity_id).some(
               (va) => (filter as string[]).includes(va)
             )
           );
@@ -732,8 +706,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             ? `${deviceName} (${areaName})`
             : deviceName
           : undefined;
-        const assistants = getEntityVoiceAssistantsIds(
-          entities as EntityRegistryEntry[],
+        const assistants = this._getExposedEntityVoiceAssistantIds(
           entry.entity_id
         );
 
@@ -839,7 +812,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         this._entities,
         this.hass.devices,
         this.hass.areas,
-        this._stateEntities,
+        this._entitiesWithoutUniqueId,
         this._filters,
         this._filteredItems,
         this._entries,
@@ -1121,6 +1094,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   protected firstUpdated() {
     this._setFiltersFromUrl();
+    this._fetchExposedEntities();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
@@ -1162,6 +1136,40 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._filteredItems = {};
   }
 
+  private _fetchExposedEntities = async () => {
+    try {
+      this._exposedEntities = (
+        await listExposedEntities(this.hass)
+      ).exposed_entities;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch exposed entities", err);
+      this._exposedEntities = {};
+    }
+  };
+
+  // local variant of data/expose/getExposedEntityVoiceAssistantIds
+  // which works for both entities with and without unique id
+  private _getExposedEntityVoiceAssistantIds(entityId: string) {
+    return Object.keys(voiceAssistants).filter(
+      (vaId) => this._exposedEntities?.[entityId]?.[vaId]
+    );
+  }
+
+  private _getExposedEntitySettingsAsOptions(
+    entityId: string
+  ): EntityRegistryOptions {
+    const exposeSettings: ExposeEntitySettings | undefined =
+      this._exposedEntities?.[entityId];
+    const options: EntityRegistryOptions = {};
+    Object.keys(voiceAssistants).forEach((vaId) => {
+      options[vaId] = {
+        should_expose: exposeSettings?.[vaId],
+      };
+    });
+    return options;
+  }
+
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
@@ -1179,12 +1187,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       (changedProps.has("hass") &&
         (!oldHass || oldHass.states !== this.hass.states)) ||
       changedProps.has("_entities") ||
-      changedProps.has("_entitySources")
+      changedProps.has("_entitySources") ||
+      changedProps.has("_exposedEntities")
     ) {
-      const stateEntities: StateEntity[] = [];
+      // represent all entities without unique id
+      // (entities present in this.hass.states but not in fullEntitiesContext)
+      // as StateEntities, so this component can treat them the same as the
+      // entities with id
+      const entitiesWithoutUniqueId: StateEntity[] = [];
       const regEntityIds = new Set(
         this._entities.map((entity) => entity.entity_id)
       );
+
       for (const entityId of Object.keys(this.hass.states)) {
         if (regEntityIds.has(entityId)) {
           continue;
@@ -1195,7 +1209,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ) {
           changed = true;
         }
-        stateEntities.push({
+        entitiesWithoutUniqueId.push({
           name: computeStateName(this.hass.states[entityId]),
           entity_id: entityId,
           platform:
@@ -1211,7 +1225,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           selectable: false,
           entity_category: null,
           has_entity_name: false,
-          options: null,
+          options: this._getExposedEntitySettingsAsOptions(entityId),
           labels: [],
           categories: {},
           created_at: 0,
@@ -1219,7 +1233,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         });
       }
       if (changed) {
-        this._stateEntities = stateEntities;
+        this._entitiesWithoutUniqueId = entitiesWithoutUniqueId;
       }
     }
   }
@@ -1358,7 +1372,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._clearSelection();
   };
 
-  private async _handleBulkLabel(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleBulkLabel(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // Prevent the dropdown from closing
 
     const label = ev.detail.item.value;
@@ -1526,7 +1540,7 @@ ${rejected
         this._entities!,
         this.hass.devices,
         this.hass.areas,
-        this._stateEntities,
+        this._entitiesWithoutUniqueId,
         this._filters,
         this._filteredItems,
         this._entries,
@@ -1566,7 +1580,7 @@ ${rejected
     this._activeHiddenColumns = ev.detail.hiddenColumns;
   }
 
-  private _handleBulkAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleBulkAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {
@@ -1667,6 +1681,10 @@ ${rejected
 
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

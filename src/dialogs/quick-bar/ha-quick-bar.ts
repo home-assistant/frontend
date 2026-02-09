@@ -1,8 +1,10 @@
 import { mdiDevices } from "@mdi/js";
 import Fuse from "fuse.js";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
@@ -15,6 +17,7 @@ import "../../components/ha-icon";
 import "../../components/ha-picker-combo-box";
 import type {
   HaPickerComboBox,
+  PickerComboBoxIndexSelectedDetail,
   PickerComboBoxItem,
 } from "../../components/ha-picker-combo-box";
 import "../../components/ha-spinner";
@@ -44,12 +47,15 @@ import {
   type ActionCommandComboBoxItem,
   type NavigationComboBoxItem,
 } from "../../data/quick_bar";
+import type { RelatedResult } from "../../data/search";
 import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../../resources/fuseMultiTerm";
+import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
+import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
@@ -64,11 +70,13 @@ export class QuickBar extends LitElement {
 
   @state() private _loading = true;
 
-  @state() private _hint?: string;
+  @state() private _showHint = false;
 
   @state() private _selectedSection?: QuickBarSection;
 
   @state() private _opened = false;
+
+  @state() private _relatedResult?: RelatedResult;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
@@ -80,7 +88,11 @@ export class QuickBar extends LitElement {
 
   private _addons?: HassioAddonInfo[];
 
+  private _navigationFilterOptions: NavigationFilterOptions = {};
+
   private _translationsLoaded = false;
+
+  private _itemSelected = false;
 
   // #region lifecycle
   public async showDialog(params: QuickBarParams) {
@@ -90,7 +102,10 @@ export class QuickBar extends LitElement {
     }
     this._initialize();
     this._selectedSection = params.mode;
-    this._hint = params.hint;
+    this._showHint = params.showHint ?? false;
+
+    this._relatedResult = params.contextItem ? params.related : undefined;
+
     this._open = true;
   }
 
@@ -104,6 +119,12 @@ export class QuickBar extends LitElement {
       this._configEntryLookup = Object.fromEntries(
         configEntries.map((entry) => [entry.entry_id, entry])
       );
+      // Derive Bluetooth config entries status for navigation filtering
+      this._navigationFilterOptions = {
+        hasBluetoothConfigEntries: configEntries.some(
+          (entry) => entry.domain === "bluetooth"
+        ),
+      };
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Error fetching config entries for quick bar", err);
@@ -152,7 +173,20 @@ export class QuickBar extends LitElement {
     this._selectedSection = undefined;
     this._opened = false;
     this._open = false;
+    this._itemSelected = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  };
+
+  // fallback in case the closed event is not fired
+  private _dialogCloseStarted = () => {
+    setTimeout(
+      () => {
+        if (this._opened) {
+          this._dialogClosed();
+        }
+      },
+      350 // close animation timeout is 300ms
+    );
   };
 
   // #endregion lifecycle
@@ -160,7 +194,7 @@ export class QuickBar extends LitElement {
   // #region render
 
   protected render() {
-    if (!this._open) {
+    if (!this._open && !this._opened) {
       return nothing;
     }
 
@@ -210,6 +244,7 @@ export class QuickBar extends LitElement {
         hideActions
         @wa-show=${this._showTriggered}
         @wa-after-show=${this._dialogOpened}
+        @wa-hide=${this._dialogCloseStarted}
         @closed=${this._dialogClosed}
       >
         ${!this._loading && this._opened
@@ -230,9 +265,17 @@ export class QuickBar extends LitElement {
               clearable
             ></ha-picker-combo-box>`
           : nothing}
-        ${this._hint
+        ${this._showHint
           ? html`<ha-tip slot="footer" .hass=${this.hass}
-              >${this._hint}</ha-tip
+              >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
+                keyboard_shortcut: html`<button
+                  class="link"
+                  @click=${this._openShortcutDialog}
+                >
+                  ${this.hass.localize("ui.tips.keyboard_shortcut")}
+                </button>`,
+                modifier: isMac ? "⌘" : "Ctrl",
+              })}</ha-tip
             >`
           : nothing}
       </ha-adaptive-dialog>
@@ -281,6 +324,9 @@ export class QuickBar extends LitElement {
                     slot="start"
                     alt=${item.primary ?? "Unknown"}
                     .src=${item.image}
+                    style=${"iconColor" in item && item.iconColor
+                      ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                      : ""}
                   />
                 `
               : item.icon
@@ -377,6 +423,7 @@ export class QuickBar extends LitElement {
     this._selectedSection = section as QuickBarSection | undefined;
     return this._getItemsMemoized(
       this._configEntryLookup,
+      this._relatedResult,
       searchString,
       this._selectedSection
     );
@@ -385,15 +432,18 @@ export class QuickBar extends LitElement {
   private _getItemsMemoized = memoizeOne(
     (
       configEntryLookup: Record<string, ConfigEntry>,
+      relatedResult: RelatedResult | undefined,
       filter?: string,
       section?: QuickBarSection
     ) => {
       const items: (string | PickerComboBoxItem)[] = [];
+      const relatedIdSets = this._getRelatedIdSets(relatedResult);
 
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
           this.hass,
-          this._addons
+          this._addons,
+          this._navigationFilterOptions
         ).sort(this._sortBySortingLabel);
 
         if (filter) {
@@ -436,17 +486,29 @@ export class QuickBar extends LitElement {
       }
 
       if (!section || section === "entity") {
-        let entityItems = this._getEntitiesMemoized(this.hass).sort(
-          this._sortBySortingLabel
-        );
+        let entityItems = this._getEntitiesMemoized(this.hass);
+
+        // Mark related items
+        if (relatedIdSets.entities.size > 0) {
+          entityItems = entityItems.map((item) => ({
+            ...item,
+            isRelated: relatedIdSets.entities.has(
+              (item as EntityComboBoxItem).stateObj?.entity_id || ""
+            ),
+          }));
+        }
 
         if (filter) {
-          entityItems = this._filterGroup(
-            "entity",
-            entityItems,
-            filter,
-            entityComboBoxKeys
-          ) as EntityComboBoxItem[];
+          entityItems = this._sortRelatedFirst(
+            this._filterGroup(
+              "entity",
+              entityItems,
+              filter,
+              entityComboBoxKeys
+            ) as EntityComboBoxItem[]
+          );
+        } else {
+          entityItems = this._sortRelatedByLabel(entityItems);
         }
 
         if (!section && entityItems.length) {
@@ -463,15 +525,25 @@ export class QuickBar extends LitElement {
         let deviceItems = this._getDevicesMemoized(
           this.hass,
           configEntryLookup
-        ).sort(this._sortBySortingLabel);
+        );
+
+        // Mark related items
+        if (relatedIdSets.devices.size > 0) {
+          deviceItems = deviceItems.map((item) => {
+            const deviceId = item.id.split(SEPARATOR)[1];
+            return {
+              ...item,
+              isRelated: relatedIdSets.devices.has(deviceId || ""),
+            };
+          });
+        }
 
         if (filter) {
-          deviceItems = this._filterGroup(
-            "device",
-            deviceItems,
-            filter,
-            deviceComboBoxKeys
+          deviceItems = this._sortRelatedFirst(
+            this._filterGroup("device", deviceItems, filter, deviceComboBoxKeys)
           );
+        } else {
+          deviceItems = this._sortRelatedByLabel(deviceItems);
         }
 
         if (!section && deviceItems.length) {
@@ -487,13 +559,23 @@ export class QuickBar extends LitElement {
       if (this.hass.user?.is_admin && (!section || section === "area")) {
         let areaItems = this._getAreasMemoized(this.hass);
 
+        // Mark related items
+        if (relatedIdSets.areas.size > 0) {
+          areaItems = areaItems.map((item) => {
+            const areaId = item.id.split(SEPARATOR)[1];
+            return {
+              ...item,
+              isRelated: relatedIdSets.areas.has(areaId || ""),
+            };
+          });
+        }
+
         if (filter) {
-          areaItems = this._filterGroup(
-            "area",
-            areaItems,
-            filter,
-            areaComboBoxKeys
+          areaItems = this._sortRelatedFirst(
+            this._filterGroup("area", areaItems, filter, areaComboBoxKeys)
           );
+        } else {
+          areaItems = this._sortRelatedByLabel(areaItems);
         }
 
         if (!section && areaItems.length) {
@@ -509,6 +591,12 @@ export class QuickBar extends LitElement {
       return items;
     }
   );
+
+  private _getRelatedIdSets = memoizeOne((related?: RelatedResult) => ({
+    entities: new Set(related?.entity || []),
+    devices: new Set(related?.device || []),
+    areas: new Set(related?.area || []),
+  }));
 
   private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
     getEntities(
@@ -559,7 +647,11 @@ export class QuickBar extends LitElement {
   );
 
   private _generateNavigationCommandsMemoized = memoizeOne(
-    generateNavigationCommands
+    (
+      hass: HomeAssistant,
+      apps: HassioAddonInfo[] | undefined,
+      filterOptions: NavigationFilterOptions
+    ) => generateNavigationCommands(hass, apps, filterOptions)
   );
 
   private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);
@@ -609,16 +701,49 @@ export class QuickBar extends LitElement {
       this.hass.locale.language
     );
 
+  private _sortRelatedByLabel = (items: PickerComboBoxItem[]) =>
+    [...items].sort((a, b) => {
+      if (a.isRelated && !b.isRelated) return -1;
+      if (!a.isRelated && b.isRelated) return 1;
+      return this._sortBySortingLabel(a, b);
+    });
+
+  private _sortRelatedFirst = (items: PickerComboBoxItem[]) =>
+    [...items].sort((a, b) => {
+      const aRelated = Boolean(a.isRelated);
+      const bRelated = Boolean(b.isRelated);
+      if (aRelated === bRelated) {
+        return 0;
+      }
+      return aRelated ? -1 : 1;
+    });
+
   // #endregion data
 
   // #region interaction
 
-  private async _handleItemSelected(ev: CustomEvent<{ index: number }>) {
-    if (this._comboBox && this._comboBox.virtualizerElement) {
-      const index = ev.detail.index;
+  private _navigate(path: string, newTab = false) {
+    if (newTab) {
+      window.open(path, "_blank", "noreferrer");
+    } else {
+      navigate(path);
+    }
+  }
+
+  private async _handleItemSelected(
+    ev: CustomEvent<PickerComboBoxIndexSelectedDetail>
+  ) {
+    if (
+      !this._itemSelected &&
+      this._comboBox &&
+      this._comboBox.virtualizerElement
+    ) {
+      const { index, newTab } = ev.detail;
       const item = this._comboBox.virtualizerElement.items[
         index
       ] as PickerComboBoxItem;
+
+      this._itemSelected = true;
 
       // entity selected
       if (item && "stateObj" in item) {
@@ -631,15 +756,17 @@ export class QuickBar extends LitElement {
 
       // device selected
       if (item && item.id.startsWith(`device${SEPARATOR}`)) {
+        const path = `/config/devices/device/${item.id.split(SEPARATOR)[1]}`;
         this.closeDialog();
-        navigate(`/config/devices/device/${item.id.split(SEPARATOR)[1]}`);
+        this._navigate(path, newTab);
         return;
       }
 
       // area selected
       if (item && item.id.startsWith(`area${SEPARATOR}`)) {
+        const path = `/config/areas/area/${item.id.split(SEPARATOR)[1]}`;
         this.closeDialog();
-        navigate(`/config/areas/area/${item.id.split(SEPARATOR)[1]}`);
+        this._navigate(path, newTab);
         return;
       }
 
@@ -693,53 +820,65 @@ export class QuickBar extends LitElement {
           return;
         }
 
-        navigate((item as NavigationComboBoxItem).path);
+        const path = (item as NavigationComboBoxItem).path;
+        this._navigate(path, newTab);
       }
     }
+  }
+
+  private _openShortcutDialog(ev: Event): void {
+    ev.preventDefault();
+    showShortcutsDialog(this);
+    this.closeDialog();
   }
 
   // #endregion interaction
 
   // #region styles
 
-  static styles = css`
-    :host {
-      --dialog-surface-margin-top: var(--ha-space-10);
-      --ha-dialog-min-height: 620px;
-      --ha-bottom-sheet-height: calc(
-        100vh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-height: calc(
-        100dvh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-max-height: calc(
-        100vh - max(var(--safe-area-inset-top), 48px)
-      );
-      --ha-bottom-sheet-max-height: calc(
-        100dvh - max(var(--safe-area-inset-top), 48px)
-      );
-      --dialog-content-padding: 0;
-      --safe-area-inset-bottom: 0px;
-    }
+  static get styles(): CSSResultGroup {
+    return [
+      buttonLinkStyle,
+      css`
+        :host {
+          --dialog-surface-margin-top: var(--ha-space-10);
+          --ha-dialog-min-height: 620px;
+          --ha-bottom-sheet-height: calc(
+            100vh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-height: calc(
+            100dvh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-max-height: calc(
+            100vh - max(var(--safe-area-inset-top), 48px)
+          );
+          --ha-bottom-sheet-max-height: calc(
+            100dvh - max(var(--safe-area-inset-top), 48px)
+          );
+          --dialog-content-padding: 0;
+          --safe-area-inset-bottom: 0px;
+        }
 
-    ha-tip {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--secondary-text-color);
-      gap: var(--ha-space-1);
-    }
+        ha-tip {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: var(--secondary-text-color);
+          gap: var(--ha-space-1);
+        }
 
-    ha-tip a {
-      color: var(--primary-color);
-    }
+        ha-tip a {
+          color: var(--primary-color);
+        }
 
-    @media all and (max-width: 450px), all and (max-height: 690px) {
-      ha-tip {
-        display: none;
-      }
-    }
-  `;
+        @media all and (max-width: 450px), all and (max-height: 690px) {
+          ha-tip {
+            display: none;
+          }
+        }
+      `,
+    ];
+  }
 
   // #endregion styles
 }

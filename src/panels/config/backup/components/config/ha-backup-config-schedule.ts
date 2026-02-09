@@ -28,7 +28,7 @@ import {
   sortWeekdays,
 } from "../../../../../data/backup";
 import type { SupervisorUpdateConfig } from "../../../../../data/supervisor/update";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import "./ha-backup-config-retention";
 
@@ -405,7 +405,7 @@ class HaBackupConfigSchedule extends LitElement {
     });
   }
 
-  private _retentionChanged(ev: CustomEvent<{ value: Retention }>) {
+  private _retentionChanged(ev: ValueChangedEvent<Retention>) {
     ev.stopPropagation();
     const retention = ev.detail.value;
 

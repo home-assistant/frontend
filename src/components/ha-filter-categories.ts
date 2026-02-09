@@ -31,6 +31,7 @@ import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-list";
 import "./ha-list-item";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
 
 @customElement("ha-filter-categories")
 export class HaFilterCategories extends SubscribeMixin(LitElement) {
@@ -174,7 +175,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const categoryId = (ev.currentTarget as any).categoryId;
     const action = ev.detail.item.value;
     switch (action) {
