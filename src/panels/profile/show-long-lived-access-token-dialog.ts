@@ -1,13 +1,14 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
 export interface LongLivedAccessTokenDialogParams {
-  token: string;
-  name: string;
+  token?: string;
+  name?: string;
+  createdCallback?: () => void;
 }
 
 export const showLongLivedAccessTokenDialog = (
   element: HTMLElement,
-  longLivedAccessTokenDialogParams: LongLivedAccessTokenDialogParams
+  longLivedAccessTokenDialogParams?: LongLivedAccessTokenDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "ha-long-lived-access-token-dialog",

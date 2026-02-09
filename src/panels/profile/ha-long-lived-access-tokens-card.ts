@@ -13,7 +13,6 @@ import type { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -98,38 +97,10 @@ class HaLongLivedTokens extends LitElement {
     `;
   }
 
-  private async _createToken(): Promise<void> {
-    const name = await showPromptDialog(this, {
-      text: this.hass.localize(
-        "ui.panel.profile.long_lived_access_tokens.prompt_name"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.profile.long_lived_access_tokens.name"
-      ),
+  private _createToken(): void {
+    showLongLivedAccessTokenDialog(this, {
+      createdCallback: () => fireEvent(this, "hass-refresh-tokens"),
     });
-
-    if (!name) {
-      return;
-    }
-
-    try {
-      const token = await this.hass.callWS<string>({
-        type: "auth/long_lived_access_token",
-        lifespan: 3650,
-        client_name: name,
-      });
-
-      showLongLivedAccessTokenDialog(this, { token, name });
-
-      fireEvent(this, "hass-refresh-tokens");
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.profile.long_lived_access_tokens.create_failed"
-        ),
-        text: err.message,
-      });
-    }
   }
 
   private async _deleteToken(ev: Event): Promise<void> {

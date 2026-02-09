@@ -9727,6 +9727,7 @@
           "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create token",
+          "created_title": "Token created: {name}",
           "create_failed": "Failed to create the access token.",
           "name": "Name",
           "prompt_name": "Give the token a name",
