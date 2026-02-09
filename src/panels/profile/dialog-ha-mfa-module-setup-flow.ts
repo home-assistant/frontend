@@ -67,7 +67,6 @@ class HaMfaModuleSetupFlow extends LitElement {
   }
 
   private _dialogClosed() {
-    // Closed dialog by clicking on the overlay
     if (this._step) {
       this._flowDone();
       return;
@@ -248,25 +247,7 @@ class HaMfaModuleSetupFlow extends LitElement {
   }
 
   private _isSubmitDisabled() {
-    if (this._loading) {
-      return true;
-    }
-
-    if (this._step?.type !== "form") {
-      return false;
-    }
-
-    const hasCodeField = this._step.data_schema.some(
-      (field) => field.name === "code"
-    );
-
-    if (!hasCodeField) {
-      return false;
-    }
-
-    const { code } = this._stepData;
-
-    return typeof code !== "string" || code.trim() === "";
+    return this._loading;
   }
 
   private _processStep(step) {

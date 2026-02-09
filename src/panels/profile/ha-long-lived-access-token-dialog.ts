@@ -185,15 +185,11 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
   }
 
   private async _createToken(): Promise<void> {
+    if (this._isCreateDisabled()) {
+      return;
+    }
+
     const name = this._name.trim();
-
-    if (!name || this._loading) {
-      return;
-    }
-
-    if (this._hasDuplicateName()) {
-      return;
-    }
 
     this._loading = true;
     this._errorMessage = undefined;
@@ -206,8 +202,8 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
       });
       this._name = name;
       this._createdCallback();
-    } catch (err: any) {
-      this._errorMessage = err.message;
+    } catch (err: unknown) {
+      this._errorMessage = err instanceof Error ? err.message : String(err);
     } finally {
       this._loading = false;
     }
