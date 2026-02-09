@@ -38,7 +38,7 @@ import { getSuggestedPeriod } from "../../../../../data/energy";
 export function getSuggestedMax(
   period: StatisticPeriod,
   end: Date,
-  forLineChart: boolean
+  noRounding: boolean
 ): Date {
   // Maximum period depends on whether plotting a line chart or discrete bars.
   //  - For line charts we must be plotting all the way to end of a given period,
@@ -47,7 +47,7 @@ export function getSuggestedMax(
   //    to avoid unnecessary padding of the chart.
   let suggestedMax = new Date(end);
 
-  if (forLineChart || period === "5minute") {
+  if (noRounding || period === "5minute") {
     return suggestedMax;
   }
   suggestedMax.setMinutes(0, 0, 0);
