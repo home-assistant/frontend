@@ -8622,7 +8622,6 @@
                 "last-updated": "Last updated",
                 "state": "State",
                 "area": "Area",
-                "area-with-floor": "Area & floor"
               },
               "entity_row": {
                 "divider": "Divider",
