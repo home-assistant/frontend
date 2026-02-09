@@ -69,6 +69,7 @@ const cardConfigStruct = assign(
     stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
     unit: optional(string()),
     hide_legend: optional(boolean()),
+    expand_legend: optional(boolean()),
     logarithmic_scale: optional(boolean()),
     min_y_axis: optional(number()),
     max_y_axis: optional(number()),
@@ -133,7 +134,8 @@ export class HuiStatisticsGraphCardEditor
       localize: LocalizeFunc,
       statisticIds: string[] | undefined,
       metaDatas: StatisticsMetaData[] | undefined,
-      showFitOption: boolean
+      showFitOption: boolean,
+      hiddenLegend: boolean
     ) => {
       const units = new Set<string>();
       metaDatas?.forEach((metaData) => {
@@ -236,27 +238,40 @@ export class HuiStatisticsGraphCardEditor
                 },
               ],
             },
-
-            ...(showFitOption
-              ? [
-                  {
-                    name: "fit_y_data",
-                    required: false,
-                    selector: { boolean: {} },
-                  },
-                ]
-              : []),
-
+            {
+              name: "",
+              type: "grid",
+              schema: [
+                {
+                  name: "logarithmic_scale",
+                  required: false,
+                  selector: { boolean: {} },
+                },
+                ...(showFitOption
+                  ? [
+                      {
+                        name: "fit_y_data",
+                        required: false,
+                        selector: { boolean: {} },
+                      },
+                    ]
+                  : []),
+              ],
+            },
             {
               name: "hide_legend",
               required: false,
               selector: { boolean: {} },
             },
-            {
-              name: "logarithmic_scale",
-              required: false,
-              selector: { boolean: {} },
-            },
+            ...(!hiddenLegend
+              ? [
+                  {
+                    name: "expand_legend",
+                    required: false,
+                    selector: { boolean: {} },
+                  },
+                ]
+              : []),
           ],
         },
         {
@@ -306,7 +321,8 @@ export class HuiStatisticsGraphCardEditor
       this._configEntities,
       this._metaDatas,
       this._config!.min_y_axis !== undefined ||
-        this._config!.max_y_axis !== undefined
+        this._config!.max_y_axis !== undefined,
+      !!this._config.hide_legend
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
@@ -421,6 +437,7 @@ export class HuiStatisticsGraphCardEditor
       case "period":
       case "unit":
       case "hide_legend":
+      case "expand_legend":
       case "logarithmic_scale":
       case "min_y_axis":
       case "max_y_axis":
