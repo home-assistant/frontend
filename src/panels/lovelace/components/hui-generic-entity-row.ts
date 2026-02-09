@@ -5,14 +5,12 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import {
   DOMAINS_INPUT_ROW,
-  STRINGS_SEPARATOR_DOT,
 } from "../../../common/const";
 import { uid } from "../../../common/util/uid";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
-import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { getEntityContext } from "../../../common/entity/context/get_entity_context";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import "../../../components/entity/state-badge";
@@ -84,13 +82,6 @@ export class HuiGenericEntityRow extends LitElement {
       this.hass.floors
     );
     const areaPart = context.area ? computeAreaName(context.area) : undefined;
-    const floorPart =
-      areaPart && context.floor ? computeFloorName(context.floor) : undefined;
-    const composedAreaWithFloor = areaPart
-      ? floorPart
-        ? [areaPart, floorPart].join(STRINGS_SEPARATOR_DOT)
-        : areaPart
-      : undefined;
 
     return html`
       <div
@@ -225,12 +216,7 @@ export class HuiGenericEntityRow extends LitElement {
                                         ? areaPart
                                           ? html`${areaPart}`
                                           : nothing
-                                        : this.config.secondary_info ===
-                                            "area-with-floor"
-                                          ? composedAreaWithFloor
-                                            ? html`${composedAreaWithFloor}`
-                                            : nothing
-                                          : nothing)}
+                                        : nothing)}
                     </div>
                   `
                 : nothing}
