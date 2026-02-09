@@ -155,7 +155,7 @@ class HaMfaModuleSetupFlow extends LitElement {
           ${this._step?.type === "form"
             ? html`<ha-button
                 slot="primaryAction"
-                .disabled=${this._loading}
+                .disabled=${this._isSubmitDisabled()}
                 @click=${this._submitStep}
                 >${this.hass.localize(
                   "ui.panel.profile.mfa_setup.submit"
@@ -215,6 +215,10 @@ class HaMfaModuleSetupFlow extends LitElement {
   }
 
   private _submitStep() {
+    if (this._isSubmitDisabled()) {
+      return;
+    }
+
     this._loading = true;
     this._errorMessage = undefined;
 
@@ -241,6 +245,26 @@ class HaMfaModuleSetupFlow extends LitElement {
           this._loading = false;
         }
       );
+  }
+
+  private _isSubmitDisabled() {
+    if (this._loading) {
+      return true;
+    }
+
+    if (this._step?.type !== "form") {
+      return false;
+    }
+
+    const hasCodeField = this._step.data_schema.some(
+      (field) => field.name === "code"
+    );
+
+    if (!hasCodeField) {
+      return false;
+    }
+
+    return !this._stepData.code?.trim();
   }
 
   private _processStep(step) {
