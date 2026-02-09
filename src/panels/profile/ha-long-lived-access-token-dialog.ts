@@ -208,7 +208,6 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
       });
       this._name = name;
       this._createdCallback?.();
-      fireEvent(this, "hass-refresh-tokens");
     } catch (err: any) {
       this._errorMessage = err.message;
       await showAlertDialog(this, {
