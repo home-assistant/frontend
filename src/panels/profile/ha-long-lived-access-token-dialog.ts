@@ -11,7 +11,6 @@ import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-svg-icon";
 import "../../components/ha-wa-dialog";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../types";
 import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
 import { showToast } from "../../util/toast";
@@ -32,7 +31,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
   @state() private _token?: string;
 
-  @state() private _createdCallback: () => void = () => undefined;
+  private _createdCallback!: () => void;
 
   private _existingNames = new Set<string>();
 
@@ -58,7 +57,6 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     this._renderDialog = false;
     this._name = "";
     this._token = undefined;
-    this._createdCallback = () => undefined;
     this._existingNames = new Set();
     this._errorMessage = undefined;
     this._loading = false;
@@ -210,12 +208,6 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
       this._createdCallback();
     } catch (err: any) {
       this._errorMessage = err.message;
-      await showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.profile.long_lived_access_tokens.create_failed"
-        ),
-        text: err.message,
-      });
     } finally {
       this._loading = false;
     }
