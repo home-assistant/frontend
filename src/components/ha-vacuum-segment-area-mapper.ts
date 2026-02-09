@@ -8,6 +8,7 @@ import { getVacuumSegments } from "../data/vacuum";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-area-picker";
+import { haStyle } from "../resources/styles";
 
 type AreaSegmentMapping = Record<string, string[]>; // area ID -> segment IDs
 
@@ -26,11 +27,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
   @state() private _error?: string;
 
   public get lastSeenSegments() {
-    return this._segments?.map((seg: Segment) => ({
-      id: seg.id,
-      name: seg.name,
-      ...(seg.group && { group: seg.group }),
-    }));
+    return this._segments;
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
@@ -77,16 +74,14 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     const groupedSegments = this._groupSegments(this._segments);
 
     return html`
-      <div class="segments">
-        ${Object.entries(groupedSegments).map(
-          ([groupName, segments]) => html`
-            ${groupName !== "undefined"
-              ? html`<div class="group-header">${groupName}</div>`
-              : nothing}
+      ${Object.entries(groupedSegments).map(
+        ([groupName, segments]) => html`
+          ${groupName !== "undefined" ? html`<h2>${groupName}</h2>` : nothing}
+          <ha-md-list>
             ${segments.map((segment) => this._renderSegment(segment))}
-          `
-        )}
-      </div>
+          </ha-md-list>
+        `
+      )}
     `;
   }
 
@@ -108,12 +103,10 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     const mappedAreas = this._getSegmentAreas(segment.id);
 
     return html`
-      <div class="segment-row">
-        <div class="segment-info">
-          <div class="segment-name">${segment.name}</div>
-          <div class="segment-id">${segment.id}</div>
-        </div>
+      <ha-md-list-item>
+        <span slot="headline">${segment.name}</span>
         <ha-area-picker
+          slot="end"
           .hass=${this.hass}
           .value=${mappedAreas}
           .label=${"Area"}
@@ -121,7 +114,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
           @value-changed=${this._handleAreaChanged}
           data-segment-id=${segment.id}
         ></ha-area-picker>
-      </div>
+      </ha-md-list-item>
     `;
   }
 
@@ -175,80 +168,29 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     fireEvent(this, "value-changed", { value: newMapping });
   }
 
-  static styles: CSSResultGroup = css`
-    :host {
-      display: block;
-    }
-
-    .loading {
-      padding: var(--ha-space-4);
-      text-align: center;
-      color: var(--secondary-text-color);
-    }
-
-    .segments {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-2);
-    }
-
-    .group-header {
-      font-weight: 500;
-      color: var(--primary-text-color);
-      padding: var(--ha-space-3) var(--ha-space-2);
-      margin-top: var(--ha-space-2);
-      background-color: var(--secondary-background-color);
-      border-radius: var(--ha-card-border-radius, 12px);
-    }
-
-    .segment-row {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-4);
-      padding: var(--ha-space-2);
-      border-radius: var(--ha-card-border-radius, 12px);
-      background-color: var(--card-background-color);
-      border: 1px solid var(--divider-color);
-    }
-
-    .segment-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .segment-name {
-      font-weight: 500;
-      color: var(--primary-text-color);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .segment-id {
-      font-size: 0.875rem;
-      color: var(--secondary-text-color);
-      font-family: var(--ha-font-family-code);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    ha-area-picker {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    @media (max-width: 600px) {
-      .segment-row {
-        flex-direction: column;
-        align-items: stretch;
+  static styles: CSSResultGroup = [
+    haStyle,
+    css`
+      :host {
+        display: block;
       }
 
       ha-area-picker {
-        min-width: 0;
+        flex: 1;
       }
-    }
-  `;
+
+      h2 {
+        margin: 0;
+        margin-inline-start: var(--ha-space-4);
+      }
+
+      .loading {
+        padding: var(--ha-space-4);
+        text-align: center;
+        color: var(--secondary-text-color);
+      }
+    `,
+  ];
 }
 
 declare global {
