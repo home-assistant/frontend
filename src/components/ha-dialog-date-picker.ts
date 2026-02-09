@@ -53,6 +53,7 @@ export class HaDialogDatePicker extends LitElement {
       .hass=${this.hass}
       .open=${this._open}
       width="small"
+      without-header
       @closed=${this._dialogClosed}
     >
       <app-datepicker
