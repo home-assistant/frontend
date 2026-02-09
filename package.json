@@ -238,6 +238,5 @@
   "packageManager": "yarn@4.12.0",
   "volta": {
     "node": "24.13.0"
-  },
-  "customElements": "custom-elements.json"
+  }
 }
