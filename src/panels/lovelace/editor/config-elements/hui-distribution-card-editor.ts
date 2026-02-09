@@ -28,8 +28,8 @@ import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 
 const distributionEntityConfigStruct = object({
-  entity: entityNameStruct,
-  name: optional(string()),
+  entity: string(),
+  name: optional(entityNameStruct),
   color: optional(string()),
 });
 
