@@ -264,7 +264,9 @@ class HaMfaModuleSetupFlow extends LitElement {
       return false;
     }
 
-    return !this._stepData.code?.trim();
+    const { code } = this._stepData;
+
+    return typeof code !== "string" || code.trim() === "";
   }
 
   private _processStep(step) {
