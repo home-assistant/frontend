@@ -1,8 +1,6 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
 export interface LongLivedAccessTokenDialogParams {
-  token?: string;
-  name?: string;
   createdCallback?: () => void;
 }
 

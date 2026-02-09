@@ -39,8 +39,8 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
   @state() private _errorMessage?: string;
 
   public showDialog(params?: LongLivedAccessTokenDialogParams): void {
-    this._name = params?.name || "";
-    this._token = params?.token;
+    this._name = "";
+    this._token = undefined;
     this._createdCallback = params?.createdCallback;
     this._errorMessage = undefined;
     this._qrCode = undefined;
