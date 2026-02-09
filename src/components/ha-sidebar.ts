@@ -437,6 +437,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       <ha-md-list-item
         .href=${`/${urlPath}`}
         type="link"
+        .ariaCurrent=${isSelected ? "page" : undefined}
         class=${classMap({ selected: isSelected })}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
@@ -466,8 +467,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     return html`
       <ha-md-list-item
         class="configuration ${classMap({ selected: isSelected })}"
-        type="button"
+        type="link"
         href="/config"
+        .ariaCurrent=${isSelected ? "page" : undefined}
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
@@ -531,6 +533,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       <ha-md-list-item
         href="/profile"
         type="link"
+        .ariaCurrent=${isSelected ? "page" : undefined}
         class=${classMap({
           user: true,
           selected: isSelected,
