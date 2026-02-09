@@ -7,7 +7,8 @@ import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../data/cloud";
@@ -138,40 +139,48 @@ export class CloudAlexaPref extends LitElement {
                         </li>
                       </ul>
                     </ha-alert>`
-                  : ""}<ha-settings-row>
-                  <span slot="heading">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.expose_new_entities"
-                    )}
-                  </span>
-                  <span slot="description">
-                    ${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.expose_new_entities_info"
-                    )}
-                  </span>
-                  <ha-switch
-                    .checked=${this._exposeNew}
-                    .disabled=${this._exposeNew === undefined}
-                    @change=${this._exposeNewToggleChanged}
-                  ></ha-switch> </ha-settings-row
-                >${alexa_registered
+                  : ""}
+                <ha-md-list>
+                  <ha-md-list-item>
+                    <span slot="headline"
+                      >${this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.expose_new_entities"
+                      )}</span
+                    >
+                    <span slot="supporting-text"
+                      >${this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.expose_new_entities_info"
+                      )}</span
+                    >
+                    <ha-switch
+                      slot="end"
+                      .checked=${this._exposeNew}
+                      .disabled=${this._exposeNew === undefined}
+                      @change=${this._exposeNewToggleChanged}
+                    ></ha-switch>
+                  </ha-md-list-item>
+                </ha-md-list>
+                ${alexa_registered
                   ? html`
-                      <ha-settings-row>
-                        <span slot="heading">
-                          ${this.hass!.localize(
-                            "ui.panel.config.cloud.account.alexa.enable_state_reporting"
-                          )}
-                        </span>
-                        <span slot="description">
-                          ${this.hass!.localize(
-                            "ui.panel.config.cloud.account.alexa.info_state_reporting"
-                          )}
-                        </span>
-                        <ha-switch
-                          .checked=${alexa_report_state}
-                          @change=${this._reportToggleChanged}
-                        ></ha-switch>
-                      </ha-settings-row>
+                      <ha-md-list>
+                        <ha-md-list-item>
+                          <span slot="headline"
+                            >${this.hass!.localize(
+                              "ui.panel.config.cloud.account.alexa.enable_state_reporting"
+                            )}</span
+                          >
+                          <span slot="supporting-text"
+                            >${this.hass!.localize(
+                              "ui.panel.config.cloud.account.alexa.info_state_reporting"
+                            )}</span
+                          >
+                          <ha-switch
+                            slot="end"
+                            .checked=${alexa_report_state}
+                            @change=${this._reportToggleChanged}
+                          ></ha-switch>
+                        </ha-md-list-item>
+                      </ha-md-list>
                     `
                   : ""}`}
         </div>
@@ -250,8 +259,14 @@ export class CloudAlexaPref extends LitElement {
     a {
       color: var(--primary-color);
     }
-    ha-settings-row {
-      padding: 0;
+    ha-md-list {
+      padding-top: 0;
+      padding-bottom: 0;
+      --md-list-item-leading-space: 0;
+      --md-list-item-trailing-space: 0;
+    }
+    ha-md-list-item {
+      --md-item-overflow: visible;
     }
     .header-actions {
       position: absolute;
