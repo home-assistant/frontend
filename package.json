@@ -21,8 +21,7 @@
     "postpack": "pinst --enable",
     "test": "vitest run --config test/vitest.config.ts",
     "test:coverage": "vitest run --config test/vitest.config.ts --coverage",
-    "analyze": "cem analyze --litelement --globs \"src/components/ha-alert.ts\" --dev",
-    "doc": "gulp generate-component-docs"
+    "analyze": "cem analyze --litelement --globs \"src/components/ha-alert.ts\" --dev"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
@@ -153,7 +152,6 @@
     "@babel/preset-env": "7.29.0",
     "@bundle-stats/plugin-webpack-filter": "4.21.9",
     "@custom-elements-manifest/analyzer": "0.11.0",
-    "@custom-elements-manifest/to-markdown": "0.1.0",
     "@lokalise/node-api": "15.6.1",
     "@octokit/auth-oauth-device": "8.0.3",
     "@octokit/plugin-retry": "8.0.3",
@@ -240,5 +238,6 @@
   "packageManager": "yarn@4.12.0",
   "volta": {
     "node": "24.13.0"
-  }
+  },
+  "customElements": "custom-elements.json"
 }

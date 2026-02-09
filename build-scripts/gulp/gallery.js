@@ -3,11 +3,9 @@ import { glob } from "glob";
 import gulp from "gulp";
 import yaml from "js-yaml";
 import { marked } from "marked";
-import ts from "typescript";
-import { create } from "@custom-elements-manifest/analyzer";
-import { litPlugin } from "@custom-elements-manifest/analyzer/src/features/framework-plugins/lit/lit.js";
 import path from "path";
 import paths from "../paths.cjs";
+import { generateComponentApiMarkdown } from "./gallery/api-docs.js";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
@@ -15,28 +13,6 @@ import "./gen-icons-json.js";
 import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
-
-gulp.task("generate-component-docs", async function generateComponentDocs() {
-  const filePaths = ["src/components/ha-alert.ts"];
-
-  const modules = await Promise.all(
-    filePaths.map(async (file) => {
-      const filePath = path.resolve(file);
-      console.log(`Reading ${file} -> ${filePath}`);
-      const source = fs.readFileSync(filePath).toString();
-
-      return ts.createSourceFile(file, source, ts.ScriptTarget.ES2015, true);
-    })
-  );
-
-  const manifest = create({
-    modules,
-    plugins: litPlugin(),
-    context: { dev: true },
-  });
-
-  console.log(manifest);
-});
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
@@ -64,11 +40,19 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
     const demoFile = path.resolve(pageDir, `${pageId}.ts`);
     const descriptionFile = path.resolve(pageDir, `${pageId}.markdown`);
+    const componentFile = path.resolve(
+      "src/components",
+      `${path.basename(pageId)}.ts`
+    );
     const hasDemo = fs.existsSync(demoFile);
     let hasDescription = fs.existsSync(descriptionFile);
+    let hasApiDocs = false;
     let metadata = {};
+    let descriptionContent = "";
+    let apiDocsContent = "";
+
     if (hasDescription) {
-      let descriptionContent = fs.readFileSync(descriptionFile, "utf-8");
+      descriptionContent = fs.readFileSync(descriptionFile, "utf-8");
 
       if (descriptionContent.startsWith("---")) {
         const metadataEnd = descriptionContent.indexOf("---", 3);
@@ -77,22 +61,45 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
           .substring(metadataEnd + 3)
           .trim();
       }
+    }
 
-      // If description is just metadata
-      if (descriptionContent === "") {
-        hasDescription = false;
-      } else {
-        descriptionContent = marked(descriptionContent).replace(/`/g, "\\`");
-        fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
-        fs.writeFileSync(
-          path.resolve(galleryBuild, `${pageId}-description.ts`),
-          `
-          import {html} from "lit";
-          export default html\`${descriptionContent}\`
-          `
+    if (fs.existsSync(componentFile)) {
+      // eslint-disable-next-line no-await-in-loop
+      const apiDocsMarkdown = await generateComponentApiMarkdown(componentFile);
+      if (apiDocsMarkdown) {
+        hasApiDocs = true;
+        apiDocsContent = marked(`## API docs\n\n${apiDocsMarkdown}`).replace(
+          /`/g,
+          "\\`"
         );
       }
     }
+
+    if (descriptionContent === "") {
+      hasDescription = false;
+    } else {
+      descriptionContent = marked(descriptionContent).replace(/`/g, "\\`");
+      fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
+      fs.writeFileSync(
+        path.resolve(galleryBuild, `${pageId}-description.ts`),
+        `
+          import {html} from "lit";
+          export default html\`${descriptionContent}\`
+          `
+      );
+    }
+
+    if (hasApiDocs) {
+      fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
+      fs.writeFileSync(
+        path.resolve(galleryBuild, `${pageId}-api-docs.ts`),
+        `
+          import {html} from "lit";
+          export default html\`${apiDocsContent}\`
+          `
+      );
+    }
+
     content += `  "${pageId}": {
       metadata: ${JSON.stringify(metadata)},
       ${
@@ -100,6 +107,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
           ? `description: () => import("./${pageId}-description").then(m => m.default),`
           : ""
       }
+      ${hasApiDocs ? `apiDocs: () => import("./${pageId}-api-docs").then(m => m.default),` : ""}
       ${hasDemo ? `demo: () => import("../src/pages/${pageId}")` : ""}
 
     },\n`;

@@ -2,7 +2,7 @@ import "@material/mwc-drawer";
 import "@material/mwc-top-app-bar-fixed";
 import { mdiMenu } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
@@ -10,6 +10,7 @@ import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
 import { PAGES, SIDEBAR } from "../build/import-pages";
+import "./components/page-api-docs";
 import "./components/page-description";
 
 const GITHUB_DEMO_URL =
@@ -95,6 +96,9 @@ class HaGallery extends LitElement {
                 `
               : ""}
             ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
+            ${PAGES[this._page].apiDocs
+              ? html`<page-api-docs .page=${this._page}></page-api-docs>`
+              : nothing}
           </div>
           <div class="page-footer">
             <div class="header">Help us to improve our documentation</div>
