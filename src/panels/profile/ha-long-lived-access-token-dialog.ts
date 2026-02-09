@@ -41,15 +41,10 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
   @state() private _errorMessage?: string;
 
   public showDialog(params?: LongLivedAccessTokenDialogParams): void {
-    this._name = "";
-    this._token = undefined;
     this._createdCallback = params?.createdCallback;
     this._existingNames = new Set(
       (params?.existingNames || []).map((name) => this._normalizeName(name))
     );
-    this._errorMessage = undefined;
-    this._qrCode = undefined;
-    this._loading = false;
     this._renderDialog = true;
     this._open = true;
   }
@@ -64,6 +59,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     this._name = "";
     this._token = undefined;
     this._createdCallback = undefined;
+    this._existingNames = new Set();
     this._errorMessage = undefined;
     this._loading = false;
     this._qrCode = undefined;
