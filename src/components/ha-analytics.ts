@@ -5,7 +5,8 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
-import "./ha-settings-row";
+import "./ha-md-list";
+import "./ha-md-list-item";
 import "./ha-switch";
 import "./ha-tooltip";
 import type { HaSwitch } from "./ha-switch";
@@ -33,48 +34,48 @@ export class HaAnalytics extends LitElement {
     const baseEnabled = !loading && this.analytics!.preferences.base;
 
     return html`
-      <ha-settings-row>
-        <span slot="heading" data-for="base">
-          ${this.localize(
-            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
-          )}
-        </span>
-        <span slot="description" data-for="base">
-          ${this.localize(
-            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
-          )}
-        </span>
-        <ha-switch
-          @change=${this._handleRowClick}
-          .checked=${!!baseEnabled}
-          .preference=${"base"}
-          .disabled=${loading}
-          name="base"
-        >
-        </ha-switch>
-      </ha-settings-row>
-      ${ADDITIONAL_PREFERENCES.map(
-        (preference) => html`
-          <ha-settings-row>
-            <span slot="heading" data-for=${preference}>
-              ${this.localize(
-                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
-              )}
-            </span>
-            <span slot="description" data-for=${preference}>
-              ${this.localize(
-                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
-              )}
-            </span>
-            <span>
+      <ha-md-list>
+        <ha-md-list-item>
+          <span slot="headline" data-for="base"
+            >${this.localize(
+              `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
+            )}</span
+          >
+          <span slot="supporting-text" data-for="base"
+            >${this.localize(
+              `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
+            )}</span
+          >
+          <ha-switch
+            slot="end"
+            @change=${this._handleRowClick}
+            .checked=${!!baseEnabled}
+            .preference=${"base"}
+            .disabled=${loading}
+            name="base"
+          ></ha-switch>
+        </ha-md-list-item>
+        ${ADDITIONAL_PREFERENCES.map(
+          (preference) => html`
+            <ha-md-list-item>
+              <span slot="headline" data-for=${preference}
+                >${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
+                )}</span
+              >
+              <span slot="supporting-text" data-for=${preference}
+                >${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
+                )}</span
+              >
               <ha-switch
+                slot="end"
                 .id="switch-${preference}"
                 @change=${this._handleRowClick}
                 .checked=${!!this.analytics?.preferences[preference]}
                 .preference=${preference}
                 name=${preference}
-              >
-              </ha-switch>
+              ></ha-switch>
               ${baseEnabled
                 ? nothing
                 : html`<ha-tooltip
@@ -85,30 +86,30 @@ export class HaAnalytics extends LitElement {
                       `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
                     )}
                   </ha-tooltip>`}
-            </span>
-          </ha-settings-row>
-        `
-      )}
-      <ha-settings-row>
-        <span slot="heading" data-for="diagnostics">
-          ${this.localize(
-            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
-          )}
-        </span>
-        <span slot="description" data-for="diagnostics">
-          ${this.localize(
-            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
-          )}
-        </span>
-        <ha-switch
-          @change=${this._handleRowClick}
-          .checked=${!!this.analytics?.preferences.diagnostics}
-          .preference=${"diagnostics"}
-          .disabled=${loading}
-          name="diagnostics"
-        >
-        </ha-switch>
-      </ha-settings-row>
+            </ha-md-list-item>
+          `
+        )}
+        <ha-md-list-item>
+          <span slot="headline" data-for="diagnostics"
+            >${this.localize(
+              `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
+            )}</span
+          >
+          <span slot="supporting-text" data-for="diagnostics"
+            >${this.localize(
+              `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
+            )}</span
+          >
+          <ha-switch
+            slot="end"
+            @change=${this._handleRowClick}
+            .checked=${!!this.analytics?.preferences.diagnostics}
+            .preference=${"diagnostics"}
+            .disabled=${loading}
+            name="diagnostics"
+          ></ha-switch>
+        </ha-md-list-item>
+      </ha-md-list>
     `;
   }
 
@@ -164,13 +165,14 @@ export class HaAnalytics extends LitElement {
           color: var(--error-color);
         }
 
-        ha-settings-row {
-          padding: 0;
+        ha-md-list {
+          padding-top: 0;
+          padding-bottom: 0;
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
         }
-
-        span[slot="heading"],
-        span[slot="description"] {
-          cursor: pointer;
+        ha-md-list-item {
+          --md-item-overflow: visible;
         }
       `,
     ];
