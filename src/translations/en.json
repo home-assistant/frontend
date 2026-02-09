@@ -9510,7 +9510,7 @@
         "user_settings_header": "User settings",
         "user_settings_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
         "localization_header": "Localization",
-        "localization_detail": "These settings control how dates, times, and numbers are displayed.",
+        "localization_detail": "Control how dates, times, and numbers are displayed and apply to all devices.",
         "mobile_app_settings": "Mobile app settings",
         "browser_settings": "Browser settings",
         "client_settings_detail": "The following settings are local to this client only, and may reset to defaults on logout or when local data is cleared.",

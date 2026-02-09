@@ -130,6 +130,10 @@ class HaProfileSectionGeneral extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.user_settings_detail")}
             </div>
+            <ha-pick-language-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-language-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -234,10 +238,10 @@ class HaProfileSectionGeneral extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.localization_detail")}
             </div>
-            <ha-pick-language-row
+            <ha-pick-time-zone-row
               .narrow=${this.narrow}
               .hass=${this.hass}
-            ></ha-pick-language-row>
+            ></ha-pick-time-zone-row>
             <ha-pick-number-format-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -250,10 +254,6 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-date-format-row>
-            <ha-pick-time-zone-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-time-zone-row>
             <ha-pick-first-weekday-row
               .narrow=${this.narrow}
               .hass=${this.hass}
