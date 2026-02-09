@@ -13,8 +13,6 @@ import type { HomeAssistant } from "../../types";
 class EntityIdPickerRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public coreUserData?: CoreFrontendUserData;
 
   @state() private _error?: string;
