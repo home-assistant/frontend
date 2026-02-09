@@ -154,6 +154,7 @@ class DialogCalendarEventEditor extends LitElement {
         header-title=${this.hass.localize(
           `ui.components.calendar.event.${isCreate ? "add" : "edit"}`
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div class="content">
