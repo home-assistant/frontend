@@ -296,7 +296,7 @@ class HaProfileSectionGeneral extends LitElement {
         }
 
         ha-md-list {
-          background: 0;
+          background: none;
           padding-top: 0;
           padding-bottom: 0;
         }
