@@ -130,7 +130,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
       ha-md-list {
         padding-top: 0;
         padding-bottom: 0;
-        background: 0;
+        background: none;
       }
     `,
   ];
