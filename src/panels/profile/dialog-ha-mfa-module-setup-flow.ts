@@ -6,6 +6,7 @@ import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-wa-dialog";
 import "../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
 import "../../components/ha-spinner";
 import { autocompleteLoginFields } from "../../data/auth";
@@ -83,6 +84,7 @@ class HaMfaModuleSetupFlow extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         header-title=${this._computeStepTitle()}
         @closed=${this._dialogClosed}
       >
@@ -185,8 +187,15 @@ class HaMfaModuleSetupFlow extends LitElement {
         ha-markdown-element p {
           text-align: center;
         }
+        ha-markdown-element svg {
+          display: block;
+          margin: 0 auto;
+        }
         ha-markdown-element code {
           background-color: transparent;
+        }
+        ha-form {
+          margin-top: var(--ha-space-4);
         }
         ha-markdown-element > *:last-child {
           margin-bottom: revert;
@@ -247,7 +256,59 @@ class HaMfaModuleSetupFlow extends LitElement {
   }
 
   private _isSubmitDisabled() {
-    return this._loading;
+    return this._loading || this._hasMissingRequiredFields();
+  }
+
+  private _hasMissingRequiredFields(
+    schema: readonly HaFormSchema[] = this._step?.type === "form"
+      ? this._step.data_schema
+      : []
+  ): boolean {
+    for (const field of schema) {
+      if ("schema" in field) {
+        if (this._hasMissingRequiredFields(field.schema)) {
+          return true;
+        }
+        continue;
+      }
+
+      if (!field.required) {
+        continue;
+      }
+
+      if (
+        field.default !== undefined ||
+        field.description?.suggested_value !== undefined
+      ) {
+        continue;
+      }
+
+      if (this._isEmptyValue(this._stepData[field.name])) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private _isEmptyValue(value: unknown): boolean {
+    if (value === undefined || value === null) {
+      return true;
+    }
+
+    if (typeof value === "string") {
+      return value.trim() === "";
+    }
+
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+
+    if (typeof value === "object") {
+      return Object.keys(value as Record<string, unknown>).length === 0;
+    }
+
+    return false;
   }
 
   private _processStep(step) {
