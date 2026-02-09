@@ -35,6 +35,9 @@ import { filterXSS } from "../../../../../common/util/xss";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
+// Number of days of padding when showing time axis in months
+const MONTH_TIME_AXIS_PADDING = 5;
+
 export function getSuggestedMax(
   period: StatisticPeriod,
   end: Date,
@@ -99,12 +102,11 @@ export function getCommonOptions(
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
 
-  const shortMonth = differenceInCalendarMonths(end, start) <= 2;
   const monthTimeAxis: ECOption = {
     xAxis: {
       type: "time",
-      min: subDays(start, 5),
-      max: addDays(suggestedMax, 5),
+      min: subDays(start, MONTH_TIME_AXIS_PADDING),
+      max: addDays(suggestedMax, MONTH_TIME_AXIS_PADDING),
       axisLabel: {
         formatter: {
           year: "{yearStyle|{MMMM} {yyyy}}",
@@ -116,7 +118,10 @@ export function getCommonOptions(
           },
         },
       },
-      splitNumber: shortMonth ? 2 : 5,
+      // For shorter month ranges, force splitting to ensure time axis renders
+      // as whole month intervals. Limit the number of forced ticks to 6 months
+      // (so a max calendar difference of 5) to reduce clutter.
+      splitNumber: Math.min(differenceInCalendarMonths(end, start), 5),
     },
   };
   const normalTimeAxis: ECOption = {
