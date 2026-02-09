@@ -38,7 +38,16 @@ export function getState(): Partial<StoredHomeAssistant> {
   STORED_STATE.forEach((key) => {
     const storageItem = window.localStorage.getItem(key);
     if (storageItem !== null) {
-      let value = JSON.parse(storageItem);
+      let value;
+      try {
+        value = JSON.parse(storageItem);
+      } catch (_err: any) {
+        if (key === "selectedTheme") {
+          window.localStorage.removeItem(key);
+          state[key] = { theme: "" };
+        }
+        return;
+      }
       // selectedTheme went from string to object on 20200718
       if (key === "selectedTheme" && typeof value === "string") {
         value = { theme: value };
