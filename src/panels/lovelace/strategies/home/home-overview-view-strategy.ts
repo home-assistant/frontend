@@ -254,11 +254,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
-      // Discovered devices card - only visible to admins, hides when empty
-      {
-        type: "discovered-devices",
-        hide_empty: true,
-      } satisfies DiscoveredDevicesCardConfig,
       // Repairs card - only visible to admins, hides when empty
       {
         type: "repairs",
@@ -277,6 +272,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           navigation_path: "/config/updates?historyBack=1",
         },
       } satisfies UpdatesCardConfig,
+      // Discovered devices card - only visible to admins, hides when empty
+      {
+        type: "discovered-devices",
+        hide_empty: true,
+      } satisfies DiscoveredDevicesCardConfig,
       hasLights &&
         ({
           type: "home-summary",

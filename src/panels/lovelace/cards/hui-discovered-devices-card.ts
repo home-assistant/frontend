@@ -183,7 +183,7 @@ export class HuiDiscoveredDevicesCard
     tileCardStyle,
     css`
       :host {
-        --tile-color: var(--primary-color);
+        --tile-color: var(--info-color);
       }
     `,
   ];
