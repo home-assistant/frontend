@@ -27,9 +27,9 @@ import "./ha-tooltip";
 export const getLabelColorStyle = (labelColor: string | undefined | null) => {
   const color = labelColor ? computeCssColor(labelColor) : undefined;
   return color
-    ? `--color: ${color};
-       --color-text: ${getContrastedColorHex(labelColor!)};`
-    : `--color-text: ${getContrastedColorHex("grey")};`;
+    ? `--ha-label-background-color: ${color};
+       --primary-color-text: ${getContrastedColorHex(labelColor!)};`
+    : `--primary-color-text: ${getContrastedColorHex("grey")};`;
 };
 
 @customElement("ha-labels-picker")
