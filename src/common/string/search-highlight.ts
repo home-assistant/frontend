@@ -120,10 +120,90 @@ export type HighlightedText =
   | null
   | undefined;
 
-interface HighlightController {
-  applyFromMarks: (key?: string) => void;
-  applyFromRanges: (ranges: Range[], key?: string) => void;
-  clear: () => void;
+class HighlightController {
+  private _lastKey?: string;
+
+  private _lastCount = -1;
+
+  public constructor(
+    private _root: ShadowRoot,
+    private _name: string
+  ) {}
+
+  public applyFromMarks(key?: string) {
+    if (!CSS.highlights) {
+      return;
+    }
+
+    const marks = this._root.querySelectorAll("mark.ha-highlight");
+    const markCount = marks.length;
+    if (key === this._lastKey && markCount === this._lastCount) {
+      return;
+    }
+
+    this._lastKey = key;
+    this._lastCount = markCount;
+
+    if (!markCount) {
+      this.clear();
+      return;
+    }
+
+    const ranges: Range[] = [];
+    marks.forEach((mark) => {
+      const textNode = mark.firstChild;
+      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+        return;
+      }
+      const text = textNode.textContent;
+      if (!text) {
+        return;
+      }
+      const range = new Range();
+      range.setStart(textNode, 0);
+      range.setEnd(textNode, text.length);
+      ranges.push(range);
+    });
+
+    if (ranges.length) {
+      CSS.highlights.set(this._name, new Highlight(...ranges));
+      (this._root.host as HTMLElement).setAttribute(
+        "data-custom-highlight",
+        ""
+      );
+    } else {
+      this.clear();
+    }
+  }
+
+  public applyFromRanges(ranges: Range[], key?: string) {
+    if (!CSS.highlights) {
+      return;
+    }
+
+    const rangeCount = ranges.length;
+    if (key === this._lastKey && rangeCount === this._lastCount) {
+      return;
+    }
+
+    this._lastKey = key;
+    this._lastCount = rangeCount;
+
+    if (!rangeCount) {
+      this.clear();
+      return;
+    }
+
+    CSS.highlights.set(this._name, new Highlight(...ranges));
+    (this._root.host as HTMLElement).setAttribute("data-custom-highlight", "");
+  }
+
+  public clear() {
+    if (CSS.highlights) {
+      CSS.highlights.delete(this._name);
+    }
+    (this._root.host as HTMLElement).removeAttribute("data-custom-highlight");
+  }
 }
 
 const HIGHLIGHT_NAME_PREFIX = "ha-search";
@@ -150,85 +230,7 @@ const getHighlightController = (root: ShadowRoot): HighlightController => {
     ensureHighlightStyle(root, name);
   }
 
-  let lastKey: string | undefined;
-  let lastMarkCount = -1;
-
-  const clear = () => {
-    if (CSS.highlights) {
-      CSS.highlights.delete(name);
-    }
-    (root.host as HTMLElement).removeAttribute("data-custom-highlight");
-  };
-
-  const controller: HighlightController = {
-    applyFromMarks: (key?: string) => {
-      if (!CSS.highlights) {
-        return;
-      }
-
-      const marks = root.querySelectorAll("mark.ha-highlight");
-      const markCount = marks.length;
-      if (key === lastKey && markCount === lastMarkCount) {
-        return;
-      }
-
-      lastKey = key;
-      lastMarkCount = markCount;
-
-      if (!markCount) {
-        clear();
-        return;
-      }
-
-      const ranges: Range[] = [];
-      marks.forEach((mark) => {
-        const textNode = mark.firstChild;
-        if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
-          return;
-        }
-        const text = textNode.textContent;
-        if (!text) {
-          return;
-        }
-        const range = new Range();
-        range.setStart(textNode, 0);
-        range.setEnd(textNode, text.length);
-        ranges.push(range);
-      });
-
-      if (ranges.length) {
-        CSS.highlights.set(name, new Highlight(...ranges));
-        (root.host as HTMLElement).setAttribute("data-custom-highlight", "");
-      } else {
-        clear();
-      }
-    },
-    applyFromRanges: (ranges: Range[], key?: string) => {
-      if (!CSS.highlights) {
-        return;
-      }
-
-      const rangeCount = ranges.length;
-      if (key === lastKey && rangeCount === lastMarkCount) {
-        return;
-      }
-
-      lastKey = key;
-      lastMarkCount = rangeCount;
-
-      if (!rangeCount) {
-        clear();
-        return;
-      }
-
-      CSS.highlights.set(name, new Highlight(...ranges));
-      (root.host as HTMLElement).setAttribute("data-custom-highlight", "");
-    },
-    clear: () => {
-      clear();
-    },
-  };
-
+  const controller = new HighlightController(root, name);
   highlightControllers.set(root, controller);
   return controller;
 };
