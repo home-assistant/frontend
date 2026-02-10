@@ -1543,10 +1543,6 @@ ${rejected
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
         }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --primary-text-color: var(--color-text);
-        }
       `,
     ];
   }
