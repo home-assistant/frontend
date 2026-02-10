@@ -17,6 +17,14 @@ const buildNormalizedIndexMap = (
   text: string,
   language?: string
 ): NormalizedIndexMap => {
+  const normalizedWhole = stripDiacritics(text).toLocaleLowerCase(language);
+
+  if (normalizedWhole.length === text.length) {
+    const mapStart = Array.from({ length: text.length }, (_, i) => i);
+    const mapEnd = Array.from({ length: text.length }, (_, i) => i + 1);
+    return { normalized: normalizedWhole, mapStart, mapEnd };
+  }
+
   let normalized = "";
   const mapStart: number[] = [];
   const mapEnd: number[] = [];
@@ -113,7 +121,7 @@ export type HighlightedText =
   | undefined;
 
 interface HighlightController {
-  apply: () => void;
+  apply: (key?: string) => void;
   clear: () => void;
 }
 
@@ -141,15 +149,26 @@ const getHighlightController = (root: ShadowRoot): HighlightController => {
     ensureHighlightStyle(root, name);
   }
 
+  let lastKey: string | undefined;
+  let lastMarkCount = -1;
+
   const controller: HighlightController = {
-    apply: () => {
+    apply: (key?: string) => {
       if (!CSS.highlights) {
         return;
       }
 
       const marks = root.querySelectorAll("mark.ha-highlight");
+      const markCount = marks.length;
+      if (key === lastKey && markCount === lastMarkCount) {
+        return;
+      }
+
+      lastKey = key;
+      lastMarkCount = markCount;
+
       const host = root.host as HTMLElement;
-      if (!marks.length) {
+      if (!markCount) {
         CSS.highlights.delete(name);
         host.removeAttribute("data-custom-highlight");
         return;
@@ -240,6 +259,18 @@ export const applyCustomHighlights = (root: ShadowRoot) => {
 
   const controller = getHighlightController(root);
   controller.apply();
+};
+
+export const applyCustomHighlightsWithKey = (
+  root: ShadowRoot,
+  key?: string
+) => {
+  if (!CSS.highlights) {
+    return;
+  }
+
+  const controller = getHighlightController(root);
+  controller.apply(key);
 };
 
 export const clearCustomHighlights = (root: ShadowRoot) => {

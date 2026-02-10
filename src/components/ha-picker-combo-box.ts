@@ -15,7 +15,7 @@ import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import {
-  applyCustomHighlights,
+  applyCustomHighlightsWithKey,
   clearCustomHighlights,
 } from "../common/string/highlight";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -280,7 +280,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   }
 
   protected updated() {
-    applyCustomHighlights(this.renderRoot as ShadowRoot);
+    applyCustomHighlightsWithKey(this.renderRoot as ShadowRoot, this._search);
   }
 
   private _renderSectionButtons() {

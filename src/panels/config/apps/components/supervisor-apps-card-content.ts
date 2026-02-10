@@ -3,7 +3,7 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
-  applyCustomHighlights,
+  applyCustomHighlightsWithKey,
   clearCustomHighlights,
   renderHighlightedText,
 } from "../../../../common/string/highlight";
@@ -83,7 +83,7 @@ class SupervisorAppsCardContent extends LitElement {
   }
 
   protected updated() {
-    applyCustomHighlights(this.renderRoot as ShadowRoot);
+    applyCustomHighlightsWithKey(this.renderRoot as ShadowRoot, this.filter);
   }
 
   public disconnectedCallback(): void {

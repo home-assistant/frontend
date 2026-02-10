@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import {
-  applyCustomHighlights,
+  applyCustomHighlightsWithKey,
   clearCustomHighlights,
   renderHighlightedText,
 } from "../../../common/string/highlight";
@@ -89,7 +89,7 @@ export class HaIntegrationHeader extends LitElement {
   }
 
   protected updated() {
-    applyCustomHighlights(this.renderRoot as ShadowRoot);
+    applyCustomHighlightsWithKey(this.renderRoot as ShadowRoot, this.filter);
   }
 
   public disconnectedCallback(): void {

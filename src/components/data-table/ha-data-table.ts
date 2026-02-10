@@ -17,7 +17,7 @@ import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import {
-  applyCustomHighlights,
+  applyCustomHighlightsWithKey,
   clearCustomHighlights,
   renderHighlightedText,
 } from "../../common/string/highlight";
@@ -259,7 +259,7 @@ export class HaDataTable extends LitElement {
       }
     }
 
-    applyCustomHighlights(this.renderRoot as ShadowRoot);
+    applyCustomHighlightsWithKey(this.renderRoot as ShadowRoot, this._filter);
   }
 
   public willUpdate(properties: PropertyValues) {
