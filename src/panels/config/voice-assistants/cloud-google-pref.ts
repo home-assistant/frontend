@@ -107,37 +107,38 @@ export class CloudGooglePref extends LitElement {
                   "ui.panel.config.cloud.account.google.manual_config"
                 )}
               </ha-alert>`
-            : ""}
+            : nothing}
           ${!google_enabled
-            ? ""
-            : html`${!google_registered
-                  ? html`
-                      <ha-alert
-                        .title=${this.hass.localize(
-                          "ui.panel.config.cloud.account.google.not_configured_title"
-                        )}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.cloud.account.google.not_configured_text"
-                        )}
-
-                        <ul>
-                          <li>
-                            <a
-                              href="https://www.nabucasa.com/config/google_assistant/"
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.cloud.account.google.config_documentation"
-                              )}
-                            </a>
-                          </li>
-                        </ul>
-                      </ha-alert>
-                    `
-                  : ""}
+            ? nothing
+            : html`
                 <ha-md-list>
+                  ${!google_registered
+                    ? html`
+                        <ha-alert
+                          .title=${this.hass.localize(
+                            "ui.panel.config.cloud.account.google.not_configured_title"
+                          )}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.cloud.account.google.not_configured_text"
+                          )}
+
+                          <ul>
+                            <li>
+                              <a
+                                href="https://www.nabucasa.com/config/google_assistant/"
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.cloud.account.google.config_documentation"
+                                )}
+                              </a>
+                            </li>
+                          </ul>
+                        </ha-alert>
+                      `
+                    : nothing}
                   <ha-md-list-item>
                     <span slot="headline"
                       >${this.hass!.localize(
@@ -156,33 +157,30 @@ export class CloudGooglePref extends LitElement {
                       @change=${this._exposeNewToggleChanged}
                     ></ha-switch>
                   </ha-md-list-item>
-                </ha-md-list>
-                ${google_registered
-                  ? html`
-                      ${this.cloudStatus.http_use_ssl
-                        ? html`
-                            <ha-alert
-                              alert-type="warning"
-                              .title=${this.hass.localize(
-                                "ui.panel.config.cloud.account.google.http_use_ssl_warning_title"
-                              )}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.cloud.account.google.http_use_ssl_warning_text"
-                              )}
-                              <a
-                                href="https://www.nabucasa.com/config/google_assistant/#local-communication"
-                                target="_blank"
-                                rel="noreferrer"
-                                >${this.hass.localize(
-                                  "ui.panel.config.common.learn_more"
-                                )}</a
+                  ${google_registered
+                    ? html`
+                        ${this.cloudStatus.http_use_ssl
+                          ? html`
+                              <ha-alert
+                                alert-type="warning"
+                                .title=${this.hass.localize(
+                                  "ui.panel.config.cloud.account.google.http_use_ssl_warning_title"
+                                )}
                               >
-                            </ha-alert>
-                          `
-                        : ""}
-
-                      <ha-md-list>
+                                ${this.hass.localize(
+                                  "ui.panel.config.cloud.account.google.http_use_ssl_warning_text"
+                                )}
+                                <a
+                                  href="https://www.nabucasa.com/config/google_assistant/#local-communication"
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  >${this.hass.localize(
+                                    "ui.panel.config.common.learn_more"
+                                  )}</a
+                                >
+                              </ha-alert>
+                            `
+                          : nothing}
                         <ha-md-list-item>
                           <span slot="headline"
                             >${this.hass!.localize(
@@ -214,21 +212,22 @@ export class CloudGooglePref extends LitElement {
                           >
                           <ha-switch slot="end"></ha-switch>
                         </ha-md-list-item>
-                      </ha-md-list>
 
-                      <ha-textfield
-                        id="google_secure_devices_pin"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.cloud.account.google.devices_pin"
-                        )}
-                        .placeholder=${this.hass.localize(
-                          "ui.panel.config.cloud.account.google.enter_pin_hint"
-                        )}
-                        .value=${google_secure_devices_pin || ""}
-                        @change=${this._pinChanged}
-                      ></ha-textfield>
-                    `
-                  : ""}`}
+                        <ha-textfield
+                          id="google_secure_devices_pin"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.cloud.account.google.devices_pin"
+                          )}
+                          .placeholder=${this.hass.localize(
+                            "ui.panel.config.cloud.account.google.enter_pin_hint"
+                          )}
+                          .value=${google_secure_devices_pin || ""}
+                          @change=${this._pinChanged}
+                        ></ha-textfield>
+                      `
+                    : nothing}
+                </ha-md-list>
+              `}
         </div>
         ${google_enabled
           ? html`<div class="card-actions">
