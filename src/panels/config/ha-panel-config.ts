@@ -332,12 +332,22 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
   ],
   // Not used as a tab, but this way it will stay in the quick bar
-  cloud: [
+  integration_credentials: [
     {
-      path: "/config/cloud",
-      translationKey: "ui.panel.config.cloud.login.title",
-      iconPath: mdiCloud,
-      iconColor: "#4084CD",
+      path: "/config/application_credentials",
+      translationKey: "ui.panel.config.application_credentials.caption",
+      iconPath: mdiPuzzle,
+      iconColor: "#2D338F",
+    },
+  ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  integration_mqtt: [
+    {
+      component: "mqtt",
+      path: "/config/mqtt",
+      translationKey: "ui.panel.config.mqtt.title",
+      iconPath: mdiPuzzle,
+      iconColor: "#2D338F",
     },
   ],
   lovelace: [
