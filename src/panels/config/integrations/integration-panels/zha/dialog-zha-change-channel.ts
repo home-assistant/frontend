@@ -7,6 +7,7 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import { changeZHANetworkChannel } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
@@ -131,8 +132,8 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
     `;
   }
 
-  private _newChannelChosen(ev: CustomEvent<{ value: string }>): void {
-    const value: string = ev.detail.value;
+  private _newChannelChosen(ev: HaSelectSelectEvent): void {
+    const value = ev.detail.value;
     this._newChannel = value === "auto" ? "auto" : parseInt(value, 10);
   }
 

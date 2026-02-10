@@ -30,7 +30,7 @@ import {
   getPanelIconPath,
   getPanelTitle,
 } from "../../data/panel";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 
 @customElement("dialog-edit-sidebar")
@@ -206,7 +206,7 @@ class DialogEditSidebar extends LitElement {
     `;
   }
 
-  private _changed(ev: CustomEvent<{ value: DisplayValue }>): void {
+  private _changed(ev: ValueChangedEvent<DisplayValue>): void {
     const { order = [], hidden = [] } = ev.detail.value;
     this._order = [...order];
     this._hidden = [...hidden];

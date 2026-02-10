@@ -5,6 +5,7 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
 import type {
@@ -66,10 +67,10 @@ export class ZHAClusterAttributes extends LitElement {
               "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
             )}
             class="menu"
-            .value=${String(this._selectedAttributeId)}
+            .value=${this._selectedAttributeId}
             @selected=${this._selectedAttributeChanged}
             .options=${this._attributes.map((entry) => ({
-              value: String(entry.id),
+              value: entry.id,
               label: `${entry.name} (id: ${formatAsPaddedHex(entry.id)})`,
             }))}
           >
@@ -213,9 +214,7 @@ export class ZHAClusterAttributes extends LitElement {
     }
   }
 
-  private _selectedAttributeChanged(
-    event: CustomEvent<{ value: string }>
-  ): void {
+  private _selectedAttributeChanged(event: HaSelectSelectEvent): void {
     this._selectedAttributeId = Number(event.detail.value);
     this._attributeValue = "";
   }

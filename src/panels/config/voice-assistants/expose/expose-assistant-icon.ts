@@ -2,6 +2,7 @@ import { mdiAlertCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { slugify } from "../../../../common/string/slugify";
 import { voiceAssistants } from "../../../../data/expose";
 import type { HomeAssistant } from "../../../../types";
 import "../../../../components/ha-svg-icon";
@@ -23,8 +24,9 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
 
   render() {
     if (!this.assistant || !voiceAssistants[this.assistant]) return nothing;
+    const id = slugify(this.id) + "-" + this.assistant;
     return html`
-      <div class="container" id="container">
+      <div class="container" id=${id}>
         <voice-assistant-brand-icon
           style=${styleMap({
             filter: this.manual ? "grayscale(100%)" : undefined,
@@ -43,7 +45,7 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
           : nothing}
       </div>
       <ha-tooltip
-        for="container"
+        for=${id}
         placement="left"
         .disabled=${!this.unsupported && !this.manual}
       >
@@ -65,13 +67,6 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
   static styles = css`
     .container {
       position: relative;
-    }
-    .logo {
-      position: relative;
-      height: 24px;
-      margin-right: 16px;
-      margin-inline-end: 16px;
-      margin-inline-start: initial;
     }
     .unsupported {
       color: var(--error-color);

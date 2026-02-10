@@ -17,7 +17,7 @@ import { energyStatisticHelpUrl } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGridPowerDialogParams } from "./show-dialogs-energy";
 
 const powerUnitClasses = ["power"];
@@ -287,26 +287,26 @@ export class DialogEnergyGridPowerSettings
     this._powerConfig = {};
   }
 
-  private _standardStatisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _standardStatisticChanged(ev: ValueChangedEvent<string>) {
     this._powerConfig = {
       stat_rate: ev.detail.value,
     };
   }
 
-  private _invertedStatisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _invertedStatisticChanged(ev: ValueChangedEvent<string>) {
     this._powerConfig = {
       stat_rate_inverted: ev.detail.value,
     };
   }
 
-  private _fromStatisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _fromStatisticChanged(ev: ValueChangedEvent<string>) {
     this._powerConfig = {
       ...this._powerConfig,
       stat_rate_from: ev.detail.value,
     };
   }
 
-  private _toStatisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _toStatisticChanged(ev: ValueChangedEvent<string>) {
     this._powerConfig = {
       ...this._powerConfig,
       stat_rate_to: ev.detail.value,
