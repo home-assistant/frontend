@@ -331,6 +331,15 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#B1345C",
     },
   ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  cloud: [
+    {
+      path: "/config/cloud",
+      translationKey: "ui.panel.config.cloud.login.title",
+      iconPath: mdiCloud,
+      iconColor: "#4084CD",
+    },
+  ],
   lovelace: [
     {
       component: "lovelace",
