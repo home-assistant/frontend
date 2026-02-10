@@ -28,8 +28,9 @@ export const getLabelColorStyle = (labelColor: string | undefined | null) => {
   const color = labelColor ? computeCssColor(labelColor) : undefined;
   return color
     ? `--ha-label-background-color: ${color};
-       --primary-color-text: ${getContrastedColorHex(labelColor!)};`
-    : `--primary-color-text: ${getContrastedColorHex("grey")};`;
+       --primary-text-color: ${getContrastedColorHex(labelColor!)};`
+    : `--ha-label-background-color: grey;
+       --primary-text-color: ${getContrastedColorHex("grey")};`;
 };
 
 @customElement("ha-labels-picker")
