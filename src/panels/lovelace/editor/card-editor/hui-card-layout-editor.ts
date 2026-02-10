@@ -141,12 +141,12 @@ export class HuiCardLayoutEditor extends LitElement {
             ></ha-grid-size-picker>
             <ha-md-list>
               <ha-md-list-item>
-                <span slot="headline" data-for="full-width"
+                <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.layout.full_width"
                   )}</span
                 >
-                <span slot="supporting-text" data-for="full-width"
+                <span slot="supporting-text"
                   >${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.layout.full_width_helper"
                   )}</span
@@ -159,12 +159,12 @@ export class HuiCardLayoutEditor extends LitElement {
                 ></ha-switch>
               </ha-md-list-item>
               <ha-md-list-item>
-                <span slot="headline" data-for="precise-mode"
+                <span slot="headline"
                   >${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.layout.precise_mode"
                   )}</span
                 >
-                <span slot="supporting-text" data-for="precise-mode"
+                <span slot="supporting-text"
                   >${this.hass.localize(
                     "ui.panel.lovelace.editor.edit_card.layout.precise_mode_helper"
                   )}</span
