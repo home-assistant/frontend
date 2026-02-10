@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-spinner";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
@@ -122,8 +123,16 @@ export class HuiGraphHeaderFooter
     }
 
     return html`
-      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
+      <div class="graph-container" @click=${this._handleClick}>
+        <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
+      </div>
     `;
+  }
+
+  private _handleClick(): void {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config?.entity ?? null,
+    });
   }
 
   public connectedCallback() {
@@ -234,6 +243,9 @@ export class HuiGraphHeaderFooter
       justify-content: center;
       position: relative;
       padding-bottom: 20%;
+    }
+    .graph-container {
+      cursor: pointer;
     }
     .info {
       position: absolute;
