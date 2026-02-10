@@ -181,7 +181,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
   static styles = css`
     ha-entity-picker {
-      margin-top: 8px;
+      margin-top: var(--ha-space-2);
     }
     ha-sortable ha-entity-picker {
       margin-top: 0;
