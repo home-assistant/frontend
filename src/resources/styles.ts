@@ -26,7 +26,7 @@ export const haStyleHighlight = css`
     box-shadow: inset 0 0 0 1px transparent;
   }
 
-  :host([data-custom-highlight]) .ha-highlight {
+  :host(.custom-highlight-active) .ha-highlight {
     background-color: transparent;
     color: inherit;
   }

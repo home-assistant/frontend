@@ -167,10 +167,7 @@ class HighlightController {
 
     if (ranges.length) {
       CSS.highlights.set(this._name, new Highlight(...ranges));
-      (this._root.host as HTMLElement).setAttribute(
-        "data-custom-highlight",
-        ""
-      );
+      (this._root.host as HTMLElement).classList.add("custom-highlight-active");
     } else {
       this.clear();
     }
@@ -195,14 +192,16 @@ class HighlightController {
     }
 
     CSS.highlights.set(this._name, new Highlight(...ranges));
-    (this._root.host as HTMLElement).setAttribute("data-custom-highlight", "");
+    (this._root.host as HTMLElement).classList.add("custom-highlight-active");
   }
 
   public clear() {
     if (CSS.highlights) {
       CSS.highlights.delete(this._name);
     }
-    (this._root.host as HTMLElement).removeAttribute("data-custom-highlight");
+    (this._root.host as HTMLElement).classList.remove(
+      "custom-highlight-active"
+    );
   }
 }
 
