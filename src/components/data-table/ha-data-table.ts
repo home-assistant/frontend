@@ -1192,6 +1192,7 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__cell--numeric {
           text-align: var(--float-end);
+          direction: ltr;
         }
 
         .mdc-data-table__cell--icon {
