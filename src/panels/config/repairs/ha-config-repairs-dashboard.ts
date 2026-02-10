@@ -32,6 +32,8 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _repairsIssues: RepairsIssue[] = [];
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   @state() private _showIgnored = false;
 
   private _getFilteredIssues = memoizeOne(
@@ -75,7 +77,9 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
     return html`
       <hass-subpage
-        back-path="/config/system"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config/system"}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}

@@ -23,6 +23,8 @@ import type { UpdatesCardConfig } from "./types";
 
 @customElement("hui-updates-card")
 export class HuiUpdatesCard extends LitElement implements LovelaceCard {
+  public connectedWhileHidden = true;
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: UpdatesCardConfig;

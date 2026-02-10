@@ -25,6 +25,8 @@ export class HuiRepairsCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public connectedWhileHidden = true;
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: RepairsCardConfig;
@@ -38,7 +40,7 @@ export class HuiRepairsCard
         (repairs: { issues: RepairsIssue[] }) => {
           // Filter to only active and non-ignored issues
           this._repairsIssues = repairs.issues.filter(
-            (issue) => issue.active && !issue.ignored
+            (issue) => issue.active !== false && !issue.ignored
           );
         }
       ),

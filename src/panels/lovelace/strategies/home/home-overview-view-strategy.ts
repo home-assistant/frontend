@@ -265,7 +265,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         hide_empty: true,
         tap_action: {
           action: "navigate",
-          navigation_path: "/config/repairs",
+          navigation_path: "/config/repairs?historyBack=1",
         },
       } satisfies RepairsCardConfig,
       // Updates card - only visible to admins, hides when empty
@@ -274,7 +274,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         hide_empty: true,
         tap_action: {
           action: "navigate",
-          navigation_path: "/config/updates",
+          navigation_path: "/config/updates?historyBack=1",
         },
       } satisfies UpdatesCardConfig,
       hasLights &&
