@@ -41,12 +41,16 @@ export const enum TodoListEntityFeature {
   SET_DESCRIPTION_ON_ITEM = 64,
 }
 
-export const getTodoLists = (hass: HomeAssistant): TodoList[] =>
+export const getTodoLists = (
+  hass: HomeAssistant,
+  includeHidden = true
+): TodoList[] =>
   Object.keys(hass.states)
     .filter(
       (entityId) =>
         computeDomain(entityId) === "todo" &&
-        !isUnavailableState(hass.states[entityId].state)
+        !isUnavailableState(hass.states[entityId].state) &&
+        (includeHidden || hass.entities[entityId]?.hidden !== true)
     )
     .map((entityId) => ({
       ...hass.states[entityId],

@@ -196,7 +196,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                       (lang) =>
                         html`<ha-dropdown-item
                           .value=${lang.id}
-                          class=${this._language === lang.id ? "selected" : ""}
+                          .selected=${this._language === lang.id}
                         >
                           ${lang.primary}
                         </ha-dropdown-item>`
@@ -406,13 +406,6 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
           margin-right: 12px;
           margin-inline-end: 12px;
           margin-inline-start: initial;
-        }
-        ha-dropdown-item.selected {
-          border: 1px solid var(--primary-color);
-          font-weight: var(--ha-font-weight-medium);
-          color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          --icon-primary-color: var(--primary-color);
         }
       `,
     ];

@@ -282,7 +282,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 ? html`
                     <ha-dropdown-item
                       .value=${id}
-                      class=${id === this._sortColumn ? "selected" : ""}
+                      .selected=${id === this._sortColumn}
                     >
                       ${this._sortColumn === id
                         ? html`
@@ -324,7 +324,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 ? html`
                     <ha-dropdown-item
                       .value=${id}
-                      class=${id === this._groupColumn ? "selected" : ""}
+                      .selected=${id === this._groupColumn}
                     >
                       ${column.title || column.label}
                     </ha-dropdown-item>
@@ -333,7 +333,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             )}
             <ha-dropdown-item
               value="none"
-              class=${this._groupColumn === undefined ? "selected" : ""}
+              .selected=${this._groupColumn === undefined}
             >
               ${localize("ui.components.subpage-data-table.dont_group_by")}
             </ha-dropdown-item>
@@ -804,16 +804,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
-        }
-
-        ha-dropdown-item.selected {
-          font-weight: var(--ha-font-weight-medium);
-          color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          --icon-primary-color: var(--primary-color);
-        }
-        ha-dropdown-item.selected:hover {
-          background-color: var(--ha-color-fill-primary-quiet-hover);
         }
       `,
     ];

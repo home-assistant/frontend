@@ -105,9 +105,11 @@ export class StorageBreakdownChart extends LitElement {
       storageInfo: HostDisksUsage | null | undefined
     ) => {
       let totalSpaceGB = hostInfo.disk_total;
-      let usedSpaceGB = hostInfo.disk_used;
       let freeSpaceGB =
         hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
+      // hostInfo.disk_used doesn't include system reserved space,
+      // so we calculate used space based on total and free space
+      let usedSpaceGB = totalSpaceGB - freeSpaceGB;
 
       if (storageInfo) {
         const totalSpace =

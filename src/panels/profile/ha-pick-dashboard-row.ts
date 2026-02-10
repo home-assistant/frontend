@@ -53,7 +53,7 @@ class HaPickDashboardRow extends LitElement {
               >
                 <ha-dropdown-item
                   .value=${USE_SYSTEM_VALUE}
-                  class=${value === USE_SYSTEM_VALUE ? "selected" : ""}
+                  .selected=${value === USE_SYSTEM_VALUE}
                 >
                   ${this.hass.localize("ui.panel.profile.dashboard.system")}
                 </ha-dropdown-item>
@@ -68,7 +68,7 @@ class HaPickDashboardRow extends LitElement {
                   return html`
                     <ha-dropdown-item
                       value=${panelInfo.url_path}
-                      class=${value === panelInfo.url_path ? "selected" : ""}
+                      .selected=${value === panelInfo.url_path}
                     >
                       <ha-icon
                         slot="icon"
@@ -91,9 +91,7 @@ class HaPickDashboardRow extends LitElement {
                         return html`
                           <ha-dropdown-item
                             .value=${dashboard.url_path}
-                            class=${value === dashboard.url_path
-                              ? "selected"
-                              : ""}
+                            .selected=${value === dashboard.url_path}
                           >
                             <ha-icon
                               slot="icon"
