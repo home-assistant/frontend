@@ -369,7 +369,6 @@ export class BluetoothConfigDashboard extends LitElement {
           padding: 24px 0 32px;
           max-width: 600px;
           margin: 0 auto;
-          direction: ltr;
         }
         ha-card {
           margin-bottom: 16px;
