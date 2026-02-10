@@ -94,6 +94,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "last-changed"
     | "last-triggered"
     | "last-updated"
+    | "area"
     | "position"
     | "state"
     | "tilt-position"
@@ -664,7 +665,9 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface DistributionEntityConfig extends EntityConfig {}
+export interface DistributionEntityConfig extends EntityConfig {
+  color?: string;
+}
 
 export interface DistributionCardConfig extends LovelaceCardConfig {
   type: "distribution";

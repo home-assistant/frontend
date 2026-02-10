@@ -6,6 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./ha-base-time-input";
 import type { TimeChangedEvent } from "./ha-base-time-input";
 import "./ha-button-toggle-group";
+import type { ValueChangedEvent } from "../types";
 
 export interface HaDurationData {
   days?: number;
@@ -152,7 +153,9 @@ class HaDurationInput extends LitElement {
         : NaN;
   }
 
-  private _durationChanged(ev: CustomEvent<{ value?: TimeChangedEvent }>) {
+  private _durationChanged(
+    ev: ValueChangedEvent<TimeChangedEvent | undefined>
+  ) {
     ev.stopPropagation();
     const value = ev.detail.value ? { ...ev.detail.value } : undefined;
 

@@ -1227,15 +1227,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/commands@npm:6.10.1":
-  version: 6.10.1
-  resolution: "@codemirror/commands@npm:6.10.1"
+"@codemirror/commands@npm:6.10.2":
+  version: 6.10.2
+  resolution: "@codemirror/commands@npm:6.10.2"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.4.0"
     "@codemirror/view": "npm:^6.27.0"
     "@lezer/common": "npm:^1.1.0"
-  checksum: 10/9e305263dc457635fa1c7e5b47756958be5367e38f5bb07a3abfd5966591e2eafd57ea0c5c738b28bb3ab5de64c07a5302ebd49b129ff7e48b225841f66e647f
+  checksum: 10/cf5cfee8db49911fd190e55dc6f2a15d5c27c875a2d422185ec11c6cdf1eeb2b66ed16d7f8023f1ec0de99b5e43f903629cb6dc1a7cdd64215e804c6d4576a6e
   languageName: node
   linkType: hard
 
@@ -1952,9 +1952,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@home-assistant/webawesome@npm:3.0.0-ha.2":
-  version: 3.0.0-ha.2
-  resolution: "@home-assistant/webawesome@npm:3.0.0-ha.2"
+"@home-assistant/webawesome@npm:3.2.1-ha.0":
+  version: 3.2.1-ha.0
+  resolution: "@home-assistant/webawesome@npm:3.2.1-ha.0"
   dependencies:
     "@ctrl/tinycolor": "npm:4.1.0"
     "@floating-ui/dom": "npm:^1.6.13"
@@ -1965,7 +1965,7 @@ __metadata:
     lit: "npm:^3.2.1"
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
-  checksum: 10/c94908d88c1e25604d148dfb375b3fb025fc838c9b9ee4aa729b7f111aef6ed45727158923d2d15e2def4b7c74057c2e779b358e90c98e6e0391b3020aa0391c
+  checksum: 10/27b61807ae41267acb112a5657b956b19c8496a3ccbf19b892a97766d5a59ed39f2c3084b1143c129a592d4685de6c19293d02986d7951056dffdcbde9fe7ce3
   languageName: node
   linkType: hard
 
@@ -9060,7 +9060,7 @@ __metadata:
     "@braintree/sanitize-url": "npm:7.1.2"
     "@bundle-stats/plugin-webpack-filter": "npm:4.21.9"
     "@codemirror/autocomplete": "npm:6.20.0"
-    "@codemirror/commands": "npm:6.10.1"
+    "@codemirror/commands": "npm:6.10.2"
     "@codemirror/language": "npm:6.12.1"
     "@codemirror/legacy-modes": "npm:6.5.2"
     "@codemirror/search": "npm:6.6.0"
@@ -9083,7 +9083,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.20"
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
-    "@home-assistant/webawesome": "npm:3.0.0-ha.2"
+    "@home-assistant/webawesome": "npm:3.2.1-ha.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
     "@lit-labs/observers": "npm:2.1.0"

@@ -9,7 +9,6 @@ import type { HomeAssistant } from "../types";
 import "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-icon-button";
-import "./ha-md-divider";
 import "./ha-svg-icon";
 import "./ha-tooltip";
 

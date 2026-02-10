@@ -7,8 +7,9 @@ import { nextRender } from "../common/util/render-status";
 import { haStyleDialog } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import type { DatePickerDialogParams } from "./ha-date-input";
-import "./ha-dialog";
 import "./ha-button";
+import "./ha-dialog-footer";
+import "./ha-wa-dialog";
 
 @customElement("ha-dialog-date-picker")
 export class HaDialogDatePicker extends LitElement {
@@ -22,6 +23,8 @@ export class HaDialogDatePicker extends LitElement {
 
   @state() private _params?: DatePickerDialogParams;
 
+  @state() private _open = false;
+
   @state() private _value?: string;
 
   public async showDialog(params: DatePickerDialogParams): Promise<void> {
@@ -30,9 +33,14 @@ export class HaDialogDatePicker extends LitElement {
     await nextRender();
     this._params = params;
     this._value = params.value;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -41,7 +49,13 @@ export class HaDialogDatePicker extends LitElement {
     if (!this._params) {
       return nothing;
     }
-    return html`<ha-dialog open @closed=${this.closeDialog}>
+    return html`<ha-wa-dialog
+      .hass=${this.hass}
+      .open=${this._open}
+      width="small"
+      without-header
+      @closed=${this._dialogClosed}
+    >
       <app-datepicker
         .value=${this._value}
         .min=${this._params.min}
@@ -50,35 +64,36 @@ export class HaDialogDatePicker extends LitElement {
         @datepicker-value-updated=${this._valueChanged}
         .firstDayOfWeek=${this._params.firstWeekday}
       ></app-datepicker>
-      ${this._params.canClear
-        ? html`<ha-button
-            slot="secondaryAction"
-            @click=${this._clear}
-            variant="danger"
-            appearance="plain"
-          >
-            ${this.hass.localize("ui.dialogs.date-picker.clear")}
-          </ha-button>`
-        : nothing}
-      <ha-button
-        appearance="plain"
-        slot="secondaryAction"
-        @click=${this._setToday}
-      >
-        ${this.hass.localize("ui.dialogs.date-picker.today")}
-      </ha-button>
-      <ha-button
-        appearance="plain"
-        slot="primaryAction"
-        dialogaction="cancel"
-        class="cancel-btn"
-      >
-        ${this.hass.localize("ui.common.cancel")}
-      </ha-button>
-      <ha-button slot="primaryAction" @click=${this._setValue}>
-        ${this.hass.localize("ui.common.ok")}
-      </ha-button>
-    </ha-dialog>`;
+      <ha-dialog-footer slot="footer">
+        ${this._params.canClear
+          ? html`<ha-button
+              slot="secondaryAction"
+              @click=${this._clear}
+              variant="danger"
+              appearance="plain"
+            >
+              ${this.hass.localize("ui.dialogs.date-picker.clear")}
+            </ha-button>`
+          : nothing}
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this._setToday}
+        >
+          ${this.hass.localize("ui.dialogs.date-picker.today")}
+        </ha-button>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
+          ${this.hass.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button slot="primaryAction" @click=${this._setValue}>
+          ${this.hass.localize("ui.common.ok")}
+        </ha-button>
+      </ha-dialog-footer>
+    </ha-wa-dialog>`;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -108,11 +123,12 @@ export class HaDialogDatePicker extends LitElement {
   static styles = [
     haStyleDialog,
     css`
-      ha-dialog {
+      ha-wa-dialog {
         --dialog-content-padding: 0;
-        --justify-action-buttons: space-between;
       }
       app-datepicker {
+        display: block;
+        margin-inline: auto;
         --app-datepicker-accent-color: var(--primary-color);
         --app-datepicker-bg-color: transparent;
         --app-datepicker-color: var(--primary-text-color);
@@ -128,11 +144,6 @@ export class HaDialogDatePicker extends LitElement {
       }
       app-datepicker::part(body) {
         direction: ltr;
-      }
-      @media all and (min-width: 450px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 300px;
-        }
       }
       @media all and (max-width: 450px), all and (max-height: 500px) {
         app-datepicker {

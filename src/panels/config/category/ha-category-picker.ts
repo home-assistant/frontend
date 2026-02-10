@@ -153,7 +153,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.category-picker.add_new_sugestion",
+            "ui.components.category-picker.add_new_suggestion",
             {
               name: searchString,
             }
