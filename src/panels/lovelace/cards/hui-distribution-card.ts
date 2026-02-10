@@ -9,6 +9,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { getGraphColorByIndex } from "../../../common/color/colors";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { normalizeValueBySIPrefix } from "../../../common/number/normalize-by-si-prefix";
 import { MobileAwareMixin } from "../../../mixins/mobile-aware-mixin";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
@@ -204,26 +205,6 @@ export class HuiDistributionCard
     }
   );
 
-  private _normalizeValue(value: number, unit: string | undefined): number {
-    if (!unit || unit.length <= 1) {
-      return value;
-    }
-    const prefixMultipliers: Record<string, number> = {
-      T: 1e12,
-      G: 1e9,
-      M: 1e6,
-      k: 1e3,
-      m: 1e-3,
-      "\u00B5": 1e-6, // µ (micro sign)
-      "\u03BC": 1e-6, // μ (greek small letter mu)
-    };
-    const prefix = unit[0];
-    if (prefix in prefixMultipliers) {
-      return value * prefixMultipliers[prefix];
-    }
-    return value;
-  }
-
   private _convertToSegments(): {
     segments: Segment[];
     hiddenIndices: number[];
@@ -252,7 +233,7 @@ export class HuiDistributionCard
 
       const rawValue = Number(stateObj.state);
       if (rawValue <= 0 || isNaN(rawValue)) return;
-      const value = this._normalizeValue(
+      const value = normalizeValueBySIPrefix(
         rawValue,
         stateObj.attributes.unit_of_measurement
       );
