@@ -52,6 +52,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockEvent(event);
   mockTheme(theme: Record<string, string> | null);
   formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
@@ -117,6 +118,7 @@ export const provideHass = (
   async function updateFormatFunctions() {
     const {
       formatEntityState,
+      formatEntityStateToParts,
       formatEntityAttributeName,
       formatEntityAttributeValue,
       formatEntityAttributeValueToParts,
@@ -133,6 +135,7 @@ export const provideHass = (
     );
     hass().updateHass({
       formatEntityState,
+      formatEntityStateToParts,
       formatEntityAttributeName,
       formatEntityAttributeValue,
       formatEntityAttributeValueToParts,
@@ -256,6 +259,10 @@ export const provideHass = (
       darkMode: false,
       theme: "default",
     },
+    selectedTheme: {
+      theme: "default",
+      dark: false,
+    },
     panels: demoPanels,
     services: demoServices,
     user: {
@@ -348,7 +355,7 @@ export const provideHass = (
     mockTheme(theme) {
       invalidateThemeCache();
       hass().updateHass({
-        selectedTheme: { theme: theme ? "mock" : "default" },
+        selectedTheme: { theme: theme ? "mock" : "default", dark: false },
         themes: {
           ...hass().themes,
           themes: {
@@ -361,7 +368,7 @@ export const provideHass = (
         document.documentElement,
         themes,
         selectedTheme!.theme,
-        undefined,
+        { dark: false },
         true
       );
     },
@@ -371,6 +378,12 @@ export const provideHass = (
     floors: {},
     formatEntityState: (stateObj, state) =>
       (state !== null ? state : stateObj.state) ?? "",
+    formatEntityStateToParts: (stateObj, state) => [
+      {
+        type: "value",
+        value: (state !== null ? state : stateObj.state) ?? "",
+      },
+    ],
     formatEntityAttributeName: (_stateObj, attribute) => attribute,
     formatEntityAttributeValue: (stateObj, attribute, value) =>
       value !== null ? value : (stateObj.attributes[attribute] ?? ""),

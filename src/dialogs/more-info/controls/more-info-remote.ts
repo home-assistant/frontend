@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-select";
 import type { RemoteEntity } from "../../../data/remote";
 import { REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
@@ -43,7 +44,7 @@ class MoreInfoRemote extends LitElement {
     `;
   }
 
-  private _handleActivityChanged(ev: CustomEvent<{ value: string }>) {
+  private _handleActivityChanged(ev: HaSelectSelectEvent) {
     const oldVal = this.stateObj!.attributes.current_activity;
     const newVal = ev.detail.value;
 

@@ -7,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { getGraphColorByIndex } from "../../../common/color/colors";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { MobileAwareMixin } from "../../../mixins/mobile-aware-mixin";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
@@ -33,6 +34,7 @@ const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 interface ProcessedEntity {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
+  color?: string;
 }
 
 interface LegendItem {
@@ -147,6 +149,7 @@ export class HuiDistributionCard
     this._configEntities = entities.map((entity) => ({
       entity: entity.entity,
       name: entity.name,
+      color: entity.color,
     }));
   }
 
@@ -230,7 +233,9 @@ export class HuiDistributionCard
       const value = Number(stateObj.state);
       if (value <= 0 || isNaN(value)) return;
 
-      const color = getGraphColorByIndex(entity.originalIndex, computedStyles);
+      const color = entity.color
+        ? computeCssColor(entity.color)
+        : getGraphColorByIndex(entity.originalIndex, computedStyles);
       const name = computeLovelaceEntityName(this.hass!, stateObj, entity.name);
       const formattedValue = this.hass!.formatEntityState(stateObj);
 
@@ -279,7 +284,9 @@ export class HuiDistributionCard
         name: name,
         value: value,
         formattedValue: formattedValue,
-        color: getGraphColorByIndex(index, computedStyles),
+        color: entity.color
+          ? computeCssColor(entity.color)
+          : getGraphColorByIndex(index, computedStyles),
         isHidden: isHidden,
         isDisabled: isZeroOrNegative,
       };

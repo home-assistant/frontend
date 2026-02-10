@@ -7,6 +7,8 @@ import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-divider";
+import "../../components/ha-md-list";
+import "../../components/ha-md-list-item";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
@@ -140,45 +142,46 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
-            <ha-settings-row .narrow=${this.narrow}>
-              <span slot="heading">
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.header"
-                )}
-              </span>
-              <span slot="description">
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.description"
-                )}
-              </span>
-              <ha-button
-                appearance="plain"
-                size="small"
-                @click=${this._customizeSidebar}
-              >
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.button"
-                )}
-              </ha-button>
-            </ha-settings-row>
-            ${this.hass.user!.is_admin
-              ? html`
-                  <ha-advanced-mode-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .coreUserData=${this._coreUserData}
-                  ></ha-advanced-mode-row>
-                `
-              : ""}
-            ${this.hass.user!.is_admin
-              ? html`
-                  <ha-entity-id-picker-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .coreUserData=${this._coreUserData}
-                  ></ha-entity-id-picker-row>
-                `
-              : ""}
+            <ha-md-list>
+              <ha-md-list-item>
+                <span slot="headline"
+                  >${this.hass.localize(
+                    "ui.panel.profile.customize_sidebar.header"
+                  )}</span
+                >
+                <span slot="supporting-text"
+                  >${this.hass.localize(
+                    "ui.panel.profile.customize_sidebar.description"
+                  )}</span
+                >
+                <ha-button
+                  slot="end"
+                  appearance="plain"
+                  size="small"
+                  @click=${this._customizeSidebar}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.profile.customize_sidebar.button"
+                  )}
+                </ha-button>
+              </ha-md-list-item>
+              ${this.hass.user!.is_admin
+                ? html`
+                    <ha-advanced-mode-row
+                      .hass=${this.hass}
+                      .coreUserData=${this._coreUserData}
+                    ></ha-advanced-mode-row>
+                  `
+                : ""}
+              ${this.hass.user!.is_admin
+                ? html`
+                    <ha-entity-id-picker-row
+                      .hass=${this.hass}
+                      .coreUserData=${this._coreUserData}
+                    ></ha-entity-id-picker-row>
+                  `
+                : ""}
+            </ha-md-list>
             <ha-divider></ha-divider>
             <ha-pick-language-row
               .narrow=${this.narrow}
@@ -215,43 +218,36 @@ class HaProfileSectionGeneral extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.client_settings_detail")}
             </div>
-            ${this.hass.dockedSidebar !== "auto" || !this.narrow
-              ? html`
-                  <ha-force-narrow-row
-                    .narrow=${this.narrow}
-                    .hass=${this.hass}
-                  ></ha-force-narrow-row>
-                `
-              : ""}
-            ${"vibrate" in navigator
-              ? html`
-                  <ha-set-vibrate-row
-                    .narrow=${this.narrow}
-                    .hass=${this.hass}
-                  ></ha-set-vibrate-row>
-                `
-              : ""}
-            ${!isExternal && isComponentLoaded(this.hass, "html5.notify")
-              ? html`
-                  <ha-push-notifications-row
-                    .narrow=${this.narrow}
-                    .hass=${this.hass}
-                  ></ha-push-notifications-row>
-                `
-              : ""}
-            <ha-set-suspend-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-set-suspend-row>
-            ${!isMobileClient
-              ? html`
-                  <ha-enable-shortcuts-row
-                    id="shortcuts"
-                    .narrow=${this.narrow}
-                    .hass=${this.hass}
-                  ></ha-enable-shortcuts-row>
-                `
-              : ""}
+            <ha-md-list>
+              ${this.hass.dockedSidebar !== "auto" || !this.narrow
+                ? html`
+                    <ha-force-narrow-row
+                      .hass=${this.hass}
+                    ></ha-force-narrow-row>
+                  `
+                : ""}
+              ${"vibrate" in navigator
+                ? html`
+                    <ha-set-vibrate-row .hass=${this.hass}></ha-set-vibrate-row>
+                  `
+                : ""}
+              ${!isExternal && isComponentLoaded(this.hass, "html5.notify")
+                ? html`
+                    <ha-push-notifications-row
+                      .hass=${this.hass}
+                    ></ha-push-notifications-row>
+                  `
+                : ""}
+              <ha-set-suspend-row .hass=${this.hass}></ha-set-suspend-row>
+              ${!isMobileClient
+                ? html`
+                    <ha-enable-shortcuts-row
+                      id="shortcuts"
+                      .hass=${this.hass}
+                    ></ha-enable-shortcuts-row>
+                  `
+                : ""}
+            </ha-md-list>
           </ha-card>
         </div>
       </hass-tabs-subpage>
@@ -297,6 +293,12 @@ class HaProfileSectionGeneral extends LitElement {
         .promo-advanced {
           text-align: center;
           color: var(--secondary-text-color);
+        }
+
+        ha-md-list {
+          background: none;
+          padding-top: 0;
+          padding-bottom: 0;
         }
       `,
     ];

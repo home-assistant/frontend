@@ -6,6 +6,7 @@ import { stringCompare } from "../common/string/compare";
 import type { Blueprint, BlueprintDomain, Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import type { HomeAssistant } from "../types";
+import type { HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
 
 @customElement("ha-blueprint-picker")
@@ -76,7 +77,7 @@ class HaBluePrintPicker extends LitElement {
     }
   }
 
-  private _blueprintChanged(ev: CustomEvent<{ value: string }>) {
+  private _blueprintChanged(ev: HaSelectSelectEvent) {
     const newValue = ev.detail.value;
 
     if (newValue !== this.value) {

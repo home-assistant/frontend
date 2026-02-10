@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { TagTrigger } from "../../../../../data/automation";
 import type { Tag } from "../../../../../data/tag";
 import { fetchTags } from "../../../../../data/tag";
@@ -60,7 +61,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
     );
   }
 
-  private _tagChanged(ev: CustomEvent<{ value: string }>) {
+  private _tagChanged(ev: HaSelectSelectEvent) {
     if (
       !ev.detail.value ||
       !this._tags ||

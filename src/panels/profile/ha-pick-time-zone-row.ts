@@ -5,6 +5,7 @@ import { formatDateTimeNumeric } from "../../common/datetime/format_date_time";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { TimeZone } from "../../data/translation";
@@ -59,8 +60,8 @@ class TimeZoneRow extends LitElement {
     `;
   }
 
-  private async _handleFormatSelection(ev: CustomEvent<{ value: string }>) {
-    fireEvent(this, "hass-time-zone-select", ev.detail.value as TimeZone);
+  private async _handleFormatSelection(ev: HaSelectSelectEvent<TimeZone>) {
+    fireEvent(this, "hass-time-zone-select", ev.detail.value);
   }
 
   static styles = css`

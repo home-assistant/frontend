@@ -251,7 +251,6 @@ For browser support, API details, and current specifications, refer to these aut
 **Available Dialog Types:**
 
 - `ha-wa-dialog` - Preferred for new dialogs (Web Awesome based)
-- `ha-md-dialog` - Material Design 3 dialog component
 - `ha-dialog` - Legacy component (still widely used)
 
 **Opening Dialogs (Fire Event Pattern - Recommended):**

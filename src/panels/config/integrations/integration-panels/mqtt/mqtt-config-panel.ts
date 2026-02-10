@@ -6,6 +6,7 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-switch";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import type { Action } from "../../../../../data/script";
@@ -134,7 +135,7 @@ export class MQTTConfigPanel extends LitElement {
     this._payload = ev.detail.value;
   }
 
-  private _handleQos(ev: CustomEvent<{ value: string }>) {
+  private _handleQos(ev: HaSelectSelectEvent) {
     const newValue = ev.detail.value;
     if (Number(newValue) >= 0 && newValue !== this._qos) {
       this._qos = newValue;
