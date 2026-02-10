@@ -123,9 +123,7 @@ export class HuiGraphHeaderFooter
     }
 
     return html`
-      <div class="graph-container" @click=${this._handleClick}>
-        <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
-      </div>
+      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
     `;
   }
 
@@ -137,6 +135,7 @@ export class HuiGraphHeaderFooter
 
   public connectedCallback() {
     super.connectedCallback();
+    this.addEventListener("click", this._handleClick);
     if (this.hasUpdated && this._config) {
       this._subscribeHistory();
     }
@@ -233,6 +232,7 @@ export class HuiGraphHeaderFooter
   static styles = css`
     :host {
       display: block;
+      cursor: pointer;
     }
     ha-spinner {
       position: absolute;
@@ -243,9 +243,6 @@ export class HuiGraphHeaderFooter
       justify-content: center;
       position: relative;
       padding-bottom: 20%;
-    }
-    .graph-container {
-      cursor: pointer;
     }
     .info {
       position: absolute;
