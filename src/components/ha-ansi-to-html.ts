@@ -12,6 +12,10 @@ import {
   state as litState,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import {
+  applyCustomHighlightRanges,
+  clearCustomHighlights,
+} from "../common/string/highlight";
 
 interface State {
   bold: boolean;
@@ -43,6 +47,13 @@ export class HaAnsiToHtml extends LitElement {
     // handle initial content
     if (this.content) {
       this.parseTextToColoredPre(this.content);
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this.shadowRoot) {
+      clearCustomHighlights(this.shadowRoot);
     }
   }
 
@@ -113,11 +124,6 @@ export class HaAnsiToHtml extends LitElement {
     }
     .bg-white {
       background-color: rgb(204, 204, 204);
-    }
-
-    ::highlight(search-results) {
-      background-color: var(--primary-color);
-      color: var(--text-primary-color);
     }
   `;
 
@@ -323,30 +329,31 @@ export class HaAnsiToHtml extends LitElement {
     this._filter = filter;
     const lines = this.shadowRoot?.querySelectorAll("div") || [];
     let numberOfFoundLines = 0;
+    const filterLower = filter.toLowerCase();
     if (!filter) {
       lines.forEach((line) => {
         line.style.display = "";
       });
       numberOfFoundLines = lines.length;
-      if (CSS.highlights) {
-        CSS.highlights.delete("search-results");
+      if (this.shadowRoot) {
+        clearCustomHighlights(this.shadowRoot);
       }
     } else {
       const highlightRanges: Range[] = [];
       lines.forEach((line) => {
-        if (!line.textContent?.toLowerCase().includes(filter.toLowerCase())) {
+        if (!line.textContent?.toLowerCase().includes(filterLower)) {
           line.style.display = "none";
         } else {
           line.style.display = "";
           numberOfFoundLines++;
-          if (CSS.highlights && line.firstChild !== null && line.textContent) {
+          if (line.firstChild !== null && line.textContent) {
             const spansOfLine = line.querySelectorAll("span");
             spansOfLine.forEach((span) => {
               const text = span.textContent.toLowerCase();
               const indices: number[] = [];
               let startPos = 0;
               while (startPos < text.length) {
-                const index = text.indexOf(filter.toLowerCase(), startPos);
+                const index = text.indexOf(filterLower, startPos);
                 if (index === -1) break;
                 indices.push(index);
                 startPos = index + filter.length;
@@ -362,8 +369,8 @@ export class HaAnsiToHtml extends LitElement {
           }
         }
       });
-      if (CSS.highlights) {
-        CSS.highlights.set("search-results", new Highlight(...highlightRanges));
+      if (this.shadowRoot) {
+        applyCustomHighlightRanges(this.shadowRoot, highlightRanges, filter);
       }
     }
 

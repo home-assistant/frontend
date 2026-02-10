@@ -121,7 +121,8 @@ export type HighlightedText =
   | undefined;
 
 interface HighlightController {
-  apply: (key?: string) => void;
+  applyFromMarks: (key?: string) => void;
+  applyFromRanges: (ranges: Range[], key?: string) => void;
   clear: () => void;
 }
 
@@ -153,7 +154,7 @@ const getHighlightController = (root: ShadowRoot): HighlightController => {
   let lastMarkCount = -1;
 
   const controller: HighlightController = {
-    apply: (key?: string) => {
+    applyFromMarks: (key?: string) => {
       if (!CSS.highlights) {
         return;
       }
@@ -197,6 +198,29 @@ const getHighlightController = (root: ShadowRoot): HighlightController => {
         CSS.highlights.delete(name);
         host.removeAttribute("data-custom-highlight");
       }
+    },
+    applyFromRanges: (ranges: Range[], key?: string) => {
+      if (!CSS.highlights) {
+        return;
+      }
+
+      const rangeCount = ranges.length;
+      if (key === lastKey && rangeCount === lastMarkCount) {
+        return;
+      }
+
+      lastKey = key;
+      lastMarkCount = rangeCount;
+
+      const host = root.host as HTMLElement;
+      if (!rangeCount) {
+        CSS.highlights.delete(name);
+        host.removeAttribute("data-custom-highlight");
+        return;
+      }
+
+      CSS.highlights.set(name, new Highlight(...ranges));
+      host.setAttribute("data-custom-highlight", "");
     },
     clear: () => {
       if (CSS.highlights) {
@@ -258,7 +282,7 @@ export const applyCustomHighlights = (root: ShadowRoot) => {
   }
 
   const controller = getHighlightController(root);
-  controller.apply();
+  controller.applyFromMarks();
 };
 
 export const applyCustomHighlightsWithKey = (
@@ -270,7 +294,20 @@ export const applyCustomHighlightsWithKey = (
   }
 
   const controller = getHighlightController(root);
-  controller.apply(key);
+  controller.applyFromMarks(key);
+};
+
+export const applyCustomHighlightRanges = (
+  root: ShadowRoot,
+  ranges: Range[],
+  key?: string
+) => {
+  if (!CSS.highlights) {
+    return;
+  }
+
+  const controller = getHighlightController(root);
+  controller.applyFromRanges(ranges, key);
 };
 
 export const clearCustomHighlights = (root: ShadowRoot) => {
