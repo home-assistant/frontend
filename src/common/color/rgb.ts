@@ -1,5 +1,5 @@
 import { wcagLuminance, wcagContrast } from "culori";
-import { hex2rgb, theme2hex } from "./convert-color";
+import { theme2hex } from "./convert-color";
 
 /**
  * Calculates the luminosity of an RGB color.
