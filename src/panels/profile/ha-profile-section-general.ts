@@ -133,6 +133,10 @@ class HaProfileSectionGeneral extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.user_preferences_detail")}
             </div>
+            <ha-pick-language-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-language-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
