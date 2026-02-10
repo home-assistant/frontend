@@ -740,7 +740,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           <ha-svg-icon .path=${mdiTransitConnection} slot="icon"></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.automation.editor.show_trace")}
         </ha-dropdown-item>
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <wa-divider></wa-divider>
         <ha-dropdown-item value="duplicate">
           <ha-svg-icon .path=${mdiContentDuplicate} slot="icon"></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.automation.picker.duplicate")}

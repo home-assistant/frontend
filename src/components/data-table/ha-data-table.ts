@@ -20,6 +20,7 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
 import { nextRender } from "../../common/util/render-status";
+import { STRINGS_SEPARATOR_DOT } from "../../common/const";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
@@ -636,7 +637,7 @@ export class HaDataTable extends LitElement {
                           .map(
                             ([key2, column2], i) =>
                               html`${i !== 0
-                                ? " · "
+                                ? STRINGS_SEPARATOR_DOT
                                 : nothing}${column2.template
                                 ? column2.template(row)
                                 : row[key2]}`
