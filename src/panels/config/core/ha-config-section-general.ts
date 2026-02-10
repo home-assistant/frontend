@@ -423,6 +423,7 @@ class HaConfigSectionGeneral extends LitElement {
     }
     button.progress = true;
     this._submittingRegional = true;
+    this._error = undefined;
 
     let locationConfig;
 
