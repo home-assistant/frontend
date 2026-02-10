@@ -246,10 +246,6 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         .warning {
           color: var(--error-color);
         }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --primary-text-color: var(--color-text);
-        }
         .add {
           position: absolute;
           bottom: 0;
