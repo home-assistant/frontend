@@ -1,14 +1,15 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { Segment } from "../data/vacuum";
 import { getVacuumSegments } from "../data/vacuum";
+import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-area-picker";
-import { haStyle } from "../resources/styles";
+import "./ha-md-list";
+import "./ha-md-list-item";
 
 type AreaSegmentMapping = Record<string, string[]>; // area ID -> segment IDs
 
@@ -66,7 +67,11 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
 
     if (!this._segments || this._segments.length === 0) {
       return html`
-        <ha-alert alert-type="info"> No segments available </ha-alert>
+        <ha-alert alert-type="info">
+          ${this.hass.localize(
+            "ui.dialogs.vacuum_segment_mapping.no_segments"
+          )}
+        </ha-alert>
       `;
     }
 
@@ -109,8 +114,9 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
           slot="end"
           .hass=${this.hass}
           .value=${mappedAreas}
-          .label=${"Area"}
-          allow-custom-entity
+          .label=${this.hass.localize(
+            "ui.dialogs.vacuum_segment_mapping.area_label"
+          )}
           @value-changed=${this._handleAreaChanged}
           data-segment-id=${segment.id}
         ></ha-area-picker>

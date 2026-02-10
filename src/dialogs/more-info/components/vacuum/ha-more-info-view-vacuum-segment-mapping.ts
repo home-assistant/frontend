@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-button";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-vacuum-segment-area-mapper";
 import type { HaVacuumSegmentAreaMapper } from "../../../../components/ha-vacuum-segment-area-mapper";
 import type {

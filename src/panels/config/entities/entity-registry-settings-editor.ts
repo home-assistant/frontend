@@ -906,9 +906,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
               .disabled=${this.disabled}
               @click=${this._handleVacuumSegmentMappingClicked}
             >
-              <span>Map vacuum segments to areas</span>
+              <span
+                >${this.hass.localize(
+                  "ui.dialogs.vacuum_segment_mapping.title"
+                )}</span
+              >
               <span slot="secondary">
-                Configure which areas each vacuum segment should clean
+                ${this.hass.localize(
+                  "ui.dialogs.vacuum_segment_mapping.description"
+                )}
               </span>
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
@@ -1506,7 +1512,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private _handleVacuumSegmentMappingClicked() {
-    showVacuumSegmentMappingView(this, this.entry.entity_id);
+    showVacuumSegmentMappingView(
+      this,
+      this.hass.localize,
+      this.entry.entity_id
+    );
   }
 
   private async _showOptionsFlow() {

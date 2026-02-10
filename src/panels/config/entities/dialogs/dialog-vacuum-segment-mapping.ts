@@ -29,10 +29,7 @@ import {
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-
-export interface VacuumSegmentMappingDialogParams {
-  entityId: string;
-}
+import type { VacuumSegmentMappingDialogParams } from "./show-dialog-vacuum-segment-mapping";
 
 @customElement("dialog-vacuum-segment-mapping")
 export class DialogVacuumSegmentMapping
@@ -161,7 +158,9 @@ export class DialogVacuumSegmentMapping
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
-        header-title="Map vacuum segments to areas"
+        .headerTitle=${this.hass.localize(
+          "ui.dialogs.vacuum_segment_mapping.title"
+        )}
         .headerSubtitle=${breadcrumb.join(
           computeRTL(this.hass) ? " ◂ " : " ▸ "
         )}
