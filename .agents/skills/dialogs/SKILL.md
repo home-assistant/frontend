@@ -52,6 +52,11 @@ export class DialogMyFeature
     this._open = false;
   }
 
+  private _submit(): void {
+    // Example submit handler: perform save logic, then close the dialog
+    this.closeDialog();
+  }
+
   private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
