@@ -8621,7 +8621,7 @@
                 "brightness": "Brightness",
                 "last-updated": "Last updated",
                 "state": "State",
-                "area": "Area",
+                "area": "Area"
               },
               "entity_row": {
                 "divider": "Divider",
