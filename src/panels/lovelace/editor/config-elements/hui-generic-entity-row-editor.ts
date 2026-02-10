@@ -19,7 +19,6 @@ const SECONDARY_INFO_VALUES = {
   "last-updated": {},
   "last-triggered": { domains: ["automation", "script"] },
   area: {},
-  "area-with-floor": {},
   position: { domains: ["cover"] },
   state: {},
   "tilt-position": { domains: ["cover"] },
