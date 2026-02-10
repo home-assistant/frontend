@@ -1458,7 +1458,8 @@
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
-            "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]"
+            "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
+            "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
           }
         },
         "filter_placeholder": "Search entities",

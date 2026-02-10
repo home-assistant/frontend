@@ -2,8 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-card";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "./integrations-startup-time";
@@ -12,44 +11,47 @@ import "./integrations-startup-time";
 class DialogIntegrationStartup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   public showDialog(): void {
-    this._opened = true;
+    this._open = true;
   }
 
   public closeDialog() {
-    this._opened = false;
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this._opened) {
+    if (!this._open) {
       return nothing;
     }
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.repairs.integration_startup_time")
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.repairs.integration_startup_time"
         )}
-        @closed=${this.closeDialog}
+        @closed=${this._dialogClosed}
       >
         <integrations-startup-time
           .hass=${this.hass}
           narrow
         ></integrations-startup-time>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
   static styles: CSSResultGroup = [
     haStyleDialog,
     css`
-      ha-dialog {
+      ha-wa-dialog {
         --dialog-content-padding: 0;
       }
     `,

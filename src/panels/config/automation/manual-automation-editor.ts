@@ -438,7 +438,6 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
   }
 
   private _saveAutomation() {
-    this.triggerCloseSidebar();
     fireEvent(this, "save-automation");
   }
 

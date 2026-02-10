@@ -571,7 +571,6 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
   }
 
   private _saveScript() {
-    this.triggerCloseSidebar();
     fireEvent(this, "save-script");
   }
 
