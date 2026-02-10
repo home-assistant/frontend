@@ -152,7 +152,7 @@ class PanelTodo extends LitElement {
         html`<ha-dropdown-item
           @click=${this._setEntityId}
           value=${list.entity_id}
-          class=${list.entity_id === this._entityId ? "selected" : ""}
+          .selected=${list.entity_id === this._entityId}
         >
           <ha-state-icon
             .stateObj=${list}
@@ -408,13 +408,6 @@ class PanelTodo extends LitElement {
 
         ha-dropdown.lists ha-dropdown-item {
           max-width: 80vw;
-        }
-
-        ha-dropdown-item.selected {
-          font-weight: var(--ha-font-weight-medium);
-          color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          --icon-primary-color: var(--primary-color);
         }
       `,
     ];

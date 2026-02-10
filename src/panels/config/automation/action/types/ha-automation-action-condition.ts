@@ -102,7 +102,7 @@ export class HaConditionAction
       }
 
       return html`
-        <ha-dropdown-item .value=${opt} class=${selected ? "selected" : ""}>
+        <ha-dropdown-item .value=${opt} .selected=${selected}>
           <ha-condition-icon
             .hass=${this.hass}
             slot="icon"
