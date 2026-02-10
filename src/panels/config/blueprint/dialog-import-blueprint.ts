@@ -18,6 +18,7 @@ import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { withViewTransition } from "../../../common/util/view-transition";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
@@ -225,7 +226,9 @@ class DialogImportBlueprint extends LitElement {
   }
 
   private _enlarge() {
-    this.large = !this.large;
+    withViewTransition(() => {
+      this.large = !this.large;
+    });
   }
 
   private async _import() {
