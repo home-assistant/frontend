@@ -152,6 +152,15 @@ export class HaPanelCustom extends ReactiveElement {
           height: 100%;
           display: block;
           background-color: var(--primary-background-color);
+          margin-top: var(--safe-area-inset-top);
+          margin-bottom: var(--safe-area-inset-bottom);
+          margin-right: var(--safe-area-inset-right);
+        }
+        @media (max-width: 870px) {
+          iframe {
+            width: calc(100% - var(--safe-area-inset-left, 0px) - var(--safe-area-inset-right, 0px));
+            margin-left: var(--safe-area-inset-left);
+          }
         }
       </style>
       <iframe ${titleAttr}></iframe>`.trim();
