@@ -183,6 +183,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     ha-entity-picker {
       margin-top: 8px;
     }
+    ha-sortable ha-entity-picker {
+      margin-top: 0;
+    }
     .add-entity {
       display: block;
       margin-left: 31px;
@@ -194,6 +197,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     .entity {
       display: flex;
       align-items: center;
+      margin-top: 8px;
     }
 
     .entity .handle {
