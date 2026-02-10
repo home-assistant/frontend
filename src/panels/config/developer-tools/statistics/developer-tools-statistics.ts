@@ -10,10 +10,10 @@ import {
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
 
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -28,15 +28,11 @@ import type {
   SortingDirection,
 } from "../../../../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../../../../components/data-table/show-dialog-data-table-settings";
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaMdMenu } from "../../../../components/ha-md-menu";
-import "../../../../components/ha-md-menu-item";
-import "../../../../components/ha-md-menu";
-import "../../../../components/ha-md-divider";
 import "../../../../components/search-input-outlined";
 import type {
   StatisticsMetaData,
@@ -112,19 +108,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
-  @query("#group-by-menu") private _groupByMenu!: HaMdMenu;
-
-  @query("#sort-by-menu") private _sortByMenu!: HaMdMenu;
-
   @query("search-input-outlined") private _searchInput!: HTMLElement;
-
-  private _toggleGroupBy() {
-    this._groupByMenu.open = !this._groupByMenu.open;
-  }
-
-  private _toggleSortBy() {
-    this._sortByMenu.open = !this._sortByMenu.open;
-  }
 
   protected firstUpdated() {
     this._validateStatistics();
@@ -278,37 +262,106 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
     const sortByMenu = Object.values(columns).find((col) => col.sortable)
       ? html`
-          <ha-assist-chip
-            .label=${localize("ui.components.subpage-data-table.sort_by", {
-              sortColumn: this._sortColumn
-                ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}` ||
-                  ""
-                : "",
-            })}
-            id="sort-by-anchor"
-            @click=${this._toggleSortBy}
-          >
-            <ha-svg-icon
-              slot="trailing-icon"
-              .path=${mdiMenuDown}
-            ></ha-svg-icon>
-          </ha-assist-chip>
+          <ha-dropdown @wa-select=${this._handleSortBy}>
+            <ha-assist-chip
+              slot="trigger"
+              .label=${localize("ui.components.subpage-data-table.sort_by", {
+                sortColumn: this._sortColumn
+                  ? ` ${columns[this._sortColumn]?.title || columns[this._sortColumn]?.label}` ||
+                    ""
+                  : "",
+              })}
+            >
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon>
+            </ha-assist-chip>
+            ${Object.entries(columns).map(([id, column]) =>
+              column.sortable
+                ? html`
+                    <ha-dropdown-item
+                      .value=${id}
+                      class=${id === this._sortColumn ? "selected" : ""}
+                    >
+                      ${this._sortColumn === id
+                        ? html`
+                            <ha-svg-icon
+                              slot="details"
+                              .path=${this._sortDirection === "desc"
+                                ? mdiArrowDown
+                                : mdiArrowUp}
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                      ${column.title || column.label}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            )}
+          </ha-dropdown>
         `
       : nothing;
 
     const groupByMenu = Object.values(columns).find((col) => col.groupable)
       ? html`
-          <ha-assist-chip
-            .label=${localize("ui.components.subpage-data-table.group_by", {
-              groupColumn: this._groupColumn
-                ? ` ${columns[this._groupColumn].title || columns[this._groupColumn].label}`
-                : "",
-            })}
-            id="group-by-anchor"
-            @click=${this._toggleGroupBy}
-          >
-            <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
-          ></ha-assist-chip>
+          <ha-dropdown @wa-select=${this._handleOverflowGroupBy}>
+            <ha-assist-chip
+              slot="trigger"
+              .label=${localize("ui.components.subpage-data-table.group_by", {
+                groupColumn: this._groupColumn
+                  ? ` ${columns[this._groupColumn].title || columns[this._groupColumn].label}`
+                  : "",
+              })}
+            >
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon
+            ></ha-assist-chip>
+            ${Object.entries(columns).map(([id, column]) =>
+              column.groupable
+                ? html`
+                    <ha-dropdown-item
+                      .value=${id}
+                      class=${id === this._groupColumn ? "selected" : ""}
+                    >
+                      ${column.title || column.label}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            )}
+            <ha-dropdown-item
+              value="none"
+              class=${this._groupColumn === undefined ? "selected" : ""}
+            >
+              ${localize("ui.components.subpage-data-table.dont_group_by")}
+            </ha-dropdown-item>
+            <wa-divider></wa-divider>
+            <ha-dropdown-item
+              value="collapse_all"
+              @click=${this._collapseAllGroups}
+              .disabled=${this._groupColumn === undefined}
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiUnfoldLessHorizontal}
+              ></ha-svg-icon>
+              ${localize(
+                "ui.components.subpage-data-table.collapse_all_groups"
+              )}
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              @click=${this._expandAllGroups}
+              .disabled=${this._groupColumn === undefined}
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiUnfoldMoreHorizontal}
+              ></ha-svg-icon>
+              ${localize("ui.components.subpage-data-table.expand_all_groups")}
+            </ha-dropdown-item>
+          </ha-dropdown>
         `
       : nothing;
 
@@ -417,6 +470,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           .hiddenColumns=${this.hiddenColumns}
           @row-click=${this._rowClicked}
           @selection-changed=${this._handleSelectionChanged}
+          @sorting-changed=${this._handleTableSortingChanged}
         >
           ${!this.narrow
             ? html`
@@ -434,82 +488,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 </div>`}
         </ha-data-table>
       </div>
-      <ha-md-menu
-        anchor="group-by-anchor"
-        id="group-by-menu"
-        positioning="fixed"
-      >
-        ${Object.entries(columns).map(([id, column]) =>
-          column.groupable
-            ? html`
-                <ha-md-menu-item
-                  .value=${id}
-                  @click=${this._handleGroupBy}
-                  .selected=${id === this._groupColumn}
-                  class=${classMap({ selected: id === this._groupColumn })}
-                >
-                  ${column.title || column.label}
-                </ha-md-menu-item>
-              `
-            : nothing
-        )}
-        <ha-md-menu-item
-          .value=${undefined}
-          @click=${this._handleGroupBy}
-          .selected=${this._groupColumn === undefined}
-          class=${classMap({ selected: this._groupColumn === undefined })}
-        >
-          ${localize("ui.components.subpage-data-table.dont_group_by")}
-        </ha-md-menu-item>
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-        <ha-md-menu-item
-          @click=${this._collapseAllGroups}
-          .disabled=${this._groupColumn === undefined}
-        >
-          <ha-svg-icon
-            slot="start"
-            .path=${mdiUnfoldLessHorizontal}
-          ></ha-svg-icon>
-          ${localize("ui.components.subpage-data-table.collapse_all_groups")}
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          @click=${this._expandAllGroups}
-          .disabled=${this._groupColumn === undefined}
-        >
-          <ha-svg-icon
-            slot="start"
-            .path=${mdiUnfoldMoreHorizontal}
-          ></ha-svg-icon>
-          ${localize("ui.components.subpage-data-table.expand_all_groups")}
-        </ha-md-menu-item>
-      </ha-md-menu>
-      <ha-md-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
-        ${Object.entries(columns).map(([id, column]) =>
-          column.sortable
-            ? html`
-                <ha-md-menu-item
-                  .value=${id}
-                  @click=${this._handleSortBy}
-                  keep-open
-                  .selected=${id === this._sortColumn}
-                  class=${classMap({ selected: id === this._sortColumn })}
-                >
-                  ${this._sortColumn === id
-                    ? html`
-                        <ha-svg-icon
-                          slot="end"
-                          .path=${this._sortDirection === "desc"
-                            ? mdiArrowDown
-                            : mdiArrowUp}
-                        ></ha-svg-icon>
-                      `
-                    : nothing}
-                  ${column.title || column.label}
-                </ha-md-menu-item>
-              `
-            : nothing
-        )}
-      </ha-md-menu>
     `;
   }
 
@@ -526,8 +504,17 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     this._selected = ev.detail.value;
   }
 
-  private _handleSortBy(ev) {
-    const columnId = ev.currentTarget.value;
+  private _handleTableSortingChanged(
+    ev: CustomEvent<{ column: string; direction: SortingDirection }>
+  ) {
+    const { column, direction } = ev.detail;
+    this._sortColumn = column;
+    this._sortDirection = direction;
+  }
+
+  private _handleSortBy(ev: HaDropdownSelectEvent) {
+    ev.preventDefault(); // keep dropdown open
+    const columnId = ev.detail.item.value;
     if (!this._sortDirection || this._sortColumn !== columnId) {
       this._sortDirection = "asc";
     } else if (this._sortDirection === "asc") {
@@ -538,11 +525,29 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     this._sortColumn = columnId;
   }
 
-  private _handleGroupBy(ev) {
-    this._setGroupColumn(ev.currentTarget.value);
-  }
+  private _handleOverflowGroupBy = (ev: HaDropdownSelectEvent) => {
+    const action = ev.detail.item.value;
 
-  private _setGroupColumn(columnId: string) {
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "collapse_all":
+        this._collapseAllGroups();
+        return;
+      case "expand_all":
+        this._expandAllGroups();
+        return;
+      case "none":
+        this._setGroupColumn();
+        return;
+      default:
+        this._setGroupColumn(action);
+    }
+  };
+
+  private _setGroupColumn(columnId?: string) {
     this._groupColumn = columnId;
   }
 
@@ -797,10 +802,18 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           --dialog-content-padding: 0;
         }
 
-        #sort-by-anchor,
-        #group-by-anchor,
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
+        }
+
+        ha-dropdown-item.selected {
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--primary-color);
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+          --icon-primary-color: var(--primary-color);
+        }
+        ha-dropdown-item.selected:hover {
+          background-color: var(--ha-color-fill-primary-quiet-hover);
         }
       `,
     ];
