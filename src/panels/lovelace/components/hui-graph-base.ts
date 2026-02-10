@@ -30,7 +30,7 @@ export class HuiGraphBase extends LitElement {
                 d="${this._path} L ${width}, ${yAxisOrigin} L 0, ${yAxisOrigin} z"
               />
             </mask>
-            <rect height="100%" width="100%" id="${this._uniqueId}-fill-rect" fill="var(--accent-color)" mask="url(#${this._uniqueId}-fill)"></rect>
+            <rect height="100%" width="100%" fill="var(--accent-color)" mask="url(#${this._uniqueId}-fill)"></rect>
             <mask id="${this._uniqueId}-line">
               <path
                 vector-effect="non-scaling-stroke"
@@ -43,7 +43,7 @@ export class HuiGraphBase extends LitElement {
                 d=${this._path}
               ></path>
             </mask>
-            <rect height="100%" width="100%" id="${this._uniqueId}-rect" fill="var(--accent-color)" mask="url(#${this._uniqueId}-line)"></rect>
+            <rect height="100%" width="100%" fill="var(--accent-color)" mask="url(#${this._uniqueId}-line)"></rect>
           </g>
         </svg>`
         : svg`<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}"></svg>`}
