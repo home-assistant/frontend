@@ -72,15 +72,6 @@ export class HuiGenericEntityRow extends LitElement {
       this.config.name
     );
 
-    const context = getEntityContext(
-      stateObj,
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas,
-      this.hass.floors
-    );
-    const area = context.area ? computeAreaName(context.area) : undefined;
-
     return html`
       <div
         class="row ${classMap({ pointer })}"
@@ -211,9 +202,7 @@ export class HuiGenericEntityRow extends LitElement {
                                           stateObj
                                         )}`
                                       : this.config.secondary_info === "area"
-                                        ? area
-                                          ? area
-                                          : nothing
+                                        ? (this._getArea(stateObj) ?? nothing)
                                         : nothing)}
                     </div>
                   `
@@ -248,6 +237,17 @@ export class HuiGenericEntityRow extends LitElement {
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this.config!, ev.detail.action!);
+  }
+
+  private _getArea(stateObj) {
+    const context = getEntityContext(
+      stateObj,
+      this.hass!.entities,
+      this.hass!.devices,
+      this.hass!.areas,
+      this.hass!.floors
+    );
+    return context.area ? computeAreaName(context.area) : undefined;
   }
 
   static styles = css`
