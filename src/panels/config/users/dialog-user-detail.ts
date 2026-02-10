@@ -96,18 +96,18 @@ class DialogUserDetail extends LitElement {
                 `
           }
           <div class="form">
-            ${
-              !user.system_generated
-                ? html`
-                    <ha-textfield
-                      dialogInitialFocus
-                      .value=${this._name}
-                      @input=${this._nameChanged}
-                      .label=${this.hass!.localize(
-                        "ui.panel.config.users.editor.name"
-                      )}
-                    ></ha-textfield>
-                    <ha-md-list>
+            <ha-md-list>
+              ${
+                !user.system_generated
+                  ? html`
+                      <ha-textfield
+                        dialogInitialFocus
+                        .value=${this._name}
+                        @input=${this._nameChanged}
+                        .label=${this.hass!.localize(
+                          "ui.panel.config.users.editor.name"
+                        )}
+                      ></ha-textfield>
                       <ha-md-list-item>
                         <span slot="headline"
                           >${this.hass.localize(
@@ -129,14 +129,12 @@ class DialogUserDetail extends LitElement {
                             `
                           : nothing}
                       </ha-md-list-item>
-                    </ha-md-list>
-                  `
-                : nothing
-            }
-            ${
-              !user.system_generated && this.hass.user?.is_owner
-                ? html`
-                    <ha-md-list>
+                    `
+                  : nothing
+              }
+              ${
+                !user.system_generated && this.hass.user?.is_owner
+                  ? html`
                       <ha-md-list-item>
                         <span slot="headline"
                           >${this.hass.localize(
@@ -158,11 +156,9 @@ class DialogUserDetail extends LitElement {
                             `
                           : nothing}
                       </ha-md-list-item>
-                    </ha-md-list>
-                  `
-                : nothing
-            }
-            <ha-md-list>
+                    `
+                  : nothing
+              }
               <ha-md-list-item>
                 <span slot="headline"
                   >${this.hass.localize(
