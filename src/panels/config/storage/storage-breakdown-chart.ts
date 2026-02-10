@@ -224,7 +224,7 @@ export class StorageBreakdownChart extends LitElement {
     .heading {
       color: var(--primary-text-color);
       line-height: var(--ha-line-height-expanded);
-      margin-right: 8px;
+      margin-right: var(--ha-space-2);
     }
 
     .description {
