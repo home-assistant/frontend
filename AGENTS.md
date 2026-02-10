@@ -373,7 +373,7 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 
 - [ ] Dialogs implement HassDialog interface
 - [ ] Dialog styling uses haStyleDialog
-- [ ] Dialog accessibility includes dialogInitialFocus
+- [ ] Dialog accessibility
 - [ ] ha-alert used correctly for messages
 - [ ] ha-form uses proper schema structure
 - [ ] Components handle all states (loading, error, unavailable)
