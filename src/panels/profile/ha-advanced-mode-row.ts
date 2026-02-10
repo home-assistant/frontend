@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
 import "../../components/ha-card";
-import "../../components/ha-settings-row";
+import "../../components/ha-md-list-item";
 import "../../components/ha-switch";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { saveFrontendUserData } from "../../data/frontend";
@@ -14,8 +14,6 @@ import type { HomeAssistant } from "../../types";
 class AdvancedModeRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public coreUserData?: CoreFrontendUserData;
 
   @state() private _error?: string;
@@ -25,12 +23,12 @@ class AdvancedModeRow extends LitElement {
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
         : nothing}
-      <ha-settings-row .narrow=${this.narrow}>
-        <span slot="heading">
-          ${this.hass.localize("ui.panel.profile.advanced_mode.title")}
-        </span>
-        <span slot="description">
-          ${this.hass.localize("ui.panel.profile.advanced_mode.description")}
+      <ha-md-list-item>
+        <span slot="headline"
+          >${this.hass.localize("ui.panel.profile.advanced_mode.title")}</span
+        >
+        <span slot="supporting-text"
+          >${this.hass.localize("ui.panel.profile.advanced_mode.description")}
           <a
             href=${documentationUrl(
               this.hass,
@@ -39,14 +37,15 @@ class AdvancedModeRow extends LitElement {
             target="_blank"
             rel="noreferrer"
             >${this.hass.localize("ui.panel.profile.advanced_mode.link_promo")}
-          </a>
-        </span>
+          </a></span
+        >
         <ha-switch
+          slot="end"
           .checked=${!!this.coreUserData && !!this.coreUserData.showAdvanced}
           .disabled=${this.coreUserData === undefined}
           @change=${this._advancedToggled}
         ></ha-switch>
-      </ha-settings-row>
+      </ha-md-list-item>
     `;
   }
 
