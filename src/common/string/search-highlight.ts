@@ -211,7 +211,20 @@ const highlightControllers = new WeakMap<ShadowRoot, HighlightController>();
 
 const ensureHighlightStyle = (root: ShadowRoot, name: string) => {
   const style = document.createElement("style");
-  style.textContent = `::highlight(${name}) {
+  style.textContent = `.ha-highlight {
+  background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
+  color: var(--ha-highlight-color, var(--primary-text-color));
+  border-radius: 2px;
+  padding: 0;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+:host(.custom-highlight-active) .ha-highlight {
+  background-color: transparent;
+  color: inherit;
+}
+
+::highlight(${name}) {
   background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
   color: var(--ha-highlight-color, var(--primary-text-color));
 }`;

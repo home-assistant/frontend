@@ -25,7 +25,7 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
 import { nextRender } from "../../common/util/render-status";
-import { haStyleHighlight, haStyleScrollbar } from "../../resources/styles";
+import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "../ha-checkbox";
@@ -1100,7 +1100,6 @@ export class HaDataTable extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleHighlight,
       haStyleScrollbar,
       css`
         /* default mdc styles, colors changed, without checkbox styles */
