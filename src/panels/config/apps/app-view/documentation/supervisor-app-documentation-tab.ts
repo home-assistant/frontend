@@ -63,6 +63,7 @@ class SupervisorAppDocumentationDashboard extends LitElement {
           margin: auto;
           padding: var(--ha-space-2);
           max-width: 1024px;
+          direction: ltr;
         }
         ha-markdown {
           padding: var(--ha-space-4);
