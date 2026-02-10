@@ -307,6 +307,30 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#F1C447",
     },
   ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  network_discovery: [
+    {
+      component: "dhcp",
+      path: "/config/dhcp",
+      translationKey: "ui.panel.config.network.discovery.dhcp",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+    {
+      component: "ssdp",
+      path: "/config/ssdp",
+      translationKey: "ui.panel.config.network.discovery.ssdp",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+    {
+      component: "zeroconf",
+      path: "/config/zeroconf",
+      translationKey: "ui.panel.config.network.discovery.zeroconf",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+  ],
   lovelace: [
     {
       component: "lovelace",
