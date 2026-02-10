@@ -127,6 +127,8 @@ export class HaDialogDatePicker extends LitElement {
         --dialog-content-padding: 0;
       }
       app-datepicker {
+        display: block;
+        margin-inline: auto;
         --app-datepicker-accent-color: var(--primary-color);
         --app-datepicker-bg-color: transparent;
         --app-datepicker-color: var(--primary-text-color);
