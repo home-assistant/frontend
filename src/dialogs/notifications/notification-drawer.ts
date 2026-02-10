@@ -29,11 +29,13 @@ export class HuiNotificationDrawer extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this.closeDialog);
+    window.addEventListener("keydown", this._handleKeyDown);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this.closeDialog);
+    window.removeEventListener("keydown", this._handleKeyDown);
   }
 
   showDialog({ narrow }) {
@@ -142,6 +144,13 @@ export class HuiNotificationDrawer extends LitElement {
     ev.stopPropagation();
     this._open = false;
   }
+
+  private _handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.key === "Escape" && this._open) {
+      ev.stopPropagation();
+      this.closeDialog();
+    }
+  };
 
   private _dismissAll() {
     this.hass.callService("persistent_notification", "dismiss_all");
