@@ -51,18 +51,11 @@ export const getRGBContrastRatio = (
 ) => Math.round((rgbContrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
 
 /**
- * Simple contrasted color.
- * If at least two RGB components <= threshold - return #ffffff, otherwise - #000000
+ * Gets a contrasted color (black or white) based on the luminance of the theme color.
+ * @param themeColor - The theme color to calculate the contrasted color for.
+ * @returns A hex color string ("#000000" for dark backgrounds, "#ffffff" for light backgrounds).
  */
 export const getContrastedColorHex = (themeColor: string): string => {
-  const blackColor = "#000000";
-  let colorHex = theme2hex(themeColor);
-  // prettier-ignore
-  colorHex = colorHex.startsWith("#") && colorHex.length === 7
-    ? colorHex : blackColor;
-  const threshold = 158;
-  return hex2rgb(colorHex).filter((component) => component <= threshold)
-    .length >= 2
-    ? "#ffffff"
-    : blackColor;
+  const lum = wcagLuminance(theme2hex(themeColor));
+  return lum > 0.5 ? "#000000" : "#ffffff";
 };
