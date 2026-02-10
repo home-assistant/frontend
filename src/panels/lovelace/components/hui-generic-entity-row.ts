@@ -212,7 +212,7 @@ export class HuiGenericEntityRow extends LitElement {
                                         )}`
                                       : this.config.secondary_info === "area"
                                         ? area
-                                          ? html`${area}`
+                                          ? area
                                           : nothing
                                         : nothing)}
                     </div>
