@@ -27,6 +27,7 @@ import {
   mdiScriptText,
   mdiShape,
   mdiSofa,
+  mdiStarFourPoints,
   mdiTextBoxOutline,
   mdiTools,
   mdiUpdate,
@@ -400,6 +401,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#f1c447",
     },
     {
+      path: "/config/ai-tasks",
+      translationKey: "ai_tasks",
+      iconPath: mdiStarFourPoints,
+      iconColor: "#8B69E3",
+      core: true,
+    },
+    {
       path: "/config/labs",
       translationKey: "labs",
       iconPath: mdiFlask,
@@ -601,6 +609,10 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       labs: {
         tag: "ha-config-labs",
         load: () => import("./labs/ha-config-labs"),
+      },
+      "ai-tasks": {
+        tag: "ha-config-section-ai-tasks",
+        load: () => import("./core/ha-config-section-ai-tasks"),
       },
       zha: {
         tag: "zha-config-dashboard-router",

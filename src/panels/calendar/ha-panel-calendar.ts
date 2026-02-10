@@ -331,6 +331,8 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
         ha-dropdown-item {
           padding-left: 32px;
+          padding-inline-start: 32px;
+          padding-inline-end: initial;
           --icon-primary-color: var(--ha-color-fill-neutral-loud-resting);
         }
 
@@ -340,6 +342,8 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
         :host([mobile]) {
           padding-left: unset;
+          padding-inline-start: unset;
+          padding-inline-end: initial;
         }
         .loading {
           display: flex;
