@@ -13,11 +13,6 @@ import {
   stateColorCss,
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import {
-  formatNumber,
-  getNumberFormatOptions,
-  isNumericState,
-} from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-attribute-value";
 import "../../../components/ha-card";
@@ -125,6 +120,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
+    const stateParts = this.hass.formatEntityStateToParts(stateObj);
 
     let unit;
     if (
@@ -205,17 +201,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   >
                   </ha-attribute-value>`
                 : this.hass.localize("state.default.unknown")
-              : (isNumericState(stateObj) || this._config.unit) &&
-                  stateObj.attributes.device_class !== "duration"
-                ? formatNumber(
-                    stateObj.state,
-                    this.hass.locale,
-                    getNumberFormatOptions(
-                      stateObj,
-                      this.hass.entities[this._config.entity]
-                    )
-                  )
-                : this.hass.formatEntityState(stateObj)}</span
+              : stateParts.find((part) => part.type === "value")?.value}</span
           >
           ${unit ? html`<span class="measurement">${unit}</span>` : nothing}
         </div>

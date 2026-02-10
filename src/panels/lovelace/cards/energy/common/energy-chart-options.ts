@@ -1,8 +1,9 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import {
-  differenceInMonths,
   subHours,
   differenceInDays,
+  differenceInMonths,
+  differenceInCalendarMonths,
   differenceInYears,
   startOfYear,
   addMilliseconds,
@@ -12,6 +13,7 @@ import {
   addHours,
   startOfDay,
   addDays,
+  subDays,
 } from "date-fns";
 import type {
   BarSeriesOption,
@@ -33,10 +35,22 @@ import { filterXSS } from "../../../../../common/util/xss";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
-export function getSuggestedMax(period: StatisticPeriod, end: Date): Date {
+// Number of days of padding when showing time axis in months
+const MONTH_TIME_AXIS_PADDING = 5;
+
+export function getSuggestedMax(
+  period: StatisticPeriod,
+  end: Date,
+  noRounding: boolean
+): Date {
+  // Maximum period depends on whether plotting a line chart or discrete bars.
+  //  - For line charts we must be plotting all the way to end of a given period,
+  //    otherwise we cut off the last period of data.
+  //  - For bar charts we need to round down to the start of the final bars period
+  //    to avoid unnecessary padding of the chart.
   let suggestedMax = new Date(end);
 
-  if (period === "5minute") {
+  if (noRounding || period === "5minute") {
     return suggestedMax;
   }
   suggestedMax.setMinutes(0, 0, 0);
@@ -82,17 +96,44 @@ export function getCommonOptions(
   detailedDailyData = false
 ): ECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
+  const suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
 
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
 
-  const options: ECOption = {
+  const monthTimeAxis: ECOption = {
+    xAxis: {
+      type: "time",
+      min: subDays(start, MONTH_TIME_AXIS_PADDING),
+      max: addDays(suggestedMax, MONTH_TIME_AXIS_PADDING),
+      axisLabel: {
+        formatter: {
+          year: "{yearStyle|{MMMM} {yyyy}}",
+          month: "{MMMM}",
+        },
+        rich: {
+          yearStyle: {
+            fontWeight: "bold",
+          },
+        },
+      },
+      // For shorter month ranges, force splitting to ensure time axis renders
+      // as whole month intervals. Limit the number of forced ticks to 6 months
+      // (so a max calendar difference of 5) to reduce clutter.
+      splitNumber: Math.min(differenceInCalendarMonths(end, start), 5),
+    },
+  };
+  const normalTimeAxis: ECOption = {
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(suggestedPeriod, end),
+      max: suggestedMax,
     },
+  };
+
+  const options: ECOption = {
+    ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
     yAxis: {
       type: "value",
       name: unit,
