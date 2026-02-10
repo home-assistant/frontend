@@ -4007,8 +4007,8 @@
           }
         },
         "core": {
-          "caption": "General",
-          "description": "Name, time zone, and locale settings",
+          "caption": "Home information",
+          "description": "Name, location, and regional settings",
           "section": {
             "core": {
               "header": "General configuration",
@@ -4040,6 +4040,15 @@
                 "update_units_confirm_title": "The unit of sensors will be updated",
                 "update_units_confirm_text": "The unit system has been changed, and the unit of some sensors like distance and speed will be updated.",
                 "update_units_confirm_update": "Update"
+              },
+              "home_name_card": {
+                "header": "Home name"
+              },
+              "location_card": {
+                "header": "Location"
+              },
+              "regional_settings_card": {
+                "header": "Region"
               }
             }
           }
@@ -7640,6 +7649,10 @@
           "learn_more": "Learn how we process your data",
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
+        },
+        "ai_tasks": {
+          "caption": "AI tasks",
+          "description": "Configure AI suggestions and task preferences"
         },
         "labs": {
           "caption": "Labs",
