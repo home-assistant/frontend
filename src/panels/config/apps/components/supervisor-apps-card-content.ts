@@ -6,7 +6,7 @@ import {
   applyCustomHighlightsWithKey,
   clearCustomHighlights,
   renderHighlightedText,
-} from "../../../../common/string/highlight";
+} from "../../../../common/string/search-highlight";
 import "../../../../components/ha-svg-icon";
 import { haStyleHighlight } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";

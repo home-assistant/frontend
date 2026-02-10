@@ -9,7 +9,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import { renderHighlightedText } from "../../common/string/highlight";
+import { renderHighlightedText } from "../../common/string/search-highlight";
 import "../../components/entity/state-badge";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-combo-box-item";

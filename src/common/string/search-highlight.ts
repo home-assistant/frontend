@@ -153,6 +153,13 @@ const getHighlightController = (root: ShadowRoot): HighlightController => {
   let lastKey: string | undefined;
   let lastMarkCount = -1;
 
+  const clear = () => {
+    if (CSS.highlights) {
+      CSS.highlights.delete(name);
+    }
+    (root.host as HTMLElement).removeAttribute("data-custom-highlight");
+  };
+
   const controller: HighlightController = {
     applyFromMarks: (key?: string) => {
       if (!CSS.highlights) {
@@ -168,10 +175,8 @@ const getHighlightController = (root: ShadowRoot): HighlightController => {
       lastKey = key;
       lastMarkCount = markCount;
 
-      const host = root.host as HTMLElement;
       if (!markCount) {
-        CSS.highlights.delete(name);
-        host.removeAttribute("data-custom-highlight");
+        clear();
         return;
       }
 
@@ -193,10 +198,9 @@ const getHighlightController = (root: ShadowRoot): HighlightController => {
 
       if (ranges.length) {
         CSS.highlights.set(name, new Highlight(...ranges));
-        host.setAttribute("data-custom-highlight", "");
+        (root.host as HTMLElement).setAttribute("data-custom-highlight", "");
       } else {
-        CSS.highlights.delete(name);
-        host.removeAttribute("data-custom-highlight");
+        clear();
       }
     },
     applyFromRanges: (ranges: Range[], key?: string) => {
@@ -212,21 +216,16 @@ const getHighlightController = (root: ShadowRoot): HighlightController => {
       lastKey = key;
       lastMarkCount = rangeCount;
 
-      const host = root.host as HTMLElement;
       if (!rangeCount) {
-        CSS.highlights.delete(name);
-        host.removeAttribute("data-custom-highlight");
+        clear();
         return;
       }
 
       CSS.highlights.set(name, new Highlight(...ranges));
-      host.setAttribute("data-custom-highlight", "");
+      (root.host as HTMLElement).setAttribute("data-custom-highlight", "");
     },
     clear: () => {
-      if (CSS.highlights) {
-        CSS.highlights.delete(name);
-      }
-      (root.host as HTMLElement).removeAttribute("data-custom-highlight");
+      clear();
     },
   };
 

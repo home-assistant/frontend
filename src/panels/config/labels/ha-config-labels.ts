@@ -14,7 +14,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
-import { renderHighlightedText } from "../../../common/string/highlight";
+import { renderHighlightedText } from "../../../common/string/search-highlight";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,

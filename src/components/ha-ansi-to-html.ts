@@ -15,7 +15,7 @@ import { classMap } from "lit/directives/class-map";
 import {
   applyCustomHighlightRanges,
   clearCustomHighlights,
-} from "../common/string/highlight";
+} from "../common/string/search-highlight";
 
 interface State {
   bold: boolean;

@@ -20,7 +20,7 @@ import {
   applyCustomHighlightsWithKey,
   clearCustomHighlights,
   renderHighlightedText,
-} from "../../common/string/highlight";
+} from "../../common/string/search-highlight";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";

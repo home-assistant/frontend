@@ -14,7 +14,7 @@ import memoize from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
-import { renderHighlightedText } from "../../../../common/string/highlight";
+import { renderHighlightedText } from "../../../../common/string/search-highlight";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type {
   DataTableColumnContainer,

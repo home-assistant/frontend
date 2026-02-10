@@ -17,7 +17,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import {
   applyCustomHighlightsWithKey,
   clearCustomHighlights,
-} from "../common/string/highlight";
+} from "../common/string/search-highlight";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
   multiTermSortedSearch,

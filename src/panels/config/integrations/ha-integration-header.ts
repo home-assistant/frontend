@@ -8,7 +8,7 @@ import {
   applyCustomHighlightsWithKey,
   clearCustomHighlights,
   renderHighlightedText,
-} from "../../../common/string/highlight";
+} from "../../../common/string/search-highlight";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
 import { haStyleHighlight } from "../../../resources/styles";
