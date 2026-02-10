@@ -426,17 +426,17 @@ export class DialogHelperDetail extends LitElement {
           --dialog-content-padding: 0;
         }
         ha-icon-next {
-          width: 24px;
+          width: var(--ha-space-6);
         }
         ha-tooltip {
           pointer-events: auto;
         }
         .form {
-          padding: 24px;
+          padding: var(--ha-space-6);
         }
         search-input {
           display: block;
-          margin: 16px 16px 0;
+          margin: 0 var(--ha-space-4) 0;
         }
         ha-list {
           height: calc(60vh - 184px);
