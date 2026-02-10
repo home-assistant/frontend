@@ -138,13 +138,6 @@ class AppsRegistriesDialog extends LitElement {
               `
             : html`
                 <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this.closeDialog}
-                >
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
-                <ha-button
                   slot="primaryAction"
                   @click=${this._addRegistry}
                   autofocus
