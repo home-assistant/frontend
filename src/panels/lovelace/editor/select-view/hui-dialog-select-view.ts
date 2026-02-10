@@ -16,7 +16,7 @@ import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../../../data/lovelace/dashboard";
 import { getDefaultPanelUrlPath } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
 
 declare global {
@@ -159,7 +159,7 @@ export class HuiDialogSelectView extends LitElement {
       this._params!.dashboards || (await fetchDashboards(this.hass));
   }
 
-  private async _dashboardChanged(ev: CustomEvent<{ value: string }>) {
+  private async _dashboardChanged(ev: ValueChangedEvent<string>) {
     let urlPath: string | null = ev.detail.value;
     if (urlPath === this._urlPath) {
       return;
