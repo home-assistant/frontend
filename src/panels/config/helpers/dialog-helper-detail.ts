@@ -16,6 +16,7 @@ import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/ha-wa-dialog";
+import "../../../components/search-input";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -140,6 +141,9 @@ export class DialogHelperDetail extends LitElement {
     await this.hass.loadBackendTranslation("title", flows, true);
     // Ensure the titles are loaded before we render the flows.
     this._helperFlows = flows;
+
+    await this.updateComplete;
+    await this._focusSearchInput();
   }
 
   public closeDialog(): void {
@@ -411,10 +415,25 @@ export class DialogHelperDetail extends LitElement {
     }
   }
 
-  private _goBack() {
+  private async _goBack() {
     this._domain = undefined;
     this._item = undefined;
     this._error = undefined;
+    await this.updateComplete;
+    await this._focusSearchInput();
+  }
+
+  private async _focusSearchInput() {
+    const searchInput = this.shadowRoot?.querySelector("search-input") as
+      | (HTMLElement & { updateComplete?: Promise<unknown> })
+      | null;
+
+    if (!searchInput) {
+      return;
+    }
+
+    await searchInput.updateComplete;
+    searchInput.focus();
   }
 
   static get styles(): CSSResultGroup {
