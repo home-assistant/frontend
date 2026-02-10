@@ -3,9 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import {
-  DOMAINS_INPUT_ROW,
-} from "../../../common/const";
+import { DOMAINS_INPUT_ROW } from "../../../common/const";
 import { uid } from "../../../common/util/uid";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
@@ -81,7 +79,7 @@ export class HuiGenericEntityRow extends LitElement {
       this.hass.areas,
       this.hass.floors
     );
-    const areaPart = context.area ? computeAreaName(context.area) : undefined;
+    const area = context.area ? computeAreaName(context.area) : undefined;
 
     return html`
       <div
@@ -213,7 +211,7 @@ export class HuiGenericEntityRow extends LitElement {
                                           stateObj
                                         )}`
                                       : this.config.secondary_info === "area"
-                                        ? areaPart
+                                        ? area
                                           ? html`${areaPart}`
                                           : nothing
                                         : nothing)}
