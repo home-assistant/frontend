@@ -88,7 +88,7 @@ export class CloudWebhooks extends LitElement {
                         <span slot="supporting-text">${entry.webhook_id}</span>
                         ${this._progress.includes(entry.webhook_id)
                           ? html`
-                              <div class="progress">
+                              <div class="progress" slot="end">
                                 <ha-spinner></ha-spinner>
                               </div>
                             `
