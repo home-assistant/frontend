@@ -36,12 +36,12 @@ export class HaAnalytics extends LitElement {
     return html`
       <ha-md-list>
         <ha-md-list-item>
-          <span slot="headline" data-for="base"
+          <span slot="headline"
             >${this.localize(
               `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
             )}</span
           >
-          <span slot="supporting-text" data-for="base"
+          <span slot="supporting-text"
             >${this.localize(
               `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
             )}</span
@@ -58,12 +58,12 @@ export class HaAnalytics extends LitElement {
         ${ADDITIONAL_PREFERENCES.map(
           (preference) => html`
             <ha-md-list-item>
-              <span slot="headline" data-for=${preference}
+              <span slot="headline"
                 >${this.localize(
                   `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
                 )}</span
               >
-              <span slot="supporting-text" data-for=${preference}
+              <span slot="supporting-text"
                 >${this.localize(
                   `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
                 )}</span
@@ -90,12 +90,12 @@ export class HaAnalytics extends LitElement {
           `
         )}
         <ha-md-list-item>
-          <span slot="headline" data-for="diagnostics"
+          <span slot="headline"
             >${this.localize(
               `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
             )}</span
           >
-          <span slot="supporting-text" data-for="diagnostics"
+          <span slot="supporting-text"
             >${this.localize(
               `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
             )}</span
@@ -111,26 +111,6 @@ export class HaAnalytics extends LitElement {
         </ha-md-list-item>
       </ha-md-list>
     `;
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-
-    this.shadowRoot!.querySelectorAll("*[data-for]").forEach((el) => {
-      const forEl = (el as HTMLElement).dataset.for;
-      delete (el as HTMLElement).dataset.for;
-
-      el.addEventListener("click", () => {
-        const toFocus = this.shadowRoot!.querySelector(
-          `*[name=${forEl}]`
-        ) as HTMLElement | null;
-
-        if (toFocus) {
-          toFocus.focus();
-          toFocus.click();
-        }
-      });
-    });
   }
 
   private _handleRowClick(ev: Event) {
