@@ -254,7 +254,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     ha-input-chip {
       --md-input-chip-selected-container-color: var(
         --ha-label-background-color,
-        var(--grey-color)
+        grey
       );
       --md-input-chip-selected-outline-width: 1px;
     }
