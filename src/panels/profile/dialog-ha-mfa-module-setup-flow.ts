@@ -1,9 +1,12 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-button";
-import "../../components/ha-dialog";
+import "../../components/ha-dialog-footer";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
 import "../../components/ha-spinner";
 import { autocompleteLoginFields } from "../../data/auth";
@@ -28,7 +31,7 @@ class HaMfaModuleSetupFlow extends LitElement {
 
   @state() private _loading = false;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _stepData: any = {};
 
@@ -39,7 +42,7 @@ class HaMfaModuleSetupFlow extends LitElement {
   public showDialog({ continueFlowId, mfaModuleId, dialogClosedCallback }) {
     this._instance = instance++;
     this._dialogClosedCallback = dialogClosedCallback;
-    this._opened = true;
+    this._open = true;
 
     const fetchStep = continueFlowId
       ? this.hass.callWS({
@@ -61,22 +64,29 @@ class HaMfaModuleSetupFlow extends LitElement {
   }
 
   public closeDialog() {
-    // Closed dialog by clicking on the overlay
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     if (this._step) {
       this._flowDone();
+      return;
     }
-    this._opened = false;
+
+    this._resetDialogState();
   }
 
   protected render() {
-    if (!this._opened) {
+    if (this._instance === undefined) {
       return nothing;
     }
     return html`
-      <ha-dialog
-        open
-        .heading=${this._computeStepTitle()}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
+        header-title=${this._computeStepTitle()}
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._errorMessage
@@ -115,6 +125,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                           )}
                         ></ha-markdown>
                         <ha-form
+                          autofocus
                           .hass=${this.hass}
                           .data=${this._stepData}
                           .schema=${autocompleteLoginFields(
@@ -127,31 +138,33 @@ class HaMfaModuleSetupFlow extends LitElement {
                         ></ha-form>`
                     : ""}`}
         </div>
-        <ha-button
-          slot="primaryAction"
-          @click=${this.closeDialog}
-          appearance=${["abort", "create_entry"].includes(
-            this._step?.type || ""
-          )
-            ? "accent"
-            : "plain"}
-          >${this.hass.localize(
-            ["abort", "create_entry"].includes(this._step?.type || "")
-              ? "ui.panel.profile.mfa_setup.close"
-              : "ui.common.cancel"
-          )}</ha-button
-        >
-        ${this._step?.type === "form"
-          ? html`<ha-button
-              slot="primaryAction"
-              .disabled=${this._loading}
-              @click=${this._submitStep}
-              >${this.hass.localize(
-                "ui.panel.profile.mfa_setup.submit"
-              )}</ha-button
-            >`
-          : nothing}
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot=${this._step?.type === "form"
+              ? "secondaryAction"
+              : "primaryAction"}
+            appearance=${ifDefined(
+              this._step?.type === "form" ? "plain" : undefined
+            )}
+            @click=${this.closeDialog}
+            >${this.hass.localize(
+              ["abort", "create_entry"].includes(this._step?.type || "")
+                ? "ui.panel.profile.mfa_setup.close"
+                : "ui.common.cancel"
+            )}</ha-button
+          >
+          ${this._step?.type === "form"
+            ? html`<ha-button
+                slot="primaryAction"
+                .disabled=${this._isSubmitDisabled()}
+                @click=${this._submitStep}
+                >${this.hass.localize(
+                  "ui.panel.profile.mfa_setup.submit"
+                )}</ha-button
+              >`
+            : nothing}
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -161,9 +174,6 @@ class HaMfaModuleSetupFlow extends LitElement {
       css`
         .error {
           color: red;
-        }
-        ha-dialog {
-          max-width: 500px;
         }
         ha-markdown {
           --markdown-svg-background-color: white;
@@ -177,8 +187,16 @@ class HaMfaModuleSetupFlow extends LitElement {
         ha-markdown-element p {
           text-align: center;
         }
+        ha-markdown-element svg {
+          display: block;
+          margin: 0 auto;
+        }
         ha-markdown-element code {
           background-color: transparent;
+        }
+        ha-form {
+          display: block;
+          margin-top: var(--ha-space-4);
         }
         ha-markdown-element > *:last-child {
           margin-bottom: revert;
@@ -206,6 +224,10 @@ class HaMfaModuleSetupFlow extends LitElement {
   }
 
   private _submitStep() {
+    if (this._isSubmitDisabled()) {
+      return;
+    }
+
     this._loading = true;
     this._errorMessage = undefined;
 
@@ -234,6 +256,62 @@ class HaMfaModuleSetupFlow extends LitElement {
       );
   }
 
+  private _isSubmitDisabled() {
+    return this._loading || this._hasMissingRequiredFields();
+  }
+
+  private _hasMissingRequiredFields(
+    schema: readonly HaFormSchema[] = this._step?.type === "form"
+      ? this._step.data_schema
+      : []
+  ): boolean {
+    for (const field of schema) {
+      if ("schema" in field) {
+        if (this._hasMissingRequiredFields(field.schema)) {
+          return true;
+        }
+        continue;
+      }
+
+      if (!field.required) {
+        continue;
+      }
+
+      if (
+        field.default !== undefined ||
+        field.description?.suggested_value !== undefined
+      ) {
+        continue;
+      }
+
+      if (this._isEmptyValue(this._stepData[field.name])) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private _isEmptyValue(value: unknown): boolean {
+    if (value === undefined || value === null) {
+      return true;
+    }
+
+    if (typeof value === "string") {
+      return value.trim() === "";
+    }
+
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+
+    if (typeof value === "object") {
+      return Object.keys(value as Record<string, unknown>).length === 0;
+    }
+
+    return false;
+  }
+
   private _processStep(step) {
     if (!step.errors) step.errors = {};
     this._step = step;
@@ -251,12 +329,15 @@ class HaMfaModuleSetupFlow extends LitElement {
     this._dialogClosedCallback!({
       flowFinished,
     });
+    this._resetDialogState();
+  }
 
+  private _resetDialogState() {
     this._errorMessage = undefined;
     this._step = undefined;
     this._stepData = {};
     this._dialogClosedCallback = undefined;
-    this.closeDialog();
+    this._instance = undefined;
   }
 
   private _computeStepTitle() {

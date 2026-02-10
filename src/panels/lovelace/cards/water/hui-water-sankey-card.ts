@@ -157,7 +157,7 @@ class HuiWaterSankeyCard
       }
 
       nodes.push({
-        id: source.stat_energy_from,
+        id: `source-${source.stat_energy_from}`,
         label: getStatisticLabel(
           this.hass,
           source.stat_energy_from,
@@ -169,7 +169,7 @@ class HuiWaterSankeyCard
       });
 
       links.push({
-        source: source.stat_energy_from,
+        source: `source-${source.stat_energy_from}`,
         target: "home",
         value,
       });

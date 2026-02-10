@@ -193,6 +193,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
               </ha-list-item>`
           : nothing}
         <ha-full-calendar
+          add-fab
           .events=${this._events}
           .calendars=${this._calendars}
           .narrow=${this.narrow}

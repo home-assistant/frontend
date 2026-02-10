@@ -1,7 +1,7 @@
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/ha-settings-row";
+import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
@@ -11,26 +11,25 @@ import { storeState } from "../../../../util/ha-pref-storage";
 class HaDebugConnectionRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
-
   protected render(): TemplateResult {
     return html`
-      <ha-settings-row .narrow=${this.narrow}>
-        <span slot="heading">
-          ${this.hass.localize(
+      <ha-md-list-item>
+        <span slot="headline"
+          >${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.debug.debug_connection.title"
-          )}
-        </span>
-        <span slot="description">
-          ${this.hass.localize(
+          )}</span
+        >
+        <span slot="supporting-text"
+          >${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.debug.debug_connection.description"
-          )}
-        </span>
+          )}</span
+        >
         <ha-switch
+          slot="end"
           .checked=${this.hass.debugConnection}
           @change=${this._checkedChanged}
         ></ha-switch>
-      </ha-settings-row>
+      </ha-md-list-item>
     `;
   }
 

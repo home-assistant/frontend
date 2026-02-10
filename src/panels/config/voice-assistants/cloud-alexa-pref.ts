@@ -280,7 +280,7 @@ export class CloudAlexaPref extends LitElement {
       display: flex;
       align-items: center;
     }
-    img {
+    voice-assistant-brand-icon {
       height: 28px;
       margin-right: 16px;
       margin-inline-end: 16px;

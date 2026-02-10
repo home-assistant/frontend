@@ -3897,22 +3897,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsdoctor/client@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@rsdoctor/client@npm:1.5.1"
-  checksum: 10/9361628cae4fc39f3289ded76496b27c6a69806a8b52e33e9c74c5a86338c67ff89206ecdad205ad97209744fe0656caeb4f42f82d4d4858e2fd8a0da2f60eff
+"@rsdoctor/client@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@rsdoctor/client@npm:1.5.2"
+  checksum: 10/fb5188a19109294e529c5dedb79fbeda36d03df5dc567583196b68b0baecad0c67bd278f1f3fd915a6fe44870a6d184076a8de38aa717f378765cc41e8d83eac
   languageName: node
   linkType: hard
 
-"@rsdoctor/core@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@rsdoctor/core@npm:1.5.1"
+"@rsdoctor/core@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@rsdoctor/core@npm:1.5.2"
   dependencies:
     "@rsbuild/plugin-check-syntax": "npm:1.6.1"
-    "@rsdoctor/graph": "npm:1.5.1"
-    "@rsdoctor/sdk": "npm:1.5.1"
-    "@rsdoctor/types": "npm:1.5.1"
-    "@rsdoctor/utils": "npm:1.5.1"
+    "@rsdoctor/graph": "npm:1.5.2"
+    "@rsdoctor/sdk": "npm:1.5.2"
+    "@rsdoctor/types": "npm:1.5.2"
+    "@rsdoctor/utils": "npm:1.5.2"
     browserslist-load-config: "npm:^1.0.1"
     enhanced-resolve: "npm:5.12.0"
     es-toolkit: "npm:^1.43.0"
@@ -3920,59 +3920,59 @@ __metadata:
     fs-extra: "npm:^11.1.1"
     semver: "npm:^7.7.3"
     source-map: "npm:^0.7.6"
-  checksum: 10/42ffd8b551fe7be1ac016f4b82ab14092b420a401308dc5cfe8eb6690ef449905980fc6069d8943601356013e51dda8884dd5e89f913ce39e4f670e1c59838e5
+  checksum: 10/2752ec40b9988f4fcc41cf01612d617e5fa75b68798937c2c71d09488a69b907f3787a2c039c39b32671fb4407bc8577bca71b877c5ef31c4fc1c5674ab9fea2
   languageName: node
   linkType: hard
 
-"@rsdoctor/graph@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@rsdoctor/graph@npm:1.5.1"
+"@rsdoctor/graph@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@rsdoctor/graph@npm:1.5.2"
   dependencies:
-    "@rsdoctor/types": "npm:1.5.1"
-    "@rsdoctor/utils": "npm:1.5.1"
+    "@rsdoctor/types": "npm:1.5.2"
+    "@rsdoctor/utils": "npm:1.5.2"
     es-toolkit: "npm:^1.43.0"
     path-browserify: "npm:1.0.1"
     source-map: "npm:^0.7.6"
-  checksum: 10/36012c7184235615bd943ab9ca3d11ca9f6fc72ea2a25ad17e840bb6e6c8d26e581b7b2d14d1cbc98686f390165992ab8a59d10c7615b1ebd8748f6572dee490
+  checksum: 10/3cab17675b9a959f5476d15d87d59b700bcf711a8fcfe6b42bbd44d92ff5c6bb85b0c75c16d6eeb8777330f2e38546dd5b6f740f824529bf1fb017149110c513
   languageName: node
   linkType: hard
 
-"@rsdoctor/rspack-plugin@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@rsdoctor/rspack-plugin@npm:1.5.1"
+"@rsdoctor/rspack-plugin@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@rsdoctor/rspack-plugin@npm:1.5.2"
   dependencies:
-    "@rsdoctor/core": "npm:1.5.1"
-    "@rsdoctor/graph": "npm:1.5.1"
-    "@rsdoctor/sdk": "npm:1.5.1"
-    "@rsdoctor/types": "npm:1.5.1"
-    "@rsdoctor/utils": "npm:1.5.1"
+    "@rsdoctor/core": "npm:1.5.2"
+    "@rsdoctor/graph": "npm:1.5.2"
+    "@rsdoctor/sdk": "npm:1.5.2"
+    "@rsdoctor/types": "npm:1.5.2"
+    "@rsdoctor/utils": "npm:1.5.2"
   peerDependencies:
     "@rspack/core": "*"
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
-  checksum: 10/4fba835686403d5977874354a569e1dbe6600a133b3044b0e54f964c52d3a463898289f4c69f9f7879b1975fe96d9ff9c43c0956061963be394b2d75499324b4
+  checksum: 10/4316c649c0c55cb3836ad5ff44f5c5975cc1e94af43973d08e2d9a88304f4558825e8297c0c82efbe4be74303a354294b195af8a7c479707d70c81dde3f413b9
   languageName: node
   linkType: hard
 
-"@rsdoctor/sdk@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@rsdoctor/sdk@npm:1.5.1"
+"@rsdoctor/sdk@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@rsdoctor/sdk@npm:1.5.2"
   dependencies:
-    "@rsdoctor/client": "npm:1.5.1"
-    "@rsdoctor/graph": "npm:1.5.1"
-    "@rsdoctor/types": "npm:1.5.1"
-    "@rsdoctor/utils": "npm:1.5.1"
+    "@rsdoctor/client": "npm:1.5.2"
+    "@rsdoctor/graph": "npm:1.5.2"
+    "@rsdoctor/types": "npm:1.5.2"
+    "@rsdoctor/utils": "npm:1.5.2"
     safer-buffer: "npm:2.1.2"
     socket.io: "npm:4.8.1"
     tapable: "npm:2.2.3"
-  checksum: 10/d14be0a86dbf4b445b0d3494a3e7da80993b2e6cab56a43b08bd10e63cea4bf5008707eaa4e2f1363ab26953ddf844192ae3eb57105277222187b8f010e2ee9a
+  checksum: 10/c9e0ff49a72ae9ac3fe735cb913876e8fee0e70bb4075fa9bd4813d51a5c6b10235908428e5595af32985c6bf12db5bdf9f5a3fc41978c0aceabd96d185d0111
   languageName: node
   linkType: hard
 
-"@rsdoctor/types@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@rsdoctor/types@npm:1.5.1"
+"@rsdoctor/types@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@rsdoctor/types@npm:1.5.2"
   dependencies:
     "@types/connect": "npm:3.4.38"
     "@types/estree": "npm:1.0.5"
@@ -3986,16 +3986,16 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10/a369904094bb7e62ee50c97ae132742d1b7bdd46e96fb4212dfad685322f71b969102267e45183d768d864e55bbdf0ec6850b834b81bdac572a4c1aefa53dfae
+  checksum: 10/d669ebd62c65b2c34b5d97178cb6bb3f8e96434b406171960da255ef056e5d8f611966726b1c3462f1d3c30c6939d6dde69591104f7e83a44bbc153c78f4f40a
   languageName: node
   linkType: hard
 
-"@rsdoctor/utils@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@rsdoctor/utils@npm:1.5.1"
+"@rsdoctor/utils@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@rsdoctor/utils@npm:1.5.2"
   dependencies:
     "@babel/code-frame": "npm:7.26.2"
-    "@rsdoctor/types": "npm:1.5.1"
+    "@rsdoctor/types": "npm:1.5.2"
     "@types/estree": "npm:1.0.5"
     acorn: "npm:^8.10.0"
     acorn-import-attributes: "npm:^1.9.5"
@@ -4009,7 +4009,7 @@ __metadata:
     picocolors: "npm:^1.1.1"
     rslog: "npm:^1.2.11"
     strip-ansi: "npm:^6.0.1"
-  checksum: 10/a877b463cc7b600c0f82dad4592980017d050ddc5a0965ac22c075d10a0bcf109e51856b2f71b475f2ea46f403d93fdbd461f63a330752da9b6535470de19ce8
+  checksum: 10/77eb5830affa65dde1ddd69e6b8994776927c892ef569d19166579e64e6a95b391d04fb69ba70a6872a24acfd3a31c67049023c958a410a317bbf22f0907bc5a
   languageName: node
   linkType: hard
 
@@ -9119,7 +9119,7 @@ __metadata:
     "@octokit/plugin-retry": "npm:8.0.3"
     "@octokit/rest": "npm:22.0.1"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
-    "@rsdoctor/rspack-plugin": "npm:1.5.1"
+    "@rsdoctor/rspack-plugin": "npm:1.5.2"
     "@rspack/core": "npm:1.7.5"
     "@rspack/dev-server": "npm:1.2.1"
     "@swc/helpers": "npm:0.5.18"
