@@ -101,10 +101,6 @@ class HaDataTableLabels extends LitElement {
       position: fixed;
       flex-wrap: nowrap;
     }
-    ha-label {
-      --ha-label-background-color: var(--color, var(--grey-color));
-      --primary-text-color: var(--color-text);
-    }
     .plus {
       --ha-label-background-color: transparent;
       border: 1px solid var(--divider-color);
