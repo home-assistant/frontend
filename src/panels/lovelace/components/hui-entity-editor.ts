@@ -246,6 +246,7 @@ export class HuiEntityEditor extends LitElement {
     }
     ha-md-list {
       gap: 8px;
+      padding-top: 0;
     }
     ha-md-list-item {
       border: 1px solid var(--divider-color);
