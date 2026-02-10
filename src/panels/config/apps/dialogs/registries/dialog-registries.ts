@@ -7,6 +7,7 @@ import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-icon-button-prev";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-wa-dialog";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
@@ -73,6 +74,14 @@ class AppsRegistriesDialog extends LitElement {
       >
         ${this._addingRegistry
           ? html`
+              <ha-icon-button-prev
+                slot="headerNavigationIcon"
+                @click=${this._stopAddingRegistry}
+              ></ha-icon-button-prev>
+            `
+          : ""}
+        ${this._addingRegistry
+          ? html`
               <ha-form
                 autofocus
                 .data=${this._input}
@@ -113,13 +122,6 @@ class AppsRegistriesDialog extends LitElement {
         <ha-dialog-footer slot="footer">
           ${this._addingRegistry
             ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this._stopAddingRegistry}
-                >
-                  ${this.hass.localize("ui.common.cancel")}
-                </ha-button>
                 <ha-button
                   slot="primaryAction"
                   ?disabled=${Boolean(
