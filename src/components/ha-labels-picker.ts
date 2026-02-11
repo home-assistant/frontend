@@ -5,8 +5,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../common/color/compute-color";
-import { getContrastedColorHex } from "../common/color/rgb";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
@@ -20,18 +18,10 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import { getLabelColorStyle } from "./ha-label";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
 import "./ha-tooltip";
-
-export const getLabelColorStyle = (labelColor: string | undefined | null) => {
-  const color = labelColor ? computeCssColor(labelColor) : undefined;
-  return color
-    ? `--ha-label-background-color: ${color};
-       --primary-text-color: ${getContrastedColorHex(labelColor!)};`
-    : `--ha-label-background-color: grey;
-       --primary-text-color: ${getContrastedColorHex("grey")};`;
-};
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends SubscribeMixin(LitElement) {
@@ -254,7 +244,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     ha-input-chip {
       --md-input-chip-selected-container-color: var(
         --ha-label-background-color,
-        grey
+        var(--grey-color)
       );
       --md-input-chip-selected-outline-width: 1px;
     }
