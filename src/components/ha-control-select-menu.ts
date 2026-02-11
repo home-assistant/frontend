@@ -89,7 +89,7 @@ export class HaControlSelectMenu extends LitElement {
   private _renderOption = (option: SelectOption) =>
     html`<ha-dropdown-item
       .value=${option.value}
-      class=${this.value === option.value ? "selected" : ""}
+      .selected=${this.value === option.value}
       >${option.iconPath
         ? html`<ha-svg-icon slot="icon" .path=${option.iconPath}></ha-svg-icon>`
         : option.icon
@@ -262,15 +262,6 @@ export class HaControlSelectMenu extends LitElement {
       .select-disabled.select-anchor {
         cursor: not-allowed;
         color: var(--disabled-color);
-      }
-      ha-dropdown-item.selected {
-        font-weight: var(--ha-font-weight-medium);
-        color: var(--primary-color);
-        background-color: var(--ha-color-fill-primary-quiet-resting);
-        --icon-primary-color: var(--primary-color);
-      }
-      ha-dropdown-item.selected:hover {
-        background-color: var(--ha-color-fill-primary-quiet-hover);
       }
 
       ha-dropdown::part(menu) {

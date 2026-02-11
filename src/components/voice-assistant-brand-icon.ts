@@ -32,12 +32,13 @@ export class VoiceAssistantBrandicon extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: inline;
+        }
         .logo {
           position: relative;
+          vertical-align: middle;
           height: 24px;
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
         }
       `,
     ];
