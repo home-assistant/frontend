@@ -1,0 +1,43 @@
+#!/bin/sh
+set -e
+
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+OUT_ROOT="$ROOT_DIR/hass_frontend"
+OUT_LATEST="$OUT_ROOT/frontend_latest"
+OUT_ES5="$OUT_ROOT/frontend_es5"
+
+bytes_dir() {
+  if [ -d "$1" ]; then
+    du -sb "$1" | cut -f1
+  else
+    echo 0
+  fi
+}
+
+run_build() {
+  minifier="$1"
+  printf "\n==> Building with %s\n" "$minifier"
+  start_time=$(date +%s)
+  JS_MINIFIER="$minifier" "$ROOT_DIR/script/build_frontend"
+  end_time=$(date +%s)
+  duration=$((end_time - start_time))
+
+  latest_size=$(bytes_dir "$OUT_LATEST")
+  es5_size=$(bytes_dir "$OUT_ES5")
+  total_size=$(bytes_dir "$OUT_ROOT")
+
+  printf "%s|%s|%s|%s\n" "$minifier" "$duration" "$latest_size" "$es5_size" >> "$ROOT_DIR/temp/minifier_benchmark.tsv"
+  printf "   duration: %ss\n" "$duration"
+  printf "   frontend_latest: %s bytes\n" "$latest_size"
+  printf "   frontend_es5:    %s bytes\n" "$es5_size"
+  printf "   hass_frontend:   %s bytes\n" "$total_size"
+}
+
+mkdir -p "$ROOT_DIR/temp"
+rm -f "$ROOT_DIR/temp/minifier_benchmark.tsv"
+
+run_build swc
+run_build terser
+
+printf "\n==> Summary (minifier | seconds | latest bytes | es5 bytes)\n"
+cat "$ROOT_DIR/temp/minifier_benchmark.tsv"
