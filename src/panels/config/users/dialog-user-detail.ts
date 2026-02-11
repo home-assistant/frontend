@@ -69,6 +69,7 @@ class DialogUserDetail extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         header-title=${user.name}
         width="medium"
         @closed=${this._dialogClosed}
