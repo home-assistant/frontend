@@ -80,7 +80,13 @@ const doneHandler = (done) => (err, stats) => {
     console.log(stats.toString("minimal"));
   }
 
-  log(`Build done @ ${new Date().toLocaleTimeString()}`);
+  const durationMs =
+    stats?.startTime && stats?.endTime ? stats.endTime - stats.startTime : 0;
+  const durationLabel = durationMs
+    ? ` (${(durationMs / 1000).toFixed(1)}s, minifier: ${env.jsMinifier()})`
+    : ` (minifier: ${env.jsMinifier()})`;
+
+  log(`Build done @ ${new Date().toLocaleTimeString()}${durationLabel}`);
 
   if (done) {
     done();

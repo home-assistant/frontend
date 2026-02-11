@@ -31,4 +31,7 @@ module.exports = {
   isDevContainer() {
     return isTrue(process.env.DEV_CONTAINER);
   },
+  jsMinifier() {
+    return (process.env.JS_MINIFIER || "swc").toLowerCase();
+  },
 };

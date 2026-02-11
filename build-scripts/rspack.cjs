@@ -13,6 +13,7 @@ const { WebpackManifestPlugin } = require("rspack-manifest-plugin");
 const log = require("fancy-log");
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const WebpackBar = require("webpackbar/rspack");
+const env = require("./env.cjs");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
 
@@ -100,11 +101,20 @@ const createRspackConfig = ({
     },
     optimization: {
       minimizer: [
-        new TerserPlugin({
-          parallel: true,
-          extractComments: true,
-          terserOptions: bundle.terserOptions({ latestBuild, isTestBuild }),
-        }),
+        env.jsMinifier() === "terser"
+          ? new TerserPlugin({
+              parallel: true,
+              extractComments: true,
+              terserOptions: bundle.terserOptions({ latestBuild, isTestBuild }),
+            })
+          : new rspack.SwcJsMinimizerRspackPlugin({
+              extractComments: true,
+              minimizerOptions: {
+                ecma: latestBuild ? 2015 : 5,
+                module: latestBuild,
+                format: { comments: false },
+              },
+            }),
       ],
       moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
       chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
