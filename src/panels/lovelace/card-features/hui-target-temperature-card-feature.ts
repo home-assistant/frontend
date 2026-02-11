@@ -9,7 +9,7 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-control-button-group";
-import "../../../components/ha-control-number-input";
+import "../../../components/ha-control-slider";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -206,17 +206,14 @@ class HuiTargetTemperatureCardFeature
       minimumFractionDigits: digits,
     };
 
-    const inputStyle = this._config.style ?? "buttons";
-
     if (
       this._supportsTarget() &&
       this._targetTemperature.value != null &&
       this._stateObj.state !== UNAVAILABLE
     ) {
-      return html`
-        <ha-control-button-group>
-          <ha-control-number-input
-            .inputStyle=${inputStyle}
+      if (this._config.style === "slider") {
+        return html`
+          <ha-control-slider
             .formatOptions=${options}
             .target=${"value"}
             .value=${this._stateObj.attributes.temperature}
@@ -235,8 +232,31 @@ class HuiTargetTemperatureCardFeature
             .disabled=${this._stateObj!.state === UNAVAILABLE}
             .locale=${this.hass.locale}
           >
-          </ha-control-number-input>
-        </ha-control-button-group>
+          </ha-control-slider>
+        `;
+      }
+
+      return html`
+        <ha-control-number-buttons
+          .formatOptions=${options}
+          .target=${"value"}
+          .value=${this._stateObj.attributes.temperature}
+          .unit=${this.hass.config.unit_system.temperature}
+          .min=${this._min}
+          .max=${this._max}
+          .step=${this._step}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass.formatEntityAttributeName(
+            this._stateObj,
+            "temperature"
+          )}
+          style=${styleMap({
+            "--control-number-buttons-focus-color": stateColor,
+          })}
+          .disabled=${this._stateObj!.state === UNAVAILABLE}
+          .locale=${this.hass.locale}
+        >
+        </ha-control-number-buttons>
       `;
     }
 
@@ -246,10 +266,56 @@ class HuiTargetTemperatureCardFeature
       this._targetTemperature.high != null &&
       this._stateObj.state !== UNAVAILABLE
     ) {
+      if (this._config.style === "slider") {
+        return html`
+          <ha-control-button-group>
+            <ha-control-slider
+              .formatOptions=${options}
+              .target=${"low"}
+              .value=${this._targetTemperature.low}
+              .unit=${this.hass.config.unit_system.temperature}
+              .min=${this._min}
+              .max=${this._max}
+              .step=${this._step}
+              @value-changed=${this._valueChanged}
+              .label=${this.hass.formatEntityAttributeName(
+                this._stateObj,
+                "target_temp_low"
+              )}
+              style=${styleMap({
+                "--control-number-buttons-focus-color": stateColor,
+              })}
+              .disabled=${this._stateObj!.state === UNAVAILABLE}
+              .locale=${this.hass.locale}
+            >
+            </ha-control-slider>
+            <ha-control-slider
+              .formatOptions=${options}
+              .target=${"high"}
+              .value=${this._targetTemperature.high}
+              .unit=${this.hass.config.unit_system.temperature}
+              .min=${this._min}
+              .max=${this._max}
+              .step=${this._step}
+              @value-changed=${this._valueChanged}
+              .label=${this.hass.formatEntityAttributeName(
+                this._stateObj,
+                "target_temp_high"
+              )}
+              style=${styleMap({
+                "--control-number-buttons-focus-color": stateColor,
+              })}
+              .disabled=${this._stateObj!.state === UNAVAILABLE}
+              .locale=${this.hass.locale}
+            >
+            </ha-control-slider>
+          </ha-control-button-group>
+        `;
+      }
+
       return html`
         <ha-control-button-group>
-          <ha-control-number-input
-            .inputStyle=${inputStyle}
+          <ha-control-number-buttons
             .formatOptions=${options}
             .target=${"low"}
             .value=${this._targetTemperature.low}
@@ -271,9 +337,8 @@ class HuiTargetTemperatureCardFeature
             .disabled=${this._stateObj!.state === UNAVAILABLE}
             .locale=${this.hass.locale}
           >
-          </ha-control-number-input>
-          <ha-control-number-input
-            .inputStyle=${inputStyle}
+          </ha-control-number-buttons>
+          <ha-control-number-buttons
             .formatOptions=${options}
             .target=${"high"}
             .value=${this._targetTemperature.high}
@@ -295,15 +360,14 @@ class HuiTargetTemperatureCardFeature
             .disabled=${this._stateObj!.state === UNAVAILABLE}
             .locale=${this.hass.locale}
           >
-          </ha-control-number-input>
+          </ha-control-number-buttons>
         </ha-control-button-group>
       `;
     }
 
-    return html`
-      <ha-control-button-group>
-        <ha-control-number-input
-          .inputStyle=${inputStyle}
+    if (this._config.style === "slider") {
+      return html`
+        <ha-control-slider
           .disabled=${this._stateObj!.state === UNAVAILABLE}
           .unit=${this.hass.config.unit_system.temperature}
           .label=${this.hass.formatEntityAttributeName(
@@ -315,8 +379,24 @@ class HuiTargetTemperatureCardFeature
           })}
           .locale=${this.hass.locale}
         >
-        </ha-control-number-input>
-      </ha-control-button-group>
+        </ha-control-slider>
+      `;
+    }
+
+    return html`
+      <ha-control-number-buttons
+        .disabled=${this._stateObj!.state === UNAVAILABLE}
+        .unit=${this.hass.config.unit_system.temperature}
+        .label=${this.hass.formatEntityAttributeName(
+          this._stateObj,
+          "temperature"
+        )}
+        style=${styleMap({
+          "--control-number-buttons-focus-color": stateColor,
+        })}
+        .locale=${this.hass.locale}
+      >
+      </ha-control-number-buttons>
     `;
   }
 

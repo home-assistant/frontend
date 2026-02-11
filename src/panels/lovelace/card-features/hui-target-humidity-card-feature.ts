@@ -2,7 +2,8 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-control-number-input";
+import "../../../components/ha-control-number-buttons";
+import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HumidifierEntity } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";
@@ -115,9 +116,26 @@ class HuiTargetHumidityCardFeature
       return nothing;
     }
 
+    if (this._config.style === "buttons") {
+      return html`
+        <ha-control-number-buttons
+          .value=${this._stateObj.attributes.humidity}
+          .min=${this._min}
+          .max=${this._max}
+          .step=${this._step}
+          .disabled=${this._stateObj!.state === UNAVAILABLE}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass.formatEntityAttributeName(
+            this._stateObj,
+            "humidity"
+          )}
+          unit="%"
+          .locale=${this.hass.locale}
+        ></ha-control-number-buttons>
+      `;
+    }
     return html`
-      <ha-control-number-input
-        .inputStyle=${this._config.style ?? "slider"}
+      <ha-control-slider
         .value=${this._stateObj.attributes.humidity}
         .min=${this._min}
         .max=${this._max}
@@ -130,7 +148,7 @@ class HuiTargetHumidityCardFeature
         )}
         unit="%"
         .locale=${this.hass.locale}
-      ></ha-control-number-input>
+      ></ha-control-slider>
     `;
   }
 
