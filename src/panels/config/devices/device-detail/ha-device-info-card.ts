@@ -10,7 +10,6 @@ import { createSearchParam } from "../../../../common/url/search-params";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-label";
-import { getLabelColorStyle } from "../../../../components/ha-labels-picker";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import { subscribeLabelRegistry } from "../../../../data/label/label_registry";
@@ -180,7 +179,7 @@ export class HaDeviceCard extends SubscribeMixin(LitElement) {
                     const label = labelMap.get(labelId);
                     return html`
                       <ha-label
-                        style=${getLabelColorStyle(label?.color)}
+                        .color=${label?.color}
                         .description=${label?.description}
                       >
                         ${label?.icon
