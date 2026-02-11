@@ -64,7 +64,8 @@ export class HaDialogDatePicker extends LitElement {
         @datepicker-value-updated=${this._valueChanged}
         .firstDayOfWeek=${this._params.firstWeekday}
       ></app-datepicker>
-      <ha-dialog-footer slot="footer">
+
+      <div class="bottom-actions">
         ${this._params.canClear
           ? html`<ha-button
               slot="secondaryAction"
@@ -82,6 +83,9 @@ export class HaDialogDatePicker extends LitElement {
         >
           ${this.hass.localize("ui.dialogs.date-picker.today")}
         </ha-button>
+      </div>
+
+      <ha-dialog-footer slot="footer">
         <ha-button
           appearance="plain"
           slot="secondaryAction"
@@ -125,6 +129,14 @@ export class HaDialogDatePicker extends LitElement {
     css`
       ha-wa-dialog {
         --dialog-content-padding: 0;
+      }
+      .bottom-actions {
+        display: flex;
+        gap: var(--ha-space-4);
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin-bottom: var(--ha-space-1);
       }
       app-datepicker {
         display: block;

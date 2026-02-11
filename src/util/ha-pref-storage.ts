@@ -38,7 +38,21 @@ export function getState(): Partial<StoredHomeAssistant> {
   STORED_STATE.forEach((key) => {
     const storageItem = window.localStorage.getItem(key);
     if (storageItem !== null) {
-      let value = JSON.parse(storageItem);
+      let value;
+      try {
+        value = JSON.parse(storageItem);
+      } catch (_err: any) {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Failed to json parse localStorage key: ${key}. Key value: ${storageItem}`,
+          _err
+        );
+        window.localStorage.removeItem(key);
+        if (key === "selectedTheme") {
+          state[key] = { theme: "" };
+        }
+        return;
+      }
       // selectedTheme went from string to object on 20200718
       if (key === "selectedTheme" && typeof value === "string") {
         value = { theme: value };

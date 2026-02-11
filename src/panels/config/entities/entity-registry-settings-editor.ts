@@ -30,12 +30,12 @@ import "../../../components/ha-labels-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-radio";
 import "../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import {
   CAMERA_ORIENTATIONS,
   CAMERA_SUPPORT_STREAM,
@@ -434,19 +434,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
           >
             <ha-dropdown-item
               value="switch"
-              class=${this._switchAsDomain === "switch" &&
-              (!this._deviceClass || this._deviceClass === "switch")
-                ? "selected"
-                : ""}
+              .selected=${this._switchAsDomain === "switch" &&
+              (!this._deviceClass || this._deviceClass === "switch")}
             >
               ${domainToName(this.hass.localize, "switch")}
             </ha-dropdown-item>
             <ha-dropdown-item
               value="outlet"
-              class=${this._switchAsDomain === "switch" &&
-              this._deviceClass === "outlet"
-                ? "selected"
-                : ""}
+              .selected=${this._switchAsDomain === "switch" &&
+              this._deviceClass === "outlet"}
             >
               ${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.device_classes.switch.outlet"
@@ -460,9 +456,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               (entry) => html`
                 <ha-dropdown-item
                   .value=${entry.domain}
-                  class=${this._switchAsDomain === entry.domain
-                    ? "selected"
-                    : ""}
+                  .selected=${this._switchAsDomain === entry.domain}
                 >
                   ${entry.label}
                 </ha-dropdown-item>
@@ -479,13 +473,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
               >
                 <ha-dropdown-item
                   value="switch"
-                  class=${this._switchAsDomain === "switch" ? "selected" : ""}
+                  .selected=${this._switchAsDomain === "switch"}
                 >
                   ${domainToName(this.hass.localize, "switch")}
                 </ha-dropdown-item>
                 <ha-dropdown-item
                   .value=${domain}
-                  class=${this._switchAsDomain === domain ? "selected" : ""}
+                  .selected=${this._switchAsDomain === domain}
                 >
                   ${domainToName(this.hass.localize, domain)}
                 </ha-dropdown-item>
@@ -499,9 +493,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                     : html`
                         <ha-dropdown-item
                           .value=${entry.domain}
-                          class=${this._switchAsDomain === entry.domain
-                            ? "selected"
-                            : ""}
+                          .selected=${this._switchAsDomain === entry.domain}
                         >
                           ${entry.label}
                         </ha-dropdown-item>
@@ -551,9 +543,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 (entry) => html`
                   <ha-dropdown-item
                     .value=${entry.deviceClass}
-                    class=${entry.deviceClass === this._deviceClass
-                      ? "selected"
-                      : ""}
+                    .selected=${entry.deviceClass === this._deviceClass}
                   >
                     ${entry.label}
                   </ha-dropdown-item>
@@ -571,9 +561,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 (entry) => html`
                   <ha-dropdown-item
                     .value=${entry.deviceClass}
-                    class=${entry.deviceClass === this._deviceClass
-                      ? "selected"
-                      : ""}
+                    .selected=${entry.deviceClass === this._deviceClass}
                   >
                     ${entry.label}
                   </ha-dropdown-item>

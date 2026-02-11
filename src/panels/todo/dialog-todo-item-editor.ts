@@ -10,10 +10,11 @@ import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-dialog-footer";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
+import "../../components/ha-wa-dialog";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
@@ -50,6 +51,8 @@ class DialogTodoItemEditor extends LitElement {
 
   @state() private _submitting = false;
 
+  @state() private _open = false;
+
   // Dates are manipulated and displayed in the browser timezone
   // which may be different from the Home Assistant timezone. When
   // events are persisted, they are relative to the Home Assistant
@@ -59,6 +62,7 @@ class DialogTodoItemEditor extends LitElement {
   public showDialog(params: TodoItemEditDialogParams): void {
     this._error = undefined;
     this._params = params;
+    this._open = true;
     this._timeZone = resolveTimeZone(
       this.hass.locale.time_zone,
       this.hass.config.time_zone
@@ -86,6 +90,11 @@ class DialogTodoItemEditor extends LitElement {
     if (!this._params) {
       return;
     }
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._open = false;
     this._error = undefined;
     this._params = undefined;
     this._due = undefined;
@@ -108,16 +117,14 @@ class DialogTodoItemEditor extends LitElement {
     );
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            `ui.components.todo.item.${isCreate ? "add" : "edit"}`
-          )
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          `ui.components.todo.item.${isCreate ? "add" : "edit"}`
         )}
+        width="medium"
+        @closed=${this._dialogClosed}
       >
         <div class="content">
           ${this._error
@@ -136,11 +143,11 @@ class DialogTodoItemEditor extends LitElement {
               .label=${this.hass.localize("ui.components.todo.item.summary")}
               .value=${this._summary}
               required
+              autofocus
               @input=${this._handleSummaryChanged}
               .validationMessage=${this.hass.localize(
                 "ui.common.error_required"
               )}
-              dialogInitialFocus
               .disabled=${!canUpdate}
             ></ha-textfield>
           </div>
@@ -203,41 +210,43 @@ class DialogTodoItemEditor extends LitElement {
               </div>`
             : nothing}
         </div>
-        ${isCreate
-          ? html`
-              <ha-button
-                slot="primaryAction"
-                @click=${this._createItem}
-                .disabled=${this._submitting}
-              >
-                ${this.hass.localize("ui.components.todo.item.add")}
-              </ha-button>
-            `
-          : html`
-              <ha-button
-                slot="primaryAction"
-                @click=${this._saveItem}
-                .disabled=${!canUpdate || this._submitting}
-              >
-                ${this.hass.localize("ui.components.todo.item.save")}
-              </ha-button>
-              ${this._todoListSupportsFeature(
-                TodoListEntityFeature.DELETE_TODO_ITEM
-              )
-                ? html`
-                    <ha-button
-                      slot="secondaryAction"
-                      variant="danger"
-                      appearance="plain"
-                      @click=${this._deleteItem}
-                      .disabled=${this._submitting}
-                    >
-                      ${this.hass.localize("ui.components.todo.item.delete")}
-                    </ha-button>
-                  `
-                : ""}
-            `}
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          ${isCreate
+            ? html`
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._createItem}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass.localize("ui.components.todo.item.add")}
+                </ha-button>
+              `
+            : html`
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._saveItem}
+                  .disabled=${!canUpdate || this._submitting}
+                >
+                  ${this.hass.localize("ui.components.todo.item.save")}
+                </ha-button>
+                ${this._todoListSupportsFeature(
+                  TodoListEntityFeature.DELETE_TODO_ITEM
+                )
+                  ? html`
+                      <ha-button
+                        slot="secondaryAction"
+                        variant="danger"
+                        appearance="plain"
+                        @click=${this._deleteItem}
+                        .disabled=${this._submitting}
+                      >
+                        ${this.hass.localize("ui.components.todo.item.delete")}
+                      </ha-button>
+                    `
+                  : ""}
+              `}
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -415,12 +424,6 @@ class DialogTodoItemEditor extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media all and (min-width: 450px) and (min-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: min(600px, 95vw);
-            --mdc-dialog-max-width: min(600px, 95vw);
-          }
-        }
         ha-alert {
           display: block;
           margin-bottom: 16px;
