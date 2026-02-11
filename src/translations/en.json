@@ -220,6 +220,16 @@
         "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
         "no_devices": "No devices to add"
       },
+      "repairs": {
+        "title": "Repairs",
+        "count_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "no_issues": "No issues"
+      },
+      "updates": {
+        "title": "Updates",
+        "count_updates": "{count} {count, plural,\n one {update available}\n other {updates available}\n}",
+        "no_updates": "Up to date"
+      },
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",

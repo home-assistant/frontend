@@ -23,7 +23,9 @@ import type {
   EmptyStateCardConfig,
   HomeSummaryCard,
   MarkdownCardConfig,
+  RepairsCardConfig,
   TileCardConfig,
+  UpdatesCardConfig,
 } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
@@ -252,6 +254,24 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
+      // Repairs card - only visible to admins, hides when empty
+      {
+        type: "repairs",
+        hide_empty: true,
+        tap_action: {
+          action: "navigate",
+          navigation_path: "/config/repairs?historyBack=1",
+        },
+      } satisfies RepairsCardConfig,
+      // Updates card - only visible to admins, hides when empty
+      {
+        type: "updates",
+        hide_empty: true,
+        tap_action: {
+          action: "navigate",
+          navigation_path: "/config/updates?historyBack=1",
+        },
+      } satisfies UpdatesCardConfig,
       // Discovered devices card - only visible to admins, hides when empty
       {
         type: "discovered-devices",
