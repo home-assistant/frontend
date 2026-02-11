@@ -49,9 +49,6 @@ export class EnergyViewStrategy extends ReactiveElement {
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
     );
-    const showFloorsNAreas = !prefs.device_consumption.some(
-      (d) => d.included_in_stat
-    );
 
     view.cards!.push({
       type: "energy-compare",
@@ -153,8 +150,7 @@ export class EnergyViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
         type: "energy-sankey",
         collection_key: "energy_dashboard",
-        group_by_floor: showFloorsNAreas,
-        group_by_area: showFloorsNAreas,
+        toggle_modes: true,
       });
     }
 

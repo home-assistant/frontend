@@ -1,8 +1,10 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+import { mdiFloorPlan, mdiFamilyTree } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { storage } from "../../../../common/decorators/storage";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
@@ -22,6 +24,7 @@ import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergySankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
+import "../../../../components/ha-icon-button";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
@@ -44,6 +47,16 @@ class HuiEnergySankeyCard
   @state() private _config?: EnergySankeyCardConfig;
 
   @state() private _data?: EnergyData;
+
+  @state()
+  @storage({
+    key: "energy-sankey-render-mode",
+    state: true,
+    subscribe: false,
+  })
+  private _renderMode?: "area" | "parent";
+
+  private _allowedRenderModes: ("area" | "parent")[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -78,8 +91,56 @@ class HuiEnergySankeyCard
     return (
       changedProps.has("_config") ||
       changedProps.has("_data") ||
-      changedProps.has("_isMobileSize")
+      changedProps.has("_isMobileSize") ||
+      changedProps.has("_renderMode")
     );
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (
+      this._config &&
+      this._data &&
+      (changedProps.has("_config") || changedProps.has("_data"))
+    ) {
+      if (!this._config.toggle_modes) return;
+      this._allowedRenderModes = this._getAllowedModes();
+      if (
+        !this._renderMode ||
+        !this._allowedRenderModes.includes(this._renderMode)
+      ) {
+        this._renderMode = this._allowedRenderModes[0];
+      }
+    }
+  }
+
+  private _getAllowedModes(): ("area" | "parent")[] {
+    const hasArea = this._data?.prefs.device_consumption.some((device) => {
+      const entity = this.hass.states[device.stat_consumption];
+      const { area, floor } = entity
+        ? getEntityContext(
+            entity,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          )
+        : { area: null, floor: null };
+
+      return !!(area || floor);
+    });
+    const hasParent = this._data?.prefs.device_consumption.some(
+      (device) => device.included_in_stat
+    );
+
+    if (hasParent && hasArea) {
+      return ["area", "parent"];
+    }
+    if (hasParent) {
+      return ["parent"];
+    }
+    return ["area"];
   }
 
   protected render() {
@@ -241,19 +302,46 @@ class HuiEnergySankeyCard
       }
     }
 
+    const { group_by_area, group_by_floor } = this._config.toggle_modes
+      ? this._renderMode === "area"
+        ? { group_by_area: true, group_by_floor: true }
+        : { group_by_area: false, group_by_floor: false }
+      : this._config;
+
+    const group_by_parent =
+      !this._config.toggle_modes ||
+      (this._config.toggle_modes && this._renderMode === "parent");
+
     let untrackedConsumption = homeNode.value;
     const deviceNodes: Node[] = [];
     const parentLinks: Record<string, string> = {};
-    prefs.device_consumption.forEach((device, idx) => {
+    const consumptions: Record<string, number> = {};
+    prefs.device_consumption.forEach((device) => {
       const value =
         device.stat_consumption in this._data!.stats
           ? calculateStatisticSumGrowth(
               this._data!.stats[device.stat_consumption]
             ) || 0
           : 0;
+      consumptions[device.stat_consumption] =
+        consumptions[device.stat_consumption] || 0;
+      consumptions[device.stat_consumption] += value;
+
+      if (!group_by_parent) {
+        if (device.included_in_stat) {
+          consumptions[device.included_in_stat] =
+            consumptions[device.included_in_stat] || 0;
+          consumptions[device.included_in_stat] -= value;
+        }
+      }
+    });
+
+    prefs.device_consumption.forEach((device, idx) => {
+      const value = consumptions[device.stat_consumption];
       if (value < 0.01) {
         return;
       }
+      const parent = device.included_in_stat;
       const node = {
         id: device.stat_consumption,
         label:
@@ -266,7 +354,7 @@ class HuiEnergySankeyCard
         value,
         color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
-        parent: device.included_in_stat,
+        parent: group_by_parent ? parent : undefined,
       };
       if (node.parent) {
         parentLinks[node.id] = node.parent;
@@ -274,7 +362,8 @@ class HuiEnergySankeyCard
           source: node.parent,
           target: node.id,
         });
-      } else {
+      }
+      if (!parent || !group_by_parent) {
         untrackedConsumption -= value;
       }
       deviceNodes.push(node);
@@ -283,7 +372,6 @@ class HuiEnergySankeyCard
       (node) => !parentLinks[node.id]
     );
 
-    const { group_by_area, group_by_floor } = this._config;
     if (group_by_area || group_by_floor) {
       const { areas, floors } = this._groupByFloorAndArea(devicesWithoutParent);
 
@@ -389,13 +477,32 @@ class HuiEnergySankeyCard
 
     return html`
       <ha-card
-        .header=${this._config.title}
         class=${classMap({
           "is-grid": this.layout === "grid",
           "is-panel": this.layout === "panel",
           "is-vertical": vertical,
         })}
       >
+        <div class="card-header">
+          <span>${this._config.title ? this._config.title : nothing}</span>
+          ${this._config.toggle_modes && this._allowedRenderModes.length > 1
+            ? html`
+                <ha-icon-button
+                  .path=${this._renderMode === "area"
+                    ? mdiFamilyTree
+                    : mdiFloorPlan}
+                  .label=${this._renderMode === "area"
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sankey.group_by_upstream"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sankey.group_by_area"
+                      )}
+                  @click=${this._handleRenderModeChange}
+                ></ha-icon-button>
+              `
+            : nothing}
+        </div>
         <div class="card-content">
           ${hasData
             ? html`<ha-sankey-chart
@@ -409,6 +516,16 @@ class HuiEnergySankeyCard
         </div>
       </ha-card>
     `;
+  }
+
+  private _handleRenderModeChange(): void {
+    if (!this._renderMode) {
+      return;
+    }
+    const allowedModes = this._allowedRenderModes;
+    const currentIndex = allowedModes.indexOf(this._renderMode);
+    const nextIndex = (currentIndex + 1) % allowedModes.length;
+    this._renderMode = allowedModes[nextIndex];
   }
 
   private _valueFormatter = (value: number) =>
@@ -533,9 +650,20 @@ class HuiEnergySankeyCard
     ha-card.is-panel {
       height: 100%;
     }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0;
+    }
     .card-content {
       flex: 1;
       display: flex;
+    }
+    ha-icon-button {
+      transform: rotate(-90deg);
+      color: var(--secondary-text-color);
+      cursor: pointer;
     }
   `;
 }
