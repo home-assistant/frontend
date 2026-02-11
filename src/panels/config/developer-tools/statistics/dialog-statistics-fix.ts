@@ -28,6 +28,10 @@ export class DialogStatisticsFix extends LitElement {
     this._open = true;
   }
 
+  public closeDialog(): void {
+    this._open = false;
+  }
+
   private _dialogClosed(): void {
     this._params = undefined;
     this._clearing = false;
@@ -176,7 +180,7 @@ export class DialogStatisticsFix extends LitElement {
 
   private _cancel(): void {
     this._params?.cancelCallback!();
-    this._dialogClosed();
+    this.closeDialog();
   }
 
   private async _clearStatistics(): Promise<void> {
@@ -203,7 +207,7 @@ export class DialogStatisticsFix extends LitElement {
     } finally {
       this._clearing = false;
       this._params?.fixedCallback!();
-      this._dialogClosed();
+      this.closeDialog();
     }
   }
 
