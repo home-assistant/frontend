@@ -9,6 +9,8 @@ import type { HassEntity } from "home-assistant-js-websocket";
 
 export const computeOpenIcon = (stateObj: HassEntity): string => {
   switch (stateObj.attributes.device_class) {
+    case "projector_screen":
+      return mdiArrowDown; // "Open" means deploy (go down)
     case "awning":
     case "door":
     case "gate":
@@ -21,6 +23,8 @@ export const computeOpenIcon = (stateObj: HassEntity): string => {
 
 export const computeCloseIcon = (stateObj: HassEntity): string => {
   switch (stateObj.attributes.device_class) {
+    case "projector_screen":
+      return mdiArrowUp; // "Close" means retract (go up)
     case "awning":
     case "door":
     case "gate":

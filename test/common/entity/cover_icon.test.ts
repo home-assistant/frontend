@@ -26,6 +26,13 @@ describe("computeOpenIcon", () => {
     expect(computeOpenIcon(stateObj)).toBe(mdiArrowExpandHorizontal);
   });
 
+  it("returns mdiArrowDown for projector_screen (inverted - open means deploy/down)", () => {
+    const stateObj = {
+      attributes: { device_class: "projector_screen" },
+    } as HassEntity;
+    expect(computeOpenIcon(stateObj)).toBe(mdiArrowDown);
+  });
+
   it("returns mdiArrowUp for other device classes", () => {
     const stateObj = { attributes: { device_class: "window" } } as HassEntity;
     expect(computeOpenIcon(stateObj)).toBe(mdiArrowUp);
@@ -45,6 +52,13 @@ describe("computeCloseIcon", () => {
 
     stateObj.attributes.device_class = "curtain";
     expect(computeCloseIcon(stateObj)).toBe(mdiArrowCollapseHorizontal);
+  });
+
+  it("returns mdiArrowUp for projector_screen (inverted - close means retract/up)", () => {
+    const stateObj = {
+      attributes: { device_class: "projector_screen" },
+    } as HassEntity;
+    expect(computeCloseIcon(stateObj)).toBe(mdiArrowUp);
   });
 
   it("returns mdiArrowDown for other device classes", () => {

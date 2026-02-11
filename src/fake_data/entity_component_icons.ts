@@ -348,6 +348,14 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
         opening: "mdi:arrow-up-box",
       },
     },
+    projector_screen: {
+      default: "mdi:projector-screen",
+      state: {
+        closed: "mdi:projector-screen-off",
+        closing: "mdi:arrow-up-box",
+        opening: "mdi:arrow-down-box",
+      },
+    },
     window: {
       default: "mdi:window-open",
       state: {
