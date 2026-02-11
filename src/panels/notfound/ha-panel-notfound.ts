@@ -2,10 +2,11 @@ import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import { NOT_FOUND_PANEL } from "../../data/panel";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
+import type { EmptyStateCardConfig } from "../lovelace/cards/types";
 import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
-import type { EmptyStateCardConfig } from "../lovelace/cards/types";
 
 @customElement("ha-panel-notfound")
 class HaPanelNotFound extends LitElement {
@@ -90,7 +91,7 @@ class HaPanelNotFound extends LitElement {
       config: config,
       rawConfig: config,
       editMode: false,
-      urlPath: "notfound",
+      urlPath: NOT_FOUND_PANEL,
       mode: "generated",
       locale: this.hass.locale,
       enableFullEditMode: () => undefined,

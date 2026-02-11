@@ -8,16 +8,17 @@ import {
   mdiPlayBoxMultiple,
   mdiTooltipAccount,
 } from "@mdi/js";
-import type { HomeAssistant, PanelInfo } from "../types";
-import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { LocalizeKeys } from "../common/translations/localize";
+import type { PageNavigation } from "../layouts/hass-tabs-subpage";
+import type { HomeAssistant, PanelInfo } from "../types";
+
+export const HOME_PANEL = "home";
+export const NOT_FOUND_PANEL = "notfound";
+export const PROFILE_PANEL = "profile";
+export const LOVELACE_PANEL = "lovelace";
 
 /** Panel to show when no panel is picked. */
-export const DEFAULT_PANEL = "home";
-
-const NOT_FOUND_PANEL = "notfound";
-
-const LOVELACE_PANEL = "lovelace";
+export const DEFAULT_PANEL = HOME_PANEL;
 
 export const hasLegacyOverviewPanel = (hass: HomeAssistant): boolean =>
   Boolean(hass.panels.lovelace?.config);
@@ -51,12 +52,8 @@ export const getDefaultPanel = (hass: HomeAssistant): PanelInfo => {
 };
 
 export const getPanelNameTranslationKey = (panel: PanelInfo) => {
-  if (panel.url_path === "profile") {
-    return "panel.profile" as const;
-  }
-
-  if (panel.url_path === "notfound") {
-    return "panel.notfound" as const;
+  if ([PROFILE_PANEL, NOT_FOUND_PANEL].includes(panel.url_path)) {
+    return `panel.${panel.url_path}` as const;
   }
 
   return `panel.${panel.title}` as const;
