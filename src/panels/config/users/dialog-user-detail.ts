@@ -7,7 +7,6 @@ import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
-import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
@@ -96,7 +95,6 @@ class DialogUserDetail extends LitElement {
                 `
           }
           <div class="form">
-            <ha-md-list>
               ${
                 !user.system_generated
                   ? html`
@@ -214,7 +212,6 @@ class DialogUserDetail extends LitElement {
                 ></ha-switch>
                 </ha-switch>
               </ha-md-list-item>
-            </ha-md-list>
             ${
               !this._isAdmin && !user.system_generated
                 ? html`
@@ -400,13 +397,9 @@ class DialogUserDetail extends LitElement {
         ha-textfield {
           display: block;
         }
-        ha-md-list {
-          padding-top: 0;
-          padding-bottom: 0;
+        ha-md-list-item {
           --md-list-item-leading-space: 0;
           --md-list-item-trailing-space: 0;
-        }
-        ha-md-list-item {
           --md-item-overflow: visible;
         }
         .badge-container {
