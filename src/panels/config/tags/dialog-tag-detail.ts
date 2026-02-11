@@ -69,6 +69,7 @@ class DialogTagDetail
         header-title=${this._params.entry
           ? this._params.entry.name || this._params.entry.id
           : this.hass!.localize("ui.panel.config.tag.detail.new_tag")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div>
