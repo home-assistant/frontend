@@ -35,7 +35,6 @@ import type {
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
@@ -49,7 +48,6 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
-import { getLabelColorStyle } from "../../../components/ha-labels-picker";
 import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
@@ -710,7 +708,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             reducedTouchTarget
           ></ha-checkbox>
           <ha-label
-            style=${getLabelColorStyle(label.color)}
+            .color=${label.color}
             .description=${label.description || undefined}
           >
             ${label.icon
