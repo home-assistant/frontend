@@ -66,8 +66,6 @@ class DialogAdminChangePassword extends LitElement {
     this._userId = params.userId;
     this._data = undefined;
     this._error = undefined;
-    this._submitting = false;
-    this._success = false;
     this._open = true;
   }
 
@@ -79,9 +77,9 @@ class DialogAdminChangePassword extends LitElement {
     this._params = undefined;
     this._userId = undefined;
     this._data = undefined;
+    this._error = undefined;
     this._submitting = false;
     this._success = false;
-    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
