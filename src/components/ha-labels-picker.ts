@@ -115,6 +115,10 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
       value
         ?.map((id) => labels?.[id])
         .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
+        .map((label) => ({
+          ...label,
+          style: getLabelColorStyle(label?.color),
+        }))
   );
 
   protected render(): TemplateResult {
@@ -157,7 +161,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
                       .disabled=${this.disabled}
                       .label=${label.name}
                       selected
-                      style=${getLabelColorStyle(label.color)}
+                      style=${label.style}
                     >
                       ${label.icon
                         ? html`<ha-icon
