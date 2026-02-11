@@ -15,7 +15,8 @@
     "light": "Lights",
     "security": "Security",
     "climate": "Climate",
-    "home": "Overview"
+    "home": "Overview",
+    "notfound": "Page not found"
   },
   "state": {
     "default": {
@@ -4273,7 +4274,18 @@
               "remove_default": "Remove as default",
               "set_default_confirm_title": "Set as default dashboard?",
               "set_default_confirm_text": "This dashboard will be shown to all users when opening Home Assistant.",
-              "set_default_confirm_note": "Users who have chosen a specific dashboard in their profile will not be affected. They must set it back to \"Auto (use system settings)\" to use this dashboard."
+              "set_default_confirm_note": "Users who have chosen a specific dashboard in their profile will not be affected. They must set it back to \"Auto (use system settings)\" to use this dashboard.",
+              "set_default_admin_only_title": "Can't set as default",
+              "set_default_admin_only_text": "This dashboard is set to admin only. Disable admin only before setting it as default."
+            },
+            "panel_detail": {
+              "edit_panel": "Edit panel",
+              "title": "Title",
+              "icon": "Icon",
+              "require_admin": "Admin only",
+              "show_in_sidebar": "Add to sidebar",
+              "reset_to_default": "Reset to default",
+              "require_admin_helper": "Can't be enabled because this dashboard is set as default"
             }
           },
           "resources": {
@@ -9540,6 +9552,11 @@
       },
       "map": {
         "edit_zones": "Edit zones"
+      },
+      "notfound": {
+        "no_access_title": "No access",
+        "no_access_content": "You don't have access to this page. Contact the administrator or change your default dashboard in your profile settings.",
+        "no_access_go_to_profile": "Go to profile"
       },
       "profile": {
         "tabs": {

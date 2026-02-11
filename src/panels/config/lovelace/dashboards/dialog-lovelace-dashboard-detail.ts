@@ -86,11 +86,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
               )
             : html`
                 <ha-form
-                  .schema=${this._schema(this._params)}
+                  .schema=${this._schema(
+                    this._params,
+                    this._data?.require_admin
+                  )}
                   .data=${this._data}
                   .hass=${this.hass}
                   .error=${this._error}
                   .computeLabel=${this._computeLabel}
+                  .computeHelper=${this._computeHelper}
                   @value-changed=${this._valueChanged}
                 ></ha-form>
               `}
@@ -137,7 +141,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (params: LovelaceDashboardDetailsDialogParams) =>
+    (params: LovelaceDashboardDetailsDialogParams, requireAdmin?: boolean) =>
       [
         {
           name: "title",
@@ -165,6 +169,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         {
           name: "require_admin",
           required: true,
+          disabled: params.isDefault && !requireAdmin,
           selector: {
             boolean: {},
           },
@@ -191,6 +196,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             : entry.name
       }`
     );
+
+  private _computeHelper = (
+    entry: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
+    entry.name === "require_admin" && entry.disabled
+      ? this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.panel_detail.require_admin_helper"
+        )
+      : "";
 
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
