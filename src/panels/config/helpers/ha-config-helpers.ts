@@ -380,7 +380,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         localize("ui.panel.config.entities.picker.status.unmanageable")
       ),
       actions: {
-        last_fixed: true,
+        lastFixed: true,
         title: "",
         label: this.hass.localize("ui.panel.config.generic.headers.actions"),
         type: "overflow-menu",
