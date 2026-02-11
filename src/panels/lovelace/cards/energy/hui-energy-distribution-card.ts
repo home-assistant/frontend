@@ -797,7 +797,7 @@ class HuiEnergyDistrubutionCard
             </svg>
           </div>
         </div>
-        ${this._config.link_dashboard
+        ${this._config.link_dashboard && this.hass.panels.energy
           ? html`
               <div class="card-actions">
                 <ha-button

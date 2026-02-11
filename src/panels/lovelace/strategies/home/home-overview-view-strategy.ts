@@ -227,11 +227,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const hasLights = findEntities(allEntities, lightsFilters).length > 0;
+    const hasLights =
+      hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
     const hasMediaPlayers =
       findEntities(allEntities, mediaPlayerFilter).length > 0;
-    const hasClimate = findEntities(allEntities, climateFilters).length > 0;
-    const hasSecurity = findEntities(allEntities, securityFilters).length > 0;
+    const hasClimate =
+      hass.panels.climate &&
+      findEntities(allEntities, climateFilters).length > 0;
+    const hasSecurity =
+      hass.panels.security &&
+      findEntities(allEntities, securityFilters).length > 0;
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -248,9 +253,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       : undefined;
 
     const hasEnergy =
-      energyPrefs?.energy_sources.some(
+      hass.panels.energy &&
+      (energyPrefs?.energy_sources.some(
         (source) => source.type === "grid" && source.flow_from.length > 0
-      ) ?? false;
+      ) ??
+        false);
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [
