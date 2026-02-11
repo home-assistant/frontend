@@ -53,7 +53,6 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import { getLabelColorStyle } from "../../../components/ha-labels-picker";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -1206,10 +1205,7 @@ ${rejected
             .indeterminate=${partial}
             reducedTouchTarget
           ></ha-checkbox>
-          <ha-label
-            style=${getLabelColorStyle(label.color)}
-            .description=${label.description}
-          >
+          <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
