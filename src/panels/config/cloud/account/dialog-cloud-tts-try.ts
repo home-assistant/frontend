@@ -56,6 +56,10 @@ export class DialogTryTts extends LitElement {
     this._open = true;
   }
 
+  public closeDialog() {
+    this._open = false;
+  }
+
   private _dialogClosed() {
     this._open = false;
     this._params = undefined;
@@ -192,7 +196,7 @@ export class DialogTryTts extends LitElement {
         },
       ],
     });
-    this._dialogClosed();
+    this.closeDialog();
   }
 
   private async _playBrowser(message: string, audio: HTMLAudioElement) {
