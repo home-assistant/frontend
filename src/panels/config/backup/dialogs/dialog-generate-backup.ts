@@ -322,6 +322,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
                   "ui.panel.config.backup.dialogs.generate.sync.locations_options.all",
                   { count: this._allAgentIds.length }
                 ),
+                disabled: !!disabledAgentIds.length,
               },
               {
                 value: "custom",
@@ -330,48 +331,42 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
                 ),
               },
             ]}
-          ></ha-select-option>
-          </ha-select>
+          ></ha-select>
         </ha-md-list-item>
       </ha-md-list>
-      ${
-        disabledAgentIds.length
-          ? html`
-              <ha-alert
-                alert-type="info"
-                .title=${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.generate.sync.locations_options.all",
-                  { count: this._allAgentIds.length }
-                )}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.description"
-                )}
-              </ha-alert>
-            `
-          : nothing
-      }
-      ${
-        this._formData.agents_mode === "custom"
-          ? html`
-              <ha-expansion-panel
-                .header=${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.generate.sync.locations"
-                )}
-                outlined
-                expanded
-              >
-                <ha-backup-agents-picker
-                  .hass=${this.hass}
-                  .value=${this._formData.agent_ids}
-                  @value-changed=${this._agentsChanged}
-                  .agents=${this._agents}
-                  .disabledAgentIds=${disabledAgentIds}
-                ></ha-backup-agents-picker>
-              </ha-expansion-panel>
-            `
-          : nothing
-      }
+      ${disabledAgentIds.length
+        ? html`
+            <ha-alert
+              alert-type="info"
+              .title=${this.hass.localize(
+                "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.title"
+              )}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.description"
+              )}
+            </ha-alert>
+          `
+        : nothing}
+      ${this._formData.agents_mode === "custom"
+        ? html`
+            <ha-expansion-panel
+              .header=${this.hass.localize(
+                "ui.panel.config.backup.dialogs.generate.sync.locations"
+              )}
+              outlined
+              expanded
+            >
+              <ha-backup-agents-picker
+                .hass=${this.hass}
+                .value=${this._formData.agent_ids}
+                @value-changed=${this._agentsChanged}
+                .agents=${this._agents}
+                .disabledAgentIds=${disabledAgentIds}
+              ></ha-backup-agents-picker>
+            </ha-expansion-panel>
+          `
+        : nothing}
     `;
   }
 
