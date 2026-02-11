@@ -47,18 +47,12 @@ class StateCardButton extends LitElement {
     return [
       haStyle,
       css`
-        ha-control-button-group > ha-control-button {
+        # ha-control-button-group > ha-control-button {
           --control-button-padding: var(--ha-space-4);
         }
         ha-control-button {
-          --control-button-focus-color: var(
-            --feature-color,
-            var(--primary-color)
-          );
-          --control-button-icon-color: var(
-            --feature-color,
-            var(--primary-color)
-          );
+          --control-button-focus-color: var(--feature-color);
+          --control-button-icon-color: var(--feature-color);
         }
       `,
     ];
