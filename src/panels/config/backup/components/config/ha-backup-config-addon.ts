@@ -122,7 +122,6 @@ class HaBackupConfigAddon extends LitElement {
       ha-select {
         min-width: 160px;
         width: 160px;
-        --md-filled-field-content-space: 0;
       }
       ha-md-textfield {
         width: 160px;
