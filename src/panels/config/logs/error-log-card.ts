@@ -169,7 +169,7 @@ class ErrorLogCard extends LitElement {
                         (boot) => html`
                           <ha-dropdown-item
                             .value=${`boot_${boot}`}
-                            class=${boot === this._boot ? "selected" : ""}
+                            .selected=${boot === this._boot}
                           >
                             ${boot === 0
                               ? localize("ui.panel.config.logs.current")
@@ -845,12 +845,6 @@ class ErrorLogCard extends LitElement {
 
     .download-link {
       color: var(--text-color);
-    }
-    ha-dropdown-item.selected {
-      font-weight: var(--ha-font-weight-medium);
-      color: var(--primary-color);
-      background-color: var(--ha-color-fill-primary-quiet-resting);
-      --icon-primary-color: var(--primary-color);
     }
   `;
 }

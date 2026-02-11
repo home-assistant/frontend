@@ -307,6 +307,49 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#F1C447",
     },
   ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  network_discovery: [
+    {
+      component: "dhcp",
+      path: "/config/dhcp",
+      translationKey: "ui.panel.config.network.discovery.dhcp",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+    {
+      component: "ssdp",
+      path: "/config/ssdp",
+      translationKey: "ui.panel.config.network.discovery.ssdp",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+    {
+      component: "zeroconf",
+      path: "/config/zeroconf",
+      translationKey: "ui.panel.config.network.discovery.zeroconf",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+  ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  integration_credentials: [
+    {
+      path: "/config/application_credentials",
+      translationKey: "ui.panel.config.application_credentials.caption",
+      iconPath: mdiPuzzle,
+      iconColor: "#2D338F",
+    },
+  ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  integration_mqtt: [
+    {
+      component: "mqtt",
+      path: "/config/mqtt",
+      translationKey: "ui.panel.config.mqtt.title",
+      iconPath: mdiPuzzle,
+      iconColor: "#2D338F",
+    },
+  ],
   lovelace: [
     {
       component: "lovelace",

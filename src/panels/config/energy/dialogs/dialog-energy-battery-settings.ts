@@ -1,13 +1,13 @@
-import { mdiBatteryHigh } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-wa-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type {
   BatterySourceTypeEnergyPreference,
@@ -36,6 +36,8 @@ export class DialogEnergyBatterySettings
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: EnergySettingsBatteryDialogParams;
+
+  @state() private _open = false;
 
   @state() private _source?: BatterySourceTypeEnergyPreference;
 
@@ -129,9 +131,16 @@ export class DialogEnergyBatterySettings
     this._excludeListPower = powerIds.filter(
       (id) => !currentPowerIds.includes(id)
     );
+
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     this._source = undefined;
     this._powerType = "none";
@@ -140,7 +149,6 @@ export class DialogEnergyBatterySettings
     this._excludeList = undefined;
     this._excludeListPower = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -149,14 +157,13 @@ export class DialogEnergyBatterySettings
     }
 
     return html`
-      <ha-dialog
-        open
-        .heading=${html`<ha-svg-icon
-            .path=${mdiBatteryHigh}
-            style="--mdc-icon-size: 32px;"
-          ></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.battery.dialog.header")}`}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.energy.battery.dialog.header"
+        )}
+        @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
 
@@ -177,7 +184,7 @@ export class DialogEnergyBatterySettings
             "ui.panel.config.energy.battery.dialog.energy_helper_into",
             { unit: this._energy_units?.join(", ") || "" }
           )}
-          dialogInitialFocus
+          autofocus
         ></ha-statistic-picker>
 
         <ha-statistic-picker
@@ -320,21 +327,23 @@ export class DialogEnergyBatterySettings
             `
           : nothing}
 
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          @click=${this._save}
-          .disabled=${!this._isValid()}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            slot="secondaryAction"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._save}
+            .disabled=${!this._isValid()}
+            slot="primaryAction"
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -427,9 +436,6 @@ export class DialogEnergyBatterySettings
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 430px;
-        }
         ha-statistic-picker {
           display: block;
           margin-bottom: var(--ha-space-4);

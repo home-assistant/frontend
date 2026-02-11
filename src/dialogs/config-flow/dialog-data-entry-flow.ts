@@ -6,8 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-dialog";
-import "../../components/ha-dialog-header";
+import "../../components/ha-wa-dialog";
 import "../../components/ha-icon-button";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import {
@@ -64,6 +63,8 @@ class DataEntryFlowDialog extends LitElement {
 
   private _instance = instance;
 
+  @state() private _open = false;
+
   @state() private _step:
     | DataEntryFlowStep
     | undefined
@@ -77,6 +78,7 @@ class DataEntryFlowDialog extends LitElement {
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
     this._params = params;
     this._instance = instance++;
+    this._open = true;
 
     const curInstance = this._instance;
     let step: DataEntryFlowStep;
@@ -149,6 +151,17 @@ class DataEntryFlowDialog extends LitElement {
     if (!this._params) {
       return;
     }
+    if (!this._open) {
+      this._dialogClosed();
+      return;
+    }
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    if (!this._params) {
+      return;
+    }
     const flowFinished = Boolean(
       this._step && ["create_entry", "abort"].includes(this._step.type)
     );
@@ -174,6 +187,7 @@ class DataEntryFlowDialog extends LitElement {
       this._unsubDataEntryFlowProgress();
       this._unsubDataEntryFlowProgress = undefined;
     }
+    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -289,56 +303,53 @@ class DataEntryFlowDialog extends LitElement {
     const dialogSubtitle = this._getDialogSubtitle();
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        hideActions
-        .heading=${dialogTitle || true}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
+        @after-show=${this._focusFormStep}
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-            slot="navigationIcon"
-          ></ha-icon-button>
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .label=${this.hass.localize("ui.common.close")}
+          .path=${mdiClose}
+          data-dialog="close"
+        ></ha-icon-button>
 
-          <div
-            slot="title"
-            class="dialog-title${this._step?.type === "form" ? " form" : ""}"
-            title=${dialogTitle}
-          >
-            ${dialogTitle}
-          </div>
+        <div
+          slot="headerTitle"
+          class="dialog-title${this._step?.type === "form" ? " form" : ""}"
+          title=${dialogTitle}
+        >
+          ${dialogTitle}
+        </div>
 
-          ${dialogSubtitle
-            ? html` <div slot="subtitle">${dialogSubtitle}</div>`
-            : nothing}
-          ${showDocumentationLink && !this._loading && this._step
-            ? html`
-                <a
-                  slot="actionItems"
-                  class="help"
-                  href=${this._params.manifest!.is_built_in
-                    ? documentationUrl(
-                        this.hass,
-                        `/integrations/${this._params.manifest!.domain}`
-                      )
-                    : this._params.manifest!.documentation}
-                  target="_blank"
-                  rel="noreferrer noopener"
+        ${dialogSubtitle
+          ? html` <div slot="headerSubtitle">${dialogSubtitle}</div>`
+          : nothing}
+        ${showDocumentationLink && !this._loading && this._step
+          ? html`
+              <a
+                slot="headerActionItems"
+                class="help"
+                href=${this._params.manifest!.is_built_in
+                  ? documentationUrl(
+                      this.hass,
+                      `/integrations/${this._params.manifest!.domain}`
+                    )
+                  : this._params.manifest!.documentation}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.common.help")}
+                  .path=${mdiHelpCircle}
                 >
-                  <ha-icon-button
-                    .label=${this.hass.localize("ui.common.help")}
-                    .path=${mdiHelpCircle}
-                  >
-                  </ha-icon-button
-                ></a>
-              `
-            : nothing}
-        </ha-dialog-header>
+                </ha-icon-button
+              ></a>
+            `
+          : nothing}
         <div>
           ${this._loading || this._step === null
             ? html`
@@ -358,6 +369,7 @@ class DataEntryFlowDialog extends LitElement {
                   ${this._step.type === "form"
                     ? html`
                         <step-flow-form
+                          autofocus
                           narrow
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
@@ -417,7 +429,7 @@ class DataEntryFlowDialog extends LitElement {
                               `}
                 `}
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -547,11 +559,24 @@ class DataEntryFlowDialog extends LitElement {
     };
   }
 
+  private _focusFormStep = async (): Promise<void> => {
+    if (this._step?.type !== "form" || !this._open) {
+      return;
+    }
+
+    await this.updateComplete;
+    (
+      this.renderRoot.querySelector(
+        "step-flow-form[autofocus]"
+      ) as HTMLElement | null
+    )?.focus();
+  };
+
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
         }
         .dialog-title {

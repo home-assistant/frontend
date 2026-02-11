@@ -220,6 +220,16 @@
         "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
         "no_devices": "No devices to add"
       },
+      "repairs": {
+        "title": "Repairs",
+        "count_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "no_issues": "No issues"
+      },
+      "updates": {
+        "title": "Updates",
+        "count_updates": "{count} {count, plural,\n one {update available}\n other {updates available}\n}",
+        "no_updates": "Up to date"
+      },
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
@@ -1458,7 +1468,8 @@
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
-            "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]"
+            "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
+            "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -8633,7 +8644,8 @@
                 "tilt-position": "Tilt position",
                 "brightness": "Brightness",
                 "last-updated": "Last updated",
-                "state": "State"
+                "state": "State",
+                "area": "Area"
               },
               "entity_row": {
                 "divider": "Divider",

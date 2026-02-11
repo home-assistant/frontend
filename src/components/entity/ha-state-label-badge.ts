@@ -224,7 +224,11 @@ export class HaStateLabelBadge extends LitElement {
     if (domain === "timer") {
       return secondsToDuration(_timerTimeRemaining);
     }
-    return entityState.attributes.unit_of_measurement || null;
+    return (
+      this.hass!.formatEntityStateToParts(entityState).find(
+        (part) => part.type === "unit"
+      )?.value || null
+    );
   }
 
   private _clearInterval() {

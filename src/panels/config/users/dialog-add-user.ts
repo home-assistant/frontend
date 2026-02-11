@@ -200,24 +200,24 @@ export class DialogAddUser extends LitElement {
         </div>
 
         <ha-dialog-footer slot="footer">
-        <ha-button
+          <ha-button
             slot="secondaryAction"
-          appearance="plain"
-          @click=${this._close}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          .disabled=${!this._name ||
-          !this._username ||
-          !this._password ||
-          this._password !== this._passwordConfirm}
-          @click=${this._createUser}
-          .loading=${this._loading}
-        >
-          ${this.hass.localize("ui.panel.config.users.add_user.create")}
-        </ha-button>
+            appearance="plain"
+            @click=${this._close}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            .disabled=${!this._name ||
+            !this._username ||
+            !this._password ||
+            this._password !== this._passwordConfirm}
+            @click=${this._createUser}
+            .loading=${this._loading}
+          >
+            ${this.hass.localize("ui.panel.config.users.add_user.create")}
+          </ha-button>
         </ha-dialog-footer>
       </ha-wa-dialog>
     `;

@@ -8,7 +8,7 @@ import { computeStateDomain } from "../../../../common/entity/compute_state_doma
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-select";
 import type {
   HaSelectOption,
@@ -16,6 +16,7 @@ import type {
 } from "../../../../components/ha-select";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
+import "../../../../components/ha-wa-dialog";
 import { showAutomationEditor } from "../../../../data/automation";
 import { MediaPlayerEntityFeature } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
@@ -29,6 +30,8 @@ export class DialogTryTts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _loadingExample = false;
+
+  @state() private _open = false;
 
   @state() private _params?: TryTtsDialogParams;
 
@@ -50,9 +53,15 @@ export class DialogTryTts extends LitElement {
 
   public showDialog(params: TryTtsDialogParams) {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
+    this._open = false;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -82,20 +91,20 @@ export class DialogTryTts extends LitElement {
     });
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.cloud.account.tts.dialog.header")
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.cloud.account.tts.dialog.header"
         )}
+        width="medium"
+        @closed=${this._dialogClosed}
       >
         <div>
           <ha-textarea
             autogrow
             id="message"
+            autofocus
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.dialog.message"
             )}
@@ -118,26 +127,33 @@ export class DialogTryTts extends LitElement {
           >
           </ha-select>
         </div>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._playExample}
-          .disabled=${this._loadingExample}
-        >
-          <ha-svg-icon slot="start" .path=${mdiPlayCircleOutline}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.cloud.account.tts.dialog.play")}
-        </ha-button>
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          .disabled=${target === "browser"}
-          @click=${this._createAutomation}
-        >
-          <ha-svg-icon slot="start" .path=${mdiRobot}></ha-svg-icon>
-          ${this.hass.localize(
-            "ui.panel.config.cloud.account.tts.dialog.create_automation"
-          )}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            .disabled=${target === "browser"}
+            @click=${this._createAutomation}
+          >
+            <ha-svg-icon slot="start" .path=${mdiRobot}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.tts.dialog.create_automation"
+            )}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._playExample}
+            .disabled=${this._loadingExample}
+          >
+            <ha-svg-icon
+              slot="start"
+              .path=${mdiPlayCircleOutline}
+            ></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.tts.dialog.play"
+            )}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -223,9 +239,6 @@ export class DialogTryTts extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 500px;
-        }
         ha-textarea,
         ha-select {
           display: block;

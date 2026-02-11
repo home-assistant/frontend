@@ -1,15 +1,15 @@
-import { mdiFire } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-button";
 import "../../../../components/ha-markdown";
+import "../../../../components/ha-wa-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
 import type { GasSourceTypeEnergyPreference } from "../../../../data/energy";
@@ -39,6 +39,8 @@ export class DialogEnergyGasSettings
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: EnergySettingsGasDialogParams;
+
+  @state() private _open = false;
 
   @state() private _source?: GasSourceTypeEnergyPreference;
 
@@ -82,16 +84,22 @@ export class DialogEnergyGasSettings
     this._excludeList = this._params.gas_sources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
+
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     this._source = undefined;
     this._pickedDisplayUnit = undefined;
     this._error = undefined;
     this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -124,14 +132,13 @@ export class DialogEnergyGasSettings
       isExternalStatistic(this._source.stat_energy_from);
 
     return html`
-      <ha-dialog
-        open
-        .heading=${html`<ha-svg-icon
-            .path=${mdiFire}
-            style="--mdc-icon-size: 32px;"
-          ></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.gas.dialog.header")}`}
-        @closed=${this.closeDialog}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.energy.gas.dialog.header"
+        )}
+        @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
         <div>
@@ -161,7 +168,7 @@ export class DialogEnergyGasSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
-          dialogInitialFocus
+          autofocus
         ></ha-statistic-picker>
 
         <p>
@@ -281,21 +288,23 @@ export class DialogEnergyGasSettings
             </ha-textfield>`
           : ""}
 
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          @click=${this._save}
-          .disabled=${!this._source.stat_energy_from}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            slot="secondaryAction"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._save}
+            .disabled=${!this._source.stat_energy_from}
+            slot="primaryAction"
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -370,9 +379,6 @@ export class DialogEnergyGasSettings
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 430px;
-        }
         ha-formfield {
           display: block;
         }
