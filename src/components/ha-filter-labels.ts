@@ -19,7 +19,6 @@ import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-label";
-import { getLabelColorStyle } from "./ha-labels-picker";
 import "./ha-list";
 import "./ha-list-item";
 import "./search-input-outlined";
@@ -107,7 +106,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                       hasMeta
                     >
                       <ha-label
-                        style=${getLabelColorStyle(label.color)}
+                        .color=${label.color}
                         .description=${label.description}
                       >
                         ${label.icon
