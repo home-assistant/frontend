@@ -6,13 +6,12 @@ import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-wa-dialog";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import type { ZeroconfDiscoveryInfoDialogParams } from "./show-dialog-zeroconf-discovery-info";
 
 @customElement("dialog-zeroconf-device-info")
-class DialogZeroconfDiscoveryInfo extends LitElement implements HassDialog {
+class DialogZeroconfDiscoveryInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: ZeroconfDiscoveryInfoDialogParams;
