@@ -124,7 +124,7 @@ class DialogBluetoothDeviceInfo extends LitElement {
         </table>
         <ha-dialog-footer slot="footer">
           <ha-button
-            slot="primaryAction"
+            slot="secondaryAction"
             appearance="plain"
             @click=${this._copyToClipboard}
           >
