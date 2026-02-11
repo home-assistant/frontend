@@ -307,6 +307,7 @@ class DataEntryFlowDialog extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
+        @after-show=${this._focusFormStep}
         @closed=${this._dialogClosed}
       >
         <ha-icon-button
@@ -368,6 +369,7 @@ class DataEntryFlowDialog extends LitElement {
                   ${this._step.type === "form"
                     ? html`
                         <step-flow-form
+                          autofocus
                           narrow
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
@@ -556,6 +558,19 @@ class DataEntryFlowDialog extends LitElement {
       (await Promise.all(unsubs)).map((unsub) => unsub());
     };
   }
+
+  private _focusFormStep = async (): Promise<void> => {
+    if (this._step?.type !== "form" || !this._open) {
+      return;
+    }
+
+    await this.updateComplete;
+    (
+      this.renderRoot.querySelector(
+        "step-flow-form[autofocus]"
+      ) as HTMLElement | null
+    )?.focus();
+  };
 
   static get styles(): CSSResultGroup {
     return [
