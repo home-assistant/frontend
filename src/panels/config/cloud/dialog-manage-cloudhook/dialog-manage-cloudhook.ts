@@ -77,13 +77,6 @@ export class DialogManageCloudhook extends LitElement {
                     )}</button
                   >.
                 `}
-            <br />
-            <a href=${docsUrl} target="_blank" rel="noreferrer">
-              ${this.hass!.localize(
-                "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
-              )}
-              <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-            </a>
           </p>
 
           <ha-copy-textfield
@@ -104,6 +97,7 @@ export class DialogManageCloudhook extends LitElement {
             ${this.hass!.localize(
               "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
             )}
+            <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-button>
           <ha-button slot="primaryAction" @click=${this.closeDialog}>
             ${this.hass!.localize(
@@ -142,12 +136,6 @@ export class DialogManageCloudhook extends LitElement {
         button.link {
           color: var(--primary-color);
           text-decoration: none;
-        }
-        a {
-          text-decoration: none;
-        }
-        a ha-svg-icon {
-          --mdc-icon-size: 16px;
         }
         p {
           margin-top: 0;
