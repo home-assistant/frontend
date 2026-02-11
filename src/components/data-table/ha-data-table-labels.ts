@@ -12,7 +12,6 @@ import "../ha-dropdown-item";
 import type { HaDropdownItem } from "../ha-dropdown-item";
 import "../ha-icon";
 import "../ha-label";
-import { getLabelColorStyle } from "../ha-labels-picker";
 
 @customElement("ha-data-table-labels")
 class HaDataTableLabels extends LitElement {
@@ -58,10 +57,10 @@ class HaDataTableLabels extends LitElement {
         dense
         role="button"
         tabindex="0"
+        .color=${label.color}
         .item=${label}
         @click=${clickAction ? this._labelClicked : undefined}
         @keydown=${clickAction ? this._labelClicked : undefined}
-        style=${getLabelColorStyle(label.color)}
         .description=${label.description}
       >
         ${label?.icon
