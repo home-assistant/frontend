@@ -174,6 +174,23 @@ export class DialogPanelDetail extends LitElement {
     this._data = ev.detail.value;
   }
 
+  private async _handleError(err: any) {
+    let localizedErrorMessage: string | undefined;
+    if (err?.translation_domain && err?.translation_key) {
+      const localize = await this.hass.loadBackendTranslation(
+        "exceptions",
+        err.translation_domain
+      );
+      localizedErrorMessage = localize(
+        `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+        err.translation_placeholders
+      );
+    }
+    this._error = {
+      base: localizedErrorMessage || err?.message || "Unknown error",
+    };
+  }
+
   private async _resetPanel() {
     this._submitting = true;
     try {
@@ -185,20 +202,7 @@ export class DialogPanelDetail extends LitElement {
       });
       this.closeDialog();
     } catch (err: any) {
-      let localizedErrorMessage: string | undefined;
-      if (err?.translation_domain && err?.translation_key) {
-        const localize = await this.hass.loadBackendTranslation(
-          "exceptions",
-          err.translation_domain
-        );
-        localizedErrorMessage = localize(
-          `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
-          err.translation_placeholders
-        );
-      }
-      this._error = {
-        base: localizedErrorMessage || err?.message || "Unknown error",
-      };
+      this._handleError(err);
     } finally {
       this._submitting = false;
     }
@@ -227,20 +231,7 @@ export class DialogPanelDetail extends LitElement {
       }
       this.closeDialog();
     } catch (err: any) {
-      let localizedErrorMessage: string | undefined;
-      if (err?.translation_domain && err?.translation_key) {
-        const localize = await this.hass.loadBackendTranslation(
-          "exceptions",
-          err.translation_domain
-        );
-        localizedErrorMessage = localize(
-          `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
-          err.translation_placeholders
-        );
-      }
-      this._error = {
-        base: localizedErrorMessage || err?.message || "Unknown error",
-      };
+      this._handleError(err);
     } finally {
       this._submitting = false;
     }
