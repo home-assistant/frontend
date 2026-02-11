@@ -1,13 +1,12 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import type { DialogThreadDatasetParams } from "./show-dialog-thread-dataset";
 import "../../../../../components/ha-wa-dialog";
 
 @customElement("ha-dialog-thread-dataset")
-class DialogThreadDataset extends LitElement implements HassDialog {
+class DialogThreadDataset extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DialogThreadDatasetParams;
