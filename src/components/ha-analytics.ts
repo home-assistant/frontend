@@ -5,7 +5,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
-import "./ha-md-list";
 import "./ha-md-list-item";
 import "./ha-switch";
 import "./ha-tooltip";
@@ -34,82 +33,77 @@ export class HaAnalytics extends LitElement {
     const baseEnabled = !loading && this.analytics!.preferences.base;
 
     return html`
-      <ha-md-list>
-        <ha-md-list-item>
-          <span slot="headline"
-            >${this.localize(
-              `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
-            )}</span
-          >
-          <span slot="supporting-text"
-            >${this.localize(
-              `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
-            )}</span
-          >
-          <ha-switch
-            slot="end"
-            @change=${this._handleRowClick}
-            .checked=${!!baseEnabled}
-            .preference=${"base"}
-            .disabled=${loading}
-            name="base"
-          ></ha-switch>
-        </ha-md-list-item>
-        ${ADDITIONAL_PREFERENCES.map(
-          (preference) => html`
-            <ha-md-list-item>
-              <span slot="headline"
-                >${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
-                )}</span
-              >
-              <span slot="supporting-text"
-                >${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
-                )}</span
-              >
-              <ha-switch
-                slot="end"
-                .id="switch-${preference}"
-                @change=${this._handleRowClick}
-                .checked=${!!this.analytics?.preferences[preference]}
-                .preference=${preference}
-                name=${preference}
-              ></ha-switch>
-              ${baseEnabled
-                ? nothing
-                : html`<ha-tooltip
-                    .for="switch-${preference}"
-                    placement="right"
-                  >
-                    ${this.localize(
-                      `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
-                    )}
-                  </ha-tooltip>`}
-            </ha-md-list-item>
-          `
-        )}
-        <ha-md-list-item>
-          <span slot="headline"
-            >${this.localize(
-              `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
-            )}</span
-          >
-          <span slot="supporting-text"
-            >${this.localize(
-              `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
-            )}</span
-          >
-          <ha-switch
-            slot="end"
-            @change=${this._handleRowClick}
-            .checked=${!!this.analytics?.preferences.diagnostics}
-            .preference=${"diagnostics"}
-            .disabled=${loading}
-            name="diagnostics"
-          ></ha-switch>
-        </ha-md-list-item>
-      </ha-md-list>
+      <ha-md-list-item>
+        <span slot="headline"
+          >${this.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
+          )}</span
+        >
+        <span slot="supporting-text"
+          >${this.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.description`
+          )}</span
+        >
+        <ha-switch
+          slot="end"
+          @change=${this._handleRowClick}
+          .checked=${!!baseEnabled}
+          .preference=${"base"}
+          .disabled=${loading}
+          name="base"
+        ></ha-switch>
+      </ha-md-list-item>
+      ${ADDITIONAL_PREFERENCES.map(
+        (preference) => html`
+          <ha-md-list-item>
+            <span slot="headline"
+              >${this.localize(
+                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
+              )}</span
+            >
+            <span slot="supporting-text"
+              >${this.localize(
+                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.description`
+              )}</span
+            >
+            <ha-switch
+              slot="end"
+              .id="switch-${preference}"
+              @change=${this._handleRowClick}
+              .checked=${!!this.analytics?.preferences[preference]}
+              .preference=${preference}
+              name=${preference}
+            ></ha-switch>
+            ${baseEnabled
+              ? nothing
+              : html`<ha-tooltip .for="switch-${preference}" placement="right">
+                  ${this.localize(
+                    `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
+                  )}
+                </ha-tooltip>`}
+          </ha-md-list-item>
+        `
+      )}
+      <ha-md-list-item>
+        <span slot="headline"
+          >${this.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
+          )}</span
+        >
+        <span slot="supporting-text"
+          >${this.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.description`
+          )}</span
+        >
+        <ha-switch
+          slot="end"
+          @change=${this._handleRowClick}
+          .checked=${!!this.analytics?.preferences.diagnostics}
+          .preference=${"diagnostics"}
+          .disabled=${loading}
+          name="diagnostics"
+        ></ha-switch>
+      </ha-md-list-item>
     `;
   }
 
@@ -145,13 +139,9 @@ export class HaAnalytics extends LitElement {
           color: var(--error-color);
         }
 
-        ha-md-list {
-          padding-top: 0;
-          padding-bottom: 0;
+        ha-md-list-item {
           --md-list-item-leading-space: 0;
           --md-list-item-trailing-space: 0;
-        }
-        ha-md-list-item {
           --md-item-overflow: visible;
         }
       `,
