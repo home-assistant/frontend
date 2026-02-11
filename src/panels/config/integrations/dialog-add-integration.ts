@@ -146,6 +146,7 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _dialogClosed() {
+    this._open = false;
     this._integrations = undefined;
     this._helpers = undefined;
     this._pickedBrand = undefined;
