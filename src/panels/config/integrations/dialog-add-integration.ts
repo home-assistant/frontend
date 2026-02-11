@@ -824,7 +824,7 @@ class AddIntegrationDialog extends LitElement {
       }
       search-input {
         display: block;
-        margin: 16px 16px 0;
+        margin: 0 16px;
       }
       .divider {
         border-bottom-color: var(--divider-color);
