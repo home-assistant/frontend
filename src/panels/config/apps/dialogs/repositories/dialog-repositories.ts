@@ -67,6 +67,7 @@ class AppsRepositoriesDialog extends LitElement {
     this._addon = undefined;
     this._open = false;
     this._error = "";
+    fireEvent(this, "dialog-closed");
   }
 
   private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>

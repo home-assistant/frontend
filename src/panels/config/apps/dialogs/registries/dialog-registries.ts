@@ -167,6 +167,7 @@ class AppsRegistriesDialog extends LitElement {
     this._open = false;
     this._addingRegistry = false;
     this._input = {};
+    fireEvent(this, "dialog-closed");
   }
 
   private async _loadRegistries(): Promise<void> {
