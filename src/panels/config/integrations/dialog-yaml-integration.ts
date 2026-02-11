@@ -1,3 +1,4 @@
+import { mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -6,6 +7,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import type { YamlIntegrationDialogParams } from "./show-add-integration-dialog";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-wa-dialog";
 
 @customElement("dialog-yaml-integration")
@@ -70,6 +72,7 @@ export class DialogYamlIntegration extends LitElement {
                 @click=${this.closeDialog}
                 autofocus
               >
+                <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_flow.open_documentation"
                 )}
