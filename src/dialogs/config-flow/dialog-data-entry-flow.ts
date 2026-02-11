@@ -306,6 +306,7 @@ class DataEntryFlowDialog extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-icon-button
