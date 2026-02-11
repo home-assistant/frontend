@@ -106,7 +106,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           filterable: true,
         },
         actions: {
-          last_fixed: true,
+          lastFixed: true,
           title: "",
           label: localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
