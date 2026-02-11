@@ -4,7 +4,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
-import "../components/ha-control-button-group";
 import "../components/ha-control-button";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { haStyle } from "../resources/styles";
@@ -27,14 +26,12 @@ class StateCardButton extends LitElement {
           .stateObj=${stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        <ha-control-button-group>
-          <ha-control-button
-            .disabled=${stateObj.state === UNAVAILABLE}
-            @click=${this._pressButton}
-          >
-            ${this.hass.localize("ui.card.button.press")}
-          </ha-control-button>
-        </ha-control-button-group>
+        <ha-control-button
+          .disabled=${stateObj.state === UNAVAILABLE}
+          @click=${this._pressButton}
+        >
+          ${this.hass.localize("ui.card.button.press")}
+        </ha-control-button>
       </div>
     `;
   }
