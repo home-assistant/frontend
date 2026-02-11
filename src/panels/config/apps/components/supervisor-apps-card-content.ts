@@ -8,7 +8,6 @@ import {
   renderHighlightedText,
 } from "../../../../common/string/search-highlight";
 import "../../../../components/ha-svg-icon";
-import { haStyleHighlight } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("supervisor-apps-card-content")
@@ -92,7 +91,6 @@ class SupervisorAppsCardContent extends LitElement {
   }
 
   static styles = [
-    haStyleHighlight,
     css`
       :host {
         direction: ltr;

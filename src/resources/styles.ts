@@ -14,24 +14,6 @@ export const buttonLinkStyle = css`
   }
 `;
 
-export const haStyleHighlight = css`
-  .ha-highlight {
-    background-color: var(
-      --ha-highlight-bg,
-      var(--ha-color-fill-primary-normal-hover)
-    );
-    color: var(--ha-highlight-color, var(--primary-text-color));
-    border-radius: 2px;
-    padding: 0;
-    box-shadow: inset 0 0 0 1px transparent;
-  }
-
-  :host(.custom-highlight-active) .ha-highlight {
-    background-color: transparent;
-    color: inherit;
-  }
-`;
-
 export const haStyle = css`
   :host {
     font-family: var(--ha-font-family-body);

@@ -11,7 +11,6 @@ import {
 } from "../../../common/string/search-highlight";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
-import { haStyleHighlight } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
@@ -106,7 +105,6 @@ export class HaIntegrationHeader extends LitElement {
   }
 
   static styles = [
-    haStyleHighlight,
     css`
       .header {
         display: flex;

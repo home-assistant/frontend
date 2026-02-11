@@ -14,7 +14,7 @@ import type { HomeAssistant } from "../../../types";
 import "./ha-integration-header";
 import "../../../components/ha-card";
 import { brandsUrl } from "../../../util/brands-url";
-import { haStyle, haStyleHighlight } from "../../../resources/styles";
+import { haStyle } from "../../../resources/styles";
 
 @customElement("ha-integration-action-card")
 export class HaIntegrationActionCard extends LitElement {
@@ -90,7 +90,6 @@ export class HaIntegrationActionCard extends LitElement {
 
   static styles = [
     haStyle,
-    haStyleHighlight,
     css`
       ha-card {
         display: flex;
