@@ -55,8 +55,8 @@ export class DialogDataTableSettings extends LitElement {
             hiddenColumns?.includes(a) ?? Boolean(columns[a].defaultHidden);
           const hiddenB =
             hiddenColumns?.includes(b) ?? Boolean(columns[b].defaultHidden);
-          const fixedA = Boolean(columns[a].last_fixed);
-          const fixedB = Boolean(columns[b].last_fixed);
+          const fixedA = Boolean(columns[a].lastFixed);
+          const fixedB = Boolean(columns[b].lastFixed);
           if (hiddenA !== hiddenB) {
             return hiddenA ? 1 : -1;
           }
@@ -115,9 +115,9 @@ export class DialogDataTableSettings extends LitElement {
               (col) => col.key,
               (col, _idx) => {
                 const canMove =
-                  !col.main && !col.last_fixed && col.moveable !== false;
+                  !col.main && !col.lastFixed && col.moveable !== false;
                 const canHide =
-                  !col.main && !col.last_fixed && col.hideable !== false;
+                  !col.main && !col.lastFixed && col.hideable !== false;
                 const isVisible = !(this._columnOrder &&
                 this._columnOrder.includes(col.key)
                   ? (this._hiddenColumns?.includes(col.key) ??
@@ -243,7 +243,7 @@ export class DialogDataTableSettings extends LitElement {
           col !== column &&
           !hidden.includes(col) &&
           !this._params!.columns[col].main &&
-          !this._params!.columns[col].last_fixed &&
+          !this._params!.columns[col].lastFixed &&
           this._params!.columns[col].moveable !== false
       );
 
