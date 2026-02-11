@@ -86,7 +86,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   flex?: number;
   forceLTR?: boolean;
   hidden?: boolean;
-  last_fixed?: boolean;
+  lastFixed?: boolean;
 }
 
 export type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
@@ -360,8 +360,8 @@ export class HaDataTable extends LitElement {
         .sort((a, b) => {
           const orderA = columnOrder!.indexOf(a);
           const orderB = columnOrder!.indexOf(b);
-          const fixedA = Boolean(columns[a].last_fixed);
-          const fixedB = Boolean(columns[b].last_fixed);
+          const fixedA = Boolean(columns[a].lastFixed);
+          const fixedB = Boolean(columns[b].lastFixed);
           if (fixedA !== fixedB) {
             return fixedA ? 1 : -1;
           }
