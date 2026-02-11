@@ -18,7 +18,7 @@ export const getLabelColorStyle = (labelColor: string | undefined | null) => {
 class HaLabel extends LitElement {
   @property({ type: Boolean, reflect: true }) dense = false;
 
-  @property({ attribute: false })
+  @property()
   public color?: string;
 
   @property({ attribute: "description" })
