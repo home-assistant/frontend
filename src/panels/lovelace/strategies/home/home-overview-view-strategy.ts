@@ -27,7 +27,10 @@ import type {
   TileCardConfig,
   UpdatesCardConfig,
 } from "../../cards/types";
-import type { Condition } from "../../common/validate-condition";
+import {
+  LARGE_SCREEN_CONDITION,
+  SMALL_SCREEN_CONDITION,
+} from "../helpers/screen-conditions";
 import type { CommonControlSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
@@ -83,16 +86,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const maxColumns = 3;
 
     const allEntities = Object.keys(hass.states);
-
-    const largeScreenCondition: Condition = {
-      condition: "screen",
-      media_query: "(min-width: 871px)",
-    };
-
-    const smallScreenCondition: Condition = {
-      condition: "screen",
-      media_query: "(max-width: 870px)",
-    };
 
     const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
       generateEntityFilter(hass, filter)
@@ -202,7 +195,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           type: "heading",
           heading: hass.localize("ui.panel.lovelace.strategy.home.favorites"),
           heading_style: "title",
-          visibility: [largeScreenCondition],
+          visibility: [LARGE_SCREEN_CONDITION],
           grid_options: {
             rows: "auto", // Compact style
           },
@@ -361,7 +354,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         ? {
             type: "grid",
             column_span: maxColumns,
-            visibility: [smallScreenCondition],
+            visibility: [SMALL_SCREEN_CONDITION],
             cards: [summaryHeadingCard, ...mobileSummaryCards],
           }
         : undefined;
@@ -460,7 +453,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           sidebar_label: hass.localize(
             "ui.panel.lovelace.strategy.home.summaries"
           ),
-          visibility: [largeScreenCondition],
+          visibility: [LARGE_SCREEN_CONDITION],
         },
       }),
     };

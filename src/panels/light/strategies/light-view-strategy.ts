@@ -12,6 +12,11 @@ import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/sec
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import {
+  LARGE_SCREEN_CONDITION,
+  SMALL_SCREEN_CONDITION,
+} from "../../lovelace/strategies/helpers/screen-conditions";
+import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
 
 export interface LightViewStrategyConfig {
   type: "light";
@@ -64,6 +69,7 @@ const processAreasForLight = (
           navigation_path: `/home/areas-${area.area_id}`,
         },
         badges: [
+          // Toggle buttons for mobile
           {
             type: "button",
             icon: "mdi:power",
@@ -75,6 +81,7 @@ const processAreasForLight = (
               },
             },
             visibility: [
+              SMALL_SCREEN_CONDITION,
               {
                 condition: "not",
                 conditions: [anyOnCondition],
@@ -84,7 +91,7 @@ const processAreasForLight = (
           {
             type: "button",
             icon: "mdi:power",
-            color: "orange",
+            color: "amber",
             tap_action: {
               action: "perform-action",
               perform_action: "light.turn_off",
@@ -92,10 +99,25 @@ const processAreasForLight = (
                 area_id: area.area_id,
               },
             },
-            visibility: [anyOnCondition],
+            visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
           },
         ] satisfies LovelaceCardConfig[],
       });
+
+      // Toggle group card for desktop
+      cards.push({
+        type: "toggle-group",
+        title: hass.localize("ui.panel.lovelace.strategy.light.all_lights"),
+        color: "amber",
+        entities: areaLights,
+        visibility: [LARGE_SCREEN_CONDITION],
+        grid_options: {
+          columns: 6,
+          rows: 1,
+          min_columns: 6,
+        },
+      } as ToggleGroupCardConfig);
+
       cards.push(...areaCards);
     }
   }
