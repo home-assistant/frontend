@@ -324,7 +324,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           localize("ui.panel.config.scene.picker.only_editable")
         ),
         actions: {
-          last_fixed: true,
+          lastFixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
