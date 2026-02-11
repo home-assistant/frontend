@@ -2,7 +2,6 @@ import type { TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import type { SSDPDiscoveryInfoDialogParams } from "./show-dialog-ssdp-discovery-info";
 import "../../../../../components/ha-button";
@@ -13,7 +12,7 @@ import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { showSSDPRawDataDialog } from "./show-dialog-ssdp-raw-data";
 
 @customElement("dialog-ssdp-device-info")
-class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
+class DialogSSDPDiscoveryInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: SSDPDiscoveryInfoDialogParams;

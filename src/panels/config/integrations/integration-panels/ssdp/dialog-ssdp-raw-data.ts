@@ -3,7 +3,6 @@ import { customElement, property, state } from "lit/decorators";
 import type { TemplateResult } from "lit";
 import { dump } from "js-yaml";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-wa-dialog";
@@ -14,7 +13,7 @@ export interface SSDPRawDataDialogParams {
 }
 
 @customElement("dialog-ssdp-raw-data")
-class DialogSSDPRawData extends LitElement implements HassDialog {
+class DialogSSDPRawData extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: SSDPRawDataDialogParams;
