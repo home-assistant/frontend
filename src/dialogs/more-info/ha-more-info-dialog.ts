@@ -406,9 +406,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const deviceType =
       (deviceId && this.hass.devices[deviceId].entry_type) || "device";
 
-    const isDefaultView =
-      this._currView === DEFAULT_VIEW &&
-      (!this._childView || this._childView.keepHeader);
+    const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
     const isSpecificInitialView =
       this._initialView !== DEFAULT_VIEW &&
       (!this._childView || this._childView.keepHeader);
