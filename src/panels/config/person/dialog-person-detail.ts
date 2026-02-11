@@ -135,6 +135,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         header-title=${this._params.entry
           ? this._params.entry.name
           : this.hass!.localize("ui.panel.config.person.detail.new_person")}
