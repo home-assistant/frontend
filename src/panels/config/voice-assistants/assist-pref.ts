@@ -23,7 +23,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
@@ -219,26 +218,24 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
-        <ha-md-list>
-          <ha-md-list-item>
-            <span slot="headline"
-              >${this.hass!.localize(
-                "ui.panel.config.voice_assistants.expose.expose_new_entities"
-              )}</span
-            >
-            <span slot="supporting-text"
-              >${this.hass!.localize(
-                "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
-              )}</span
-            >
-            <ha-switch
-              slot="end"
-              .checked=${this._exposeNew}
-              .disabled=${this._exposeNew === undefined}
-              @change=${this._exposeNewToggleChanged}
-            ></ha-switch>
-          </ha-md-list-item>
-        </ha-md-list>
+        <ha-md-list-item>
+          <span slot="headline"
+            >${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities"
+            )}</span
+          >
+          <span slot="supporting-text"
+            >${this.hass!.localize(
+              "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
+            )}</span
+          >
+          <ha-switch
+            slot="end"
+            .checked=${this._exposeNew}
+            .disabled=${this._exposeNew === undefined}
+            @change=${this._exposeNewToggleChanged}
+          ></ha-switch>
+        </ha-md-list-item>
         <div class="card-actions">
           <ha-button
             appearance="plain"
@@ -443,11 +440,6 @@ export class AssistPref extends LitElement {
     ha-list-item span ha-svg-icon {
       color: currentColor;
       width: 16px;
-    }
-
-    ha-md-list {
-      padding-top: 0;
-      padding-bottom: 0;
     }
 
     .add {
