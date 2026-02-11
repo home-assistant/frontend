@@ -1,17 +1,38 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { computeCssColor } from "../common/color/compute-color";
+import { getContrastedColorHex } from "../common/color/rgb";
 import { uid } from "../common/util/uid";
 import "./ha-tooltip";
+
+export const getLabelColorStyle = (labelColor: string | undefined | null) => {
+  const color = labelColor ? computeCssColor(labelColor) : undefined;
+  return color
+    ? `--ha-label-background-color: ${color};
+       --primary-text-color: ${getContrastedColorHex(labelColor!)};`
+    : `--ha-label-background-color: rgba(var(--rgb-primary-text-color),0.15);`;
+};
 
 @customElement("ha-label")
 class HaLabel extends LitElement {
   @property({ type: Boolean, reflect: true }) dense = false;
 
+  @property({ attribute: false })
+  public color?: string;
+
   @property({ attribute: "description" })
   public description?: string;
 
   private _elementId = "label-" + uid();
+
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("color")) {
+      return;
+    }
+    this.style.cssText = getLabelColorStyle(this.color);
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -36,10 +57,6 @@ class HaLabel extends LitElement {
         :host {
           --ha-label-text-color: var(--primary-text-color);
           --ha-label-icon-color: var(--primary-text-color);
-          --ha-label-background-color: rgba(
-            var(--rgb-primary-text-color),
-            0.15
-          );
           --ha-label-background-opacity: 1;
           border: 1px solid var(--outline-color);
           position: relative;
