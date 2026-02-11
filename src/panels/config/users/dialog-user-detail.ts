@@ -2,15 +2,17 @@ import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import "../../../components/ha-wa-dialog";
 import { adminChangeUsername } from "../../../data/auth";
 import {
   computeUserBadges,
@@ -42,6 +44,8 @@ class DialogUserDetail extends LitElement {
 
   @state() private _params?: UserDetailDialogParams;
 
+  @state() private _open = false;
+
   @state() private _submitting = false;
 
   public async showDialog(params: UserDetailDialogParams): Promise<void> {
@@ -51,6 +55,7 @@ class DialogUserDetail extends LitElement {
     this._isAdmin = params.entry.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
     this._localOnly = params.entry.local_only;
     this._isActive = params.entry.is_active;
+    this._open = true;
     await this.updateComplete;
   }
 
@@ -61,12 +66,13 @@ class DialogUserDetail extends LitElement {
     const user = this._params.entry;
     const badges = computeUserBadges(this.hass, user, true);
     return html`
-      <ha-dialog
-        open
-        @closed=${this._close}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(this.hass, user.name)}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
+        header-title=${user.name}
+        width="medium"
+        @closed=${this._dialogClosed}
       >
         <div>
           ${
@@ -95,68 +101,68 @@ class DialogUserDetail extends LitElement {
                 `
           }
           <div class="form">
-              ${
-                !user.system_generated
-                  ? html`
-                      <ha-textfield
-                        dialogInitialFocus
-                        .value=${this._name}
-                        @input=${this._nameChanged}
-                        .label=${this.hass!.localize(
-                          "ui.panel.config.users.editor.name"
-                        )}
-                      ></ha-textfield>
-                      <ha-md-list-item>
-                        <span slot="headline"
-                          >${this.hass.localize(
-                            "ui.panel.config.users.editor.username"
-                          )}</span
-                        >
-                        <span slot="supporting-text">${user.username}</span>
-                        ${this.hass.user?.is_owner
-                          ? html`
-                              <ha-icon-button
-                                slot="end"
-                                .path=${mdiPencil}
-                                @click=${this._changeUsername}
-                                .label=${this.hass.localize(
-                                  "ui.panel.config.users.editor.change_username"
-                                )}
-                              >
-                              </ha-icon-button>
-                            `
-                          : nothing}
-                      </ha-md-list-item>
-                    `
-                  : nothing
-              }
-              ${
-                !user.system_generated && this.hass.user?.is_owner
-                  ? html`
-                      <ha-md-list-item>
-                        <span slot="headline"
-                          >${this.hass.localize(
-                            "ui.panel.config.users.editor.password"
-                          )}</span
-                        >
-                        <span slot="supporting-text">************</span>
-                        ${this.hass.user?.is_owner
-                          ? html`
-                              <ha-icon-button
-                                slot="end"
-                                .path=${mdiPencil}
-                                @click=${this._changePassword}
-                                .label=${this.hass.localize(
-                                  "ui.panel.config.users.editor.change_password"
-                                )}
-                              >
-                              </ha-icon-button>
-                            `
-                          : nothing}
-                      </ha-md-list-item>
-                    `
-                  : nothing
-              }
+            ${
+              !user.system_generated
+                ? html`
+                    <ha-textfield
+                      autofocus
+                      .value=${this._name}
+                      @input=${this._nameChanged}
+                      .label=${this.hass!.localize(
+                        "ui.panel.config.users.editor.name"
+                      )}
+                    ></ha-textfield>
+                    <ha-md-list-item>
+                      <span slot="headline"
+                        >${this.hass.localize(
+                          "ui.panel.config.users.editor.username"
+                        )}</span
+                      >
+                      <span slot="supporting-text">${user.username}</span>
+                      ${this.hass.user?.is_owner
+                        ? html`
+                            <ha-icon-button
+                              slot="end"
+                              .path=${mdiPencil}
+                              @click=${this._changeUsername}
+                              .label=${this.hass.localize(
+                                "ui.panel.config.users.editor.change_username"
+                              )}
+                            >
+                            </ha-icon-button>
+                          `
+                        : nothing}
+                    </ha-md-list-item>
+                  `
+                : nothing
+            }
+            ${
+              !user.system_generated && this.hass.user?.is_owner
+                ? html`
+                    <ha-md-list-item>
+                      <span slot="headline"
+                        >${this.hass.localize(
+                          "ui.panel.config.users.editor.password"
+                        )}</span
+                      >
+                      <span slot="supporting-text">************</span>
+                      ${this.hass.user?.is_owner
+                        ? html`
+                            <ha-icon-button
+                              slot="end"
+                              .path=${mdiPencil}
+                              @click=${this._changePassword}
+                              .label=${this.hass.localize(
+                                "ui.panel.config.users.editor.change_password"
+                              )}
+                            >
+                            </ha-icon-button>
+                          `
+                        : nothing}
+                    </ha-md-list-item>
+                  `
+                : nothing
+            }
               <ha-md-list-item>
                 <span slot="headline"
                   >${this.hass.localize(
@@ -237,19 +243,20 @@ class DialogUserDetail extends LitElement {
           }
         </div>
 
+        <ha-dialog-footer slot="footer">
         <ha-button
           slot="secondaryAction"
           variant="danger"
           appearance="plain"
           @click=${this._deleteEntry}
-          .disabled=${
-            this._submitting || user.system_generated || user.is_owner
-          }
+            .disabled=${
+              this._submitting || user.system_generated || user.is_owner
+            }
         >
           ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
         </ha-button>
         <ha-button
-          slot="primaryAction"
+            slot="secondaryAction"
           appearance="plain"
           @click=${this._close}
         >
@@ -258,11 +265,14 @@ class DialogUserDetail extends LitElement {
         <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
-          .disabled=${!this._name || this._submitting || user.system_generated}
+            .disabled=${
+              !this._name || this._submitting || user.system_generated
+            }
         >
           ${this.hass!.localize("ui.common.save")}
         </ha-button>
-      </ha-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -306,7 +316,7 @@ class DialogUserDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeEntry()) {
-        this._params = undefined;
+        this._close();
       }
     } finally {
       this._submitting = false;
@@ -378,16 +388,18 @@ class DialogUserDetail extends LitElement {
   }
 
   private _close(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 500px;
-        }
         .form {
           padding-top: 16px;
         }
