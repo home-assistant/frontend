@@ -4,6 +4,7 @@ import {
   mdiAppleKeyboardCommand,
   mdiClose,
   mdiContentPaste,
+  mdiHelpCircle,
   mdiPlus,
 } from "@mdi/js";
 import type {
@@ -116,6 +117,7 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
@@ -750,6 +752,16 @@ class DialogAddAutomationElement
         <span slot="title">${this._getDialogTitle()}</span>
 
         ${this._renderDialogSubtitle()}
+        ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
+          ? html`<ha-icon-button
+              slot="actionItems"
+              .path=${mdiHelpCircle}
+              .label=${this.hass.localize(
+                `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
+              )}
+              @click=${this._openDocumentation}
+            ></ha-icon-button>`
+          : nothing}
         ${this._narrow && (this._selectedGroup || this._selectedTarget)
           ? html`<ha-icon-button-prev
               slot="navigationIcon"
@@ -1720,6 +1732,16 @@ class DialogAddAutomationElement
     mainWindow.history.back();
   }
 
+  private _openDocumentation = () => {
+    const docUrl =
+      this._params!.type === "trigger"
+        ? "/docs/automation/trigger/"
+        : this._params!.type === "condition"
+          ? "/docs/automation/condition/"
+          : "/docs/automation/action/";
+    window.open(documentationUrl(this.hass, docUrl), "_blank", "noreferrer");
+  };
+
   private _groupSelected(ev) {
     const group = ev.currentTarget;
     if (this._selectedGroup === group.value) {
@@ -2065,6 +2087,10 @@ class DialogAddAutomationElement
             )
           );
           --ha-dialog-max-height: var(--ha-dialog-min-height);
+        }
+
+        ha-wa-dialog ha-icon-button[slot="actionItems"] {
+          color: var(--secondary-text-color);
         }
 
         search-input {
