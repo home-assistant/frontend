@@ -11,7 +11,6 @@ import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import { changeZHANetworkChannel } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
 
@@ -36,7 +35,7 @@ const VALID_CHANNELS = [
 ];
 
 @customElement("dialog-zha-change-channel")
-class DialogZHAChangeChannel extends LitElement implements HassDialog {
+class DialogZHAChangeChannel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _migrationInProgress = false;
