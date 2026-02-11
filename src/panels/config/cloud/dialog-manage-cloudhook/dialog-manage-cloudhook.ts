@@ -58,7 +58,6 @@ export class DialogManageCloudhook extends LitElement {
           { name: webhook.name }
         )}
         @closed=${this._dialogClosed}
-        width="large"
       >
         <div>
           <p>
