@@ -7,7 +7,6 @@ import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -111,122 +110,120 @@ export class CloudGooglePref extends LitElement {
           ${!google_enabled
             ? nothing
             : html`
-                <ha-md-list>
-                  ${!google_registered
-                    ? html`
-                        <ha-alert
-                          .title=${this.hass.localize(
-                            "ui.panel.config.cloud.account.google.not_configured_title"
-                          )}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.cloud.account.google.not_configured_text"
-                          )}
+                ${!google_registered
+                  ? html`
+                      <ha-alert
+                        .title=${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.not_configured_title"
+                        )}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.not_configured_text"
+                        )}
 
-                          <ul>
-                            <li>
+                        <ul>
+                          <li>
+                            <a
+                              href="https://www.nabucasa.com/config/google_assistant/"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              ${this.hass.localize(
+                                "ui.panel.config.cloud.account.google.config_documentation"
+                              )}
+                            </a>
+                          </li>
+                        </ul>
+                      </ha-alert>
+                    `
+                  : nothing}
+                <ha-md-list-item>
+                  <span slot="headline"
+                    >${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.expose_new_entities"
+                    )}</span
+                  >
+                  <span slot="supporting-text"
+                    >${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.expose_new_entities_info"
+                    )}</span
+                  >
+                  <ha-switch
+                    slot="end"
+                    .checked=${this._exposeNew}
+                    .disabled=${this._exposeNew === undefined}
+                    @change=${this._exposeNewToggleChanged}
+                  ></ha-switch>
+                </ha-md-list-item>
+                ${google_registered
+                  ? html`
+                      ${this.cloudStatus.http_use_ssl
+                        ? html`
+                            <ha-alert
+                              alert-type="warning"
+                              .title=${this.hass.localize(
+                                "ui.panel.config.cloud.account.google.http_use_ssl_warning_title"
+                              )}
+                            >
+                              ${this.hass.localize(
+                                "ui.panel.config.cloud.account.google.http_use_ssl_warning_text"
+                              )}
                               <a
-                                href="https://www.nabucasa.com/config/google_assistant/"
+                                href="https://www.nabucasa.com/config/google_assistant/#local-communication"
                                 target="_blank"
                                 rel="noreferrer"
+                                >${this.hass.localize(
+                                  "ui.panel.config.common.learn_more"
+                                )}</a
                               >
-                                ${this.hass.localize(
-                                  "ui.panel.config.cloud.account.google.config_documentation"
-                                )}
-                              </a>
-                            </li>
-                          </ul>
-                        </ha-alert>
-                      `
-                    : nothing}
-                  <ha-md-list-item>
-                    <span slot="headline"
-                      >${this.hass!.localize(
-                        "ui.panel.config.cloud.account.google.expose_new_entities"
-                      )}</span
-                    >
-                    <span slot="supporting-text"
-                      >${this.hass!.localize(
-                        "ui.panel.config.cloud.account.google.expose_new_entities_info"
-                      )}</span
-                    >
-                    <ha-switch
-                      slot="end"
-                      .checked=${this._exposeNew}
-                      .disabled=${this._exposeNew === undefined}
-                      @change=${this._exposeNewToggleChanged}
-                    ></ha-switch>
-                  </ha-md-list-item>
-                  ${google_registered
-                    ? html`
-                        ${this.cloudStatus.http_use_ssl
-                          ? html`
-                              <ha-alert
-                                alert-type="warning"
-                                .title=${this.hass.localize(
-                                  "ui.panel.config.cloud.account.google.http_use_ssl_warning_title"
-                                )}
-                              >
-                                ${this.hass.localize(
-                                  "ui.panel.config.cloud.account.google.http_use_ssl_warning_text"
-                                )}
-                                <a
-                                  href="https://www.nabucasa.com/config/google_assistant/#local-communication"
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  >${this.hass.localize(
-                                    "ui.panel.config.common.learn_more"
-                                  )}</a
-                                >
-                              </ha-alert>
-                            `
-                          : nothing}
-                        <ha-md-list-item>
-                          <span slot="headline"
-                            >${this.hass!.localize(
-                              "ui.panel.config.cloud.account.google.enable_state_reporting"
-                            )}</span
-                          >
-                          <span slot="supporting-text"
-                            >${this.hass!.localize(
-                              "ui.panel.config.cloud.account.google.info_state_reporting"
-                            )}</span
-                          >
-                          <ha-switch
-                            slot="end"
-                            .checked=${google_report_state}
-                            @change=${this._reportToggleChanged}
-                          ></ha-switch>
-                        </ha-md-list-item>
+                            </ha-alert>
+                          `
+                        : nothing}
+                      <ha-md-list-item>
+                        <span slot="headline"
+                          >${this.hass!.localize(
+                            "ui.panel.config.cloud.account.google.enable_state_reporting"
+                          )}</span
+                        >
+                        <span slot="supporting-text"
+                          >${this.hass!.localize(
+                            "ui.panel.config.cloud.account.google.info_state_reporting"
+                          )}</span
+                        >
+                        <ha-switch
+                          slot="end"
+                          .checked=${google_report_state}
+                          @change=${this._reportToggleChanged}
+                        ></ha-switch>
+                      </ha-md-list-item>
 
-                        <ha-md-list-item>
-                          <span slot="headline"
-                            >${this.hass.localize(
-                              "ui.panel.config.cloud.account.google.security_devices"
-                            )}</span
-                          >
-                          <span slot="supporting-text"
-                            >${this.hass.localize(
-                              "ui.panel.config.cloud.account.google.enter_pin_info"
-                            )}</span
-                          >
-                          <ha-switch slot="end"></ha-switch>
-                        </ha-md-list-item>
+                      <ha-md-list-item>
+                        <span slot="headline"
+                          >${this.hass.localize(
+                            "ui.panel.config.cloud.account.google.security_devices"
+                          )}</span
+                        >
+                        <span slot="supporting-text"
+                          >${this.hass.localize(
+                            "ui.panel.config.cloud.account.google.enter_pin_info"
+                          )}</span
+                        >
+                        <ha-switch slot="end"></ha-switch>
+                      </ha-md-list-item>
 
-                        <ha-textfield
-                          id="google_secure_devices_pin"
-                          .label=${this.hass.localize(
-                            "ui.panel.config.cloud.account.google.devices_pin"
-                          )}
-                          .placeholder=${this.hass.localize(
-                            "ui.panel.config.cloud.account.google.enter_pin_hint"
-                          )}
-                          .value=${google_secure_devices_pin || ""}
-                          @change=${this._pinChanged}
-                        ></ha-textfield>
-                      `
-                    : nothing}
-                </ha-md-list>
+                      <ha-textfield
+                        id="google_secure_devices_pin"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.devices_pin"
+                        )}
+                        .placeholder=${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.enter_pin_hint"
+                        )}
+                        .value=${google_secure_devices_pin || ""}
+                        @change=${this._pinChanged}
+                      ></ha-textfield>
+                    `
+                  : nothing}
               `}
         </div>
         ${google_enabled
@@ -337,13 +334,9 @@ export class CloudGooglePref extends LitElement {
       direction: var(--direction);
       color: var(--secondary-text-color);
     }
-    ha-md-list {
-      padding-top: 0;
-      padding-bottom: 0;
+    ha-md-list-item {
       --md-list-item-leading-space: 0;
       --md-list-item-trailing-space: 0;
-    }
-    ha-md-list-item {
       --md-item-overflow: visible;
     }
     ha-textfield {
