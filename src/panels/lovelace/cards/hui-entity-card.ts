@@ -216,7 +216,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   measurement: true,
                   "first-part": reversedOrder,
                 })}
-                style=${reversedOrder ? `order: -1;` : ""}
                 >${unit}</span
               >`
             : nothing}
@@ -342,10 +341,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           align-items: baseline;
           padding: 0px 16px 16px;
           margin-top: -4px;
+          line-height: var(--ha-line-height-condensed);
+        }
+
+        .info > * {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: var(--ha-line-height-condensed);
         }
 
         .value {
@@ -358,6 +360,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .first-part {
+          order: -1; /* ? */
           margin-right: 4px;
           margin-inline-end: 4px;
           margin-inline-start: initial;
