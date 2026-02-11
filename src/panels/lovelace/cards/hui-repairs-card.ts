@@ -1,31 +1,27 @@
-import { mdiDevices } from "@mdi/js";
+import { mdiWrench } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import {
-  DISCOVERY_SOURCES,
-  subscribeConfigFlowInProgress,
-  type ConfigFlowInProgressMessage,
-} from "../../../data/config_flow";
-import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { RepairsIssue } from "../../../data/repairs";
+import { subscribeRepairsIssueRegistry } from "../../../data/repairs";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { showAddIntegrationDialog } from "../../config/integrations/show-add-integration-dialog";
 import type { HomeAssistant } from "../../../types";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
-import type { DiscoveredDevicesCardConfig } from "./types";
+import type { RepairsCardConfig } from "./types";
 
-@customElement("hui-discovered-devices-card")
-export class HuiDiscoveredDevicesCard
+@customElement("hui-repairs-card")
+export class HuiRepairsCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
@@ -33,54 +29,25 @@ export class HuiDiscoveredDevicesCard
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: DiscoveredDevicesCardConfig;
+  @state() private _config?: RepairsCardConfig;
 
-  @state() private _discoveredFlows: DataEntryFlowProgress[] = [];
+  @state() private _repairsIssues: RepairsIssue[] = [];
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
-      subscribeConfigFlowInProgress(
-        this.hass!,
-        (messages: ConfigFlowInProgressMessage[]) => {
-          if (messages.length === 0) {
-            this._discoveredFlows = [];
-            return;
-          }
-
-          let fullUpdate = false;
-          const newFlows: DataEntryFlowProgress[] = [];
-
-          messages.forEach((message) => {
-            if (message.type === "removed") {
-              this._discoveredFlows = this._discoveredFlows.filter(
-                (flow) => flow.flow_id !== message.flow_id
-              );
-              return;
-            }
-
-            if (message.type === null || message.type === "added") {
-              if (message.type === null) {
-                fullUpdate = true;
-              }
-              // Only include flows from discovery sources
-              if (DISCOVERY_SOURCES.includes(message.flow.context.source)) {
-                newFlows.push(message.flow);
-              }
-            }
-          });
-
-          if (!newFlows.length && !fullUpdate) {
-            return;
-          }
-
-          const existingFlows = fullUpdate ? [] : this._discoveredFlows;
-          this._discoveredFlows = [...existingFlows, ...newFlows];
+      subscribeRepairsIssueRegistry(
+        this.hass!.connection,
+        (repairs: { issues: RepairsIssue[] }) => {
+          // Filter to only active and non-ignored issues
+          this._repairsIssues = repairs.issues.filter(
+            (issue) => issue.active !== false && !issue.ignored
+          );
         }
       ),
     ];
   }
 
-  public setConfig(config: DiscoveredDevicesCardConfig): void {
+  public setConfig(config: RepairsCardConfig): void {
     this._config = config;
   }
 
@@ -107,8 +74,7 @@ export class HuiDiscoveredDevicesCard
 
   private async _handleAction(ev: ActionHandlerEvent) {
     if (ev.detail.action === "tap" && !hasAction(this._config?.tap_action)) {
-      await this.hass!.loadFragmentTranslation("config");
-      showAddIntegrationDialog(this, { brand: "_discovered" });
+      navigate("/config/repairs");
       return;
     }
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
@@ -130,10 +96,10 @@ export class HuiDiscoveredDevicesCard
       return;
     }
 
-    // Update visibility based on admin status and discovered devices count
+    // Update visibility based on admin status and repairs count
     const shouldBeHidden =
       !this.hass.user?.is_admin ||
-      (this._config.hide_empty && this._discoveredFlows.length === 0);
+      (this._config.hide_empty && this._repairsIssues.length === 0);
 
     if (shouldBeHidden !== this.hidden) {
       this.style.display = shouldBeHidden ? "none" : "";
@@ -147,15 +113,15 @@ export class HuiDiscoveredDevicesCard
       return nothing;
     }
 
-    const count = this._discoveredFlows.length;
+    const count = this._repairsIssues.length;
 
-    const label = this.hass.localize("ui.card.discovered-devices.title");
+    const label = this.hass.localize("ui.card.repairs.title");
     const secondary =
       count > 0
-        ? this.hass.localize("ui.card.discovered-devices.count_devices", {
+        ? this.hass.localize("ui.card.repairs.count_issues", {
             count,
           })
-        : this.hass.localize("ui.card.discovered-devices.no_devices");
+        : this.hass.localize("ui.card.repairs.no_issues");
 
     return html`
       <ha-card>
@@ -168,7 +134,7 @@ export class HuiDiscoveredDevicesCard
           }}
           @action=${this._handleAction}
         >
-          <ha-tile-icon slot="icon" .iconPath=${mdiDevices}></ha-tile-icon>
+          <ha-tile-icon slot="icon" .iconPath=${mdiWrench}></ha-tile-icon>
           <ha-tile-info
             slot="info"
             .primary=${label}
@@ -183,7 +149,7 @@ export class HuiDiscoveredDevicesCard
     tileCardStyle,
     css`
       :host {
-        --tile-color: var(--info-color);
+        --tile-color: var(--warning-color);
       }
     `,
   ];
@@ -191,6 +157,6 @@ export class HuiDiscoveredDevicesCard
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-discovered-devices-card": HuiDiscoveredDevicesCard;
+    "hui-repairs-card": HuiRepairsCard;
   }
 }
