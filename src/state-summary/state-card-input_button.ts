@@ -4,7 +4,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
-import "../components/ha-control-button-group";
 import "../components/ha-control-button";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { haStyle } from "../resources/styles";
