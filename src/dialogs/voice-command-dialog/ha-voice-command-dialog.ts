@@ -281,7 +281,7 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-start: -9px;
         }
         ha-dropdown ha-button {
-          --ha-button-height: 20px;
+          --ha-button-height: var(--ha-space-5);
         }
         ha-dropdown ha-button::part(base) {
           margin-left: 5px;
@@ -293,15 +293,15 @@ export class HaVoiceCommandDialog extends LitElement {
           }
         }
         ha-dropdown ha-button ha-svg-icon {
-          height: 28px;
-          margin-left: 4px;
-          margin-inline-start: 4px;
+          height: var(--ha-space-7);
+          margin-left: var(--ha-space-1);
+          margin-inline-start: var(--ha-space-1);
           margin-inline-end: initial;
           direction: var(--direction);
         }
         ha-dropdown-item ha-svg-icon {
-          margin-left: 4px;
-          margin-inline-start: 4px;
+          margin-left: var(--ha-space-1);
+          margin-inline-start: var(--ha-space-1);
           margin-inline-end: initial;
           direction: var(--direction);
           display: block;
@@ -313,10 +313,6 @@ export class HaVoiceCommandDialog extends LitElement {
         .pipelines-loading {
           display: flex;
           justify-content: center;
-        }
-        ha-assist-chat {
-          margin: 0 24px 16px;
-          min-height: 399px;
         }
       `,
     ];
