@@ -1,18 +1,25 @@
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
-import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-wa-dialog";
 
 @customElement("app-dialog")
 class DialogApp extends LitElement {
   @property({ attribute: false }) public localize?: LocalizeFunc;
 
-  public async showDialog(params): Promise<void> {
+  @state() private _open = false;
+
+  public async showDialog(params: { localize: LocalizeFunc }): Promise<void> {
     this.localize = params.localize;
+    this._open = true;
   }
 
-  public async closeDialog(): Promise<void> {
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this.localize = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -21,15 +28,12 @@ class DialogApp extends LitElement {
     if (!this.localize) {
       return nothing;
     }
-    return html`<ha-dialog
-      open
-      hideActions
-      @closed=${this.closeDialog}
-      .heading=${createCloseHeading(
-        undefined,
-        this.localize("ui.panel.page-onboarding.welcome.download_app") ||
-          "Click here to download the app"
-      )}
+    return html`<ha-wa-dialog
+      .open=${this._open}
+      header-title=${this.localize(
+        "ui.panel.page-onboarding.welcome.download_app"
+      ) || "Click here to download the app"}
+      @closed=${this._dialogClosed}
     >
       <div>
         <div class="app-qr">
@@ -69,13 +73,10 @@ class DialogApp extends LitElement {
           </a>
         </div>
       </div>
-    </ha-dialog>`;
+    </ha-wa-dialog>`;
   }
 
   static styles = css`
-    ha-dialog {
-      --mdc-dialog-min-width: min(500px, 90vw);
-    }
     .app-qr {
       display: flex;
       justify-content: space-between;
