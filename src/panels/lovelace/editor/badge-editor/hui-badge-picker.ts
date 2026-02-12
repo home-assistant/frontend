@@ -12,6 +12,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
+import { haStyleScrollbar } from "../../../../resources/styles";
 import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -139,6 +140,7 @@ export class HuiBadgePicker extends LitElement {
       ></search-input>
       <div
         id="content"
+        class="ha-scrollbar"
         style=${styleMap({
           width: this._width ? `${this._width}px` : "auto",
           height: this._height ? `${this._height}px` : "auto",
@@ -468,9 +470,23 @@ export class HuiBadgePicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+
+        #content {
+          flex: 1;
+          min-height: 0;
+          overflow: auto;
+        }
+
         search-input {
           display: block;
+          width: 100%;
           --mdc-shape-small: var(--badge-picker-search-shape);
           margin: var(--badge-picker-search-margin);
         }
@@ -487,7 +503,7 @@ export class HuiBadgePicker extends LitElement {
           display: grid;
           grid-gap: 8px 8px;
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          margin-top: 20px;
+          padding: var(--ha-space-3);
         }
 
         .badge {

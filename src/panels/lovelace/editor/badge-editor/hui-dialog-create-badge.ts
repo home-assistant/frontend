@@ -95,6 +95,7 @@ export class HuiCreateDialogBadge
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+        flexcontent
         width="large"
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
@@ -178,13 +179,18 @@ export class HuiCreateDialogBadge
       haStyleDialog,
       css`
         ha-wa-dialog {
-          --dialog-content-padding: 2px 24px 20px 24px;
+          --dialog-content-padding: 0;
           --dialog-z-index: 6;
         }
 
         ha-wa-dialog.table {
           --dialog-content-padding: 0;
         }
+
+        ha-wa-dialog::part(body) {
+          overflow: hidden;
+        }
+
         ha-tab-group-tab {
           flex: 1;
         }
@@ -194,14 +200,24 @@ export class HuiCreateDialogBadge
         }
         hui-badge-picker {
           --badge-picker-search-shape: 0;
-          --badge-picker-search-margin: -2px -24px 0;
+          --badge-picker-search-margin: 0;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
         }
+
+        hui-badge-picker,
+        hui-entity-picker-table {
+          height: calc(100vh - 198px);
+        }
+
         hui-entity-picker-table {
           display: block;
-          height: calc(100vh - 198px);
           --mdc-shape-small: 0;
         }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
+          hui-badge-picker,
           hui-entity-picker-table {
             height: calc(100vh - 158px);
           }
