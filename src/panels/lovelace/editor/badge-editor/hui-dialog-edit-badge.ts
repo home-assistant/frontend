@@ -208,7 +208,7 @@ export class HuiDialogEditBadge
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        width="large"
+        .width=${this.large ? "full" : "large"}
         ?prevent-scrim-close=${!this._isEscapeEnabled}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}

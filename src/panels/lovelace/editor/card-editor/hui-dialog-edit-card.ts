@@ -168,7 +168,7 @@ export class HuiDialogEditCard
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        width="large"
+        .width=${this.large ? "full" : "large"}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}
