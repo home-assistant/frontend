@@ -27,14 +27,12 @@ class StateCardInputButton extends LitElement {
           .stateObj=${stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        <ha-control-button-group>
-          <ha-control-button
-            .disabled=${stateObj.state === UNAVAILABLE}
-            @click=${this._pressButton}
-          >
-            ${this.hass.localize("ui.card.button.press")}
-          </ha-control-button>
-        </ha-control-button-group>
+        <ha-control-button
+          .disabled=${stateObj.state === UNAVAILABLE}
+          @click=${this._pressButton}
+        >
+          ${this.hass.localize("ui.card.button.press")}
+        </ha-control-button>
       </div>
     `;
   }
@@ -50,18 +48,10 @@ class StateCardInputButton extends LitElement {
     return [
       haStyle,
       css`
-        ha-control-button-group > ha-control-button {
-          --control-button-padding: var(--ha-space-4);
-        }
         ha-control-button {
-          --control-button-focus-color: var(
-            --feature-color,
-            var(--primary-color)
-          );
-          --control-button-icon-color: var(
-            --feature-color,
-            var(--primary-color)
-          );
+          --control-button-padding: var(--ha-space-4);
+          --control-button-focus-color: var(--feature-color);
+          --control-button-icon-color: var(--feature-color);
         }
       `,
     ];
