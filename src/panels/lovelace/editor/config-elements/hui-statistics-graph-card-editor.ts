@@ -135,7 +135,9 @@ export class HuiStatisticsGraphCardEditor
       statisticIds: string[] | undefined,
       metaDatas: StatisticsMetaData[] | undefined,
       showFitOption: boolean,
-      hiddenLegend: boolean
+      hiddenLegend: boolean,
+      enableDateSelect: boolean,
+      linkedDateSelect: boolean
     ) => {
       const units = new Set<string>();
       metaDatas?.forEach((metaData) => {
@@ -154,6 +156,40 @@ export class HuiStatisticsGraphCardEditor
           name: "",
           type: "grid",
           schema: [
+            {
+              name: "",
+              type: "grid",
+              schema: [
+                {
+                  name: "chart_type",
+                  required: true,
+                  type: "select",
+                  options: [
+                    [
+                      "line",
+                      localize(
+                        `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.line`
+                      ),
+                    ],
+                    [
+                      "bar",
+                      localize(
+                        `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.bar`
+                      ),
+                    ],
+                  ],
+                },
+                ...(!linkedDateSelect || !enableDateSelect
+                  ? ([
+                      {
+                        name: "days_to_show",
+                        default: DEFAULT_DAYS_TO_SHOW,
+                        selector: { number: { min: 1, mode: "box" } },
+                      },
+                    ] as HaFormSchema[])
+                  : []),
+              ],
+            },
             {
               name: "period",
               required: true,
@@ -174,11 +210,32 @@ export class HuiStatisticsGraphCardEditor
                 },
               },
             },
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          schema: [
             {
-              name: "days_to_show",
-              default: DEFAULT_DAYS_TO_SHOW,
-              selector: { number: { min: 1, mode: "box" } },
+              name: "energy_date_selection",
+              required: false,
+              selector: { boolean: {} },
             },
+            ...(enableDateSelect
+              ? ([
+                  {
+                    type: "string",
+                    name: "collection_key",
+                    required: false,
+                  },
+                ] as HaFormSchema[])
+              : []),
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          schema: [
             {
               name: "stat_types",
               required: true,
@@ -204,25 +261,6 @@ export class HuiStatisticsGraphCardEditor
               },
             },
             {
-              name: "chart_type",
-              required: true,
-              type: "select",
-              options: [
-                [
-                  "line",
-                  localize(
-                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.line`
-                  ),
-                ],
-                [
-                  "bar",
-                  localize(
-                    `ui.panel.lovelace.editor.card.statistics-graph.chart_type_labels.bar`
-                  ),
-                ],
-              ],
-            },
-            {
               name: "",
               type: "grid",
               schema: [
@@ -236,17 +274,6 @@ export class HuiStatisticsGraphCardEditor
                   required: false,
                   selector: { number: { mode: "box", step: "any" } },
                 },
-              ],
-            },
-            {
-              name: "",
-              type: "grid",
-              schema: [
-                {
-                  name: "logarithmic_scale",
-                  required: false,
-                  selector: { boolean: {} },
-                },
                 ...(showFitOption
                   ? [
                       {
@@ -256,56 +283,46 @@ export class HuiStatisticsGraphCardEditor
                       },
                     ]
                   : []),
+                {
+                  name: "logarithmic_scale",
+                  required: false,
+                  selector: { boolean: {} },
+                },
+                {
+                  name: "hide_legend",
+                  required: false,
+                  selector: { boolean: {} },
+                },
+                ...(!hiddenLegend
+                  ? [
+                      {
+                        name: "expand_legend",
+                        required: false,
+                        selector: { boolean: {} },
+                      },
+                    ]
+                  : []),
               ],
             },
-            {
-              name: "hide_legend",
-              required: false,
-              selector: { boolean: {} },
-            },
-            ...(!hiddenLegend
-              ? [
-                  {
-                    name: "expand_legend",
-                    required: false,
-                    selector: { boolean: {} },
+          ],
+        },
+        ...(units.size > 1
+          ? [
+              {
+                name: "unit",
+                required: false,
+                selector: {
+                  select: {
+                    options: Array.from(units).map((unit) => ({
+                      value: unit,
+                      label: unit,
+                    })),
                   },
-                ]
-              : []),
-          ],
-        },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "energy_date_selection",
-              required: false,
-              selector: { boolean: {} },
-            },
-            {
-              type: "string",
-              name: "collection_key",
-              required: false,
-            },
-          ],
-        },
+                },
+              },
+            ]
+          : []),
       ];
-
-      if (units.size > 1) {
-        (schema[1] as any).schema.push({
-          name: "unit",
-          required: false,
-          selector: {
-            select: {
-              options: Array.from(units).map((unit) => ({
-                value: unit,
-                label: unit,
-              })),
-            },
-          },
-        });
-      }
 
       return schema;
     }
@@ -322,7 +339,9 @@ export class HuiStatisticsGraphCardEditor
       this._metaDatas,
       this._config!.min_y_axis !== undefined ||
         this._config!.max_y_axis !== undefined,
-      !!this._config.hide_legend
+      !!this._config!.hide_legend,
+      !!this._config!.energy_date_selection,
+      !!this._config!.collection_key
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
