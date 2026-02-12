@@ -31,15 +31,40 @@ export class DialogDataTableSettings extends LitElement {
 
   @state() private _hiddenColumns?: string[];
 
+  private _lastFixedKeys: string[] = [];
+
   public showDialog(params: DataTableSettingsDialogParams) {
     this._params = params;
-    this._columnOrder = params.columnOrder;
+    this._columnOrder = this._preserveLastFixed(params.columnOrder);
     this._hiddenColumns = params.hiddenColumns;
   }
 
   public closeDialog() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _lastFixedCount(): number {
+    const lastFixedKeys = Object.keys(this._params!.columns).filter(
+      (col) => this._params!.columns[col].lastFixed
+    );
+    if (lastFixedKeys.length) {
+      this._lastFixedKeys = lastFixedKeys;
+    }
+    return lastFixedKeys.length;
+  }
+
+  private _preserveLastFixed(columnOrder) {
+    let strippedColumnOrder;
+    const lastFixedCount = this._lastFixedCount();
+    if (lastFixedCount && columnOrder) {
+      strippedColumnOrder = [...columnOrder];
+      strippedColumnOrder.splice(
+        columnOrder.length - lastFixedCount,
+        lastFixedCount
+      );
+    }
+    return strippedColumnOrder;
   }
 
   private _sortedColumns = memoizeOne(
@@ -187,7 +212,8 @@ export class DialogDataTableSettings extends LitElement {
 
     this._columnOrder = columnOrder;
 
-    this._params!.onUpdate(this._columnOrder, this._hiddenColumns);
+    const reportedOrder = columnOrder.concat(this._lastFixedKeys);
+    this._params!.onUpdate(reportedOrder, this._hiddenColumns);
   }
 
   private _toggle(ev) {
@@ -268,7 +294,8 @@ export class DialogDataTableSettings extends LitElement {
 
     this._hiddenColumns = hidden;
 
-    this._params!.onUpdate(this._columnOrder, this._hiddenColumns);
+    const reportedOrder = this._columnOrder.concat(this._lastFixedKeys);
+    this._params!.onUpdate(reportedOrder, this._hiddenColumns);
   }
 
   private _reset() {
