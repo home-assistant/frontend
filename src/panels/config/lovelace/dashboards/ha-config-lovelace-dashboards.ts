@@ -14,7 +14,7 @@ import memoize from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
-import { renderHighlightedText } from "../../../../common/string/search-highlight";
+import { SearchHighlight } from "../../../../common/string/search-highlight";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -135,6 +135,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
   })
   private _activeCollapsed: string[] = [];
 
+  private readonly _searchHighlight = new SearchHighlight();
+
   public willUpdate() {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
@@ -180,7 +182,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 >
                   <span
                     style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"
-                    >${renderHighlightedText(
+                    >${this._searchHighlight.renderHighlightedText(
                       dashboard.title,
                       this._filter,
                       this.hass.locale.language
@@ -224,7 +226,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         sortable: true,
         filterable: true,
         template: (dashboard) => html`
-          ${renderHighlightedText(
+          ${this._searchHighlight.renderHighlightedText(
             this.hass.localize(
               `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
             ) || dashboard.mode,

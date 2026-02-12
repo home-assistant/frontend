@@ -9,7 +9,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import { renderHighlightedText } from "../../common/string/search-highlight";
+import { SearchHighlight } from "../../common/string/search-highlight";
 import "../../components/entity/state-badge";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-combo-box-item";
@@ -96,6 +96,8 @@ export class QuickBar extends LitElement {
   private _translationsLoaded = false;
 
   private _itemSelected = false;
+
+  private readonly _searchHighlight = new SearchHighlight();
 
   // #region lifecycle
   public async showDialog(params: QuickBarParams) {
@@ -350,7 +352,7 @@ export class QuickBar extends LitElement {
                       <ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>
                     `}
         <span slot="headline"
-          >${renderHighlightedText(
+          >${this._searchHighlight.renderHighlightedText(
             item.primary,
             this._search,
             this.hass.locale.language
@@ -358,7 +360,7 @@ export class QuickBar extends LitElement {
         >
         ${item.secondary
           ? html`<span slot="supporting-text"
-              >${renderHighlightedText(
+              >${this._searchHighlight.renderHighlightedText(
                 item.secondary,
                 this._search,
                 this.hass.locale.language
@@ -368,7 +370,7 @@ export class QuickBar extends LitElement {
         ${"stateObj" in item && !!this._showEntityId
           ? html`
               <span slot="supporting-text" class="code">
-                ${renderHighlightedText(
+                ${this._searchHighlight.renderHighlightedText(
                   item.stateObj?.entity_id,
                   this._search,
                   this.hass.locale.language
@@ -380,7 +382,7 @@ export class QuickBar extends LitElement {
         (!("stateObj" in item) || !this._showEntityId)
           ? html`
               <div slot="trailing-supporting-text" class="domain">
-                ${renderHighlightedText(
+                ${this._searchHighlight.renderHighlightedText(
                   (item as EntityComboBoxItem).domain_name,
                   this._search,
                   this.hass.locale.language

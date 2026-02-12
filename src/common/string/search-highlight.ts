@@ -8,110 +8,10 @@ export interface HighlightRange {
 }
 
 interface NormalizedIndexMap {
-  normalized: string;
-  mapStart: number[];
-  mapEnd: number[];
+  normalizedText: string;
+  startMap: number[];
+  endMap: number[];
 }
-
-const buildNormalizedIndexMap = (
-  text: string,
-  language?: string
-): NormalizedIndexMap => {
-  const normalizedWhole = stripDiacritics(text).toLocaleLowerCase(language);
-
-  if (normalizedWhole.length === text.length) {
-    const mapStart = Array.from({ length: text.length }, (_, i) => i);
-    const mapEnd = Array.from({ length: text.length }, (_, i) => i + 1);
-    return { normalized: normalizedWhole, mapStart, mapEnd };
-  }
-
-  let normalized = "";
-  const mapStart: number[] = [];
-  const mapEnd: number[] = [];
-
-  for (let i = 0; i < text.length; ) {
-    const code = text.codePointAt(i);
-    if (code === undefined) {
-      break;
-    }
-    const char = String.fromCodePoint(code);
-    const charLength = char.length;
-    const normalizedChar = stripDiacritics(char).toLocaleLowerCase(language);
-
-    for (const _char of normalizedChar) {
-      mapStart.push(i);
-      mapEnd.push(i + charLength);
-    }
-
-    normalized += normalizedChar;
-    i += charLength;
-  }
-
-  return { normalized, mapStart, mapEnd };
-};
-
-export const getHighlightRanges = (
-  text: string,
-  query: string,
-  language?: string
-): HighlightRange[] => {
-  const trimmed = query.trim();
-  if (!trimmed || !text) {
-    return [];
-  }
-
-  const terms = trimmed.split(/\s+/).filter(Boolean);
-  if (!terms.length) {
-    return [];
-  }
-
-  const { normalized, mapStart, mapEnd } = buildNormalizedIndexMap(
-    text,
-    language
-  );
-
-  if (!normalized) {
-    return [];
-  }
-
-  const ranges: HighlightRange[] = [];
-
-  for (const term of terms) {
-    const normalizedTerm = stripDiacritics(term).toLocaleLowerCase(language);
-    if (!normalizedTerm) {
-      continue;
-    }
-    let index = normalized.indexOf(normalizedTerm);
-    while (index !== -1) {
-      const start = mapStart[index];
-      const end = mapEnd[index + normalizedTerm.length - 1];
-      if (start !== undefined && end !== undefined) {
-        ranges.push({ start, end });
-      }
-      index = normalized.indexOf(normalizedTerm, index + normalizedTerm.length);
-    }
-  }
-
-  if (!ranges.length) {
-    return [];
-  }
-
-  ranges.sort((a, b) => a.start - b.start);
-
-  const merged: HighlightRange[] = [ranges[0]];
-
-  for (let i = 1; i < ranges.length; i++) {
-    const last = merged[merged.length - 1];
-    const current = ranges[i];
-    if (current.start <= last.end) {
-      last.end = Math.max(last.end, current.end);
-    } else {
-      merged.push({ ...current });
-    }
-  }
-
-  return merged;
-};
 
 export type HighlightedText =
   | string
@@ -120,61 +20,264 @@ export type HighlightedText =
   | null
   | undefined;
 
-class HighlightController {
+const HIGHLIGHT_NAME_PREFIX = "ha-search";
+const ACTIVE_HOST_CLASS = "custom-highlight-active";
+
+const normalizeForSearch = (text: string, language?: string): string =>
+  stripDiacritics(text).toLocaleLowerCase(language);
+
+const tokenizeSearchQuery = (query: string): string[] => {
+  const terms = query.trim().split(/\s+/).filter(Boolean);
+  return [...new Set(terms)];
+};
+
+const buildNormalizedIndexMap = (
+  text: string,
+  language?: string
+): NormalizedIndexMap => {
+  let normalizedText = "";
+  const startMap: number[] = [];
+  const endMap: number[] = [];
+
+  let originalIndex = 0;
+
+  for (const char of text) {
+    const start = originalIndex;
+    const end = start + char.length;
+    const normalizedChar = normalizeForSearch(char, language);
+
+    // One original character can normalize into multiple characters.
+    // Keep a mapping for every normalized character back to original indexes.
+    for (const normalizedPart of normalizedChar) {
+      normalizedText += normalizedPart;
+      startMap.push(start);
+      endMap.push(end);
+    }
+
+    originalIndex = end;
+  }
+
+  return { normalizedText, startMap, endMap };
+};
+
+const mergeHighlightRanges = (ranges: HighlightRange[]): HighlightRange[] => {
+  if (!ranges.length) {
+    return [];
+  }
+
+  const sortedRanges = [...ranges].sort((a, b) => a.start - b.start);
+  const mergedRanges: HighlightRange[] = [{ ...sortedRanges[0] }];
+
+  // Merge overlapping/adjacent ranges so the rendered marks stay minimal.
+  for (let i = 1; i < sortedRanges.length; i++) {
+    const previousRange = mergedRanges[mergedRanges.length - 1];
+    const currentRange = sortedRanges[i];
+
+    if (currentRange.start <= previousRange.end) {
+      previousRange.end = Math.max(previousRange.end, currentRange.end);
+      continue;
+    }
+
+    mergedRanges.push({ ...currentRange });
+  }
+
+  return mergedRanges;
+};
+
+const getHighlightRangesInternal = (
+  text: string,
+  query: string,
+  language?: string
+): HighlightRange[] => {
+  if (!text) {
+    return [];
+  }
+
+  const terms = tokenizeSearchQuery(query);
+  if (!terms.length) {
+    return [];
+  }
+
+  const { normalizedText, startMap, endMap } = buildNormalizedIndexMap(
+    text,
+    language
+  );
+
+  if (!normalizedText) {
+    return [];
+  }
+
+  const ranges: HighlightRange[] = [];
+
+  for (const term of terms) {
+    const normalizedTerm = normalizeForSearch(term, language);
+    if (!normalizedTerm) {
+      continue;
+    }
+
+    let matchIndex = normalizedText.indexOf(normalizedTerm);
+
+    while (matchIndex !== -1) {
+      // Convert normalized-text match indexes back to original-text indexes.
+      const start = startMap[matchIndex];
+      const end = endMap[matchIndex + normalizedTerm.length - 1];
+
+      if (start !== undefined && end !== undefined) {
+        ranges.push({ start, end });
+      }
+
+      matchIndex = normalizedText.indexOf(
+        normalizedTerm,
+        matchIndex + normalizedTerm.length
+      );
+    }
+  }
+
+  return mergeHighlightRanges(ranges);
+};
+
+const renderHighlightedParts = (
+  text: string,
+  ranges: HighlightRange[]
+): (string | TemplateResult)[] => {
+  const parts: (string | TemplateResult)[] = [];
+  let previousIndex = 0;
+
+  for (const range of ranges) {
+    if (range.start > previousIndex) {
+      parts.push(text.slice(previousIndex, range.start));
+    }
+
+    parts.push(
+      html`<mark class="ha-highlight"
+        >${text.slice(range.start, range.end)}</mark
+      >`
+    );
+
+    previousIndex = range.end;
+  }
+
+  if (previousIndex < text.length) {
+    parts.push(text.slice(previousIndex));
+  }
+
+  return parts;
+};
+
+const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
+  const ranges: Range[] = [];
+
+  root.querySelectorAll("mark.ha-highlight").forEach((mark) => {
+    const textNode = mark.firstChild;
+    if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+      return;
+    }
+
+    const text = textNode.textContent;
+    if (!text) {
+      return;
+    }
+
+    const range = new Range();
+    range.setStart(textNode, 0);
+    range.setEnd(textNode, text.length);
+    ranges.push(range);
+  });
+
+  return ranges;
+};
+
+const createHighlightStyle = (highlightName: string): string => `.ha-highlight {
+  background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
+  color: var(--ha-highlight-color, var(--primary-text-color));
+  border-radius: 2px;
+  padding: 0;
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+:host(.${ACTIVE_HOST_CLASS}) .ha-highlight {
+  background-color: transparent;
+  color: inherit;
+}
+
+::highlight(${highlightName}) {
+  background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
+  color: var(--ha-highlight-color, var(--primary-text-color));
+}`;
+
+export class SearchHighlight {
+  private static _nextHighlightId = 0;
+
   private _lastKey?: string;
 
   private _lastCount = -1;
 
-  public constructor(
-    private _root: ShadowRoot,
-    private _name: string
-  ) {}
+  private readonly _highlightName?: string;
 
-  public applyFromMarks(key?: string) {
-    if (!CSS.highlights) {
-      return;
-    }
-
-    const marks = this._root.querySelectorAll("mark.ha-highlight");
-    const markCount = marks.length;
-    if (key === this._lastKey && markCount === this._lastCount) {
-      return;
-    }
-
-    this._lastKey = key;
-    this._lastCount = markCount;
-
-    if (!markCount) {
-      this.clear();
-      return;
-    }
-
-    const ranges: Range[] = [];
-    marks.forEach((mark) => {
-      const textNode = mark.firstChild;
-      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
-        return;
-      }
-      const text = textNode.textContent;
-      if (!text) {
-        return;
-      }
-      const range = new Range();
-      range.setStart(textNode, 0);
-      range.setEnd(textNode, text.length);
-      ranges.push(range);
-    });
-
-    if (ranges.length) {
-      CSS.highlights.set(this._name, new Highlight(...ranges));
-      (this._root.host as HTMLElement).classList.add("custom-highlight-active");
-    } else {
-      this.clear();
+  public constructor(private readonly _root?: ShadowRoot) {
+    if (this._root && CSS.highlights) {
+      this._highlightName = `${HIGHLIGHT_NAME_PREFIX}-${SearchHighlight._nextHighlightId++}`;
+      this._ensureHighlightStyle();
     }
   }
 
-  public applyFromRanges(ranges: Range[], key?: string) {
-    if (!CSS.highlights) {
+  public getHighlightRanges(
+    text: string,
+    query: string,
+    language?: string
+  ): HighlightRange[] {
+    return getHighlightRangesInternal(text, query, language);
+  }
+
+  public renderHighlightedText(
+    text: string | null | undefined,
+    query: string | null | undefined,
+    language?: string
+  ): HighlightedText {
+    if (!text) {
+      return text;
+    }
+
+    const ranges = this.getHighlightRanges(text, query ?? "", language);
+    if (!ranges.length) {
+      return text;
+    }
+
+    return renderHighlightedParts(text, ranges);
+  }
+
+  public applyFromMarks(key?: string): void {
+    if (!this._root) {
+      return;
+    }
+
+    this._applyFromRanges(getHighlightRangesFromMarks(this._root), key);
+  }
+
+  public applyFromRanges(ranges: Range[], key?: string): void {
+    if (!this._root) {
+      return;
+    }
+
+    this._applyFromRanges(ranges, key);
+  }
+
+  public clear(): void {
+    if (!this._root) {
+      return;
+    }
+
+    if (CSS.highlights && this._highlightName) {
+      CSS.highlights.delete(this._highlightName);
+    }
+
+    (this._root.host as HTMLElement).classList.remove(ACTIVE_HOST_CLASS);
+    this._lastKey = undefined;
+    this._lastCount = -1;
+  }
+
+  private _applyFromRanges(ranges: Range[], key?: string): void {
+    if (!this._root || !CSS.highlights || !this._highlightName) {
       return;
     }
 
@@ -191,139 +294,17 @@ class HighlightController {
       return;
     }
 
-    CSS.highlights.set(this._name, new Highlight(...ranges));
-    (this._root.host as HTMLElement).classList.add("custom-highlight-active");
+    CSS.highlights.set(this._highlightName, new Highlight(...ranges));
+    (this._root.host as HTMLElement).classList.add(ACTIVE_HOST_CLASS);
   }
 
-  public clear() {
-    if (CSS.highlights) {
-      CSS.highlights.delete(this._name);
+  private _ensureHighlightStyle(): void {
+    if (!this._root || !this._highlightName) {
+      return;
     }
-    (this._root.host as HTMLElement).classList.remove(
-      "custom-highlight-active"
-    );
+
+    const style = document.createElement("style");
+    style.textContent = createHighlightStyle(this._highlightName);
+    this._root.appendChild(style);
   }
 }
-
-const HIGHLIGHT_NAME_PREFIX = "ha-search";
-let highlightId = 0;
-const highlightControllers = new WeakMap<ShadowRoot, HighlightController>();
-
-const ensureHighlightStyle = (root: ShadowRoot, name: string) => {
-  const style = document.createElement("style");
-  style.textContent = `.ha-highlight {
-  background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
-  color: var(--ha-highlight-color, var(--primary-text-color));
-  border-radius: 2px;
-  padding: 0;
-  box-shadow: inset 0 0 0 1px transparent;
-}
-
-:host(.custom-highlight-active) .ha-highlight {
-  background-color: transparent;
-  color: inherit;
-}
-
-::highlight(${name}) {
-  background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
-  color: var(--ha-highlight-color, var(--primary-text-color));
-}`;
-  root.appendChild(style);
-};
-
-const getHighlightController = (root: ShadowRoot): HighlightController => {
-  const existing = highlightControllers.get(root);
-  if (existing) {
-    return existing;
-  }
-
-  const name = `${HIGHLIGHT_NAME_PREFIX}-${highlightId++}`;
-  if (CSS.highlights) {
-    ensureHighlightStyle(root, name);
-  }
-
-  const controller = new HighlightController(root, name);
-  highlightControllers.set(root, controller);
-  return controller;
-};
-
-export const renderHighlightedText = (
-  text: string | null | undefined,
-  query: string | null | undefined,
-  language?: string
-): HighlightedText => {
-  if (!text) {
-    return text;
-  }
-
-  const filter = (query ?? "").trim();
-  if (!filter) {
-    return text;
-  }
-
-  const ranges = getHighlightRanges(text, filter, language);
-
-  if (!ranges.length) {
-    return text;
-  }
-
-  const parts: (string | TemplateResult)[] = [];
-  let lastIndex = 0;
-
-  for (const range of ranges) {
-    if (range.start > lastIndex) {
-      parts.push(text.slice(lastIndex, range.start));
-    }
-    parts.push(
-      html`<mark class="ha-highlight"
-        >${text.slice(range.start, range.end)}</mark
-      >`
-    );
-    lastIndex = range.end;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-
-  return parts;
-};
-
-export const applyCustomHighlights = (root: ShadowRoot) => {
-  if (!CSS.highlights) {
-    return;
-  }
-
-  const controller = getHighlightController(root);
-  controller.applyFromMarks();
-};
-
-export const applyCustomHighlightsWithKey = (
-  root: ShadowRoot,
-  key?: string
-) => {
-  if (!CSS.highlights) {
-    return;
-  }
-
-  const controller = getHighlightController(root);
-  controller.applyFromMarks(key);
-};
-
-export const applyCustomHighlightRanges = (
-  root: ShadowRoot,
-  ranges: Range[],
-  key?: string
-) => {
-  if (!CSS.highlights) {
-    return;
-  }
-
-  const controller = getHighlightController(root);
-  controller.applyFromRanges(ranges, key);
-};
-
-export const clearCustomHighlights = (root: ShadowRoot) => {
-  const controller = highlightControllers.get(root);
-  controller?.clear();
-};

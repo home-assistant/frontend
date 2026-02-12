@@ -1,11 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import {
-  applyCustomHighlightsWithKey,
-  clearCustomHighlights,
-  renderHighlightedText,
-} from "../../../common/string/search-highlight";
+import { SearchHighlight } from "../../../common/string/search-highlight";
 import {
   domainToName,
   type IntegrationManifest,
@@ -32,6 +28,8 @@ export class HaIntegrationActionCard extends LitElement {
 
   @property({ attribute: false }) public filter?: string;
 
+  private _searchHighlight?: SearchHighlight;
+
   protected render(): TemplateResult {
     return html`
       <ha-card outlined>
@@ -49,14 +47,14 @@ export class HaIntegrationActionCard extends LitElement {
             @load=${this._onImageLoad}
           />
           <h2>
-            ${renderHighlightedText(
+            ${this._getSearchHighlight().renderHighlightedText(
               this.label,
               this.filter,
               this.hass.locale.language
             )}
           </h2>
           <h3>
-            ${renderHighlightedText(
+            ${this._getSearchHighlight().renderHighlightedText(
               this.localizedDomainName ||
                 domainToName(this.hass.localize, this.domain, this.manifest),
               this.filter,
@@ -72,12 +70,21 @@ export class HaIntegrationActionCard extends LitElement {
   }
 
   protected updated() {
-    applyCustomHighlightsWithKey(this.renderRoot as ShadowRoot, this.filter);
+    this._getSearchHighlight().applyFromMarks(this.filter);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    clearCustomHighlights(this.renderRoot as ShadowRoot);
+    this._searchHighlight?.clear();
+  }
+
+  private _getSearchHighlight(): SearchHighlight {
+    if (!this._searchHighlight) {
+      this._searchHighlight = new SearchHighlight(
+        this.renderRoot as ShadowRoot
+      );
+    }
+    return this._searchHighlight;
   }
 
   private _onImageLoad(ev) {

@@ -12,10 +12,7 @@ import {
   state as litState,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import {
-  applyCustomHighlightRanges,
-  clearCustomHighlights,
-} from "../common/string/search-highlight";
+import { SearchHighlight } from "../common/string/search-highlight";
 
 interface State {
   bold: boolean;
@@ -37,6 +34,8 @@ export class HaAnsiToHtml extends LitElement {
 
   @litState() private _filter = "";
 
+  private _searchHighlight?: SearchHighlight;
+
   protected render(): TemplateResult {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
   }
@@ -52,9 +51,7 @@ export class HaAnsiToHtml extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (this.shadowRoot) {
-      clearCustomHighlights(this.shadowRoot);
-    }
+    this._searchHighlight?.clear();
   }
 
   static styles = css`
@@ -335,9 +332,7 @@ export class HaAnsiToHtml extends LitElement {
         line.style.display = "";
       });
       numberOfFoundLines = lines.length;
-      if (this.shadowRoot) {
-        clearCustomHighlights(this.shadowRoot);
-      }
+      this._searchHighlight?.clear();
     } else {
       const highlightRanges: Range[] = [];
       lines.forEach((line) => {
@@ -370,7 +365,10 @@ export class HaAnsiToHtml extends LitElement {
         }
       });
       if (this.shadowRoot) {
-        applyCustomHighlightRanges(this.shadowRoot, highlightRanges, filter);
+        this._getSearchHighlight(this.shadowRoot).applyFromRanges(
+          highlightRanges,
+          filter
+        );
       }
     }
 
@@ -381,6 +379,13 @@ export class HaAnsiToHtml extends LitElement {
     if (this._pre) {
       this._pre.innerHTML = "";
     }
+  }
+
+  private _getSearchHighlight(root: ShadowRoot): SearchHighlight {
+    if (!this._searchHighlight) {
+      this._searchHighlight = new SearchHighlight(root);
+    }
+    return this._searchHighlight;
   }
 }
 

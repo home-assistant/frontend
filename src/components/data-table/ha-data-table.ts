@@ -16,11 +16,7 @@ import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
-import {
-  applyCustomHighlightsWithKey,
-  clearCustomHighlights,
-  renderHighlightedText,
-} from "../../common/string/search-highlight";
+import { SearchHighlight } from "../../common/string/search-highlight";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
@@ -183,6 +179,8 @@ export class HaDataTable extends LitElement {
 
   private _lastUpdate = 0;
 
+  private _searchHighlight?: SearchHighlight;
+
   // @ts-ignore
   @restoreScroll(".scroller") private _savedScrollPos?: number;
 
@@ -243,7 +241,7 @@ export class HaDataTable extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    clearCustomHighlights(this.renderRoot as ShadowRoot);
+    this._searchHighlight?.clear();
   }
 
   protected firstUpdated() {
@@ -260,7 +258,7 @@ export class HaDataTable extends LitElement {
       }
     }
 
-    applyCustomHighlightsWithKey(this.renderRoot as ShadowRoot, this._filter);
+    this._getSearchHighlight().applyFromMarks(this._filter);
   }
 
   public willUpdate(properties: PropertyValues) {
@@ -708,7 +706,20 @@ export class HaDataTable extends LitElement {
     }
 
     const text = String(value);
-    return renderHighlightedText(text, filter, this.hass.locale.language);
+    return this._getSearchHighlight().renderHighlightedText(
+      text,
+      filter,
+      this.hass.locale.language
+    );
+  }
+
+  private _getSearchHighlight(): SearchHighlight {
+    if (!this._searchHighlight) {
+      this._searchHighlight = new SearchHighlight(
+        this.renderRoot as ShadowRoot
+      );
+    }
+    return this._searchHighlight;
   }
 
   private async _sortFilterData() {

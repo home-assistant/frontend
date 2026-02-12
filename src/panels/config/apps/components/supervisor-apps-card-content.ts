@@ -2,11 +2,7 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import {
-  applyCustomHighlightsWithKey,
-  clearCustomHighlights,
-  renderHighlightedText,
-} from "../../../../common/string/search-highlight";
+import { SearchHighlight } from "../../../../common/string/search-highlight";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 
@@ -35,6 +31,8 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property({ attribute: false }) public filter?: string;
 
+  private _searchHighlight?: SearchHighlight;
+
   protected render(): TemplateResult {
     return html`
       ${this.showTopbar
@@ -60,14 +58,14 @@ class SupervisorAppsCardContent extends LitElement {
           `}
       <div>
         <div class="title">
-          ${renderHighlightedText(
+          ${this._getSearchHighlight().renderHighlightedText(
             this.title,
             this.filter,
             this.hass.locale.language
           )}
         </div>
         <div class="addition">
-          ${renderHighlightedText(
+          ${this._getSearchHighlight().renderHighlightedText(
             this.description,
             this.filter,
             this.hass.locale.language
@@ -82,12 +80,21 @@ class SupervisorAppsCardContent extends LitElement {
   }
 
   protected updated() {
-    applyCustomHighlightsWithKey(this.renderRoot as ShadowRoot, this.filter);
+    this._getSearchHighlight().applyFromMarks(this.filter);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    clearCustomHighlights(this.renderRoot as ShadowRoot);
+    this._searchHighlight?.clear();
+  }
+
+  private _getSearchHighlight(): SearchHighlight {
+    if (!this._searchHighlight) {
+      this._searchHighlight = new SearchHighlight(
+        this.renderRoot as ShadowRoot
+      );
+    }
+    return this._searchHighlight;
   }
 
   static styles = [
