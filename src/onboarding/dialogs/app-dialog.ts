@@ -2,22 +2,15 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
 import "../../components/ha-wa-dialog";
 
 @customElement("app-dialog")
 class DialogApp extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public localize?: LocalizeFunc;
 
   @state() private _open = false;
 
-  public async showDialog(params: {
-    localize: LocalizeFunc;
-    hass: HomeAssistant;
-  }): Promise<void> {
-    this.hass = params.hass;
+  public async showDialog(params: { localize: LocalizeFunc }): Promise<void> {
     this.localize = params.localize;
     this._open = true;
   }
@@ -36,7 +29,6 @@ class DialogApp extends LitElement {
       return nothing;
     }
     return html`<ha-wa-dialog
-      .hass=${this.hass}
       .open=${this._open}
       width="medium"
       header-title=${this.localize(
