@@ -75,7 +75,7 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  */
 @customElement("ha-wa-dialog")
 export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: "aria-labelledby" })
   public ariaLabelledBy?: string;
@@ -198,13 +198,13 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (isIosApp(this.hass)) {
+      if (this.hass && isIosApp(this.hass)) {
         const element = this.querySelector("[autofocus]");
         if (element !== null) {
           if (!element.id) {
             element.id = "ha-wa-dialog-autofocus";
           }
-          this.hass.auth.external!.fireMessage({
+          this.hass?.auth.external?.fireMessage({
             type: "focus_element",
             payload: {
               element_id: element.id,
