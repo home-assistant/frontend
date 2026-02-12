@@ -494,14 +494,15 @@ export class HuiBadgePicker extends LitElement {
         .badges-container-header {
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-medium);
-          padding: 12px 8px 4px 8px;
+          padding: var(--ha-space-3) var(--ha-space-2) var(--ha-space-1)
+            var(--ha-space-2);
           margin: 0;
           grid-column: 1 / -1;
         }
 
         .badges-container {
           display: grid;
-          grid-gap: 8px 8px;
+          gap: var(--ha-space-2);
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
           padding: var(--ha-space-3);
         }
@@ -530,19 +531,20 @@ export class HuiBadgePicker extends LitElement {
           font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
           line-height: var(--ha-line-height-condensed);
-          padding: 12px 16px;
+          padding: var(--ha-space-3) var(--ha-space-4);
           display: block;
           text-align: center;
           background: var(
             --ha-card-background,
             var(--card-background-color, white)
           );
-          border-bottom: 1px solid var(--divider-color);
+          border-bottom: var(--ha-card-border-width, 1px) solid
+            var(--divider-color);
         }
 
         .preview {
           pointer-events: none;
-          margin: 20px;
+          margin: var(--ha-space-5);
           flex-grow: 1;
           display: flex;
           align-items: center;
@@ -577,16 +579,16 @@ export class HuiBadgePicker extends LitElement {
 
         .icon {
           position: absolute;
-          top: 8px;
-          right: 8px;
-          inset-inline-start: 8px;
-          inset-inline-end: 8px;
+          top: var(--ha-space-2);
+          right: var(--ha-space-2);
+          inset-inline-start: var(--ha-space-2);
+          inset-inline-end: var(--ha-space-2);
           border-radius: var(--ha-border-radius-circle);
-          --mdc-icon-size: 16px;
-          line-height: 16px;
+          --mdc-icon-size: var(--ha-space-4);
+          line-height: var(--ha-space-4);
           box-sizing: border-box;
           color: var(--text-primary-color);
-          padding: 4px;
+          padding: var(--ha-space-1);
         }
         .icon.custom {
           background: var(--warning-color);
