@@ -126,7 +126,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                     "ui.panel.config.url.external_url_label"
                   )}
                 </h4>
-                <ha-md-list-item slim>
+                <ha-md-list-item>
                   <span slot="headline"
                     >${this.hass.localize(
                       "ui.panel.config.url.external_use_ha_cloud"
