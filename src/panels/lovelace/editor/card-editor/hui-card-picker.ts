@@ -11,6 +11,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
+import { haStyleScrollbar } from "../../../../resources/styles";
 import { isUnavailableState } from "../../../../data/entity/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -142,7 +143,7 @@ export class HuiCardPicker extends LitElement {
           "ui.panel.lovelace.editor.edit_card.search_cards"
         )}
       ></search-input>
-      <div id="content">
+      <div id="content" class="ha-scrollbar">
         ${this._filter
           ? html`<div class="cards-container">
               ${this._filterCards(this._cards, this._filter).map(
@@ -460,9 +461,23 @@ export class HuiCardPicker extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+
+        #content {
+          flex: 1;
+          min-height: 0;
+          overflow: auto;
+        }
+
         search-input {
           display: block;
+          width: 100%;
           --mdc-shape-small: var(--card-picker-search-shape);
           margin: var(--card-picker-search-margin);
           position: sticky;
@@ -493,7 +508,7 @@ export class HuiCardPicker extends LitElement {
           display: grid;
           grid-gap: 8px 8px;
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          margin-top: 20px;
+          padding: var(--ha-space-3);
         }
 
         .card {
