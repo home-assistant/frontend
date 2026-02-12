@@ -116,8 +116,8 @@ import {
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { isMac } from "../../../util/is_mac";
 import { documentationUrl } from "../../../util/documentation-url";
+import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
@@ -747,20 +747,29 @@ class DialogAddAutomationElement
   }
 
   private _renderHeader() {
+    const docUrl = this._getDocumentationUrl(this._params!.type);
+
     return html`
       <ha-dialog-header subtitle-position="above">
         <span slot="title">${this._getDialogTitle()}</span>
 
         ${this._renderDialogSubtitle()}
         ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
-          ? html`<ha-icon-button
-              slot="actionItems"
-              .path=${mdiHelpCircle}
-              .label=${this.hass.localize(
-                `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
-              )}
-              @click=${this._openDocumentation}
-            ></ha-icon-button>`
+          ? html`
+              <a
+                slot="actionItems"
+                href=${docUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircle}
+                  .label=${this.hass.localize(
+                    `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
+                  )}
+                ></ha-icon-button>
+              </a>
+            `
           : nothing}
         ${this._narrow && (this._selectedGroup || this._selectedTarget)
           ? html`<ha-icon-button-prev
@@ -1732,15 +1741,17 @@ class DialogAddAutomationElement
     mainWindow.history.back();
   }
 
-  private _openDocumentation = () => {
-    const docUrl =
-      this._params!.type === "trigger"
-        ? "/docs/automation/trigger/"
-        : this._params!.type === "condition"
-          ? "/docs/automation/condition/"
-          : "/docs/automation/action/";
-    window.open(documentationUrl(this.hass, docUrl), "_blank", "noreferrer");
-  };
+  private _getDocumentationUrl = memoizeOne(
+    (type: "trigger" | "condition" | "action") =>
+      documentationUrl(
+        this.hass,
+        type === "trigger"
+          ? "/docs/automation/trigger/"
+          : type === "condition"
+            ? "/docs/automation/condition/"
+            : "/docs/automation/action/"
+      )
+  );
 
   private _groupSelected(ev) {
     const group = ev.currentTarget;
@@ -2089,7 +2100,7 @@ class DialogAddAutomationElement
           --ha-dialog-max-height: var(--ha-dialog-min-height);
         }
 
-        ha-wa-dialog ha-icon-button[slot="actionItems"] {
+        ha-wa-dialog a[slot="actionItems"] {
           color: var(--secondary-text-color);
         }
 
