@@ -116,6 +116,7 @@ export class DialogEnterCode
           .open=${this._open}
           header-title=${this._dialogParams.title ??
           this.hass.localize("ui.dialogs.enter_code.title")}
+          width="small"
           @closed=${this._dialogClosed}
         >
           <ha-textfield
