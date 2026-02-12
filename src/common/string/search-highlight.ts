@@ -9,8 +9,7 @@ export interface HighlightRange {
 
 interface NormalizedIndexMap {
   normalizedText: string;
-  startMap: number[];
-  endMap: number[];
+  normalizedIndexMap: HighlightRange[];
 }
 
 export type HighlightedText =
@@ -26,6 +25,9 @@ const ACTIVE_HOST_CLASS = "custom-highlight-active";
 const normalizeForSearch = (text: string, language?: string): string =>
   stripDiacritics(text).toLocaleLowerCase(language);
 
+const supportsCustomHighlights = (): boolean =>
+  typeof CSS !== "undefined" && CSS.highlights !== undefined;
+
 const tokenizeSearchQuery = (query: string): string[] => {
   const terms = query.trim().split(/\s+/).filter(Boolean);
   return [...new Set(terms)];
@@ -36,8 +38,7 @@ const buildNormalizedIndexMap = (
   language?: string
 ): NormalizedIndexMap => {
   let normalizedText = "";
-  const startMap: number[] = [];
-  const endMap: number[] = [];
+  const normalizedIndexMap: HighlightRange[] = [];
 
   let originalIndex = 0;
 
@@ -50,14 +51,13 @@ const buildNormalizedIndexMap = (
     // Keep a mapping for every normalized character back to original indexes.
     for (const normalizedPart of normalizedChar) {
       normalizedText += normalizedPart;
-      startMap.push(start);
-      endMap.push(end);
+      normalizedIndexMap.push({ start, end });
     }
 
     originalIndex = end;
   }
 
-  return { normalizedText, startMap, endMap };
+  return { normalizedText, normalizedIndexMap };
 };
 
 const mergeHighlightRanges = (ranges: HighlightRange[]): HighlightRange[] => {
@@ -98,11 +98,12 @@ const getHighlightRangesInternal = (
     return [];
   }
 
-  const { normalizedText, startMap, endMap } = buildNormalizedIndexMap(
+  const { normalizedText, normalizedIndexMap } = buildNormalizedIndexMap(
     text,
     language
   );
 
+  // Text can normalize to empty (for example, combining marks only).
   if (!normalizedText) {
     return [];
   }
@@ -111,6 +112,7 @@ const getHighlightRangesInternal = (
 
   for (const term of terms) {
     const normalizedTerm = normalizeForSearch(term, language);
+    // Some tokens normalize to empty (like combining marks); skip them.
     if (!normalizedTerm) {
       continue;
     }
@@ -119,12 +121,12 @@ const getHighlightRangesInternal = (
 
     while (matchIndex !== -1) {
       // Convert normalized-text match indexes back to original-text indexes.
-      const start = startMap[matchIndex];
-      const end = endMap[matchIndex + normalizedTerm.length - 1];
-
-      if (start !== undefined && end !== undefined) {
-        ranges.push({ start, end });
-      }
+      // `indexOf` guarantees the full normalized term is within bounds, and
+      // we append one mapping item per normalized character.
+      const start = normalizedIndexMap[matchIndex]!.start;
+      const end =
+        normalizedIndexMap[matchIndex + normalizedTerm.length - 1]!.end;
+      ranges.push({ start, end });
 
       matchIndex = normalizedText.indexOf(
         normalizedTerm,
@@ -215,7 +217,9 @@ export class SearchHighlight {
   private readonly _highlightName?: string;
 
   public constructor(private readonly _root?: ShadowRoot) {
-    if (this._root && CSS.highlights) {
+    // Text highlighting always works via <mark>. This only enables the
+    // optional Custom Highlight API upgrade for a cleaner paint path.
+    if (this._root && supportsCustomHighlights()) {
       this._highlightName = `${HIGHLIGHT_NAME_PREFIX}-${SearchHighlight._nextHighlightId++}`;
       this._ensureHighlightStyle();
     }
@@ -234,6 +238,7 @@ export class SearchHighlight {
     query: string | null | undefined,
     language?: string
   ): HighlightedText {
+    // Render plain text + <mark> as the baseline highlight mechanism.
     if (!text) {
       return text;
     }
@@ -251,6 +256,8 @@ export class SearchHighlight {
       return;
     }
 
+    // Upgrade rendered <mark> tags to Custom Highlight API ranges when
+    // supported, so visual highlighting can happen without mark backgrounds.
     this._applyFromRanges(getHighlightRangesFromMarks(this._root), key);
   }
 
@@ -267,7 +274,7 @@ export class SearchHighlight {
       return;
     }
 
-    if (CSS.highlights && this._highlightName) {
+    if (supportsCustomHighlights() && this._highlightName) {
       CSS.highlights.delete(this._highlightName);
     }
 
@@ -277,7 +284,7 @@ export class SearchHighlight {
   }
 
   private _applyFromRanges(ranges: Range[], key?: string): void {
-    if (!this._root || !CSS.highlights || !this._highlightName) {
+    if (!this._root || !supportsCustomHighlights() || !this._highlightName) {
       return;
     }
 
