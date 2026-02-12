@@ -93,7 +93,7 @@ export class HaSelectSelector extends LitElement {
         <ha-select-box
           .options=${options}
           .value=${this.value as string | undefined}
-          @value-changed=${this._valueChanged}
+          @value-changed=${this._selectChanged}
           .maxColumns=${this.selector.select?.box_max_columns}
           .hass=${this.hass}
         ></ha-select-box>
@@ -236,7 +236,7 @@ export class HaSelectSelector extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required}
         clearable
-        @selected=${this._valueChanged}
+        @selected=${this._selectChanged}
         .options=${options}
       >
       </ha-select>
@@ -282,15 +282,21 @@ export class HaSelectSelector extends LitElement {
     );
   }
 
-  private _valueChanged(ev) {
-    ev.stopPropagation();
-
+  private _selectChanged(ev) {
+    // Additional handling for reset of select elements
     if (ev.detail?.value === undefined && this.value !== undefined) {
+      ev.stopPropagation();
       fireEvent(this, "value-changed", {
         value: undefined,
       });
       return;
     }
+
+    this._valueChanged(ev);
+  }
+
+  private _valueChanged(ev) {
+    ev.stopPropagation();
 
     const value = ev.detail?.value || ev.target.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
