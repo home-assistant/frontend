@@ -51,7 +51,7 @@ class StateCardButton extends LitElement {
           width: auto;
           min-width: 40px;
           --control-button-padding: 0 var(--ha-space-4);
-          --control-button-focus-color: var(--feature-color);
+          --control-button-focus-color: var(--primary-text-color);
           --control-button-icon-color: var(--feature-color);
         }
       `,
