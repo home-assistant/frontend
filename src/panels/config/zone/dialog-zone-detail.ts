@@ -119,14 +119,15 @@ class DialogZoneDetail extends LitElement {
                   ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
                 </ha-button>
               `
-            : nothing}
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this.closeDialog}
-          >
-            ${this.hass!.localize("ui.common.cancel")}
-          </ha-button>
+            : html`
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this.closeDialog}
+                >
+                  ${this.hass!.localize("ui.common.cancel")}
+                </ha-button>
+              `}
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
