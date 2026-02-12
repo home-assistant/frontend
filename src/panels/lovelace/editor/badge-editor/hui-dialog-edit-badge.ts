@@ -420,7 +420,7 @@ export class HuiDialogEditBadge
         }
 
         .content {
-          width: calc(90vw - 48px);
+          width: 100%;
           max-width: 1000px;
         }
 
