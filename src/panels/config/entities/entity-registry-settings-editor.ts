@@ -811,23 +811,24 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   "ui.dialogs.entity_registry.editor.stream.stream_orientation_description"
                 )}</span
               >
+	            <ha-select
+	              slot="supporting-text"
+	              .label=${this.hass.localize(
+	                "ui.dialogs.entity_registry.editor.stream.stream_orientation"
+	              )}
+	              .disabled=${this.disabled}
+	              @selected=${this._handleCameraOrientationChanged}
+	              .options=${CAMERA_ORIENTATIONS.map((num) => ({
+	                value: num.toString(),
+	                label: this.hass.localize(
+	                  ("ui.dialogs.entity_registry.editor.stream.stream_orientation_" +
+	                    num.toString()) as LocalizeKeys
+	                ),
+	              }))}
+	              .value=${this._cameraPrefs.orientation.toString()}
+	            >
+	            </ha-select>
             </ha-md-list-item>
-            <ha-select
-              .label=${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.stream.stream_orientation"
-              )}
-              .disabled=${this.disabled}
-              @selected=${this._handleCameraOrientationChanged}
-              .options=${CAMERA_ORIENTATIONS.map((num) => ({
-                value: num.toString(),
-                label: this.hass.localize(
-                  ("ui.dialogs.entity_registry.editor.stream.stream_orientation_" +
-                    num.toString()) as LocalizeKeys
-                ),
-              }))}
-              .value=${this._cameraPrefs.orientation.toString()}
-            >
-            </ha-select>
           `
         : nothing}
       ${this.helperConfigEntry &&
