@@ -212,7 +212,6 @@ export class DialogEnterCode
     }
     ha-textfield {
       width: 100%;
-      max-width: 300px;
       margin: auto;
     }
     .container {
