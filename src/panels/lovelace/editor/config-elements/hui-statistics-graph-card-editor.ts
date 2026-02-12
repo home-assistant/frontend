@@ -145,8 +145,7 @@ export class HuiStatisticsGraphCardEditor
       metaDatas: StatisticsMetaData[] | undefined,
       showFitOption: boolean,
       hiddenLegend: boolean,
-      enableDateSelect: boolean,
-      linkedDateSelect: boolean
+      enableDateSelect: boolean
     ) => {
       const units = new Set<string>();
       metaDatas?.forEach((metaData) => {
@@ -188,7 +187,7 @@ export class HuiStatisticsGraphCardEditor
                     ],
                   ],
                 },
-                ...(!linkedDateSelect || !enableDateSelect
+                ...(!enableDateSelect
                   ? ([
                       {
                         name: "days_to_show",
@@ -353,8 +352,7 @@ export class HuiStatisticsGraphCardEditor
       this._config!.min_y_axis !== undefined ||
         this._config!.max_y_axis !== undefined,
       !!this._config!.hide_legend,
-      !!this._config!.energy_date_selection,
-      !!this._config!.collection_key
+      !!this._config!.energy_date_selection
     );
     const configured_stat_types = this._config!.stat_types
       ? ensureArray(this._config.stat_types)
