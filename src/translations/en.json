@@ -9039,12 +9039,13 @@
                 "bar": "Bar"
               },
               "periods": {
+                "auto": "Auto",
+                "5minute": "5 minutes",
                 "hour": "Hour",
                 "day": "Day",
-                "month": "Month",
                 "week": "Week",
-                "year": "Year",
-                "5minute": "5 minutes"
+                "month": "Month",
+                "year": "Year"
               },
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",

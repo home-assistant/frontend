@@ -270,12 +270,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private get _period() {
-    return (
-      this._config?.period ??
-      (this._energyStart && this._energyEnd
-        ? getSuggestedPeriod(this._energyStart, this._energyEnd)
-        : undefined)
-    );
+    const period = this._config?.period;
+    const autoMode = period === "auto";
+    return this._energyStart && this._energyEnd && (!period || autoMode)
+      ? getSuggestedPeriod(this._energyStart, this._energyEnd)
+      : autoMode
+        ? undefined
+        : period;
   }
 
   protected render() {
