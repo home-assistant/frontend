@@ -67,6 +67,12 @@ import "./zwave-js-add-node-select-security-strategy";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
+interface ButtonParams {
+  disabled?: boolean;
+  label: string;
+  onClick: () => void;
+}
+
 @customElement("dialog-zwave_js-add-node")
 class DialogZWaveJSAddNode extends LitElement {
   // #region variables
@@ -379,89 +385,83 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   private _renderStepActions() {
-    if (this._step === "qr_code_input") {
-      return html`
-        <ha-button
-          slot="primaryAction"
-          .disabled=${!this._codeInput}
-          @click=${this._qrCodeScanned}
-        >
-          ${this.hass.localize("ui.common.next")}
-        </ha-button>
-      `;
+    const buttonParams: ButtonParams | undefined =
+      new Map<ZWaveJSAddNodeStage, ButtonParams | undefined>([
+        [
+          "qr_code_input",
+          {
+            label: this.hass.localize("ui.common.next"),
+            onClick: this._qrCodeScanned,
+          },
+        ],
+        [
+          "search_smart_start_device",
+          {
+            label: this.hass.localize("ui.common.close"),
+            onClick: this.closeDialog,
+          },
+        ],
+        [
+          "choose_security_strategy",
+          {
+            label: this.hass.localize(
+              "ui.panel.config.zwave_js.add_node.select_method.search_device"
+            ),
+            onClick: this._searchDevicesWithStrategy,
+          },
+        ],
+        [
+          "configure_device",
+          {
+            label: this.hass.localize(
+              this._device?.id
+                ? "ui.common.save"
+                : "ui.panel.config.zwave_js.add_node.configure_device.add_device"
+            ),
+            onClick: this._saveDevice,
+          },
+        ],
+        [
+          "validate_dsk_enter_pin",
+          {
+            disabled: !this._dskPin || this._dskPin.length !== 5,
+            label: this.hass.localize(
+              "ui.panel.config.zwave_js.add_node.configure_device.add_device"
+            ),
+            onClick: this._validateDskAndEnterPin,
+          },
+        ],
+        [
+          "added_insecure",
+          {
+            label: this.hass.localize(
+              "ui.panel.config.zwave_js.add_node.added_insecure.view_device"
+            ),
+            onClick: this._navigateToDevice,
+          },
+        ],
+        [
+          "grant_security_classes",
+          {
+            label: this.hass.localize("ui.common.submit"),
+            onClick: this._grantSecurityClasses,
+          },
+        ],
+      ]).get(this._step!) ?? undefined;
+
+    if (!buttonParams) {
+      return nothing;
     }
 
-    if (this._step === "search_smart_start_device") {
-      return html`
-        <ha-button slot="primaryAction" @click=${this.closeDialog}>
-          ${this.hass.localize("ui.common.close")}
-        </ha-button>
-      `;
-    }
-
-    if (this._step === "choose_security_strategy") {
-      return html`
-        <ha-button
-          slot="primaryAction"
-          .disabled=${this._inclusionStrategy === undefined}
-          @click=${this._searchDevicesWithStrategy}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.zwave_js.add_node.select_method.search_device"
-          )}
-        </ha-button>
-      `;
-    }
-
-    if (this._step === "configure_device") {
-      return html`
-        <ha-button
-          slot="primaryAction"
-          .disabled=${!this._deviceOptions?.name}
-          @click=${this._saveDevice}
-        >
-          ${this.hass.localize(
-            this._device?.id
-              ? "ui.common.save"
-              : "ui.panel.config.zwave_js.add_node.configure_device.add_device"
-          )}
-        </ha-button>
-      `;
-    }
-
-    if (this._step === "validate_dsk_enter_pin") {
-      return html`
-        <ha-button
-          slot="primaryAction"
-          .disabled=${!this._dskPin || this._dskPin.length !== 5}
-          @click=${this._validateDskAndEnterPin}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.zwave_js.add_node.configure_device.add_device"
-          )}
-        </ha-button>
-      `;
-    }
-
-    if (this._step === "added_insecure") {
-      return html`
-        <ha-button slot="primaryAction" @click=${this._navigateToDevice}>
-          ${this.hass.localize(
-            "ui.panel.config.zwave_js.add_node.added_insecure.view_device"
-          )}
-        </ha-button>
-      `;
-    }
-
-    if (this._step === "grant_security_classes") {
-      return html`
-        <ha-button slot="primaryAction" @click=${this._grantSecurityClasses}>
-          ${this.hass.localize("ui.common.submit")}
-        </ha-button>
-      `;
-    }
-
-    return nothing;
+    return html`
+      <ha-button
+        slot="primaryAction"
+        .disabled=${buttonParams.disabled ?? false}
+        @click=${buttonParams.onClick}
+      >
+        ${buttonParams.label}
+      </ha-button>
+    `;
   }
 
   private _onBeforeUnload = (event: BeforeUnloadEvent) => {
