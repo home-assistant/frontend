@@ -18,7 +18,7 @@ import "../../../components/ha-state-icon";
 import "../../../components/ha-list";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
-import { haStyle } from "../../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./entity-voice-settings";
@@ -261,6 +261,7 @@ class DialogExposeEntity extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ha-wa-dialog {
           --dialog-content-padding: 0;
