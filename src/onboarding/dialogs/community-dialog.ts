@@ -33,7 +33,6 @@ class DialogCommunity extends LitElement {
     }
     return html`<ha-wa-dialog
       .open=${this._open}
-      width="small"
       header-title=${this.localize(
         "ui.panel.page-onboarding.welcome.community"
       )}

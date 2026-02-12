@@ -30,7 +30,6 @@ class DialogApp extends LitElement {
     }
     return html`<ha-wa-dialog
       .open=${this._open}
-      width="medium"
       header-title=${this.localize(
         "ui.panel.page-onboarding.welcome.download_app"
       ) || "Click here to download the app"}
