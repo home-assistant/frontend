@@ -643,6 +643,9 @@ export class HuiDialogEditView extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
+        ha-wa-dialog {
+          --dialog-content-padding: var(--ha-space-6);
+        }
         ha-wa-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
