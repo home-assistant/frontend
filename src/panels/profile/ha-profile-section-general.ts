@@ -6,7 +6,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-card";
-import "../../components/ha-divider";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
 import { isExternal } from "../../data/external";
@@ -128,12 +127,16 @@ class HaProfileSectionGeneral extends LitElement {
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
-              "ui.panel.profile.user_settings_header"
+              "ui.panel.profile.user_preferences_header"
             )}
           >
             <div class="card-content">
-              ${this.hass.localize("ui.panel.profile.user_settings_detail")}
+              ${this.hass.localize("ui.panel.profile.user_preferences_detail")}
             </div>
+            <ha-pick-language-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-language-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -182,11 +185,19 @@ class HaProfileSectionGeneral extends LitElement {
                   `
                 : ""}
             </ha-md-list>
-            <ha-divider></ha-divider>
-            <ha-pick-language-row
+          </ha-card>
+          <ha-card
+            .header=${this.hass.localize(
+              "ui.panel.profile.localization_header"
+            )}
+          >
+            <div class="card-content">
+              ${this.hass.localize("ui.panel.profile.localization_detail")}
+            </div>
+            <ha-pick-time-zone-row
               .narrow=${this.narrow}
               .hass=${this.hass}
-            ></ha-pick-language-row>
+            ></ha-pick-time-zone-row>
             <ha-pick-number-format-row
               .narrow=${this.narrow}
               .hass=${this.hass}
@@ -199,10 +210,6 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-date-format-row>
-            <ha-pick-time-zone-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-time-zone-row>
             <ha-pick-first-weekday-row
               .narrow=${this.narrow}
               .hass=${this.hass}

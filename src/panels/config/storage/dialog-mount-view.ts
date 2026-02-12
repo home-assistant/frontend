@@ -1,4 +1,4 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,9 +8,11 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-wa-dialog";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { SupervisorMountRequestParams } from "../../../data/supervisor/mounts";
 import {
@@ -169,12 +171,15 @@ class ViewMountDialog extends LitElement {
 
   @state() private _reloadMounts?: () => void;
 
+  @state() private _open = false;
+
   public async showDialog(
     dialogParams: MountViewDialogParams
   ): Promise<Promise<void>> {
     this._data = dialogParams.mount;
     this._existing = dialogParams.mount !== undefined;
     this._reloadMounts = dialogParams.reloadMounts;
+    this._open = true;
     if (
       dialogParams.mount?.type === "cifs" &&
       dialogParams.mount.version &&
@@ -185,6 +190,10 @@ class ViewMountDialog extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._data = undefined;
     this._waiting = undefined;
     this._error = undefined;
@@ -201,56 +210,39 @@ class ViewMountDialog extends LitElement {
       return nothing;
     }
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        .heading=${this._existing
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._existing
           ? this.hass.localize(
               "ui.panel.config.storage.network_mounts.update_title"
             )
           : this.hass.localize(
               "ui.panel.config.storage.network_mounts.add_title"
             )}
-        @closed=${this.closeDialog}
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title"
-            >${this._existing
-              ? this.hass.localize(
-                  "ui.panel.config.storage.network_mounts.update_title"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.storage.network_mounts.add_title"
-                )}
-          </span>
-          <a
-            slot="actionItems"
-            class="header_button"
-            href=${documentationUrl(
-              this.hass,
-              "/common-tasks/os#network-storage"
-            )}
-            title=${this.hass.localize(
-              "ui.panel.config.storage.network_mounts.documentation"
-            )}
-            target="_blank"
-            rel="noreferrer"
-            dir=${computeRTLDirection(this.hass)}
-          >
-            <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
-          </a>
-        </ha-dialog-header>
+        <a
+          slot="headerActionItems"
+          class="header_button"
+          href=${documentationUrl(
+            this.hass,
+            "/common-tasks/os#network-storage"
+          )}
+          title=${this.hass.localize(
+            "ui.panel.config.storage.network_mounts.documentation"
+          )}
+          target="_blank"
+          rel="noreferrer"
+          dir=${computeRTLDirection(this.hass)}
+        >
+          <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+        </a>
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
         <ha-form
+          autofocus
           .data=${this._data}
           .schema=${mountSchema(
             this.hass.localize,
@@ -265,29 +257,28 @@ class ViewMountDialog extends LitElement {
           .computeError=${this._computeErrorCallback}
           .computeWarning=${this._computeWarningCallback}
           @value-changed=${this._valueChanged}
-          dialogInitialFocus
         ></ha-form>
 
-        ${this._existing
-          ? html`<ha-button
-              @click=${this._deleteMount}
-              variant="danger"
-              slot="secondaryAction"
-              appearance="plain"
-            >
-              ${this.hass.localize("ui.common.delete")}
-            </ha-button>`
-          : nothing}
-
-        <div slot="primaryAction">
+        <ha-dialog-footer slot="footer">
+          ${this._existing
+            ? html`<ha-button
+                @click=${this._deleteMount}
+                variant="danger"
+                slot="secondaryAction"
+                appearance="plain"
+              >
+                ${this.hass.localize("ui.common.delete")}
+              </ha-button>`
+            : nothing}
           <ha-button
+            slot="secondaryAction"
             appearance="plain"
             @click=${this.closeDialog}
-            dialogInitialFocus
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-progress-button
+            slot="primaryAction"
             .progress=${!!this._waiting}
             @click=${this._connectMount}
           >
@@ -299,8 +290,8 @@ class ViewMountDialog extends LitElement {
                   "ui.panel.config.storage.network_mounts.connect"
                 )}
           </ha-progress-button>
-        </div>
-      </ha-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 

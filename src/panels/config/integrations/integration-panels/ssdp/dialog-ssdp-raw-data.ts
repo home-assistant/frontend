@@ -3,10 +3,9 @@ import { customElement, property, state } from "lit/decorators";
 import type { TemplateResult } from "lit";
 import { dump } from "js-yaml";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-code-editor";
+import "../../../../../components/ha-wa-dialog";
 
 export interface SSDPRawDataDialogParams {
   key: string;
@@ -14,19 +13,25 @@ export interface SSDPRawDataDialogParams {
 }
 
 @customElement("dialog-ssdp-raw-data")
-class DialogSSDPRawData extends LitElement implements HassDialog {
+class DialogSSDPRawData extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: SSDPRawDataDialogParams;
 
+  @state() private _open = false;
+
   public async showDialog(params: SSDPRawDataDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
   }
 
-  public closeDialog(): boolean {
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -35,13 +40,11 @@ class DialogSSDPRawData extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          `${this.hass.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${`${this.hass.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`}
+        @closed=${this._dialogClosed}
       >
         <ha-code-editor
           mode="yaml"
@@ -50,7 +53,7 @@ class DialogSSDPRawData extends LitElement implements HassDialog {
           read-only
           autofocus
         ></ha-code-editor>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

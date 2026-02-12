@@ -3,9 +3,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { computeDeviceNameDisplay } from "../../../../../../common/entity/compute_device_name";
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
-import "../../../../../../components/ha-dialog";
+import { fireEvent } from "../../../../../../common/dom/fire_event";
+import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-switch";
+import "../../../../../../components/ha-wa-dialog";
 import "../../../../../../components/ha-button";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import type { MQTTDeviceDebugInfo } from "../../../../../../data/mqtt";
@@ -24,6 +26,8 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
 
   @state() private _debugInfo?: MQTTDeviceDebugInfo;
 
+  @state() private _open = false;
+
   @state() private _showAsYaml = true;
 
   @state() private _showDeserialized = true;
@@ -32,6 +36,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     params: MQTTDeviceDebugInfoDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
     fetchMQTTDebugInfo(this.hass, params.device.id).then((results) => {
       this._debugInfo = results;
     });
@@ -43,13 +48,15 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     }
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this._close}
-        .heading=${this.hass!.localize(
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        width="large"
+        header-title=${this.hass!.localize(
           "ui.dialogs.mqtt_device_debug_info.title",
           { device: computeDeviceNameDisplay(this._params.device, this.hass) }
         )}
+        @closed=${this._dialogClosed}
       >
         <h4>
           ${this.hass!.localize(
@@ -65,7 +72,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             <ha-switch
               .checked=${this._showDeserialized}
               @change=${this._showDeserializedChanged}
-              dialogInitialFocus
+              autofocus
             >
             </ha-switch>
           </ha-formfield>
@@ -107,16 +114,23 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 )}
               `}
         </ul>
-        <ha-button slot="primaryAction" @click=${this._close}>
-          ${this.hass!.localize("ui.common.close")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button slot="primaryAction" @click=${this._close}>
+            ${this.hass!.localize("ui.common.close")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
   private _close(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._debugInfo = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _showAsYamlChanged(ev: Event): void {
@@ -233,16 +247,6 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 95vw;
-          --mdc-dialog-min-width: min(640px, 95vw);
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 100vw;
-            --mdc-dialog-max-width: 100vw;
-          }
-        }
         ha-switch {
           margin: 16px;
         }
