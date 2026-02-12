@@ -6,7 +6,8 @@ import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-button";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-next";
@@ -41,6 +42,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   @state() private _params?: DialogStatisticsAdjustSumParams;
 
+  @state() private _open = false;
+
   @state() private _busy = false;
 
   @state() private _moment?: string;
@@ -71,6 +74,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   public showDialog(params: DialogStatisticsAdjustSumParams): void {
     this._params = params;
+    this._open = true;
     // moment is in format YYYY-MM-DD HH:mm:ss because of selector
     // Here we create a date with minutes set to %5
     const now = new Date();
@@ -80,6 +84,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._open = false;
     this._params = undefined;
     this._moment = undefined;
     this._stats5min = undefined;
@@ -97,25 +106,59 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     }
 
     let content: TemplateResult;
+    let footer: TemplateResult;
 
     if (!this._chosenStat) {
       content = this._renderPickStatistic();
+      footer = html`
+        <ha-button
+          slot="secondaryAction"
+          appearance="plain"
+          @click=${this._fetchOutliers}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
+          )}
+        </ha-button>
+        <ha-button slot="primaryAction" data-dialog="close">
+          ${this.hass.localize("ui.common.close")}
+        </ha-button>
+      `;
     } else {
       content = this._renderAdjustStat();
+      footer = html`
+        <ha-button
+          slot="secondaryAction"
+          .disabled=${this._busy}
+          @click=${this._clearChosenStatistic}
+          appearance="plain"
+        >
+          ${this.hass.localize("ui.common.back")}</ha-button
+        >
+        <ha-button
+          slot="primaryAction"
+          .disabled=${this._busy}
+          @click=${this._fixIssue}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
+          )}</ha-button
+        >
+      `;
     }
 
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
         )}
+        @closed=${this._dialogClosed}
       >
         ${content}
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">${footer}</ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -196,18 +239,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         @value-changed=${this._dateTimeSelectorChanged}
       ></ha-selector-datetime>
       <div class="stat-list">${stats}</div>
-      <ha-button
-        appearance="plain"
-        slot="secondaryAction"
-        @click=${this._fetchOutliers}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
-        )}
-      </ha-button>
-      <ha-button slot="primaryAction" dialogAction="cancel">
-        ${this.hass.localize("ui.common.close")}
-      </ha-button>
     `;
   }
 
@@ -285,24 +316,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         .disabled=${this._busy}
         @value-changed=${this._amountChanged}
       ></ha-selector-number>
-
-      <ha-button
-        slot="secondaryAction"
-        .disabled=${this._busy}
-        @click=${this._clearChosenStatistic}
-        appearance="plain"
-      >
-        ${this.hass.localize("ui.common.back")}</ha-button
-      >
-      <ha-button
-        slot="primaryAction"
-        .disabled=${this._busy}
-        @click=${this._fixIssue}
-      >
-        ${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
-        )}</ha-button
-      >
     `;
   }
 
@@ -492,27 +505,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* overrule the ha-style-dialog max-height on small screens */
-          ha-dialog {
-            --mdc-dialog-max-height: 100%;
-            height: 100%;
-          }
-        }
-
-        @media all and (min-width: 850px) {
-          ha-dialog {
-            --mdc-dialog-max-height: 80%;
-            --mdc-dialog-max-height: 80%;
-          }
-        }
-
-        @media all and (min-width: 451px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 480px;
-          }
-        }
-
         .text-content,
         ha-selector-datetime,
         ha-selector-number {
@@ -528,6 +520,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           margin-bottom: var(--ha-space-5);
         }
         .stat-list {
+          margin-top: var(--ha-space-2);
           min-height: 360px;
           display: flex;
           flex-direction: column;

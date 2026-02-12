@@ -19,7 +19,6 @@ import {
   mdiToggleSwitchOffOutline,
   mdiTransitConnection,
 } from "@mdi/js";
-import { differenceInDays } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -28,14 +27,11 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
-import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -51,8 +47,11 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-dropdown";
+import type {
+  HaDropdown,
+  HaDropdownSelectEvent,
+} from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
@@ -62,10 +61,6 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-menu";
-import type { HaMdMenu } from "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu-item";
-import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -89,8 +84,8 @@ import { fullEntitiesContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
-  isUsedFilter as isFilterUsed,
-  isUsedRelatedItemsFilter as isRelatedItemsFilterUsed,
+  isFilterUsed,
+  isRelatedItemsFilterUsed,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -119,6 +114,13 @@ import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import {
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getEntityIdHiddenTableColumn,
+  getLabelsTableColumn,
+  getTriggeredAtTableColumn,
+} from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
@@ -134,7 +136,7 @@ type AutomationItem = AutomationEntity & {
   last_triggered: string | undefined;
   formatted_state: string;
   category: string | undefined;
-  labels: LabelRegistryEntry[];
+  label_entries: LabelRegistryEntry[];
   assistants: string[];
   assistants_sortable_key: string | undefined;
 };
@@ -220,7 +222,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @query("#overflow-menu") private _overflowMenu!: HaMdMenu;
+  @query("#overflow-menu") private _overflowMenu!: HaDropdown;
 
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
@@ -229,6 +231,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private get _availableAssistants() {
     return getAvailableAssistants(this.cloudStatus, this.hass);
   }
+
+  private _openingOverflow = false;
 
   private _automations = memoizeOne(
     (
@@ -269,7 +273,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          labels: (labels || []).map(
+          label_entries: (labels || []).map(
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
           assistants,
@@ -284,7 +288,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     (
       narrow: boolean,
       localize: LocalizeFunc,
-      locale: HomeAssistant["locale"],
       entitiesToCheck?: any[]
     ): DataTableColumnContainer<AutomationItem> => {
       const columns: DataTableColumnContainer<AutomationItem> = {
@@ -306,11 +309,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               })}
             ></ha-state-icon>`,
         },
-        entity_id: {
-          title: "",
-          hidden: true,
-          filterable: true,
-        },
+        entity_id: getEntityIdHiddenTableColumn(),
         name: {
           title: localize("ui.panel.config.automation.picker.headers.name"),
           main: true,
@@ -319,59 +318,17 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           direction: "asc",
           flex: 2,
           extraTemplate: (automation) =>
-            automation.labels.length
+            automation.label_entries.length
               ? html`<ha-data-table-labels
                   @label-clicked=${narrow ? undefined : this._labelClicked}
-                  .labels=${automation.labels}
+                  .labels=${automation.label_entries}
                 ></ha-data-table-labels>`
               : nothing,
         },
-        area: {
-          title: localize("ui.panel.config.automation.picker.headers.area"),
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        category: {
-          title: localize("ui.panel.config.automation.picker.headers.category"),
-          defaultHidden: true,
-          groupable: true,
-          filterable: true,
-          sortable: true,
-        },
-        labels: {
-          title: "",
-          hidden: true,
-          filterable: true,
-          template: (automation) =>
-            automation.labels.map((lbl) => lbl.name).join(" "),
-        },
-        last_triggered: {
-          sortable: true,
-          title: localize("ui.card.automation.last_triggered"),
-          template: (automation) => {
-            if (!automation.last_triggered) {
-              return this.hass.localize("ui.components.relative_time.never");
-            }
-            const date = new Date(automation.last_triggered);
-            const now = new Date();
-            const dayDifference = differenceInDays(now, date);
-            const formattedTime = formatShortDateTimeWithConditionalYear(
-              date,
-              this.hass.locale,
-              this.hass.config
-            );
-            const elementId = "last-triggered-" + slugify(automation.entity_id);
-            return html`
-              ${dayDifference > 3
-                ? formattedTime
-                : html`
-                    <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
-                    <span id=${elementId}>${relativeTime(date, locale)}</span>
-                  `}
-            `;
-          },
-        },
+        area: getAreaTableColumn(localize),
+        category: getCategoryTableColumn(localize),
+        labels: getLabelsTableColumn(),
+        last_triggered: getTriggeredAtTableColumn(localize, this.hass),
         formatted_state: {
           minWidth: "82px",
           maxWidth: "82px",
@@ -415,16 +372,27 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   );
 
   private _showOverflowMenu = (ev) => {
-    if (
-      this._overflowMenu.open &&
-      ev.target === this._overflowMenu.anchorElement
-    ) {
-      this._overflowMenu.close();
+    if (this._overflowMenu.anchorElement === ev.target) {
+      this._overflowMenu.anchorElement = undefined;
       return;
     }
-    this._overflowAutomation = ev.target.automation;
+    this._openingOverflow = true;
     this._overflowMenu.anchorElement = ev.target;
-    this._overflowMenu.show();
+    this._overflowAutomation = ev.target.automation;
+    this._overflowMenu.open = true;
+  };
+
+  private _overflowMenuOpened = () => {
+    this._openingOverflow = false;
+  };
+
+  private _overflowMenuClosed = () => {
+    // changing the anchorElement triggers a close event, ignore it
+    if (this._openingOverflow) {
+      return;
+    }
+
+    this._overflowMenu.anchorElement = undefined;
   };
 
   protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
@@ -485,12 +453,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 Array.isArray(val) ? val.length : val
               )
         ).length}
-        .columns=${this._columns(
-          this.narrow,
-          this.hass.localize,
-          this.hass.locale,
-          automations
-        )}
+        .columns=${this._columns(this.narrow, this.hass.localize, automations)}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -746,74 +709,58 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
-      <ha-md-menu id="overflow-menu" positioning="fixed">
-        <ha-md-menu-item .clickAction=${this._showInfo}>
-          <ha-svg-icon
-            .path=${mdiInformationOutline}
-            slot="start"
-          ></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
-          </div>
-        </ha-md-menu-item>
+      <ha-dropdown
+        id="overflow-menu"
+        @wa-select=${this._handleOverflowAction}
+        @wa-after-show=${this._overflowMenuOpened}
+        @wa-after-hide=${this._overflowMenuClosed}
+      >
+        <ha-dropdown-item value="show_info">
+          <ha-svg-icon .path=${mdiInformationOutline} slot="icon"></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.automation.editor.show_info")}
+        </ha-dropdown-item>
 
-        <ha-md-menu-item .clickAction=${this._showSettings}>
-          <ha-svg-icon .path=${mdiCog} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize(
-              "ui.panel.config.automation.picker.show_settings"
-            )}
-          </div>
-        </ha-md-menu-item>
-        <ha-md-menu-item .clickAction=${this._editCategory}>
-          <ha-svg-icon .path=${mdiTag} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize(
-              `ui.panel.config.automation.picker.${this._overflowAutomation?.category ? "edit_category" : "assign_category"}`
-            )}
-          </div>
-        </ha-md-menu-item>
-        <ha-md-menu-item .clickAction=${this._runActions}>
-          <ha-svg-icon .path=${mdiPlay} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.config.automation.editor.run")}
-          </div>
-        </ha-md-menu-item>
-        <ha-md-menu-item .clickAction=${this._showTrace}>
-          <ha-svg-icon .path=${mdiTransitConnection} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.show_trace"
-            )}
-          </div>
-        </ha-md-menu-item>
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-        <ha-md-menu-item .clickAction=${this._duplicate}>
-          <ha-svg-icon .path=${mdiContentDuplicate} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.config.automation.picker.duplicate")}
-          </div>
-        </ha-md-menu-item>
-        <ha-md-menu-item .clickAction=${this._toggle}>
+        <ha-dropdown-item value="show_settings">
+          <ha-svg-icon .path=${mdiCog} slot="icon"></ha-svg-icon>
+          ${this.hass.localize(
+            "ui.panel.config.automation.picker.show_settings"
+          )}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="edit_category">
+          <ha-svg-icon .path=${mdiTag} slot="icon"></ha-svg-icon>
+          ${this.hass.localize(
+            `ui.panel.config.automation.picker.${this._overflowAutomation?.category ? "edit_category" : "assign_category"}`
+          )}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="run_actions">
+          <ha-svg-icon .path=${mdiPlay} slot="icon"></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.automation.editor.run")}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="show_trace">
+          <ha-svg-icon .path=${mdiTransitConnection} slot="icon"></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.automation.editor.show_trace")}
+        </ha-dropdown-item>
+        <wa-divider></wa-divider>
+        <ha-dropdown-item value="duplicate">
+          <ha-svg-icon .path=${mdiContentDuplicate} slot="icon"></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.automation.picker.duplicate")}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="toggle">
           <ha-svg-icon
             .path=${this._overflowAutomation?.state === "off"
               ? mdiToggleSwitch
               : mdiToggleSwitchOffOutline}
-            slot="start"
+            slot="icon"
           ></ha-svg-icon>
-          <div slot="headline">
-            ${this._overflowAutomation?.state === "off"
-              ? this.hass.localize("ui.panel.config.automation.editor.enable")
-              : this.hass.localize("ui.panel.config.automation.editor.disable")}
-          </div>
-        </ha-md-menu-item>
-        <ha-md-menu-item .clickAction=${this._deleteConfirm} class="warning">
-          <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.config.automation.picker.delete")}
-          </div>
-        </ha-md-menu-item>
-      </ha-md-menu>
+          ${this._overflowAutomation?.state === "off"
+            ? this.hass.localize("ui.panel.config.automation.editor.enable")
+            : this.hass.localize("ui.panel.config.automation.editor.disable")}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="delete" variant="danger">
+          <ha-svg-icon .path=${mdiDelete} slot="icon"></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.automation.picker.delete")}
+        </ha-dropdown-item>
+      </ha-dropdown>
     `;
   }
 
@@ -884,9 +831,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
 
         // the filters below only expose the selected options (as filter.value);
-        // category filter only allows a single selected option
         // applying the filter must be done here
       } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
+        // category filter only allows a single selected option
         filteredEntityIds = filteredEntityIds.filter(
           (entityId) =>
             filter.value![0] ===
@@ -950,33 +897,59 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     this._applyFilters();
   }
 
-  private _showInfo = (item: HaMdMenuItem) => {
-    const automation = ((item.parentElement as HaMdMenu)!.anchorElement as any)!
-      .automation;
-    fireEvent(this, "hass-more-info", { entityId: automation.entity_id });
+  private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
+    const action = ev.detail.item.value;
+
+    if (!action || !this._overflowAutomation) {
+      return;
+    }
+
+    switch (action) {
+      case "show_info":
+        this._showInfo(this._overflowAutomation);
+        break;
+      case "show_settings":
+        this._showSettings(this._overflowAutomation);
+        break;
+      case "edit_category":
+        this._editCategory(this._overflowAutomation);
+        break;
+      case "run_actions":
+        this._runActions(this._overflowAutomation);
+        break;
+      case "show_trace":
+        this._showTrace(this._overflowAutomation);
+        break;
+      case "toggle":
+        this._toggle(this._overflowAutomation);
+        break;
+      case "delete":
+        this._deleteConfirm(this._overflowAutomation);
+        break;
+      case "duplicate":
+        this._duplicate(this._overflowAutomation);
+        break;
+    }
   };
 
-  private _showSettings = (item: HaMdMenuItem) => {
-    const automation = ((item.parentElement as HaMdMenu)!.anchorElement as any)!
-      .automation;
+  private _showInfo = (automation: AutomationItem) => {
+    fireEvent(this, "hass-more-info", {
+      entityId: automation.entity_id,
+    });
+  };
 
+  private _showSettings = (automation: AutomationItem) => {
     fireEvent(this, "hass-more-info", {
       entityId: automation.entity_id,
       view: "settings",
     });
   };
 
-  private _runActions = (item: HaMdMenuItem) => {
-    const automation = ((item.parentElement as HaMdMenu)!.anchorElement as any)!
-      .automation;
-
+  private _runActions = (automation: AutomationItem) => {
     triggerAutomationActions(this.hass, automation.entity_id);
   };
 
-  private _editCategory = (item: HaMdMenuItem) => {
-    const automation = ((item.parentElement as HaMdMenu)!.anchorElement as any)!
-      .automation;
-
+  private _editCategory = (automation: AutomationItem) => {
     const entityReg = this._entityReg.find(
       (reg) => reg.entity_id === automation.entity_id
     );
@@ -997,10 +970,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     });
   };
 
-  private _showTrace = (item: HaMdMenuItem) => {
-    const automation = ((item.parentElement as HaMdMenu)!.anchorElement as any)!
-      .automation;
-
+  private _showTrace = (automation: AutomationItem) => {
     if (!automation.attributes.id) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -1014,20 +984,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     );
   };
 
-  private _toggle = async (item: HaMdMenuItem): Promise<void> => {
-    const automation = ((item.parentElement as HaMdMenu)!.anchorElement as any)!
-      .automation;
-
+  private _toggle = async (automation: AutomationItem): Promise<void> => {
     const service = automation.state === "off" ? "turn_on" : "turn_off";
     await this.hass.callService("automation", service, {
       entity_id: automation.entity_id,
     });
   };
 
-  private _deleteConfirm = async (item: HaMdMenuItem) => {
-    const automation = ((item.parentElement as HaMdMenu)!.anchorElement as any)!
-      .automation;
-
+  private _deleteConfirm = async (automation: AutomationItem) => {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.automation.picker.delete_confirm_title"
@@ -1043,9 +1007,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     });
   };
 
-  private async _delete(automation) {
+  private async _delete(automation: AutomationItem) {
     try {
-      await deleteAutomation(this.hass, automation.attributes.id);
+      await deleteAutomation(this.hass, automation.attributes.id!);
       this._selected = this._selected.filter(
         (entityId) => entityId !== automation.entity_id
       );
@@ -1064,14 +1028,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _duplicate = async (item: HaMdMenuItem) => {
-    const automation = ((item.parentElement as HaMdMenu)!.anchorElement as any)!
-      .automation;
-
+  private _duplicate = async (automation: AutomationItem) => {
     try {
       const config = await fetchAutomationFileConfig(
         this.hass,
-        automation.attributes.id
+        automation.attributes.id!
       );
       duplicateAutomation(config);
     } catch (err: any) {
@@ -1140,7 +1101,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleBulkCategory = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleBulkCategory = (ev: HaDropdownSelectEvent) => {
     const value = ev.detail.item.value;
     if (value === "category_create") {
       this._bulkCreateCategory();
@@ -1527,6 +1488,10 @@ ${rejected
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
+        }
+        ha-dropdown::part(menu),
+        ha-dropdown::part(submenu) {
+          --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

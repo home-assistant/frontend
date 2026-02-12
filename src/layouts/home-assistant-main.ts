@@ -98,7 +98,7 @@ export class HomeAssistantMain extends LitElement {
         });
         return;
       }
-      if (this._sidebarNarrow) {
+      if (this._sidebarNarrow || this.hass.kioskMode) {
         this._drawerOpen = ev.detail?.open ?? !this._drawerOpen;
       } else {
         fireEvent(this, "hass-dock-sidebar", {

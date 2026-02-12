@@ -9,7 +9,6 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
@@ -36,6 +35,7 @@ import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
 import { showSupportPackageDialog } from "./show-dialog-cloud-support-package";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("cloud-account")
 export class CloudAccount extends SubscribeMixin(LitElement) {
@@ -229,7 +229,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-webhooks
               .hass=${this.hass}
-              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-webhooks>
           </ha-config-section>
@@ -300,7 +299,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
     fireEvent(this, "ha-refresh-cloud-status");
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     switch (value) {
       case "reset":

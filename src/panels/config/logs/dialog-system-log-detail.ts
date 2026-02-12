@@ -1,14 +1,13 @@
-import { mdiClose, mdiContentCopy } from "@mdi/js";
+import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
-import "../../../components/ha-dialog";
-import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-wa-dialog";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
@@ -34,13 +33,20 @@ class DialogSystemLogDetail extends LitElement {
 
   @state() private _manifest?: IntegrationManifest;
 
+  @state() private _open = false;
+
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
     this._manifest = undefined;
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -77,23 +83,19 @@ class DialogSystemLogDetail extends LitElement {
     });
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${title}>
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title">${title}</span>
-          <ha-icon-button
-            id="copy"
-            @click=${this._copyLog}
-            slot="actionItems"
-            .label=${this.hass.localize("ui.panel.config.logs.copy")}
-            .path=${mdiContentCopy}
-          ></ha-icon-button>
-        </ha-dialog-header>
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+      >
+        <span slot="headerTitle">${title}</span>
+        <ha-icon-button
+          id="copy"
+          @click=${this._copyLog}
+          slot="headerActionItems"
+          .label=${this.hass.localize("ui.panel.config.logs.copy")}
+          .path=${mdiContentCopy}
+        ></ha-icon-button>
         ${this.isCustomIntegration
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
@@ -101,7 +103,7 @@ class DialogSystemLogDetail extends LitElement {
               )}
             </ha-alert>`
           : ""}
-        <div class="contents" tabindex="-1" dialogInitialFocus>
+        <div class="contents" tabindex="-1" autofocus>
           <p>
             ${this.hass.localize("ui.panel.config.logs.detail.logger")}:
             ${item.name}<br />
@@ -184,7 +186,7 @@ class DialogSystemLogDetail extends LitElement {
             : item.message[0]}
           ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -228,7 +230,7 @@ class DialogSystemLogDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0px;
         }
 
@@ -256,12 +258,6 @@ class DialogSystemLogDetail extends LitElement {
         }
         .warning {
           color: var(--warning-color);
-        }
-
-        @media all and (min-width: 451px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-max-width: 90vw;
-          }
         }
       `,
     ];

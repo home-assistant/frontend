@@ -25,11 +25,11 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   computeEntityEntryName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   getEntityContext,
   getEntityEntryContext,
@@ -37,11 +37,12 @@ import {
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
@@ -95,7 +96,6 @@ interface ChildView {
   viewTitle?: string;
   viewImport?: () => Promise<unknown>;
   viewParams?: any;
-  keepHeader?: boolean;
 }
 
 declare global {
@@ -317,7 +317,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._setView("related");
   }
 
-  private _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     switch (action) {
       case "device":
@@ -349,7 +349,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._childView = {
       viewTag: "ha-more-info-attributes",
       viewParams: { entityId: this._entityId },
-      keepHeader: true,
     };
   }
 
@@ -405,12 +404,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const deviceType =
       (deviceId && this.hass.devices[deviceId].entry_type) || "device";
 
-    const isDefaultView =
-      this._currView === DEFAULT_VIEW &&
-      (!this._childView || this._childView.keepHeader);
+    const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
     const isSpecificInitialView =
-      this._initialView !== DEFAULT_VIEW &&
-      (!this._childView || this._childView.keepHeader);
+      this._initialView !== DEFAULT_VIEW && !this._childView;
     const showCloseIcon =
       (isDefaultView &&
         this._parentEntityIds.length === 0 &&
@@ -449,12 +445,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const breadcrumb = [areaName, deviceName, entityName].filter(
       (v): v is string => Boolean(v)
     );
-    const title =
-      (this._childView && !this._childView.keepHeader
-        ? this._childView.viewTitle
-        : undefined) ||
-      breadcrumb.pop() ||
-      entityId;
+    const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
     const isRTL = computeRTL(this.hass);
 
@@ -770,7 +761,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _enlarge() {
-    this.large = !this.large;
+    withViewTransition(() => {
+      this.large = !this.large;
+    });
   }
 
   private _handleOpened() {

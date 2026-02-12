@@ -359,7 +359,6 @@ export class LovelacePanel extends LitElement {
         (resources) => loadLovelaceResources(resources, this.hass!)
       );
     }
-
     if (this.urlPath !== null || !confProm) {
       // Refreshing a YAML config can trigger an update event. We will ignore
       // all update events while fetching the config and for 2 seconds after the config is back.

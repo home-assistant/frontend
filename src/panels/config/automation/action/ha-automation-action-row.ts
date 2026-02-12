@@ -36,7 +36,6 @@ import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
@@ -92,6 +91,7 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -184,8 +184,6 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
-  @state() private _uiSupported = false;
-
   @query("ha-automation-action-editor")
   private _actionEditor?: HaAutomationActionEditor;
 
@@ -216,25 +214,6 @@ export default class HaAutomationActionRow extends LitElement {
       type !== undefined && !YAML_ONLY_ACTION_TYPES.has(type as any);
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
-    }
-
-    if (changedProperties.has("action") || !this.hasUpdated) {
-      const uiSupported = this._checkUiSupport(type);
-      if (uiSupported !== this._uiSupported || !this.hasUpdated) {
-        this._uiSupported = uiSupported;
-      }
-    }
-  }
-
-  protected override updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-    if (
-      changedProps.has("_uiSupported") &&
-      this._selected &&
-      this.optionsInSidebar
-    ) {
-      // update sidebar if uiSupported changed
-      this.openSidebar();
     }
   }
 
@@ -488,7 +467,7 @@ export default class HaAutomationActionRow extends LitElement {
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
               .narrow=${this.narrow}
-              .uiSupported=${this._uiSupported}
+              .uiSupported=${this._uiSupported(type!)}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-action-editor>`
         : nothing}
@@ -560,7 +539,7 @@ export default class HaAutomationActionRow extends LitElement {
             .action=${this.action}
             .narrow=${this.narrow}
             .disabled=${this.disabled}
-            .uiSupported=${this._uiSupported}
+            .uiSupported=${this._uiSupported(type!)}
             indent
             .selected=${this._selected}
             @value-changed=${this._onValueChange}
@@ -790,6 +769,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   public openSidebar(action?: Action): void {
     const sidebarAction = action ?? this.action;
+    const actionType = getAutomationActionType(sidebarAction);
 
     fireEvent(this, "open-sidebar", {
       save: (value) => {
@@ -819,7 +799,7 @@ export default class HaAutomationActionRow extends LitElement {
       config: {
         action: sidebarAction,
       },
-      uiSupported: this._uiSupported,
+      uiSupported: actionType ? this._uiSupported(actionType) : false,
       yamlMode: this._yamlMode,
     } satisfies ActionSidebarConfig);
     this._selected = true;
@@ -869,10 +849,9 @@ export default class HaAutomationActionRow extends LitElement {
     this._actionEditor?.collapseAll();
   }
 
-  private _checkUiSupport = memoizeOne((type?: string) =>
-    type
-      ? customElements.get(`ha-automation-action-${type}`) !== undefined
-      : false
+  private _uiSupported = memoizeOne(
+    (type: string) =>
+      customElements.get(`ha-automation-action-${type}`) !== undefined
   );
 
   private _toggleCollapse() {
@@ -883,7 +862,7 @@ export default class HaAutomationActionRow extends LitElement {
     this._automationRowElement?.focus();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     ev.stopPropagation();
     const action = ev.detail?.item?.value;
 

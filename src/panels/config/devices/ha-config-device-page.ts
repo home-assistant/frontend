@@ -20,6 +20,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -27,13 +28,13 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
@@ -93,6 +94,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -302,6 +304,11 @@ export class HaConfigDevicePage extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("deviceId")) {
       this._findRelated();
+      // Broadcast device context for quick bar
+      fireEvent(this, "hass-quick-bar-context", {
+        itemType: "device",
+        itemId: this.deviceId,
+      });
     }
   }
 
@@ -569,7 +576,9 @@ export class HaConfigDevicePage extends LitElement {
                               </ha-list-item>
                               <ha-tooltip
                                 .for="scene-${slugify(entityState.entity_id)}"
-                                placement="left"
+                                placement=${computeRTL(this.hass)
+                                  ? "left"
+                                  : "right"}
                               >
                                 ${this.hass.localize(
                                   "ui.panel.config.devices.cant_edit"
@@ -1337,7 +1346,7 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private _handleToolbarMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleToolbarMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     if (action === "reset_entity_ids") {
       this._resetEntityIds();
@@ -1481,7 +1490,7 @@ export class HaConfigDevicePage extends LitElement {
     fileDownload(signedUrl.path);
   }
 
-  private _deviceActionSelected(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _deviceActionSelected(ev: HaDropdownSelectEvent) {
     const deviceAction = (ev.detail?.item as any)?.data as DeviceAction;
     if (deviceAction?.action) {
       deviceAction.action(ev);

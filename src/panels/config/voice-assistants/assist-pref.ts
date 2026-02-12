@@ -22,8 +22,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
@@ -52,6 +52,7 @@ import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/sh
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -217,23 +218,24 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
-        <ha-settings-row>
-          <span slot="heading">
-            ${this.hass!.localize(
+        <ha-md-list-item>
+          <span slot="headline"
+            >${this.hass!.localize(
               "ui.panel.config.voice_assistants.expose.expose_new_entities"
-            )}
-          </span>
-          <span slot="description">
-            ${this.hass!.localize(
+            )}</span
+          >
+          <span slot="supporting-text"
+            >${this.hass!.localize(
               "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
-            )}
-          </span>
+            )}</span
+          >
           <ha-switch
+            slot="end"
             .checked=${this._exposeNew}
             .disabled=${this._exposeNew === undefined}
             @change=${this._exposeNewToggleChanged}
           ></ha-switch>
-        </ha-settings-row>
+        </ha-md-list-item>
         <div class="card-actions">
           <ha-button
             appearance="plain"
@@ -278,7 +280,7 @@ export class AssistPref extends LitElement {
     }
   }
 
-  private _handlePipelineMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handlePipelineMenuAction(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     const id = (ev.detail.item as any).data as string;
     switch (value) {
@@ -454,7 +456,7 @@ export class AssistPref extends LitElement {
       align-items: center;
       padding-bottom: 0;
     }
-    img {
+    voice-assistant-brand-icon {
       height: 28px;
       margin-right: 16px;
       margin-inline-end: 16px;

@@ -33,12 +33,15 @@ import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _showSkipped = false;
 
@@ -64,7 +67,9 @@ class HaConfigSectionUpdates extends LitElement {
 
     return html`
       <hass-subpage
-        back-path="/config/system"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config/system"}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
@@ -161,9 +166,7 @@ class HaConfigSectionUpdates extends LitElement {
     this._supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
   }
 
-  private _handleOverflowAction(
-    ev: CustomEvent<{ item: { value: string } }>
-  ): void {
+  private _handleOverflowAction(ev: HaDropdownSelectEvent): void {
     if (ev.detail.item.value === "toggle_beta") {
       if (this._supervisorInfo!.channel === "stable") {
         showJoinBetaDialog(this, {

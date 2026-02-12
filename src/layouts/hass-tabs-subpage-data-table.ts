@@ -27,11 +27,14 @@ import type {
   SortingDirection,
 } from "../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
+import "../components/ha-button";
 import "../components/ha-dialog";
 import "../components/ha-dialog-header";
 import "../components/ha-dropdown";
+import "../components/ha-icon-button";
+import "../components/ha-svg-icon";
+import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
 import "../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../components/ha-dropdown-item";
 import "../components/search-input-outlined";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
@@ -134,7 +137,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    * String to show when there are no records in the data table.
    * @type {String}
    */
-  @property({ attribute: false, type: String }) public noDataText?: string;
+  @property({ attribute: false }) public noDataText?: string;
 
   /**
    * Hides the data table and show an empty message.
@@ -590,7 +593,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._sortColumn = this._sortDirection ? ev.detail.column : undefined;
   }
 
-  private _handleSortBy(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSortBy(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // keep the dropdown open
 
     const columnId = ev.detail.item.value;
@@ -609,7 +612,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _handleGroupBy(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleGroupBy(ev: HaDropdownSelectEvent) {
     const group = ev.detail.item.value;
 
     if (group === "reset") {
@@ -662,7 +665,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._selectMode = true;
   }
 
-  private _handleSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (!action) {

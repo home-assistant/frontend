@@ -22,7 +22,6 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
@@ -40,6 +39,7 @@ import {
   validateConditionalConfig,
 } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
@@ -245,7 +245,7 @@ export class HaCardConditionEditor extends LitElement {
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (action === undefined) {

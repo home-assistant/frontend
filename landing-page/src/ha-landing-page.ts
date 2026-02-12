@@ -100,7 +100,6 @@ class HaLandingPage extends LandingPageBaseElement {
           button-style
           native-name
           @value-changed=${this._languageChanged}
-          inline-arrow
         ></ha-language-picker>
         <ha-button
           appearance="plain"

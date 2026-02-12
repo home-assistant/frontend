@@ -8,7 +8,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
@@ -28,6 +27,7 @@ import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const UI_CONDITION = [
   "location",
@@ -144,7 +144,7 @@ export class HaCardConditionsEditor extends LitElement {
     `;
   }
 
-  private _addCondition(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _addCondition(ev: HaDropdownSelectEvent) {
     const condition = ev.detail.item.value as "paste" | Condition["condition"];
     const conditions = [...this.conditions];
 

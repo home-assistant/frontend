@@ -9,8 +9,8 @@ import { formatLanguageCode } from "../../common/language/format_language";
 import "../../components/chips/ha-assist-chip";
 import "../../components/ha-dialog";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import { getLanguageOptions } from "../../components/ha-language-picker";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
@@ -196,7 +196,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                       (lang) =>
                         html`<ha-dropdown-item
                           .value=${lang.id}
-                          class=${this._language === lang.id ? "selected" : ""}
+                          .selected=${this._language === lang.id}
                         >
                           ${lang.primary}
                         </ha-dropdown-item>`
@@ -328,7 +328,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     }
   }
 
-  private _handlePickLanguage(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handlePickLanguage(ev: HaDropdownSelectEvent) {
     this._language = ev.detail.item.value;
   }
 
@@ -406,13 +406,6 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
           margin-right: 12px;
           margin-inline-end: 12px;
           margin-inline-start: initial;
-        }
-        ha-dropdown-item.selected {
-          border: 1px solid var(--primary-color);
-          font-weight: var(--ha-font-weight-medium);
-          color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          --icon-primary-color: var(--primary-color);
         }
       `,
     ];

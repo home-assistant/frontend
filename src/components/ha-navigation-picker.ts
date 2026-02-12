@@ -11,6 +11,7 @@ import { fetchConfig } from "../data/lovelace/config/types";
 import { getPanelIcon, getPanelTitle } from "../data/panel";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
+import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { multiTermSortedSearch } from "../resources/fuseMultiTerm";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { ActionRelatedContext } from "../panels/lovelace/components/hui-action-editor";
@@ -25,8 +26,9 @@ import {
 type NavigationGroup = "related" | "dashboards" | "views" | "other_routes";
 
 const RELATED_SORT_PREFIX = {
-  area: "0_area",
-  device: "1_device",
+  area_view: "0_area_view",
+  area: "1_area_settings",
+  device: "2_device",
 } as const;
 
 interface NavigationItem extends PickerComboBoxItem {
@@ -260,12 +262,7 @@ export class HaNavigationPicker extends LitElement {
 
     const viewConfigs = await Promise.all(
       lovelacePanels.map((panel) =>
-        fetchConfig(
-          this.hass!.connection,
-          // path should be null to fetch default lovelace panel
-          panel.url_path === "lovelace" ? null : panel.url_path,
-          true
-        )
+        fetchConfig(this.hass!.connection, panel.url_path, true)
           .then((config) => [panel.id, config] as [string, typeof config])
           .catch((_) => [panel.id, undefined] as [string, undefined])
       )
@@ -437,10 +434,31 @@ export class HaNavigationPicker extends LitElement {
     for (const areaId of relatedAreaIds) {
       const area = this.hass.areas[areaId];
       const primary = area?.name ?? areaId;
+
+      // Area dashboard view
+      const viewPath = `/home/${computeAreaPath(areaId)}`;
+      relatedItems.push({
+        id: viewPath,
+        primary,
+        secondary: viewPath,
+        icon: area?.icon ?? undefined,
+        icon_path: area?.icon ? undefined : mdiTextureBox,
+        sorting_label: createSortingLabel(
+          RELATED_SORT_PREFIX.area_view,
+          primary,
+          viewPath
+        ),
+        group: "related",
+      });
+
+      // Area settings
       const path = `/config/areas/area/${areaId}`;
       relatedItems.push({
         id: path,
-        primary,
+        primary: this.hass.localize(
+          "ui.components.navigation-picker.area_settings",
+          { area: primary }
+        ),
         secondary: path,
         icon: area?.icon ?? undefined,
         icon_path: area?.icon ? undefined : mdiTextureBox,

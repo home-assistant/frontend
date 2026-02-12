@@ -508,8 +508,8 @@ class HuiPowerSankeyCard
       });
     });
 
-    // untracked consumption
-    if (untrackedConsumption > 0) {
+    // untracked consumption (only show if larger than 1W)
+    if (untrackedConsumption > 1) {
       nodes.push({
         id: "untracked",
         label: this.hass.localize(
