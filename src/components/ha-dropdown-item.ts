@@ -56,6 +56,9 @@ export class HaDropdownItem extends DropdownItem {
           background-color: var(--ha-color-fill-primary-quiet-resting);
           --icon-primary-color: var(--primary-color);
         }
+        :host([selected]:hover) {
+          background-color: var(--ha-color-fill-primary-quiet-hover);
+        }
       `,
     ];
   }
