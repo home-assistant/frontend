@@ -558,6 +558,10 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 - Use HTTPS - All external resources must use HTTPS
 - CSP compliance - Ensure code works with Content Security Policy
 
+### Pull Requests
+
+When creating a pull request, you **must** use the PR template located at `.github/PULL_REQUEST_TEMPLATE.md`. Read the template file and use its full content as the PR body, filling in each section appropriately. Do not omit, reorder, or rewrite the template sections.
+
 ### Text and Copy Guidelines
 
 #### Terminology Standards
