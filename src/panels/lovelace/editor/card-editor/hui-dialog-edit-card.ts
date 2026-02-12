@@ -391,12 +391,12 @@ export class HuiDialogEditCard
 
         ha-wa-dialog {
           --dialog-z-index: 6;
-          --dialog-content-padding: 24px 12px;
+          --dialog-content-padding: var(--ha-space-2);
         }
 
         .content {
           width: 100%;
-          max-width: 1000px;
+          max-width: 100%;
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
