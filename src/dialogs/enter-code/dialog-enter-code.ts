@@ -152,6 +152,7 @@ export class DialogEnterCode
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._dialogParams.title ?? "Enter code"}
+        width="small"
         @closed=${this._dialogClosed}
       >
         <div class="container">
