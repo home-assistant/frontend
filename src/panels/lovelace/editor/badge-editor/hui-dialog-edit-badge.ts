@@ -416,7 +416,7 @@ export class HuiDialogEditBadge
 
         ha-wa-dialog {
           --dialog-z-index: 6;
-          --dialog-content-padding: 24px 12px;
+          --dialog-content-padding: 0;
         }
 
         .content {
@@ -478,6 +478,8 @@ export class HuiDialogEditBadge
           background: var(--primary-background-color);
           padding: 10px;
           border-radius: var(--ha-border-radius-sm);
+          position: sticky;
+          top: 0;
           display: flex;
           flex-direction: column;
           justify-content: center;
