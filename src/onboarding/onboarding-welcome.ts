@@ -90,24 +90,24 @@ class OnboardingWelcome extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          margin-bottom: -16px;
+          margin-bottom: calc(var(--ha-space-4) * -1);
         }
         h1 {
-          margin-top: 16px;
-          margin-bottom: 8px;
+          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-2);
         }
         p {
           margin: 0;
         }
         .start {
-          margin: 32px 0;
+          margin: var(--ha-space-8) 0;
           width: 100%;
         }
         .divider {
-          width: calc(100% + 64px);
+          width: calc(100% + var(--ha-space-16));
           position: relative;
-          margin-left: -32px;
-          margin-right: -32px;
+          margin-left: calc(var(--ha-space-8) * -1);
+          margin-right: calc(var(--ha-space-8) * -1);
         }
         .divider div {
           position: absolute;
