@@ -158,7 +158,6 @@ export class HuiDialogEditSection
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        width="large"
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         class=${classMap({
@@ -427,6 +426,9 @@ export class HuiDialogEditSection
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
+        ha-wa-dialog {
+          --dialog-content-padding: var(--ha-space-6);
+        }
         ha-wa-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
