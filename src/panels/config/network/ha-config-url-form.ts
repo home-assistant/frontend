@@ -475,6 +475,8 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     ha-md-list-item {
       --md-list-item-top-space: 0;
       --md-list-item-bottom-space: 0;
+      --md-list-item-leading-space: 0;
+      --md-list-item-trailing-space: 0;
       --md-list-item-two-line-container-height: 48px;
     }
   `;
