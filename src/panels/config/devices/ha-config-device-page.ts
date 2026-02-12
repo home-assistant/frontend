@@ -20,6 +20,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -303,6 +304,11 @@ export class HaConfigDevicePage extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("deviceId")) {
       this._findRelated();
+      // Broadcast device context for quick bar
+      fireEvent(this, "hass-quick-bar-context", {
+        itemType: "device",
+        itemId: this.deviceId,
+      });
     }
   }
 

@@ -6,7 +6,7 @@ import memoizeOne from "memoize-one";
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import type { PickerValueRenderer } from "./ha-picker-field";
@@ -224,7 +224,7 @@ export class HaColorPicker extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: CustomEvent<{ value?: string }>) {
+  private _valueChanged(ev: ValueChangedEvent<string | undefined>) {
     ev.stopPropagation();
     const selected = ev.detail.value;
     const normalized =

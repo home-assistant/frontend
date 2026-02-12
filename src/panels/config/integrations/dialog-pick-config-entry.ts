@@ -1,13 +1,9 @@
-import { mdiClose } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-dialog-header";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../components/ha-md-dialog";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-wa-dialog";
 import { ERROR_STATES, RECOVERABLE_STATES } from "../../../data/config_entries";
 import type { HomeAssistant } from "../../../types";
 import type { PickConfigEntryDialogParams } from "./show-pick-config-entry-dialog";
@@ -18,10 +14,11 @@ export class DialogPickConfigEntry extends LitElement {
 
   @state() private _params?: PickConfigEntryDialogParams;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public showDialog(params: PickConfigEntryDialogParams): void {
     this._params = params;
+    this._open = true;
   }
 
   private _dialogClosed(): void {
@@ -29,35 +26,25 @@ export class DialogPickConfigEntry extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  public closeDialog() {
-    this._dialog?.close();
-    return true;
+  public closeDialog(): void {
+    this._open = false;
   }
 
   protected render() {
     if (!this._params) {
       return nothing;
     }
+    const title = this.hass.localize(
+      `component.${this._params.domain}.config_subentries.${this._params.subFlowType}.initiate_flow.user`
+    );
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed}>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-          ></ha-icon-button>
-          <span
-            slot="title"
-            .title=${this.hass.localize(
-              `component.${this._params.domain}.config_subentries.${this._params.subFlowType}.initiate_flow.user`
-            )}
-            >${this.hass.localize(
-              `component.${this._params.domain}.config_subentries.${this._params.subFlowType}.initiate_flow.user`
-            )}</span
-          >
-        </ha-dialog-header>
-        <ha-md-list slot="content">
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        @closed=${this._dialogClosed}
+      >
+        <ha-md-list>
           ${this._params.configEntries.map(
             (entry) =>
               html`<ha-md-list-item
@@ -70,7 +57,7 @@ export class DialogPickConfigEntry extends LitElement {
               >`
           )}
         </ha-md-list>
-      </ha-md-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -80,13 +67,8 @@ export class DialogPickConfigEntry extends LitElement {
   }
 
   static styles = css`
-    :host {
+    ha-wa-dialog {
       --dialog-content-padding: 0;
-    }
-    @media all and (min-width: 600px) {
-      ha-dialog {
-        --mdc-dialog-min-width: 400px;
-      }
     }
   `;
 }

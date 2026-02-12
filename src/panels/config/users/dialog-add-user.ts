@@ -1,16 +1,17 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-spinner";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/ha-wa-dialog";
 import { createAuthForUser } from "../../../data/auth";
 import type { User } from "../../../data/user";
 import {
@@ -34,6 +35,8 @@ export class DialogAddUser extends LitElement {
   @state() private _error?: string;
 
   @state() private _params?: AddUserDialogParams;
+
+  @state() private _open = false;
 
   @state() private _name?: string;
 
@@ -66,6 +69,8 @@ export class DialogAddUser extends LitElement {
     } else {
       this._allowChangeName = true;
     }
+
+    this._open = true;
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {
@@ -83,15 +88,15 @@ export class DialogAddUser extends LitElement {
     }
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this._close}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.users.add_user.caption")
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
+        header-title=${this.hass.localize(
+          "ui.panel.config.users.add_user.caption"
         )}
+        width="medium"
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -109,7 +114,7 @@ export class DialogAddUser extends LitElement {
                 )}
                 @input=${this._handleValueChanged}
                 @blur=${this._maybePopulateUsername}
-                dialogInitialFocus
+                autofocus
               ></ha-textfield>`
             : ""}
           <ha-textfield
@@ -122,7 +127,7 @@ export class DialogAddUser extends LitElement {
             required
             @input=${this._handleValueChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
-            dialogInitialFocus
+            ?autofocus=${!this._allowChangeName}
           ></ha-textfield>
 
           <ha-password-field
@@ -191,30 +196,37 @@ export class DialogAddUser extends LitElement {
             : nothing}
         </div>
 
-        <ha-button
-          slot="primaryAction"
-          appearance="plain"
-          @click=${this._close}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          .disabled=${!this._name ||
-          !this._username ||
-          !this._password ||
-          this._password !== this._passwordConfirm}
-          @click=${this._createUser}
-          .loading=${this._loading}
-        >
-          ${this.hass.localize("ui.panel.config.users.add_user.create")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._close}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            .disabled=${!this._name ||
+            !this._username ||
+            !this._password ||
+            this._password !== this._passwordConfirm}
+            @click=${this._createUser}
+            .loading=${this._loading}
+          >
+            ${this.hass.localize("ui.panel.config.users.add_user.create")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
   private _close() {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _maybePopulateUsername() {
@@ -297,8 +309,7 @@ export class DialogAddUser extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 500px;
+        ha-wa-dialog {
           --dialog-z-index: 10;
         }
         .row {

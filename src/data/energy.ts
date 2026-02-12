@@ -14,6 +14,7 @@ import {
 import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import {
   calcDate,
   calcDateProperty,
@@ -1431,26 +1432,10 @@ export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
     return undefined;
   }
 
-  // Normalize to watts (W) based on unit of measurement (case-sensitive)
-  // Supported units: GW, kW, MW, mW, TW, W
-  const unit = stateObj.attributes.unit_of_measurement;
-  switch (unit) {
-    case "W":
-      return value;
-    case "kW":
-      return value * 1000;
-    case "mW":
-      return value / 1000;
-    case "MW":
-      return value * 1_000_000;
-    case "GW":
-      return value * 1_000_000_000;
-    case "TW":
-      return value * 1_000_000_000_000;
-    default:
-      // Assume value is in watts (W) if no unit or an unsupported unit is provided
-      return value;
-  }
+  return normalizeValueBySIPrefix(
+    value,
+    stateObj.attributes.unit_of_measurement
+  );
 };
 
 /**

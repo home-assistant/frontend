@@ -6,12 +6,13 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import "../../../components/ha-wa-dialog";
 import { adminChangeUsername } from "../../../data/auth";
 import type { PersonMutableParams } from "../../../data/person";
 import type { User } from "../../../data/user";
@@ -69,6 +70,8 @@ class DialogPersonDetail extends LitElement implements HassDialog {
 
   @state() private _personExists = false;
 
+  @state() private _open = false;
+
   private _deviceTrackersAvailable = memoizeOne((hass) =>
     Object.keys(hass.states).some(
       (entityId) =>
@@ -100,10 +103,16 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._deviceTrackers = [];
       this._picture = null;
     }
+    this._open = true;
     await this.updateComplete;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     // If we do not have a person ID yet (= person creation dialog was just cancelled), but
     // we already created a user ID for it, delete it now to not have it "free floating".
     if (!this._personExists && this._userId) {
@@ -115,7 +124,6 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     }
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -124,23 +132,20 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     }
     const nameInvalid = this._name.trim() === "";
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.entry
-            ? this._params.entry.name
-            : this.hass!.localize("ui.panel.config.person.detail.new_person")
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
+        header-title=${this._params.entry
+          ? this._params.entry.name
+          : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <ha-textfield
-              dialogInitialFocus
+              autofocus
               .value=${this._name}
               @input=${this._nameChanged}
               label=${this.hass!.localize("ui.panel.config.person.detail.name")}
@@ -233,37 +238,39 @@ class DialogPersonDetail extends LitElement implements HassDialog {
                 `}
           </div>
         </div>
-        ${this._params.entry
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                variant="danger"
-                appearance="plain"
-                @click=${this._deleteEntry}
-                .disabled=${(this._user && this._user.is_owner) ||
-                this._submitting}
-              >
-                ${this.hass!.localize("ui.panel.config.person.detail.delete")}
-              </ha-button>
-            `
-          : nothing}
-        <ha-button
-          slot="primaryAction"
-          appearance="plain"
-          @click=${this.closeDialog}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${nameInvalid || this._submitting}
-        >
+        <ha-dialog-footer slot="footer">
           ${this._params.entry
-            ? this.hass!.localize("ui.common.save")
-            : this.hass!.localize("ui.common.add")}
-        </ha-button>
-      </ha-dialog>
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  variant="danger"
+                  appearance="plain"
+                  @click=${this._deleteEntry}
+                  .disabled=${(this._user && this._user.is_owner) ||
+                  this._submitting}
+                >
+                  ${this.hass!.localize("ui.panel.config.person.detail.delete")}
+                </ha-button>
+              `
+            : nothing}
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${nameInvalid || this._submitting}
+          >
+            ${this._params.entry
+              ? this.hass!.localize("ui.common.save")
+              : this.hass!.localize("ui.common.add")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 

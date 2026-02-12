@@ -107,9 +107,6 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ attribute: "no-sort", type: Boolean }) public noSort = false;
 
-  @property({ attribute: "inline-arrow", type: Boolean })
-  public inlineArrow = false;
-
   @state() _defaultLanguages: string[] = [];
 
   @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;

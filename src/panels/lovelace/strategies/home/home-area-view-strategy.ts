@@ -360,7 +360,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "empty-state",
-            icon: area.icon || "mdi:sofa-outline",
+            icon: area.icon || "mdi:shape-square-rounded-plus",
             icon_color: "primary",
             content_only: true,
             title: hass.localize(

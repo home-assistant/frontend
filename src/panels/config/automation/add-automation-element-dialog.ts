@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
@@ -42,7 +43,6 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
@@ -114,7 +114,7 @@ import {
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
@@ -657,10 +657,7 @@ class DialogAddAutomationElement
                             .path=${mdiPlus}
                           ></ha-svg-icon>
                         </ha-md-list-item>
-                        <ha-md-divider
-                          role="separator"
-                          tabindex="-1"
-                        ></ha-md-divider>`
+                        <wa-divider></wa-divider>`
                     : nothing}
                   ${collections.map(
                     (collection, index) => html`
@@ -1752,7 +1749,7 @@ class DialogAddAutomationElement
     this.closeDialog();
   }
 
-  private _selected(ev: CustomEvent<{ value: string }>) {
+  private _selected(ev: ValueChangedEvent<string>) {
     let target: HassServiceTarget | undefined;
     if (
       this._tab === "targets" &&
@@ -1766,7 +1763,7 @@ class DialogAddAutomationElement
   }
 
   private _handleTargetSelected = (
-    ev: CustomEvent<{ value: SingleHassServiceTarget }>
+    ev: ValueChangedEvent<SingleHassServiceTarget>
   ) => {
     this._targetItems = undefined;
     this._loadItemsError = false;
@@ -2177,8 +2174,8 @@ class DialogAddAutomationElement
           width: var(--ha-space-6);
         }
 
-        ha-md-list-item.paste {
-          border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
+        wa-divider {
+          --spacing: 0;
         }
 
         ha-svg-icon.plus {

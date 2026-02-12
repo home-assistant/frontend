@@ -1,5 +1,6 @@
 {
   "panel": {
+    "demo": "Demo",
     "apps": "Apps",
     "energy": "Energy",
     "calendar": "Calendar",
@@ -218,6 +219,16 @@
         "title": "Devices discovered",
         "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
         "no_devices": "No devices to add"
+      },
+      "repairs": {
+        "title": "Repairs",
+        "count_issues": "{count} {count, plural,\n one {issue}\n other {issues}\n}",
+        "no_issues": "No issues"
+      },
+      "updates": {
+        "title": "Updates",
+        "count_updates": "{count} {count, plural,\n one {update available}\n other {updates available}\n}",
+        "no_updates": "Up to date"
       },
       "media_player": {
         "source": "Source",
@@ -825,7 +836,7 @@
         "categories": "Categories",
         "category": "Category",
         "add_category": "Add category",
-        "add_new_sugestion": "Add new category ''{name}''",
+        "add_new_suggestion": "Add new category ''{name}''",
         "add_new": "Add new category…",
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
@@ -841,7 +852,7 @@
       "label-picker": {
         "label": "Label",
         "labels": "Labels",
-        "add_new_sugestion": "Add new label ''{name}''",
+        "add_new_suggestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
         "add": "Add label",
         "no_labels": "No labels available",
@@ -852,7 +863,7 @@
         "clear": "Clear",
         "show_areas": "Show areas",
         "area": "Area",
-        "add_new_sugestion": "Add new area ''{name}''",
+        "add_new_suggestion": "Add new area ''{name}''",
         "add_new": "Add new area…",
         "no_areas": "No areas available",
         "no_match": "No areas found for {term}",
@@ -863,7 +874,7 @@
         "clear": "Clear",
         "show_floors": "Show floors",
         "floor": "Floor",
-        "add_new_sugestion": "Add new floor ''{name}''",
+        "add_new_suggestion": "Add new floor ''{name}''",
         "add_new": "Add new floor…",
         "no_floors": "No floors available",
         "no_match": "No floors found for {term}",
@@ -1457,7 +1468,8 @@
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
-            "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]"
+            "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
+            "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -3461,7 +3473,8 @@
             "icon": "Icon",
             "name": "Name",
             "last_scanned": "Last scanned",
-            "write": "Write"
+            "write": "Write",
+            "tag_id": "Tag ID"
           },
           "detail": {
             "new_tag": "New tag",
@@ -4005,8 +4018,8 @@
           }
         },
         "core": {
-          "caption": "General",
-          "description": "Name, time zone, and locale settings",
+          "caption": "Home information",
+          "description": "Name, location, and regional settings",
           "section": {
             "core": {
               "header": "General configuration",
@@ -4038,6 +4051,15 @@
                 "update_units_confirm_title": "The unit of sensors will be updated",
                 "update_units_confirm_text": "The unit system has been changed, and the unit of some sensors like distance and speed will be updated.",
                 "update_units_confirm_update": "Update"
+              },
+              "home_name_card": {
+                "header": "Home name"
+              },
+              "location_card": {
+                "header": "Location"
+              },
+              "regional_settings_card": {
+                "header": "Region"
               }
             }
           }
@@ -7639,6 +7661,10 @@
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },
+        "ai_tasks": {
+          "caption": "AI tasks",
+          "description": "Configure AI suggestions and task preferences"
+        },
         "labs": {
           "caption": "Labs",
           "custom_integration": "Custom integration",
@@ -7744,8 +7770,8 @@
             "used": "Used space",
             "free": "Free space",
             "system": "System",
-            "apps_data": "App data",
-            "apps_config": "App configuration",
+            "addons_data": "App data",
+            "addons_config": "App configuration",
             "media": "Media",
             "share": "Share",
             "backup": "Backups",
@@ -8618,7 +8644,8 @@
                 "tilt-position": "Tilt position",
                 "brightness": "Brightness",
                 "last-updated": "Last updated",
-                "state": "State"
+                "state": "State",
+                "area": "Area"
               },
               "entity_row": {
                 "divider": "Divider",
@@ -8878,7 +8905,7 @@
               },
               "default_zoom": "Default zoom",
               "source": "Source",
-              "description": "The Map card that allows you to display entities on a map."
+              "description": "The Map card allows you to display entities on a map."
             },
             "markdown": {
               "name": "Markdown",
@@ -9520,8 +9547,10 @@
         },
         "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
-        "user_settings_header": "User settings",
-        "user_settings_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
+        "user_preferences_header": "User preferences",
+        "user_preferences_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
+        "localization_header": "Localization",
+        "localization_detail": "These settings are tied to your account and control how dates, times, and numbers are displayed.",
         "mobile_app_settings": "Mobile app settings",
         "browser_settings": "Browser settings",
         "client_settings_detail": "The following settings are local to this client only, and may reset to defaults on logout or when local data is cleared.",
@@ -9725,8 +9754,10 @@
           "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
           "create": "Create token",
+          "created_title": "Token created: {name}",
           "create_failed": "Failed to create the access token.",
           "name": "Name",
+          "name_exists": "A token with this name already exists.",
           "prompt_name": "Give the token a name",
           "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet.",

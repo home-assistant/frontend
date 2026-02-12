@@ -1,27 +1,32 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import type { DialogThreadDatasetParams } from "./show-dialog-thread-dataset";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-wa-dialog";
 
 @customElement("ha-dialog-thread-dataset")
-class DialogThreadDataset extends LitElement implements HassDialog {
+class DialogThreadDataset extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DialogThreadDatasetParams;
+
+  @state() private _open = false;
 
   public async showDialog(
     params: DialogThreadDatasetParams
   ): Promise<Promise<void>> {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -37,10 +42,11 @@ class DialogThreadDataset extends LitElement implements HassDialog {
       dataset.extended_pan_id &&
       otbrInfo.active_dataset_tlvs?.includes(dataset.extended_pan_id);
 
-    return html`<ha-dialog
-      open
-      @closed=${this.closeDialog}
-      .heading=${createCloseHeading(this.hass, network.name)}
+    return html`<ha-wa-dialog
+      .hass=${this.hass}
+      .open=${this._open}
+      header-title=${network.name}
+      @closed=${this._dialogClosed}
     >
       <div>
         Network name: ${dataset.network_name}<br />
@@ -54,7 +60,7 @@ class DialogThreadDataset extends LitElement implements HassDialog {
               Active dataset TLVs: ${otbrInfo.active_dataset_tlvs}`
           : nothing}
       </div>
-    </ha-dialog>`;
+    </ha-wa-dialog>`;
   }
 }
 

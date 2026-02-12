@@ -59,6 +59,7 @@ export interface PickerComboBoxItem {
   sorting_label?: string;
   icon_path?: string;
   icon?: string;
+  isRelated?: boolean;
 }
 
 export interface PickerComboBoxIndexSelectedDetail {

@@ -3,7 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -12,6 +12,7 @@ import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
 import "../../../../components/ha-button";
 import "../../../../components/ha-copy-textfield";
+import "../../../../components/ha-wa-dialog";
 
 @customElement("dialog-manage-cloudhook")
 export class DialogManageCloudhook extends LitElement {
@@ -19,11 +20,19 @@ export class DialogManageCloudhook extends LitElement {
 
   @state() private _params?: WebhookDialogParams;
 
+  @state() private _open = false;
+
   public showDialog(params: WebhookDialogParams) {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
+    this._open = false;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -41,17 +50,14 @@ export class DialogManageCloudhook extends LitElement {
           )
         : documentationUrl(this.hass!, `/integrations/${webhook.domain}/`);
     return html`
-      <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass!,
-          this.hass!.localize(
-            "ui.panel.config.cloud.dialog_cloudhook.webhook_for",
-            { name: webhook.name }
-          )
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass!.localize(
+          "ui.panel.config.cloud.dialog_cloudhook.webhook_for",
+          { name: webhook.name }
         )}
+        @closed=${this._dialogClosed}
       >
         <div>
           <p>
@@ -71,13 +77,6 @@ export class DialogManageCloudhook extends LitElement {
                     )}</button
                   >.
                 `}
-            <br />
-            <a href=${docsUrl} target="_blank" rel="noreferrer">
-              ${this.hass!.localize(
-                "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
-              )}
-              <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-            </a>
           </p>
 
           <ha-copy-textfield
@@ -87,21 +86,26 @@ export class DialogManageCloudhook extends LitElement {
           ></ha-copy-textfield>
         </div>
 
-        <ha-button
-          href=${docsUrl}
-          target="_blank"
-          rel="noreferrer"
-          slot="secondaryAction"
-          appearance="plain"
-        >
-          ${this.hass!.localize(
-            "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
-          )}
-        </ha-button>
-        <ha-button @click=${this.closeDialog} slot="primaryAction">
-          ${this.hass!.localize("ui.panel.config.cloud.dialog_cloudhook.close")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            href=${docsUrl}
+            target="_blank"
+            rel="noreferrer"
+            appearance="plain"
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
+            )}
+            <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+          </ha-button>
+          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_cloudhook.close"
+            )}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -129,18 +133,9 @@ export class DialogManageCloudhook extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
-          width: 650px;
-        }
         button.link {
           color: var(--primary-color);
           text-decoration: none;
-        }
-        a {
-          text-decoration: none;
-        }
-        a ha-svg-icon {
-          --mdc-icon-size: 16px;
         }
         p {
           margin-top: 0;

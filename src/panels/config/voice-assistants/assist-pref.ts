@@ -454,7 +454,7 @@ export class AssistPref extends LitElement {
       align-items: center;
       padding-bottom: 0;
     }
-    img {
+    voice-assistant-brand-icon {
       height: 28px;
       margin-right: 16px;
       margin-inline-end: 16px;

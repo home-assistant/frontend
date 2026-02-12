@@ -5,17 +5,16 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
+import "../ha-dropdown-item";
 import "../ha-formfield";
 import "../ha-generic-picker";
 import "../ha-input-helper-text";
-import "../ha-list-item";
 import "../ha-radio";
 import "../ha-select";
 import "../ha-select-box";
@@ -231,24 +230,15 @@ export class HaSelectSelector extends LitElement {
 
     return html`
       <ha-select
-        fixedMenuPosition
-        naturalMenuWidth
         .label=${this.label ?? ""}
-        .value=${this.value ?? ""}
+        .value=${(this.value as string) ?? ""}
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}
         clearable
-        @closed=${stopPropagation}
         @selected=${this._valueChanged}
+        .options=${options}
       >
-        ${options.map(
-          (item: SelectOption) => html`
-            <ha-list-item .value=${item.value} .disabled=${!!item.disabled}
-              >${item.label}</ha-list-item
-            >
-          `
-        )}
       </ha-select>
     `;
   }
@@ -295,7 +285,7 @@ export class HaSelectSelector extends LitElement {
   private _valueChanged(ev) {
     ev.stopPropagation();
 
-    if (ev.detail?.index === -1 && this.value !== undefined) {
+    if (ev.detail?.value === undefined && this.value !== undefined) {
       fireEvent(this, "value-changed", {
         value: undefined,
       });
@@ -385,7 +375,7 @@ export class HaSelectSelector extends LitElement {
     ha-formfield {
       display: block;
     }
-    ha-list-item[disabled] {
+    ha-dropdown-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);
     }
     ha-chip-set {
