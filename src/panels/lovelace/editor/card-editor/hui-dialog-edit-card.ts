@@ -380,14 +380,19 @@ export class HuiDialogEditCard
       haStyleDialogFixedTop,
       css`
         :host {
-          --code-mirror-max-height: calc(100vh - 176px);
+          --code-mirror-max-height: calc(100vh - 209px);
+          /* 68px - header
+             69px - footer
+             24px - padding-top for #content
+             40px - margin-top for mdc-dialog__surface
+             8px - spacing under mdc-dialog__surface */
         }
 
         ha-dialog {
           --mdc-dialog-max-width: 100px;
           --dialog-z-index: 6;
           --mdc-dialog-max-width: 90vw;
-          --dialog-content-padding: 24px 12px;
+          --dialog-content-padding: 24px 12px 0;
         }
 
         .content {
@@ -438,18 +443,21 @@ export class HuiDialogEditCard
           max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
-          margin: 0 10px;
+          margin: 0 var(--ha-space-1);
         }
 
         @media (min-width: 1000px) {
           .content {
             flex-direction: row;
+            max-height: var(--code-mirror-max-height);
           }
           .content > * {
             flex-basis: 0;
             flex-grow: 1;
             flex-shrink: 1;
             min-width: 0;
+            height: auto !important;
+            overflow-y: auto;
           }
           .content hui-card {
             padding: 8px 10px;
