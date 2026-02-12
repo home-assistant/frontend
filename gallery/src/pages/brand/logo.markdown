@@ -6,7 +6,7 @@ title: "Logo"
 
 As a community, we are proud of our logo. Follow these guidelines to ensure it always represents the identity of the Home Assistant project and community the best way possible.
 
-[Download Logo](https://github.com/home-assistant/assets/tree/master/logo)
+[Download Logos](https://drive.google.com/drive/folders/1ek9uuPHyR0uwU_GjDNifoAcSs8Iv35v4)
 
 ![Logo](/images/brand/logo.png)
 
