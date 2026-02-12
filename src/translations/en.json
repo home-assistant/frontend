@@ -4237,7 +4237,7 @@
                 "title": "Title",
                 "conf_mode": "Configuration method",
                 "default": "Default",
-                "require_admin": "Admin only",
+                "require_admin": "Admin-only",
                 "sidebar": "In sidebar",
                 "filename": "Filename",
                 "url": "Open",
@@ -4266,7 +4266,7 @@
               "title_required": "Title is required.",
               "url": "URL",
               "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -",
-              "require_admin": "Admin only",
+              "require_admin": "Admin-only",
               "delete": "Delete",
               "update": "Update",
               "create": "Create",
@@ -4276,14 +4276,14 @@
               "set_default_confirm_text": "This dashboard will be shown to all users when opening Home Assistant.",
               "set_default_confirm_note": "Users who have chosen a specific dashboard in their profile will not be affected. They must set it back to \"Auto (use system settings)\" to use this dashboard.",
               "set_default_admin_only_title": "Can't set as default",
-              "set_default_admin_only_text": "This dashboard is set to admin only. Disable admin only before setting it as default."
+              "set_default_admin_only_text": "This dashboard is set to admin-only. Disable admin-only before setting it as default."
             },
             "panel_detail": {
               "edit_panel": "Edit panel",
-              "title": "Title",
-              "icon": "Icon",
-              "require_admin": "Admin only",
-              "show_in_sidebar": "Add to sidebar",
+              "title": "[%key:ui::panel::config::lovelace::dashboards::detail::title%]",
+              "icon": "[%key:ui::panel::config::lovelace::dashboards::detail::icon%]",
+              "require_admin": "[%key:ui::panel::config::lovelace::dashboards::detail::require_admin%]",
+              "show_in_sidebar": "[%key:ui::panel::config::lovelace::dashboards::detail::show_sidebar%]",
               "reset_to_default": "Reset to default",
               "require_admin_helper": "Can't be enabled because this dashboard is set as default"
             }
