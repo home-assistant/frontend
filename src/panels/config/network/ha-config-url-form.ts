@@ -468,10 +468,6 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
       direction: var(--direction);
     }
 
-    h4 {
-      margin-inline-start: var(--ha-space-4);
-    }
-
     ha-md-list-item {
       --md-list-item-top-space: 0;
       --md-list-item-bottom-space: 0;
