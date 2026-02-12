@@ -27,9 +27,12 @@ import type {
   SortingDirection,
 } from "../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
+import "../components/ha-button";
 import "../components/ha-dialog";
 import "../components/ha-dialog-header";
 import "../components/ha-dropdown";
+import "../components/ha-icon-button";
+import "../components/ha-svg-icon";
 import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
 import "../components/ha-dropdown-item";
 import "../components/search-input-outlined";

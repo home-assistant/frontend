@@ -10,9 +10,11 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import { createCloseHeading } from "../ha-dialog";
+import "../ha-icon-button";
 import "../ha-list";
 import "../ha-list-item";
 import "../ha-sortable";
+import "../ha-svg-icon";
 import type {
   DataTableColumnContainer,
   DataTableColumnData,
