@@ -30,6 +30,7 @@ import {
 import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 import { generateDefaultSection } from "./default-section";
+import "./hui-view-footer";
 import "./hui-view-header";
 import "./hui-view-sidebar";
 
@@ -305,6 +306,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               `
             : nothing}
         </div>
+        <hui-view-footer
+          .hass=${this.hass}
+          .lovelace=${this.lovelace}
+          .viewIndex=${this.index}
+          .config=${this._config?.footer}
+        ></hui-view-footer>
         <div class="imported-cards-section">
           ${editMode && this._config?.cards?.length
             ? html`
@@ -647,6 +654,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     hui-view-header {
       display: block;
       padding-top: var(--row-gap);
+    }
+
+    hui-view-footer {
+      display: block;
     }
 
     .imported-cards {

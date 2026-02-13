@@ -8346,6 +8346,16 @@
               }
             }
           },
+          "edit_view_footer": {
+            "header": "Footer settings",
+            "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
+            "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
+            "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
+            "settings": {
+              "column_span": "Width",
+              "column_span_helper": "[%key:ui::panel::lovelace::editor::edit_section::settings::column_span_helper%]"
+            }
+          },
           "edit_badges": {
             "view_no_badges": "Badges are not be supported by the current view type."
           },
