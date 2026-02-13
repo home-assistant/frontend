@@ -229,19 +229,19 @@ export class DemoHaDialog extends LitElement {
             <tr>
               <th>Slot</th>
               <th>Description</th>
-              <th>Variant to use</th>
+              <th>Appearance to use</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>secondaryAction</code></td>
               <td>The secondary action button(s).</td>
-              <td><code>plain</code></td>
+              <td><code>appearance="plain"</code></td>
             </tr>
             <tr>
               <td><code>primaryAction</code></td>
               <td>The primary action button(s).</td>
-              <td><code>accent</code></td>
+              <td>Default (no appearance attribute)</td>
             </tr>
           </tbody>
         </table>
@@ -262,10 +262,16 @@ export class DemoHaDialog extends LitElement {
   &lt;/div&gt;
   &lt;div&gt;Dialog content&lt;/div&gt;
   &lt;ha-dialog-footer slot="footer"&gt;
-    &lt;ha-button data-dialog="close" slot="secondaryAction" variant="plain"
-      &gt;Cancel&lt;/ha-button
+    &lt;ha-button
+      data-dialog="close"
+      appearance="plain"
+      slot="secondaryAction"
     &gt;
-    &lt;ha-button slot="primaryAction" variant="accent"&gt;Submit&lt;/ha-button&gt;
+      Cancel
+    &lt;/ha-button&gt;
+    &lt;ha-button data-dialog="close" slot="primaryAction"&gt;
+      Submit
+    &lt;/ha-button&gt;
   &lt;/ha-dialog-footer&gt;
 &lt;/ha-dialog&gt;</code></pre>
 
