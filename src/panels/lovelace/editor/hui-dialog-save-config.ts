@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -77,7 +77,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
           slot="headerActionItems"
         >
           <ha-icon-button
-            .path=${mdiHelpCircle}
+            .path=${mdiHelpCircleOutline}
             .label=${this.hass!.localize("ui.common.help")}
           ></ha-icon-button>
         </a>
