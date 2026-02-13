@@ -2,6 +2,7 @@ import { TopAppBarFixedBase } from "@material/mwc-top-app-bar-fixed/mwc-top-app-
 import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
+import { haTopAppBarFixedSharedStyles } from "./ha-top-app-bar-fixed-shared-styles";
 
 @customElement("ha-top-app-bar-fixed")
 export class HaTopAppBarFixed extends TopAppBarFixedBase {
@@ -9,46 +10,8 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
 
   static override styles = [
     styles,
+    haTopAppBarFixedSharedStyles,
     css`
-      header {
-        padding-top: var(--safe-area-inset-top);
-      }
-      .mdc-top-app-bar__row {
-        height: var(--header-height);
-        border-bottom: var(--app-header-border-bottom);
-      }
-      .mdc-top-app-bar--fixed-adjust {
-        padding-top: calc(
-          var(--header-height, 0px) + var(--safe-area-inset-top, 0px)
-        );
-        padding-bottom: var(--safe-area-inset-bottom);
-        padding-right: var(--safe-area-inset-right);
-      }
-      :host([narrow]) .mdc-top-app-bar--fixed-adjust {
-        padding-left: var(--safe-area-inset-left);
-      }
-      .mdc-top-app-bar {
-        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
-        color: var(--app-header-text-color, var(--mdc-theme-on-primary, #fff));
-        background-color: var(
-          --app-header-background-color,
-          var(--mdc-theme-primary)
-        );
-        padding-top: var(--safe-area-inset-top);
-        padding-right: var(--safe-area-inset-right);
-        transition:
-          width var(--ha-animation-duration-normal) ease,
-          padding-left var(--ha-animation-duration-normal) ease,
-          padding-right var(--ha-animation-duration-normal) ease;
-      }
-      :host([narrow]) .mdc-top-app-bar {
-        padding-left: var(--safe-area-inset-left);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .mdc-top-app-bar {
-          transition: none;
-        }
-      }
       .mdc-top-app-bar__title {
         font-size: var(--ha-font-size-xl);
         padding-inline-start: var(--ha-space-6);
