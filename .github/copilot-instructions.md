@@ -239,7 +239,7 @@ For browser support, API details, and current specifications, refer to these aut
 
 ## Component Library
 
-### Dialog Components
+### Dialog Component
 
 **Opening Dialogs (Fire Event Pattern - Recommended):**
 
@@ -269,7 +269,6 @@ fireEvent(this, "show-dialog", {
 
 - Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (560px - default), `"large"` (720px), or `"full"`
 - Custom sizing is NOT recommended - use the standard width presets
-- Example: `<ha-dialog width="small">` for alert/confirmation dialogs
 
 **Button Appearance Guidelines:**
 
