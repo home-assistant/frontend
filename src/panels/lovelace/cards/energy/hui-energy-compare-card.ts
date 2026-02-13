@@ -5,7 +5,11 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../common/datetime/format_date";
 import type { EnergyData } from "../../../../data/energy";
-import { CompareMode, getEnergyDataCollection } from "../../../../data/energy";
+import {
+  CompareMode,
+  getEnergyDataCollection,
+  validateEnergyCollectionKey,
+} from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -20,6 +24,11 @@ export class HuiEnergyCompareCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyCardBaseConfig;
@@ -47,6 +56,9 @@ export class HuiEnergyCompareCard
   }
 
   public setConfig(config: EnergyCardBaseConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
