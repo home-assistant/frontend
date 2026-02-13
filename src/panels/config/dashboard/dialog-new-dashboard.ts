@@ -198,7 +198,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                 `}
           </div>
         </div>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

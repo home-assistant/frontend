@@ -302,7 +302,7 @@ export class HuiDialogEditBadge
               `
             : nothing}
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

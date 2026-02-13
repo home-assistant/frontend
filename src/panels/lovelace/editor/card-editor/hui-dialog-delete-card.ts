@@ -86,7 +86,7 @@ export class HuiDialogDeleteCard extends LitElement {
             ${this.hass!.localize("ui.common.delete")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

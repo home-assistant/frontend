@@ -221,7 +221,7 @@ class DialogImportBlueprint extends LitElement {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

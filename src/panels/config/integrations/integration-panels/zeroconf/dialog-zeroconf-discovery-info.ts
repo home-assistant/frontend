@@ -109,7 +109,7 @@ class DialogZeroconfDiscoveryInfo extends LitElement {
             ${this.hass.localize("ui.panel.config.zeroconf.copy_to_clipboard")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 }

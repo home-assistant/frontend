@@ -127,7 +127,7 @@ export class HuiDialogSuggestBadge extends LitElement {
               `
             : nothing}
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

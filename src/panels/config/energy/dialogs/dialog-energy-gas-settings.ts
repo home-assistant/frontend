@@ -304,7 +304,7 @@ export class DialogEnergyGasSettings
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

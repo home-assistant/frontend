@@ -82,7 +82,7 @@ class DialogMatterManageFabrics extends LitElement {
           : html`<div class="center">
               <ha-spinner></ha-spinner>
             </div>`}
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

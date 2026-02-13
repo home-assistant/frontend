@@ -85,7 +85,7 @@ export class DialogYamlIntegration extends LitElement {
                 ${this.hass.localize("ui.common.ok")}
               </ha-button>`}
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

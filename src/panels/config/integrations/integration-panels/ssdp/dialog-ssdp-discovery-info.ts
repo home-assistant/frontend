@@ -128,7 +128,7 @@ class DialogSSDPDiscoveryInfo extends LitElement {
             ${this.hass.localize("ui.panel.config.ssdp.copy_to_clipboard")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 }

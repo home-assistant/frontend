@@ -158,7 +158,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 </ha-button>
               </ha-dialog-footer>
             `}
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

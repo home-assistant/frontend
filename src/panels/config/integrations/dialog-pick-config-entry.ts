@@ -57,7 +57,7 @@ export class DialogPickConfigEntry extends LitElement {
               >`
           )}
         </ha-md-list>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

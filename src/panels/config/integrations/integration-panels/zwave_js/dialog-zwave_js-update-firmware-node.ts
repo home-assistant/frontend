@@ -336,7 +336,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                 ? html` ${closeButton} `
                 : html` ${beginFirmwareUpdateButton} `}
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

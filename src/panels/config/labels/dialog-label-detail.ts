@@ -146,7 +146,7 @@ class DialogLabelDetail
               : this.hass!.localize("ui.common.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

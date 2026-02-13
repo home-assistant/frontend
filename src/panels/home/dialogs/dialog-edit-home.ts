@@ -105,7 +105,7 @@ export class DialogEditHome
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

@@ -156,7 +156,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
             )}
           </div>
         </div>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

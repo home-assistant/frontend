@@ -85,7 +85,7 @@ export class DialogJoinBeta
             ${this.hass.localize("ui.dialogs.join_beta_channel.join")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 

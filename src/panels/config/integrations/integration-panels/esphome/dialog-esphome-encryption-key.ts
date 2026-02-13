@@ -80,7 +80,7 @@ class DialogESPHomeEncryptionKey extends LitElement {
             ${this.hass.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 
