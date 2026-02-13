@@ -91,13 +91,14 @@ export class DemoHaDialog extends LitElement {
           <ha-dialog-footer slot="footer">
             <ha-button
               data-dialog="close"
+              appearance="plain"
               slot="secondaryAction"
-              variant="plain"
-              >Cancel</ha-button
             >
-            <ha-button data-dialog="close" slot="primaryAction" variant="accent"
-              >Submit</ha-button
-            >
+              Cancel
+            </ha-button>
+            <ha-button data-dialog="close" slot="primaryAction">
+              Submit
+            </ha-button>
           </ha-dialog-footer>
         </ha-dialog>
 
