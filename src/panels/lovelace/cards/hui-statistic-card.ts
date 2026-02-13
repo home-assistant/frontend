@@ -9,7 +9,10 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
-import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  getEnergyDataCollection,
+  validateEnergyCollectionKey,
+} from "../../../data/energy";
 import type { StatisticsMetaData } from "../../../data/recorder";
 import {
   fetchStatistic,
@@ -152,6 +155,9 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       !isValidEntityId(config.entity)
     ) {
       throw new Error("Invalid entity");
+    }
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
     }
     // Migrate legacy period option to new key
     if (config.period === PERIOD_ENERGY) {
