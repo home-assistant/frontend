@@ -221,17 +221,13 @@ class HUIRoot extends LitElement {
           >
             ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
           </ha-button>
-          <a
+          <ha-icon-button
+            .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+            .path=${mdiHelpCircle}
             href=${documentationUrl(this.hass, "/dashboards/")}
             rel="noreferrer"
-            class="menu-link"
             target="_blank"
-          >
-            <ha-icon-button
-              .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>`
+          ></ha-icon-button>`
       );
     }
 
@@ -1502,9 +1498,6 @@ class HUIRoot extends LitElement {
         }
         .hide-tab {
           display: none;
-        }
-        .menu-link {
-          text-decoration: none;
         }
         .exit-edit-mode {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);

@@ -216,9 +216,6 @@ export class CloudTTSPref extends LitElement {
   }
 
   static styles = css`
-    a {
-      color: var(--primary-color);
-    }
     .example {
       position: absolute;
       right: 16px;

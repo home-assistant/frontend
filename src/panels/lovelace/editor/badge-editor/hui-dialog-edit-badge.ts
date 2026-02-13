@@ -216,16 +216,15 @@ export class HuiDialogEditBadge
           <span slot="title" @click=${this._enlarge}>${heading}</span>
           ${this._documentationURL !== undefined
             ? html`
-                <a
+                <ha-icon-button
+                  .path=${mdiHelpCircle}
                   slot="actionItems"
                   href=${this._documentationURL}
                   title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                   target="_blank"
                   rel="noreferrer"
                   dir=${computeRTLDirection(this.hass)}
-                >
-                  <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
-                </a>
+                ></ha-icon-button>
               `
             : nothing}
         </ha-dialog-header>
@@ -500,9 +499,9 @@ export class HuiDialogEditBadge
           align-items: center;
           justify-content: space-between;
         }
-        ha-dialog-header a {
-          color: inherit;
-          text-decoration: none;
+
+        ha-icon-button[slot="actionItems"] {
+          color: var(--secondary-text-color);
         }
       `,
     ];

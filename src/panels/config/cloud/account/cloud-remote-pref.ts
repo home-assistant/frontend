@@ -83,19 +83,16 @@ export class CloudRemotePref extends LitElement {
         )}
       >
         <div class="header-actions">
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircle}
             href="https://www.nabucasa.com/config/remote/"
             target="_blank"
             rel="noreferrer"
             class="icon-link"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
           <ha-switch
             .checked=${remote_enabled}
             @change=${this._toggleChanged}
@@ -242,9 +239,6 @@ export class CloudRemotePref extends LitElement {
   static styles = css`
     .preparing {
       padding: 0 16px 16px;
-    }
-    a {
-      color: var(--primary-color);
     }
     .header-actions {
       position: absolute;

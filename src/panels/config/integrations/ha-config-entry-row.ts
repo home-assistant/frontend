@@ -27,6 +27,7 @@ import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import {
   deleteApplicationCredential,
@@ -75,7 +76,6 @@ import {
 import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-entry-row")
 class HaConfigEntryRow extends LitElement {
@@ -216,17 +216,16 @@ class HaConfigEntryRow extends LitElement {
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
           : configPanel && !stateText
-            ? html`<a
+            ? html`<ha-icon-button
+                .path=${mdiCogOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.configure"
+                )}
                 slot="end"
+                class="link"
                 href=${`/${configPanel}?config_entry=${item.entry_id}`}
-                ><ha-icon-button
-                  .path=${mdiCogOutline}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.configure"
-                  )}
-                >
-                </ha-icon-button
-              ></a>`
+              >
+              </ha-icon-button>`
             : item.supports_options
               ? html`
                   <ha-icon-button
@@ -842,7 +841,7 @@ class HaConfigEntryRow extends LitElement {
         margin: 16px;
         margin-top: 0;
       }
-      a ha-icon-button {
+      ha-icon-button.link {
         color: var(
           --md-list-item-trailing-icon-color,
           var(--md-sys-color-on-surface-variant, #49454f)

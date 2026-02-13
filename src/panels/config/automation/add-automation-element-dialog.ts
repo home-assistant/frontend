@@ -756,19 +756,16 @@ class DialogAddAutomationElement
         ${this._renderDialogSubtitle()}
         ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
           ? html`
-              <a
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                .label=${this.hass.localize(
+                  `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
+                )}
                 slot="actionItems"
                 href=${docUrl}
                 target="_blank"
                 rel="noreferrer"
-              >
-                <ha-icon-button
-                  .path=${mdiHelpCircle}
-                  .label=${this.hass.localize(
-                    `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
-                  )}
-                ></ha-icon-button>
-              </a>
+              ></ha-icon-button>
             `
           : nothing}
         ${this._narrow && (this._selectedGroup || this._selectedTarget)
@@ -2100,7 +2097,7 @@ class DialogAddAutomationElement
           --ha-dialog-max-height: var(--ha-dialog-min-height);
         }
 
-        ha-wa-dialog a[slot="actionItems"] {
+        ha-wa-dialog ha-icon-button[slot="actionItems"] {
           color: var(--secondary-text-color);
         }
 

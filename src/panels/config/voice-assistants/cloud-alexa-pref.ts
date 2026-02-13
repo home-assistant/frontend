@@ -72,19 +72,16 @@ export class CloudAlexaPref extends LitElement {
           >${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
         </h1>
         <div class="header-actions">
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircle}
             href="https://www.nabucasa.com/config/amazon_alexa/"
             target="_blank"
             rel="noreferrer"
             class="icon-link"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
           <ha-switch
             .checked=${alexa_enabled}
             @change=${this._enabledToggleChanged}

@@ -115,19 +115,16 @@ export class AssistPref extends LitElement {
           >Assist
         </h1>
         <div class="header-actions">
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.voice_assistants.assistants.pipeline.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircle}
             href=${documentationUrl(this.hass, "/docs/assist/")}
             target="_blank"
             rel="noreferrer noopener"
             class="icon-link"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.voice_assistants.assistants.pipeline.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
         </div>
         <ha-list>
           ${this._pipelines.map(

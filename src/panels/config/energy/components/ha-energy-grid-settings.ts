@@ -299,11 +299,10 @@ export class EnergyGridSettings extends LitElement {
                   })}
                 />
                 <span class="content">${this._co2ConfigEntry.title}</span>
-                <a
+                <ha-icon-button
                   href=${`/config/integrations/integration/${this._co2ConfigEntry?.domain}`}
-                >
-                  <ha-icon-button .path=${mdiPencil}></ha-icon-button>
-                </a>
+                  .path=${mdiPencil}
+                ></ha-icon-button>
                 <ha-icon-button
                   .label=${this.hass.localize(
                     "ui.panel.config.energy.grid.remove_co2_signal"

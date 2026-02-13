@@ -70,18 +70,15 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${heading}</span>
-          <a
+          <ha-icon-button
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
             href=${documentationUrl(this.hass!, "/lovelace/")}
             title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
             target="_blank"
             rel="noreferrer"
             slot="actionItems"
-          >
-            <ha-icon-button
-              .path=${mdiHelpCircle}
-              .label=${this.hass!.localize("ui.common.help")}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
         </ha-dialog-header>
         <div>
           <p>
@@ -200,9 +197,8 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
           --dialog-content-padding: 0 24px 24px 24px;
         }
 
-        ha-dialog-header a {
-          color: inherit;
-          text-decoration: none;
+        ha-icon-button[slot="actionItems"] {
+          color: var(--secondary-text-color);
         }
       `,
     ];
