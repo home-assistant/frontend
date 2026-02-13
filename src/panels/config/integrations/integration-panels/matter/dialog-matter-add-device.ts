@@ -176,6 +176,7 @@ class DialogMatterAddDevice extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${hasBackStep
