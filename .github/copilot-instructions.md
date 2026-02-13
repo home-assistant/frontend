@@ -214,13 +214,6 @@ By default, `:root` receives `view-transition-name: root`, creating a full-page 
 - Only one view transition can run at a time
 - **Shadow DOM incompatibility**: View transitions operate at document level and do not work within Shadow DOM due to style isolation ([spec discussion](https://github.com/w3c/csswg-drafts/issues/10303)). For web components, set `view-transition-name` on the `:host` element or use document-level transitions
 
-**Current Usage & Planned Applications:**
-
-- Launch screen fade out (implemented)
-- Automation sidebar transitions (planned - #27238)
-- More info dialog content changes (planned - #27672)
-- Toolbar navigation, ha-spinner transitions (planned)
-
 **Specification & Documentation:**
 
 For browser support, API details, and current specifications, refer to these authoritative sources (note: check publication dates as specs evolve):
