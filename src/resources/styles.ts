@@ -150,7 +150,6 @@ export const haStyle = css`
 `;
 
 export const haStyleDialog = css`
-  /* mwc-dialog (ha-dialog) styles */
   ha-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
