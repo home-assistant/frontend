@@ -1,3 +1,3 @@
 ---
-title: Dialog (ha-wa-dialog)
+title: Dialog (ha-dialog)
 ---

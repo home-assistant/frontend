@@ -68,7 +68,7 @@ export class DemoHaWaDialog extends LitElement {
           @closed=${this._handleClosed}
         >
           <div>Dialog content</div>
-        </ha-wa-dialog>
+        </ha-dialog>
 
         <ha-dialog
           .open=${this._openDialog === "basic-subtitle-above"}
@@ -78,7 +78,7 @@ export class DemoHaWaDialog extends LitElement {
           @closed=${this._handleClosed}
         >
           <div>Dialog content</div>
-        </ha-wa-dialog>
+        </ha-dialog>
 
         <ha-dialog
           .open=${this._openDialog === "form"}
@@ -99,7 +99,7 @@ export class DemoHaWaDialog extends LitElement {
               >Submit</ha-button
             >
           </ha-dialog-footer>
-        </ha-wa-dialog>
+        </ha-dialog>
 
         <ha-dialog
           .open=${this._openDialog === "actions"}
@@ -113,7 +113,7 @@ export class DemoHaWaDialog extends LitElement {
           </div>
 
           <div>Dialog content</div>
-        </ha-wa-dialog>
+        </ha-dialog>
 
         <h2>Design</h2>
 
@@ -249,7 +249,7 @@ export class DemoHaWaDialog extends LitElement {
 
         <h3>Example Usage</h3>
 
-        <pre><code>&lt;ha-wa-dialog
+        <pre><code>&lt;ha-dialog
   open
   header-title="Dialog title"
   header-subtitle="Dialog subtitle"
@@ -266,7 +266,7 @@ export class DemoHaWaDialog extends LitElement {
     &gt;
     &lt;ha-button slot="primaryAction" variant="accent"&gt;Submit&lt;/ha-button&gt;
   &lt;/ha-dialog-footer&gt;
-&lt;/ha-wa-dialog&gt;</code></pre>
+&lt;/ha-dialog&gt;</code></pre>
 
         <h3>API</h3>
 
