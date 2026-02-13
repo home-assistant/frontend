@@ -216,9 +216,7 @@ export class HaConfigPerson extends LitElement {
 
       // Add all persons (storage + config)
       for (const person of [...storageItems, ...configItems]) {
-        const user = person.user_id
-          ? userMap.get(person.user_id)
-          : undefined;
+        const user = person.user_id ? userMap.get(person.user_id) : undefined;
         if (person.user_id) {
           personUserIds.add(person.user_id);
         }

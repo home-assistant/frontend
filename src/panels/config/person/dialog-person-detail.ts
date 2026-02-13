@@ -322,9 +322,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         : nothing}
       <ha-settings-row>
         <span slot="heading">
-          ${this.hass.localize(
-            "ui.panel.config.person.detail.active"
-          )}
+          ${this.hass.localize("ui.panel.config.person.detail.active")}
         </span>
         <span slot="description">
           ${this.hass.localize(
