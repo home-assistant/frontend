@@ -278,14 +278,6 @@ fireEvent(this, "show-dialog", {
 - **Button sizes**: Use `size="small"` (32px height) or default/medium (40px height)
 - Always place primary action in `slot="primaryAction"` and secondary in `slot="secondaryAction"` within `ha-dialog-footer`
 
-**Recent Examples:**
-
-See these files for current patterns:
-
-- `src/panels/config/repairs/dialog-repairs-issue.ts`
-- `src/dialogs/restart/dialog-restart.ts`
-- `src/panels/config/lovelace/resources/dialog-lovelace-resource-detail.ts`
-
 **Gallery Documentation:**
 
 - `gallery/src/pages/components/ha-dialog.markdown`
