@@ -23,7 +23,7 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
 /**
  * Home Assistant dialog component
  *
- * @element ha-wa-dialog
+ * @element ha-dialog
  * @extends {LitElement}
  *
  * @summary
@@ -73,8 +73,8 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  *
  * @see https://github.com/home-assistant/frontend/issues/27143
  */
-@customElement("ha-wa-dialog")
-export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
+@customElement("ha-dialog")
+export class HaDialog extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: "aria-labelledby" })
@@ -142,7 +142,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         without-header
         aria-labelledby=${ifDefined(
           this.ariaLabelledBy ||
-            (this.headerTitle !== undefined ? "ha-wa-dialog-title" : undefined)
+            (this.headerTitle !== undefined ? "ha-dialog-title" : undefined)
         )}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @keydown=${this._handleKeyDown}
@@ -168,7 +168,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
                   ? html`<span
                       slot="title"
                       class="title"
-                      id="ha-wa-dialog-title"
+                      id="ha-dialog-title"
                     >
                       ${this.headerTitle}
                     </span>`
@@ -202,7 +202,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
         const element = this.querySelector("[autofocus]");
         if (element !== null) {
           if (!element.id) {
-            element.id = "ha-wa-dialog-autofocus";
+            element.id = "ha-dialog-autofocus";
           }
           this.hass?.auth.external?.fireMessage({
             type: "focus_element",
@@ -440,7 +440,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-wa-dialog": HaWaDialog;
+    "ha-dialog": HaDialog;
   }
 
   interface HASSDomEvents {
