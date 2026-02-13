@@ -168,7 +168,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     return [
       haStyleScrollbar,
       css`
-        ha-dialog
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         .content-container {
