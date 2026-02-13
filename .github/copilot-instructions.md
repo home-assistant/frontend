@@ -372,81 +372,6 @@ export class HaPanelMyFeature extends SubscribeMixin(LitElement) {
 }
 ```
 
-### Creating a Dialog
-
-```typescript
-@customElement("dialog-my-feature")
-export class DialogMyFeature
-  extends LitElement
-  implements HassDialog<MyDialogParams>
-{
-  @property({ attribute: false })
-  hass!: HomeAssistant;
-
-  @state()
-  private _params?: MyDialogParams;
-
-  @state()
-  private _open = false;
-
-  public async showDialog(params: MyDialogParams): Promise<void> {
-    this._params = params;
-    this._open = true;
-  }
-
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  protected render() {
-    if (!this._params) {
-      return nothing;
-    }
-
-    return html`
-      <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this._params.title}
-        header-subtitle=${this._params.subtitle}
-        @closed=${this._dialogClosed}
-      >
-        <p>Dialog content</p>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this.closeDialog}
-          >
-            ${this.hass.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button slot="primaryAction" @click=${this._submit}>
-            ${this.hass.localize("ui.common.save")}
-          </ha-button>
-        </ha-dialog-footer>
-      </ha-dialog>
-    `;
-  }
-
-  static styles = [haStyleDialog, css``];
-}
-```
-
-### Dialog Design Guidelines
-
-- Max width: 560px (Alert/confirmation: 320px fixed width)
-- Close X-icon on top left (all screen sizes)
-- Submit button grouped with cancel at bottom right
-- Keep button labels short: "Save", "Delete", "Enable"
-- Destructive actions use red warning button
-- Always use a title (best practice)
-- Strive for minimalism
-
 #### Creating a Lovelace Card
 
 **Purpose**: Cards allow users to tell different stories about their house (based on gallery)
@@ -698,9 +623,6 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 
 ### Component-Specific Checks
 
-- [ ] Dialogs implement HassDialog interface
-- [ ] Dialog styling uses haStyleDialog
-- [ ] Dialog accessibility includes dialogInitialFocus
 - [ ] ha-alert used correctly for messages
 - [ ] ha-form uses proper schema structure
 - [ ] Components handle all states (loading, error, unavailable)
