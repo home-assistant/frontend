@@ -158,17 +158,14 @@ export class HaVoiceCommandDialog extends LitElement {
                 : nothing}
             </ha-dropdown>
           </div>
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize("ui.common.help")}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/docs/assist/")}
             slot="actionItems"
             target="_blank"
             rel="noopener noreferer"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize("ui.common.help")}
-              .path=${mdiHelpCircleOutline}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
         </ha-dialog-header>
 
         ${this._errorLoadAssist

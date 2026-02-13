@@ -4,8 +4,8 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
-import { goBack } from "../common/navigate";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import { goBack } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
@@ -143,11 +143,10 @@ class HassTabsSubpage extends LitElement {
                 `
               : this.backPath
                 ? html`
-                    <a href=${this.backPath}>
-                      <ha-icon-button-arrow-prev
-                        .hass=${this.hass}
-                      ></ha-icon-button-arrow-prev>
-                    </a>
+                    <ha-icon-button-arrow-prev
+                      href=${this.backPath}
+                      .hass=${this.hass}
+                    ></ha-icon-button-arrow-prev>
                   `
                 : html`
                     <ha-icon-button-arrow-prev

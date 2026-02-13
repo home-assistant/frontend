@@ -2,6 +2,7 @@ import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { mainWindow } from "../common/dom/get_main_window";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
@@ -14,6 +15,14 @@ export class HaIconButtonArrowPrev extends LitElement {
 
   @property() public label?: string;
 
+  @property() href?: string;
+
+  @property() target?: "_blank" | "_parent" | "_self" | "_top";
+
+  @property() rel?: string;
+
+  @property() download?: string;
+
   @state() private _icon =
     mainWindow.document.dir === "rtl" ? mdiArrowRight : mdiArrowLeft;
 
@@ -23,6 +32,10 @@ export class HaIconButtonArrowPrev extends LitElement {
         .disabled=${this.disabled}
         .label=${this.label || this.hass?.localize("ui.common.back") || "Back"}
         .path=${this._icon}
+        href=${ifDefined(this.href)}
+        target=${ifDefined(this.target)}
+        .rel=${this.rel}
+        .download=${this.download}
       ></ha-icon-button>
     `;
   }

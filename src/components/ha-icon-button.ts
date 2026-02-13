@@ -24,6 +24,14 @@ export class HaIconButton extends LitElement {
 
   @property({ type: Boolean, reflect: true }) selected = false;
 
+  @property() href?: string;
+
+  @property() target?: "_blank" | "_parent" | "_self" | "_top";
+
+  @property() rel?: string;
+
+  @property() download?: string;
+
   static shadowRootOptions: ShadowRootInit = {
     mode: "open",
     delegatesFocus: true,
@@ -39,6 +47,10 @@ export class HaIconButton extends LitElement {
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
         .disabled=${this.disabled}
         .iconTag=${"ha-svg-icon"}
+        href=${ifDefined(this.href)}
+        target=${ifDefined(this.target)}
+        .rel=${this.rel}
+        .download=${this.download}
       >
         ${this.path
           ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>`
