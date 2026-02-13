@@ -120,7 +120,6 @@ export class HuiDialogSuggestCard extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        width="large"
         header-title=${this.hass!.localize(
           "ui.panel.lovelace.editor.suggest_card.header"
         )}
