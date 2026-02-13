@@ -165,11 +165,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
                   ></ha-icon-button>
                 </slot>
                 ${this.headerTitle !== undefined
-                  ? html`<span
-                      slot="title"
-                      class="title"
-                      id="ha-dialog-title"
-                    >
+                  ? html`<span slot="title" class="title" id="ha-dialog-title">
                       ${this.headerTitle}
                     </span>`
                   : html`<slot name="headerTitle" slot="title"></slot>`}
