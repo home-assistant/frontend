@@ -80,15 +80,9 @@ const cardConfigStruct = assign(
   })
 );
 
-const periods = [
-  "5minute",
-  "hour",
-  "day",
-  "week",
-  "month",
-  "year",
-  "auto",
-] as const;
+const periods = ["5minute", "hour", "day", "week", "month", "year"] as const;
+const energyPeriods = [...periods, "auto"] as const;
+
 const stat_types = [
   "mean",
   "min",
@@ -204,21 +198,20 @@ export class HuiStatisticsGraphCardEditor
               selector: {
                 select: {
                   mode: "list",
-                  options: periods.map((period) => ({
-                    value: period,
-                    label: localize(
-                      `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
-                    ),
-                    disabled:
-                      period === "5minute"
-                        ? // External statistics don't support 5-minute statistics.
-                          statisticIds?.some((statistic_id) =>
-                            isExternalStatistic(statistic_id)
-                          )
-                        : period === "auto"
-                          ? !enableDateSelect
-                          : false,
-                  })),
+                  options: (enableDateSelect ? energyPeriods : periods).map(
+                    (period) => ({
+                      value: period,
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.statistics-graph.periods.${period}`
+                      ),
+                      disabled:
+                        // External statistics don't support 5-minute statistics.
+                        period === "5minute" &&
+                        statisticIds?.some((statistic_id) =>
+                          isExternalStatistic(statistic_id)
+                        ),
+                    })
+                  ),
                 },
               },
             },
