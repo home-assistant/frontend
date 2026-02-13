@@ -86,6 +86,7 @@ export interface MoreInfoDialogParams {
   view?: View;
   /** @deprecated Use `view` instead */
   tab?: View;
+  large?: boolean;
   data?: Record<string, any>;
 }
 
@@ -115,6 +116,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
+
+  @state() private _fill = false;
 
   @state() private _open = false;
 
@@ -157,7 +160,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._currView = params.view || DEFAULT_VIEW;
     this._initialView = params.view || DEFAULT_VIEW;
     this._childView = undefined;
-    this.large = false;
+    this.large = params.large ?? false;
+    this._fill = false;
     this._open = true;
     this._loadEntityRegistryEntry();
   }
@@ -470,7 +474,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
-        .width=${this.large ? "full" : "medium"}
+        .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
         ?prevent-scrim-close=${!this._isEscapeEnabled}
@@ -777,7 +781,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _enlarge() {
     withViewTransition(() => {
-      this.large = !this.large;
+      this._fill = !this._fill;
     });
   }
 
