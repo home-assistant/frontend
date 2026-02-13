@@ -23,7 +23,7 @@ type DialogType =
   | "actions";
 
 @customElement("demo-components-ha-dialog")
-export class DemoHaWaDialog extends LitElement {
+export class DemoHaDialog extends LitElement {
   @state() private _openDialog: DialogType = false;
 
   protected render() {
@@ -514,6 +514,6 @@ export class DemoHaWaDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-dialog": DemoHaWaDialog;
+    "demo-components-ha-dialog": DemoHaDialog;
   }
 }
