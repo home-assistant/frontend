@@ -248,11 +248,6 @@ For browser support, API details, and current specifications, refer to these aut
 
 ### Dialog Components
 
-**Available Dialog Types:**
-
-- `ha-wa-dialog` - Preferred for new dialogs (Web Awesome based)
-- `ha-dialog` - Legacy component (still widely used)
-
 **Opening Dialogs (Fire Event Pattern - Recommended):**
 
 ```typescript
@@ -265,6 +260,7 @@ fireEvent(this, "show-dialog", {
 
 **Dialog Implementation Requirements:**
 
+- Use `ha-dialog` component
 - Implement `HassDialog<T>` interface
 - Use `@state() private _open = false` to control dialog visibility
 - Set `_open = true` in `showDialog()`, `_open = false` in `closeDialog()`
@@ -280,7 +276,7 @@ fireEvent(this, "show-dialog", {
 
 - Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (560px - default), `"large"` (720px), or `"full"`
 - Custom sizing is NOT recommended - use the standard width presets
-- Example: `<ha-wa-dialog width="small">` for alert/confirmation dialogs
+- Example: `<ha-dialog width="small">` for alert/confirmation dialogs
 
 **Button Appearance Guidelines:**
 
@@ -300,7 +296,7 @@ See these files for current patterns:
 
 **Gallery Documentation:**
 
-- `gallery/src/pages/components/ha-wa-dialog.markdown`
+- `gallery/src/pages/components/ha-dialog.markdown`
 - `gallery/src/pages/components/ha-dialogs.markdown`
 
 ### Form Component (ha-form)
@@ -430,7 +426,7 @@ export class DialogMyFeature
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title}
@@ -450,7 +446,7 @@ export class DialogMyFeature
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
