@@ -6946,7 +6946,7 @@
             "remove_node": "Remove device",
             "remove_a_node": "Remove a device",
             "rebuild_network_routes": "Rebuild network routes",
-            "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
+            "in_progress_inclusion_exclusion": "Z-Wave is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
           },
           "dashboard": {
@@ -6971,8 +6971,8 @@
             },
             "data_collection": {
               "title": "Third-party data reporting",
-              "description": "Enable the reporting of anonymized telemetry and statistics to the Z-Wave JS organization. This data will be used to focus development efforts and improve the user experience. Information about the data that is collected and how it is used, including an example of the data collected, can be found in the {documentation_link}.",
-              "documentation_link": "Z-Wave JS data collection documentation"
+              "description": "Enable the reporting of anonymized telemetry and statistics to the Z-Wave organization. This data will be used to focus development efforts and improve the user experience. Information about the data that is collected and how it is used, including an example of the data collected, can be found in the {documentation_link}.",
+              "documentation_link": "Z-Wave data collection documentation"
             },
             "statistics": {
               "title": "Adapter statistics",
@@ -7029,7 +7029,7 @@
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}",
             "node_statistics": "Statistics",
-            "custom_device_config": "This device is using a custom device config file not provided by Z-Wave JS. If you want to use the default device config provided by Z-Wave JS, you must remove the custom device config file from the folder that Z-Wave JS is reading from."
+            "custom_device_config": "This device is using a custom device config file not provided by Z-Wave. If you want to use the default device config provided by Z-Wave, you must remove the custom device config file from the folder that Z-Wave is reading from."
           },
           "hard_reset_controller": {
             "NotStarted": {
@@ -7130,7 +7130,7 @@
             "introduction": "Manage and adjust device-specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
             "endpoint": "Endpoint {endpoint}",
-            "zwave_js_device_database": "Z-Wave JS device database",
+            "zwave_js_device_database": "Z-Wave device database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
             "parameter_is_read_only": "This parameter is read-only.",
             "between_min_max": "Between {min} and {max}",
@@ -7341,8 +7341,8 @@
           },
           "update_firmware": {
             "title": "Update device firmware",
-            "warning": "WARNING: Firmware updates can brick your device if you do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your device as a result of the firmware update and will not be able to help you if you brick your device. Would you still like to continue?",
-            "warning_controller": "WARNING: Firmware updates can brick your adapter if you do not use the right firmware files, or if you attempt to stop the firmware update before it completes. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your adapter as a result of the firmware update and will not be able to help you if you brick your adapter. Would you still like to continue?",
+            "warning": "WARNING: Firmware updates can brick your device if you do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave teams do not take any responsibility for any damages to your device as a result of the firmware update and will not be able to help you if you brick your device. Would you still like to continue?",
+            "warning_controller": "WARNING: Firmware updates can brick your adapter if you do not use the right firmware files, or if you attempt to stop the firmware update before it completes. The Home Assistant and Z-Wave teams do not take any responsibility for any damages to your adapter as a result of the firmware update and will not be able to help you if you brick your adapter. Would you still like to continue?",
             "introduction": "Select the firmware file you would like to use to update {device}.",
             "introduction_controller": "Select the firmware file you would like to use to update {device}. Note that once you start a firmware update, you MUST wait for the update to complete.",
             "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update.",
@@ -7386,9 +7386,9 @@
             }
           },
           "logs": {
-            "title": "Z-Wave JS logs",
+            "title": "Z-Wave logs",
             "log_level": "Log level",
-            "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
+            "subscribed_to_logs": "Subscribed to Z-Wave log messages…",
             "log_level_changed": "Log level changed to: {level}",
             "download_logs": "Download logs"
           },
@@ -7500,7 +7500,7 @@
           },
           "picker": {
             "title": "Select Z-Wave network",
-            "no_entries": "No Z-Wave networks configured. Set up the Z-Wave JS integration first."
+            "no_entries": "No Z-Wave networks configured. Set up the Z-Wave integration first."
           }
         },
         "matter": {
