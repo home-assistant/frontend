@@ -6,7 +6,7 @@ import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-dialog-footer";
 import "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-icon-button";
-import "../../../../src/components/ha-wa-dialog";
+import "../../../../src/components/ha-dialog";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 
 const SCHEMA: HaFormSchema[] = [
@@ -22,14 +22,14 @@ type DialogType =
   | "form"
   | "actions";
 
-@customElement("demo-components-ha-wa-dialog")
+@customElement("demo-components-ha-dialog")
 export class DemoHaWaDialog extends LitElement {
   @state() private _openDialog: DialogType = false;
 
   protected render() {
     return html`
       <div class="content">
-        <h1>Dialog <code>&lt;ha-wa-dialog&gt;</code></h1>
+        <h1>Dialog <code>&lt;ha-dialog&gt;</code></h1>
 
         <p class="subtitle">Dialog component built with WebAwesome.</p>
 
@@ -53,15 +53,15 @@ export class DemoHaWaDialog extends LitElement {
           >
         </div>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "basic"}
           header-title="Basic dialog"
           @closed=${this._handleClosed}
         >
           <div>Dialog content</div>
-        </ha-wa-dialog>
+        </ha-dialog>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "basic-subtitle-below"}
           header-title="Basic dialog with subtitle"
           header-subtitle="This is a basic dialog with a subtitle below"
@@ -70,7 +70,7 @@ export class DemoHaWaDialog extends LitElement {
           <div>Dialog content</div>
         </ha-wa-dialog>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "basic-subtitle-above"}
           header-title="Dialog with subtitle above"
           header-subtitle="This is a basic dialog with a subtitle above"
@@ -80,7 +80,7 @@ export class DemoHaWaDialog extends LitElement {
           <div>Dialog content</div>
         </ha-wa-dialog>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "form"}
           header-title="Dialog with form"
           header-subtitle="This is a dialog with a form and a footer"
@@ -101,7 +101,7 @@ export class DemoHaWaDialog extends LitElement {
           </ha-dialog-footer>
         </ha-wa-dialog>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "actions"}
           header-title="Dialog with actions"
           header-subtitle="This is a dialog with header actions"
@@ -514,6 +514,6 @@ export class DemoHaWaDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-wa-dialog": DemoHaWaDialog;
+    "demo-components-ha-dialog": DemoHaWaDialog;
   }
 }
