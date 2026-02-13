@@ -596,7 +596,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     .volume ha-icon-button {
-      --mdc-icon-button-size: 32px;
+      --ha-icon-button-size: 32px;
       --mdc-icon-size: 16px;
     }
 

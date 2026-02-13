@@ -257,7 +257,7 @@ export class CloudTTSPref extends LitElement {
       font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
       --mdc-icon-size: 14px;
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
     }
     :host([narrow]) .voice-id {
       flex-direction: column;

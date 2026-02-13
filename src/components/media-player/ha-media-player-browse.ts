@@ -1232,7 +1232,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         .child .play:not(.can_expand) {
-          --mdc-icon-button-size: 70px;
+          --ha-icon-button-size: 70px;
           --mdc-icon-size: 48px;
           background-color: var(--primary-color);
           color: var(--text-primary-color);
@@ -1293,7 +1293,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           transition: all 0.5s;
           background-color: rgba(var(--rgb-card-background-color), 0.5);
           border-radius: var(--ha-border-radius-circle);
-          --mdc-icon-button-size: 40px;
+          --ha-icon-button-size: 40px;
         }
 
         ha-list-item:hover .graphic .play {

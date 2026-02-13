@@ -401,7 +401,7 @@ class HaConfigSectionStorage extends LitElement {
     }
 
     .help-button {
-      --mdc-icon-button-size: 20px;
+      --ha-icon-button-size: 20px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
     }

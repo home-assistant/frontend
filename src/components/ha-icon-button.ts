@@ -61,7 +61,7 @@ export class HaIconButton extends LitElement {
       inset: 0;
       z-index: -1;
       border-radius: 50%;
-      background-color: var(--ha-color-fill-neutral-loud-hover);
+      background-color: currentColor;
       opacity: 0;
       pointer-events: none;
     }
@@ -82,12 +82,12 @@ export class HaIconButton extends LitElement {
       display: flex;
     }
     :host([selected])::after {
-      opacity: 0.2;
+      opacity: 0.1;
     }
 
     @media (hover: hover) {
       :host(:hover:not([disabled]))::after {
-        opacity: 0.2;
+        opacity: 0.1;
       }
     }
   `;
