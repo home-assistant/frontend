@@ -210,7 +210,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog
+        ha-dialog {
           --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
         ha-md-list {
