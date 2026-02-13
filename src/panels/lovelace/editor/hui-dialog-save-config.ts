@@ -197,7 +197,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
           --dialog-content-padding: 0 24px 24px 24px;
         }
 
-        ha-wa-dialog ha-icon-button[slot="actionItems"] {
+        ha-wa-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
         }
       `,
