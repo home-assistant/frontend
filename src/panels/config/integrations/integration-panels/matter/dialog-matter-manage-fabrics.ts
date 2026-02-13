@@ -154,7 +154,7 @@ class DialogMatterManageFabrics extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog
+        ha-dialog {
           --dialog-content-padding: 0;
           --mdc-list-side-padding: 24px;
           --mdc-list-side-padding-right: 16px;
