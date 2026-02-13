@@ -51,11 +51,19 @@ export class HaIconButton extends LitElement {
     :host {
       display: inline-block;
       outline: none;
-      position: relative;
-      isolation: isolate;
       --ha-button-height: var(--ha-icon-button-size, 48px);
     }
-    :host::after {
+    ha-button {
+      position: relative;
+      isolation: isolate;
+      --wa-form-control-padding-inline: var(
+        --ha-icon-button-padding-inline,
+        --ha-space-2
+      );
+      --wa-color-on-normal: currentColor;
+      --wa-color-fill-quiet: transparent;
+    }
+    ha-button::after {
       content: "";
       position: absolute;
       inset: 0;
@@ -65,14 +73,6 @@ export class HaIconButton extends LitElement {
       opacity: 0;
       pointer-events: none;
     }
-    ha-button {
-      --wa-form-control-padding-inline: var(
-        --ha-icon-button-padding-inline,
-        --ha-space-2
-      );
-      --wa-color-on-normal: currentColor;
-      --wa-color-fill-quiet: transparent;
-    }
     ha-button::part(base) {
       width: var(--wa-form-control-height);
       aspect-ratio: 1;
@@ -81,12 +81,12 @@ export class HaIconButton extends LitElement {
     ha-button::part(label) {
       display: flex;
     }
-    :host([selected])::after {
+    :host([selected]) ha-button::after {
       opacity: 0.1;
     }
 
     @media (hover: hover) {
-      :host(:hover:not([disabled]))::after {
+      :host(:hover:not([disabled])) ha-button::after {
         opacity: 0.1;
       }
     }
