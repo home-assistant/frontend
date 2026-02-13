@@ -819,7 +819,7 @@ class AddIntegrationDialog extends LitElement {
     haStyleScrollbar,
     haStyleDialog,
     css`
-      ha-dialog
+      ha-dialog {
         --dialog-content-padding: 0;
       }
       search-input {
