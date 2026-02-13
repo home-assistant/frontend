@@ -263,7 +263,7 @@ class DialogExposeEntity extends LitElement {
       haStyle,
       haStyleScrollbar,
       css`
-        ha-dialog
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         ha-list {

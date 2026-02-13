@@ -258,7 +258,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     return [
       haStyleScrollbar,
       css`
-        ha-dialog
+        ha-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
           --ha-dialog-min-height: 60svh;

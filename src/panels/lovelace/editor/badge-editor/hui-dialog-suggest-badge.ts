@@ -135,7 +135,7 @@ export class HuiDialogSuggestBadge extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-dialog
+        ha-dialog {
           --dialog-z-index: 6;
         }
         .hidden {

@@ -414,7 +414,7 @@ export class HuiDialogEditBadge
           --code-mirror-max-height: calc(100vh - 176px);
         }
 
-        ha-dialog
+        ha-dialog {
           --dialog-z-index: 6;
           --dialog-content-padding: var(--ha-space-2);
         }
@@ -496,7 +496,7 @@ export class HuiDialogEditBadge
           margin-inline-end: auto;
           margin-inline-start: initial;
         }
-        ha-dialogslot="headerActionItems"] {
+        ha-dialog a[slot="headerActionItems"] {
           color: inherit;
           text-decoration: none;
         }

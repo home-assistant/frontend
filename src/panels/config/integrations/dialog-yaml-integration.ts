@@ -97,7 +97,7 @@ export class DialogYamlIntegration extends LitElement {
     a {
       text-decoration: none;
     }
-    ha-dialog
+    ha-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
     }

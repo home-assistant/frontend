@@ -138,7 +138,7 @@ export class DialogEditHome
   static styles = [
     haStyleDialog,
     css`
-      ha-dialog
+      ha-dialog {
         --dialog-content-padding: var(--ha-space-6);
       }
 

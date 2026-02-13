@@ -67,7 +67,7 @@ export class DialogPickConfigEntry extends LitElement {
   }
 
   static styles = css`
-    ha-dialog
+    ha-dialog {
       --dialog-content-padding: 0;
     }
   `;
