@@ -21,7 +21,8 @@ import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import {
   createEnergyCollectionKey,
-  ENERGY_COLLECTION_KEY_PREFIX,
+  stripEnergyCollectionKeyPrefix,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 
 const cardConfigStruct = assign(
@@ -48,6 +49,8 @@ export class HuiEnergyDateSelectionCardEditor
 
   public setConfig(config: EnergyDateSelectorCardConfig): void {
     assert(config, cardConfigStruct);
+    if (config.collection_key)
+      validateEnergyCollectionKey(config.collection_key, true);
     this._config = config;
   }
 
@@ -97,8 +100,8 @@ export class HuiEnergyDateSelectionCardEditor
     };
 
     if (data.collection_key) {
-      data.collection_group = data.collection_key.slice(
-        ENERGY_COLLECTION_KEY_PREFIX.length
+      data.collection_group = stripEnergyCollectionKeyPrefix(
+        data.collection_key
       );
     }
 
