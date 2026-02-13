@@ -68,7 +68,6 @@
     "@material/mwc-fab": "0.27.0",
     "@material/mwc-floating-label": "0.27.0",
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch",
-    "@material/mwc-icon-button": "0.27.0",
     "@material/mwc-linear-progress": "0.27.0",
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch",
     "@material/mwc-radio": "0.27.0",
