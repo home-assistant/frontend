@@ -13,6 +13,7 @@ import type {
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
+import { computeCardGridSize } from "../common/compute-card-grid-size";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { replaceView } from "../editor/config-util";
@@ -66,7 +67,12 @@ export class HuiViewFooter extends LitElement {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
     element.preview = this.lovelace.editMode;
+    element.layout = "grid";
     element.config = cardConfig;
+    element.addEventListener("card-updated", (ev: Event) => {
+      ev.stopPropagation();
+      this.requestUpdate();
+    });
     element.load();
     return element;
   }
@@ -133,6 +139,38 @@ export class HuiViewFooter extends LitElement {
     this.lovelace.saveConfig(updatedConfig);
   }
 
+  private _renderCard(card: HuiCard, editMode: boolean) {
+    const gridOptions = card.getGridOptions();
+    const { rows } = computeCardGridSize(gridOptions);
+
+    return html`
+      <div
+        class="card ${classMap({
+          "fit-rows": typeof rows === "number",
+        })}"
+        style=${styleMap({
+          "--row-size": typeof rows === "number" ? String(rows) : undefined,
+        })}
+      >
+        ${editMode
+          ? html`
+              <hui-card-edit-mode
+                @ll-edit-card=${this._editCard}
+                @ll-delete-card=${this._deleteCard}
+                .hass=${this.hass}
+                .lovelace=${this.lovelace!}
+                .path=${[0]}
+                no-duplicate
+                no-move
+              >
+                ${card}
+              </hui-card-edit-mode>
+            `
+          : card}
+      </div>
+    `;
+  }
+
   render() {
     if (!this.lovelace) return nothing;
 
@@ -164,22 +202,10 @@ export class HuiViewFooter extends LitElement {
             `
           : nothing}
         <div class=${classMap({ container: true, "edit-mode": editMode })}>
-          ${editMode
-            ? card
+          ${card
+            ? this._renderCard(card, editMode)
+            : editMode
               ? html`
-                  <hui-card-edit-mode
-                    @ll-edit-card=${this._editCard}
-                    @ll-delete-card=${this._deleteCard}
-                    .hass=${this.hass}
-                    .lovelace=${this.lovelace!}
-                    .path=${[0]}
-                    no-duplicate
-                    no-move
-                  >
-                    ${card}
-                  </hui-card-edit-mode>
-                `
-              : html`
                   <button class="add" @click=${this._addCard}>
                     <ha-ripple></ha-ripple>
                     <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
@@ -188,7 +214,7 @@ export class HuiViewFooter extends LitElement {
                     )}
                   </button>
                 `
-            : card}
+              : nothing}
         </div>
       </div>
     `;
@@ -228,7 +254,15 @@ export class HuiViewFooter extends LitElement {
     }
 
     .container {
+      --row-height: var(--ha-section-grid-row-height, 56px);
+      --row-gap: var(--ha-section-grid-row-gap, 8px);
+      --column-gap: var(--ha-section-grid-column-gap, 8px);
       position: relative;
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-auto-rows: auto;
+      row-gap: var(--row-gap);
+      column-gap: var(--column-gap);
     }
 
     .container.edit-mode {
@@ -236,6 +270,20 @@ export class HuiViewFooter extends LitElement {
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
+    }
+
+    .card {
+      position: relative;
+      grid-column: 1 / -1;
+      grid-row: span var(--row-size, 1);
+    }
+
+    .card.fit-rows {
+      height: calc(
+        (var(--row-size, 1) * (var(--row-height) + var(--row-gap))) - var(
+            --row-gap
+          )
+      );
     }
 
     .actions-container {
@@ -269,6 +317,8 @@ export class HuiViewFooter extends LitElement {
     }
 
     .add {
+      grid-column: 1 / -1;
+      margin: 0 auto;
       position: relative;
       display: flex;
       flex-direction: row;
