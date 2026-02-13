@@ -2,7 +2,6 @@ import { ContextProvider } from "@lit/context";
 import {
   mdiAccount,
   mdiBackupRestore,
-  mdiBadgeAccountHorizontal,
   mdiBluetooth,
   mdiCellphoneCog,
   mdiCog,
@@ -183,7 +182,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "people",
       iconPath: mdiAccount,
       iconColor: "#5A87FA",
-      component: ["person", "users"],
+      component: "person",
     },
     {
       path: "/config/system",
@@ -323,15 +322,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.person.caption",
       iconPath: mdiAccount,
       iconColor: "#5A87FA",
-    },
-    {
-      component: "users",
-      path: "/config/users",
-      translationKey: "ui.panel.config.users.caption",
-      iconPath: mdiBadgeAccountHorizontal,
-      iconColor: "#5A87FA",
-      core: true,
-      advancedOnly: true,
     },
   ],
   areas: [
@@ -594,10 +584,8 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "ha-config-repairs-dashboard",
         load: () => import("./repairs/ha-config-repairs-dashboard"),
       },
-      users: {
-        tag: "ha-config-users",
-        load: () => import("./users/ha-config-users"),
-      },
+      // users tab was merged into person
+      users: "person",
       zone: {
         tag: "ha-config-zone",
         load: () => import("./zone/ha-config-zone"),

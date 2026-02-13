@@ -6296,6 +6296,8 @@
             "allow_login_description": "Allow access using username and password.",
             "username": "[%key:ui::panel::config::users::editor::username%]",
             "password": "[%key:ui::panel::config::users::editor::password%]",
+            "active": "[%key:ui::panel::config::users::editor::active%]",
+            "active_description": "[%key:ui::panel::config::users::editor::active_description%]",
             "admin": "[%key:ui::panel::config::users::editor::admin%]",
             "admin_description": "[%key:ui::panel::config::users::editor::admin_description%]",
             "local_access_only": "[%key:ui::panel::config::users::editor::local_access_only%]",

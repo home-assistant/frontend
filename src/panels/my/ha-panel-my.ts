@@ -231,7 +231,7 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/zone",
   },
   users: {
-    redirect: "/config/users",
+    redirect: "/config/person",
   },
   general: {
     redirect: "/config/general",

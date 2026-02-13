@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-alert";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -55,6 +56,8 @@ class DialogPersonDetail extends LitElement implements HassDialog {
 
   @state() private _isAdmin?: boolean;
 
+  @state() private _isActive?: boolean;
+
   @state() private _localOnly?: boolean;
 
   @state() private _deviceTrackers!: string[];
@@ -89,6 +92,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         ? this._params.users?.find((user) => user.id === this._userId)
         : undefined;
       this._isAdmin = this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+      this._isActive = this._user?.is_active;
       this._localOnly = this._user?.local_only;
     } else {
       this._personExists = false;
@@ -96,6 +100,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._userId = undefined;
       this._user = undefined;
       this._isAdmin = undefined;
+      this._isActive = undefined;
       this._localOnly = undefined;
       this._deviceTrackers = [];
       this._picture = null;
@@ -318,6 +323,24 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       <ha-settings-row>
         <span slot="heading">
           ${this.hass.localize(
+            "ui.panel.config.person.detail.active"
+          )}
+        </span>
+        <span slot="description">
+          ${this.hass.localize(
+            "ui.panel.config.person.detail.active_description"
+          )}
+        </span>
+        <ha-switch
+          .disabled=${user.system_generated || user.is_owner}
+          .checked=${this._isActive}
+          @change=${this._activeChanged}
+        >
+        </ha-switch>
+      </ha-settings-row>
+      <ha-settings-row>
+        <span slot="heading">
+          ${this.hass.localize(
             "ui.panel.config.person.detail.local_access_only"
           )}
         </span>
@@ -349,6 +372,15 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         >
         </ha-switch>
       </ha-settings-row>
+      ${!this._isAdmin && !user.system_generated
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass.localize(
+                "ui.panel.config.users.users_privileges_note"
+              )}
+            </ha-alert>
+          `
+        : nothing}
     `;
   }
 
@@ -359,6 +391,10 @@ class DialogPersonDetail extends LitElement implements HassDialog {
 
   private _adminChanged(ev): void {
     this._isAdmin = ev.target.checked;
+  }
+
+  private _activeChanged(ev): void {
+    this._isActive = ev.target.checked;
   }
 
   private _localOnlyChanged(ev): void {
@@ -380,6 +416,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
             this._user = user;
             this._userId = user.id;
             this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+            this._isActive = user.is_active;
             this._localOnly = user.local_only;
           }
         },
@@ -408,6 +445,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._userId = undefined;
       this._user = undefined;
       this._isAdmin = undefined;
+      this._isActive = undefined;
       this._localOnly = undefined;
     }
   }
@@ -492,10 +530,12 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         (this._userId && this._name !== this._params!.entry?.name) ||
         this._isAdmin !==
           this._user?.group_ids.includes(SYSTEM_GROUP_ID_ADMIN) ||
+        this._isActive !== this._user?.is_active ||
         this._localOnly !== this._user?.local_only
       ) {
         await updateUser(this.hass!, this._userId!, {
           name: this._name.trim(),
+          is_active: this._isActive,
           group_ids: [
             this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
           ],
