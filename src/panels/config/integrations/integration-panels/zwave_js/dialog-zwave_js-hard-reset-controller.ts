@@ -96,7 +96,7 @@ class DialogZWaveJSHardResetController extends LitElement {
             </ha-button>
           </ha-dialog-footer>`
         : nothing}
-    </ha-dialog
+    </ha-dialog>`;
   }
 
   private async _hardResetController(): Promise<void> {

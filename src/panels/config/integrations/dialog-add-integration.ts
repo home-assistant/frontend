@@ -406,7 +406,7 @@ class AddIntegrationDialog extends LitElement {
             ${this._renderBrandView(pickedIntegration, flowsInProgress)}
           `
         : this._renderAll(integrations)}
-    </ha-dialog
+    </ha-dialog>`;
   }
 
   private _getFlowsForCurrentView(
