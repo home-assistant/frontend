@@ -73,7 +73,7 @@ export class DialogForm
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title}
-		prevent-scrim-close
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-form
