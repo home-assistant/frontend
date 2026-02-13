@@ -288,7 +288,6 @@ fireEvent(this, "show-dialog", {
 - Schema-driven using `HaFormSchema[]`
 - Supports entity, device, area, target, number, boolean, time, action, text, object, select, icon, media, location selectors
 - Built-in validation with error display
-- Use `dialogInitialFocus` in dialogs
 - Use `computeLabel`, `computeError`, `computeHelper` for translations
 
 ```typescript
