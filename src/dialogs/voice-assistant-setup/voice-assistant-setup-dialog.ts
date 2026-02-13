@@ -146,6 +146,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title="Voice Satellite setup"
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${hideNavigationIcon
@@ -194,7 +195,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                     (lang) =>
                       html`<ha-dropdown-item
                         .value=${lang.id}
-                        class=${this._language === lang.id ? "selected" : ""}
+                        .selected=${this._language === lang.id}
                       >
                         ${lang.primary}
                       </ha-dropdown-item>`
