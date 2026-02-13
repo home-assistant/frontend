@@ -40,6 +40,7 @@ import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
+export const DEFAULT_POWER_COLLECTION_KEY = "energy_dashboard_now";
 
 const EMPTY_PREFERENCES: EnergyPreferences = {
   energy_sources: [],
@@ -87,7 +88,7 @@ const POWER_VIEW = {
   path: "now",
   strategy: {
     type: "power",
-    collection_key: "energy_dashboard_now",
+    collection_key: DEFAULT_POWER_COLLECTION_KEY,
   },
 } as LovelaceViewConfig;
 
@@ -350,7 +351,7 @@ class PanelEnergy extends LitElement {
 
   private _dumpCSV = async () => {
     const energyData = getEnergyDataCollection(this.hass, {
-      key: "energy_dashboard",
+      key: DEFAULT_ENERGY_COLLECTION_KEY,
     });
 
     if (!energyData.prefs || !energyData.state.stats) {
