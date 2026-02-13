@@ -98,7 +98,7 @@ export class DialogForm
             ${this._params.submitText || this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-dialog
+      </ha-dialog>
     `;
   }
 
