@@ -76,6 +76,7 @@ class DialogMatterAddDevice extends LitElement {
   }
 
   private _dialogClosed(): void {
+    this._open = false;
     this._step = "main";
     this._pairingCode = "";
     this._unsub?.();
