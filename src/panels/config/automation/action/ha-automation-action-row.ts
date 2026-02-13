@@ -6,6 +6,8 @@ import {
   mdiArrowDown,
   mdiArrowRightThin,
   mdiArrowUp,
+  mdiCheckboxBlankOutline,
+  mdiCheckboxOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiDelete,
@@ -15,7 +17,6 @@ import {
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
-  mdiStopCircle,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
@@ -430,12 +431,12 @@ export default class HaAutomationActionRow extends LitElement {
                 <ha-svg-icon
                   slot="icon"
                   .path=${(this.action as NonConditionAction).continue_on_error
-                    ? mdiStopCircle
-                    : mdiAlertCircleCheck}
+                    ? mdiCheckboxOutline
+                    : mdiCheckboxBlankOutline}
                 ></ha-svg-icon>
                 ${this._renderOverflowLabel(
                   this.hass.localize(
-                    `ui.panel.config.automation.editor.actions.${(this.action as NonConditionAction).continue_on_error === true ? "stop" : "continue"}_on_error`
+                    `ui.panel.config.automation.editor.actions.continue_on_error`
                   )
                 )}
               </ha-dropdown-item>

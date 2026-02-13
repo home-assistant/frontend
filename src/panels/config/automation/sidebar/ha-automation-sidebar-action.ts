@@ -1,7 +1,8 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiAlertCircleCheck,
   mdiAppleKeyboardCommand,
+  mdiCheckboxBlankOutline,
+  mdiCheckboxOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiDelete,
@@ -10,7 +11,6 @@ import {
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
-  mdiStopCircle,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
@@ -269,12 +269,12 @@ export default class HaAutomationSidebarAction extends LitElement {
                 slot="icon"
                 .path=${(this.config.config.action as NonConditionAction)
                   .continue_on_error
-                  ? mdiStopCircle
-                  : mdiAlertCircleCheck}
+                  ? mdiCheckboxOutline
+                  : mdiCheckboxBlankOutline}
               ></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
-                  `ui.panel.config.automation.editor.actions.${(this.config.config.action as NonConditionAction).continue_on_error === true ? "stop" : "continue"}_on_error`
+                  `ui.panel.config.automation.editor.actions.continue_on_error`
                 )}
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
