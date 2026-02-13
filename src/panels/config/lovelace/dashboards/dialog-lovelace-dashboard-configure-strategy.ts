@@ -50,6 +50,7 @@ export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
       <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
+		prevent-scrim-close
         header-title=${this.hass.localize(
           "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
         )}
