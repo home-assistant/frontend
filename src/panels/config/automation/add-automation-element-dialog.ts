@@ -4,6 +4,7 @@ import {
   mdiAppleKeyboardCommand,
   mdiClose,
   mdiContentPaste,
+  mdiHelpCircle,
   mdiPlus,
 } from "@mdi/js";
 import type {
@@ -115,6 +116,7 @@ import {
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
@@ -745,11 +747,30 @@ class DialogAddAutomationElement
   }
 
   private _renderHeader() {
+    const docUrl = this._getDocumentationUrl(this._params!.type);
+
     return html`
       <ha-dialog-header subtitle-position="above">
         <span slot="title">${this._getDialogTitle()}</span>
 
         ${this._renderDialogSubtitle()}
+        ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
+          ? html`
+              <a
+                slot="actionItems"
+                href=${docUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircle}
+                  .label=${this.hass.localize(
+                    `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
+                  )}
+                ></ha-icon-button>
+              </a>
+            `
+          : nothing}
         ${this._narrow && (this._selectedGroup || this._selectedTarget)
           ? html`<ha-icon-button-prev
               slot="navigationIcon"
@@ -1720,6 +1741,18 @@ class DialogAddAutomationElement
     mainWindow.history.back();
   }
 
+  private _getDocumentationUrl = memoizeOne(
+    (type: "trigger" | "condition" | "action") =>
+      documentationUrl(
+        this.hass,
+        type === "trigger"
+          ? "/docs/automation/trigger/"
+          : type === "condition"
+            ? "/docs/automation/condition/"
+            : "/docs/automation/action/"
+      )
+  );
+
   private _groupSelected(ev) {
     const group = ev.currentTarget;
     if (this._selectedGroup === group.value) {
@@ -2065,6 +2098,10 @@ class DialogAddAutomationElement
             )
           );
           --ha-dialog-max-height: var(--ha-dialog-min-height);
+        }
+
+        ha-wa-dialog a[slot="actionItems"] {
+          color: var(--secondary-text-color);
         }
 
         search-input {
