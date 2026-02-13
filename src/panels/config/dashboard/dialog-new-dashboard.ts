@@ -263,7 +263,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
           --dialog-z-index: 6;
           --ha-dialog-min-height: 60svh;
         }
-        ha-dialogart(body) {
+        ha-dialog::part(body) {
           overflow: hidden;
           min-height: 0;
         }
