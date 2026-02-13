@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-button";
 import type { HomeZoneMutableParams } from "../../../data/zone";
@@ -66,7 +66,7 @@ class DialogHomeZoneDetail extends LitElement {
     const valid = !latInvalid && !lngInvalid;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass!.localize("ui.common.edit_item", {
@@ -99,7 +99,7 @@ class DialogHomeZoneDetail extends LitElement {
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

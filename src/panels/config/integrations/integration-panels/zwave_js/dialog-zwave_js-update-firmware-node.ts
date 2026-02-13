@@ -8,7 +8,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
@@ -190,7 +190,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     `;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -336,7 +336,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                 ? html` ${closeButton} `
                 : html` ${beginFirmwareUpdateButton} `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

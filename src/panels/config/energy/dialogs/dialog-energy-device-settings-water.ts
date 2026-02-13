@@ -8,7 +8,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-select";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
@@ -124,7 +124,7 @@ export class DialogEnergyDeviceSettingsWater
         }));
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -202,7 +202,7 @@ export class DialogEnergyDeviceSettingsWater
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

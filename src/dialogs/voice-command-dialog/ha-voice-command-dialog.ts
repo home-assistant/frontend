@@ -21,7 +21,7 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-next";
 import "../../components/ha-spinner";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
   getAssistPipeline,
@@ -98,7 +98,7 @@ export class HaVoiceCommandDialog extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -195,7 +195,7 @@ export class HaVoiceCommandDialog extends LitElement {
             : html`<div class="pipelines-loading">
                 <ha-spinner size="large"></ha-spinner>
               </div>`}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -258,7 +258,7 @@ export class HaVoiceCommandDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         ha-dialog-header a {

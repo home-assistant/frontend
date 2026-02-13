@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
 import { domainToName } from "../../../../../data/integration";
@@ -42,7 +42,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -166,7 +166,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                   </ha-button>
                 `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

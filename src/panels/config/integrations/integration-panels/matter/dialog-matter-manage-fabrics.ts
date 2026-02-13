@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type {
   MatterFabricData,
   MatterNodeDiagnostics,
@@ -47,7 +47,7 @@ class DialogMatterManageFabrics extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -82,7 +82,7 @@ class DialogMatterManageFabrics extends LitElement {
           : html`<div class="center">
               <ha-spinner></ha-spinner>
             </div>`}
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 
@@ -154,7 +154,7 @@ class DialogMatterManageFabrics extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog
           --dialog-content-padding: 0;
           --mdc-list-side-padding: 24px;
           --mdc-list-side-padding-right: 16px;

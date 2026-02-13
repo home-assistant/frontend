@@ -194,7 +194,7 @@ export const haStyleDialog = css`
 
 export const haStyleDialogFixedTop = css`
   ha-dialog,
-  ha-wa-dialog {
+  ha-dialog {
     /* Pin dialog to top so it doesn't jump when content changes size */
     --vertical-align-dialog: flex-start;
     --dialog-surface-margin-top: var(--ha-space-10);
@@ -226,7 +226,7 @@ export const haStyleDialogFixedTop = css`
 
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog,
-    ha-wa-dialog {
+    ha-dialog {
       /* When in fullscreen, dialog should be attached to top */
       --dialog-surface-margin-top: 0px;
       --mdc-dialog-min-height: 100vh;

@@ -12,7 +12,7 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
@@ -68,7 +68,7 @@ class DialogImportBlueprint extends LitElement {
     }
     const heading = this.hass.localize("ui.panel.config.blueprint.add.header");
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         width=${this.large ? "full" : "medium"}
@@ -221,7 +221,7 @@ class DialogImportBlueprint extends LitElement {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

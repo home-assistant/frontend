@@ -11,7 +11,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { getConfigEntries } from "../../../../data/config_entries";
@@ -102,7 +102,7 @@ export class DialogEnergySolarSettings
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -239,7 +239,7 @@ export class DialogEnergySolarSettings
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

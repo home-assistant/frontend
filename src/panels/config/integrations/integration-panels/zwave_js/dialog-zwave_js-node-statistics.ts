@@ -10,7 +10,7 @@ import "../../../../../components/ha-help-tooltip";
 import "../../../../../components/ha-list";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import { subscribeDeviceRegistry } from "../../../../../data/device/device_registry";
 import type {
@@ -83,7 +83,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -314,7 +314,7 @@ class DialogZWaveJSNodeStatistics extends LitElement {
               `
             : ``
         )}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

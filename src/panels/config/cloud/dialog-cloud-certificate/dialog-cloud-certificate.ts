@@ -7,7 +7,7 @@ import "../../../../components/ha-dialog-footer";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../../../components/ha-button";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { CloudCertificateParams as CloudCertificateDialogParams } from "./show-dialog-cloud-certificate";
 
 @customElement("dialog-cloud-certificate")
@@ -40,7 +40,7 @@ class DialogCloudCertificate extends LitElement {
     const { certificateInfo } = this._params;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -88,7 +88,7 @@ class DialogCloudCertificate extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

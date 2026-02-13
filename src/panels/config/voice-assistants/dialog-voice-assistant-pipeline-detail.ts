@@ -9,7 +9,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import type {
   AssistPipeline,
@@ -142,7 +142,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
           );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
@@ -237,7 +237,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                 )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

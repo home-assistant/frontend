@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button-arrow-prev";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import {
   commissionMatterDevice,
   redirectOnNewMatterDevice,
@@ -173,7 +173,7 @@ class DialogMatterAddDevice extends LitElement {
     const actions = this._renderActions();
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
@@ -195,7 +195,7 @@ class DialogMatterAddDevice extends LitElement {
           : html`<ha-dialog-footer slot="footer">
               ${actions}
             </ha-dialog-footer>`}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -205,7 +205,7 @@ class DialogMatterAddDevice extends LitElement {
       :host {
         --horizontal-padding: 24px;
       }
-      ha-wa-dialog {
+      ha-dialog {
         --dialog-content-padding: 0;
       }
       @media all and (max-width: 450px), all and (max-height: 500px) {

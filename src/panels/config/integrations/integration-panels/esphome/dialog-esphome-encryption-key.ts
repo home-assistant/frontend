@@ -8,7 +8,7 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
@@ -37,7 +37,7 @@ class DialogESPHomeEncryptionKey extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         open
         @closed=${this.closeDialog}
         header-title=${this.hass.localize(
@@ -80,7 +80,7 @@ class DialogESPHomeEncryptionKey extends LitElement {
             ${this.hass.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 

@@ -9,7 +9,7 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
 import "../../../../../components/ha-settings-row";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import {
   addHassioDockerRegistry,
@@ -60,7 +60,7 @@ class AppsRegistriesDialog extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -148,7 +148,7 @@ class AppsRegistriesDialog extends LitElement {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

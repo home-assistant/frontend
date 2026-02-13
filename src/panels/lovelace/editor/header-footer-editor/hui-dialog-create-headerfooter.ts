@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -47,7 +47,7 @@ export class HuiCreateDialogHeaderFooter
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass!.localize(
@@ -94,7 +94,7 @@ export class HuiCreateDialogHeaderFooter
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -139,7 +139,7 @@ export class HuiCreateDialogHeaderFooter
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 2px 24px 20px 24px;
           --dialog-z-index: 6;
         }

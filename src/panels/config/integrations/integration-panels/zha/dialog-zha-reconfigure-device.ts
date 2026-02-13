@@ -9,7 +9,7 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-tooltip";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type {
   AttributeConfigurationStatus,
   Cluster,
@@ -79,7 +79,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         width="large"
@@ -323,7 +323,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

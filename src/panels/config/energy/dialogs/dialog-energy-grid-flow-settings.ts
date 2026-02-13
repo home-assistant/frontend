@@ -9,7 +9,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-markdown";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type {
   FlowFromGridSourceEnergyPreference,
@@ -129,7 +129,7 @@ export class DialogEnergyGridFlowSettings
       );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -290,7 +290,7 @@ export class DialogEnergyGridFlowSettings
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog
     `;
   }
 
