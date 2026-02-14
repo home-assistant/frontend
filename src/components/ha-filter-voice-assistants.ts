@@ -5,6 +5,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeKeys } from "../common/translations/localize";
+import { FILTER_NONE_OF_LISTED } from "../common/const";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -23,7 +25,7 @@ export class HaFilterVoiceAssistants extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   // the list of selected voiceAssistantIds
-  @property({ attribute: false }) public value: string[] = [];
+  @property({ attribute: false }) public value?: string[];
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -59,6 +61,14 @@ export class HaFilterVoiceAssistants extends LitElement {
               class="ha-scrollbar"
               multi
             >
+              <ha-check-list-item
+                .value=${FILTER_NONE_OF_LISTED}
+                .selected=${this.value?.[0] === FILTER_NONE_OF_LISTED}
+              >
+                ${this.hass.localize(
+                  `ui.panel.config.labels.${FILTER_NONE_OF_LISTED}` as LocalizeKeys
+                )}
+              </ha-check-list-item>
               ${repeat(
                 this._voiceAssistantOptions,
                 (voiceAssistantId) => voiceAssistantId,
@@ -110,30 +120,40 @@ export class HaFilterVoiceAssistants extends LitElement {
   private async _assistantsSelected(
     ev: CustomEvent<SelectedDetail<Set<number>>>
   ) {
-    if (!ev.detail.index) {
+    let value;
+    if ([...ev.detail.index][ev.detail.index.size - 1] === 0) {
+      value = [...[FILTER_NONE_OF_LISTED]];
+    } else {
+      if (!ev.detail.index.size) {
+        fireEvent(this, "data-table-filter-changed", {
+          value: undefined,
+          items: undefined,
+        });
+        this.value = [];
+        return;
+      }
+
+      value = [];
+      for (const index of ev.detail.index) {
+        if (index !== 0) {
+          value.push(this._voiceAssistantOptions![index - 1]);
+        }
+      }
+    }
+
+    this.value = value;
+
+    if (!ev.detail.index.has(0) || ev.detail.index.size === 1) {
       fireEvent(this, "data-table-filter-changed", {
-        value: [],
+        value: value.length ? value : undefined,
         items: undefined,
       });
-      this.value = [];
-      return;
     }
-
-    const newvalue: string[] = [];
-    for (const index of ev.detail.index) {
-      newvalue.push(this._voiceAssistantOptions![index]);
-    }
-    this.value = newvalue;
-
-    fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: undefined,
-    });
   }
 
   private _clearFilter(ev) {
     ev.preventDefault();
-    this.value = [];
+    this.value = undefined;
     fireEvent(this, "data-table-filter-changed", {
       value: undefined,
       items: undefined,
