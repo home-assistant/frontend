@@ -92,7 +92,13 @@ export class HaTargetSelector extends LitElement {
     }
 
     return ensureArray(this.selector.target.entity).some((filter) =>
-      filterSelectorEntities(filter, entity, this._entitySources)
+      filterSelectorEntities(
+        filter,
+        entity,
+        this._entitySources,
+        this.hass.entities,
+        this.hass.devices
+      )
     );
   };
 
