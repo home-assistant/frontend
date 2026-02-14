@@ -4,9 +4,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import type { LocalizeKeys } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
-import { FILTER_NONE_OF_LISTED } from "../common/const";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import type { RelatedResult } from "../data/search";
@@ -41,8 +39,6 @@ export class HaFilterBlueprints extends LitElement {
       properties.has("value") &&
       !deepEqual(this.value, properties.get("value"))
     ) {
-      // eslint-disable-next-line no-console
-      console.log("BF: willUpdate", this.value, properties.get("value"));
       this._findRelated();
     }
   }
@@ -72,16 +68,6 @@ export class HaFilterBlueprints extends LitElement {
                 multi
                 class="ha-scrollbar"
               >
-                <ha-check-list-item
-                  .value=${FILTER_NONE_OF_LISTED}
-                  .selected=${this.value?.[0] === FILTER_NONE_OF_LISTED}
-                >
-                  <div class="none-of-listed">
-                    ${this.hass.localize(
-                      `ui.panel.config.blueprint.${FILTER_NONE_OF_LISTED}` as LocalizeKeys
-                    )}
-                  </div>
-                </ha-check-list-item>
                 ${Object.entries(this._blueprints).map(([id, blueprint]) =>
                   "error" in blueprint
                     ? nothing
@@ -127,47 +113,29 @@ export class HaFilterBlueprints extends LitElement {
   private async _blueprintsSelected(
     ev: CustomEvent<SelectedDetail<Set<number>>>
   ) {
-    let value;
-    if ([...ev.detail.index][ev.detail.index.size - 1] === 0) {
-      value = [...[FILTER_NONE_OF_LISTED]];
-      // eslint-disable-next-line no-console
-      console.log("BF: _blueprintsSelected (1)", ev.detail.index);
-    } else {
-      // eslint-disable-next-line no-console
-      console.log("BF: _blueprintsSelected (2)", ev.detail.index);
+    const blueprints = this._blueprints!;
 
-      const blueprints = this._blueprints!;
-
-      if (!ev.detail.index.size) {
-        // eslint-disable-next-line no-console
-        console.log("BF: _blueprintsSelected: push []");
-        fireEvent(this, "data-table-filter-changed", {
-          value: [],
-          items: undefined,
-        });
-        this.value = [];
-        return;
-      }
-
-      value = [];
-
-      for (const index of ev.detail.index) {
-        if (index !== 0) {
-          const blueprintId = Object.keys(blueprints)[index - 1];
-          value.push(blueprintId);
-        }
-      }
+    if (!ev.detail.index.size) {
+      fireEvent(this, "data-table-filter-changed", {
+        value: [],
+        items: undefined,
+      });
+      this.value = [];
+      return;
     }
 
-    // eslint-disable-next-line no-console
-    console.log("BF: _blueprintsSelected", value);
+    const value: string[] = [];
+
+    for (const index of ev.detail.index) {
+      const blueprintId = Object.keys(blueprints)[index];
+      value.push(blueprintId);
+    }
+
     this.value = value;
   }
 
   private async _findRelated() {
     if (!this.value?.length) {
-      // eslint-disable-next-line no-console
-      console.log("BF: _findRelated: push []");
       this.value = [];
       fireEvent(this, "data-table-filter-changed", {
         value: [],
@@ -176,33 +144,23 @@ export class HaFilterBlueprints extends LitElement {
       return;
     }
 
-    let items;
-    // eslint-disable-next-line no-console
-    console.log("BF: _findRelated:", this.value);
-    if (this.value[0] !== FILTER_NONE_OF_LISTED) {
-      const relatedPromises: Promise<RelatedResult>[] = [];
+    const relatedPromises: Promise<RelatedResult>[] = [];
 
-      for (const blueprintId of this.value) {
-        if (this.type) {
-          relatedPromises.push(
-            findRelated(this.hass, `${this.type}_blueprint`, blueprintId)
-          );
-        }
+    for (const blueprintId of this.value) {
+      if (this.type) {
+        relatedPromises.push(
+          findRelated(this.hass, `${this.type}_blueprint`, blueprintId)
+        );
       }
-
-      const results = await Promise.all(relatedPromises);
-      const itms = new Set<string>();
-      for (const result of results) {
-        if (result[this.type!]) {
-          result[this.type!]!.forEach((item) => itms.add(item));
-        }
-      }
-      items = [...itms];
-    } else {
-      items = undefined; // ????
     }
-    // eslint-disable-next-line no-console
-    console.log("BF: _findRelated: items:", items);
+
+    const results = await Promise.all(relatedPromises);
+    const items = new Set<string>();
+    for (const result of results) {
+      if (result[this.type!]) {
+        result[this.type!]!.forEach((item) => items.add(item));
+      }
+    }
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,
