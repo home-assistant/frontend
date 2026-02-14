@@ -48,6 +48,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
+import { FILTER_NONE_OF_LISTED } from "../../../common/const";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -642,11 +643,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           Array.isArray(filter) &&
           filter.length
         ) {
-          filteredEntities = filteredEntities.filter((entity) =>
-            this._getExposedEntityVoiceAssistantIds(entity.entity_id).some(
-              (va) => (filter as string[]).includes(va)
-            )
-          );
+          if (filter[0] !== FILTER_NONE_OF_LISTED) {
+            filteredEntities = filteredEntities.filter((entity) =>
+              this._getExposedEntityVoiceAssistantIds(entity.entity_id).some(
+                (va) => (filter as string[]).includes(va)
+              )
+            );
+          } else {
+            filteredEntities = filteredEntities.filter(
+              (entity) =>
+                this._getExposedEntityVoiceAssistantIds(entity.entity_id)
+                  .length === 0
+            );
+          }
         }
       });
 
