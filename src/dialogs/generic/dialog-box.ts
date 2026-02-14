@@ -76,7 +76,7 @@ class DialogBox extends LitElement {
         aria-describedby="dialog-box-description"
       >
         <ha-dialog-header slot="header">
-          ${!confirmPrompt
+          ${!this._params.confirmation
             ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
                 <ha-icon-button
                   data-dialog="close"

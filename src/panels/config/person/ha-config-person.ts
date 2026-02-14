@@ -146,15 +146,19 @@ export class HaConfigPerson extends LitElement {
       },
       is_active: {
         title: localize("ui.panel.config.users.picker.headers.is_active"),
-        type: "icon",
-        minWidth: "80px",
         sortable: true,
         filterable: true,
         hidden: narrow,
         template: (row) =>
-          row.is_active
-            ? html`<ha-svg-icon .path=${mdiCheck}></ha-svg-icon>`
-            : "",
+          row.is_active === undefined
+            ? "—"
+            : row.is_active
+              ? html`<span style="color: var(--success-color)"
+                  >${localize(
+                    "ui.panel.config.users.picker.status.active"
+                  )}</span
+                >`
+              : localize("ui.panel.config.users.picker.status.inactive"),
       },
       local_only: {
         title: localize("ui.panel.config.users.picker.headers.local"),
@@ -224,7 +228,7 @@ export class HaConfigPerson extends LitElement {
           id: person.id,
           name: person.name,
           username: user?.username || null,
-          group: user ? localize(`groups.${user.group_ids[0]}`) : "",
+          group: user ? localize(`groups.${user.group_ids[0]}`) : "—",
           is_active: user?.is_active,
           local_only: user?.local_only,
           is_owner: user?.is_owner ?? false,
@@ -505,8 +509,8 @@ export class HaConfigPerson extends LitElement {
 
   static styles = css`
     ha-person-badge {
-      width: 32px;
-      height: 32px;
+      width: var(--ha-space-8);
+      height: var(--ha-space-8);
     }
   `;
 }

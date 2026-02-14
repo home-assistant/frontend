@@ -120,6 +120,12 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
 
   private _escapePressed = false;
 
+  // Tracks whether an Escape close is being handled by another dialog instance.
+  // Each wa-dialog registers a document-level keydown listener, so when Escape
+  // is pressed, ALL open dialogs try to close. This flag ensures only the
+  // topmost dialog (which received the keydown) actually closes.
+  private static _escapeCloseInProgress = false;
+
   protected get scrollableElement(): HTMLElement | null {
     return this.bodyContainer;
   }
@@ -241,10 +247,19 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
   private _handleKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Escape") {
       this._escapePressed = true;
+      HaWaDialog._escapeCloseInProgress = true;
     }
   }
 
   private _handleHide(ev: CustomEvent<{ source: Element }>) {
+    // If another dialog is handling an Escape close, prevent this dialog
+    // from closing. Only the topmost dialog (where _escapePressed is true)
+    // should close.
+    if (HaWaDialog._escapeCloseInProgress && !this._escapePressed) {
+      ev.preventDefault();
+      return;
+    }
+
     if (
       this.preventScrimClose &&
       this._escapePressed &&
@@ -253,6 +268,7 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
       ev.preventDefault();
     }
     this._escapePressed = false;
+    HaWaDialog._escapeCloseInProgress = false;
   }
 
   static get styles() {

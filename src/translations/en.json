@@ -6279,6 +6279,11 @@
           "person_not_found": "We couldn't find the person you were trying to edit.",
           "detail": {
             "new_person": "Add person",
+            "edit_person": "Edit {name}",
+            "copy_id": "Copy ID",
+            "section_profile": "Profile",
+            "section_access": "Access",
+            "section_devices": "Devices",
             "name": "Name",
             "name_error_msg": "Name is required",
             "linked_user": "Linked user",
@@ -6551,19 +6556,24 @@
           "is_owner": "Owner",
           "picker": {
             "headers": {
-              "name": "Display name",
+              "name": "Name",
               "username": "Username",
-              "group": "Group",
+              "group": "Role",
               "system": "System",
-              "is_active": "Active",
+              "is_active": "Status",
               "local": "Local",
               "icon": "Icon"
+            },
+            "status": {
+              "active": "Active",
+              "inactive": "Inactive"
             },
             "add_user": "Add user"
           },
           "editor": {
             "caption": "View user",
-            "name": "Display name",
+            "edit_user": "Edit {name}",
+            "name": "Name",
             "username": "Username",
             "password": "Password",
             "change_password": "Change password",
@@ -6573,10 +6583,11 @@
             "delete_user": "Delete user",
             "update_user": "Update",
             "id": "ID",
+            "copy_id": "Copy ID",
             "owner": "Owner",
             "admin": "Administrator",
             "admin_description": "Administrators can manage users, devices, automations and dashboards.",
-            "group": "Group",
+            "group": "Role",
             "active": "Active",
             "active_description": "Controls if user can log in",
             "local_access_only": "Local access only",

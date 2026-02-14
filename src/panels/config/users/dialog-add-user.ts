@@ -1,7 +1,6 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
@@ -180,15 +179,6 @@ export class DialogAddUser extends LitElement {
             <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
             </ha-switch>
           </ha-settings-row>
-          ${!this._isAdmin
-            ? html`
-                <ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.users.users_privileges_note"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
         </div>
 
         <ha-button
