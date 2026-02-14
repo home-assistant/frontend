@@ -297,6 +297,15 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#3263C3",
     },
   ],
+  developer_tools: [
+    {
+      path: "/config/developer-tools",
+      translationKey: "panel.developer_tools",
+      iconPath: mdiHammer,
+      iconColor: "#7A5AA6",
+      core: true,
+    },
+  ],
   // Not used as a tab, but this way it will stay in the quick bar
   energy: [
     {
