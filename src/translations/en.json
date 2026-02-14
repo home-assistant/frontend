@@ -5583,7 +5583,6 @@
         "blueprint": {
           "caption": "Blueprints",
           "description": "Manage blueprints",
-          "filter_none_of_listed": "None",
           "overview": {
             "header": "Blueprint editor",
             "introduction": "The blueprint configuration allows you to import and manage your blueprints.",
