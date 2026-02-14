@@ -4325,6 +4325,7 @@
         "voice_assistants": {
           "assistants": {
             "caption": "Assistants",
+            "filter_none_of_listed": "None",
             "pipeline": {
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "add_assistant": "Add assistant",
