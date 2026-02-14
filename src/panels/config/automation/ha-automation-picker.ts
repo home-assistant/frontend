@@ -37,6 +37,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
+import { FILTER_NONE_OF_LISTED } from "../../../common/const";
 import "../../../components/chips/ha-assist-chip";
 import type {
   DataTableColumnContainer,
@@ -847,11 +848,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
         );
       } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
-        filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
-            (filter.value as string[]).includes(va)
-          )
-        );
+        if (filter.value?.[0] !== FILTER_NONE_OF_LISTED) {
+          filteredEntityIds = filteredEntityIds.filter((entityId) =>
+            getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
+              (filter.value as string[]).includes(va)
+            )
+          );
+        } else {
+          filteredEntityIds = filteredEntityIds.filter(
+            (entityId) =>
+              getEntityVoiceAssistantsIds(this._entityReg, entityId).length ===
+              0
+          );
+        }
       }
     }
     this._filteredEntityIds = filteredEntityIds;
