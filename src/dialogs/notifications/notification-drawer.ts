@@ -185,12 +185,12 @@ export class HuiNotificationDrawer extends LitElement {
       flex: 1 1 auto;
       min-height: 0;
       overflow: auto;
+      padding-top: var(--ha-space-4);
     }
 
     .notifications {
       display: flex;
       flex-direction: column;
-      padding-top: 16px;
       padding-left: var(--safe-area-inset-left, 0px);
       padding-inline-start: var(--safe-area-inset-left, 0px);
       padding-bottom: var(--safe-area-inset-bottom, 0px);
@@ -210,19 +210,19 @@ export class HuiNotificationDrawer extends LitElement {
     }
 
     .notification {
-      padding: 0 16px 16px;
+      padding: 0 var(--ha-space-4) var(--ha-space-4);
       width: 100%;
     }
 
     .notification-actions {
       border-top: 1px solid var(--divider-color);
-      padding: 16px;
+      padding: var(--ha-space-4);
       text-align: center;
       flex: 0 0 auto;
     }
 
     .empty {
-      padding: 16px;
+      padding: var(--ha-space-4);
       text-align: center;
     }
   `;
