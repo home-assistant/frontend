@@ -36,6 +36,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
+import { FILTER_NONE_OF_LISTED } from "../../../common/const";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -862,16 +863,29 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         filter.length
       ) {
         const labelItems = new Set<string>();
-        this._helperEntities
-          .filter((stateItem) =>
-            entityRegistryByEntityId(this._entityReg)[
-              stateItem.entity_id
-            ]?.labels.some((lbl) => filter.includes(lbl))
-          )
-          .forEach((stateItem) => labelItems.add(stateItem.entity_id));
-        (this._disabledEntityEntries || [])
-          .filter((entry) => entry.labels.some((lbl) => filter.includes(lbl)))
-          .forEach((entry) => labelItems.add(entry.entity_id));
+        if (filter[0] !== FILTER_NONE_OF_LISTED) {
+          this._helperEntities
+            .filter((stateItem) =>
+              entityRegistryByEntityId(this._entityReg)[
+                stateItem.entity_id
+              ]?.labels.some((lbl) => filter.includes(lbl))
+            )
+            .forEach((stateItem) => labelItems.add(stateItem.entity_id));
+          (this._disabledEntityEntries || [])
+            .filter((entry) => entry.labels.some((lbl) => filter.includes(lbl)))
+            .forEach((entry) => labelItems.add(entry.entity_id));
+        } else {
+          this._helperEntities
+            .filter(
+              (stateItem) =>
+                entityRegistryByEntityId(this._entityReg)[stateItem.entity_id]
+                  ?.labels.length === 0
+            )
+            .forEach((stateItem) => labelItems.add(stateItem.entity_id));
+          (this._disabledEntityEntries || [])
+            .filter((entry) => entry.labels.length === 0)
+            .forEach((entry) => labelItems.add(entry.entity_id));
+        }
         if (!items) {
           items = labelItems;
           continue;

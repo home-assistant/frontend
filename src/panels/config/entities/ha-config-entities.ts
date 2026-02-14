@@ -48,6 +48,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
+import { FILTER_NONE_OF_LISTED } from "../../../common/const";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -634,9 +635,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           Array.isArray(filter) &&
           filter.length
         ) {
-          filteredEntities = filteredEntities.filter((entity) =>
-            entity.labels.some((lbl) => (filter as string[]).includes(lbl))
-          );
+          if (filter[0] !== FILTER_NONE_OF_LISTED) {
+            filteredEntities = filteredEntities.filter((entity) =>
+              entity.labels.some((lbl) => (filter as string[]).includes(lbl))
+            );
+          } else {
+            filteredEntities = filteredEntities.filter(
+              (entity) => entity.labels.length === 0
+            );
+          }
         } else if (
           key === "ha-filter-voice-assistants" &&
           Array.isArray(filter) &&

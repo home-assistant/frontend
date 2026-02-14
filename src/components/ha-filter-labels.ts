@@ -10,6 +10,8 @@ import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeKeys } from "../common/translations/localize";
+import { FILTER_NONE_OF_LISTED } from "../common/const";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { subscribeLabelRegistry } from "../data/label/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -97,6 +99,16 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                 class="ha-scrollbar"
                 multi
               >
+                <ha-check-list-item
+                  .value=${FILTER_NONE_OF_LISTED}
+                  .selected=${this.value?.[0] === FILTER_NONE_OF_LISTED}
+                >
+                  <div class="none-of-listed">
+                    ${this.hass.localize(
+                      `ui.panel.config.labels.${FILTER_NONE_OF_LISTED}` as LocalizeKeys
+                    )}
+                  </div>
+                </ha-check-list-item>
                 ${repeat(
                   this._filteredLabels(this._labels, this._filter, this.value),
                   (label) => label.label_id,
@@ -167,35 +179,44 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
   }
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
-    const filteredLabels = this._filteredLabels(
-      this._labels,
-      this._filter,
-      this.value
-    );
+    let value;
+    if ([...ev.detail.index][ev.detail.index.size - 1] === 0) {
+      value = [...[FILTER_NONE_OF_LISTED]];
+    } else {
+      const filteredLabels = this._filteredLabels(
+        this._labels,
+        this._filter,
+        this.value
+      );
 
-    const filteredLabelIds = new Set(filteredLabels.map((l) => l.label_id));
+      const filteredLabelIds = new Set(filteredLabels.map((l) => l.label_id));
 
-    // Keep previously selected labels that are not in the current filtered view
-    const preservedLabels = (this.value || []).filter(
-      (id) => !filteredLabelIds.has(id)
-    );
+      // Keep previously selected labels that are not in the current filtered view
+      const preservedLabels = (this.value || []).filter(
+        (id) => !filteredLabelIds.has(id) && id !== FILTER_NONE_OF_LISTED
+      );
 
-    // Build the new selection from the filtered labels based on selected indices
-    const newlySelectedLabels: string[] = [];
-    for (const index of ev.detail.index) {
-      const labelId = filteredLabels[index]?.label_id;
-      if (labelId) {
-        newlySelectedLabels.push(labelId);
+      // Build the new selection from the filtered labels based on selected indices
+      const newlySelectedLabels: string[] = [];
+      for (const index of ev.detail.index) {
+        if (index !== 0) {
+          const labelId = filteredLabels[index - 1]?.label_id;
+          if (labelId) {
+            newlySelectedLabels.push(labelId);
+          }
+        }
       }
-    }
 
-    const value = [...preservedLabels, ...newlySelectedLabels];
+      value = [...preservedLabels, ...newlySelectedLabels];
+    }
     this.value = value.length ? value : [];
 
-    fireEvent(this, "data-table-filter-changed", {
-      value: value.length ? value : undefined,
-      items: undefined,
-    });
+    if (!ev.detail.index.has(0) || ev.detail.index.size === 1) {
+      fireEvent(this, "data-table-filter-changed", {
+        value: value.length ? value : undefined,
+        items: undefined,
+      });
+    }
   }
 
   private _clearFilter(ev) {
@@ -263,6 +284,9 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         search-input-outlined {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
+        }
+        .none-of-listed {
+          margin-inline-start: var(--ha-space-4);
         }
       `,
     ];

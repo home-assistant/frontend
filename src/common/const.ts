@@ -119,3 +119,6 @@ export const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 
 /** String to visually separate labels on UI */
 export const STRINGS_SEPARATOR_DOT = " · ";
+
+/** String to represent a "None of listed" variant in data table filters */
+export const FILTER_NONE_OF_LISTED = "filter_none_of_listed";

@@ -33,6 +33,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
+import { FILTER_NONE_OF_LISTED } from "../../../common/const";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -755,11 +756,19 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
               ?.categories.scene
         );
       } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
-        filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          this._entityReg
-            .find((reg) => reg.entity_id === entityId)
-            ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
-        );
+        if (filter.value?.[0] !== FILTER_NONE_OF_LISTED) {
+          filteredEntityIds = filteredEntityIds.filter((entityId) =>
+            this._entityReg
+              .find((reg) => reg.entity_id === entityId)
+              ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
+          );
+        } else {
+          filteredEntityIds = filteredEntityIds.filter(
+            (entityId) =>
+              this._entityReg.find((reg) => reg.entity_id === entityId)?.labels
+                .length === 0
+          );
+        }
       } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
           getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>

@@ -31,6 +31,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
+import { FILTER_NONE_OF_LISTED } from "../../../common/const";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -420,11 +421,17 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           Array.isArray(filter.value) &&
           filter.value.length
         ) {
-          outputDevices = outputDevices.filter((device) =>
-            device.labels.some((lbl) =>
-              (filter.value as string[]).includes(lbl)
-            )
-          );
+          if (filter.value?.[0] !== FILTER_NONE_OF_LISTED) {
+            outputDevices = outputDevices.filter((device) =>
+              device.labels.some((lbl) =>
+                (filter.value as string[]).includes(lbl)
+              )
+            );
+          } else {
+            outputDevices = outputDevices.filter(
+              (device) => device.labels.length === 0
+            );
+          }
         } else if (filter.items) {
           outputDevices = outputDevices.filter((device) =>
             filter.items!.has(device.id)
