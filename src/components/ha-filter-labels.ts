@@ -209,7 +209,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
 
       value = [...preservedLabels, ...newlySelectedLabels];
     }
-    this.value = value.length ? value : [];
+    this.value = value;
 
     if (!ev.detail.index.has(0) || ev.detail.index.size === 1) {
       fireEvent(this, "data-table-filter-changed", {
