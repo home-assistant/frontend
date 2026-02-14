@@ -36,6 +36,7 @@ import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
+import { FILTER_NONE_OF_LISTED } from "../../../common/const";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -913,21 +914,42 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         filter.length
       ) {
         const assistItems = new Set<string>();
-        this._helperEntities
-          .filter((stateItem) =>
-            getEntityVoiceAssistantsIds(
-              this._entityReg,
-              stateItem.entity_id
-            ).some((va) => (filter as string[]).includes(va))
-          )
-          .forEach((stateItem) => assistItems.add(stateItem.entity_id));
-        (this._disabledEntityEntries || [])
-          .filter((entry) =>
-            getEntityVoiceAssistantsIds(this._entityReg, entry.entity_id).some(
-              (va) => (filter as string[]).includes(va)
+        if (filter[0] !== FILTER_NONE_OF_LISTED) {
+          this._helperEntities
+            .filter((stateItem) =>
+              getEntityVoiceAssistantsIds(
+                this._entityReg,
+                stateItem.entity_id
+              ).some((va) => (filter as string[]).includes(va))
             )
-          )
-          .forEach((entry) => assistItems.add(entry.entity_id));
+            .forEach((stateItem) => assistItems.add(stateItem.entity_id));
+          (this._disabledEntityEntries || [])
+            .filter((entry) =>
+              getEntityVoiceAssistantsIds(
+                this._entityReg,
+                entry.entity_id
+              ).some((va) => (filter as string[]).includes(va))
+            )
+            .forEach((entry) => assistItems.add(entry.entity_id));
+        } else {
+          this._helperEntities
+            .filter(
+              (stateItem) =>
+                getEntityVoiceAssistantsIds(
+                  this._entityReg,
+                  stateItem.entity_id
+                ).length === 0
+            )
+            .forEach((stateItem) => assistItems.add(stateItem.entity_id));
+          (this._disabledEntityEntries || [])
+            .filter(
+              (entry) =>
+                getEntityVoiceAssistantsIds(this._entityReg, entry.entity_id)
+                  .length === 0
+            )
+            .forEach((entry) => assistItems.add(entry.entity_id));
+        }
+
         if (!items) {
           items = assistItems;
           continue;
