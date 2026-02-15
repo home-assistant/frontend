@@ -7,7 +7,10 @@ import { hasConfigChanged } from "../../common/has-changed";
 import "../../components/hui-energy-period-selector";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergyDateSelectorCardConfig } from "../types";
-import { validateEnergyCollectionKey } from "../../../../data/energy";
+import {
+  getCurrentDashboardDefaultCollectionKey,
+  validateEnergyCollectionKey,
+} from "../../../../data/energy";
 
 @customElement("hui-energy-date-selection-card")
 export class HuiEnergyDateSelectionCard
@@ -22,6 +25,18 @@ export class HuiEnergyDateSelectionCard
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDateSelectorCardConfig;
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyDateSelectorCardConfig {
+    return {
+      type: "energy-date-selection",
+      vertical_opening_direction: "auto",
+      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
+    };
+  }
 
   public getCardSize(): Promise<number> | number {
     return 1;

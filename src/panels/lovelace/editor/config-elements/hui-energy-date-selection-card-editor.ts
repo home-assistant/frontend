@@ -49,8 +49,9 @@ export class HuiEnergyDateSelectionCardEditor
 
   public setConfig(config: EnergyDateSelectorCardConfig): void {
     assert(config, cardConfigStruct);
-    if (config.collection_key)
+    if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key, true);
+    }
     this._config = config;
   }
 
