@@ -242,6 +242,7 @@ export class HuiClockCardEditor
   );
 
   private _data = memoizeOne((config) => ({
+    ...config,
     clock_style: "digital",
     clock_size: "small",
     time_format: "auto",
@@ -251,7 +252,6 @@ export class HuiClockCardEditor
     border: false,
     ticks: "hour",
     face_style: "markers",
-    ...config,
   }));
 
   public setConfig(config: ClockCardConfig): void {
