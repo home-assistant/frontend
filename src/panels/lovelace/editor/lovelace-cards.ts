@@ -51,27 +51,27 @@ export const coreCards: Card[] = [
   },
   {
     type: "energy-distribution",
-    showElement: true,
+    showElement: false,
   },
   {
     type: "energy-usage-graph",
-    showElement: true,
+    showElement: false,
   },
   {
     type: "energy-solar-graph",
-    showElement: true,
+    showElement: false,
   },
   {
     type: "energy-gas-graph",
-    showElement: true,
+    showElement: false,
   },
   {
     type: "energy-water-graph",
-    showElement: true,
+    showElement: false,
   },
   {
     type: "power-sources-graph",
-    showElement: true,
+    showElement: false,
   },
   {
     type: "energy-devices-graph",
