@@ -396,8 +396,7 @@ export class HuiDialogEditCard
 
         ha-wa-dialog {
           --dialog-z-index: 6;
-          --dialog-content-padding: var(--ha-space-2); /* added */
-          /* --dialog-content-padding: 24px 12px 0; */ /* PR */
+          --dialog-content-padding: var(--ha-space-2);
         }
 
         .content {
