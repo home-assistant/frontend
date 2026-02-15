@@ -16,7 +16,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
@@ -208,7 +208,7 @@ export class HuiDialogEditView extends LitElement {
       this._config?.sections?.length;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         width="large"
@@ -329,7 +329,7 @@ export class HuiDialogEditView extends LitElement {
             ${this.hass!.localize("ui.common.save")}</ha-button
           >
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -643,10 +643,10 @@ export class HuiDialogEditView extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: var(--ha-space-6);
         }
-        ha-wa-dialog.yaml-mode {
+        ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
         h2 {

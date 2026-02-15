@@ -7,7 +7,7 @@ import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-button";
@@ -205,7 +205,7 @@ export class HuiDialogEditBadge
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
@@ -302,7 +302,7 @@ export class HuiDialogEditBadge
               `
             : nothing}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -414,7 +414,7 @@ export class HuiDialogEditBadge
           --code-mirror-max-height: calc(100vh - 176px);
         }
 
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-z-index: 6;
           --dialog-content-padding: var(--ha-space-2);
         }
@@ -496,7 +496,7 @@ export class HuiDialogEditBadge
           margin-inline-end: auto;
           margin-inline-start: initial;
         }
-        ha-wa-dialog a[slot="headerActionItems"] {
+        ha-dialog a[slot="headerActionItems"] {
           color: inherit;
           text-decoration: none;
         }

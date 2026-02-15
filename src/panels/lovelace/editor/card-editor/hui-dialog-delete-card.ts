@@ -9,7 +9,7 @@ import type { HomeAssistant } from "../../../../types";
 import "../../cards/hui-card";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { DeleteCardDialogParams } from "./show-delete-card-dialog";
 
 @customElement("hui-dialog-delete-card")
@@ -48,7 +48,7 @@ export class HuiDialogDeleteCard extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -86,7 +86,7 @@ export class HuiDialogDeleteCard extends LitElement {
             ${this.hass!.localize("ui.common.delete")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

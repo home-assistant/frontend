@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import type { UpdateBackupDialogParams } from "./show-update-backup-dialog";
 
@@ -28,7 +28,7 @@ class DialogBox extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.dialogs.update_backup.title")}
@@ -48,7 +48,7 @@ class DialogBox extends LitElement {
             ${this.hass.localize("ui.dialogs.update_backup.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -87,7 +87,7 @@ class DialogBox extends LitElement {
       margin: 0;
       color: var(--primary-text-color);
     }
-    ha-wa-dialog {
+    ha-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
     }

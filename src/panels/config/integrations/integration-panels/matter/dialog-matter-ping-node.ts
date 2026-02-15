@@ -9,7 +9,7 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import { pingMatterNode } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -50,7 +50,7 @@ class DialogMatterPingNode extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -146,7 +146,7 @@ class DialogMatterPingNode extends LitElement {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

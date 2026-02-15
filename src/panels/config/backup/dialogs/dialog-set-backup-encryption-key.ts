@@ -7,7 +7,7 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
@@ -86,7 +86,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
         : "";
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
@@ -116,7 +116,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -210,7 +210,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
         ha-md-list {
