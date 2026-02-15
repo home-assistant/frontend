@@ -274,9 +274,9 @@ export class HuiPictureGlanceCardEditor
   }
 
   private _processData = memoizeOne((config: PictureGlanceCardConfig) => ({
+    ...config,
     camera_view: "auto",
     fit_mode: "cover",
-    ...config,
     ...(typeof config.image === "string"
       ? { image: { media_content_id: config.image } }
       : {}),
