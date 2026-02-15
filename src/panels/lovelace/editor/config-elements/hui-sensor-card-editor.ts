@@ -133,8 +133,8 @@ export class HuiSensorCardEditor
     }
 
     const data = {
-      graph: "none",
       ...this._config,
+      graph: "none",
       detail: this._config!.detail === 2,
     };
 
