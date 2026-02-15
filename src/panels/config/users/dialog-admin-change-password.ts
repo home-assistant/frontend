@@ -8,7 +8,7 @@ import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-textfield";
 import "../../../components/ha-button";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import { adminChangePassword } from "../../../data/auth";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -116,7 +116,7 @@ class DialogAdminChangePassword extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -169,7 +169,7 @@ class DialogAdminChangePassword extends LitElement {
                 </ha-button>
               </ha-dialog-footer>
             `}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

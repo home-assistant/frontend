@@ -8,7 +8,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-spinner";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -108,7 +108,7 @@ class MoveDatadiskDialog extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._moving
@@ -176,7 +176,7 @@ class MoveDatadiskDialog extends LitElement {
                 </ha-button>
               </ha-dialog-footer>
             `}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

@@ -5,7 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -63,7 +63,7 @@ class LocalBackupLocationDialog extends LitElement {
       return nothing;
     }
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -109,7 +109,7 @@ class LocalBackupLocationDialog extends LitElement {
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

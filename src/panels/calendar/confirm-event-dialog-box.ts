@@ -4,7 +4,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-svg-icon";
 import "../../components/ha-switch";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import { RecurrenceRange } from "../../data/calendar";
 import type { HomeAssistant } from "../../types";
 import type { ConfirmEventDialogBoxParams } from "./show-confirm-event-dialog-box";
@@ -40,7 +40,7 @@ class ConfirmEventDialogBox extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title}
@@ -78,7 +78,7 @@ class ConfirmEventDialogBox extends LitElement {
               `
             : ""}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -137,7 +137,7 @@ class ConfirmEventDialogBox extends LitElement {
     .secondary {
       color: var(--secondary-text-color);
     }
-    ha-wa-dialog {
+    ha-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
     }
