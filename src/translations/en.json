@@ -215,6 +215,11 @@
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
       },
+      "toggle-group": {
+        "all_off": "All off",
+        "all_on": "All on",
+        "some_on": "{on_count} of {total_count} on"
+      },
       "discovered-devices": {
         "title": "Devices discovered",
         "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
@@ -4272,7 +4277,8 @@
               "set_default": "Set as default",
               "remove_default": "Remove as default",
               "set_default_confirm_title": "Set as default dashboard?",
-              "set_default_confirm_text": "This dashboard will be shown to all users when opening Home Assistant. Each user can change this in their profile."
+              "set_default_confirm_text": "This dashboard will be shown to all users when opening Home Assistant.",
+              "set_default_confirm_note": "Users who have chosen a specific dashboard in their profile will not be affected. They must set it back to \"Auto (use system settings)\" to use this dashboard."
             }
           },
           "resources": {
@@ -7942,7 +7948,8 @@
           },
           "light": {
             "lights": "Lights",
-            "other_lights": "Other lights"
+            "other_lights": "Other lights",
+            "all_lights": "All lights"
           },
           "security": {
             "devices": "Devices",
@@ -9547,8 +9554,10 @@
         },
         "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
-        "user_settings_header": "User settings",
-        "user_settings_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
+        "user_preferences_header": "User preferences",
+        "user_preferences_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
+        "localization_header": "Localization",
+        "localization_detail": "These settings are tied to your account and control how dates, times, and numbers are displayed.",
         "mobile_app_settings": "Mobile app settings",
         "browser_settings": "Browser settings",
         "client_settings_detail": "The following settings are local to this client only, and may reset to defaults on logout or when local data is cleared.",

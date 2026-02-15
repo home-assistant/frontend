@@ -1,10 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
-import "../components/ha-button";
+import "../components/ha-control-button";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -26,14 +26,12 @@ class StateCardButton extends LitElement {
           .stateObj=${stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        <ha-button
-          appearance="plain"
-          size="small"
-          @click=${this._pressButton}
+        <ha-control-button
           .disabled=${stateObj.state === UNAVAILABLE}
+          @click=${this._pressButton}
         >
           ${this.hass.localize("ui.card.button.press")}
-        </ha-button>
+        </ha-control-button>
       </div>
     `;
   }
@@ -46,7 +44,18 @@ class StateCardButton extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        ha-control-button {
+          width: auto;
+          min-width: 40px;
+          --control-button-padding: 0 var(--ha-space-4);
+          --control-button-focus-color: var(--primary-text-color);
+          --control-button-icon-color: var(--feature-color);
+        }
+      `,
+    ];
   }
 }
 

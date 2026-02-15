@@ -52,7 +52,7 @@ export class EnergyViewStrategy extends ReactiveElement {
     );
     view.cards!.push({
       type: "energy-compare",
-      collection_key: "energy_dashboard",
+      collection_key: collectionKey,
     });
 
     // Only include if we have a grid or battery.
@@ -60,7 +60,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       view.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_usage_graph_title"),
         type: "energy-usage-graph",
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
       });
     }
 
@@ -69,7 +69,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       view.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_solar_graph_title"),
         type: "energy-solar-graph",
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
       });
     }
 
@@ -79,7 +79,7 @@ export class EnergyViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
         type: "energy-distribution",
         view_layout: { position: "sidebar" },
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
       });
     }
 
@@ -89,7 +89,7 @@ export class EnergyViewStrategy extends ReactiveElement {
           "ui.panel.energy.cards.energy_sources_table_title"
         ),
         type: "energy-sources-table",
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
         types: ["grid", "solar", "battery"],
       });
     }
@@ -99,7 +99,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       view.cards!.push({
         type: "energy-grid-neutrality-gauge",
         view_layout: { position: "sidebar" },
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
       });
     }
 
@@ -109,14 +109,14 @@ export class EnergyViewStrategy extends ReactiveElement {
         view.cards!.push({
           type: "energy-solar-consumed-gauge",
           view_layout: { position: "sidebar" },
-          collection_key: "energy_dashboard",
+          collection_key: collectionKey,
         });
       }
       if (hasGrid) {
         view.cards!.push({
           type: "energy-self-sufficiency-gauge",
           view_layout: { position: "sidebar" },
-          collection_key: "energy_dashboard",
+          collection_key: collectionKey,
         });
       }
     }
@@ -126,7 +126,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       view.cards!.push({
         type: "energy-carbon-consumed-gauge",
         view_layout: { position: "sidebar" },
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
       });
     }
 
@@ -142,19 +142,19 @@ export class EnergyViewStrategy extends ReactiveElement {
           "ui.panel.energy.cards.energy_devices_detail_graph_title"
         ),
         type: "energy-devices-detail-graph",
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
       });
       view.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_devices_graph_title"
         ),
         type: "energy-devices-graph",
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
       });
       view.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
         type: "energy-sankey",
-        collection_key: "energy_dashboard",
+        collection_key: collectionKey,
         group_by_floor: showFloorsAndAreas,
         group_by_area: showFloorsAndAreas,
       });

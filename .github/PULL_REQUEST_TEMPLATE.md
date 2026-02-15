@@ -21,6 +21,14 @@
 -->
 
 
+## Screenshots
+<!--
+  If your PR includes visual changes, please add screenshots or a short video
+  showing the before and after. This helps reviewers understand the impact of
+  your changes.
+  Note: Remove this section if this PR has no visual changes.
+-->
+
 ## Type of change
 <!--
   What type of change does your PR introduce to the Home Assistant frontend?
@@ -34,14 +42,6 @@
 - [ ] New feature (thank you!)
 - [ ] Breaking change (fix/feature causing existing functionality to break)
 - [ ] Code quality improvements to existing code or addition of tests
-
-## Screenshots
-<!--
-  If your PR includes visual changes, please add screenshots or a short video
-  showing the before and after. This helps reviewers understand the impact of
-  your changes.
-  Note: Remove this section if this PR has no visual changes.
--->
 
 ## Additional information
 <!--

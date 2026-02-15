@@ -23,6 +23,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
@@ -217,23 +218,24 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
-        <ha-settings-row>
-          <span slot="heading">
-            ${this.hass!.localize(
+        <ha-md-list-item>
+          <span slot="headline"
+            >${this.hass!.localize(
               "ui.panel.config.voice_assistants.expose.expose_new_entities"
-            )}
-          </span>
-          <span slot="description">
-            ${this.hass!.localize(
+            )}</span
+          >
+          <span slot="supporting-text"
+            >${this.hass!.localize(
               "ui.panel.config.voice_assistants.expose.expose_new_entities_info"
-            )}
-          </span>
+            )}</span
+          >
           <ha-switch
+            slot="end"
             .checked=${this._exposeNew}
             .disabled=${this._exposeNew === undefined}
             @change=${this._exposeNewToggleChanged}
           ></ha-switch>
-        </ha-settings-row>
+        </ha-md-list-item>
         <div class="card-actions">
           <ha-button
             appearance="plain"

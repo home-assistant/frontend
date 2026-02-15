@@ -7,7 +7,7 @@ import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
@@ -106,10 +106,11 @@ export class CloudGooglePref extends LitElement {
                   "ui.panel.config.cloud.account.google.manual_config"
                 )}
               </ha-alert>`
-            : ""}
+            : nothing}
           ${!google_enabled
-            ? ""
-            : html`${!google_registered
+            ? nothing
+            : html`
+                ${!google_registered
                   ? html`
                       <ha-alert
                         .title=${this.hass.localize(
@@ -135,24 +136,26 @@ export class CloudGooglePref extends LitElement {
                         </ul>
                       </ha-alert>
                     `
-                  : ""}
-                <ha-settings-row>
-                  <span slot="heading">
-                    ${this.hass!.localize(
+                  : nothing}
+                <ha-md-list-item>
+                  <span slot="headline"
+                    >${this.hass!.localize(
                       "ui.panel.config.cloud.account.google.expose_new_entities"
-                    )}
-                  </span>
-                  <span slot="description">
-                    ${this.hass!.localize(
+                    )}</span
+                  >
+                  <span slot="supporting-text"
+                    >${this.hass!.localize(
                       "ui.panel.config.cloud.account.google.expose_new_entities_info"
-                    )}
-                  </span>
+                    )}</span
+                  >
                   <ha-switch
+                    slot="end"
                     .checked=${this._exposeNew}
                     .disabled=${this._exposeNew === undefined}
                     @change=${this._exposeNewToggleChanged}
-                  ></ha-switch> </ha-settings-row
-                >${google_registered
+                  ></ha-switch>
+                </ha-md-list-item>
+                ${google_registered
                   ? html`
                       ${this.cloudStatus.http_use_ssl
                         ? html`
@@ -175,37 +178,38 @@ export class CloudGooglePref extends LitElement {
                               >
                             </ha-alert>
                           `
-                        : ""}
-
-                      <ha-settings-row>
-                        <span slot="heading">
-                          ${this.hass!.localize(
+                        : nothing}
+                      <ha-md-list-item>
+                        <span slot="headline"
+                          >${this.hass!.localize(
                             "ui.panel.config.cloud.account.google.enable_state_reporting"
-                          )}
-                        </span>
-                        <span slot="description">
-                          ${this.hass!.localize(
+                          )}</span
+                        >
+                        <span slot="supporting-text"
+                          >${this.hass!.localize(
                             "ui.panel.config.cloud.account.google.info_state_reporting"
-                          )}
-                        </span>
+                          )}</span
+                        >
                         <ha-switch
+                          slot="end"
                           .checked=${google_report_state}
                           @change=${this._reportToggleChanged}
                         ></ha-switch>
-                      </ha-settings-row>
+                      </ha-md-list-item>
 
-                      <ha-settings-row>
-                        <span slot="heading">
-                          ${this.hass.localize(
+                      <ha-md-list-item>
+                        <span slot="headline"
+                          >${this.hass.localize(
                             "ui.panel.config.cloud.account.google.security_devices"
-                          )}
-                        </span>
-                        <span slot="description">
-                          ${this.hass.localize(
+                          )}</span
+                        >
+                        <span slot="supporting-text"
+                          >${this.hass.localize(
                             "ui.panel.config.cloud.account.google.enter_pin_info"
-                          )}
-                        </span>
-                      </ha-settings-row>
+                          )}</span
+                        >
+                        <ha-switch slot="end"></ha-switch>
+                      </ha-md-list-item>
 
                       <ha-textfield
                         id="google_secure_devices_pin"
@@ -219,7 +223,8 @@ export class CloudGooglePref extends LitElement {
                         @change=${this._pinChanged}
                       ></ha-textfield>
                     `
-                  : ""}`}
+                  : nothing}
+              `}
         </div>
         ${google_enabled
           ? html`<div class="card-actions">
@@ -329,8 +334,10 @@ export class CloudGooglePref extends LitElement {
       direction: var(--direction);
       color: var(--secondary-text-color);
     }
-    ha-settings-row {
-      padding: 0;
+    ha-md-list-item {
+      --md-list-item-leading-space: 0;
+      --md-list-item-trailing-space: 0;
+      --md-item-overflow: visible;
     }
     ha-textfield {
       width: 250px;

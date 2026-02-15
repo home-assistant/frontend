@@ -119,7 +119,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
               "ui.panel.energy.cards.energy_usage_graph_title"
             ),
             type: "energy-usage-graph",
-            collection_key: "energy_dashboard",
+            collection_key: collectionKey,
           },
         ],
       });

@@ -15,7 +15,7 @@ import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type {
   BackupAgent,
   BackupConfig,
@@ -180,7 +180,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const selectedAgents = this._formData.agent_ids;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -241,7 +241,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -443,7 +443,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 24px;
         }
         ha-md-list {
