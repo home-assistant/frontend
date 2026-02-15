@@ -33,6 +33,7 @@ export class DialogDataTableSettings extends LitElement {
   @state() private _hiddenColumns?: string[];
 
   private _lastFixedKeys: string[] = [];
+
   @state() private _open = false;
 
   public showDialog(params: DataTableSettingsDialogParams) {
