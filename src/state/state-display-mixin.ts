@@ -53,6 +53,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
 
       const {
         formatEntityState,
+        formatEntityStateToParts,
         formatEntityAttributeName,
         formatEntityAttributeValue,
         formatEntityAttributeValueToParts,
@@ -69,6 +70,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
       );
       this._updateHass({
         formatEntityState,
+        formatEntityStateToParts,
         formatEntityAttributeName,
         formatEntityAttributeValue,
         formatEntityAttributeValueToParts,

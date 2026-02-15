@@ -213,9 +213,7 @@ class MoreInfoMediaPlayer extends LitElement {
         (source) =>
           html`<ha-dropdown-item
             .value=${source}
-            class=${source === this.stateObj?.attributes.source
-              ? "selected"
-              : ""}
+            .selected=${source === this.stateObj?.attributes.source}
           >
             ${this.hass.formatEntityAttributeValue(
               this.stateObj!,
@@ -250,9 +248,7 @@ class MoreInfoMediaPlayer extends LitElement {
         (soundMode) =>
           html`<ha-dropdown-item
             .value=${soundMode}
-            class=${soundMode === this.stateObj?.attributes.sound_mode
-              ? "selected"
-              : ""}
+            .selected=${soundMode === this.stateObj?.attributes.sound_mode}
           >
             ${this.hass.formatEntityAttributeValue(
               this.stateObj!,
@@ -677,13 +673,6 @@ class MoreInfoMediaPlayer extends LitElement {
       gap: var(--ha-space-6);
       align-self: center;
       width: 320px;
-    }
-
-    ha-dropdown-item.selected {
-      font-weight: var(--ha-font-weight-medium);
-      color: var(--primary-color);
-      background-color: var(--ha-color-fill-primary-quiet-resting);
-      --icon-primary-color: var(--primary-color);
     }
   `;
 

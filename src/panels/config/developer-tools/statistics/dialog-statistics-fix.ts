@@ -3,6 +3,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-spinner";
 import { clearStatistics, getStatisticLabel } from "../../../../data/recorder";
@@ -18,19 +19,23 @@ export class DialogStatisticsFix extends LitElement {
 
   @state() private _params?: DialogStatisticsFixParams;
 
+  @state() private _open = false;
+
   @state() private _clearing = false;
 
   public showDialog(params: DialogStatisticsFixParams): void {
     this._params = params;
+    this._open = true;
   }
 
   public closeDialog(): void {
-    this._cancel();
+    this._open = false;
   }
 
-  private _closeDialog(): void {
+  private _dialogClosed(): void {
     this._params = undefined;
     this._clearing = false;
+    this._open = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -43,13 +48,12 @@ export class DialogStatisticsFix extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        @closed=${this._closeDialog}
-        .heading=${this.hass.localize(
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
           `ui.panel.config.developer-tools.tabs.statistics.fix_issue.${issue.type}.title`
         )}
+        @closed=${this._dialogClosed}
       >
         <p>
           ${this.hass.localize(
@@ -147,33 +151,36 @@ export class DialogStatisticsFix extends LitElement {
                   : nothing}
         </p>
 
-        ${issue.type !== "entity_not_recorded"
-          ? html`<ha-button
-                appearance="plain"
-                slot="primaryAction"
-                @click=${this._cancel}
-              >
-                ${this.hass.localize("ui.common.close")}
-              </ha-button>
-              <ha-button
-                slot="primaryAction"
-                @click=${this._clearStatistics}
-                variants="danger"
-                .disabled=${this._clearing}
-                .loading=${this._clearing}
-              >
-                ${this.hass.localize("ui.common.delete")}
-              </ha-button>`
-          : html`<ha-button slot="primaryAction" @click=${this._cancel}>
-              ${this.hass.localize("ui.common.ok")}
-            </ha-button>`}
+        <ha-dialog-footer slot="footer">
+          ${issue.type !== "entity_not_recorded"
+            ? html`<ha-button
+                  appearance="plain"
+                  slot="secondaryAction"
+                  @click=${this._cancel}
+                >
+                  ${this.hass.localize("ui.common.close")}
+                </ha-button>
+                <ha-button
+                  slot="primaryAction"
+                  appearance="filled"
+                  @click=${this._clearStatistics}
+                  variant="danger"
+                  .disabled=${this._clearing}
+                  .loading=${this._clearing}
+                >
+                  ${this.hass.localize("ui.common.delete")}
+                </ha-button>`
+            : html`<ha-button slot="primaryAction" @click=${this._cancel}>
+                ${this.hass.localize("ui.common.ok")}
+              </ha-button>`}
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
   private _cancel(): void {
     this._params?.cancelCallback!();
-    this._closeDialog();
+    this.closeDialog();
   }
 
   private async _clearStatistics(): Promise<void> {
@@ -200,7 +207,7 @@ export class DialogStatisticsFix extends LitElement {
     } finally {
       this._clearing = false;
       this._params?.fixedCallback!();
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 

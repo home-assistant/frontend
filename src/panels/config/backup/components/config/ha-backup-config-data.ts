@@ -17,9 +17,7 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-md-select";
-import type { HaMdSelect } from "../../../../../components/ha-md-select";
-import "../../../../../components/ha-md-select-option";
+import "../../../../../components/ha-select";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
@@ -27,11 +25,11 @@ import "../../../../../components/ha-tooltip";
 import { fetchHassioAddonsInfo } from "../../../../../data/hassio/addon";
 import type { HostDisksUsage } from "../../../../../data/hassio/host";
 import { fetchHostDisksUsage } from "../../../../../data/hassio/host";
-import type { HomeAssistant } from "../../../../../types";
+import { getRecorderInfo } from "../../../../../data/recorder";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
 import "../ha-backup-addons-picker";
 import type { BackupAddonItem } from "../ha-backup-addons-picker";
-import { getRecorderInfo } from "../../../../../data/recorder";
 
 export interface FormData {
   homeassistant: boolean;
@@ -369,34 +367,31 @@ class HaBackupConfigData extends LitElement {
                           "ui.panel.config.backup.data.apps_description"
                         )}
                       </span>
-                      <ha-md-select
+                      <ha-select
                         slot="end"
-                        id="addons_mode"
-                        @change=${this._selectChanged}
+                        @selected=${this._selectChanged}
                         .value=${data.addons_mode}
-                      >
-                        <ha-md-select-option value="all">
-                          <div slot="headline">
-                            ${this.hass.localize(
+                        .options=${[
+                          {
+                            value: "all",
+                            label: this.hass.localize(
                               "ui.panel.config.backup.data.apps_all"
-                            )}
-                          </div>
-                        </ha-md-select-option>
-                        <ha-md-select-option value="none">
-                          <div slot="headline">
-                            ${this.hass.localize(
+                            ),
+                          },
+                          {
+                            value: "none",
+                            label: this.hass.localize(
                               "ui.panel.config.backup.data.apps_none"
-                            )}
-                          </div>
-                        </ha-md-select-option>
-                        <ha-md-select-option value="custom">
-                          <div slot="headline">
-                            ${this.hass.localize(
+                            ),
+                          },
+                          {
+                            value: "custom",
+                            label: this.hass.localize(
                               "ui.panel.config.backup.data.apps_custom"
-                            )}
-                          </div>
-                        </ha-md-select-option>
-                      </ha-md-select>
+                            ),
+                          },
+                        ]}
+                      ></ha-select>
                     </ha-md-list-item>
                   `
                 : nothing}
@@ -432,16 +427,21 @@ class HaBackupConfigData extends LitElement {
     });
   }
 
-  private _selectChanged(ev: Event) {
-    const target = ev.currentTarget as HaMdSelect;
+  private _selectChanged(
+    ev: ValueChangedEvent<"all" | "none" | "custom" | undefined>
+  ) {
+    const value = ev.detail.value;
+
+    if (!value) {
+      return;
+    }
     const data = this._getData(this.value, this._showAddons);
+
     this._setData({
       ...data,
-      [target.id]: target.value,
+      addons_mode: value,
     });
-    if (target.id === "addons_mode") {
-      this._showAddons = target.value === "custom";
-    }
+    this._showAddons = value === "custom";
   }
 
   private _addonsChanged(ev: CustomEvent) {
@@ -559,14 +559,13 @@ class HaBackupConfigData extends LitElement {
     ha-md-list-item {
       --md-item-overflow: visible;
     }
-    ha-md-select {
+    ha-select {
       min-width: 210px;
     }
     @media all and (max-width: 450px) {
-      ha-md-select {
+      ha-select {
         min-width: 140px;
         width: 140px;
-        --md-filled-field-content-space: 0;
       }
     }
   `;

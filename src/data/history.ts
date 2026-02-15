@@ -142,7 +142,7 @@ export const subscribeHistory = (
   );
 };
 
-class HistoryStream {
+export class HistoryStream {
   hass: HomeAssistant;
 
   hoursToShow?: number;
@@ -221,6 +221,7 @@ class HistoryStream {
         // only expire the rest of the history as it ages.
         const lastExpiredState = expiredStates[expiredStates.length - 1];
         lastExpiredState.lu = purgeBeforePythonTime;
+        delete lastExpiredState.lc;
         newHistory[entityId].unshift(lastExpiredState);
       }
     }

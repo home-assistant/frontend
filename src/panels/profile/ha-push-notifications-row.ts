@@ -3,15 +3,13 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { pushSupported } from "../../components/ha-push-notifications-toggle";
-import "../../components/ha-settings-row";
+import "../../components/ha-md-list-item";
 import { documentationUrl } from "../../util/documentation-url";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-push-notifications-row")
 class HaPushNotificationsRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
     const platformLoaded = isComponentLoaded(this.hass, "html5.notify");
@@ -30,14 +28,14 @@ class HaPushNotificationsRow extends LitElement {
     const isDisabled = !platformLoaded || !pushSupported;
 
     return html`
-      <ha-settings-row .narrow=${this.narrow}>
-        <span slot="heading"
+      <ha-md-list-item>
+        <span slot="headline"
           >${this.hass.localize(
             "ui.panel.profile.push_notifications.header"
           )}</span
         >
-        <span slot="description">
-          ${this.hass.localize(
+        <span slot="supporting-text"
+          >${this.hass.localize(
             `ui.panel.profile.push_notifications.${descriptionKey}`
           )}
           <a
@@ -47,13 +45,14 @@ class HaPushNotificationsRow extends LitElement {
             >${this.hass.localize(
               "ui.panel.profile.push_notifications.link_promo"
             )}</a
-          >
-        </span>
+          ></span
+        >
         <ha-push-notifications-toggle
+          slot="end"
           .hass=${this.hass}
           .disabled=${isDisabled}
         ></ha-push-notifications-toggle>
-      </ha-settings-row>
+      </ha-md-list-item>
     `;
   }
 

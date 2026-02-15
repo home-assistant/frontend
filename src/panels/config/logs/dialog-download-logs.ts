@@ -4,13 +4,12 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-md-select";
-import "../../../components/ha-md-select-option";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-select";
+import "../../../components/ha-dialog";
 import { getSignedPath } from "../../../data/auth";
 import { getHassioLogDownloadLinesUrl } from "../../../data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import type { DownloadLogsDialogParams } from "./show-dialog-download-logs";
 
@@ -67,7 +66,7 @@ class DownloadLogsDialog extends LitElement {
     }`;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.panel.config.logs.download_logs")}
@@ -81,19 +80,12 @@ class DownloadLogsDialog extends LitElement {
               "ui.panel.config.logs.select_number_of_lines"
             )}:
           </div>
-          <ha-md-select
+          <ha-select
             .label=${this.hass.localize("ui.panel.config.logs.lines")}
-            @change=${this._setNumberOfLogs}
+            @selected=${this._setNumberOfLogs}
             .value=${String(this._lineCount)}
-          >
-            ${numberOfLinesOptions.map(
-              (option) => html`
-                <ha-md-select-option .value=${String(option)}>
-                  ${option}
-                </ha-md-select-option>
-              `
-            )}
-          </ha-md-select>
+            .options=${numberOfLinesOptions.map((option) => String(option))}
+          ></ha-select>
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -107,7 +99,7 @@ class DownloadLogsDialog extends LitElement {
             ${this.hass.localize("ui.common.download")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -130,8 +122,8 @@ class DownloadLogsDialog extends LitElement {
     this.closeDialog();
   }
 
-  private _setNumberOfLogs(ev) {
-    this._lineCount = Number(ev.target.value);
+  private _setNumberOfLogs(ev: ValueChangedEvent<string>) {
+    this._lineCount = Number(ev.detail.value);
   }
 
   static get styles(): CSSResultGroup {
@@ -147,6 +139,9 @@ class DownloadLogsDialog extends LitElement {
           flex-direction: column;
           align-items: center;
           gap: var(--ha-space-2);
+        }
+        ha-select {
+          width: 100%;
         }
       `,
     ];

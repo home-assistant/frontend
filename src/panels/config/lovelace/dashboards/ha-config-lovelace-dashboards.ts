@@ -20,6 +20,7 @@ import type {
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
@@ -460,9 +461,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_title"
       ),
-      text: this.hass.localize(
-        "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
-      ),
+      text: html`${this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
+        )}<br /><br /><ha-alert alert-type="info"
+          >${this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_note"
+          )}</ha-alert
+        >`,
       confirmText: this.hass.localize("ui.common.ok"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: false,

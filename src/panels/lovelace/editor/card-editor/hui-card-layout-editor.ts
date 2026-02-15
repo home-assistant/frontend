@@ -10,7 +10,7 @@ import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-settings-row";
+import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
@@ -138,42 +138,42 @@ export class HuiCardLayoutEditor extends LitElement {
               .columnsDisabled=${this._defaultGridOptions?.fixed_columns}
               .step=${this._preciseMode ? 1 : GRID_COLUMN_MULTIPLIER}
             ></ha-grid-size-picker>
-            <ha-settings-row>
-              <span slot="heading" data-for="full-width">
-                ${this.hass.localize(
+            <ha-md-list-item>
+              <span slot="headline"
+                >${this.hass.localize(
                   "ui.panel.lovelace.editor.edit_card.layout.full_width"
-                )}
-              </span>
-              <span slot="description" data-for="full-width">
-                ${this.hass.localize(
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
                   "ui.panel.lovelace.editor.edit_card.layout.full_width_helper"
-                )}
-              </span>
+                )}</span
+              >
               <ha-switch
+                slot="end"
                 @change=${this._fullWidthChanged}
                 .checked=${options.columns === "full"}
                 name="full-width"
-              >
-              </ha-switch>
-            </ha-settings-row>
-            <ha-settings-row>
-              <span slot="heading" data-for="precise-mode">
-                ${this.hass.localize(
+              ></ha-switch>
+            </ha-md-list-item>
+            <ha-md-list-item>
+              <span slot="headline"
+                >${this.hass.localize(
                   "ui.panel.lovelace.editor.edit_card.layout.precise_mode"
-                )}
-              </span>
-              <span slot="description" data-for="precise-mode">
-                ${this.hass.localize(
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
                   "ui.panel.lovelace.editor.edit_card.layout.precise_mode_helper"
-                )}
-              </span>
+                )}</span
+              >
               <ha-switch
+                slot="end"
                 @change=${this._preciseModeChanged}
                 .checked=${this._preciseMode}
                 name="precise-mode"
-              >
-              </ha-switch>
-            </ha-settings-row>
+              ></ha-switch>
+            </ha-md-list-item>
           `}
     `;
   }

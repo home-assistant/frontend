@@ -26,15 +26,16 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type {
+  HaDropdown,
+  HaDropdownSelectEvent,
+} from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-md-menu";
-import type { HaMdMenu } from "../../../components/ha-md-menu";
-import "../../../components/ha-md-menu-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import type {
@@ -73,7 +74,6 @@ import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup"
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";
 import { showUploadBackupDialog } from "./dialogs/show-dialog-upload-backup";
 import { downloadBackup } from "./helper/download_backup";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface BackupRow extends DataTableRowData, BackupContent {
   formatted_type: string;
@@ -123,7 +123,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
-  @query("#overflow-menu") private _overflowMenu?: HaMdMenu;
+  @query("#overflow-menu") private _overflowMenu?: HaDropdown;
+
+  private _openingOverflow = false;
+
+  private _overflowBackup?: BackupRow;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -287,12 +291,27 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       return;
     }
 
-    if (this._overflowMenu.open) {
-      this._overflowMenu.close();
+    if (this._overflowMenu.anchorElement === ev.target) {
+      this._overflowMenu.anchorElement = undefined;
       return;
     }
+    this._openingOverflow = true;
     this._overflowMenu.anchorElement = ev.target;
-    this._overflowMenu.show();
+    this._overflowBackup = ev.target.backup;
+    this._overflowMenu.open = true;
+  };
+
+  private _overflowMenuOpened = () => {
+    this._openingOverflow = false;
+  };
+
+  private _overflowMenuClosed = () => {
+    // changing the anchorElement triggers a close event, ignore it
+    if (this._openingOverflow || !this._overflowMenu) {
+      return;
+    }
+
+    this._overflowMenu.anchorElement = undefined;
   };
 
   private _handleGroupingChanged(ev: CustomEvent) {
@@ -477,16 +496,21 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
             `
           : nothing}
       </hass-tabs-subpage-data-table>
-      <ha-md-menu id="overflow-menu" positioning="fixed">
-        <ha-md-menu-item .clickAction=${this._downloadBackup}>
-          <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+      <ha-dropdown
+        id="overflow-menu"
+        @wa-select=${this._handleOverflowAction}
+        @wa-after-show=${this._overflowMenuOpened}
+        @wa-after-hide=${this._overflowMenuClosed}
+      >
+        <ha-dropdown-item value="download">
+          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
           ${this.hass.localize("ui.common.download")}
-        </ha-md-menu-item>
-        <ha-md-menu-item class="warning" .clickAction=${this._deleteBackup}>
-          <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+        </ha-dropdown-item>
+        <ha-dropdown-item variant="danger" value="delete">
+          <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
           ${this.hass.localize("ui.common.delete")}
-        </ha-md-menu-item>
-      </ha-md-menu>
+        </ha-dropdown-item>
+      </ha-dropdown>
     `;
   }
 
@@ -556,16 +580,29 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     navigate(`/config/backup/details/${id}`);
   }
 
-  private _downloadBackup = async (ev): Promise<void> => {
-    const backup = ev.parentElement.anchorElement.backup;
+  private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
+    const action = ev.detail.item.value;
+
+    if (action === "download") {
+      this._downloadBackup();
+      return;
+    }
+
+    if (action === "delete") {
+      this._deleteBackup();
+    }
+  };
+
+  private _downloadBackup = async (): Promise<void> => {
+    const backup = this._overflowBackup;
     if (!backup) {
       return;
     }
     downloadBackup(this.hass, this, backup, this.config);
   };
 
-  private _deleteBackup = async (ev): Promise<void> => {
-    const backup = ev.parentElement.anchorElement.backup;
+  private _deleteBackup = async (): Promise<void> => {
+    const backup = this._overflowBackup;
     if (!backup) {
       return;
     }
