@@ -5,7 +5,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-select";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import { getSignedPath } from "../../../data/auth";
 import { getHassioLogDownloadLinesUrl } from "../../../data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -66,7 +66,7 @@ class DownloadLogsDialog extends LitElement {
     }`;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.panel.config.logs.download_logs")}
@@ -99,7 +99,7 @@ class DownloadLogsDialog extends LitElement {
             ${this.hass.localize("ui.common.download")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

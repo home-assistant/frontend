@@ -11,7 +11,7 @@ import { computeEntityNameList } from "../../../common/entity/compute_entity_nam
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-state-icon";
@@ -86,7 +86,7 @@ class DialogExposeEntity extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         width="medium"
@@ -128,7 +128,7 @@ class DialogExposeEntity extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -263,7 +263,7 @@ class DialogExposeEntity extends LitElement {
       haStyle,
       haStyleScrollbar,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         ha-list {

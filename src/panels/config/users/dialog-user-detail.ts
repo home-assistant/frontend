@@ -12,7 +12,7 @@ import "../../../components/ha-md-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import { adminChangeUsername } from "../../../data/auth";
 import {
   computeUserBadges,
@@ -66,7 +66,7 @@ class DialogUserDetail extends LitElement {
     const user = this._params.entry;
     const badges = computeUserBadges(this.hass, user, true);
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -272,7 +272,7 @@ class DialogUserDetail extends LitElement {
           ${this.hass!.localize("ui.common.save")}
         </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

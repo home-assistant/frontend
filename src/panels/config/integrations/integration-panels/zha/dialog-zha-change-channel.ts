@@ -6,7 +6,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import { changeZHANetworkChannel } from "../../../../../data/zha";
@@ -68,7 +68,7 @@ class DialogZHAChangeChannel extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -133,7 +133,7 @@ class DialogZHAChangeChannel extends LitElement {
             )}
           </ha-progress-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

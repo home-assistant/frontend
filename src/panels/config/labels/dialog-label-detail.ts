@@ -8,7 +8,7 @@ import "../../../components/ha-color-picker";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-textarea";
 import "../../../components/ha-textfield";
 import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
@@ -73,7 +73,7 @@ class DialogLabelDetail
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.entry
@@ -146,7 +146,7 @@ class DialogLabelDetail
               : this.hass!.localize("ui.common.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

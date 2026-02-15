@@ -2,7 +2,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 
 @customElement("app-dialog")
 class DialogApp extends LitElement {
@@ -28,7 +28,7 @@ class DialogApp extends LitElement {
     if (!this.localize) {
       return nothing;
     }
-    return html`<ha-wa-dialog
+    return html`<ha-dialog
       .open=${this._open}
       header-title=${this.localize(
         "ui.panel.page-onboarding.welcome.download_app"
@@ -73,7 +73,7 @@ class DialogApp extends LitElement {
           </a>
         </div>
       </div>
-    </ha-wa-dialog>`;
+    </ha-dialog>`;
   }
 
   static styles = css`

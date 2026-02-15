@@ -19,7 +19,7 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-with-ai-button";
 import "../../../components/ha-textfield";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import type { GenDataTaskResult } from "../../../data/ai_task";
 import type {
   AreaRegistryEntry,
@@ -338,7 +338,7 @@ class DialogAreaDetail
     const isNew = !entry;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${entry
@@ -385,7 +385,7 @@ class DialogAreaDetail
               : this.hass.localize("ui.common.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

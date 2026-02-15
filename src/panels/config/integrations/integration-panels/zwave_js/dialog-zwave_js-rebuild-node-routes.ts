@@ -7,7 +7,7 @@ import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_d
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZWaveJSNetwork } from "../../../../../data/zwave_js";
 import {
@@ -54,7 +54,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -201,7 +201,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                 </ha-button>
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
