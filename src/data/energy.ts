@@ -37,6 +37,7 @@ import {
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { formatNumber } from "../common/number/format_number";
+import { getPanelTitleFromUrlPath } from "./panel";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
@@ -51,13 +52,24 @@ const energyCollectionKeys: (string | undefined)[] = [];
 // If the supplied key has an valid non-user prefix, that will
 // remain unchanged to support dashboards made in YAML.
 export function createEnergyCollectionKey(key: string): string {
-  if (
-    !key.startsWith(ENERGY_COLLECTION_KEY_UI_PREFIX) &&
-    !key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)
-  ) {
+  if (!key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
+    // No collection key prefix, so add UI prefix.
     key = ENERGY_COLLECTION_KEY_UI_PREFIX + key;
   }
   return key;
+}
+
+// Create default collection key for the current dashboard
+// This attempts to get the current dashboard title and forms a collection key
+// from it if a title is found.
+export function getCurrentDashboardDefaultCollectionKey(
+  hass: HomeAssistant
+): string | undefined {
+  const dashboardTitle = getPanelTitleFromUrlPath(hass, hass.panelUrl);
+  if (dashboardTitle) {
+    return createEnergyCollectionKey(dashboardTitle);
+  }
+  return undefined;
 }
 
 // Does the opposite of createEnergyCollectionKey, removing the collection key
@@ -819,16 +831,24 @@ export const getEnergyDataCollection = (
   options: { prefs?: EnergyPreferences; key?: string } = {}
 ): EnergyCollection => {
   let key = "_energy";
+  let name: string | undefined;
   if (options.key) {
     validateEnergyCollectionKey(options.key);
     key = `_${options.key}`;
+    name = options.key;
+  } else {
+    const defaultKey = getCurrentDashboardDefaultCollectionKey(hass);
+    if (defaultKey) {
+      key = `_${defaultKey}`;
+      name = defaultKey;
+    }
   }
 
   if ((hass.connection as any)[key]) {
     return (hass.connection as any)[key];
   }
 
-  energyCollectionKeys.push(options.key);
+  energyCollectionKeys.push(name);
 
   const collection = getCollection<EnergyData>(
     hass.connection,
