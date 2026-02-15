@@ -10,7 +10,7 @@ import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-wa-dialog";
 import "../../../../components/ha-icon-button";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
@@ -165,7 +165,7 @@ export class HuiDialogEditCard
     }
 
     return html`
-      <ha-dialog
+      <ha-wa-dialog
         .hass=${this.hass}
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
@@ -269,7 +269,7 @@ export class HuiDialogEditCard
               `
             : ``}
         </ha-dialog-footer>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -394,9 +394,10 @@ export class HuiDialogEditCard
              8px - spacing under mdc-dialog__surface */
         }
 
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-z-index: 6;
-          --dialog-content-padding: var(--ha-space-2);
+          --dialog-content-padding: var(--ha-space-2); /* added */
+          /* --dialog-content-padding: 24px 12px 0; */ /* PR */
         }
 
         .content {
@@ -504,7 +505,7 @@ export class HuiDialogEditCard
           margin-inline-end: auto;
           margin-inline-start: initial;
         }
-        ha-dialog a[slot="headerActionItems"] {
+        ha-wa-dialog a[slot="headerActionItems"] {
           color: inherit;
           text-decoration: none;
         }
