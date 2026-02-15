@@ -70,7 +70,7 @@ class DialogBox extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
-        ?prevent-scrim-close=${confirmPrompt}
+        ?prevent-scrim-close=${!!this._params.confirmation}
         @closed=${this._dialogClosed}
         aria-labelledby="dialog-box-title"
         aria-describedby="dialog-box-description"

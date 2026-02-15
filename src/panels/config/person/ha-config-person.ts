@@ -152,13 +152,20 @@ export class HaConfigPerson extends LitElement {
         template: (row) =>
           row.is_active === undefined
             ? "—"
-            : row.is_active
-              ? html`<span style="color: var(--success-color)"
-                  >${localize(
-                    "ui.panel.config.users.picker.status.active"
-                  )}</span
-                >`
-              : localize("ui.panel.config.users.picker.status.inactive"),
+            : html`<span
+                style="display: flex; align-items: center; gap: 8px"
+              >
+                <span
+                  style="width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background-color: var(${row.is_active ? "--success-color" : "--error-color"})"
+                ></span>
+                ${row.is_active
+                  ? localize(
+                      "ui.panel.config.users.picker.status.active"
+                    )
+                  : localize(
+                      "ui.panel.config.users.picker.status.inactive"
+                    )}
+              </span>`,
       },
       local_only: {
         title: localize("ui.panel.config.users.picker.headers.local"),
