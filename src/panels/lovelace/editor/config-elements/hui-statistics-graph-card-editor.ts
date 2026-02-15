@@ -297,9 +297,9 @@ export class HuiStatisticsGraphCardEditor
           )
         );
     const data = {
+      ...this._config,
       chart_type: "line",
       period: "hour",
-      ...this._config,
       stat_types: configured_stat_types,
     };
     const unitClass = this._metaDatas?.[0]?.unit_class;
