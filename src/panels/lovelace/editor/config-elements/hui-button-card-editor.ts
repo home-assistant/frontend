@@ -165,9 +165,9 @@ export class HuiButtonCardEditor
     }
 
     const data = {
+      ...this._config,
       show_name: true,
       show_icon: true,
-      ...this._config,
     };
 
     if (data.icon_height?.includes("px")) {
