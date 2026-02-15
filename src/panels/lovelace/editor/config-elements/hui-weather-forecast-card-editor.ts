@@ -307,9 +307,9 @@ export class HuiWeatherForecastCardEditor
     );
 
     const data: WeatherForecastCardConfig = {
+      ...this._config,
       show_current: true,
       show_forecast: this._hasForecast,
-      ...this._config,
     };
 
     data.forecast =
