@@ -429,12 +429,12 @@ export class HuiAreaCardEditor
     );
 
     const data = {
+      ...this._config,
       camera_view: "auto",
       alert_classes: DEVICE_CLASSES.binary_sensor,
       sensor_classes: DEVICE_CLASSES.sensor,
       display_type: displayType,
       content_layout: vertical ? "vertical" : "horizontal",
-      ...this._config,
     };
 
     // Backwards compatibility: convert navigation_path to tap_action for display
