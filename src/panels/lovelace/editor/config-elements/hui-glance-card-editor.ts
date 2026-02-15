@@ -153,10 +153,10 @@ export class HuiGlanceCardEditor
     }
 
     const data = {
+      ...this._config,
       show_name: true,
       show_icon: true,
       show_state: true,
-      ...this._config,
     };
 
     return html`
