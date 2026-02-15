@@ -11,6 +11,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -39,6 +40,17 @@ class HuiEnergyGridGaugeCard
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyGridNeutralityGaugeCardConfig;
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyGridNeutralityGaugeCardConfig {
+    return {
+      type: "energy-grid-neutrality-gauge",
+      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
+    };
+  }
 
   @state() private _data?: EnergyData;
 

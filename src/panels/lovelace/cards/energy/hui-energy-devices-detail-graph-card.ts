@@ -19,6 +19,7 @@ import {
   getSummedData,
   computeConsumptionData,
   validateEnergyCollectionKey,
+  getCurrentDashboardDefaultCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import {
@@ -56,6 +57,17 @@ export class HuiEnergyDevicesDetailGraphCard
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDevicesDetailGraphCardConfig;
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyDevicesDetailGraphCardConfig {
+    return {
+      type: "energy-devices-detail-graph",
+      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
+    };
+  }
 
   @state() private _chartData: BarSeriesOption[] = [];
 

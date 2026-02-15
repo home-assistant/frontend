@@ -11,6 +11,7 @@ import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -39,6 +40,17 @@ class HuiEnergySelfSufficiencyGaugeCard
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergySelfSufficiencyGaugeCardConfig;
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergySelfSufficiencyGaugeCardConfig {
+    return {
+      type: "energy-self-sufficiency-gauge",
+      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
+    };
+  }
 
   @state() private _data?: EnergyData;
 

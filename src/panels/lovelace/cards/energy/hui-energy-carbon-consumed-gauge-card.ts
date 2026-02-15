@@ -11,6 +11,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -40,6 +41,17 @@ class HuiEnergyCarbonGaugeCard
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyCarbonGaugeCardConfig;
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyCarbonGaugeCardConfig {
+    return {
+      type: "energy-carbon-consumed-gauge",
+      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
+    };
+  }
 
   @state() private _data?: EnergyData;
 

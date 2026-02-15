@@ -10,6 +10,7 @@ import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
   calculateSolarConsumedGauge,
+  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -38,6 +39,17 @@ class HuiEnergySolarGaugeCard
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergySolarGaugeCardConfig;
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergySolarGaugeCardConfig {
+    return {
+      type: "energy-solar-consumed-gauge",
+      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
+    };
+  }
 
   @state() private _data?: EnergyData;
 

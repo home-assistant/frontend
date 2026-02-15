@@ -22,6 +22,7 @@ import type {
 } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -63,6 +64,17 @@ export class HuiEnergyUsageGraphCard
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyUsageGraphCardConfig;
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyUsageGraphCardConfig {
+    return {
+      type: "energy-usage-graph",
+      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
+    };
+  }
 
   @state() private _chartData: BarSeriesOption[] = [];
 
