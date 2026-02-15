@@ -9,7 +9,7 @@ import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-tab-group";
 import "../../../../../components/ha-tab-group-tab";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
 import {
@@ -95,7 +95,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     const tabs = this._getTabs(this._device);
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -176,7 +176,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                     `
           )}
         </div>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

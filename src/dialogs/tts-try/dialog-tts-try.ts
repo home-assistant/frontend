@@ -6,7 +6,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/buttons/ha-progress-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-textarea";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { HaTextArea } from "../../components/ha-textarea";
 import { convertTextToSpeech } from "../../data/tts";
 import { haStyleDialog } from "../../resources/styles";
@@ -69,7 +69,7 @@ export class TTSTryDialog extends LitElement {
       return nothing;
     }
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.dialogs.tts-try.header")}
@@ -100,7 +100,7 @@ export class TTSTryDialog extends LitElement {
             ${this.hass.localize("ui.dialogs.tts-try.play")}
           </ha-progress-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

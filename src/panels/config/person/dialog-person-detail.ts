@@ -12,7 +12,7 @@ import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-textfield";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import { adminChangeUsername } from "../../../data/auth";
 import type { PersonMutableParams } from "../../../data/person";
 import type { User } from "../../../data/user";
@@ -132,7 +132,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     }
     const nameInvalid = this._name.trim() === "";
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -271,7 +271,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
               : this.hass!.localize("ui.common.add")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

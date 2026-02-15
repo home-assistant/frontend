@@ -15,7 +15,7 @@ import "../ha-list";
 import "../ha-list-item";
 import "../ha-sortable";
 import "../ha-svg-icon";
-import "../ha-wa-dialog";
+import "../ha-dialog";
 import type {
   DataTableColumnContainer,
   DataTableColumnData,
@@ -101,7 +101,7 @@ export class DialogDataTableSettings extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${localize("ui.components.data-table.settings.header")}
@@ -171,7 +171,7 @@ export class DialogDataTableSettings extends LitElement {
             ${localize("ui.components.data-table.settings.done")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -291,7 +291,7 @@ export class DialogDataTableSettings extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-z-index: 10;
           --dialog-content-padding: 0 8px;
         }
