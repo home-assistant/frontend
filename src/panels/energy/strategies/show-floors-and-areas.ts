@@ -33,7 +33,7 @@ export function shouldShowFloorsAndAreas(
       hass.devices
     );
 
-    if (childArea !== parentArea) return false;
+    if (childArea && parentArea && childArea !== parentArea) return false;
   }
 
   return true;
