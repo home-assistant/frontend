@@ -197,11 +197,11 @@ export class HuiPictureEntityCardEditor
   }
 
   private _processData = memoizeOne((config: PictureEntityCardConfig) => ({
+    ...config,
     show_state: true,
     show_name: true,
     camera_view: "auto",
     fit_mode: "cover",
-    ...config,
     ...(typeof config.image === "string"
       ? { image: { media_content_id: config.image } }
       : {}),
