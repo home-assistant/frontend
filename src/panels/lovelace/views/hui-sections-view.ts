@@ -14,7 +14,6 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
@@ -30,6 +29,7 @@ import {
 } from "../editor/lovelace-path";
 import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
+import { generateDefaultSection } from "./default-section";
 import "./hui-view-header";
 import "./hui-view-sidebar";
 
@@ -340,22 +340,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     `;
   }
 
-  private _defaultSection(includeHeading: boolean): LovelaceSectionConfig {
-    return {
-      type: "grid",
-      cards: includeHeading
-        ? [
-            {
-              type: "heading",
-              heading: this.hass!.localize(
-                "ui.panel.lovelace.editor.section.default_section_title"
-              ),
-            },
-          ]
-        : [],
-    };
-  }
-
   private _handleCardAdded(ev) {
     const { data } = ev.detail;
     const oldPath = data as LovelaceCardPath;
@@ -372,7 +356,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const configWithNewSection = addSection(
       this.lovelace!.config,
       this.index!,
-      this._defaultSection(cardConfig.type !== "heading") // If we move a heading card, we don't want to include a heading in the new section
+      generateDefaultSection(this.hass.localize, cardConfig.type !== "heading") // If we move a heading card, we don't want to include a heading in the new section
     );
     const viewConfig = configWithNewSection.views[
       this.index!
@@ -397,7 +381,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const newConfig = addSection(
       this.lovelace!.config,
       this.index!,
-      this._defaultSection(true)
+      generateDefaultSection(this.hass.localize, true)
     );
     this.lovelace!.saveConfig(newConfig);
   }

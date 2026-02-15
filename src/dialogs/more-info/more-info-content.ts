@@ -3,7 +3,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
+import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
@@ -14,6 +17,12 @@ import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers
 import "../../panels/lovelace/sections/hui-section";
 import type { HomeAssistant } from "../../types";
 import { stateMoreInfoType } from "./state_more_info_control";
+
+interface EntityInfo {
+  entityId: string;
+  entityName: string | undefined;
+  areaId: string | undefined;
+}
 
 @customElement("more-info-content")
 class MoreInfoContent extends LitElement {
@@ -83,32 +92,78 @@ class MoreInfoContent extends LitElement {
   }
 
   private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => {
-    const cards = entityIds
-      .map((entityId) => {
-        const entity = this.hass!.entities[entityId];
-        if (entity?.hidden) {
+    const hass = this.hass!;
+
+    // Get entity names and areas for all visible entities
+    const entityInfos = entityIds
+      .map<EntityInfo | null>((entityId) => {
+        const entry = hass.entities[entityId];
+        if (entry?.hidden) {
           return null;
         }
-        const features: LovelaceCardFeatureConfig[] = [];
-        const context = { entity_id: entityId };
-        if (supportsCoverPositionCardFeature(this.hass!, context)) {
-          features.push({
-            type: "cover-position",
-          });
-        } else if (supportsLightBrightnessCardFeature(this.hass!, context)) {
-          features.push({
-            type: "light-brightness",
-          });
+        const stateObj = hass.states[entityId];
+        if (!stateObj) {
+          return null;
         }
-        return {
-          type: "tile",
-          entity: entityId,
-          features_position: "inline",
-          features,
-          grid_options: { columns: 12 },
-        } as TileCardConfig;
+        const entityName = entry
+          ? computeEntityName(stateObj, hass.entities, hass.devices)
+          : undefined;
+        const { area } = getEntityContext(
+          stateObj,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        );
+        const areaId = area?.area_id;
+        return { entityId, entityName, areaId };
       })
-      .filter(Boolean);
+      .filter(Boolean) as EntityInfo[];
+
+    // Check if all entities have the same entity name
+    const entityNames = new Set(entityInfos.map((info) => info.entityName));
+    const allSameEntityName = entityNames.size === 1;
+
+    // Check if all entities have the same area
+    const areaIds = new Set(entityInfos.map((info) => info.areaId));
+    const allSameArea = areaIds.size === 1;
+
+    // Build name and state content config based on conditions
+    const name: EntityNameItem[] = [{ type: "device" }];
+
+    if (!allSameEntityName) {
+      name.push({ type: "entity" });
+    }
+
+    const stateContent = ["state"];
+    if (!allSameArea) {
+      stateContent.push("area_name");
+    }
+
+    const cards = entityInfos.map(({ entityId }) => {
+      const features: LovelaceCardFeatureConfig[] = [];
+      const context = { entity_id: entityId };
+      if (supportsCoverPositionCardFeature(hass, context)) {
+        features.push({
+          type: "cover-position",
+        });
+      } else if (supportsLightBrightnessCardFeature(hass, context)) {
+        features.push({
+          type: "light-brightness",
+        });
+      }
+
+      return {
+        type: "tile",
+        entity: entityId,
+        name,
+        state_content: stateContent,
+        features_position: "inline",
+        features,
+        grid_options: { columns: 12 },
+      } as TileCardConfig;
+    });
+
     return {
       type: "grid",
       cards,

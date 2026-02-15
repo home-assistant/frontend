@@ -48,7 +48,6 @@ import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-alert";
 import "../ha-button";
-import "../ha-button-menu";
 import "../ha-card";
 import "../ha-fab";
 import "../ha-icon-button";

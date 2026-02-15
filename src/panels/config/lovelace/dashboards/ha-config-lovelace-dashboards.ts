@@ -8,7 +8,7 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
@@ -20,17 +20,17 @@ import type {
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-overflow-menu";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import { saveFrontendSystemData } from "../../../../data/frontend";
-import type { LovelacePanelConfig } from "../../../../data/lovelace";
 import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
   isStrategyDashboard,
@@ -282,7 +282,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 action: () => this._handleSetAsDefault(dashboard),
                 disabled: dashboard.default,
               },
-              ...(dashboard.type === "user_created"
+              ...(dashboard.type === "user_created" &&
+              dashboard.mode === "storage"
                 ? [
                     {
                       path: mdiPencil,
@@ -313,23 +314,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _getItems = memoize(
     (dashboards: LovelaceDashboard[], defaultUrlPath: string | null) => {
-      const mode = (this.hass.panels?.lovelace?.config as LovelacePanelConfig)
-        .mode;
-      const isDefault = defaultUrlPath === "lovelace";
-      const result: DataTableItem[] = [
-        {
-          icon: "mdi:view-dashboard",
-          title: this.hass.localize("panel.states"),
-          default: isDefault,
-          show_in_sidebar: true,
-          require_admin: false,
-          url_path: "lovelace",
-          mode: mode,
-          filename: mode === "yaml" ? "ui-lovelace.yaml" : "",
-          type: "built_in",
-          localized_type: this._localizeType("built_in"),
-        },
-      ];
+      const result: DataTableItem[] = [];
 
       PANEL_DASHBOARDS.forEach((panel) => {
         const panelInfo = this.hass.panels[panel];
@@ -413,16 +398,20 @@ export class HaConfigLovelaceDashboards extends LitElement {
         has-fab
         clickable
       >
-        <ha-md-button-menu slot="toolbar-icon">
+        <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-md-list-item type="link" href="/config/lovelace/resources">
-            ${this.hass.localize("ui.panel.config.lovelace.resources.caption")}
-          </ha-md-list-item>
-        </ha-md-button-menu>
+          <a href="/config/lovelace/resources">
+            <ha-dropdown-item>
+              ${this.hass.localize(
+                "ui.panel.config.lovelace.resources.caption"
+              )}
+            </ha-dropdown-item>
+          </a>
+        </ha-dropdown>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(
@@ -472,9 +461,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_title"
       ),
-      text: this.hass.localize(
-        "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
-      ),
+      text: html`${this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_text"
+        )}<br /><br /><ha-alert alert-type="info"
+          >${this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.detail.set_default_confirm_note"
+          )}</ha-alert
+        >`,
       confirmText: this.hass.localize("ui.common.ok"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: false,
@@ -613,6 +606,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
   }
+
+  static styles = css`
+    ha-dropdown a {
+      text-decoration: none;
+    }
+  `;
 }
 
 declare global {

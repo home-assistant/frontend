@@ -37,7 +37,6 @@ declare global {
   var __VERSION__: string;
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
-  var __SUPERVISOR__: boolean;
   var __HASS_URL__: string;
   /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -206,6 +205,11 @@ export interface Context {
   user_id?: string | null;
 }
 
+export interface ValuePart {
+  type: "value" | "literal" | "unit";
+  value: string;
+}
+
 export interface ServiceCallResponse<T = any> {
   context: Context;
   response?: T;
@@ -288,11 +292,17 @@ export interface HomeAssistant {
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
   formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
     value?: any
   ): string;
+  formatEntityAttributeValueToParts(
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
+  ): ValuePart[];
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,

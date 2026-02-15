@@ -9,15 +9,17 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { BINARY_STATE_ON } from "../../../common/const";
+import { BINARY_STATE_ON, STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
-import { navigate } from "../../../common/navigate";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 import {
   formatNumber,
   isNumericState,
@@ -30,21 +32,20 @@ import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon";
-import "../../../components/ha-ripple";
-import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-badge";
+import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
+import { tileCardStyle } from "./tile/tile-card-style";
 import type { AreaCardConfig } from "./types";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
@@ -112,10 +113,28 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const displayType =
       config.display_type || (config.show_camera ? "camera" : "picture");
     const vertical = displayType === "compact" ? config.vertical : false;
+
+    // Backwards compatibility: convert navigation_path to tap_action
+    let tapAction = config.tap_action;
+    if (config.navigation_path && !tapAction) {
+      tapAction = {
+        action: "navigate",
+        navigation_path: config.navigation_path,
+      };
+    }
+
+    // Set smart default for image_tap_action only for camera display type
+    let imageTapAction = config.image_tap_action;
+    if (displayType === "camera" && !imageTapAction) {
+      imageTapAction = { action: "more-info" };
+    }
+
     this._config = {
       ...config,
       vertical,
       display_type: displayType,
+      tap_action: tapAction || { action: "none" },
+      image_tap_action: imageTapAction,
     };
 
     this._featureContext = {
@@ -184,12 +203,38 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   }
 
   private get _hasCardAction() {
-    return this._config?.navigation_path;
+    return hasAction(this._config?.tap_action);
   }
 
-  private _handleAction() {
-    if (this._config?.navigation_path) {
-      navigate(this._config.navigation_path);
+  private get _hasImageAction() {
+    if (this._config?.display_type === "compact") {
+      return false;
+    }
+    // Image is interactive if it has its own action OR if card has an action
+    return (
+      hasAction(this._config?.image_tap_action) ||
+      hasAction(this._config?.tap_action)
+    );
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _handleImageAction(ev: ActionHandlerEvent) {
+    if (hasAction(this._config?.image_tap_action)) {
+      const entity =
+        this._config?.display_type === "camera"
+          ? this._getCameraEntity(this.hass.entities, this._config.area!)
+          : undefined;
+      handleAction(
+        this,
+        this.hass!,
+        { entity, tap_action: this._config!.image_tap_action },
+        ev.detail.action!
+      );
+    } else {
+      handleAction(this, this.hass!, this._config!, ev.detail.action!);
     }
   }
 
@@ -477,7 +522,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         return `${formattedValue}${formattedUnit}`;
       })
       .filter(Boolean)
-      .join(" · ");
+      .join(STRINGS_SEPARATOR_DOT);
 
     return sensorStates;
   }
@@ -548,9 +593,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const contentClasses = { vertical: Boolean(this._config.vertical) };
-
-    const icon = area.icon;
+    const icon = area.icon || undefined;
 
     const name = this._config.name || computeAreaName(area);
 
@@ -559,9 +602,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const featurePosition = this._featurePosition(this._config);
     const features = this._displayedFeatures(this._config);
-
-    const containerOrientationClass =
-      featurePosition === "inline" ? "horizontal" : "";
 
     const displayType = this._config.display_type || "picture";
 
@@ -582,21 +622,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card style=${styleMap(style)}>
-        <div
-          class="background"
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler()}
-          role=${ifDefined(this._hasCardAction ? "button" : undefined)}
-          tabindex=${ifDefined(this._hasCardAction ? "0" : undefined)}
-          aria-labelledby="info"
-        >
-          <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
-        </div>
         ${displayType === "compact"
           ? nothing
           : html`
               <div class="header">
-                <div class="picture">
+                <div
+                  class="picture"
+                  @action=${this._handleImageAction}
+                  .actionHandler=${this._hasImageAction
+                    ? actionHandler()
+                    : nothing}
+                  role=${ifDefined(this._hasImageAction ? "button" : undefined)}
+                  tabindex=${ifDefined(this._hasImageAction ? "0" : undefined)}
+                >
                   ${(displayType === "picture" || displayType === "camera") &&
                   (cameraEntityId || area.picture)
                     ? html`
@@ -628,30 +666,30 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                 ${this._renderAlertSensors()}
               </div>
             `}
-        <div class="container ${containerOrientationClass}">
-          <div class="content ${classMap(contentClasses)}">
-            <ha-tile-icon>
-              ${displayType === "compact"
-                ? this._renderAlertSensorBadge()
-                : nothing}
-              ${icon
-                ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
-                : html`
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${mdiTextureBox}
-                    ></ha-svg-icon>
-                  `}
-            </ha-tile-icon>
-            <ha-tile-info
-              id="info"
-              .primary=${primary}
-              .secondary=${secondary}
-            ></ha-tile-info>
-          </div>
+        <ha-tile-container
+          .featurePosition=${featurePosition}
+          .vertical=${Boolean(this._config.vertical)}
+          .interactive=${Boolean(this._hasCardAction)}
+          @action=${this._handleAction}
+        >
+          <ha-tile-icon
+            slot="icon"
+            .icon=${icon}
+            .iconPath=${icon ? undefined : mdiTextureBox}
+          >
+            ${displayType === "compact"
+              ? this._renderAlertSensorBadge()
+              : nothing}
+          </ha-tile-icon>
+          <ha-tile-info
+            slot="info"
+            .primary=${primary}
+            .secondary=${secondary}
+          ></ha-tile-info>
           ${features.length > 0
             ? html`
                 <hui-card-features
+                  slot="features"
                   .hass=${this.hass}
                   .context=${this._featureContext}
                   .color=${this._config.color}
@@ -660,181 +698,110 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                 ></hui-card-features>
               `
             : nothing}
-        </div>
+        </ha-tile-container>
       </ha-card>
     `;
   }
 
-  static styles = css`
-    :host {
-      --tile-color: var(--state-icon-color);
-      -webkit-tap-highlight-color: transparent;
-    }
-    ha-card:has(.background:focus-visible) {
-      --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-      --shadow-focus: 0 0 0 1px var(--tile-color);
-      border-color: var(--tile-color);
-      box-shadow: var(--shadow-default), var(--shadow-focus);
-    }
-    ha-card {
-      --ha-ripple-color: var(--tile-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
-      height: 100%;
-      transition:
-        box-shadow 180ms ease-in-out,
-        border-color 180ms ease-in-out;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    [role="button"] {
-      cursor: pointer;
-      pointer-events: auto;
-    }
-    [role="button"]:focus {
-      outline: none;
-    }
-    .background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      margin: calc(-1 * var(--ha-card-border-width, 1px));
-      overflow: hidden;
-    }
-    .header {
-      flex: 1;
-      overflow: hidden;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      border-end-end-radius: 0;
-      border-end-start-radius: 0;
-      pointer-events: none;
-    }
-    .picture {
-      height: 100%;
-      width: 100%;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-    .picture hui-image {
-      height: 100%;
-    }
-    .picture .icon-container {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      --mdc-icon-size: var(--ha-space-12);
-      color: var(--tile-color);
-    }
-    .picture .icon-container::before {
-      position: absolute;
-      content: "";
-      width: 100%;
-      height: 100%;
-      background-color: var(--tile-color);
-      opacity: 0.12;
-    }
-    .container {
-      margin: calc(-1 * var(--ha-card-border-width, 1px));
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-    .header + .container {
-      height: auto;
-      flex: none;
-    }
-    .container.horizontal {
-      flex-direction: row;
-    }
-
-    .content {
-      position: relative;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      padding: 10px;
-      flex: 1;
-      min-width: 0;
-      box-sizing: border-box;
-      pointer-events: none;
-      gap: 10px;
-    }
-
-    .vertical {
-      flex-direction: column;
-      text-align: center;
-      justify-content: center;
-    }
-    .vertical ha-tile-info {
-      width: 100%;
-      flex: none;
-    }
-
-    ha-tile-icon {
-      --tile-icon-color: var(--tile-color);
-      position: relative;
-      padding: 6px;
-      margin: -6px;
-    }
-    ha-tile-badge {
-      position: absolute;
-      top: 3px;
-      right: 3px;
-      inset-inline-end: 3px;
-      inset-inline-start: initial;
-    }
-    ha-tile-info {
-      position: relative;
-      min-width: 0;
-      transition: background-color 180ms ease-in-out;
-      box-sizing: border-box;
-    }
-    hui-card-features {
-      --feature-color: var(--tile-color);
-      padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
-    }
-    .container.horizontal hui-card-features {
-      width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
-      flex: none;
-      --feature-height: var(--ha-space-9);
-      padding: 0 var(--ha-space-3);
-      padding-inline-start: 0;
-    }
-    .alert-badge {
-      --tile-badge-background-color: var(--orange-color);
-    }
-    .alerts {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      flex-direction: row;
-      gap: var(--ha-space-2);
-      padding: var(--ha-space-2);
-      pointer-events: none;
-      z-index: 1;
-    }
-    .alert {
-      background-color: var(--orange-color);
-      border-radius: var(--ha-border-radius-lg);
-      width: var(--ha-space-6);
-      height: var(--ha-space-6);
-      padding: 2px;
-      box-sizing: border-box;
-      --mdc-icon-size: var(--ha-space-4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
-  `;
+  static styles = [
+    tileCardStyle,
+    css`
+      :host {
+        --tile-color: var(--state-icon-color);
+      }
+      ha-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .header {
+        flex: 1;
+        overflow: hidden;
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+        border-end-end-radius: 0;
+        border-end-start-radius: 0;
+        position: relative;
+        z-index: 1;
+      }
+      .picture {
+        height: 100%;
+        width: 100%;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        pointer-events: none;
+      }
+      .picture[role="button"] {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+      .picture[role="button"]:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: -2px;
+      }
+      .picture hui-image {
+        height: 100%;
+      }
+      .picture .icon-container {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        --mdc-icon-size: var(--ha-space-12);
+        color: var(--tile-color);
+      }
+      .picture .icon-container::before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        height: 100%;
+        background-color: var(--tile-color);
+        opacity: 0.12;
+      }
+      .header + ha-tile-container {
+        height: auto;
+        flex: none;
+      }
+      ha-tile-badge {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        inset-inline-end: 3px;
+        inset-inline-start: initial;
+      }
+      hui-card-features {
+        --feature-color: var(--tile-color);
+      }
+      .alert-badge {
+        --tile-badge-background-color: var(--orange-color);
+      }
+      .alerts {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        gap: var(--ha-space-2);
+        padding: var(--ha-space-2);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .alert {
+        background-color: var(--orange-color);
+        border-radius: var(--ha-border-radius-lg);
+        width: var(--ha-space-6);
+        height: var(--ha-space-6);
+        padding: 2px;
+        box-sizing: border-box;
+        --mdc-icon-size: var(--ha-space-4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+    `,
+  ];
 }
 
 declare global {

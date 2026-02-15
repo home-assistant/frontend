@@ -251,7 +251,6 @@ For browser support, API details, and current specifications, refer to these aut
 **Available Dialog Types:**
 
 - `ha-wa-dialog` - Preferred for new dialogs (Web Awesome based)
-- `ha-md-dialog` - Material Design 3 dialog component
 - `ha-dialog` - Legacy component (still widely used)
 
 **Opening Dialogs (Fire Event Pattern - Recommended):**
@@ -559,6 +558,10 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 - Use HTTPS - All external resources must use HTTPS
 - CSP compliance - Ensure code works with Content Security Policy
 
+### Pull Requests
+
+When creating a pull request, you **must** use the PR template located at `.github/PULL_REQUEST_TEMPLATE.md`. Read the template file and use its full content as the PR body, filling in each section appropriately. Do not omit, reorder, or rewrite the template sections. Do not check the checklist items on behalf of the user — those are the user's responsibility to review and check. If the PR includes UI changes, remind the user to add screenshots or a short video to the PR after creating it.
+
 ### Text and Copy Guidelines
 
 #### Terminology Standards
@@ -621,7 +624,6 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 
 #### Key Terminology
 
-- **"add-on"** (hyphenated, not "addon")
 - **"integration"** (preferred over "component")
 - **Technical terms**: Use lowercase (automation, entity, device, service)
 
@@ -713,7 +715,7 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 - [ ] American English spelling
 - [ ] Friendly, informational tone
 - [ ] Avoids abbreviations and jargon
-- [ ] Correct terminology (add-on not addon, integration not component)
+- [ ] Correct terminology (integration not component)
 
 ### Component-Specific Checks
 

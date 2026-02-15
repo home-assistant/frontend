@@ -27,6 +27,7 @@ import type {
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GridPowerSourceEnergyPreference,
+  GridPowerSourceInput,
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
@@ -559,7 +560,7 @@ export class EnergyGridSettings extends LitElement {
     ) as GridSourceTypeEnergyPreference | undefined;
     showEnergySettingsGridPowerDialog(this, {
       grid_source: gridSource,
-      saveCallback: async (power) => {
+      saveCallback: async (power: GridPowerSourceInput) => {
         let preferences: EnergyPreferences;
         if (!gridSource) {
           preferences = {
@@ -568,7 +569,7 @@ export class EnergyGridSettings extends LitElement {
               ...this.preferences.energy_sources,
               {
                 ...emptyGridSourceEnergyPreference(),
-                power: [power],
+                power: [power as GridPowerSourceEnergyPreference],
               },
             ],
           };
@@ -577,7 +578,13 @@ export class EnergyGridSettings extends LitElement {
             ...this.preferences,
             energy_sources: this.preferences.energy_sources.map((src) =>
               src.type === "grid"
-                ? { ...src, power: [...(gridSource.power || []), power] }
+                ? {
+                    ...src,
+                    power: [
+                      ...(gridSource.power || []),
+                      power as GridPowerSourceEnergyPreference,
+                    ],
+                  }
                 : src
             ),
           };
@@ -596,7 +603,7 @@ export class EnergyGridSettings extends LitElement {
     showEnergySettingsGridPowerDialog(this, {
       source: { ...origSource },
       grid_source: gridSource,
-      saveCallback: async (source) => {
+      saveCallback: async (source: GridPowerSourceInput) => {
         const power =
           energySourcesByType(this.preferences).grid![0].power || [];
 
@@ -606,7 +613,11 @@ export class EnergyGridSettings extends LitElement {
             src.type === "grid"
               ? {
                   ...src,
-                  power: power.map((p) => (p === origSource ? source : p)),
+                  power: power.map((p) =>
+                    p === origSource
+                      ? (source as GridPowerSourceEnergyPreference)
+                      : p
+                  ),
                 }
               : src
           ),

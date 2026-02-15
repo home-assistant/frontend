@@ -40,7 +40,6 @@ const createRspackConfig = ({
   latestBuild,
   isStatsBuild,
   isTestBuild,
-  isHassioBuild,
   isLandingPageBuild,
   dontHash,
 }) => {
@@ -168,13 +167,9 @@ const createRspackConfig = ({
           );
         },
       }),
-      bundle.emptyPackages({ isHassioBuild, isLandingPageBuild }).length
+      bundle.emptyPackages({ isLandingPageBuild }).length
         ? new rspack.NormalModuleReplacementPlugin(
-            new RegExp(
-              bundle
-                .emptyPackages({ isHassioBuild, isLandingPageBuild })
-                .join("|")
-            ),
+            new RegExp(bundle.emptyPackages({ isLandingPageBuild }).join("|")),
             path.resolve(paths.root_dir, "src/util/empty.js")
           )
         : false,
@@ -205,6 +200,7 @@ const createRspackConfig = ({
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
         "lit/directives/until$": "lit/directives/until.js",
+        "lit/directives/ref$": "lit/directives/ref.js",
         "lit/directives/class-map$": "lit/directives/class-map.js",
         "lit/directives/style-map$": "lit/directives/style-map.js",
         "lit/directives/if-defined$": "lit/directives/if-defined.js",
@@ -325,21 +321,6 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
 const createCastConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createHassioConfig = ({
-  isProdBuild,
-  latestBuild,
-  isStatsBuild,
-  isTestBuild,
-}) =>
-  createRspackConfig(
-    bundle.config.hassio({
-      isProdBuild,
-      latestBuild,
-      isStatsBuild,
-      isTestBuild,
-    })
-  );
-
 const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
@@ -350,7 +331,6 @@ module.exports = {
   createAppConfig,
   createDemoConfig,
   createCastConfig,
-  createHassioConfig,
   createGalleryConfig,
   createRspackConfig,
   createLandingPageConfig,

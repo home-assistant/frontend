@@ -5,24 +5,28 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
+import type { HaSwitch } from "../../../components/ha-switch";
 import type { Analytics } from "../../../data/analytics";
 import {
   getAnalyticsDetails,
   setAnalyticsPreferences,
 } from "../../../data/analytics";
+import type { LabPreviewFeature } from "../../../data/labs";
+import { subscribeLabFeature } from "../../../data/labs";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-alert";
 
 @customElement("ha-config-analytics")
-class ConfigAnalytics extends LitElement {
+class ConfigAnalytics extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _analyticsDetails?: Analytics;
 
   @state() private _error?: string;
+
+  @state() private _snapshotsLabEnabled = false;
 
   protected render(): TemplateResult {
     const error = this._error
@@ -56,8 +60,7 @@ class ConfigAnalytics extends LitElement {
           ></ha-analytics>
         </div>
       </ha-card>
-      ${this._analyticsDetails &&
-      "snapshots" in this._analyticsDetails.preferences
+      ${this._snapshotsLabEnabled
         ? html`<ha-card
             outlined
             .header=${this.hass.localize(
@@ -67,25 +70,19 @@ class ConfigAnalytics extends LitElement {
             <div class="card-content">
               <p>
                 ${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.info"
+                  "ui.panel.config.analytics.preferences.snapshots.info",
+                  {
+                    data_use_statement: html`<a
+                      href="https://www.openhomefoundation.org/device-database-data-use-statement"
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.panel.config.analytics.preferences.snapshots.data_use_statement"
+                      )}</a
+                    >`,
+                  }
                 )}
-                <a
-                  href=${documentationUrl(this.hass, "/device-database/")}
-                  target="_blank"
-                  rel="noreferrer"
-                  >${this.hass.localize(
-                    "ui.panel.config.analytics.preferences.snapshots.learn_more"
-                  )}</a
-                >.
               </p>
-              <ha-alert
-                .title=${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.alert.title"
-                )}
-                >${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.alert.content"
-                )}</ha-alert
-              >
               <ha-settings-row>
                 <span slot="heading" data-for="snapshots">
                   ${this.hass.localize(
@@ -109,6 +106,19 @@ class ConfigAnalytics extends LitElement {
           </ha-card>`
         : nothing}
     `;
+  }
+
+  public hassSubscribe() {
+    return [
+      subscribeLabFeature(
+        this.hass.connection,
+        "analytics",
+        "snapshots",
+        (feature: LabPreviewFeature) => {
+          this._snapshotsLabEnabled = feature.enabled;
+        }
+      ),
+    ];
   }
 
   protected firstUpdated(changedProps: PropertyValues) {

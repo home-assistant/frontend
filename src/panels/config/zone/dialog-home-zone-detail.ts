@@ -1,9 +1,10 @@
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-button";
 import type { HomeZoneMutableParams } from "../../../data/zone";
@@ -29,6 +30,8 @@ class DialogHomeZoneDetail extends LitElement {
 
   @state() private _params?: HomeZoneDetailDialogParams;
 
+  @state() private _open = false;
+
   @state() private _submitting = false;
 
   public showDialog(params: HomeZoneDetailDialogParams): void {
@@ -40,9 +43,14 @@ class DialogHomeZoneDetail extends LitElement {
       longitude: this.hass.config.longitude,
       radius: this.hass.config.radius,
     };
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -58,41 +66,40 @@ class DialogHomeZoneDetail extends LitElement {
     const valid = !latInvalid && !lngInvalid;
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass!.localize("ui.common.edit_item", { name: this._data.name })
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass!.localize("ui.common.edit_item", {
+          name: this._data.name,
+        })}
+        @closed=${this._dialogClosed}
       >
-        <div>
-          <ha-form
-            .hass=${this.hass}
-            .schema=${SCHEMA}
-            .data=${this._formData(this._data)}
-            .error=${this._error}
-            .computeLabel=${this._computeLabel}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
-        </div>
-        <ha-button
-          slot="primaryAction"
-          appearance="plain"
-          @click=${this.closeDialog}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${!valid || this._submitting}
-        >
-          ${this.hass!.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+        <ha-form
+          autofocus
+          .hass=${this.hass}
+          .schema=${SCHEMA}
+          .data=${this._formData(this._data)}
+          .error=${this._error}
+          .computeLabel=${this._computeLabel}
+          @value-changed=${this._valueChanged}
+        ></ha-form>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${!valid || this._submitting}
+          >
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -130,20 +137,7 @@ class DialogHomeZoneDetail extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyleDialog,
-      css`
-        ha-dialog {
-          --mdc-dialog-min-width: min(600px, 95vw);
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 100vw;
-            --mdc-dialog-max-width: 100vw;
-          }
-        }
-      `,
-    ];
+    return [haStyleDialog];
   }
 }
 

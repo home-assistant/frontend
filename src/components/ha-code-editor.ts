@@ -13,6 +13,9 @@ import {
   mdiArrowCollapse,
   mdiArrowExpand,
   mdiContentCopy,
+  mdiBug,
+  mdiBugOutline,
+  mdiFindReplace,
   mdiRedo,
   mdiUndo,
 } from "@mdi/js";
@@ -36,6 +39,7 @@ import type { HaIconButtonToolbar } from "./ha-icon-button-toolbar";
 declare global {
   interface HASSDomEvents {
     "editor-save": undefined;
+    "test-toggle": undefined;
   }
 }
 
@@ -81,6 +85,11 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean, attribute: "has-toolbar" })
   public hasToolbar = true;
+
+  @property({ type: Boolean, attribute: "has-test" })
+  public hasTest = false;
+
+  @property({ attribute: false }) public testing = false;
 
   @property({ type: String }) public placeholder?: string;
 
@@ -213,7 +222,8 @@ export class HaCodeEditor extends ReactiveElement {
     if (
       changedProps.has("_canCopy") ||
       changedProps.has("_canUndo") ||
-      changedProps.has("_canRedo")
+      changedProps.has("_canRedo") ||
+      changedProps.has("testing")
     ) {
       this._updateToolbarButtons();
     }
@@ -361,6 +371,19 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     this._editorToolbar.items = [
+      ...(this.hasTest && !this._isFullscreen
+        ? [
+            {
+              id: "test",
+              label:
+                this.hass?.localize(
+                  `ui.components.yaml-editor.test_${this.testing ? "off" : "on"}`
+                ) || "Test",
+              path: this.testing ? mdiBugOutline : mdiBug,
+              action: (e: Event) => this._handleTestClick(e),
+            },
+          ]
+        : []),
       {
         id: "undo",
         disabled: !this._canUndo,
@@ -383,6 +406,14 @@ export class HaCodeEditor extends ReactiveElement {
           "Copy to Clipboard",
         path: mdiContentCopy,
         action: (e: Event) => this._handleClipboardClick(e),
+      },
+      {
+        id: "find-replace",
+        label:
+          this.hass?.localize("ui.components.yaml-editor.find_and_replace") ||
+          "Find and replace",
+        path: mdiFindReplace,
+        action: (e: Event) => this._handleFindReplaceClick(e),
       },
       {
         id: "fullscreen",
@@ -418,6 +449,15 @@ export class HaCodeEditor extends ReactiveElement {
     }
   };
 
+  private _handleTestClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror) {
+      return;
+    }
+    fireEvent(this, "test-toggle");
+  };
+
   private _handleUndoClick = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
@@ -440,6 +480,21 @@ export class HaCodeEditor extends ReactiveElement {
     e.preventDefault();
     e.stopPropagation();
     this._updateFullscreenState(!this._isFullscreen);
+  };
+
+  private _handleFindReplaceClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror || !this._loadedCodeMirror) {
+      return;
+    }
+    // Toggle search panel: close if open, open if closed
+    const searchPanel = this.codemirror.dom.querySelector(".cm-search");
+    if (searchPanel) {
+      this._loadedCodeMirror.closeSearchPanel(this.codemirror);
+    } else {
+      this._loadedCodeMirror.openSearchPanel(this.codemirror);
+    }
   };
 
   private _handleKeyDown = (e: KeyboardEvent) => {
@@ -691,15 +746,10 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _getIconItems = async (): Promise<Completion[]> => {
     if (!this._iconList) {
-      let iconList: {
+      const iconList: {
         name: string;
         keywords: string[];
-      }[];
-      if (__SUPERVISOR__) {
-        iconList = [];
-      } else {
-        iconList = (await import("../../build/mdi/iconList.json")).default;
-      }
+      }[] = (await import("../../build/mdi/iconList.json")).default;
 
       this._iconList = iconList.map((icon) => ({
         type: "variable",

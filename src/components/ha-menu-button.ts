@@ -9,8 +9,6 @@ import "./ha-icon-button";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
-  @property({ type: Boolean }) public hassio = false;
-
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -57,18 +55,6 @@ class HaMenuButton extends LitElement {
       ></ha-icon-button>
       ${hasNotifications ? html`<div class="dot"></div>` : ""}
     `;
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    if (!this.hassio) {
-      return;
-    }
-    // This component is used on Hass.io too, but Hass.io might run the UI
-    // on older frontends too, that don't have an always visible menu button
-    // in the sidebar.
-    this._alwaysVisible =
-      (Number((window.parent as any).frontendVersion) || 0) < 20190710;
   }
 
   protected willUpdate(changedProps) {

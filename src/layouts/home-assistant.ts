@@ -106,6 +106,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
     // Navigation
     const updateRoute = (path = curPath()) => {
+      // Developer tools panel was moved to config in 2026.2
+      if (path.startsWith("/developer-tools")) {
+        path = path.replace("/developer-tools", "/config/developer-tools");
+      }
       if (this._route && path === this._route.path) {
         return;
       }

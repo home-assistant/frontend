@@ -4,18 +4,17 @@ import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
-import "../../../../components/ha-md-select";
-import "../../../../components/ha-md-select-option";
+import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-wa-dialog";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../../../data/lovelace/dashboard";
 import { getDefaultPanelUrlPath } from "../../../../data/panel";
-import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { SelectDashboardDialogParams } from "./show-select-dashboard-dialog";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { SelectDashboardDialogParams } from "./show-select-dashboard-dialog";
 
 @customElement("hui-dialog-select-dashboard")
 export class HuiDialogSelectDashboard extends LitElement {
@@ -77,26 +76,22 @@ export class HuiDialogSelectDashboard extends LitElement {
       >
         ${this._dashboards && !this._saving
           ? html`
-              <ha-md-select
+              <ha-select
                 .label=${this.hass.localize(
                   "ui.panel.lovelace.editor.select_view.dashboard_label"
                 )}
-                @change=${this._dashboardChanged}
+                @selected=${this._dashboardChanged}
                 .value=${this._toUrlPath || ""}
-              >
-                ${this._dashboards.map(
-                  (dashboard) => html`
-                    <ha-md-select-option
-                      .disabled=${dashboard.mode !== "storage" ||
-                      dashboard.url_path === this._fromUrlPath ||
-                      (dashboard.url_path === "lovelace" &&
-                        this._fromUrlPath === null)}
-                      .value=${dashboard.url_path}
-                      >${dashboard.title}</ha-md-select-option
-                    >
-                  `
-                )}
-              </ha-md-select>
+                .options=${this._dashboards.map((dashboard) => ({
+                  value: dashboard.url_path,
+                  label: dashboard.title,
+                  disabled:
+                    dashboard.mode !== "storage" ||
+                    dashboard.url_path === this._fromUrlPath ||
+                    (dashboard.url_path === "lovelace" &&
+                      this._fromUrlPath === null),
+                }))}
+              ></ha-select>
             `
           : html`<div class="loading">
               <ha-spinner size="medium"></ha-spinner>
@@ -167,8 +162,8 @@ export class HuiDialogSelectDashboard extends LitElement {
     }
   }
 
-  private async _dashboardChanged(ev) {
-    const urlPath: string = ev.target.value;
+  private async _dashboardChanged(ev: ValueChangedEvent<string>) {
+    const urlPath = ev.detail.value;
     if (urlPath === this._toUrlPath) {
       return;
     }
@@ -188,7 +183,7 @@ export class HuiDialogSelectDashboard extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-md-select {
+        ha-select {
           width: 100%;
         }
         .loading {

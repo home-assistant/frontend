@@ -3,11 +3,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 
 import { fireEvent } from "../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-textfield";
 import "../../../components/ha-button";
+import "../../../components/ha-wa-dialog";
 import { adminChangePassword } from "../../../data/auth";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -48,6 +49,8 @@ class DialogAdminChangePassword extends LitElement {
 
   @state() private _params?: AdminChangePasswordDialogParams;
 
+  @state() private _open = false;
+
   @state() private _userId?: string;
 
   @state() private _data?: FormData;
@@ -61,11 +64,20 @@ class DialogAdminChangePassword extends LitElement {
   public showDialog(params: AdminChangePasswordDialogParams): void {
     this._params = params;
     this._userId = params.userId;
+    this._data = undefined;
+    this._error = undefined;
+    this._open = true;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
+    this._userId = undefined;
     this._data = undefined;
+    this._error = undefined;
     this._submitting = false;
     this._success = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -104,15 +116,14 @@ class DialogAdminChangePassword extends LitElement {
     );
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.users.change_password.caption")
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        prevent-scrim-close
+        header-title=${this.hass.localize(
+          "ui.panel.config.users.change_password.caption"
         )}
+        @closed=${this._dialogClosed}
       >
         ${this._success
           ? html`
@@ -121,12 +132,15 @@ class DialogAdminChangePassword extends LitElement {
                   "ui.panel.config.users.change_password.password_changed"
                 )}
               </p>
-              <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.ok")}
-              </ha-button>
+              <ha-dialog-footer slot="footer">
+                <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.ok")}
+                </ha-button>
+              </ha-dialog-footer>
             `
           : html`
               <ha-form
+                autofocus
                 .hass=${this.hass}
                 .data=${this._data}
                 .error=${this._error}
@@ -136,24 +150,26 @@ class DialogAdminChangePassword extends LitElement {
                 @value-changed=${this._valueChanged}
                 .disabled=${this._submitting}
               ></ha-form>
-              <ha-button
-                appearance="plain"
-                slot="primaryAction"
-                @click=${this.closeDialog}
-              >
-                ${this.hass.localize("ui.common.cancel")}
-              </ha-button>
-              <ha-button
-                slot="primaryAction"
-                @click=${this._changePassword}
-                .disabled=${this._submitting || !canSubmit}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.users.change_password.change"
-                )}
-              </ha-button>
+              <ha-dialog-footer slot="footer">
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this.closeDialog}
+                >
+                  ${this.hass.localize("ui.common.cancel")}
+                </ha-button>
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._changePassword}
+                  .disabled=${this._submitting || !canSubmit}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.users.change_password.change"
+                  )}
+                </ha-button>
+              </ha-dialog-footer>
             `}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 

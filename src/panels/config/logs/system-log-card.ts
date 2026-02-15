@@ -5,8 +5,9 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
@@ -24,6 +25,7 @@ import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
@@ -121,19 +123,19 @@ export class SystemLogCard extends LitElement {
                       .label=${this.hass.localize("ui.common.refresh")}
                     ></ha-icon-button>
 
-                    <ha-button-menu @action=${this._handleOverflowAction}>
-                      <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
-                      </ha-icon-button>
-                      <ha-list-item graphic="icon">
-                        <ha-svg-icon
-                          slot="graphic"
-                          .path=${mdiText}
-                        ></ha-svg-icon>
+                    <ha-dropdown @wa-select=${this._handleOverflowAction}>
+                      <ha-icon-button
+                        slot="trigger"
+                        .path=${mdiDotsVertical}
+                        .label=${this.hass.localize("ui.common.menu")}
+                      ></ha-icon-button>
+                      <ha-dropdown-item value="show-full-logs">
+                        <ha-svg-icon slot="icon" .path=${mdiText}></ha-svg-icon>
                         ${this.hass.localize(
                           "ui.panel.config.logs.show_full_logs"
                         )}
-                      </ha-list-item>
-                    </ha-button-menu>
+                      </ha-dropdown-item>
+                    </ha-dropdown>
                   </div>
                 </div>
                 ${this._items.length === 0
@@ -221,9 +223,11 @@ export class SystemLogCard extends LitElement {
     }
   }
 
-  private _handleOverflowAction() {
-    // @ts-ignore
-    fireEvent(this, "switch-log-view");
+  private _handleOverflowAction(ev: HaDropdownSelectEvent) {
+    if (ev.detail.item.value === "show-full-logs") {
+      // @ts-ignore
+      fireEvent(this, "switch-log-view");
+    }
   }
 
   private async _downloadLogs() {

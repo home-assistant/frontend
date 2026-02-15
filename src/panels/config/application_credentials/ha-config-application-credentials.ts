@@ -357,11 +357,6 @@ export class HaConfigApplicationCredentials extends LitElement {
     .header-btns > ha-icon-button {
       margin: 8px;
     }
-    ha-button-menu {
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: initial;
-    }
     .warning {
       --mdc-theme-primary: var(--error-color);
     }

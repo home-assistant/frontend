@@ -7,7 +7,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-service-control";
 import type { ServiceAction } from "../../../../../data/script";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import type { ServiceButtonElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
 
@@ -78,7 +78,7 @@ export class HuiServiceButtonElementEditor
     });
   }
 
-  private _serviceDataChanged(ev: CustomEvent<{ value: ServiceAction }>): void {
+  private _serviceDataChanged(ev: ValueChangedEvent<ServiceAction>): void {
     const config: ServiceButtonElementConfig = {
       ...this._config!,
       action: ev.detail.value.action,

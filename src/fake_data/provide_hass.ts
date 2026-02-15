@@ -7,7 +7,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
-import { DEFAULT_PANEL } from "../data/panel";
 import {
   DateFormat,
   FirstWeekday,
@@ -16,7 +15,7 @@ import {
   TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, ValuePart } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
@@ -53,11 +52,17 @@ export interface MockHomeAssistant extends HomeAssistant {
   mockEvent(event);
   mockTheme(theme: Record<string, string> | null);
   formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
     value?: any
   ): string;
+  formatEntityAttributeValueToParts(
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
+  ): ValuePart[];
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
 }
 
@@ -113,8 +118,10 @@ export const provideHass = (
   async function updateFormatFunctions() {
     const {
       formatEntityState,
+      formatEntityStateToParts,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityAttributeValueToParts,
       formatEntityName,
     } = await computeFormatFunctions(
       hass().localize,
@@ -128,8 +135,10 @@ export const provideHass = (
     );
     hass().updateHass({
       formatEntityState,
+      formatEntityStateToParts,
       formatEntityAttributeName,
       formatEntityAttributeValue,
+      formatEntityAttributeValueToParts,
       formatEntityName,
     });
   }
@@ -250,6 +259,10 @@ export const provideHass = (
       darkMode: false,
       theme: "default",
     },
+    selectedTheme: {
+      theme: "default",
+      dark: false,
+    },
     panels: demoPanels,
     services: demoServices,
     user: {
@@ -261,7 +274,9 @@ export const provideHass = (
       name: "Demo User",
     },
     panelUrl: "lovelace",
-    defaultPanel: DEFAULT_PANEL,
+    systemData: {
+      default_panel: "lovelace",
+    },
     language: localLanguage,
     selectedLanguage: localLanguage,
     locale: {
@@ -340,7 +355,7 @@ export const provideHass = (
     mockTheme(theme) {
       invalidateThemeCache();
       hass().updateHass({
-        selectedTheme: { theme: theme ? "mock" : "default" },
+        selectedTheme: { theme: theme ? "mock" : "default", dark: false },
         themes: {
           ...hass().themes,
           themes: {
@@ -353,18 +368,31 @@ export const provideHass = (
         document.documentElement,
         themes,
         selectedTheme!.theme,
-        undefined,
+        { dark: false },
         true
       );
     },
     areas: {},
     devices: {},
     entities: {},
+    floors: {},
     formatEntityState: (stateObj, state) =>
       (state !== null ? state : stateObj.state) ?? "",
+    formatEntityStateToParts: (stateObj, state) => [
+      {
+        type: "value",
+        value: (state !== null ? state : stateObj.state) ?? "",
+      },
+    ],
     formatEntityAttributeName: (_stateObj, attribute) => attribute,
     formatEntityAttributeValue: (stateObj, attribute, value) =>
       value !== null ? value : (stateObj.attributes[attribute] ?? ""),
+    formatEntityAttributeValueToParts: (stateObj, attribute, value) => [
+      {
+        type: "value",
+        value: value !== null ? value : (stateObj.attributes[attribute] ?? ""),
+      },
+    ],
     ...overrideData,
   };
 

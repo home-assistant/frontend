@@ -5,10 +5,11 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-qr-code";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+import "../../../components/ha-wa-dialog";
 import type { Tag, UpdateTagParams } from "../../../data/tag";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -32,9 +33,12 @@ class DialogTagDetail
 
   @state() private _submitting = false;
 
+  @state() private _open = false;
+
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
     this._error = undefined;
+    this._open = true;
     if (this._params.entry) {
       this._name = this._params.entry.name || "";
     } else {
@@ -43,10 +47,14 @@ class DialogTagDetail
     }
   }
 
-  public closeDialog() {
+  public closeDialog(): boolean {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -55,17 +63,14 @@ class DialogTagDetail
     }
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.entry
-            ? this._params.entry.name || this._params.entry.id
-            : this.hass!.localize("ui.panel.config.tag.detail.new_tag")
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.entry
+          ? this._params.entry.name || this._params.entry.id
+          : this.hass!.localize("ui.panel.config.tag.detail.new_tag")}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error
@@ -79,7 +84,7 @@ class DialogTagDetail
                 ${this._params.entry.id}`
               : ""}
             <ha-textfield
-              dialogInitialFocus
+              autofocus
               .value=${this._name}
               .configValue=${"name"}
               @input=${this._valueChanged}
@@ -131,40 +136,42 @@ class DialogTagDetail
               `
             : ``}
         </div>
-        ${this._params.entry
-          ? html`
-              <ha-button
-                slot="secondaryAction"
-                variant="danger"
-                appearance="plain"
-                @click=${this._deleteEntry}
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
-              </ha-button>
-            `
-          : nothing}
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${this._submitting || !this._name}
-        >
+        <ha-dialog-footer slot="footer">
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.tag.detail.update")
-            : this.hass!.localize("ui.panel.config.tag.detail.create")}
-        </ha-button>
-        ${this._params.openWrite && !this._params.entry
-          ? html`<ha-button
-              slot="primaryAction"
-              @click=${this._updateWriteEntry}
-              .disabled=${this._submitting || !this._name}
-            >
-              ${this.hass!.localize(
-                "ui.panel.config.tag.detail.create_and_write"
-              )}
-            </ha-button>`
-          : ""}
-      </ha-dialog>
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  variant="danger"
+                  appearance="plain"
+                  @click=${this._deleteEntry}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
+                </ha-button>
+              `
+            : nothing}
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${this._submitting || !this._name}
+          >
+            ${this._params.entry
+              ? this.hass!.localize("ui.panel.config.tag.detail.update")
+              : this.hass!.localize("ui.panel.config.tag.detail.create")}
+          </ha-button>
+          ${this._params.openWrite && !this._params.entry
+            ? html`<ha-button
+                slot="primaryAction"
+                @click=${this._updateWriteEntry}
+                .disabled=${this._submitting || !this._name}
+              >
+                ${this.hass!.localize(
+                  "ui.panel.config.tag.detail.create_and_write"
+                )}
+              </ha-button>`
+            : ""}
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 

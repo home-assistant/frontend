@@ -89,7 +89,7 @@ export class HaPasswordField extends LitElement {
   @property({ type: Boolean }) readOnly = false;
 
   // eslint-disable-next-line lit/no-native-attributes
-  @property({ attribute: false, type: String }) autocapitalize = "";
+  @property({ attribute: false }) autocapitalize = "";
 
   @state() private _unmaskedPassword = false;
 

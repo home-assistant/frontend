@@ -29,11 +29,11 @@ import {
 import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import type { BlueprintInputSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
-import type HaBlueprintInputEditor from "../../../developer-tools/blueprints/input/ha-blueprint-input-editor";
+import type HaBlueprintInputEditor from "../../developer-tools/blueprints/input/ha-blueprint-input-editor";
 import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
 import "../../../../components/ha-dropdown-item";
-import "../../../developer-tools/blueprints/input/ha-blueprint-input-editor";
+import "../../developer-tools/blueprints/input/ha-blueprint-input-editor";
 
 @customElement("ha-automation-sidebar-blueprint-input")
 export default class HaAutomationSidebarBlueprintInput extends LitElement {
@@ -84,7 +84,7 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
     const isSection = isInputSection(input);
     if (isSection) {
       return this.hass.localize(
-        `ui.panel.developer-tools.tabs.blueprints.editor.inputs.editor.section`
+        `ui.panel.config.developer-tools.tabs.blueprints.editor.inputs.editor.section`
       );
     }
 
@@ -98,7 +98,7 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
   private _getSubtitle(input: BlueprintInput | BlueprintInputSection) {
     const isSection = isInputSection(input);
     return this.hass.localize(
-      `ui.panel.developer-tools.tabs.blueprints.editor.inputs.editor.${isSection ? "section" : "single"}`
+      `ui.panel.config.developer-tools.tabs.blueprints.editor.inputs.editor.${isSection ? "section" : "single"}`
     );
   }
 

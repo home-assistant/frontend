@@ -4,16 +4,15 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { debounce } from "../../../common/util/debounce";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
@@ -26,6 +25,7 @@ import {
 } from "../../../data/supervisor/update";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./components/config/ha-backup-config-addon";
 import "./components/config/ha-backup-config-agents";
@@ -35,7 +35,7 @@ import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
-import { brandsUrl } from "../../../util/brands-url";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -80,7 +80,7 @@ class HaConfigBackupSettings extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._supervisorUpdateConfigError = this.hass.localize(
-        "ui.panel.config.backup.settings.addon_update_backup.error_load",
+        "ui.panel.config.backup.settings.app_update_backup.error_load",
         {
           error: err?.message || err,
         }
@@ -96,12 +96,12 @@ class HaConfigBackupSettings extends LitElement {
       !this._config?.create_backup.include_all_addons &&
       this._config?.create_backup.include_addons?.length
     ) {
-      // Wait for the addons to be loaded before scrolling because the height can change and location section is below addons.
+      // Wait for the apps to be loaded before scrolling because the height can change and location section is below apps.
       this.addEventListener("backup-addons-fetched", async () => {
         await nextRender();
         this._scrolltoHash();
       });
-      // Clear hash to cancel the scroll after 500ms if addons doesn't load
+      // Clear hash to cancel the scroll after 500ms if apps doesn't load
       setTimeout(() => {
         this._clearHash();
       }, 500);
@@ -140,25 +140,22 @@ class HaConfigBackupSettings extends LitElement {
       >
         ${supervisor
           ? html`
-              <ha-button-menu slot="toolbar-icon">
+              <ha-dropdown
+                slot="toolbar-icon"
+                @wa-select=${this._handleDropdownSelect}
+              >
                 <ha-icon-button
                   slot="trigger"
                   .label=${this.hass.localize("ui.common.menu")}
                   .path=${mdiDotsVertical}
                 ></ha-icon-button>
-                <ha-list-item
-                  graphic="icon"
-                  @request-selected=${this._changeLocalLocation}
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiHarddisk}
-                  ></ha-svg-icon>
+                <ha-dropdown-item value="change_local_location">
+                  <ha-svg-icon slot="icon" .path=${mdiHarddisk}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.backup.settings.menu.change_default_location"
                   )}
-                </ha-list-item>
-              </ha-button-menu>
+                </ha-dropdown-item>
+              </ha-dropdown>
             `
           : nothing}
 
@@ -320,18 +317,18 @@ class HaConfigBackupSettings extends LitElement {
             ? html`<ha-card>
                 <div class="card-header">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.settings.addon_update_backup.title"
+                    "ui.panel.config.backup.settings.app_update_backup.title"
                   )}
                 </div>
                 <div class="card-content">
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.backup.settings.addon_update_backup.description"
+                      "ui.panel.config.backup.settings.app_update_backup.description"
                     )}
                   </p>
                   <p>
                     ${this.hass.localize(
-                      "ui.panel.config.backup.settings.addon_update_backup.local_only"
+                      "ui.panel.config.backup.settings.app_update_backup.local_only"
                     )}
                   </p>
                   ${this._supervisorUpdateConfigError
@@ -372,13 +369,9 @@ class HaConfigBackupSettings extends LitElement {
     `;
   }
 
-  private async _changeLocalLocation(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _changeLocalLocation = () => {
     showLocalBackupLocationDialog(this, {});
-  }
+  };
 
   private async _supervisorUpdateConfigChanged(ev) {
     const config = ev.detail.value as SupervisorUpdateConfig;
@@ -473,7 +466,7 @@ class HaConfigBackupSettings extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._supervisorUpdateConfigError = this.hass.localize(
-        "ui.panel.config.backup.settings.addon_update_backup.error_save",
+        "ui.panel.config.backup.settings.app_update_backup.error_save",
         {
           error: err?.message || err?.toString(),
         }
@@ -497,6 +490,14 @@ class HaConfigBackupSettings extends LitElement {
       schedule: this._config!.schedule,
     });
     fireEvent(this, "ha-refresh-backup-config");
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+
+    if (action === "change_local_location") {
+      this._changeLocalLocation();
+    }
   }
 
   static styles = css`

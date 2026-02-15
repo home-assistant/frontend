@@ -2,11 +2,16 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import "./ha-list-item";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
+import type { FrontendLocaleData } from "../data/translation";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import "./ha-generic-picker";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "secondary", weight: 8 },
+];
 
 const CURRENCIES = [
   "AED",
@@ -172,9 +177,31 @@ const curSymbol = (currency: string, locale?: string) =>
   new Intl.NumberFormat(locale, { style: "currency", currency })
     .formatToParts(1)
     .find((x) => x.type === "currency")?.value;
+
+export const getCurrencyOptions = (
+  locale?: FrontendLocaleData
+): PickerComboBoxItem[] => {
+  const language = locale?.language ?? "en";
+  const currencyDisplayNames = new Intl.DisplayNames(language, {
+    type: "currency",
+    fallback: "code",
+  });
+
+  const options: PickerComboBoxItem[] = CURRENCIES.map((currency) => ({
+    id: currency,
+    primary: `${currencyDisplayNames.of(currency)} (${curSymbol(currency, language)})`,
+    secondary: currency,
+  }));
+
+  options.sort((a, b) =>
+    caseInsensitiveStringCompare(a.primary, b.primary, language)
+  );
+  return options;
+};
+
 @customElement("ha-currency-picker")
 export class HaCurrencyPicker extends LitElement {
-  @property() public language = "en";
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public value?: string;
 
@@ -184,60 +211,62 @@ export class HaCurrencyPicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
-  private _getOptions = memoizeOne((language?: string) => {
-    const currencyDisplayNames = new Intl.DisplayNames(language, {
-      type: "currency",
-      fallback: "code",
-    });
-    const options = CURRENCIES.map((currency) => ({
-      value: currency,
-      label: `${
-        currencyDisplayNames ? currencyDisplayNames.of(currency)! : currency
-      } (${curSymbol(currency, language)})`,
-    }));
-    options.sort((a, b) =>
-      caseInsensitiveStringCompare(a.label, b.label, language)
-    );
-    return options;
-  });
+  private _getCurrencyOptions = memoizeOne(getCurrencyOptions);
+
+  private _getItems = () => this._getCurrencyOptions(this.hass?.locale);
+
+  private _getCurrencyName = (currency?: string) =>
+    this._getItems().find((c) => c.id === currency)?.primary;
+
+  private _valueRenderer = (value: string) =>
+    html`<span slot="headline">${this._getCurrencyName(value) ?? value}</span>`;
 
   protected render() {
-    const options = this._getOptions(this.language);
+    const label =
+      this.label ??
+      (this.hass?.localize("ui.components.currency-picker.currency") ||
+        "Currency");
 
     return html`
-      <ha-select
-        .label=${this.label}
+      <ha-generic-picker
+        .hass=${this.hass}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass?.localize(
+          "ui.components.currency-picker.no_currencies"
+        ) || "No currencies available"}
+        .label=${label}
         .value=${this.value}
-        .required=${this.required}
+        .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
-        @selected=${this._changed}
-        @closed=${stopPropagation}
-        fixedMenuPosition
-        naturalMenuWidth
-      >
-        ${options.map(
-          (option) => html`
-            <ha-list-item .value=${option.value}>${option.label}</ha-list-item>
-          `
-        )}
-      </ha-select>
+        .required=${this.required}
+        .getItems=${this._getItems}
+        .searchKeys=${SEARCH_KEYS}
+        @value-changed=${this._changed}
+        hide-clear-icon
+      ></ha-generic-picker>
     `;
   }
 
   static styles = css`
-    ha-select {
+    ha-generic-picker {
       width: 100%;
+      min-width: 200px;
+      display: block;
     }
   `;
 
-  private _changed(ev): void {
-    const target = ev.target as HaSelect;
-    if (target.value === "" || target.value === this.value) {
-      return;
-    }
-    this.value = target.value;
+  private _changed(ev: ValueChangedEvent<string>): void {
+    ev.stopPropagation();
+    this.value = ev.detail.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
+
+  private _notFoundLabel = (search: string) => {
+    const term = html`<b>'${search}'</b>`;
+    return this.hass
+      ? this.hass.localize("ui.components.currency-picker.no_match", { term })
+      : html`No currencies found for ${term}`;
+  };
 }
 
 declare global {

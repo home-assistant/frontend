@@ -341,7 +341,6 @@ export interface ExternalConfig {
   hasAssist?: boolean;
   hasBarCodeScanner?: number;
   canSetupImprov?: boolean;
-  downloadFileSupported?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
 }

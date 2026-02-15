@@ -14,14 +14,13 @@ import { removeLaunchScreen } from "../util/launch-screen";
 import type { RouteOptions, RouterOptions } from "./hass-router-page";
 import { HassRouterPage } from "./hass-router-page";
 
-const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
+const CACHE_URL_PATHS = ["lovelace", "home", "config"];
 const COMPONENTS = {
+  app: () => import("../panels/app/ha-panel-app"),
   energy: () => import("../panels/energy/ha-panel-energy"),
   calendar: () => import("../panels/calendar/ha-panel-calendar"),
   config: () => import("../panels/config/ha-panel-config"),
   custom: () => import("../panels/custom/ha-panel-custom"),
-  "developer-tools": () =>
-    import("../panels/developer-tools/ha-panel-developer-tools"),
   lovelace: () => import("../panels/lovelace/ha-panel-lovelace"),
   history: () => import("../panels/history/ha-panel-history"),
   iframe: () => import("../panels/iframe/ha-panel-iframe"),
@@ -155,6 +154,7 @@ class PartialPanelResolver extends HassRouterPage {
         // iFrames will lose their state when disconnected
         // Do not disconnect any iframe panel
         curPanel.component_name !== "iframe" &&
+        curPanel.component_name !== "app" &&
         // Do not disconnect any custom panel that embeds into iframe (ie hassio)
         (curPanel.component_name !== "custom" ||
           !(curPanel as CustomPanelInfo).config._panel_custom.embed_iframe)

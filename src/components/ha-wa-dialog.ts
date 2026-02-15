@@ -14,6 +14,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import { isIosApp } from "../util/is_ios";
 import "./ha-dialog-header";
 import "./ha-icon-button";
 
@@ -74,7 +75,7 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  */
 @customElement("ha-wa-dialog")
 export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: "aria-labelledby" })
   public ariaLabelledBy?: string;
@@ -197,22 +198,21 @@ export class HaWaDialog extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      // temporary disabled because of issues with focus in iOS app, can be reenabled in 2026.2.0
-      // if (isIosApp(this.hass)) {
-      //   const element = this.querySelector("[autofocus]");
-      //   if (element !== null) {
-      //     if (!element.id) {
-      //       element.id = "ha-wa-dialog-autofocus";
-      //     }
-      //     this.hass.auth.external!.fireMessage({
-      //       type: "focus_element",
-      //       payload: {
-      //         element_id: element.id,
-      //       },
-      //     });
-      //   }
-      //   return;
-      // }
+      if (this.hass && isIosApp(this.hass)) {
+        const element = this.querySelector("[autofocus]");
+        if (element !== null) {
+          if (!element.id) {
+            element.id = "ha-wa-dialog-autofocus";
+          }
+          this.hass?.auth.external?.fireMessage({
+            type: "focus_element",
+            payload: {
+              element_id: element.id,
+            },
+          });
+        }
+        return;
+      }
       (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
     });
   };

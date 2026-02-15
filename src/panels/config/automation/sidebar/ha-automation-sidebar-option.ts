@@ -9,7 +9,6 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
@@ -17,6 +16,7 @@ import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-sidebar-option")
 export default class HaAutomationSidebarOption extends LitElement {
@@ -129,7 +129,7 @@ export default class HaAutomationSidebarOption extends LitElement {
     </ha-automation-sidebar-card>`;
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {

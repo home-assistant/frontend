@@ -40,6 +40,7 @@ import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
+export const DEFAULT_POWER_COLLECTION_KEY = "energy_dashboard_now";
 
 const EMPTY_PREFERENCES: EnergyPreferences = {
   energy_sources: [],
@@ -87,7 +88,7 @@ const POWER_VIEW = {
   path: "now",
   strategy: {
     type: "power",
-    collection_key: "energy_dashboard_now",
+    collection_key: DEFAULT_POWER_COLLECTION_KEY,
   },
 } as LovelaceViewConfig;
 
@@ -114,6 +115,8 @@ class PanelEnergy extends LitElement {
 
   @state()
   private _prefs?: EnergyPreferences;
+
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state()
   private _error?: string;
@@ -142,7 +145,7 @@ class PanelEnergy extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass && oldHass.localize !== this.hass.localize) {
+    if (this._lovelace && oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
     }
   }
@@ -248,6 +251,8 @@ class PanelEnergy extends LitElement {
         .lovelace=${this._lovelace}
         .route=${this.route}
         .panel=${this.panel}
+        .backButton=${this._searchParms.has("historyBack")}
+        .backPath=${this._searchParms.get("backPath") || "/"}
         .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
         class=${classMap({ "has-period-selector": showEnergySelector })}
@@ -259,7 +264,9 @@ class PanelEnergy extends LitElement {
               <hui-energy-period-selector
                 .hass=${this.hass}
                 .collectionKey=${DEFAULT_ENERGY_COLLECTION_KEY}
+                opening-direction="right"
                 vertical-opening-direction="up"
+                fixed
               ></hui-energy-period-selector>
             </ha-card>
           `
@@ -344,7 +351,7 @@ class PanelEnergy extends LitElement {
 
   private _dumpCSV = async () => {
     const energyData = getEnergyDataCollection(this.hass, {
-      key: "energy_dashboard",
+      key: DEFAULT_ENERGY_COLLECTION_KEY,
     });
 
     if (!energyData.prefs || !energyData.state.stats) {
@@ -694,8 +701,13 @@ class PanelEnergy extends LitElement {
             var(--safe-area-inset-left, 0px)
           );
           inset-inline-end: var(--safe-area-inset-right, 0);
+          transition:
+            left var(--ha-animation-duration-normal) ease,
+            right var(--ha-animation-duration-normal) ease,
+            inset-inline-start var(--ha-animation-duration-normal) ease,
+            inset-inline-end var(--ha-animation-duration-normal) ease;
           margin: 0 auto;
-          max-width: calc(min(450px, 100% - var(--ha-space-4)));
+          max-width: calc(min(470px, 100% - var(--ha-space-4)));
           box-sizing: border-box;
           padding-left: var(--ha-space-2);
           padding-right: 0;

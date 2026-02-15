@@ -170,9 +170,7 @@ const setFragment = (fragment) => async () => {
 };
 
 const panelFragment = (fragment) =>
-  fragment !== "base" &&
-  fragment !== "supervisor" &&
-  fragment !== "landing-page";
+  fragment !== "base" && fragment !== "landing-page";
 
 const HASHES = new Map();
 
@@ -207,18 +205,15 @@ const createTranslations = async () => {
         FRAGMENTS.map((fragment) => {
           switch (fragment) {
             case "base":
-              // Remove the panels and supervisor to create the base translations
+              // Remove the panels and landing-page to create the base translations
               return [
                 flatten({
                   ...data,
                   ui: { ...data.ui, panel: undefined },
-                  supervisor: undefined,
+                  "landing-page": undefined,
                 }),
                 "",
               ];
-            case "supervisor":
-              // Supervisor key is at the top level
-              return [flatten(data.supervisor), ""];
             case "landing-page":
               // landing-page key is at the top level
               return [flatten(data["landing-page"]), ""];
@@ -316,11 +311,6 @@ gulp.task(
     createTranslations,
     writeTranslationMetaData
   )
-);
-
-gulp.task(
-  "build-supervisor-translations",
-  gulp.series(setFragment("supervisor"), "build-translations")
 );
 
 gulp.task(

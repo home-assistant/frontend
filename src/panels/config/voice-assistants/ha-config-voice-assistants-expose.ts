@@ -49,6 +49,11 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import {
+  getEntityIdTableColumn,
+  getDomainTableColumn,
+  getAreaTableColumn,
+} from "../common/data-table-columns";
 import "./expose/expose-assistant-icon";
 import {
   getAssistantsTableColumn,
@@ -178,30 +183,9 @@ export class VoiceAssistantsExpose extends LitElement {
         direction: "asc",
         flex: 2,
       },
-      area: {
-        title: localize("ui.panel.config.voice_assistants.expose.headers.area"),
-        sortable: true,
-        groupable: true,
-        filterable: true,
-        template: (entry) => entry.area || "—",
-      },
-      entity_id: {
-        title: localize(
-          "ui.panel.config.voice_assistants.expose.headers.entity_id"
-        ),
-        sortable: true,
-        filterable: true,
-        defaultHidden: true,
-      },
-      domain: {
-        title: localize(
-          "ui.panel.config.voice_assistants.expose.headers.domain"
-        ),
-        sortable: false,
-        hidden: true,
-        filterable: true,
-        groupable: true,
-      },
+      area: getAreaTableColumn(localize),
+      entity_id: getEntityIdTableColumn(localize, true),
+      domain: getDomainTableColumn(localize),
       assistants: getAssistantsTableColumn(
         localize,
         this.hass,
@@ -801,11 +785,6 @@ export class VoiceAssistantsExpose extends LitElement {
         .header-btns > ha-button,
         .header-btns > ha-icon-button {
           margin: var(--ha-space-2);
-        }
-        ha-button-menu {
-          margin-left: var(--ha-space-2);
-          margin-inline-start: var(--ha-space-2);
-          margin-inline-end: initial;
         }
         .clear {
           color: var(--primary-color);

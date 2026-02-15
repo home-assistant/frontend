@@ -82,9 +82,11 @@ class ZWaveJSConfigEntryPicker extends LitElement {
     const entries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
     });
-    this._configEntries = entries.sort((a, b) =>
-      caseInsensitiveStringCompare(a.title, b.title)
-    );
+    this._configEntries = entries
+      .filter(
+        (entry) => entry.disabled_by === null && entry.source !== "ignore"
+      )
+      .sort((a, b) => caseInsensitiveStringCompare(a.title, b.title));
     if (this._configEntries.length === 1) {
       navigate(
         `/config/zwave_js/dashboard?config_entry=${this._configEntries[0].entry_id}`,

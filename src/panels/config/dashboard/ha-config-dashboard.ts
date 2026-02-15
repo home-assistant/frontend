@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiCloudLock,
   mdiDotsVertical,
@@ -13,11 +12,11 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/chips/ha-assist-chip";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
@@ -40,12 +39,14 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { isMac } from "../../../util/is_mac";
 import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
@@ -122,6 +123,14 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
       },
       {
         content: hass.localize("ui.tips.key_a_tip", localizeParam),
+        weight: 1,
+        narrow: false,
+      },
+      {
+        content: hass.localize("ui.tips.key_shortcut_quick_search", {
+          ...localizeParam,
+          modifier: isMac ? "⌘" : "Ctrl",
+        }),
         weight: 1,
         narrow: false,
       }
@@ -226,25 +235,25 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           .path=${mdiMagnify}
           @click=${this._showQuickBar}
         ></ha-icon-button>
-        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="check-updates">
             ${this.hass.localize("ui.panel.config.updates.check_updates")}
-            <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item graphic="icon">
+          <ha-dropdown-item value="restart">
             ${this.hass.localize(
               "ui.panel.config.system_dashboard.restart_homeassistant"
             )}
-            <ha-svg-icon slot="graphic" .path=${mdiPower}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <ha-config-section
           .narrow=${this.narrow}
@@ -365,25 +374,16 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   );
 
   private _showQuickBar(): void {
-    const params = {
-      keyboard_shortcut: html`<a href="#" @click=${this._openShortcutDialog}
-        >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
-      >`,
-    };
-
-    showQuickBar(this, {
-      hint: this.hass.enableShortcuts
-        ? this.hass.localize("ui.dialogs.quick-bar.key_c_tip", params)
-        : undefined,
-    });
+    showQuickBar(this, { showHint: this.hass.enableShortcuts });
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "check-updates":
         checkForEntityUpdates(this, this.hass);
         break;
-      case 1:
+      case "restart":
         showRestartDialog(this);
         break;
     }

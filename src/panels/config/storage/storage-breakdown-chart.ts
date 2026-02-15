@@ -55,17 +55,16 @@ export class StorageBreakdownChart extends LitElement {
           <span class="heading">${heading}</span>
           <span class="description">${description}</span>
         </div>
-        ${hasChildren
-          ? html`<ha-icon-button
-              .path=${this._chartType === "sunburst"
-                ? mdiViewArray
-                : mdiChartDonutVariant}
-              .label=${this.hass.localize(
-                "ui.panel.config.storage.change_chart_type"
-              )}
-              @click=${this._handleChartTypeChange}
-            ></ha-icon-button>`
-          : nothing}
+        <ha-icon-button
+          .path=${this._chartType === "sunburst"
+            ? mdiViewArray
+            : mdiChartDonutVariant}
+          .label=${this.hass.localize(
+            "ui.panel.config.storage.change_chart_type"
+          )}
+          .disabled=${!hasChildren}
+          @click=${this._handleChartTypeChange}
+        ></ha-icon-button>
       </div>
 
       <div class="chart-container ${this._chartType}">
@@ -106,9 +105,11 @@ export class StorageBreakdownChart extends LitElement {
       storageInfo: HostDisksUsage | null | undefined
     ) => {
       let totalSpaceGB = hostInfo.disk_total;
-      let usedSpaceGB = hostInfo.disk_used;
       let freeSpaceGB =
         hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
+      // hostInfo.disk_used doesn't include system reserved space,
+      // so we calculate used space based on total and free space
+      let usedSpaceGB = totalSpaceGB - freeSpaceGB;
 
       if (storageInfo) {
         const totalSpace =
@@ -213,26 +214,24 @@ export class StorageBreakdownChart extends LitElement {
   static styles = css`
     .header {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: var(--ha-space-2);
+      align-items: flex-end;
+      gap: var(--ha-space-2);
     }
 
     .heading-text {
       display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-1);
+      flex: 1;
     }
 
     .heading {
-      font-weight: 500;
-      font-size: var(--ha-font-size-m);
       color: var(--primary-text-color);
+      line-height: var(--ha-line-height-expanded);
+      margin-right: var(--ha-space-2);
     }
 
     .description {
-      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
+      line-height: var(--ha-line-height-expanded);
     }
 
     ha-icon-button {
@@ -242,7 +241,7 @@ export class StorageBreakdownChart extends LitElement {
     }
 
     .chart-container {
-      transition: height var(--ha-animation-base-duration) ease;
+      transition: height var(--ha-animation-duration-slow) ease;
       overflow: hidden;
     }
 
@@ -264,7 +263,7 @@ export class StorageBreakdownChart extends LitElement {
 
     ha-segmented-bar,
     ha-sunburst-chart {
-      animation: fade-in var(--ha-animation-base-duration) ease;
+      animation: fade-in var(--ha-animation-duration-slow) ease;
     }
 
     @keyframes fade-in {

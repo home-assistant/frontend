@@ -39,7 +39,7 @@ class DialogPasteReplace extends LitElement {
 
     const localizationNamespace =
       this._params.domain === "blueprint"
-        ? "ui.panel.developer-tools.tabs.blueprints"
+        ? "ui.panel.config.developer-tools.tabs.blueprints"
         : `ui.panel.config.${this._params.domain}`;
     return html`
       <ha-wa-dialog
