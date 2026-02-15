@@ -93,6 +93,7 @@ export interface HaFormStringSchema extends HaFormBaseSchema {
   format?: string;
   autocomplete?: string;
   autofocus?: boolean;
+  ignoreOnInput?: boolean;
 }
 
 export interface HaFormBooleanSchema extends HaFormBaseSchema {
