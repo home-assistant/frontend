@@ -68,7 +68,7 @@ export const getAssistantsTableColumnIcon = (
         .unsupported=${unsupported ?? false}
       ></voice-assistants-expose-assistant-icon>`
     : preserveSpacing
-      ? html`<div style="width: 40px;"></div>`
+      ? html`<div style="width: 24px;"></div>`
       : nothing;
 };
 

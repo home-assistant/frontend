@@ -215,6 +215,11 @@
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
       },
+      "toggle-group": {
+        "all_off": "All off",
+        "all_on": "All on",
+        "some_on": "{on_count} of {total_count} on"
+      },
       "discovered-devices": {
         "title": "Devices discovered",
         "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
@@ -7943,7 +7948,8 @@
           },
           "light": {
             "lights": "Lights",
-            "other_lights": "Other lights"
+            "other_lights": "Other lights",
+            "all_lights": "All lights"
           },
           "security": {
             "devices": "Devices",
