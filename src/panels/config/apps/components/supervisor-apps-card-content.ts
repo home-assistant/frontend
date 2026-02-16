@@ -2,7 +2,6 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { SearchHighlight } from "../../../../common/string/search-highlight";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 
@@ -31,8 +30,6 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property({ attribute: false }) public filter?: string;
 
-  private _searchHighlight?: SearchHighlight;
-
   protected render(): TemplateResult {
     return html`
       ${this.showTopbar
@@ -57,19 +54,9 @@ class SupervisorAppsCardContent extends LitElement {
             ></ha-svg-icon>
           `}
       <div>
-        <div class="title">
-          ${this._getSearchHighlight().renderHighlightedText(
-            this.title,
-            this.filter,
-            this.hass.locale.language
-          )}
-        </div>
+        <div class="title">${this.title}</div>
         <div class="addition">
-          ${this._getSearchHighlight().renderHighlightedText(
-            this.description,
-            this.filter,
-            this.hass.locale.language
-          )}
+          ${this.description}
           ${
             /* treat as available when undefined */
             this.available === false ? " (Not available)" : ""
@@ -77,24 +64,6 @@ class SupervisorAppsCardContent extends LitElement {
         </div>
       </div>
     `;
-  }
-
-  protected updated() {
-    this._getSearchHighlight().applyFromMarks(this.filter);
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._searchHighlight?.clear();
-  }
-
-  private _getSearchHighlight(): SearchHighlight {
-    if (!this._searchHighlight) {
-      this._searchHighlight = new SearchHighlight(
-        this.renderRoot as ShadowRoot
-      );
-    }
-    return this._searchHighlight;
   }
 
   static styles = [

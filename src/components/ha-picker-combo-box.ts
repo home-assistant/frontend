@@ -14,7 +14,6 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import { SearchHighlight } from "../common/string/search-highlight";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
   multiTermSortedSearch,
@@ -192,8 +191,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _removeKeyboardShortcuts?: () => void;
 
-  private _searchHighlight?: SearchHighlight;
-
   private _search = "";
 
   protected firstUpdated() {
@@ -212,7 +209,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     this._removeKeyboardShortcuts?.();
-    this._searchHighlight?.clear();
   }
 
   protected render() {
@@ -277,19 +273,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         </lit-virtualizer>
         ${this.renderScrollableFades()}
       </div>`;
-  }
-
-  protected updated() {
-    this._getSearchHighlight().applyFromMarks(this._search);
-  }
-
-  private _getSearchHighlight(): SearchHighlight {
-    if (!this._searchHighlight) {
-      this._searchHighlight = new SearchHighlight(
-        this.renderRoot as ShadowRoot
-      );
-    }
-    return this._searchHighlight;
   }
 
   private _renderSectionButtons() {

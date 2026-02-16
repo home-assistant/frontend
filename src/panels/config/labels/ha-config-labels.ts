@@ -15,7 +15,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
-import { SearchHighlight } from "../../../common/string/search-highlight";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -104,8 +103,6 @@ export class HaConfigLabels extends LitElement {
 
   private _openingOverflow = false;
 
-  private readonly _searchHighlight = new SearchHighlight();
-
   private _columns = memoizeOne((localize: LocalizeFunc, narrow: boolean) => {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
       icon: {
@@ -135,21 +132,9 @@ export class HaConfigLabels extends LitElement {
         template: narrow
           ? undefined
           : (label) => html`
-              <div>
-                ${this._searchHighlight.renderHighlightedText(
-                  label.name,
-                  this._filter,
-                  this.hass.locale.language
-                )}
-              </div>
+              <div>${label.name}</div>
               ${label.description
-                ? html`<div class="secondary">
-                    ${this._searchHighlight.renderHighlightedText(
-                      label.description,
-                      this._filter,
-                      this.hass.locale.language
-                    )}
-                  </div>`
+                ? html`<div class="secondary">${label.description}</div>`
                 : nothing}
             `,
       },

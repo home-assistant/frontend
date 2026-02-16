@@ -1,7 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { SearchHighlight } from "../../../common/string/search-highlight";
 import {
   domainToName,
   type IntegrationManifest,
@@ -28,8 +27,6 @@ export class HaIntegrationActionCard extends LitElement {
 
   @property({ attribute: false }) public filter?: string;
 
-  private _searchHighlight?: SearchHighlight;
-
   protected render(): TemplateResult {
     return html`
       <ha-card outlined>
@@ -46,20 +43,10 @@ export class HaIntegrationActionCard extends LitElement {
             @error=${this._onImageError}
             @load=${this._onImageLoad}
           />
-          <h2>
-            ${this._getSearchHighlight().renderHighlightedText(
-              this.label,
-              this.filter,
-              this.hass.locale.language
-            )}
-          </h2>
+          <h2>${this.label}</h2>
           <h3>
-            ${this._getSearchHighlight().renderHighlightedText(
-              this.localizedDomainName ||
-                domainToName(this.hass.localize, this.domain, this.manifest),
-              this.filter,
-              this.hass.locale.language
-            )}
+            ${this.localizedDomainName ||
+            domainToName(this.hass.localize, this.domain, this.manifest)}
           </h3>
         </div>
         <div class="filler"></div>
@@ -67,24 +54,6 @@ export class HaIntegrationActionCard extends LitElement {
         <div class="header-button"><slot name="header-button"></slot></div>
       </ha-card>
     `;
-  }
-
-  protected updated() {
-    this._getSearchHighlight().applyFromMarks(this.filter);
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._searchHighlight?.clear();
-  }
-
-  private _getSearchHighlight(): SearchHighlight {
-    if (!this._searchHighlight) {
-      this._searchHighlight = new SearchHighlight(
-        this.renderRoot as ShadowRoot
-      );
-    }
-    return this._searchHighlight;
   }
 
   private _onImageLoad(ev) {

@@ -4,7 +4,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import { SearchHighlight } from "../../../common/string/search-highlight";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
 import type { HomeAssistant } from "../../../types";
@@ -25,8 +24,6 @@ export class HaIntegrationHeader extends LitElement {
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   @property({ attribute: false }) public filter?: string;
-
-  private _searchHighlight?: SearchHighlight;
 
   protected render(): TemplateResult {
     const domainName =
@@ -53,11 +50,7 @@ export class HaIntegrationHeader extends LitElement {
             role="heading"
             aria-level="1"
           >
-            ${this._getSearchHighlight().renderHighlightedText(
-              domainName,
-              this.filter,
-              this.hass.locale.language
-            )}
+            ${domainName}
           </div>
           ${this.error
             ? html`
@@ -83,24 +76,6 @@ export class HaIntegrationHeader extends LitElement {
         ></ha-icon-next>
       </div>
     `;
-  }
-
-  protected updated() {
-    this._getSearchHighlight().applyFromMarks(this.filter);
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._searchHighlight?.clear();
-  }
-
-  private _getSearchHighlight(): SearchHighlight {
-    if (!this._searchHighlight) {
-      this._searchHighlight = new SearchHighlight(
-        this.renderRoot as ShadowRoot
-      );
-    }
-    return this._searchHighlight;
   }
 
   private _onImageLoad(ev) {

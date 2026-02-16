@@ -151,7 +151,7 @@ export class SearchHighlight {
     // Use Custom Highlight API for a cleaner paint path.
     if (this._root && supportsCustomHighlights()) {
       this._highlightName = `${HIGHLIGHT_NAME_PREFIX}-${SearchHighlight._nextHighlightId++}`;
-      this._ensureHighlightStyle();
+      this._addHighlightStyle();
     }
   }
 
