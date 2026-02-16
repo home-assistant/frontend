@@ -1,18 +1,33 @@
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
+import type WaDrawer from "@home-assistant/webawesome/dist/components/drawer/drawer";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
+import type { HomeAssistant } from "../types";
+import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
 
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: "aria-labelledby" })
+  public ariaLabelledBy?: string;
+
+  @property({ attribute: "aria-describedby" })
+  public ariaDescribedBy?: string;
+
   @property({ type: Boolean }) public open = false;
 
   @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
   public flexContent = false;
+
+  @property({ type: Boolean, reflect: true, attribute: "prevent-scrim-close" })
+  public preventScrimClose = false;
 
   @state() private _drawerOpen = false;
 
@@ -28,15 +43,76 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   private _isDragging = false;
 
-  private _handleAfterHide(afterHideEvent: Event) {
-    afterHideEvent.stopPropagation();
-    this.open = false;
-    const ev = new Event("closed", {
-      bubbles: true,
-      composed: true,
+  private _escapePressed = false;
+
+  private _handleShow = async () => {
+    this._drawerOpen = true;
+    this.open = true;
+    fireEvent(this, "opened");
+
+    await this.updateComplete;
+
+    requestAnimationFrame(() => {
+      if (this.hass && isIosApp(this.hass)) {
+        const element = this.querySelector("[autofocus]");
+        if (element !== null) {
+          if (!element.id) {
+            element.id = "ha-bottom-sheet-autofocus";
+          }
+          this.hass.auth.external?.fireMessage({
+            type: "focus_element",
+            payload: {
+              element_id: element.id,
+            },
+          });
+        }
+        return;
+      }
+      (this.querySelector("[autofocus]") as HTMLElement | null)?.focus();
     });
-    this.dispatchEvent(ev);
-  }
+  };
+
+  private _handleAfterShow = () => {
+    fireEvent(this, "after-show");
+  };
+
+  private _handleAfterHide = () => {
+    this.open = false;
+    this._drawerOpen = false;
+    fireEvent(this, "closed");
+  };
+
+  private _handleHide = (ev: CustomEvent<{ source: Element }>) => {
+    if (
+      this.preventScrimClose &&
+      this._escapePressed &&
+      ev.detail.source === (ev.target as WaDrawer).drawer
+    ) {
+      ev.preventDefault();
+    }
+    this._escapePressed = false;
+  };
+
+  private _handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.key === "Escape") {
+      this._escapePressed = true;
+    }
+  };
+
+  private _handleCloseAction = (ev: Event) => {
+    const shouldClose = ev
+      .composedPath()
+      .some(
+        (node) =>
+          node instanceof HTMLElement &&
+          (node.getAttribute("data-dialog") === "close" ||
+            node.getAttribute("data-drawer") === "close")
+      );
+
+    if (shouldClose) {
+      this._drawerOpen = false;
+    }
+  };
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -51,7 +127,15 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         id="drawer"
         placement="bottom"
         .open=${this._drawerOpen}
+        .lightDismiss=${!this.preventScrimClose}
+        .ariaLabelledby=${this.ariaLabelledBy}
+        .ariaDescribedby=${this.ariaDescribedBy}
+        @keydown=${this._handleKeyDown}
+        @wa-show=${this._handleShow}
+        @wa-after-show=${this._handleAfterShow}
+        @wa-hide=${this._handleHide}
         @wa-after-hide=${this._handleAfterHide}
+        @click=${this._handleCloseAction}
         without-header
         @touchstart=${this._handleTouchStart}
       >
@@ -68,6 +152,10 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleTouchStart = (ev: TouchEvent) => {
+    if (this.preventScrimClose) {
+      return;
+    }
+
     // Check if any element inside drawer in the composed path has scrollTop > 0
     for (const path of ev.composedPath()) {
       const el = path as HTMLElement;
@@ -228,16 +316,24 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           flex-direction: column;
           min-height: 0;
         }
+        .body {
+          padding: var(--ha-bottom-sheet-content-padding, 0);
+          box-sizing: border-box;
+        }
         :host([flexcontent]) .body {
           flex: 1;
           max-width: 100%;
           display: flex;
           flex-direction: column;
           padding: var(
-            --ha-bottom-sheet-padding,
-            0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
-              var(--safe-area-inset-left)
+            --ha-bottom-sheet-content-padding,
+            var(
+              --ha-bottom-sheet-padding,
+              0 var(--safe-area-inset-right) var(--safe-area-inset-bottom)
+                var(--safe-area-inset-left)
+            )
           );
+          box-sizing: border-box;
         }
         slot[name="footer"] {
           display: block;
