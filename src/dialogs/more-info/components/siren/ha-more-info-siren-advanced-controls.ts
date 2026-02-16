@@ -13,7 +13,7 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import { SirenEntityFeature } from "../../../../data/siren";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -63,7 +63,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
       SirenEntityFeature.DURATION
     );
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .open=${this._open}
         .hass=${this.hass}
         header-title=${this.hass.localize(
@@ -143,7 +143,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
             ${this.hass.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

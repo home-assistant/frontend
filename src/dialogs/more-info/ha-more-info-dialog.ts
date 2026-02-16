@@ -49,7 +49,7 @@ import {
   STATE_ATTRIBUTES,
   STATE_ATTRIBUTES_DOMAIN_CLASS,
 } from "../../data/entity/entity_attributes";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -461,7 +461,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const isRTL = computeRTL(this.hass);
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
@@ -747,7 +747,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
           )}
           ${this.renderScrollableFades()}
         </div>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -808,7 +808,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       haStyleDialogFixedTop,
       haStyleScrollbar,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
 

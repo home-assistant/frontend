@@ -7,7 +7,7 @@ import { slugify } from "../../../../common/string/slugify";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type {
   LovelaceDashboard,
@@ -70,7 +70,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.urlPath
@@ -139,7 +139,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                 )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

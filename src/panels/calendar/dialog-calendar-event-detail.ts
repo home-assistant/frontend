@@ -15,7 +15,7 @@ import "../../components/ha-button";
 import "../../components/ha-date-input";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-time-input";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { CalendarEventMutableParams } from "../../data/calendar";
 import { deleteCalendarEvent } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
@@ -65,7 +65,7 @@ class DialogCalendarEventDetail extends LitElement {
     }
     const stateObj = this.hass.states[this._calendarId!];
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._data!.summary}
@@ -125,7 +125,7 @@ class DialogCalendarEventDetail extends LitElement {
               </ha-button>`
             : ""}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

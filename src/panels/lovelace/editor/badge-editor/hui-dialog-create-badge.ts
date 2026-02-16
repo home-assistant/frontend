@@ -10,7 +10,7 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -92,7 +92,7 @@ export class HuiCreateDialogBadge
       : this.hass!.localize("ui.panel.lovelace.editor.edit_badge.pick_badge");
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         flexcontent
@@ -166,7 +166,7 @@ export class HuiCreateDialogBadge
               `
             : ""}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -178,16 +178,16 @@ export class HuiCreateDialogBadge
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
         }
 
-        ha-wa-dialog.table {
+        ha-dialog.table {
           --dialog-content-padding: 0;
         }
 
-        ha-wa-dialog::part(body) {
+        ha-dialog::part(body) {
           overflow: hidden;
         }
 

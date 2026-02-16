@@ -10,7 +10,7 @@ import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
@@ -66,7 +66,7 @@ class DialogBox extends LitElement {
         this.hass.localize("ui.dialogs.generic.default_confirmation_title"));
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
@@ -145,7 +145,7 @@ class DialogBox extends LitElement {
               : this.hass.localize("ui.common.ok")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
