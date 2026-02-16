@@ -3952,7 +3952,7 @@
             }
           },
           "device_consumption": {
-            "title": "Individual devices",
+            "title": "Individual electrical devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
             "learn_more": "More information on how to get started.",
             "add_stat": "Pick entity to track energy of",
