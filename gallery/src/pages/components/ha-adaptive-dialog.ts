@@ -164,8 +164,8 @@ export class DemoHaAdaptiveDialog extends LitElement {
 
         <ha-adaptive-dialog
           .hass=${this._hass}
-          .open=${this._openDialog === "allow-mode-change"}
-          allow-mode-change
+          .allowModeChange=${this._openDialog === "allow-mode-change"}
+          
           header-title="Adaptive dialog with allow mode change"
           header-subtitle="Resize the window while this dialog is open"
           @closed=${this._handleClosed}
