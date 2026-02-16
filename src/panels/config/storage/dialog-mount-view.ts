@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,7 +12,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { SupervisorMountRequestParams } from "../../../data/supervisor/mounts";
 import {
@@ -210,7 +210,7 @@ class ViewMountDialog extends LitElement {
       return nothing;
     }
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._existing
@@ -236,7 +236,7 @@ class ViewMountDialog extends LitElement {
           rel="noreferrer"
           dir=${computeRTLDirection(this.hass)}
         >
-          <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+          <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
         </a>
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -291,7 +291,7 @@ class ViewMountDialog extends LitElement {
                 )}
           </ha-progress-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

@@ -1,11 +1,12 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getEnergyDataCollection } from "../../../data/energy";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
+import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
@@ -27,12 +28,14 @@ export class PowerViewStrategy extends ReactiveElement {
     await energyCollection.refresh();
     const prefs = energyCollection.prefs;
 
-    const hasPowerSources = prefs?.energy_sources.some(
-      (source) =>
-        (source.type === "solar" && source.stat_rate) ||
-        (source.type === "battery" && source.stat_rate) ||
-        (source.type === "grid" && source.power?.length)
-    );
+    const hasPowerSources = prefs?.energy_sources.some((source) => {
+      if (source.type === "solar" && source.stat_rate) return true;
+      if (source.type === "battery" && source.stat_rate) return true;
+      if (source.type === "grid") {
+        return !!source.stat_rate || !!source.power_config;
+      }
+      return false;
+    });
     const hasPowerDevices = prefs?.device_consumption.some(
       (device) => device.stat_rate
     );
@@ -56,15 +59,17 @@ export class PowerViewStrategy extends ReactiveElement {
     }
 
     if (hasPowerDevices) {
-      const showFloorsNAreas = !prefs.device_consumption.some(
-        (d) => d.included_in_stat
+      const showFloorsAndAreas = shouldShowFloorsAndAreas(
+        prefs.device_consumption,
+        hass,
+        (d) => d.stat_rate
       );
       section.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
         type: "power-sankey",
         collection_key: collectionKey,
-        group_by_floor: showFloorsNAreas,
-        group_by_area: showFloorsNAreas,
+        group_by_floor: showFloorsAndAreas,
+        group_by_area: showFloorsAndAreas,
         grid_options: {
           columns: 36,
         },

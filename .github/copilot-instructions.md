@@ -214,13 +214,6 @@ By default, `:root` receives `view-transition-name: root`, creating a full-page 
 - Only one view transition can run at a time
 - **Shadow DOM incompatibility**: View transitions operate at document level and do not work within Shadow DOM due to style isolation ([spec discussion](https://github.com/w3c/csswg-drafts/issues/10303)). For web components, set `view-transition-name` on the `:host` element or use document-level transitions
 
-**Current Usage & Planned Applications:**
-
-- Launch screen fade out (implemented)
-- Automation sidebar transitions (planned - #27238)
-- More info dialog content changes (planned - #27672)
-- Toolbar navigation, ha-spinner transitions (planned)
-
 **Specification & Documentation:**
 
 For browser support, API details, and current specifications, refer to these authoritative sources (note: check publication dates as specs evolve):
@@ -246,12 +239,7 @@ For browser support, API details, and current specifications, refer to these aut
 
 ## Component Library
 
-### Dialog Components
-
-**Available Dialog Types:**
-
-- `ha-wa-dialog` - Preferred for new dialogs (Web Awesome based)
-- `ha-dialog` - Legacy component (still widely used)
+### Dialog Component
 
 **Opening Dialogs (Fire Event Pattern - Recommended):**
 
@@ -265,6 +253,7 @@ fireEvent(this, "show-dialog", {
 
 **Dialog Implementation Requirements:**
 
+- Use `ha-dialog` component
 - Implement `HassDialog<T>` interface
 - Use `@state() private _open = false` to control dialog visibility
 - Set `_open = true` in `showDialog()`, `_open = false` in `closeDialog()`
@@ -280,7 +269,6 @@ fireEvent(this, "show-dialog", {
 
 - Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (560px - default), `"large"` (720px), or `"full"`
 - Custom sizing is NOT recommended - use the standard width presets
-- Example: `<ha-wa-dialog width="small">` for alert/confirmation dialogs
 
 **Button Appearance Guidelines:**
 
@@ -290,17 +278,9 @@ fireEvent(this, "show-dialog", {
 - **Button sizes**: Use `size="small"` (32px height) or default/medium (40px height)
 - Always place primary action in `slot="primaryAction"` and secondary in `slot="secondaryAction"` within `ha-dialog-footer`
 
-**Recent Examples:**
-
-See these files for current patterns:
-
-- `src/panels/config/repairs/dialog-repairs-issue.ts`
-- `src/dialogs/restart/dialog-restart.ts`
-- `src/panels/config/lovelace/resources/dialog-lovelace-resource-detail.ts`
-
 **Gallery Documentation:**
 
-- `gallery/src/pages/components/ha-wa-dialog.markdown`
+- `gallery/src/pages/components/ha-dialog.markdown`
 - `gallery/src/pages/components/ha-dialogs.markdown`
 
 ### Form Component (ha-form)
@@ -308,7 +288,6 @@ See these files for current patterns:
 - Schema-driven using `HaFormSchema[]`
 - Supports entity, device, area, target, number, boolean, time, action, text, object, select, icon, media, location selectors
 - Built-in validation with error display
-- Use `dialogInitialFocus` in dialogs
 - Use `computeLabel`, `computeError`, `computeHelper` for translations
 
 ```typescript
@@ -392,81 +371,6 @@ export class HaPanelMyFeature extends SubscribeMixin(LitElement) {
   }
 }
 ```
-
-### Creating a Dialog
-
-```typescript
-@customElement("dialog-my-feature")
-export class DialogMyFeature
-  extends LitElement
-  implements HassDialog<MyDialogParams>
-{
-  @property({ attribute: false })
-  hass!: HomeAssistant;
-
-  @state()
-  private _params?: MyDialogParams;
-
-  @state()
-  private _open = false;
-
-  public async showDialog(params: MyDialogParams): Promise<void> {
-    this._params = params;
-    this._open = true;
-  }
-
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  protected render() {
-    if (!this._params) {
-      return nothing;
-    }
-
-    return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        header-title=${this._params.title}
-        header-subtitle=${this._params.subtitle}
-        @closed=${this._dialogClosed}
-      >
-        <p>Dialog content</p>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this.closeDialog}
-          >
-            ${this.hass.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button slot="primaryAction" @click=${this._submit}>
-            ${this.hass.localize("ui.common.save")}
-          </ha-button>
-        </ha-dialog-footer>
-      </ha-wa-dialog>
-    `;
-  }
-
-  static styles = [haStyleDialog, css``];
-}
-```
-
-### Dialog Design Guidelines
-
-- Max width: 560px (Alert/confirmation: 320px fixed width)
-- Close X-icon on top left (all screen sizes)
-- Submit button grouped with cancel at bottom right
-- Keep button labels short: "Save", "Delete", "Enable"
-- Destructive actions use red warning button
-- Always use a title (best practice)
-- Strive for minimalism
 
 #### Creating a Lovelace Card
 
@@ -557,6 +461,10 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 - Validate inputs - Always validate user inputs
 - Use HTTPS - All external resources must use HTTPS
 - CSP compliance - Ensure code works with Content Security Policy
+
+### Pull Requests
+
+When creating a pull request, you **must** use the PR template located at `.github/PULL_REQUEST_TEMPLATE.md`. Read the template file and use its full content as the PR body, filling in each section appropriately. Do not omit, reorder, or rewrite the template sections. Do not check the checklist items on behalf of the user — those are the user's responsibility to review and check. If the PR includes UI changes, remind the user to add screenshots or a short video to the PR after creating it.
 
 ### Text and Copy Guidelines
 
@@ -715,9 +623,6 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 
 ### Component-Specific Checks
 
-- [ ] Dialogs implement HassDialog interface
-- [ ] Dialog styling uses haStyleDialog
-- [ ] Dialog accessibility includes dialogInitialFocus
 - [ ] ha-alert used correctly for messages
 - [ ] ha-form uses proper schema structure
 - [ ] Components handle all states (loading, error, unavailable)

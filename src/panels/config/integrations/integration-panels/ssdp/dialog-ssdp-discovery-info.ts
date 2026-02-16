@@ -6,7 +6,7 @@ import type { HomeAssistant } from "../../../../../types";
 import type { SSDPDiscoveryInfoDialogParams } from "./show-dialog-ssdp-discovery-info";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import { showToast } from "../../../../../util/toast";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { showSSDPRawDataDialog } from "./show-dialog-ssdp-raw-data";
@@ -62,7 +62,7 @@ class DialogSSDPDiscoveryInfo extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -128,7 +128,7 @@ class DialogSSDPDiscoveryInfo extends LitElement {
             ${this.hass.localize("ui.panel.config.ssdp.copy_to_clipboard")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 }

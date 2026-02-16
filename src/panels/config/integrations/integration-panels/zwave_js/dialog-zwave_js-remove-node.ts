@@ -12,11 +12,11 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog";
-import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-dialog";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import {
   fetchZwaveNodeStatus,
@@ -65,6 +65,8 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _open = false;
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubscribe();
@@ -76,6 +78,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     this._entryId = params.entryId;
     this._deviceId = params.deviceId;
     this._onClose = params.onClose;
+    this._open = true;
     if (this._deviceId) {
       const nodeStatus = await fetchZwaveNodeStatus(this.hass, this._deviceId!);
       this._device = this.hass.devices[this._deviceId];
@@ -99,22 +102,24 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     return html`
       <ha-dialog
-        open
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${dialogTitle}
+        prevent-scrim-close
         @closed=${this.handleDialogClosed}
-        .heading=${dialogTitle}
-        .hideActions=${this._step === "start"}
       >
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-          ></ha-icon-button>
-          <span slot="title">${dialogTitle}</span>
-        </ha-dialog-header>
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .path=${mdiClose}
+          @click=${this.closeDialog}
+          .label=${this.hass.localize("ui.common.close")}
+        ></ha-icon-button>
         <div class="content">${this._renderStepContent()}</div>
-        ${this._renderAction()}
+        ${this._step === "start"
+          ? nothing
+          : html`<ha-dialog-footer slot="footer">
+              ${this._renderAction()}
+            </ha-dialog-footer>`}
       </ha-dialog>
     `;
   }
@@ -340,14 +345,18 @@ class DialogZWaveJSRemoveNode extends LitElement {
   };
 
   public closeDialog(): void {
-    this._unsubscribe();
-    this._entryId = undefined;
+    if (this._open) {
+      this._open = false;
+      return;
+    }
+    this.handleDialogClosed();
   }
 
   public handleDialogClosed(): void {
     this._unsubscribe();
     this._entryId = undefined;
     this._step = "start";
+    this._open = false;
     if (this._onClose) {
       this._onClose();
     }

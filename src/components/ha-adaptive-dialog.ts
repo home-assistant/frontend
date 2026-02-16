@@ -6,8 +6,8 @@ import type { HomeAssistant } from "../types";
 import "./ha-bottom-sheet";
 import "./ha-dialog-header";
 import "./ha-icon-button";
-import "./ha-wa-dialog";
-import type { DialogWidth } from "./ha-wa-dialog";
+import "./ha-dialog";
+import type { DialogWidth } from "./ha-dialog";
 
 type DialogSheetMode = "dialog" | "bottom-sheet";
 
@@ -18,7 +18,7 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  * @extends {LitElement}
  *
  * @summary
- * A responsive dialog component that automatically switches between a full dialog (ha-wa-dialog)
+ * A responsive dialog component that automatically switches between a full dialog (ha-dialog)
  * and a bottom sheet (ha-bottom-sheet) based on screen size. Uses dialog mode on larger screens
  * (>870px width and >500px height) and bottom sheet mode on smaller screens or mobile devices.
  *
@@ -134,11 +134,7 @@ export class HaAdaptiveDialog extends LitElement {
                   ></ha-icon-button>
                 </slot>
                 ${this.headerTitle !== undefined
-                  ? html`<span
-                      slot="title"
-                      class="title"
-                      id="ha-wa-dialog-title"
-                    >
+                  ? html`<span slot="title" class="title" id="ha-dialog-title">
                       ${this.headerTitle}
                     </span>`
                   : html`<slot name="headerTitle" slot="title"></slot>`}
@@ -155,7 +151,7 @@ export class HaAdaptiveDialog extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this.open}
         .width=${this.width}
@@ -179,7 +175,7 @@ export class HaAdaptiveDialog extends LitElement {
         <slot name="headerActionItems" slot="headerActionItems"></slot>
         <slot></slot>
         <slot name="footer" slot="footer"></slot>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

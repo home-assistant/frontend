@@ -150,7 +150,6 @@ export const haStyle = css`
 `;
 
 export const haStyleDialog = css`
-  /* mwc-dialog (ha-dialog) styles */
   ha-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
@@ -209,6 +208,18 @@ export const haStyleDialogFixedTop = css`
           0px
         )
     );
+    --ha-dialog-max-height: calc(
+      100vh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
+          --safe-area-inset-y,
+          0px
+        )
+    );
+    --ha-dialog-max-height: calc(
+      100svh - var(--dialog-surface-margin-top) - var(--ha-space-2) - var(
+          --safe-area-inset-y,
+          0px
+        )
+    );
   }
 
   @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -219,6 +230,8 @@ export const haStyleDialogFixedTop = css`
       --mdc-dialog-min-height: 100svh;
       --mdc-dialog-max-height: 100vh;
       --mdc-dialog-max-height: 100svh;
+      --ha-dialog-max-height: 100vh;
+      --ha-dialog-max-height: 100svh;
     }
   }
 `;

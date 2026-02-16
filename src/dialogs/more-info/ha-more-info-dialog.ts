@@ -29,7 +29,6 @@ import {
   computeEntityEntryName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   getEntityContext,
   getEntityEntryContext,
@@ -38,7 +37,6 @@ import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-reques
 import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
-import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
@@ -46,10 +44,8 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
-import {
-  STATE_ATTRIBUTES,
-  STATE_ATTRIBUTES_DOMAIN_CLASS,
-} from "../../data/entity/entity_attributes";
+import { computeShownAttributes } from "../../data/entity/entity_attributes";
+import "../../components/ha-dialog";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -86,6 +82,7 @@ export interface MoreInfoDialogParams {
   view?: View;
   /** @deprecated Use `view` instead */
   tab?: View;
+  large?: boolean;
   data?: Record<string, any>;
 }
 
@@ -114,6 +111,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
+
+  @state() private _fill = false;
+
+  @state() private _open = false;
 
   @state() private _parentEntityIds: string[] = [];
 
@@ -154,7 +155,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._currView = params.view || DEFAULT_VIEW;
     this._initialView = params.view || DEFAULT_VIEW;
     this._childView = undefined;
-    this.large = false;
+    this.large = params.large ?? false;
+    this._fill = false;
+    this._open = true;
     this._loadEntityRegistryEntry();
   }
 
@@ -173,6 +176,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._entityId = undefined;
     this._parentEntityIds = [];
     this._entry = undefined;
@@ -360,16 +367,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     if (!stateObj) {
       return false;
     }
-    const domain = computeStateDomain(stateObj);
-    const filtersArray = STATE_ATTRIBUTES.concat(
-      (STATE_ATTRIBUTES_DOMAIN_CLASS[domain]?.[
-        stateObj.attributes?.device_class
-      ] || []) as string[]
-    );
-    const displayAttributes = Object.keys(stateObj.attributes).filter(
-      (key) => filtersArray.indexOf(key) === -1
-    );
-    return displayAttributes.length > 0;
+    return computeShownAttributes(stateObj).length > 0;
   }
 
   private _goToAddEntityTo(ev) {
@@ -451,20 +449,20 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
+        .hass=${this.hass}
+        .open=${this._open}
+        .width=${this._fill ? "full" : this.large ? "large" : "medium"}
+        @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
-        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
-        .heading=${title}
-        hideActions
-        flexContent
+        ?prevent-scrim-close=${!this._isEscapeEnabled}
+        flexcontent
       >
-        <ha-dialog-header slot="heading">
+        <ha-dialog-header slot="header">
           ${showCloseIcon
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"
-                  dialogAction="cancel"
+                  data-dialog="close"
                   .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
                 ></ha-icon-button>
@@ -670,7 +668,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
               <div
                 class="content ha-scrollbar"
                 tabindex="-1"
-                dialogInitialFocus
                 @show-child-view=${this._showChildView}
                 @entity-entry-updated=${this._entryUpdated}
                 @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
@@ -690,7 +687,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                     : this._currView === "info"
                       ? html`
                           <ha-more-info-info
-                            dialogInitialFocus
                             .hass=${this.hass}
                             .entityId=${this._entityId}
                             .entry=${this._entry}
@@ -762,7 +758,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _enlarge() {
     withViewTransition(() => {
-      this.large = !this.large;
+      this._fill = !this._fill;
     });
   }
 
@@ -834,23 +830,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
           padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
             var(--ha-space-6);
           display: block;
-        }
-
-        @media all and (min-width: 600px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 580px;
-            --mdc-dialog-max-width: 580px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
-
-          .main-title {
-            cursor: default;
-          }
-
-          :host([large]) ha-dialog {
-            --mdc-dialog-min-width: 90vw;
-            --mdc-dialog-max-width: 90vw;
-          }
         }
 
         .title {
