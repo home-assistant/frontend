@@ -47,8 +47,8 @@ export class HaIconButton extends LitElement {
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
         .disabled=${this.disabled}
         .iconTag=${"ha-svg-icon"}
-        href=${ifDefined(this.href)}
-        target=${ifDefined(this.target)}
+        .href=${this.href}
+        .target=${this.target}
         .rel=${this.rel}
         .download=${this.download}
       >
