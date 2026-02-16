@@ -151,8 +151,6 @@ export class HaConfigLabels extends LitElement {
         title: "",
         label: localize("ui.panel.config.generic.headers.actions"),
         showNarrow: true,
-        moveable: false,
-        hideable: false,
         type: "overflow-menu",
         template: (label) => html`
           <ha-icon-button
