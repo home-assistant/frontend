@@ -29,8 +29,6 @@ export class CloudRemotePref extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
 
-  @property({ type: Boolean }) public narrow = false;
-
   protected render() {
     if (!this.cloudStatus) {
       return nothing;
