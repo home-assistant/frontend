@@ -139,6 +139,8 @@ export class SearchHighlight {
   // other's highlight ranges.
   private static _nextHighlightId = 0;
 
+  // Cache the last apply inputs to avoid re-registering identical highlights
+  // on every Lit update.
   private _lastKey?: string;
 
   private _lastCount = -1;
@@ -297,6 +299,8 @@ export class SearchHighlight {
     }
 
     const rangeCount = ranges.length;
+    // If caller key and number of ranges are unchanged, skip redundant writes
+    // into the document-wide highlight registry.
     if (key === this._lastKey && rangeCount === this._lastCount) {
       return;
     }
