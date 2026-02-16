@@ -441,13 +441,18 @@ export class HuiDialogEditCard
           max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
-          margin: 0 var(--ha-space-1);
+          padding-inline-end: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-1);
+          margin-bottom: 0;
         }
 
         @media (min-width: 1000px) {
           .content {
             flex-direction: row;
             max-height: var(--code-mirror-max-height);
+          }
+          .content .element-editor {
+            padding-inline-end: var(--ha-space-4);
           }
           .content > * {
             flex-basis: 0;
@@ -483,8 +488,6 @@ export class HuiDialogEditCard
           background: var(--primary-background-color);
           padding: 4px;
           border-radius: var(--ha-border-radius-sm);
-          position: sticky;
-          top: 0;
         }
         .element-preview ha-spinner {
           top: calc(50% - 24px);
