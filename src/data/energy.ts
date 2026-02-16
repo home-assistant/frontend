@@ -45,7 +45,7 @@ export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 export const ENERGY_COLLECTION_KEY_UI_PREFIX = `${ENERGY_COLLECTION_KEY_PREFIX}ui_`;
 
 // All collection keys created this session
-const energyCollectionKeys: (string | undefined)[] = [];
+const energyCollectionKeys = new Set<string | undefined>();
 
 // Create an energy collection key.
 // This will add the required prefix if not already present.
@@ -105,8 +105,8 @@ export function getActiveEnergyCollectionKeys(
   hass: HomeAssistant,
   uiKeysOnly = true
 ): string[] | undefined {
-  if (!energyCollectionKeys?.length) return undefined;
-  return energyCollectionKeys.filter((key) => {
+  if (!energyCollectionKeys.size) return undefined;
+  return [...energyCollectionKeys].filter((key) => {
     if (
       key !== null &&
       key !== undefined &&
@@ -840,7 +840,7 @@ export const getEnergyDataCollection = (
     return (hass.connection as any)[key];
   }
 
-  energyCollectionKeys.push(collectionKey);
+  energyCollectionKeys.add(collectionKey);
 
   const collection = getCollection<EnergyData>(
     hass.connection,
