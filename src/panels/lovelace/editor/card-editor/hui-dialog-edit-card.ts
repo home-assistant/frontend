@@ -24,6 +24,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
+  haStyleScrollbar,
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
@@ -196,7 +197,7 @@ export class HuiDialogEditCard
             `
           : nothing}
         <div class="content">
-          <div class="element-editor">
+          <div class="element-editor ha-scrollbar">
             <hui-card-element-editor
               autofocus
               .showVisibilityTab=${this._cardConfig.type !== "conditional"}
@@ -209,7 +210,7 @@ export class HuiDialogEditCard
               @editor-save=${this._save}
             ></hui-card-element-editor>
           </div>
-          <div class="element-preview">
+          <div class="element-preview ha-scrollbar">
             ${this._sectionConfig
               ? html`
                   <hui-section
@@ -385,6 +386,7 @@ export class HuiDialogEditCard
     return [
       haStyleDialog,
       haStyleDialogFixedTop,
+      haStyleScrollbar,
       css`
         :host {
           --code-mirror-max-height: calc(100vh - 209px);
