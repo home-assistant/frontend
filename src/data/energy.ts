@@ -22,11 +22,13 @@ import {
 } from "../common/datetime/calc_date";
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
+import { fileDownload } from "../util/file_download";
 import type { HomeAssistant } from "../types";
 import type {
   Statistics,
   StatisticsMetaData,
   StatisticsUnitConfiguration,
+  StatisticValue,
 } from "./recorder";
 import {
   fetchStatistics,
@@ -40,27 +42,17 @@ import { formatNumber } from "../common/number/format_number";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
-export const emptyFlowFromGridSourceEnergyPreference =
-  (): FlowFromGridSourceEnergyPreference => ({
-    stat_energy_from: "",
-    stat_cost: null,
-    entity_energy_price: null,
-    number_energy_price: null,
-  });
-
-export const emptyFlowToGridSourceEnergyPreference =
-  (): FlowToGridSourceEnergyPreference => ({
-    stat_energy_to: "",
-    stat_compensation: null,
-    entity_energy_price: null,
-    number_energy_price: null,
-  });
-
 export const emptyGridSourceEnergyPreference =
   (): GridSourceTypeEnergyPreference => ({
     type: "grid",
-    flow_from: [],
-    flow_to: [],
+    stat_energy_from: null,
+    stat_energy_to: null,
+    stat_cost: null,
+    stat_compensation: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+    entity_energy_price_export: null,
+    number_energy_price_export: null,
     cost_adjustment_day: 0,
   });
 
@@ -108,30 +100,6 @@ export interface DeviceConsumptionEnergyPreference {
   included_in_stat?: string;
 }
 
-export interface FlowFromGridSourceEnergyPreference {
-  // kWh meter
-  stat_energy_from: string;
-
-  // $ meter
-  stat_cost: string | null;
-
-  // Can be used to generate costs if stat_cost omitted
-  entity_energy_price: string | null;
-  number_energy_price: number | null;
-}
-
-export interface FlowToGridSourceEnergyPreference {
-  // kWh meter
-  stat_energy_to: string;
-
-  // $ meter
-  stat_compensation: string | null;
-
-  // Can be used to generate costs if stat_compensation omitted
-  entity_energy_price: string | null;
-  number_energy_price: number | null;
-}
-
 export interface PowerConfig {
   stat_rate?: string; // Standard single sensor
   stat_rate_inverted?: string; // Inverted single sensor
@@ -139,29 +107,33 @@ export interface PowerConfig {
   stat_rate_to?: string; // Battery: charge / Grid: return
 }
 
-export interface GridPowerSourceEnergyPreference {
-  stat_rate: string;
-  power_config?: PowerConfig;
-}
-
 /**
- * Input type for saving grid power sources.
- * Core requires EITHER stat_rate (legacy) OR power_config (new format).
- * When reading from backend, stat_rate is always populated.
+ * Grid source format.
+ * Each grid connection is a single object with import/export/power together.
+ * Multiple grid sources are allowed.
  */
-export type GridPowerSourceInput = Omit<
-  GridPowerSourceEnergyPreference,
-  "stat_rate"
-> & {
-  stat_rate?: string;
-};
-
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 
-  flow_from: FlowFromGridSourceEnergyPreference[];
-  flow_to: FlowToGridSourceEnergyPreference[];
-  power?: GridPowerSourceEnergyPreference[];
+  // Import meter
+  stat_energy_from: string | null;
+
+  // Export meter
+  stat_energy_to: string | null;
+
+  // Import cost tracking
+  stat_cost: string | null;
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
+
+  // Export compensation tracking
+  stat_compensation: string | null;
+  entity_energy_price_export: string | null;
+  number_energy_price_export: number | null;
+
+  // Power measurement
+  stat_rate?: string; // always available if power_config is set
+  power_config?: PowerConfig;
 
   cost_adjustment_day: number;
 }
@@ -178,7 +150,7 @@ export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
   stat_energy_to: string;
-  stat_rate?: string;
+  stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 }
 export interface GasSourceTypeEnergyPreference {
@@ -355,24 +327,25 @@ export const getReferencedStatisticIds = (
     }
 
     // grid source
-    for (const flowFrom of source.flow_from) {
-      statIDs.push(flowFrom.stat_energy_from);
-      if (flowFrom.stat_cost) {
-        statIDs.push(flowFrom.stat_cost);
+    if (source.stat_energy_from) {
+      statIDs.push(source.stat_energy_from);
+      if (source.stat_cost) {
+        statIDs.push(source.stat_cost);
       }
-      const costStatId = info.cost_sensors[flowFrom.stat_energy_from];
-      if (costStatId) {
-        statIDs.push(costStatId);
+      const importCostStatId = info.cost_sensors[source.stat_energy_from];
+      if (importCostStatId) {
+        statIDs.push(importCostStatId);
       }
     }
-    for (const flowTo of source.flow_to) {
-      statIDs.push(flowTo.stat_energy_to);
-      if (flowTo.stat_compensation) {
-        statIDs.push(flowTo.stat_compensation);
+
+    if (source.stat_energy_to) {
+      statIDs.push(source.stat_energy_to);
+      if (source.stat_compensation) {
+        statIDs.push(source.stat_compensation);
       }
-      const costStatId = info.cost_sensors[flowTo.stat_energy_to];
-      if (costStatId) {
-        statIDs.push(costStatId);
+      const exportCostStatId = info.cost_sensors[source.stat_energy_to];
+      if (exportCostStatId) {
+        statIDs.push(exportCostStatId);
       }
     }
   }
@@ -404,12 +377,15 @@ export const getReferencedStatisticIdsPower = (
     }
 
     if (source.type === "battery") {
-      statIDs.push(source.stat_rate);
+      if (source.stat_rate) {
+        statIDs.push(source.stat_rate);
+      }
       continue;
     }
 
-    if (source.power) {
-      statIDs.push(...source.power.map((p) => p.stat_rate));
+    // grid source
+    if (source.stat_rate) {
+      statIDs.push(source.stat_rate);
     }
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
@@ -450,11 +426,8 @@ const getEnergyData = async (
 
   const consumptionStatIDs: string[] = [];
   for (const source of prefs.energy_sources) {
-    // grid source
-    if (source.type === "grid") {
-      for (const flowFrom of source.flow_from) {
-        consumptionStatIDs.push(flowFrom.stat_energy_from);
-      }
+    if (source.type === "grid" && source.stat_energy_from) {
+      consumptionStatIDs.push(source.stat_energy_from);
     }
   }
   const energyStatIds = getReferencedStatisticIds(prefs, info, [
@@ -1055,18 +1028,18 @@ const getSummedDataPartial = (
     }
 
     // grid source
-    for (const flowFrom of source.flow_from) {
+    if (source.stat_energy_from) {
       if (statIds.from_grid) {
-        statIds.from_grid.push(flowFrom.stat_energy_from);
+        statIds.from_grid.push(source.stat_energy_from);
       } else {
-        statIds.from_grid = [flowFrom.stat_energy_from];
+        statIds.from_grid = [source.stat_energy_from];
       }
     }
-    for (const flowTo of source.flow_to) {
+    if (source.stat_energy_to) {
       if (statIds.to_grid) {
-        statIds.to_grid.push(flowTo.stat_energy_to);
+        statIds.to_grid.push(source.stat_energy_to);
       } else {
-        statIds.to_grid = [flowTo.stat_energy_to];
+        statIds.to_grid = [source.stat_energy_to];
       }
     }
   }
@@ -1486,3 +1459,311 @@ export function getSuggestedPeriod(
       ? "day"
       : "hour";
 }
+
+export const downloadEnergyData = (
+  hass: HomeAssistant,
+  collectionKey?: string
+) => {
+  const energyData = getEnergyDataCollection(hass, {
+    key: collectionKey,
+  });
+
+  if (!energyData.prefs || !energyData.state.stats) {
+    return;
+  }
+
+  const gasUnit = energyData.state.gasUnit;
+  const electricUnit = "kWh";
+
+  const energy_sources = energyData.prefs.energy_sources;
+  const device_consumption = energyData.prefs.device_consumption;
+  const device_consumption_water = energyData.prefs.device_consumption_water;
+  const stats = energyData.state.stats;
+
+  const timeSet = new Set<number>();
+  Object.values(stats).forEach((stat) => {
+    stat.forEach((datapoint) => {
+      timeSet.add(datapoint.start);
+    });
+  });
+  const times = Array.from(timeSet).sort();
+
+  const headers =
+    "entity_id,type,unit," +
+    times.map((t) => new Date(t).toISOString()).join(",") +
+    "\n";
+  const csv: string[] = [];
+  csv[0] = headers;
+
+  const processCsvRow = function (
+    id: string,
+    type: string,
+    unit: string,
+    data: StatisticValue[]
+  ) {
+    let n = 0;
+    const row: string[] = [];
+    row.push(id);
+    row.push(type);
+    row.push(unit.normalize("NFKD"));
+    times.forEach((t) => {
+      if (n < data.length && data[n].start === t) {
+        row.push((data[n].change ?? "").toString());
+        n++;
+      } else {
+        row.push("");
+      }
+    });
+    csv.push(row.join(",") + "\n");
+  };
+
+  const processStat = function (stat: string, type: string, unit: string) {
+    if (!stats[stat]) {
+      return;
+    }
+
+    processCsvRow(stat, type, unit, stats[stat]);
+  };
+
+  const currency = hass.config.currency;
+
+  const printCategory = function (
+    type: string,
+    statIds: string[],
+    unit: string,
+    costType?: string,
+    costStatIds?: string[]
+  ) {
+    if (statIds.length) {
+      statIds.forEach((stat) => processStat(stat, type, unit));
+      if (costType && costStatIds) {
+        costStatIds.forEach((stat) => processStat(stat, costType, currency));
+      }
+    }
+  };
+
+  const grid_consumptions: string[] = [];
+  const grid_productions: string[] = [];
+  const grid_consumptions_cost: string[] = [];
+  const grid_productions_cost: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "grid")
+    .forEach((source) => {
+      const gridSource = source as GridSourceTypeEnergyPreference;
+      if (gridSource.stat_energy_from) {
+        grid_consumptions.push(gridSource.stat_energy_from);
+        const importCostId =
+          gridSource.stat_cost ||
+          energyData.state.info.cost_sensors[gridSource.stat_energy_from];
+        if (importCostId) {
+          grid_consumptions_cost.push(importCostId);
+        }
+      }
+      if (gridSource.stat_energy_to) {
+        grid_productions.push(gridSource.stat_energy_to);
+        const exportCostId =
+          gridSource.stat_compensation ||
+          energyData.state.info.cost_sensors[gridSource.stat_energy_to];
+        if (exportCostId) {
+          grid_productions_cost.push(exportCostId);
+        }
+      }
+    });
+
+  printCategory(
+    "grid_consumption",
+    grid_consumptions,
+    electricUnit,
+    "grid_consumption_cost",
+    grid_consumptions_cost
+  );
+  printCategory(
+    "grid_return",
+    grid_productions,
+    electricUnit,
+    "grid_return_compensation",
+    grid_productions_cost
+  );
+
+  const battery_ins: string[] = [];
+  const battery_outs: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "battery")
+    .forEach((source) => {
+      source = source as BatterySourceTypeEnergyPreference;
+      battery_ins.push(source.stat_energy_to);
+      battery_outs.push(source.stat_energy_from);
+    });
+
+  printCategory("battery_in", battery_ins, electricUnit);
+  printCategory("battery_out", battery_outs, electricUnit);
+
+  const solar_productions: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "solar")
+    .forEach((source) => {
+      source = source as SolarSourceTypeEnergyPreference;
+      solar_productions.push(source.stat_energy_from);
+    });
+
+  printCategory("solar_production", solar_productions, electricUnit);
+
+  const gas_consumptions: string[] = [];
+  const gas_consumptions_cost: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "gas")
+    .forEach((source) => {
+      source = source as GasSourceTypeEnergyPreference;
+      const statId = source.stat_energy_from;
+      gas_consumptions.push(statId);
+      const costId =
+        source.stat_cost || energyData.state.info.cost_sensors[statId];
+      if (costId) {
+        gas_consumptions_cost.push(costId);
+      }
+    });
+
+  printCategory(
+    "gas_consumption",
+    gas_consumptions,
+    gasUnit,
+    "gas_consumption_cost",
+    gas_consumptions_cost
+  );
+
+  const water_consumptions: string[] = [];
+  const water_consumptions_cost: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "water")
+    .forEach((source) => {
+      source = source as WaterSourceTypeEnergyPreference;
+      const statId = source.stat_energy_from;
+      water_consumptions.push(statId);
+      const costId =
+        source.stat_cost || energyData.state.info.cost_sensors[statId];
+      if (costId) {
+        water_consumptions_cost.push(costId);
+      }
+    });
+
+  printCategory(
+    "water_consumption",
+    water_consumptions,
+    energyData.state.waterUnit,
+    "water_consumption_cost",
+    water_consumptions_cost
+  );
+
+  const devices: string[] = [];
+  device_consumption.forEach((source) => {
+    source = source as DeviceConsumptionEnergyPreference;
+    devices.push(source.stat_consumption);
+  });
+
+  printCategory("device_consumption", devices, electricUnit);
+
+  if (device_consumption_water) {
+    const waterDevices: string[] = [];
+    device_consumption_water.forEach((source) => {
+      source = source as DeviceConsumptionEnergyPreference;
+      waterDevices.push(source.stat_consumption);
+    });
+
+    printCategory(
+      "device_consumption_water",
+      waterDevices,
+      energyData.state.waterUnit
+    );
+  }
+
+  const { summedData } = getSummedData(energyData.state);
+  const { consumption } = computeConsumptionData(summedData, undefined);
+
+  const processConsumptionData = function (
+    type: string,
+    unit: string,
+    data: Record<number, number>
+  ) {
+    const data2: StatisticValue[] = [];
+
+    Object.entries(data).forEach(([t, value]) => {
+      data2.push({
+        start: Number(t),
+        end: NaN,
+        change: value,
+      });
+    });
+
+    processCsvRow("", type, unit, data2);
+  };
+
+  const hasSolar = !!solar_productions.length;
+  const hasBattery = !!battery_ins.length;
+  const hasGridReturn = !!grid_productions.length;
+  const hasGridSource = !!grid_consumptions.length;
+
+  if (hasGridSource) {
+    processConsumptionData(
+      "calculated_consumed_grid",
+      electricUnit,
+      consumption.used_grid
+    );
+    if (hasBattery) {
+      processConsumptionData(
+        "calculated_grid_to_battery",
+        electricUnit,
+        consumption.grid_to_battery
+      );
+    }
+  }
+  if (hasGridReturn && hasBattery) {
+    processConsumptionData(
+      "calculated_battery_to_grid",
+      electricUnit,
+      consumption.battery_to_grid
+    );
+  }
+  if (hasBattery) {
+    processConsumptionData(
+      "calculated_consumed_battery",
+      electricUnit,
+      consumption.used_battery
+    );
+  }
+
+  if (hasSolar) {
+    processConsumptionData(
+      "calculated_consumed_solar",
+      electricUnit,
+      consumption.used_solar
+    );
+    if (hasBattery) {
+      processConsumptionData(
+        "calculated_solar_to_battery",
+        electricUnit,
+        consumption.solar_to_battery
+      );
+    }
+    if (hasGridReturn) {
+      processConsumptionData(
+        "calculated_solar_to_grid",
+        electricUnit,
+        consumption.solar_to_grid
+      );
+    }
+  }
+
+  if ((hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1) {
+    processConsumptionData(
+      "calculated_total_consumption",
+      electricUnit,
+      consumption.used_total
+    );
+  }
+
+  const blob = new Blob(csv, {
+    type: "text/csv",
+  });
+  const url = window.URL.createObjectURL(blob);
+  fileDownload(url, "energy.csv");
+};

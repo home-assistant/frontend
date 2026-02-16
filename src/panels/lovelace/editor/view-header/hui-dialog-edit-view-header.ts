@@ -107,6 +107,7 @@ export class HuiDialogEditViewHeader extends LitElement {
         .open=${this._open}
         header-title=${title}
         width="large"
+        prevent-scrim-close
         @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,
