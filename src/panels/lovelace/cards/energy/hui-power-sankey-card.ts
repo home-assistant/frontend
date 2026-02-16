@@ -599,17 +599,15 @@ class HuiPowerSankeyCard
 
     // Collect grid power (positive = import, negative = export)
     prefs.energy_sources
-      .filter((source) => source.type === "grid" && source.power)
+      .filter((source) => source.type === "grid")
       .forEach((source) => {
-        if (source.type === "grid" && source.power) {
-          source.power.forEach((powerSource) => {
-            const value = this._getCurrentPower(powerSource.stat_rate);
-            if (value > 0) {
-              from_grid += value;
-            } else if (value < 0) {
-              to_grid += Math.abs(value);
-            }
-          });
+        if (source.type === "grid" && source.stat_rate) {
+          const value = this._getCurrentPower(source.stat_rate);
+          if (value > 0) {
+            from_grid += value;
+          } else if (value < 0) {
+            to_grid += Math.abs(value);
+          }
         }
       });
 
