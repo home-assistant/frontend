@@ -1,4 +1,4 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -344,7 +344,7 @@ class DataEntryFlowDialog extends LitElement {
               >
                 <ha-icon-button
                   .label=${this.hass.localize("ui.common.help")}
-                  .path=${mdiHelpCircle}
+                  .path=${mdiHelpCircleOutline}
                 >
                 </ha-icon-button
               ></a>

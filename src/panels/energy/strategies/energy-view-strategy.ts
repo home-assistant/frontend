@@ -39,11 +39,11 @@ export class EnergyViewStrategy extends ReactiveElement {
     view.type = "sidebar";
 
     const hasGrid = prefs.energy_sources.find(
-      (source) =>
+      (source): source is GridSourceTypeEnergyPreference =>
         source.type === "grid" &&
-        (source.flow_from?.length || source.flow_to?.length)
-    ) as GridSourceTypeEnergyPreference;
-    const hasReturn = hasGrid && hasGrid.flow_to.length;
+        (!!source.stat_energy_from || !!source.stat_energy_to)
+    );
+    const hasReturn = hasGrid && !!hasGrid.stat_energy_to;
     const hasSolar = prefs.energy_sources.some(
       (source) => source.type === "solar"
     );

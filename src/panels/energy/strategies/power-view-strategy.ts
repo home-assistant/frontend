@@ -28,12 +28,14 @@ export class PowerViewStrategy extends ReactiveElement {
     await energyCollection.refresh();
     const prefs = energyCollection.prefs;
 
-    const hasPowerSources = prefs?.energy_sources.some(
-      (source) =>
-        (source.type === "solar" && source.stat_rate) ||
-        (source.type === "battery" && source.stat_rate) ||
-        (source.type === "grid" && source.power?.length)
-    );
+    const hasPowerSources = prefs?.energy_sources.some((source) => {
+      if (source.type === "solar" && source.stat_rate) return true;
+      if (source.type === "battery" && source.stat_rate) return true;
+      if (source.type === "grid") {
+        return !!source.stat_rate || !!source.power_config;
+      }
+      return false;
+    });
     const hasPowerDevices = prefs?.device_consumption.some(
       (device) => device.stat_rate
     );
