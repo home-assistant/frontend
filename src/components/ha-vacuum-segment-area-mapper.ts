@@ -68,9 +68,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     if (!this._segments || this._segments.length === 0) {
       return html`
         <ha-alert alert-type="info">
-          ${this.hass.localize(
-            "ui.dialogs.vacuum_segment_mapping.no_segments"
-          )}
+          ${this.hass.localize("ui.dialogs.vacuum_segment_mapping.no_segments")}
         </ha-alert>
       `;
     }
@@ -81,7 +79,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     return html`
       ${Object.entries(groupedSegments).map(
         ([groupName, segments]) => html`
-          ${groupName !== "undefined" ? html`<h2>${groupName}</h2>` : nothing}
+          ${groupName ? html`<h2>${groupName}</h2>` : nothing}
           <ha-md-list>
             ${segments.map((segment) => this._renderSegment(segment))}
           </ha-md-list>
@@ -94,7 +92,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     const grouped: Record<string, Segment[]> = {};
 
     for (const segment of segments) {
-      const group = segment.group || "undefined";
+      const group = segment.group || "";
       if (!grouped[group]) {
         grouped[group] = [];
       }

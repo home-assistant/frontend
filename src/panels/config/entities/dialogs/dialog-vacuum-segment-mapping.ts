@@ -96,6 +96,7 @@ export class DialogVacuumSegmentMapping
       ) as HaVacuumSegmentAreaMapper;
 
       const options: VacuumEntityOptions = {
+        ...(this._entry?.options?.vacuum ?? {}),
         area_mapping: this._areaMapping,
         last_seen_segments: mapper.lastSeenSegments,
       };

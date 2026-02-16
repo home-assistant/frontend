@@ -919,7 +919,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
           `
-        : ""}
+        : nothing}
       ${this._disabledBy &&
       this._disabledBy !== "user" &&
       this._disabledBy !== "integration"
