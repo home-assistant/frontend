@@ -11,7 +11,6 @@ import {
   mdiFlask,
   mdiHammer,
   mdiInformationOutline,
-  mdiInformationOutline,
   mdiLabel,
   mdiLightningBolt,
   mdiMapMarkerRadius,
