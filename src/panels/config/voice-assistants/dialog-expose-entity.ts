@@ -92,6 +92,7 @@ class DialogExposeEntity extends LitElement {
         width="medium"
         header-title=${header}
         header-subtitle=${subtitle}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <search-input
