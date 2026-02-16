@@ -84,60 +84,6 @@ const mergeHighlightRanges = (ranges: HighlightRange[]): HighlightRange[] => {
   return mergedRanges;
 };
 
-const getHighlightRangesInternal = (
-  text: string,
-  query: string,
-  language?: string
-): HighlightRange[] => {
-  if (!text) {
-    return [];
-  }
-
-  const terms = tokenizeSearchQuery(query);
-  if (!terms.length) {
-    return [];
-  }
-
-  const { normalizedText, normalizedIndexMap } = buildNormalizedIndexMap(
-    text,
-    language
-  );
-
-  // Text can normalize to empty (for example, combining marks only).
-  if (!normalizedText) {
-    return [];
-  }
-
-  const ranges: HighlightRange[] = [];
-
-  for (const term of terms) {
-    const normalizedTerm = normalizeForSearch(term, language);
-    // Some tokens normalize to empty (like combining marks); skip them.
-    if (!normalizedTerm) {
-      continue;
-    }
-
-    let matchIndex = normalizedText.indexOf(normalizedTerm);
-
-    while (matchIndex !== -1) {
-      // Convert normalized-text match indexes back to original-text indexes.
-      // `indexOf` guarantees the full normalized term is within bounds, and
-      // we append one mapping item per normalized character.
-      const start = normalizedIndexMap[matchIndex]!.start;
-      const end =
-        normalizedIndexMap[matchIndex + normalizedTerm.length - 1]!.end;
-      ranges.push({ start, end });
-
-      matchIndex = normalizedText.indexOf(
-        normalizedTerm,
-        matchIndex + normalizedTerm.length
-      );
-    }
-  }
-
-  return mergeHighlightRanges(ranges);
-};
-
 const renderHighlightedParts = (
   text: string,
   ranges: HighlightRange[]
@@ -232,7 +178,53 @@ export class SearchHighlight {
     query: string,
     language?: string
   ): HighlightRange[] {
-    return getHighlightRangesInternal(text, query, language);
+    if (!text) {
+      return [];
+    }
+
+    const terms = tokenizeSearchQuery(query);
+    if (!terms.length) {
+      return [];
+    }
+
+    const { normalizedText, normalizedIndexMap } = buildNormalizedIndexMap(
+      text,
+      language
+    );
+
+    // Text can normalize to empty (for example, combining marks only).
+    if (!normalizedText) {
+      return [];
+    }
+
+    const ranges: HighlightRange[] = [];
+
+    for (const term of terms) {
+      const normalizedTerm = normalizeForSearch(term, language);
+      // Some tokens normalize to empty (like combining marks); skip them.
+      if (!normalizedTerm) {
+        continue;
+      }
+
+      let matchIndex = normalizedText.indexOf(normalizedTerm);
+
+      while (matchIndex !== -1) {
+        // Convert normalized-text match indexes back to original-text indexes.
+        // `indexOf` guarantees the full normalized term is within bounds, and
+        // we append one mapping item per normalized character.
+        const start = normalizedIndexMap[matchIndex]!.start;
+        const end =
+          normalizedIndexMap[matchIndex + normalizedTerm.length - 1]!.end;
+        ranges.push({ start, end });
+
+        matchIndex = normalizedText.indexOf(
+          normalizedTerm,
+          matchIndex + normalizedTerm.length
+        );
+      }
+    }
+
+    return mergeHighlightRanges(ranges);
   }
 
   public renderHighlightedText(
