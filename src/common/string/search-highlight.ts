@@ -22,122 +22,138 @@ export type HighlightedText =
 const HIGHLIGHT_NAME_PREFIX = "ha-search";
 const ACTIVE_HOST_CLASS = "custom-highlight-active";
 
-const normalizeForSearch = (text: string, language?: string): string =>
-  stripDiacritics(text).toLocaleLowerCase(language);
-
-const supportsCustomHighlights = (): boolean =>
-  typeof CSS !== "undefined" && CSS.highlights !== undefined;
-
-const tokenizeSearchQuery = (query: string): string[] => {
-  const terms = query.trim().split(/\s+/).filter(Boolean);
-  return [...new Set(terms)];
-};
-
-const buildNormalizedIndexMap = (
-  text: string,
-  language?: string
-): NormalizedIndexMap => {
-  let normalizedText = "";
-  const normalizedIndexMap: HighlightRange[] = [];
-
-  let originalIndex = 0;
-
-  for (const char of text) {
-    const start = originalIndex;
-    const end = start + char.length;
-    const normalizedChar = normalizeForSearch(char, language);
-
-    // One original character can normalize into multiple characters.
-    // Keep a mapping for every normalized character back to original indexes.
-    for (const normalizedPart of normalizedChar) {
-      normalizedText += normalizedPart;
-      normalizedIndexMap.push({ start, end });
-    }
-
-    originalIndex = end;
-  }
-
-  return { normalizedText, normalizedIndexMap };
-};
-
-const mergeHighlightRanges = (ranges: HighlightRange[]): HighlightRange[] => {
-  if (!ranges.length) {
-    return [];
-  }
-
-  const sortedRanges = [...ranges].sort((a, b) => a.start - b.start);
-  const mergedRanges: HighlightRange[] = [{ ...sortedRanges[0] }];
-
-  // Merge overlapping/adjacent ranges so the rendered marks stay minimal.
-  for (let i = 1; i < sortedRanges.length; i++) {
-    const previousRange = mergedRanges[mergedRanges.length - 1];
-    const currentRange = sortedRanges[i];
-
-    if (currentRange.start <= previousRange.end) {
-      previousRange.end = Math.max(previousRange.end, currentRange.end);
-      continue;
-    }
-
-    mergedRanges.push({ ...currentRange });
-  }
-
-  return mergedRanges;
-};
-
-const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
-  const ranges: Range[] = [];
-
-  root.querySelectorAll("mark.ha-highlight").forEach((mark) => {
-    const textNode = mark.firstChild;
-    if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
-      return;
-    }
-
-    const text = textNode.textContent;
-    if (!text) {
-      return;
-    }
-
-    const range = new Range();
-    range.setStart(textNode, 0);
-    range.setEnd(textNode, text.length);
-    ranges.push(range);
-  });
-
-  return ranges;
-};
-
-const createHighlightStyle = (highlightName: string): string => css`
-  .ha-highlight {
-    background-color: var(
-      --ha-highlight-bg,
-      var(--ha-color-fill-primary-normal-hover)
-    );
-    color: var(--ha-highlight-color, var(--primary-text-color));
-    border-radius: 2px;
-    padding: 0;
-    box-shadow: inset 0 0 0 1px transparent;
-  }
-
-  :host(.${unsafeCSS(ACTIVE_HOST_CLASS)}) .ha-highlight {
-    background-color: transparent;
-    color: inherit;
-  }
-
-  ::highlight(${unsafeCSS(highlightName)}) {
-    background-color: var(
-      --ha-highlight-bg,
-      var(--ha-color-fill-primary-normal-hover)
-    );
-    color: var(--ha-highlight-color, var(--primary-text-color));
-  }
-`.cssText;
-
 export class SearchHighlight {
   // `CSS.highlights` is document-global, not per shadow root.
   // Each instance needs a unique key so that components do not overwrite each
   // other's highlight ranges.
   private static _nextHighlightId = 0;
+
+  private static _normalizeForSearch(text: string, language?: string): string {
+    return stripDiacritics(text).toLocaleLowerCase(language);
+  }
+
+  private static _supportsCustomHighlights(): boolean {
+    return typeof CSS !== "undefined" && CSS.highlights !== undefined;
+  }
+
+  private static _tokenizeSearchQuery(query: string): string[] {
+    const terms = query.trim().split(/\s+/).filter(Boolean);
+    return [...new Set(terms)];
+  }
+
+  /**
+   * Build normalized text and an index map back to original indexes.
+   * Needed because normalization can change character length/index positions.
+   */
+  private static _buildNormalizedIndexMap(
+    text: string,
+    language?: string
+  ): NormalizedIndexMap {
+    let normalizedText = "";
+    const normalizedIndexMap: HighlightRange[] = [];
+
+    let originalIndex = 0;
+
+    for (const char of text) {
+      const start = originalIndex;
+      const end = start + char.length;
+      const normalizedChar = SearchHighlight._normalizeForSearch(
+        char,
+        language
+      );
+
+      // One original character can normalize into multiple characters.
+      // Keep a mapping for every normalized character back to original indexes.
+      for (const normalizedPart of normalizedChar) {
+        normalizedText += normalizedPart;
+        normalizedIndexMap.push({ start, end });
+      }
+
+      originalIndex = end;
+    }
+
+    return { normalizedText, normalizedIndexMap };
+  }
+
+  private static _mergeHighlightRanges(
+    ranges: HighlightRange[]
+  ): HighlightRange[] {
+    if (!ranges.length) {
+      return [];
+    }
+
+    const sortedRanges = [...ranges].sort((a, b) => a.start - b.start);
+    const mergedRanges: HighlightRange[] = [{ ...sortedRanges[0] }];
+
+    // Merge overlapping/adjacent ranges so the rendered marks stay minimal.
+    for (let i = 1; i < sortedRanges.length; i++) {
+      const previousRange = mergedRanges[mergedRanges.length - 1];
+      const currentRange = sortedRanges[i];
+
+      if (currentRange.start <= previousRange.end) {
+        previousRange.end = Math.max(previousRange.end, currentRange.end);
+        continue;
+      }
+
+      mergedRanges.push({ ...currentRange });
+    }
+
+    return mergedRanges;
+  }
+
+  /**
+   * Convert rendered `<mark>` fallback nodes into DOM Ranges for `CSS.highlights`.
+   */
+  private static _getHighlightRangesFromMarks(root: ShadowRoot): Range[] {
+    const ranges: Range[] = [];
+
+    root.querySelectorAll("mark.ha-highlight").forEach((mark) => {
+      const textNode = mark.firstChild;
+      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+        return;
+      }
+
+      const text = textNode.textContent;
+      if (!text) {
+        return;
+      }
+
+      const range = new Range();
+      range.setStart(textNode, 0);
+      range.setEnd(textNode, text.length);
+      ranges.push(range);
+    });
+
+    return ranges;
+  }
+
+  private static _createHighlightStyle(highlightName: string): string {
+    return css`
+      .ha-highlight {
+        background-color: var(
+          --ha-highlight-bg,
+          var(--ha-color-fill-primary-normal-hover)
+        );
+        color: var(--ha-highlight-color, var(--primary-text-color));
+        border-radius: 2px;
+        padding: 0;
+        box-shadow: inset 0 0 0 1px transparent;
+      }
+
+      :host(.${unsafeCSS(ACTIVE_HOST_CLASS)}) .ha-highlight {
+        background-color: transparent;
+        color: inherit;
+      }
+
+      ::highlight(${unsafeCSS(highlightName)}) {
+        background-color: var(
+          --ha-highlight-bg,
+          var(--ha-color-fill-primary-normal-hover)
+        );
+        color: var(--ha-highlight-color, var(--primary-text-color));
+      }
+    `.cssText;
+  }
 
   // Cache the last apply inputs to avoid re-registering identical highlights
   // on every Lit update.
@@ -149,7 +165,7 @@ export class SearchHighlight {
 
   public constructor(private readonly _root?: ShadowRoot) {
     // Use Custom Highlight API for a cleaner paint path.
-    if (this._root && supportsCustomHighlights()) {
+    if (this._root && SearchHighlight._supportsCustomHighlights()) {
       this._highlightName = `${HIGHLIGHT_NAME_PREFIX}-${SearchHighlight._nextHighlightId++}`;
       this._addHighlightStyle();
     }
@@ -164,15 +180,13 @@ export class SearchHighlight {
       return [];
     }
 
-    const terms = tokenizeSearchQuery(query);
+    const terms = SearchHighlight._tokenizeSearchQuery(query);
     if (!terms.length) {
       return [];
     }
 
-    const { normalizedText, normalizedIndexMap } = buildNormalizedIndexMap(
-      text,
-      language
-    );
+    const { normalizedText, normalizedIndexMap } =
+      SearchHighlight._buildNormalizedIndexMap(text, language);
 
     // Text can normalize to empty (for example, combining marks only).
     if (!normalizedText) {
@@ -182,7 +196,10 @@ export class SearchHighlight {
     const ranges: HighlightRange[] = [];
 
     for (const term of terms) {
-      const normalizedTerm = normalizeForSearch(term, language);
+      const normalizedTerm = SearchHighlight._normalizeForSearch(
+        term,
+        language
+      );
       // Some tokens normalize to empty (like combining marks); skip them.
       if (!normalizedTerm) {
         continue;
@@ -206,7 +223,7 @@ export class SearchHighlight {
       }
     }
 
-    return mergeHighlightRanges(ranges);
+    return SearchHighlight._mergeHighlightRanges(ranges);
   }
 
   /**
@@ -240,7 +257,10 @@ export class SearchHighlight {
       return;
     }
 
-    this._applyFromRanges(getHighlightRangesFromMarks(this._root), key);
+    this._applyFromRanges(
+      SearchHighlight._getHighlightRangesFromMarks(this._root),
+      key
+    );
   }
 
   public applyFromRanges(ranges: Range[], key?: string): void {
@@ -256,7 +276,7 @@ export class SearchHighlight {
       return;
     }
 
-    if (supportsCustomHighlights() && this._highlightName) {
+    if (SearchHighlight._supportsCustomHighlights() && this._highlightName) {
       CSS.highlights.delete(this._highlightName);
     }
 
@@ -293,8 +313,15 @@ export class SearchHighlight {
     return parts;
   }
 
+  /**
+   * Register custom highlight ranges and skip no-op updates using cached inputs.
+   */
   private _applyFromRanges(ranges: Range[], key?: string): void {
-    if (!this._root || !supportsCustomHighlights() || !this._highlightName) {
+    if (
+      !this._root ||
+      !SearchHighlight._supportsCustomHighlights() ||
+      !this._highlightName
+    ) {
       return;
     }
 
@@ -317,13 +344,18 @@ export class SearchHighlight {
     (this._root.host as HTMLElement).classList.add(ACTIVE_HOST_CLASS);
   }
 
+  /**
+   * Inject shared styles for both `<mark>` fallback and `::highlight()` rendering.
+   */
   private _addHighlightStyle(): void {
     if (!this._root || !this._highlightName) {
       return;
     }
 
     const style = document.createElement("style");
-    style.textContent = createHighlightStyle(this._highlightName);
+    style.textContent = SearchHighlight._createHighlightStyle(
+      this._highlightName
+    );
     this._root.appendChild(style);
   }
 }
