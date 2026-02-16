@@ -71,6 +71,7 @@ class DialogCategoryDetail extends LitElement {
         header-title=${entry
           ? this.hass.localize("ui.panel.config.category.editor.edit")
           : this.hass.localize("ui.panel.config.category.editor.create")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error

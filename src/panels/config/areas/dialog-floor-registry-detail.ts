@@ -112,6 +112,7 @@ class DialogFloorDetail extends LitElement {
         header-title=${entry
           ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
           : this.hass.localize("ui.panel.config.floors.editor.create_floor")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div>

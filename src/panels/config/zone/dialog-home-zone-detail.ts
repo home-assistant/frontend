@@ -72,6 +72,7 @@ class DialogHomeZoneDetail extends LitElement {
         header-title=${this.hass!.localize("ui.common.edit_item", {
           name: this._data.name,
         })}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-form
