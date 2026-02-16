@@ -112,8 +112,8 @@ export function getActiveEnergyCollectionKeys(
       key !== undefined &&
       (!uiKeysOnly || key.startsWith(ENERGY_COLLECTION_KEY_UI_PREFIX))
     ) {
-      const energyCollection = getEnergyDataCollection(hass, { key });
-      return energyCollection.isActive();
+      const energyCollection = findEnergyDataCollection(hass, key);
+      return energyCollection && energyCollection.isActive();
     }
     return false;
   }) as string[];
@@ -768,10 +768,12 @@ export interface EnergyCollection extends Collection<EnergyData> {
 
 const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
   energyCollectionKeys.forEach((key) => {
-    const energyCollection = getEnergyDataCollection(hass, { key });
-    energyCollection.clearPrefs();
-    if (energyCollection.isActive()) {
-      energyCollection.refresh();
+    const energyCollection = findEnergyDataCollection(hass, key);
+    if (energyCollection) {
+      energyCollection.clearPrefs();
+      if (energyCollection.isActive()) {
+        energyCollection.refresh();
+      }
     }
   });
 };
@@ -798,29 +800,47 @@ const scheduleHourlyRefresh = (collection: EnergyCollection) => {
   }
 };
 
-export const getEnergyDataCollection = (
+const convertCollectionKeyToConnection = (
   hass: HomeAssistant,
-  options: { prefs?: EnergyPreferences; key?: string } = {}
-): EnergyCollection => {
+  collectionKey: string | undefined
+): [string, string | undefined] => {
   let key = "_energy";
-  let name: string | undefined;
-  if (options.key) {
-    validateEnergyCollectionKey(options.key);
-    key = `_${options.key}`;
-    name = options.key;
+  if (collectionKey) {
+    validateEnergyCollectionKey(collectionKey);
+    key = `_${collectionKey}`;
   } else {
     const defaultKey = getCurrentDashboardDefaultCollectionKey(hass);
     if (defaultKey) {
       key = `_${defaultKey}`;
-      name = defaultKey;
+      collectionKey = defaultKey;
     }
   }
+  return [key, collectionKey];
+};
 
+const findEnergyDataCollection = (
+  hass: HomeAssistant,
+  collectionKey: string | undefined
+): EnergyCollection | undefined => {
+  // Lookup the connection key and default key name
+  let key;
+  [key, collectionKey] = convertCollectionKeyToConnection(hass, collectionKey);
+  return (hass.connection as any)[key];
+};
+
+export const getEnergyDataCollection = (
+  hass: HomeAssistant,
+  options: { prefs?: EnergyPreferences; key?: string } = {}
+): EnergyCollection => {
+  const [key, collectionKey] = convertCollectionKeyToConnection(
+    hass,
+    options.key
+  );
   if ((hass.connection as any)[key]) {
     return (hass.connection as any)[key];
   }
 
-  energyCollectionKeys.push(name);
+  energyCollectionKeys.push(collectionKey);
 
   const collection = getCollection<EnergyData>(
     hass.connection,
