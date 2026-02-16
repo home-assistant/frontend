@@ -14,6 +14,7 @@ import {
 import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import {
   calcDate,
   calcDateProperty,
@@ -39,27 +40,17 @@ import { formatNumber } from "../common/number/format_number";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
-export const emptyFlowFromGridSourceEnergyPreference =
-  (): FlowFromGridSourceEnergyPreference => ({
-    stat_energy_from: "",
-    stat_cost: null,
-    entity_energy_price: null,
-    number_energy_price: null,
-  });
-
-export const emptyFlowToGridSourceEnergyPreference =
-  (): FlowToGridSourceEnergyPreference => ({
-    stat_energy_to: "",
-    stat_compensation: null,
-    entity_energy_price: null,
-    number_energy_price: null,
-  });
-
 export const emptyGridSourceEnergyPreference =
   (): GridSourceTypeEnergyPreference => ({
     type: "grid",
-    flow_from: [],
-    flow_to: [],
+    stat_energy_from: null,
+    stat_energy_to: null,
+    stat_cost: null,
+    stat_compensation: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+    entity_energy_price_export: null,
+    number_energy_price_export: null,
     cost_adjustment_day: 0,
   });
 
@@ -107,30 +98,6 @@ export interface DeviceConsumptionEnergyPreference {
   included_in_stat?: string;
 }
 
-export interface FlowFromGridSourceEnergyPreference {
-  // kWh meter
-  stat_energy_from: string;
-
-  // $ meter
-  stat_cost: string | null;
-
-  // Can be used to generate costs if stat_cost omitted
-  entity_energy_price: string | null;
-  number_energy_price: number | null;
-}
-
-export interface FlowToGridSourceEnergyPreference {
-  // kWh meter
-  stat_energy_to: string;
-
-  // $ meter
-  stat_compensation: string | null;
-
-  // Can be used to generate costs if stat_compensation omitted
-  entity_energy_price: string | null;
-  number_energy_price: number | null;
-}
-
 export interface PowerConfig {
   stat_rate?: string; // Standard single sensor
   stat_rate_inverted?: string; // Inverted single sensor
@@ -138,29 +105,33 @@ export interface PowerConfig {
   stat_rate_to?: string; // Battery: charge / Grid: return
 }
 
-export interface GridPowerSourceEnergyPreference {
-  stat_rate: string;
-  power_config?: PowerConfig;
-}
-
 /**
- * Input type for saving grid power sources.
- * Core requires EITHER stat_rate (legacy) OR power_config (new format).
- * When reading from backend, stat_rate is always populated.
+ * Grid source format.
+ * Each grid connection is a single object with import/export/power together.
+ * Multiple grid sources are allowed.
  */
-export type GridPowerSourceInput = Omit<
-  GridPowerSourceEnergyPreference,
-  "stat_rate"
-> & {
-  stat_rate?: string;
-};
-
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 
-  flow_from: FlowFromGridSourceEnergyPreference[];
-  flow_to: FlowToGridSourceEnergyPreference[];
-  power?: GridPowerSourceEnergyPreference[];
+  // Import meter
+  stat_energy_from: string | null;
+
+  // Export meter
+  stat_energy_to: string | null;
+
+  // Import cost tracking
+  stat_cost: string | null;
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
+
+  // Export compensation tracking
+  stat_compensation: string | null;
+  entity_energy_price_export: string | null;
+  number_energy_price_export: number | null;
+
+  // Power measurement
+  stat_rate?: string; // always available if power_config is set
+  power_config?: PowerConfig;
 
   cost_adjustment_day: number;
 }
@@ -177,7 +148,7 @@ export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
   stat_energy_to: string;
-  stat_rate?: string;
+  stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 }
 export interface GasSourceTypeEnergyPreference {
@@ -354,24 +325,25 @@ export const getReferencedStatisticIds = (
     }
 
     // grid source
-    for (const flowFrom of source.flow_from) {
-      statIDs.push(flowFrom.stat_energy_from);
-      if (flowFrom.stat_cost) {
-        statIDs.push(flowFrom.stat_cost);
+    if (source.stat_energy_from) {
+      statIDs.push(source.stat_energy_from);
+      if (source.stat_cost) {
+        statIDs.push(source.stat_cost);
       }
-      const costStatId = info.cost_sensors[flowFrom.stat_energy_from];
-      if (costStatId) {
-        statIDs.push(costStatId);
+      const importCostStatId = info.cost_sensors[source.stat_energy_from];
+      if (importCostStatId) {
+        statIDs.push(importCostStatId);
       }
     }
-    for (const flowTo of source.flow_to) {
-      statIDs.push(flowTo.stat_energy_to);
-      if (flowTo.stat_compensation) {
-        statIDs.push(flowTo.stat_compensation);
+
+    if (source.stat_energy_to) {
+      statIDs.push(source.stat_energy_to);
+      if (source.stat_compensation) {
+        statIDs.push(source.stat_compensation);
       }
-      const costStatId = info.cost_sensors[flowTo.stat_energy_to];
-      if (costStatId) {
-        statIDs.push(costStatId);
+      const exportCostStatId = info.cost_sensors[source.stat_energy_to];
+      if (exportCostStatId) {
+        statIDs.push(exportCostStatId);
       }
     }
   }
@@ -403,12 +375,15 @@ export const getReferencedStatisticIdsPower = (
     }
 
     if (source.type === "battery") {
-      statIDs.push(source.stat_rate);
+      if (source.stat_rate) {
+        statIDs.push(source.stat_rate);
+      }
       continue;
     }
 
-    if (source.power) {
-      statIDs.push(...source.power.map((p) => p.stat_rate));
+    // grid source
+    if (source.stat_rate) {
+      statIDs.push(source.stat_rate);
     }
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
@@ -449,11 +424,8 @@ const getEnergyData = async (
 
   const consumptionStatIDs: string[] = [];
   for (const source of prefs.energy_sources) {
-    // grid source
-    if (source.type === "grid") {
-      for (const flowFrom of source.flow_from) {
-        consumptionStatIDs.push(flowFrom.stat_energy_from);
-      }
+    if (source.type === "grid" && source.stat_energy_from) {
+      consumptionStatIDs.push(source.stat_energy_from);
     }
   }
   const energyStatIds = getReferencedStatisticIds(prefs, info, [
@@ -1054,18 +1026,18 @@ const getSummedDataPartial = (
     }
 
     // grid source
-    for (const flowFrom of source.flow_from) {
+    if (source.stat_energy_from) {
       if (statIds.from_grid) {
-        statIds.from_grid.push(flowFrom.stat_energy_from);
+        statIds.from_grid.push(source.stat_energy_from);
       } else {
-        statIds.from_grid = [flowFrom.stat_energy_from];
+        statIds.from_grid = [source.stat_energy_from];
       }
     }
-    for (const flowTo of source.flow_to) {
+    if (source.stat_energy_to) {
       if (statIds.to_grid) {
-        statIds.to_grid.push(flowTo.stat_energy_to);
+        statIds.to_grid.push(source.stat_energy_to);
       } else {
-        statIds.to_grid = [flowTo.stat_energy_to];
+        statIds.to_grid = [source.stat_energy_to];
       }
     }
   }
@@ -1431,26 +1403,10 @@ export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
     return undefined;
   }
 
-  // Normalize to watts (W) based on unit of measurement (case-sensitive)
-  // Supported units: GW, kW, MW, mW, TW, W
-  const unit = stateObj.attributes.unit_of_measurement;
-  switch (unit) {
-    case "W":
-      return value;
-    case "kW":
-      return value * 1000;
-    case "mW":
-      return value / 1000;
-    case "MW":
-      return value * 1_000_000;
-    case "GW":
-      return value * 1_000_000_000;
-    case "TW":
-      return value * 1_000_000_000_000;
-    default:
-      // Assume value is in watts (W) if no unit or an unsupported unit is provided
-      return value;
-  }
+  return normalizeValueBySIPrefix(
+    value,
+    stateObj.attributes.unit_of_measurement
+  );
 };
 
 /**

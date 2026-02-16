@@ -1,5 +1,5 @@
 import { ContextProvider } from "@lit/context";
-import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
+import { mdiContentSave, mdiHelpCircleOutline } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -184,7 +184,7 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
                 rel="noreferrer"
               >
                 <ha-icon-button
-                  .path=${mdiHelpCircle}
+                  .path=${mdiHelpCircleOutline}
                   .label=${this.hass.localize(
                     "ui.panel.config.script.editor.field.link_help_fields"
                   )}
@@ -218,7 +218,7 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
         rel="noreferrer"
       >
         <ha-icon-button
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
           .label=${this.hass.localize(
             "ui.panel.config.script.editor.link_available_actions"
           )}
@@ -571,7 +571,6 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
   }
 
   private _saveScript() {
-    this.triggerCloseSidebar();
     fireEvent(this, "save-script");
   }
 

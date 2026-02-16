@@ -2,6 +2,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-button";
+import "../../../../components/ha-md-list";
 import "../../../../components/entity/ha-entity-picker";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
@@ -22,8 +23,6 @@ import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_regi
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @state() private _entityId?: string;
 
   protected render() {
@@ -34,14 +33,14 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
             "ui.panel.config.developer-tools.tabs.debug.title"
           )}
         >
-          <ha-debug-connection-row
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-debug-connection-row>
-          <ha-debug-disable-view-transition-row
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-debug-disable-view-transition-row>
+          <ha-md-list>
+            <ha-debug-connection-row
+              .hass=${this.hass}
+            ></ha-debug-connection-row>
+            <ha-debug-disable-view-transition-row
+              .hass=${this.hass}
+            ></ha-debug-disable-view-transition-row>
+          </ha-md-list>
         </ha-card>
         <ha-card
           .header=${this.hass.localize(
@@ -127,6 +126,11 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
         display: block;
         max-width: 600px;
         margin: 0 auto;
+      }
+      ha-md-list {
+        padding-top: 0;
+        padding-bottom: 0;
+        background: none;
       }
     `,
   ];

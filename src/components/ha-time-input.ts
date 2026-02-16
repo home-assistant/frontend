@@ -5,6 +5,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { FrontendLocaleData } from "../data/translation";
 import "./ha-base-time-input";
 import type { TimeChangedEvent } from "./ha-base-time-input";
+import type { ValueChangedEvent } from "../types";
 
 @customElement("ha-time-input")
 export class HaTimeInput extends LitElement {
@@ -69,7 +70,7 @@ export class HaTimeInput extends LitElement {
     `;
   }
 
-  private _timeChanged(ev: CustomEvent<{ value?: TimeChangedEvent }>) {
+  private _timeChanged(ev: ValueChangedEvent<TimeChangedEvent | undefined>) {
     ev.stopPropagation();
     const eventValue = ev.detail.value;
 

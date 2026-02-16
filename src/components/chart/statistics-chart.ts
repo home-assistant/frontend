@@ -335,7 +335,10 @@ export class StatisticsChart extends LitElement {
       },
       tooltip: {
         trigger: "axis",
-        appendTo: document.body,
+        renderMode: "html",
+        position: "bottom",
+        align: "center",
+        confine: true,
         formatter: this._renderTooltip,
       },
     };
@@ -572,6 +575,7 @@ export class StatisticsChart extends LitElement {
       let firstSum: number | null | undefined = null;
       stats.forEach((stat) => {
         const startDate = new Date(stat.start);
+        const endDate = new Date(stat.end);
         if (prevDate === startDate) {
           return;
         }
@@ -601,9 +605,24 @@ export class StatisticsChart extends LitElement {
           dataValues.push(val);
         });
         if (!this._hiddenStats.has(statistic_id)) {
-          pushData(startDate, new Date(stat.end), dataValues);
+          pushData(
+            startDate,
+            endDate.getTime() < endTime.getTime() ? endDate : endTime,
+            dataValues
+          );
         }
       });
+
+      // Close out the last stat segment at prevEndTime
+      const lastEndTime = prevEndTime;
+      const lastValues = prevValues;
+      if (lastEndTime && lastValues) {
+        statDataSets.forEach((d, i) => {
+          d.data!.push(
+            this._transformDataValue([lastEndTime, ...lastValues[i]!])
+          );
+        });
+      }
 
       // Append current state if viewing recent data
       const now = new Date();
@@ -619,16 +638,6 @@ export class StatisticsChart extends LitElement {
               isFinite(currentValue) &&
               !this._hiddenStats.has(statistic_id)
             ) {
-              // First, close out the last stat segment at prevEndTime
-              const lastEndTime = prevEndTime;
-              const lastValues = prevValues;
-              if (lastEndTime && lastValues) {
-                statDataSets.forEach((d, i) => {
-                  d.data!.push(
-                    this._transformDataValue([lastEndTime, ...lastValues[i]!])
-                  );
-                });
-              }
               // Then push the current state at now
               statTypes.forEach((type, i) => {
                 const val: (number | null)[] = [];

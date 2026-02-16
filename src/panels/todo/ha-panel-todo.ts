@@ -110,7 +110,7 @@ class PanelTodo extends LitElement {
           this._entityId = undefined;
         }
         if (!this._entityId) {
-          this._entityId = getTodoLists(this.hass)[0]?.entity_id;
+          this._entityId = getTodoLists(this.hass, false)[0]?.entity_id;
         }
       }
     }
@@ -147,12 +147,12 @@ class PanelTodo extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
     const showPane = this._showPaneController.value ?? !this.narrow;
-    const listItems = getTodoLists(this.hass).map(
+    const listItems = getTodoLists(this.hass, false).map(
       (list) =>
         html`<ha-dropdown-item
           @click=${this._setEntityId}
           value=${list.entity_id}
-          class=${list.entity_id === this._entityId ? "selected" : ""}
+          .selected=${list.entity_id === this._entityId}
         >
           <ha-state-icon
             .stateObj=${list}
@@ -322,7 +322,7 @@ class PanelTodo extends LitElement {
     }
     const result = await deleteConfigEntry(this.hass, entryId);
 
-    this._entityId = getTodoLists(this.hass)[0]?.entity_id;
+    this._entityId = getTodoLists(this.hass, false)[0]?.entity_id;
 
     if (result.require_restart) {
       showAlertDialog(this, {
@@ -408,13 +408,6 @@ class PanelTodo extends LitElement {
 
         ha-dropdown.lists ha-dropdown-item {
           max-width: 80vw;
-        }
-
-        ha-dropdown-item.selected {
-          font-weight: var(--ha-font-weight-medium);
-          color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          --icon-primary-color: var(--primary-color);
         }
       `,
     ];

@@ -12,6 +12,11 @@ import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/sec
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import {
+  LARGE_SCREEN_CONDITION,
+  SMALL_SCREEN_CONDITION,
+} from "../../lovelace/strategies/helpers/screen-conditions";
+import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
 
 export interface LightViewStrategyConfig {
   type: "light";
@@ -45,6 +50,16 @@ const processAreasForLight = (
     }
 
     if (areaCards.length > 0) {
+      // Visibility condition: any light is on
+      const anyOnCondition = {
+        condition: "or" as const,
+        conditions: areaLights.map((entityId) => ({
+          condition: "state" as const,
+          entity: entityId,
+          state: "on",
+        })),
+      };
+
       cards.push({
         heading_style: "subtitle",
         type: "heading",
@@ -53,7 +68,56 @@ const processAreasForLight = (
           action: "navigate",
           navigation_path: `/home/areas-${area.area_id}`,
         },
+        badges: [
+          // Toggle buttons for mobile
+          {
+            type: "button",
+            icon: "mdi:power",
+            tap_action: {
+              action: "perform-action",
+              perform_action: "light.turn_on",
+              target: {
+                area_id: area.area_id,
+              },
+            },
+            visibility: [
+              SMALL_SCREEN_CONDITION,
+              {
+                condition: "not",
+                conditions: [anyOnCondition],
+              },
+            ],
+          },
+          {
+            type: "button",
+            icon: "mdi:power",
+            color: "amber",
+            tap_action: {
+              action: "perform-action",
+              perform_action: "light.turn_off",
+              target: {
+                area_id: area.area_id,
+              },
+            },
+            visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
+          },
+        ] satisfies LovelaceCardConfig[],
       });
+
+      // Toggle group card for desktop
+      cards.push({
+        type: "toggle-group",
+        title: hass.localize("ui.panel.lovelace.strategy.light.all_lights"),
+        color: "amber",
+        entities: areaLights,
+        visibility: [LARGE_SCREEN_CONDITION],
+        grid_options: {
+          columns: 6,
+          rows: 1,
+          min_columns: 6,
+        },
+      } as ToggleGroupCardConfig);
+
       cards.push(...areaCards);
     }
   }

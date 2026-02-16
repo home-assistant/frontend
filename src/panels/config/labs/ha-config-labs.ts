@@ -1,4 +1,4 @@
-import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
+import { mdiFlask, mdiHelpCircleOutline, mdiOpenInNew } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -118,7 +118,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
               >
                 <ha-icon-button
                   .label=${this.hass.localize("ui.common.help")}
-                  .path=${mdiHelpCircle}
+                  .path=${mdiHelpCircleOutline}
                 ></ha-icon-button>
               </a>
             `

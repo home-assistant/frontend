@@ -6,7 +6,7 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiInformationOutline,
   mdiMenuDown,
   mdiOpenInNew,
@@ -54,7 +54,6 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -482,7 +481,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-filter-floor-areas

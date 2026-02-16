@@ -29,7 +29,7 @@
     "@babel/runtime": "7.28.6",
     "@braintree/sanitize-url": "7.1.2",
     "@codemirror/autocomplete": "6.20.0",
-    "@codemirror/commands": "6.10.1",
+    "@codemirror/commands": "6.10.2",
     "@codemirror/language": "6.12.1",
     "@codemirror/legacy-modes": "6.5.2",
     "@codemirror/search": "6.6.0",
@@ -52,7 +52,7 @@
     "@fullcalendar/list": "6.1.20",
     "@fullcalendar/luxon3": "6.1.20",
     "@fullcalendar/timegrid": "6.1.20",
-    "@home-assistant/webawesome": "3.0.0-ha.2",
+    "@home-assistant/webawesome": "3.2.1-ha.0",
     "@lezer/highlight": "1.2.3",
     "@lit-labs/motion": "1.1.0",
     "@lit-labs/observers": "2.1.0",
@@ -132,7 +132,7 @@
     "stacktrace-js": "2.0.2",
     "superstruct": "2.0.2",
     "tinykeys": "3.0.0",
-    "ua-parser-js": "2.0.8",
+    "ua-parser-js": "2.0.9",
     "vue": "2.7.16",
     "vue2-daterange-picker": "0.6.8",
     "weekstart": "2.0.0",
@@ -154,7 +154,7 @@
     "@octokit/auth-oauth-device": "8.0.3",
     "@octokit/plugin-retry": "8.0.3",
     "@octokit/rest": "22.0.1",
-    "@rsdoctor/rspack-plugin": "1.5.1",
+    "@rsdoctor/rspack-plugin": "1.5.2",
     "@rspack/core": "1.7.5",
     "@rspack/dev-server": "1.2.1",
     "@types/babel__plugin-transform-runtime": "7.9.5",
@@ -191,7 +191,7 @@
     "eslint-plugin-wc": "3.0.2",
     "fancy-log": "2.0.0",
     "fs-extra": "11.3.3",
-    "glob": "13.0.0",
+    "glob": "13.0.1",
     "gulp": "5.0.1",
     "gulp-brotli": "3.0.0",
     "gulp-json-transform": "0.5.0",
@@ -235,6 +235,6 @@
   },
   "packageManager": "yarn@4.12.0",
   "volta": {
-    "node": "24.13.0"
+    "node": "24.13.1"
   }
 }

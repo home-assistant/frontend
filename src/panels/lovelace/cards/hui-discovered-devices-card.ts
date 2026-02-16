@@ -29,6 +29,8 @@ export class HuiDiscoveredDevicesCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public connectedWhileHidden = true;
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: DiscoveredDevicesCardConfig;
@@ -181,7 +183,7 @@ export class HuiDiscoveredDevicesCard
     tileCardStyle,
     css`
       :host {
-        --tile-color: var(--primary-color);
+        --tile-color: var(--info-color);
       }
     `,
   ];

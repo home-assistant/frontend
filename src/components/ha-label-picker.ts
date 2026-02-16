@@ -182,7 +182,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.label-picker.add_new_sugestion",
+            "ui.components.label-picker.add_new_suggestion",
             {
               name: searchString,
             }

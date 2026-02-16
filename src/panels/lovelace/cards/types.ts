@@ -94,6 +94,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "last-changed"
     | "last-triggered"
     | "last-updated"
+    | "area"
     | "position"
     | "state"
     | "tilt-position"
@@ -664,7 +665,16 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface DistributionEntityConfig extends EntityConfig {}
+export interface ToggleGroupCardConfig extends LovelaceCardConfig {
+  title: string;
+  entities: string[];
+  color?: string;
+  vertical?: boolean;
+}
+
+export interface DistributionEntityConfig extends EntityConfig {
+  color?: string;
+}
 
 export interface DistributionCardConfig extends LovelaceCardConfig {
   type: "distribution";
@@ -673,6 +683,22 @@ export interface DistributionCardConfig extends LovelaceCardConfig {
 }
 
 export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {
+  hide_empty?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface RepairsCardConfig extends LovelaceCardConfig {
+  hide_empty?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface UpdatesCardConfig extends LovelaceCardConfig {
   hide_empty?: boolean;
   vertical?: boolean;
   tap_action?: ActionConfig;

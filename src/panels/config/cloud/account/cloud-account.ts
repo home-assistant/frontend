@@ -229,7 +229,6 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-webhooks
               .hass=${this.hass}
-              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-webhooks>
           </ha-config-section>

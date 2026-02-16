@@ -40,6 +40,7 @@ import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 
 export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
+export const DEFAULT_POWER_COLLECTION_KEY = "energy_dashboard_now";
 
 const EMPTY_PREFERENCES: EnergyPreferences = {
   energy_sources: [],
@@ -87,7 +88,7 @@ const POWER_VIEW = {
   path: "now",
   strategy: {
     type: "power",
-    collection_key: "energy_dashboard_now",
+    collection_key: DEFAULT_POWER_COLLECTION_KEY,
   },
 } as LovelaceViewConfig;
 
@@ -289,12 +290,14 @@ class PanelEnergy extends LitElement {
       ["grid", "solar", "battery"].includes(source.type)
     );
 
-    const hasPowerSource = this._prefs.energy_sources.some(
-      (source) =>
-        (source.type === "solar" && source.stat_rate) ||
-        (source.type === "battery" && source.stat_rate) ||
-        (source.type === "grid" && source.power?.length)
-    );
+    const hasPowerSource = this._prefs.energy_sources.some((source) => {
+      if (source.type === "solar" && source.stat_rate) return true;
+      if (source.type === "battery" && source.stat_rate) return true;
+      if (source.type === "grid") {
+        return !!source.stat_rate || !!source.power_config;
+      }
+      return false;
+    });
 
     const hasDevicePower = this._prefs.device_consumption.some(
       (device) => device.stat_rate
@@ -350,7 +353,7 @@ class PanelEnergy extends LitElement {
 
   private _dumpCSV = async () => {
     const energyData = getEnergyDataCollection(this.hass, {
-      key: "energy_dashboard",
+      key: DEFAULT_ENERGY_COLLECTION_KEY,
     });
 
     if (!energyData.prefs || !energyData.state.stats) {
@@ -434,26 +437,25 @@ class PanelEnergy extends LitElement {
     energy_sources
       .filter((s) => s.type === "grid")
       .forEach((source) => {
-        source = source as GridSourceTypeEnergyPreference;
-        source.flow_from.forEach((flowFrom) => {
-          const statId = flowFrom.stat_energy_from;
-          grid_consumptions.push(statId);
-          const costId =
-            flowFrom.stat_cost || energyData.state.info.cost_sensors[statId];
-          if (costId) {
-            grid_consumptions_cost.push(costId);
+        const gridSource = source as GridSourceTypeEnergyPreference;
+        if (gridSource.stat_energy_from) {
+          grid_consumptions.push(gridSource.stat_energy_from);
+          const importCostId =
+            gridSource.stat_cost ||
+            energyData.state.info.cost_sensors[gridSource.stat_energy_from];
+          if (importCostId) {
+            grid_consumptions_cost.push(importCostId);
           }
-        });
-        source.flow_to.forEach((flowTo) => {
-          const statId = flowTo.stat_energy_to;
-          grid_productions.push(statId);
-          const costId =
-            flowTo.stat_compensation ||
-            energyData.state.info.cost_sensors[statId];
-          if (costId) {
-            grid_productions_cost.push(costId);
+        }
+        if (gridSource.stat_energy_to) {
+          grid_productions.push(gridSource.stat_energy_to);
+          const exportCostId =
+            gridSource.stat_compensation ||
+            energyData.state.info.cost_sensors[gridSource.stat_energy_to];
+          if (exportCostId) {
+            grid_productions_cost.push(exportCostId);
           }
-        });
+        }
       });
 
     printCategory(
