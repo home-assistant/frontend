@@ -29,7 +29,6 @@ import {
   computeEntityEntryName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   getEntityContext,
   getEntityEntryContext,
@@ -45,10 +44,7 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
-import {
-  STATE_ATTRIBUTES,
-  STATE_ATTRIBUTES_DOMAIN_CLASS,
-} from "../../data/entity/entity_attributes";
+import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import "../../components/ha-dialog";
 import type {
   EntityRegistryEntry,
@@ -371,16 +367,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     if (!stateObj) {
       return false;
     }
-    const domain = computeStateDomain(stateObj);
-    const filtersArray = STATE_ATTRIBUTES.concat(
-      (STATE_ATTRIBUTES_DOMAIN_CLASS[domain]?.[
-        stateObj.attributes?.device_class
-      ] || []) as string[]
-    );
-    const displayAttributes = Object.keys(stateObj.attributes).filter(
-      (key) => filtersArray.indexOf(key) === -1
-    );
-    return displayAttributes.length > 0;
+    return computeShownAttributes(stateObj).length > 0;
   }
 
   private _goToAddEntityTo(ev) {
