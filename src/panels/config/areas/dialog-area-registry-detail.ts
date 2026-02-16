@@ -344,6 +344,7 @@ class DialogAreaDetail
         header-title=${entry
           ? this.hass.localize("ui.panel.config.areas.editor.update_area")
           : this.hass.localize("ui.panel.config.areas.editor.create_area")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-suggest-with-ai-button

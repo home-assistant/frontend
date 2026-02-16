@@ -79,6 +79,7 @@ class DialogLabelDetail
         header-title=${this._params.entry
           ? this._params.entry.name || this._params.entry.label_id
           : this.hass!.localize("ui.dialogs.label-detail.new_label")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div>
