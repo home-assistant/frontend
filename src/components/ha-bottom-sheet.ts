@@ -68,7 +68,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         }
         return;
       }
-      (this.renderRoot.querySelector("[autofocus]") as HTMLElement | null)?.focus();
+      (
+        this.renderRoot.querySelector("[autofocus]") as HTMLElement | null
+      )?.focus();
     });
   };
 
