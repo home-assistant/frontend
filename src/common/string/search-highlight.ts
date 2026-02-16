@@ -227,12 +227,16 @@ export class SearchHighlight {
     return mergeHighlightRanges(ranges);
   }
 
+  /**
+   * Render plain text with matching segments wrapped in `<mark>`.
+   * This is the baseline highlight path and has fallbacks for when Custom Highlights
+   * are not supported by the browser.
+   */
   public renderHighlightedText(
     text: string | null | undefined,
     query: string | null | undefined,
     language?: string
   ): HighlightedText {
-    // Render plain text + <mark> as the baseline highlight mechanism.
     if (!text) {
       return text;
     }
@@ -245,13 +249,15 @@ export class SearchHighlight {
     return renderHighlightedParts(text, ranges);
   }
 
+  /**
+   * Build highlight ranges from rendered mark nodes in the shadow root and
+   * apply them using the Custom Highlight API when available.
+   */
   public applyFromMarks(key?: string): void {
     if (!this._root) {
       return;
     }
 
-    // Upgrade rendered <mark> tags to Custom Highlight API ranges when
-    // supported, so visual highlighting can happen without mark backgrounds.
     this._applyFromRanges(getHighlightRangesFromMarks(this._root), key);
   }
 
