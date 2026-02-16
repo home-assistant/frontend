@@ -454,7 +454,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
         ?prevent-scrim-close=${!this._isEscapeEnabled}
-        block-mode-change
         flexcontent
       >
         ${showCloseIcon
