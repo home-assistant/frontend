@@ -375,7 +375,13 @@ class DialogAreaDetail
                   ${this.hass.localize("ui.common.delete")}
                 </ha-button>
               `
-            : nothing}
+            : html`<ha-button
+                appearance="plain"
+                slot="secondaryAction"
+                @click=${this.closeDialog}
+              >
+                ${this.hass.localize("ui.common.cancel")}
+              </ha-button>`}
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
