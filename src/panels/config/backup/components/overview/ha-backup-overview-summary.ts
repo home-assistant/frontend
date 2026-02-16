@@ -1,4 +1,4 @@
-import { mdiBackupRestore, mdiCalendar, mdiInformation } from "@mdi/js";
+import { mdiBackupRestore, mdiCalendar, mdiInformationOutline } from "@mdi/js";
 import { addHours, differenceInDays, isToday, isTomorrow } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -87,7 +87,7 @@ class HaBackupOverviewBackups extends LitElement {
                       @click=${this._createAdditionalBackupDescription(
                         lastCompletedDate
                       )}
-                      .path=${mdiInformation}
+                      .path=${mdiInformationOutline}
                     ></ha-icon-button>`
                   : nothing}
               </ha-md-list-item>`
