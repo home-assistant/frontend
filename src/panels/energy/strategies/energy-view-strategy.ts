@@ -2,10 +2,11 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import type { GridSourceTypeEnergyPreference } from "../../../data/energy";
 import { getEnergyDataCollection } from "../../../data/energy";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("energy-view-strategy")
 export class EnergyViewStrategy extends ReactiveElement {
@@ -49,10 +50,6 @@ export class EnergyViewStrategy extends ReactiveElement {
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
     );
-    const showFloorsNAreas = !prefs.device_consumption.some(
-      (d) => d.included_in_stat
-    );
-
     view.cards!.push({
       type: "energy-compare",
       collection_key: collectionKey,
@@ -135,6 +132,11 @@ export class EnergyViewStrategy extends ReactiveElement {
 
     // Only include if we have at least 1 device in the config.
     if (prefs.device_consumption.length) {
+      const showFloorsAndAreas = shouldShowFloorsAndAreas(
+        prefs.device_consumption,
+        hass,
+        (d) => d.stat_consumption
+      );
       view.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_devices_detail_graph_title"
@@ -153,8 +155,8 @@ export class EnergyViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
         type: "energy-sankey",
         collection_key: collectionKey,
-        group_by_floor: showFloorsNAreas,
-        group_by_area: showFloorsNAreas,
+        group_by_floor: showFloorsAndAreas,
+        group_by_area: showFloorsAndAreas,
       });
     }
 

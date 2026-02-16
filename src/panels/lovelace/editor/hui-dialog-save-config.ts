@@ -4,11 +4,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-switch";
-import "../../../components/ha-wa-dialog";
 import "../../../components/ha-yaml-editor";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
@@ -62,7 +62,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
       "ui.panel.lovelace.editor.save_config.header"
     );
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${heading}
@@ -151,6 +151,52 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 </ha-dialog-footer>
               `
             : html`
+                <p>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.yaml_mode"
+                  )}
+                </p>
+                <p>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.yaml_control"
+                  )}
+                </p>
+                <p>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.yaml_config"
+                  )}
+                </p>
+                <ha-yaml-editor
+                  .hass=${this.hass}
+                  .defaultValue=${this._params!.lovelace.config}
+                  autofocus
+                ></ha-yaml-editor>
+              `
+        }
+        </div>
+        ${
+          this._params.mode === "storage"
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass!.localize("ui.common.cancel")}
+                  </ha-button>
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._saveConfig}
+                    .loading=${this._saving}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.save"
+                    )}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+            : html`
                 <ha-dialog-footer slot="footer">
                   <ha-button slot="primaryAction" @click=${this.closeDialog}>
                     ${this.hass!.localize(
@@ -160,7 +206,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 </ha-dialog-footer>
               `
         }
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -193,11 +239,11 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0 24px 24px 24px;
         }
 
-        ha-wa-dialog ha-icon-button[slot="headerActionItems"] {
+        ha-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
         }
       `,

@@ -8,7 +8,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { obfuscateUrl } from "../../../../util/url";
@@ -48,7 +48,7 @@ class DialogCloudAlreadyConnected extends LitElement {
     const { details } = this._params;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -153,7 +153,7 @@ class DialogCloudAlreadyConnected extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

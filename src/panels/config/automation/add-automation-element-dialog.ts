@@ -37,6 +37,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-combo-box-item";
 import { CONDITION_ICONS } from "../../../components/ha-condition-icon";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-floor-icon";
@@ -51,7 +52,6 @@ import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
-import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
@@ -474,7 +474,7 @@ class DialogAddAutomationElement
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         width="large"
         .open=${this._open}
@@ -482,7 +482,7 @@ class DialogAddAutomationElement
         flexcontent
       >
         ${this._renderContent()}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -2074,7 +2074,7 @@ class DialogAddAutomationElement
           --ha-bottom-sheet-surface-background: var(--card-background-color);
         }
 
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
           --ha-dialog-min-height: min(
             800px,
@@ -2097,7 +2097,7 @@ class DialogAddAutomationElement
           --ha-dialog-max-height: var(--ha-dialog-min-height);
         }
 
-        ha-wa-dialog ha-icon-button[slot="actionItems"] {
+        ha-dialog ha-icon-button[slot="actionItems"] {
           color: var(--secondary-text-color);
         }
 
@@ -2187,7 +2187,7 @@ class DialogAddAutomationElement
           overflow: clip;
         }
 
-        ha-wa-dialog ha-automation-add-items {
+        ha-dialog ha-automation-add-items {
           margin-top: var(--ha-space-3);
         }
 

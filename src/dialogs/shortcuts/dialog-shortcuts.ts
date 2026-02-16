@@ -4,7 +4,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
 import "../../components/ha-svg-icon";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 
@@ -211,7 +211,7 @@ class DialogShortcuts extends LitElement {
 
   protected render() {
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .open=${this._open}
         @closed=${this._dialogClosed}
         .headerTitle=${this.hass.localize("ui.dialogs.shortcuts.title")}
@@ -246,7 +246,7 @@ class DialogShortcuts extends LitElement {
             >`,
           })}
         </ha-alert>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

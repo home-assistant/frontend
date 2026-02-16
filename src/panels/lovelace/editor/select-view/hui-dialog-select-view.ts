@@ -9,7 +9,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-list";
 import "../../../../components/ha-radio-list-item";
 import "../../../../components/ha-select";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { fetchConfig } from "../../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
@@ -71,7 +71,7 @@ export class HuiDialogSelectView extends LitElement {
     const defaultPanel = getDefaultPanelUrlPath(this.hass);
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.header ||
@@ -160,7 +160,7 @@ export class HuiDialogSelectView extends LitElement {
             ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
