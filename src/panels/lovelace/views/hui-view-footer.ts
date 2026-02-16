@@ -276,6 +276,7 @@ export class HuiViewFooter extends LitElement {
       position: relative;
       grid-column: 1 / -1;
       grid-row: span var(--row-size, 1);
+      max-height: 25dvh;
     }
 
     .card.fit-rows {
