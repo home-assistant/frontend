@@ -539,9 +539,7 @@ class HuiEnergyDistrubutionCard
               ${hasGas && hasWater
                 ? ""
                 : html`<span class="label"
-                    >${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.energy_distribution.home"
-                    )}</span
+                    >${this.hass.config.location_name}</span
                   >`}
             </div>
           </div>
