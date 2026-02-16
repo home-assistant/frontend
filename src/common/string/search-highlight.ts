@@ -208,6 +208,9 @@ const createHighlightStyle = (highlightName: string): string => `.ha-highlight {
 }`;
 
 export class SearchHighlight {
+  // `CSS.highlights` is document-global, not per shadow root.
+  // Each instance needs a unique key so that components do not overwrite each
+  // other's highlight ranges.
   private static _nextHighlightId = 0;
 
   private _lastKey?: string;
