@@ -1,7 +1,7 @@
 import {
   mdiBackupRestore,
   mdiFolder,
-  mdiInformation,
+  mdiInformationOutline,
   mdiNas,
   mdiPlayBox,
   mdiReload,
@@ -254,7 +254,7 @@ class HaConfigSectionStorage extends LitElement {
       >
         <ha-tooltip slot="extra">
           <ha-icon-button
-            .path=${mdiInformation}
+            .path=${mdiInformationOutline}
             class="help-button"
           ></ha-icon-button>
           <p class="metric-description" slot="content">

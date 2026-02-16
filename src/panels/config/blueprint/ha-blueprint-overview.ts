@@ -3,7 +3,7 @@ import {
   mdiDelete,
   mdiDownload,
   mdiEye,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiOpenInNew,
   mdiPlus,
   mdiShareVariant,
@@ -374,7 +374,7 @@ class HaBlueprintOverview extends LitElement {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-fab
