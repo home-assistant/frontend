@@ -76,6 +76,11 @@ export class HaFormFloat extends LitElement implements HaFormElement {
       return;
     }
 
+    // Allow user to start typing a negative zero
+    if (rawValue === "-0") {
+      return;
+    }
+
     if (rawValue !== "") {
       value = parseFloat(rawValue);
       if (isNaN(value)) {
