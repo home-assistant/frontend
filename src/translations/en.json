@@ -8348,6 +8348,7 @@
           },
           "edit_view_footer": {
             "header": "Footer settings",
+            "add": "Add footer",
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",

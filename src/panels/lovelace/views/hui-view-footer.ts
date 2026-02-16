@@ -210,7 +210,7 @@ export class HuiViewFooter extends LitElement {
                     <ha-ripple></ha-ripple>
                     <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(
-                      "ui.panel.lovelace.editor.edit_card.add"
+                      "ui.panel.lovelace.editor.edit_view_footer.add"
                     )}
                   </button>
                 `
