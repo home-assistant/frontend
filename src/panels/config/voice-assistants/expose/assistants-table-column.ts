@@ -21,12 +21,12 @@ export function getAssistantsTableColumn<T>(
     defaultHidden: !visible,
     sortable: true,
     showNarrow: true,
-    minWidth: "120px",
-    maxWidth: "120px",
+    minWidth: "112px",
+    maxWidth: "112px",
     valueColumn: "assistants_sortable_key",
     template: (entry: any) =>
       html`${entry.assistants.length !== 0
-        ? html`<div style="display: flex; gap: var(--ha-space-2);">
+        ? html`<div style="display: flex; gap: var(--ha-space-1);">
             ${availableAssistants.map((vaId) => {
               const supported =
                 !supportedEntities?.[vaId] ||
