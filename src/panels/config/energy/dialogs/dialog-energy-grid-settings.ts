@@ -434,7 +434,7 @@ export class DialogEnergyGridSettings
           .powerType=${this._powerType}
           .powerConfig=${this._powerConfig}
           .excludeList=${this._excludeListPower}
-          localizeBaseKey="ui.panel.config.energy.grid.dialog"
+          .localizeBaseKey=${"ui.panel.config.energy.grid.dialog"}
           @power-config-changed=${this._handlePowerConfigChanged}
         ></ha-energy-power-config>
 
