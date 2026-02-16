@@ -25,8 +25,6 @@ export class HaIntegrationActionCard extends LitElement {
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
-  @property({ attribute: false }) public filter?: string;
-
   protected render(): TemplateResult {
     return html`
       <ha-card outlined>

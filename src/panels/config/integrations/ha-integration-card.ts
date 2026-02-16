@@ -45,8 +45,6 @@ export class HaIntegrationCard extends LitElement {
 
   @property({ attribute: false }) public domainEntities: string[] = [];
 
-  @property({ attribute: false }) public filter?: string;
-
   protected render(): TemplateResult {
     const entryState = this._getState(this.items);
 
@@ -74,7 +72,6 @@ export class HaIntegrationCard extends LitElement {
             .hass=${this.hass}
             .domain=${this.domain}
             .localizedDomainName=${this.items[0].localized_domain_name}
-            .filter=${this.filter}
             .error=${ERROR_STATES.includes(entryState)
               ? this.hass.localize(
                   `ui.panel.config.integrations.config_entry.state.${entryState}`

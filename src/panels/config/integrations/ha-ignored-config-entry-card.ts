@@ -18,8 +18,6 @@ export class HaIgnoredConfigEntryCard extends LitElement {
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
-  @property({ attribute: false }) public filter?: string;
-
   protected render(): TemplateResult {
     return html`
       <ha-integration-action-card
@@ -35,7 +33,6 @@ export class HaIgnoredConfigEntryCard extends LitElement {
             // that have title "Ignored" so we fallback to localized domain name.
             this.entry.localized_domain_name
           : this.entry.title}
-        .filter=${this.filter}
       >
         <ha-button appearance="plain" @click=${this._removeIgnoredIntegration}>
           ${this.hass.localize(

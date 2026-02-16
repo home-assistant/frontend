@@ -23,8 +23,6 @@ export class HaIntegrationHeader extends LitElement {
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
-  @property({ attribute: false }) public filter?: string;
-
   protected render(): TemplateResult {
     const domainName =
       this.localizedDomainName ||
@@ -86,81 +84,79 @@ export class HaIntegrationHeader extends LitElement {
     ev.target.style.visibility = "hidden";
   }
 
-  static styles = [
-    css`
-      .header {
-        display: flex;
-        align-items: center;
-        position: relative;
-        padding-top: 16px;
-        padding-bottom: 16px;
-        padding-inline-start: 16px;
-        padding-inline-end: 8px;
-        direction: var(--direction);
-        box-sizing: border-box;
-        min-width: 0;
-      }
-      .header img {
-        margin-inline-start: initial;
-        margin-inline-end: 16px;
-        width: 40px;
-        height: 40px;
-        direction: var(--direction);
-      }
-      .header .info {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        align-self: center;
-        min-width: 0;
-      }
-      ha-icon-next {
-        color: var(--secondary-text-color);
-      }
-      .primary {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        font-size: var(--ha-font-size-l);
-        font-weight: var(--ha-font-weight-normal);
-        color: var(--primary-text-color);
-      }
-      .has-secondary {
-        -webkit-line-clamp: 1;
-        font-size: var(--ha-font-size-m);
-      }
-      .secondary {
-        min-width: 0;
-        --mdc-icon-size: 20px;
-        -webkit-line-clamp: 1;
-        font-size: var(--ha-font-size-s);
-        display: flex;
-        flex-direction: row;
-      }
-      .secondary > span {
-        position: relative;
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .secondary > ha-svg-icon {
-        margin-right: 4px;
-        margin-inline-end: 4px;
-        margin-inline-start: initial;
-        flex-shrink: 0;
-      }
-      .error ha-svg-icon {
-        color: var(--error-color);
-      }
-      .warning ha-svg-icon {
-        color: var(--warning-color);
-      }
-    `,
-  ];
+  static styles = css`
+    .header {
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      padding-inline-start: 16px;
+      padding-inline-end: 8px;
+      direction: var(--direction);
+      box-sizing: border-box;
+      min-width: 0;
+    }
+    .header img {
+      margin-inline-start: initial;
+      margin-inline-end: 16px;
+      width: 40px;
+      height: 40px;
+      direction: var(--direction);
+    }
+    .header .info {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      align-self: center;
+      min-width: 0;
+    }
+    ha-icon-next {
+      color: var(--secondary-text-color);
+    }
+    .primary {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
+      color: var(--primary-text-color);
+    }
+    .has-secondary {
+      -webkit-line-clamp: 1;
+      font-size: var(--ha-font-size-m);
+    }
+    .secondary {
+      min-width: 0;
+      --mdc-icon-size: 20px;
+      -webkit-line-clamp: 1;
+      font-size: var(--ha-font-size-s);
+      display: flex;
+      flex-direction: row;
+    }
+    .secondary > span {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .secondary > ha-svg-icon {
+      margin-right: 4px;
+      margin-inline-end: 4px;
+      margin-inline-start: initial;
+      flex-shrink: 0;
+    }
+    .error ha-svg-icon {
+      color: var(--error-color);
+    }
+    .warning ha-svg-icon {
+      color: var(--warning-color);
+    }
+  `;
 }
 
 declare global {

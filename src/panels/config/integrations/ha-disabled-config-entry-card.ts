@@ -20,8 +20,6 @@ export class HaDisabledConfigEntryCard extends LitElement {
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
-  @property({ attribute: false }) public filter?: string;
-
   protected render(): TemplateResult {
     return html`
       <ha-integration-action-card
@@ -40,7 +38,6 @@ export class HaDisabledConfigEntryCard extends LitElement {
         .domain=${this.entry.domain}
         .localizedDomainName=${this.entry.localized_domain_name}
         .label=${this.entry.title || this.entry.localized_domain_name}
-        .filter=${this.filter}
       >
         <a
           href=${`/config/integrations/integration/${this.entry.domain}`}

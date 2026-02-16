@@ -525,7 +525,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                           .hass=${this.hass}
                           .manifest=${this._manifests[entry.domain]}
                           .entry=${entry}
-                          .filter=${this._filter}
                           @change=${this._handleFlowUpdated}
                         ></ha-ignored-config-entry-card>
                       `
@@ -546,7 +545,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                       .hass=${this.hass}
                       .manifest=${this._manifests[flow.handler]}
                       .flow=${flow}
-                      .filter=${this._filter}
                       @change=${this._handleFlowUpdated}
                     ></ha-config-flow-card>
                   `
@@ -566,7 +564,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                           .entry=${entry}
                           .manifest=${this._manifests[entry.domain]}
                           .entityRegistryEntries=${this._entityRegistryEntries}
-                          .filter=${this._filter}
                         ></ha-disabled-config-entry-card>
                       `
                     )
@@ -600,7 +597,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     .logInfo=${this._logInfos
                       ? this._logInfos[domain]
                       : nothing}
-                    .filter=${this._filter}
                   ></ha-integration-card>`
               )
             : this._filter &&
