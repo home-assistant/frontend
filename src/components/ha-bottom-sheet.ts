@@ -54,7 +54,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
     requestAnimationFrame(() => {
       if (this.hass && isIosApp(this.hass)) {
-        const element = this.querySelector("[autofocus]");
+        const element = this.renderRoot.querySelector("[autofocus]");
         if (element !== null) {
           if (!element.id) {
             element.id = "ha-bottom-sheet-autofocus";
