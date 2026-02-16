@@ -41,6 +41,13 @@ export class HaDropdown extends Dropdown {
     if (!this.popup) {
       return;
     }
+
+    // @ts-ignore
+    if (this.popup.anchor && this.popup.anchor.localName === "ha-icon-button") {
+      // @ts-ignore
+      (this.popup.anchor as HaIconButton).selected = false;
+    }
+
     // @ts-ignore Allow to get the current anchor element from popup
     this.popup.anchor = element;
   }
@@ -70,12 +77,12 @@ export class HaDropdown extends Dropdown {
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private override async hideMenu() {
-    // @ts-ignore
-    await super.hideMenu();
     const triggerElement = this.getTrigger();
-    if (triggerElement) {
+    if (triggerElement && triggerElement.localName === "ha-icon-button") {
       (triggerElement as HaIconButton).selected = false;
     }
+    // @ts-ignore
+    await super.hideMenu();
   }
 
   static get styles(): CSSResultGroup {
