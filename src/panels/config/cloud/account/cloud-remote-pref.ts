@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -10,6 +10,7 @@ import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 
 import { formatDate } from "../../../../common/datetime/format_date";
+import "../../../../components/ha-copy-textfield";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import {
@@ -19,9 +20,8 @@ import {
 } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 import { obfuscateUrl } from "../../../../util/url";
-import "../../../../components/ha-copy-textfield";
+import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -87,7 +87,7 @@ export class CloudRemotePref extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
             )}
-            .path=${mdiHelpCircle}
+            .path=${mdiHelpCircleOutline}
             href="https://www.nabucasa.com/config/remote/"
             target="_blank"
             rel="noreferrer"

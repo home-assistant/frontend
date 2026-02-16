@@ -3,7 +3,7 @@ import {
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiLabelOutline,
   mdiPlus,
   mdiRobot,
@@ -233,7 +233,7 @@ export class HaConfigLabels extends LitElement {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
         <ha-fab
           slot="fab"

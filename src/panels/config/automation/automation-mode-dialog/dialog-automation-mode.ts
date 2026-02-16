@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -77,7 +77,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.modes.learn_more"
           )}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
           href=${documentationUrl(this.hass, "/docs/automation/modes/")}
           slot="headerActionItems"
           target="_blank"

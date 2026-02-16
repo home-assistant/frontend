@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -76,7 +76,7 @@ export class CloudAlexaPref extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
             )}
-            .path=${mdiHelpCircle}
+            .path=${mdiHelpCircleOutline}
             href="https://www.nabucasa.com/config/amazon_alexa/"
             target="_blank"
             rel="noreferrer"

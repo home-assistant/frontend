@@ -4,7 +4,7 @@ import {
   mdiCommentProcessingOutline,
   mdiContentDuplicate,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiPlus,
   mdiStar,
   mdiTrashCan,
@@ -119,7 +119,7 @@ export class AssistPref extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.voice_assistants.assistants.pipeline.link_learn_how_it_works"
             )}
-            .path=${mdiHelpCircle}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/docs/assist/")}
             target="_blank"
             rel="noreferrer noopener"

@@ -1,4 +1,4 @@
-import { mdiHelpCircle, mdiStarFourPoints } from "@mdi/js";
+import { mdiHelpCircleOutline, mdiStarFourPoints } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -69,7 +69,7 @@ export class AITaskPref extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
             )}
-            .path=${mdiHelpCircle}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/integrations/ai_task/")}
             target="_blank"
             rel="noreferrer"

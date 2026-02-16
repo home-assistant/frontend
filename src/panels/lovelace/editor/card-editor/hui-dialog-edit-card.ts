@@ -1,4 +1,4 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -183,7 +183,7 @@ export class HuiDialogEditCard
         ${this._documentationURL !== undefined
           ? html`
               <ha-icon-button
-                .path=${mdiHelpCircle}
+                .path=${mdiHelpCircleOutline}
                 slot="headerActionItems"
                 href=${this._documentationURL}
                 title=${this.hass!.localize("ui.panel.lovelace.menu.help")}

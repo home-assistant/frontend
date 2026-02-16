@@ -6,7 +6,7 @@ import {
   mdiDotsVertical,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiMagnify,
   mdiPencil,
   mdiPlus,
@@ -39,6 +39,7 @@ import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -93,7 +94,6 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 interface ActionItem {
   icon: string;
@@ -223,7 +223,7 @@ class HUIRoot extends LitElement {
           </ha-button>
           <ha-icon-button
             .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-            .path=${mdiHelpCircle}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/dashboards/")}
             rel="noreferrer"
             target="_blank"

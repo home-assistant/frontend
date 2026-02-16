@@ -4,7 +4,7 @@ import {
   mdiAppleKeyboardCommand,
   mdiClose,
   mdiContentPaste,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiPlus,
 } from "@mdi/js";
 import type {
@@ -757,7 +757,7 @@ class DialogAddAutomationElement
         ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
           ? html`
               <ha-icon-button
-                .path=${mdiHelpCircle}
+                .path=${mdiHelpCircleOutline}
                 .label=${this.hass.localize(
                   `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
                 )}

@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -82,7 +82,7 @@ export class CloudGooglePref extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.google.link_learn_how_it_works"
             )}
-            .path=${mdiHelpCircle}
+            .path=${mdiHelpCircleOutline}
             href="https://www.nabucasa.com/config/google_assistant/"
             target="_blank"
             rel="noreferrer"
