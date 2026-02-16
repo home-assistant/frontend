@@ -9532,7 +9532,8 @@
             "now": "Now",
             "previous": "Previous",
             "next": "Next",
-            "compare": "Compare data"
+            "compare": "Compare data",
+            "download_data": "[%key:ui::panel::history::download_data%]"
           }
         },
         "reload_lovelace": "Reload UI"
@@ -10182,7 +10183,6 @@
           "water": "Water",
           "now": "Now"
         },
-        "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "setup": {
           "next": "Next",
