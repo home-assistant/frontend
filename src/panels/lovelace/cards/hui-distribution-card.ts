@@ -163,7 +163,6 @@ export class HuiDistributionCard
       columns: 12,
       rows: "auto",
       min_columns: 3,
-      fixed_rows: true,
     };
   }
 
@@ -490,8 +489,8 @@ export class HuiDistributionCard
   }
 
   static styles = css`
-    :host {
-      display: block;
+    ha-card {
+      height: 100%;
     }
 
     ha-alert {
