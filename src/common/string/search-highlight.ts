@@ -317,7 +317,7 @@ export class SearchHighlight {
     (this._root.host as HTMLElement).classList.add(ACTIVE_HOST_CLASS);
   }
 
-  private _ensureHighlightStyle(): void {
+  private _addHighlightStyle(): void {
     if (!this._root || !this._highlightName) {
       return;
     }
