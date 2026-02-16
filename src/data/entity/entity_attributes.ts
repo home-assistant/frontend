@@ -193,9 +193,9 @@ export const NON_NUMERIC_ATTRIBUTES = [
 export const computeShownAttributes = (stateObj: HassEntity) => {
   const domain = computeStateDomain(stateObj);
   const filtersArray = STATE_ATTRIBUTES.concat(
-    (STATE_ATTRIBUTES_DOMAIN_CLASS[domain]?.[
+    STATE_ATTRIBUTES_DOMAIN_CLASS[domain]?.[
       stateObj.attributes?.device_class
-    ] || []) as string[]
+    ] || []
   );
   return Object.keys(stateObj.attributes).filter(
     (key) => filtersArray.indexOf(key) === -1
