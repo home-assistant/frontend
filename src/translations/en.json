@@ -6931,7 +6931,8 @@
         },
         "zwave_js": {
           "navigation": {
-            "network": "Network",
+            "general": "General",
+            "statistics": "Statistics",
             "logs": "Logs",
             "visualization": "Visualization"
           },
@@ -6949,6 +6950,8 @@
             "cancel_inclusion_exclusion": "Stop searching"
           },
           "dashboard": {
+            "network_card_title": "My network",
+            "network_info_title": "Network information",
             "driver_version": "Driver version",
             "server_version": "Server version",
             "home_id": "Home ID",
@@ -6956,6 +6959,7 @@
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "provisioned_devices": "Provisioned devices",
             "not_ready": "{count} not ready",
+            "devices_offline": "{count} offline",
             "nvm_backup": {
               "title": "Backup and restore",
               "description": "Back up or restore your Z-Wave adapter's non-volatile memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
@@ -7168,9 +7172,8 @@
             "default": "Default"
           },
           "network_status": {
-            "connected": "status: connected",
-            "connecting": "status: connecting",
-            "unknown": "status: unknown"
+            "online": "online",
+            "offline": "offline"
           },
           "add_node": {
             "title": "Add a Z-Wave device",

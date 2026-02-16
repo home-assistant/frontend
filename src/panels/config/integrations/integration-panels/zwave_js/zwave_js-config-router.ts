@@ -1,4 +1,4 @@
-import { mdiNetwork, mdiServerNetwork, mdiTextBoxOutline } from "@mdi/js";
+import { mdiCogOutline, mdiLan, mdiPoll, mdiTextBoxOutline } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
@@ -7,9 +7,14 @@ import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
 export const configTabs: PageNavigation[] = [
   {
-    translationKey: "ui.panel.config.zwave_js.navigation.network",
+    translationKey: "ui.panel.config.zwave_js.navigation.general",
     path: `/config/zwave_js/dashboard`,
-    iconPath: mdiServerNetwork,
+    iconPath: mdiCogOutline,
+  },
+  {
+    translationKey: "ui.panel.config.zwave_js.navigation.statistics",
+    path: `/config/zwave_js/statistics`,
+    iconPath: mdiPoll,
   },
   {
     translationKey: "ui.panel.config.zwave_js.navigation.logs",
@@ -19,7 +24,7 @@ export const configTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.zwave_js.navigation.visualization",
     path: `/config/zwave_js/visualization`,
-    iconPath: mdiNetwork,
+    iconPath: mdiLan,
   },
 ];
 
@@ -76,6 +81,10 @@ class ZWaveJSConfigRouter extends HassRouterPage {
       node_installer: {
         tag: "zwave_js-node-installer",
         load: () => import("./zwave_js-node-installer"),
+      },
+      statistics: {
+        tag: "zwave_js-controller-statistics",
+        load: () => import("./zwave_js-controller-statistics"),
       },
       logs: {
         tag: "zwave_js-logs",
