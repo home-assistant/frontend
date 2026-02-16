@@ -84,34 +84,6 @@ const mergeHighlightRanges = (ranges: HighlightRange[]): HighlightRange[] => {
   return mergedRanges;
 };
 
-const renderHighlightedParts = (
-  text: string,
-  ranges: HighlightRange[]
-): (string | TemplateResult)[] => {
-  const parts: (string | TemplateResult)[] = [];
-  let previousIndex = 0;
-
-  for (const range of ranges) {
-    if (range.start > previousIndex) {
-      parts.push(text.slice(previousIndex, range.start));
-    }
-
-    parts.push(
-      html`<mark class="ha-highlight"
-        >${text.slice(range.start, range.end)}</mark
-      >`
-    );
-
-    previousIndex = range.end;
-  }
-
-  if (previousIndex < text.length) {
-    parts.push(text.slice(previousIndex));
-  }
-
-  return parts;
-};
-
 const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
   const ranges: Range[] = [];
 
@@ -246,7 +218,7 @@ export class SearchHighlight {
       return text;
     }
 
-    return renderHighlightedParts(text, ranges);
+    return SearchHighlight._renderHighlightedParts(text, ranges);
   }
 
   /**
@@ -281,6 +253,34 @@ export class SearchHighlight {
     (this._root.host as HTMLElement).classList.remove(ACTIVE_HOST_CLASS);
     this._lastKey = undefined;
     this._lastCount = -1;
+  }
+
+  private static _renderHighlightedParts(
+    text: string,
+    ranges: HighlightRange[]
+  ): (string | TemplateResult)[] {
+    const parts: (string | TemplateResult)[] = [];
+    let previousIndex = 0;
+
+    for (const range of ranges) {
+      if (range.start > previousIndex) {
+        parts.push(text.slice(previousIndex, range.start));
+      }
+
+      parts.push(
+        html`<mark class="ha-highlight"
+          >${text.slice(range.start, range.end)}</mark
+        >`
+      );
+
+      previousIndex = range.end;
+    }
+
+    if (previousIndex < text.length) {
+      parts.push(text.slice(previousIndex));
+    }
+
+    return parts;
   }
 
   private _applyFromRanges(ranges: Range[], key?: string): void {
