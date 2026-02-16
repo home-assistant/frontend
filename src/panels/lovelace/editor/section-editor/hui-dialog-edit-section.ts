@@ -158,6 +158,7 @@ export class HuiDialogEditSection
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         class=${classMap({
