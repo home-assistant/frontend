@@ -2,6 +2,7 @@ import {
   mdiChevronLeft,
   mdiChevronRight,
   mdiDotsVertical,
+  mdiDownload,
   mdiCheckboxBlankOutline,
   mdiCheckboxOutline,
   mdiHomeClock,
@@ -53,7 +54,11 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../data/energy";
-import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
+import {
+  CompareMode,
+  downloadEnergyData,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 
@@ -237,6 +242,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           "ui.panel.lovelace.components.energy_period_selector.compare"
         ),
         action: () => this._toggleCompare(),
+      },
+      {
+        path: mdiDownload,
+        alwaysCollapse: true,
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.download_data"
+        ),
+        action: () => downloadEnergyData(this.hass, this.collectionKey),
       },
     ] as OverflowMenuItem[];
 
