@@ -212,6 +212,7 @@ export class HuiDialogEditView extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         width="large"
+        prevent-scrim-close
         @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,

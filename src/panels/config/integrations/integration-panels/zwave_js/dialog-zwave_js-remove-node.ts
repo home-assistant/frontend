@@ -105,6 +105,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
+        prevent-scrim-close
         @closed=${this.handleDialogClosed}
       >
         <ha-icon-button

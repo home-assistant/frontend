@@ -82,8 +82,6 @@ export class HuiDialogEditBadge
 
   @state() private _dirty = false;
 
-  @state() private _isEscapeEnabled = true;
-
   public async showDialog(params: EditBadgeDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -126,9 +124,6 @@ export class HuiDialogEditBadge
 
   private _dialogClosed(): void {
     this._open = false;
-    this._isEscapeEnabled = true;
-    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
-    window.removeEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._params = undefined;
     this._badgeConfig = undefined;
     this._error = undefined;
@@ -154,16 +149,6 @@ export class HuiDialogEditBadge
         : undefined;
     }
   }
-
-  private _enableEscapeKeyClose = (ev: any) => {
-    if (ev.detail.dialog === "ha-more-info-dialog") {
-      this._isEscapeEnabled = true;
-    }
-  };
-
-  private _disableEscapeKeyClose = () => {
-    this._isEscapeEnabled = false;
-  };
 
   protected render() {
     if (!this._params) {
@@ -209,7 +194,7 @@ export class HuiDialogEditBadge
         .hass=${this.hass}
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
-        ?prevent-scrim-close=${!this._isEscapeEnabled}
+        prevent-scrim-close
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}
@@ -333,8 +318,6 @@ export class HuiDialogEditBadge
   }
 
   private _opened() {
-    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
-    window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._badgeEditorEl?.focusYamlEditor();
   }
 

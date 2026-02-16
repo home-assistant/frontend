@@ -81,7 +81,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
           href=${documentationUrl(this.hass, "/docs/automation/modes/")}
           slot="headerActionItems"
           target="_blank"
-          rel="noopener noreferer"
+          rel="noopener noreferrer"
         ></ha-icon-button>
         <ha-md-list
           role="listbox"

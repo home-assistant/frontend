@@ -74,6 +74,7 @@ class DialogZHAChangeChannel extends LitElement {
         header-title=${this.hass.localize(
           "ui.panel.config.zha.change_channel_dialog.title"
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-alert alert-type="warning">

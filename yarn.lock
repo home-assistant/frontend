@@ -1627,6 +1627,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eslint/css-tree@npm:^3.6.8":
+  version: 3.6.8
+  resolution: "@eslint/css-tree@npm:3.6.8"
+  dependencies:
+    mdn-data: "npm:2.23.0"
+    source-map-js: "npm:^1.0.1"
+  checksum: 10/dce5da0aef43b82375906b1760b1cbea29a424ec458564f3274295dd1625610809603f96dc5a7cccab85e4d943996b917347c9a3e84f2328c24912685f400053
+  languageName: node
+  linkType: hard
+
 "@eslint/eslintrc@npm:^3.3.1":
   version: 3.3.3
   resolution: "@eslint/eslintrc@npm:3.3.3"
@@ -1966,6 +1976,66 @@ __metadata:
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
   checksum: 10/27b61807ae41267acb112a5657b956b19c8496a3ccbf19b892a97766d5a59ed39f2c3084b1143c129a592d4685de6c19293d02986d7951056dffdcbde9fe7ce3
+  languageName: node
+  linkType: hard
+
+"@html-eslint/eslint-plugin@npm:0.55.0":
+  version: 0.55.0
+  resolution: "@html-eslint/eslint-plugin@npm:0.55.0"
+  dependencies:
+    "@eslint/plugin-kit": "npm:^0.4.1"
+    "@html-eslint/parser": "npm:^0.55.0"
+    "@html-eslint/template-parser": "npm:^0.55.0"
+    "@html-eslint/template-syntax-parser": "npm:^0.55.0"
+    "@html-eslint/types": "npm:^0.55.0"
+    html-standard: "npm:^0.0.11"
+  peerDependencies:
+    eslint: ">=8.0.0 || ^10.0.0-0"
+  checksum: 10/945a0f0b6f4007beade9d22b889984498d10aa7855d3087fd9fb71dc20b1da7b452a3877b55f7683ef12736b356279356d66e8a201b25ee4a332e139315f16ae
+  languageName: node
+  linkType: hard
+
+"@html-eslint/parser@npm:^0.55.0":
+  version: 0.55.0
+  resolution: "@html-eslint/parser@npm:0.55.0"
+  dependencies:
+    "@eslint/css-tree": "npm:^3.6.8"
+    "@html-eslint/template-syntax-parser": "npm:^0.55.0"
+    "@html-eslint/types": "npm:^0.55.0"
+    css-tree: "npm:^3.1.0"
+    es-html-parser: "npm:0.3.1"
+  checksum: 10/f763ffb6d33f7ae7b8873772fabcb93650cd0e160b8b855cb24c41e19d9b9d423781ba2eff5cbe25b3ffc628c592a4350e91c6c56af475d21429595d944a359d
+  languageName: node
+  linkType: hard
+
+"@html-eslint/template-parser@npm:^0.55.0":
+  version: 0.55.0
+  resolution: "@html-eslint/template-parser@npm:0.55.0"
+  dependencies:
+    "@html-eslint/types": "npm:^0.55.0"
+    es-html-parser: "npm:0.3.1"
+  checksum: 10/a8243200a347319d14614496790b1954b55dca148406c3af58d62c158b28934c4aa832e62e546961a99cfced551d0468dc5bae4455b005ea500fad7435427934
+  languageName: node
+  linkType: hard
+
+"@html-eslint/template-syntax-parser@npm:^0.55.0":
+  version: 0.55.0
+  resolution: "@html-eslint/template-syntax-parser@npm:0.55.0"
+  dependencies:
+    "@html-eslint/types": "npm:^0.55.0"
+  checksum: 10/d2207b86abb86014aefb24e10e9d1b40719b4e884c146079704fb2dd95dcd5be909df9e71e18b0bbc365d7ae7b787a9d48a4d8126999bc5d109f8ae4a0a130bb
+  languageName: node
+  linkType: hard
+
+"@html-eslint/types@npm:^0.55.0":
+  version: 0.55.0
+  resolution: "@html-eslint/types@npm:0.55.0"
+  dependencies:
+    "@types/css-tree": "npm:^2.3.11"
+    "@types/estree": "npm:^1.0.6"
+    es-html-parser: "npm:0.3.1"
+    eslint: "npm:^9.39.1"
+  checksum: 10/10d6b53e0cbb3f529a20949040bc363722f6c91bd224d78c8df2d8e6ff8ac157186e23db7bff61e7c1927f110237fd669c9d910a72399aa8b9929445c288a3cb
   languageName: node
   linkType: hard
 
@@ -4523,6 +4593,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/css-tree@npm:^2.3.11":
+  version: 2.3.11
+  resolution: "@types/css-tree@npm:2.3.11"
+  checksum: 10/c4e1e990257cc8f9c90ebe3ec1b3d53733f9883cf772bbf1c2da462bb9fa6770b6ed98f24e176d1e0ad2c6b276b8ced5cd3d676b793518bec09adf2dd077a307
+  languageName: node
+  linkType: hard
+
 "@types/culori@npm:4.0.1":
   version: 4.0.1
   resolution: "@types/culori@npm:4.0.1"
@@ -5325,6 +5402,13 @@ __metadata:
     "@vitest/pretty-format": "npm:4.0.18"
     tinyrainbow: "npm:^3.0.3"
   checksum: 10/e8b2ad7bc35b2bc5590f9dc1d1a67644755da416b47ab7099a6f26792903fa0aacb81e6ba99f0f03858d9d3a1d76eeba65150a1a0849690a40817424e749c367
+  languageName: node
+  linkType: hard
+
+"@vscode/l10n@npm:^0.0.18":
+  version: 0.0.18
+  resolution: "@vscode/l10n@npm:0.0.18"
+  checksum: 10/82e2d02ab28d1733340c3c8829ee39dfb40a7a6637bf3fc71b0d1a74f2d46cf35f551dacd18c34832d377fe8717ecc2f3d196e3d1c64fca1e55751ce67273daf
   languageName: node
   linkType: hard
 
@@ -7553,6 +7637,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"es-html-parser@npm:0.3.1":
+  version: 0.3.1
+  resolution: "es-html-parser@npm:0.3.1"
+  checksum: 10/4829834c54ab2b51c903b404c7378910f4d599cc4cda5684fa2579d2b1fcebbb45a29487c73fa359030425ed1248a4ee74c92b880455473a936b4a92962bb813
+  languageName: node
+  linkType: hard
+
 "es-module-lexer@npm:^1.7.0":
   version: 1.7.0
   resolution: "es-module-lexer@npm:1.7.0"
@@ -7917,7 +8008,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:9.39.2":
+"eslint@npm:9.39.2, eslint@npm:^9.39.1":
   version: 9.39.2
   resolution: "eslint@npm:9.39.2"
   dependencies:
@@ -9073,6 +9164,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
     "@home-assistant/webawesome": "npm:3.2.1-ha.0"
+    "@html-eslint/eslint-plugin": "npm:0.55.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
     "@lit-labs/observers": "npm:2.1.0"
@@ -9310,6 +9402,15 @@ __metadata:
   bin:
     html-minifier-terser: cli.js
   checksum: 10/97d45614e8f07ba66ea66015cfa80759e3e270b475430f8a5d67586876deaad535db97be3247dee3dd2ed51aeafcd1d6bfaf02276fec12e56cf5e4141e52ae28
+  languageName: node
+  linkType: hard
+
+"html-standard@npm:^0.0.11":
+  version: 0.0.11
+  resolution: "html-standard@npm:0.0.11"
+  dependencies:
+    vscode-css-languageservice: "npm:^6.3.9"
+  checksum: 10/724cf7e7234edfda8bad776f2deaf430fa986fdb97fd41d491229aa1e5a1f01dbf6603efb1651b997487fc2c67a788bd6346266830ac4d860938dc3dc11e99b4
   languageName: node
   linkType: hard
 
@@ -10798,6 +10899,13 @@ __metadata:
   version: 2.12.2
   resolution: "mdn-data@npm:2.12.2"
   checksum: 10/854e41715a9358e69f9a530117cd6ca7e71d06176469de8d70b1e629753b6827f5bd730995c16ad3750f3c9bad92230f8e4e178de2b34926b05f5205d27d76af
+  languageName: node
+  linkType: hard
+
+"mdn-data@npm:2.23.0":
+  version: 2.23.0
+  resolution: "mdn-data@npm:2.23.0"
+  checksum: 10/081db7e8585be60e6f031c7537d613a2a4e692e3c58e2968f5d7ce7104900f6530e2600dfe7c7d92e4d4378d60fc5c57a76ca5f0a5a77b3359f4b7e9a69de531
   languageName: node
   linkType: hard
 
@@ -14612,6 +14720,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vscode-css-languageservice@npm:^6.3.9":
+  version: 6.3.9
+  resolution: "vscode-css-languageservice@npm:6.3.9"
+  dependencies:
+    "@vscode/l10n": "npm:^0.0.18"
+    vscode-languageserver-textdocument: "npm:^1.0.12"
+    vscode-languageserver-types: "npm:3.17.5"
+    vscode-uri: "npm:^3.1.0"
+  checksum: 10/e74ebe74a374115d7eff59301835e08422be64b519707c5b2c5260dd265ff6420b984dcb0e83b6d4c68b4a548b61681d28ad70aa55b4be2ce428ec684f70f8a5
+  languageName: node
+  linkType: hard
+
 "vscode-html-languageservice@npm:3.1.0":
   version: 3.1.0
   resolution: "vscode-html-languageservice@npm:3.1.0"
@@ -14624,7 +14744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vscode-languageserver-textdocument@npm:^1.0.1":
+"vscode-languageserver-textdocument@npm:^1.0.1, vscode-languageserver-textdocument@npm:^1.0.12":
   version: 1.0.12
   resolution: "vscode-languageserver-textdocument@npm:1.0.12"
   checksum: 10/2bc0fde952d40f35a31179623d1491b0fafdee156aaf58557f40f5d394a25fc84826763cdde55fa6ce2ed9cd35a931355ad6dd7fe5db82e7f21e5d865f0af8c6
@@ -14635,6 +14755,13 @@ __metadata:
   version: 3.16.0-next.2
   resolution: "vscode-languageserver-types@npm:3.16.0-next.2"
   checksum: 10/6e096517257d365df065c8b26f8758d5db2dff30913cc5794462182c88509d132ba9b493b1f9761768b6b404d7a1074cec98717e096a45f1f91ad481471069ba
+  languageName: node
+  linkType: hard
+
+"vscode-languageserver-types@npm:3.17.5":
+  version: 3.17.5
+  resolution: "vscode-languageserver-types@npm:3.17.5"
+  checksum: 10/900d0b81df5bef8d90933e75be089142f6989cc70fdb2d5a3a5f11fa20feb396aaea23ccffc8fbcc83a2f0e1b13c6ee48ff8151f236cbd6e61a4f856efac1a58
   languageName: node
   linkType: hard
 
@@ -14649,6 +14776,13 @@ __metadata:
   version: 2.1.2
   resolution: "vscode-uri@npm:2.1.2"
   checksum: 10/9384da42075dafc97f09194119c2f84f9e7838badccc768721aba31d43f96e597744129b717a9fd46162ca7102d6b9a658d4b873b019ead91814ee5cb798b433
+  languageName: node
+  linkType: hard
+
+"vscode-uri@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "vscode-uri@npm:3.1.0"
+  checksum: 10/80c2a2421f44b64008ef1f91dfa52a2d68105cbb4dcea197dbf5b00c65ccaccf218b615e93ec587f26fc3ba04796898f3631a9406e3b04cda970c3ca8eadf646
   languageName: node
   linkType: hard
 

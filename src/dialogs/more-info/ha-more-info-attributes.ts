@@ -3,13 +3,9 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import "../../components/ha-attribute-value";
 import "../../components/ha-card";
-import {
-  STATE_ATTRIBUTES,
-  STATE_ATTRIBUTES_DOMAIN_CLASS,
-} from "../../data/entity/entity_attributes";
+import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
 
@@ -36,24 +32,12 @@ class HaMoreInfoAttributes extends LitElement {
     }
   }
 
-  private _computeDisplayAttributes(stateObj: HassEntity): string[] {
-    const domain = computeStateDomain(stateObj);
-    const filtersArray = STATE_ATTRIBUTES.concat(
-      (STATE_ATTRIBUTES_DOMAIN_CLASS[domain]?.[
-        stateObj.attributes?.device_class
-      ] || []) as string[]
-    );
-    return Object.keys(stateObj.attributes).filter(
-      (key) => filtersArray.indexOf(key) === -1
-    );
-  }
-
   protected render() {
     if (!this.params || !this._stateObj) {
       return nothing;
     }
 
-    const attributes = this._computeDisplayAttributes(this._stateObj);
+    const attributes = computeShownAttributes(this._stateObj);
 
     return html`
       <div class="content">

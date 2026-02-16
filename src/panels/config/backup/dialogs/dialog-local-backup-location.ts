@@ -69,6 +69,7 @@ class LocalBackupLocationDialog extends LitElement {
         header-title=${this.hass.localize(
           `ui.panel.config.backup.dialogs.local_backup_location.title`
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error

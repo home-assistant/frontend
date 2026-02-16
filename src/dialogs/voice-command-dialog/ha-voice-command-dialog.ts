@@ -14,6 +14,7 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-alert";
 import "../../components/ha-assist-chat";
 import "../../components/ha-button";
+import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
@@ -21,7 +22,6 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-next";
 import "../../components/ha-spinner";
-import "../../components/ha-dialog";
 import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
   getAssistPipeline,
@@ -170,7 +170,7 @@ export class HaVoiceCommandDialog extends LitElement {
             href=${documentationUrl(this.hass, "/docs/assist/")}
             slot="actionItems"
             target="_blank"
-            rel="noopener noreferer"
+            rel="noopener noreferrer"
           ></ha-icon-button>
         </ha-dialog-header>
 
