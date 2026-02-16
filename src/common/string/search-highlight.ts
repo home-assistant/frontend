@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { html } from "lit";
+import { css, html, unsafeCSS } from "lit";
 import { stripDiacritics } from "./strip-diacritics";
 
 export interface HighlightRange {
@@ -107,23 +107,31 @@ const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
   return ranges;
 };
 
-const createHighlightStyle = (highlightName: string): string => `.ha-highlight {
-  background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
-  color: var(--ha-highlight-color, var(--primary-text-color));
-  border-radius: 2px;
-  padding: 0;
-  box-shadow: inset 0 0 0 1px transparent;
-}
+const createHighlightStyle = (highlightName: string): string => css`
+  .ha-highlight {
+    background-color: var(
+      --ha-highlight-bg,
+      var(--ha-color-fill-primary-normal-hover)
+    );
+    color: var(--ha-highlight-color, var(--primary-text-color));
+    border-radius: 2px;
+    padding: 0;
+    box-shadow: inset 0 0 0 1px transparent;
+  }
 
-:host(.${ACTIVE_HOST_CLASS}) .ha-highlight {
-  background-color: transparent;
-  color: inherit;
-}
+  :host(.${unsafeCSS(ACTIVE_HOST_CLASS)}) .ha-highlight {
+    background-color: transparent;
+    color: inherit;
+  }
 
-::highlight(${highlightName}) {
-  background-color: var(--ha-highlight-bg, var(--ha-color-fill-primary-normal-hover));
-  color: var(--ha-highlight-color, var(--primary-text-color));
-}`;
+  ::highlight(${unsafeCSS(highlightName)}) {
+    background-color: var(
+      --ha-highlight-bg,
+      var(--ha-color-fill-primary-normal-hover)
+    );
+    color: var(--ha-highlight-color, var(--primary-text-color));
+  }
+`.cssText;
 
 export class SearchHighlight {
   // `CSS.highlights` is document-global, not per shadow root.
