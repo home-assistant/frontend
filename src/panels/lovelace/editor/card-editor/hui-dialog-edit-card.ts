@@ -1,4 +1,4 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -190,7 +190,7 @@ export class HuiDialogEditCard
                 rel="noreferrer"
                 dir=${computeRTLDirection(this.hass)}
               >
-                <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+                <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
               </a>
             `
           : nothing}

@@ -6,7 +6,7 @@ import {
   mdiDotsVertical,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiMagnify,
   mdiPencil,
   mdiPlus,
@@ -229,7 +229,7 @@ class HUIRoot extends LitElement {
           >
             <ha-icon-button
               .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-              .path=${mdiHelpCircle}
+              .path=${mdiHelpCircleOutline}
             ></ha-icon-button>
           </a>`
       );

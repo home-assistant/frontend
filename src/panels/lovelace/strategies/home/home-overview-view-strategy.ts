@@ -152,15 +152,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       const noOtherAreas = home.areas.length === 0;
       const noFloor = home.floors.length === 0;
 
-      // Other areas / Areas / Others / nothing
-      const heading =
-        noFloor && noOtherAreas
-          ? undefined
-          : noFloor
-            ? hass.localize("ui.panel.lovelace.strategy.home.areas")
-            : noOtherAreas
-              ? hass.localize("ui.panel.lovelace.strategy.home.devices")
-              : hass.localize("ui.panel.lovelace.strategy.home.other_areas");
+      // Determine heading based on floor/area configuration
+      let heading: string | undefined;
+      if (noFloor && noOtherAreas) {
+        heading = undefined;
+      } else if (noFloor) {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.areas");
+      } else if (noOtherAreas) {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.devices");
+      } else {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.other_areas");
+      }
 
       floorsSections.push({
         type: "grid",
@@ -242,7 +244,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const hasEnergy =
       energyPrefs?.energy_sources.some(
-        (source) => source.type === "grid" && source.flow_from.length > 0
+        (source) => source.type === "grid" && !!source.stat_energy_from
       ) ?? false;
 
     // Build summary cards (used in both mobile section and sidebar)

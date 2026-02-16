@@ -1,6 +1,6 @@
 import {
   mdiDelete,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiMemoryArrowDown,
   mdiPlus,
   mdiRobot,
@@ -208,7 +208,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
         <ha-fab
           slot="fab"

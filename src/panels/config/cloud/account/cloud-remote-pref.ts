@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -93,7 +93,7 @@ export class CloudRemotePref extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
               )}
-              .path=${mdiHelpCircle}
+              .path=${mdiHelpCircleOutline}
             ></ha-icon-button>
           </a>
           <ha-switch
