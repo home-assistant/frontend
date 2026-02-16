@@ -2,7 +2,6 @@ import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { mainWindow } from "../common/dom/get_main_window";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
@@ -32,8 +31,8 @@ export class HaIconButtonArrowPrev extends LitElement {
         .disabled=${this.disabled}
         .label=${this.label || this.hass?.localize("ui.common.back") || "Back"}
         .path=${this._icon}
-        href=${ifDefined(this.href)}
-        target=${ifDefined(this.target)}
+        .href=${this.href}
+        .target=${this.target}
         .rel=${this.rel}
         .download=${this.download}
       ></ha-icon-button>
