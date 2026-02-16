@@ -238,6 +238,8 @@ export class QuickBar extends LitElement {
     return html`
       <ha-adaptive-dialog
         without-header
+        allow-mode-change
+        flexcontent
         .hass=${this.hass}
         aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}

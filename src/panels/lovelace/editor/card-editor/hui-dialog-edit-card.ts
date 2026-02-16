@@ -169,6 +169,7 @@ export class HuiDialogEditCard
         .hass=${this.hass}
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
+        prevent-scrim-close
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}
