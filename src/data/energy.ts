@@ -113,7 +113,7 @@ export function getActiveEnergyCollectionKeys(
       (!uiKeysOnly || key.startsWith(ENERGY_COLLECTION_KEY_UI_PREFIX))
     ) {
       const energyCollection = getEnergyDataCollection(hass, { key });
-      return !!energyCollection._active;
+      return energyCollection.isActive();
     }
     return false;
   }) as string[];
@@ -760,6 +760,7 @@ export interface EnergyCollection extends Collection<EnergyData> {
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   setCompare(compare: CompareMode): void;
+  isActive(): boolean;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
   _active: number;
@@ -769,7 +770,7 @@ const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
   energyCollectionKeys.forEach((key) => {
     const energyCollection = getEnergyDataCollection(hass, { key });
     energyCollection.clearPrefs();
-    if (energyCollection._active) {
+    if (energyCollection.isActive()) {
       energyCollection.refresh();
     }
   });
@@ -905,6 +906,7 @@ export const getEnergyDataCollection = (
   };
   scheduleUpdatePeriod();
 
+  collection.isActive = () => !!collection._active;
   collection.clearPrefs = () => {
     collection.prefs = undefined;
   };
