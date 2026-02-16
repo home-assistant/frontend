@@ -1,9 +1,6 @@
 import { css } from "lit";
 
 export const energyCardStyles = css`
-  ha-card {
-    height: 100%;
-  }
   .card-header ha-svg-icon {
     height: 32px;
     width: 32px;

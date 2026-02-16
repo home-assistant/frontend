@@ -159,7 +159,7 @@ export class EnergyGridSettings extends LitElement {
                   })}
                 </div>
               `
-            : ""}
+            : nothing}
           <div class="row">
             <ha-button
               @click=${this._addSource}

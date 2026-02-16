@@ -236,7 +236,7 @@ class HaConfigEnergy extends LitElement {
       haStyle,
       css`
         .content {
-          padding: 0 20px;
+          padding: 0 var(--ha-space-5);
           max-width: 1040px;
           margin: 0 auto;
         }
