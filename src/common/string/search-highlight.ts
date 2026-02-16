@@ -220,8 +220,7 @@ export class SearchHighlight {
   private readonly _highlightName?: string;
 
   public constructor(private readonly _root?: ShadowRoot) {
-    // Text highlighting always works via <mark>. This only enables the
-    // optional Custom Highlight API upgrade for a cleaner paint path.
+    // Use Custom Highlight API for a cleaner paint path.
     if (this._root && supportsCustomHighlights()) {
       this._highlightName = `${HIGHLIGHT_NAME_PREFIX}-${SearchHighlight._nextHighlightId++}`;
       this._ensureHighlightStyle();
