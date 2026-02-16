@@ -131,9 +131,7 @@ class HuiEnergySankeyCard
 
     const homeNode: Node = {
       id: "home",
-      label: this.hass.localize(
-        "ui.panel.lovelace.cards.energy.energy_distribution.home"
-      ),
+      label: this.hass.config.location_name,
       value: Math.max(0, consumption.total.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -234,7 +232,7 @@ class HuiEnergySankeyCard
     }
 
     // Add grid return if available
-    if (types.grid && types.grid[0].flow_to) {
+    if (types.grid && types.grid[0].stat_energy_to) {
       const totalToGrid = summedData.total.to_grid ?? 0;
 
       nodes.push({

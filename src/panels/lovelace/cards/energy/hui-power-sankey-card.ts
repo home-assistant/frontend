@@ -173,9 +173,7 @@ class HuiPowerSankeyCard
     // Create home node
     const homeNode: Node = {
       id: "home",
-      label: this.hass.localize(
-        "ui.panel.lovelace.cards.energy.energy_distribution.home"
-      ),
+      label: this.hass.config.location_name,
       value: Math.max(0, powerData.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -622,17 +620,15 @@ class HuiPowerSankeyCard
 
     // Collect grid power (positive = import, negative = export)
     prefs.energy_sources
-      .filter((source) => source.type === "grid" && source.power)
+      .filter((source) => source.type === "grid")
       .forEach((source) => {
-        if (source.type === "grid" && source.power) {
-          source.power.forEach((powerSource) => {
-            const value = this._getCurrentPower(powerSource.stat_rate);
-            if (value > 0) {
-              from_grid += value;
-            } else if (value < 0) {
-              to_grid += Math.abs(value);
-            }
-          });
+        if (source.type === "grid" && source.stat_rate) {
+          const value = this._getCurrentPower(source.stat_rate);
+          if (value > 0) {
+            from_grid += value;
+          } else if (value < 0) {
+            to_grid += Math.abs(value);
+          }
         }
       });
 
