@@ -1,5 +1,6 @@
 import {
   mdiAlertCircleOutline,
+  mdiChartBox,
   mdiCheck,
   mdiDevices,
   mdiDownload,
@@ -11,6 +12,7 @@ import {
   mdiShape,
   mdiTextBoxOutline,
   mdiTune,
+  mdiVectorPolyline,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -26,7 +28,6 @@ import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-progress-ring";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-switch";
 import { goBack } from "../../../../../common/navigate";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
@@ -46,7 +47,6 @@ import {
   NodeStatus,
   ProvisioningEntryStatus,
   restoreZwaveNVM,
-  setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
   subscribeZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
@@ -159,7 +159,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   notReadyDevices
                 )}
                 ${this._renderNetworkCard()} ${this._renderNavigationCard()}
-                ${this._renderBackupCard()} ${this._renderDataCollectionCard()}
+                ${this._renderBackupCard()}
               `
             : nothing}
         </div>
@@ -198,7 +198,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
     if (notReadyDevices > 0) {
       statusParts.push(
-        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_ready", {
+        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_included", {
           count: notReadyDevices,
         })
       );
@@ -260,9 +260,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
             appearance="filled"
             href=${`visualization?config_entry=${this.configEntryId}`}
           >
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.dashboard.show_map"
-            )}
+            <ha-svg-icon slot="start" .path=${mdiVectorPolyline}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.zwave_js.dashboard.show_map")}
           </ha-button>
         </div>
         <div class="card-content network-card-content">
@@ -373,6 +372,27 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
+            <ha-md-list-item type="link" href="/config/analytics?section=zwave">
+              <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.analytics_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.dashboard.analytics_description"
+                )}
+              </div>
+              <span slot="end">
+                ${this._dataCollectionOptIn !== undefined
+                  ? this.hass.localize(
+                      `ui.panel.config.zwave_js.dashboard.analytics_${this._dataCollectionOptIn ? "on" : "off"}`
+                    )
+                  : nothing}
+              </span>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
             <ha-md-list-item
               type="link"
               href=${`network-info?config_entry=${this.configEntryId}`}
@@ -395,44 +415,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
             </ha-md-list-item>
           </ha-md-list>
         </div>
-      </ha-card>
-    `;
-  }
-
-  private _renderDataCollectionCard() {
-    return html`
-      <ha-card
-        .header=${this.hass.localize(
-          "ui.panel.config.zwave_js.dashboard.data_collection.title"
-        )}
-      >
-        <ha-md-list>
-          <ha-md-list-item>
-            <span slot="supporting-text">
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.dashboard.data_collection.description",
-                {
-                  documentation_link: html`<a
-                    target="_blank"
-                    href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
-                    >${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
-                    )}</a
-                  >`,
-                }
-              )}
-            </span>
-            ${this._dataCollectionOptIn !== undefined
-              ? html`
-                  <ha-switch
-                    slot="end"
-                    .checked=${this._dataCollectionOptIn === true}
-                    @change=${this._dataCollectionToggled}
-                  ></ha-switch>
-                `
-              : html`<ha-spinner slot="end" size="small"></ha-spinner>`}
-          </ha-md-list-item>
-        </ha-md-list>
       </ha-card>
     `;
   }
@@ -626,12 +608,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const [network, dataCollectionStatus, provisioningEntries] =
-      await Promise.all([
-        fetchZwaveNetworkStatus(this.hass!, { entry_id: this.configEntryId }),
-        fetchZwaveDataCollectionStatus(this.hass!, this.configEntryId),
-        fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
-      ]);
+    const [network, provisioningEntries] = await Promise.all([
+      fetchZwaveNetworkStatus(this.hass!, { entry_id: this.configEntryId }),
+      fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
+    ]);
 
     this._provisioningEntries = provisioningEntries;
 
@@ -639,9 +619,16 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
     this._status = this._network.client.state;
 
-    this._dataCollectionOptIn =
-      dataCollectionStatus.opted_in === true ||
-      dataCollectionStatus.enabled === true;
+    try {
+      const status = await fetchZwaveDataCollectionStatus(
+        this.hass,
+        this.configEntryId
+      );
+      this._dataCollectionOptIn =
+        status.opted_in === true || status.enabled === true;
+    } catch {
+      // Data collection status is optional
+    }
   };
 
   private async _addNodeClicked() {
@@ -655,14 +642,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         this._network?.controller.inclusion_state === InclusionState.Excluding,
       onClose: this._fetchData,
     });
-  }
-
-  private _dataCollectionToggled(ev) {
-    setZwaveDataCollectionPreference(
-      this.hass!,
-      this.configEntryId!,
-      ev.target.checked
-    );
   }
 
   private async _openConfigFlow() {
