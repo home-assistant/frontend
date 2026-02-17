@@ -157,7 +157,7 @@ export class HaPanelCustom extends ReactiveElement {
           display: block;
           background-color: var(--primary-background-color);
           opacity: 0;
-          transition: opacity var(--ha-animation-base-duration) ease;
+          transition: opacity var(--ha-animation-duration-normal) ease;
         }
         iframe.loaded {
           opacity: 1;
