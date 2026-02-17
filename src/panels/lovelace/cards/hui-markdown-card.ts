@@ -61,6 +61,14 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         : this._config.card_size;
   }
 
+  private get _interactive() {
+    return (
+      hasAction(this._config?.tap_action) ||
+      hasAction(this._config?.hold_action) ||
+      hasAction(this._config?.double_tap_action)
+    );
+  }
+
   public setConfig(config: MarkdownCardConfig): void {
     if (!config.content) {
       throw new Error("Content required");
@@ -109,10 +117,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (!this._config) {
       return nothing;
     }
-    const safeHandleAction = this._hasAnyAction()
-      ? this._handleAction
-      : undefined;
-    const safeActionHandler = this._hasAnyAction()
+    const safeHandleAction = this._interactive ? this._handleAction : undefined;
+    const safeActionHandler = this._interactive
       ? actionHandler({
           hasHold: hasAction(this._config.hold_action),
           hasDoubleClick: hasAction(this._config.double_tap_action),
@@ -135,7 +141,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         class=${classMap({
           "with-header": !!this._config.title,
           "text-only": this._config.text_only ?? false,
-          action: this._hasAnyAction(),
+          action: this._interactive,
         })}
         tabindex=${ifDefined(
           !this._config.tap_action || hasAction(this._config.tap_action)
@@ -145,6 +151,15 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         @action=${safeHandleAction}
         .actionHandler=${safeActionHandler}
       >
+        ${this._interactive
+          ? html`<div
+              class="background"
+              @focus=${this._handleFocus}
+              @blur=${this._handleBlur}
+            >
+              <ha-ripple></ha-ripple>
+            </div>`
+          : nothing}
         <ha-markdown
           cache
           breaks
@@ -249,19 +264,36 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     this._errorLevel = undefined;
   }
 
-  private _hasAnyAction = () =>
-    hasAction(this._config?.tap_action) ||
-    hasAction(this._config?.hold_action) ||
-    hasAction(this._config?.double_tap_action);
-
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
+  private _handleFocus(ev: FocusEvent) {
+    if ((ev.target as HTMLElement).matches(":focus-visible")) {
+      this.setAttribute("focused", "");
+    }
+  }
+
+  private _handleBlur() {
+    this.removeAttribute("focused");
+  }
+
   static styles = css`
+    :host {
+      -webkit-tap-highlight-color: transparent;
+      --ha-ripple-hover-opacity: 0.04;
+      --ha-ripple-pressed-opacity: 0.12;
+    }
     ha-card {
       height: 100%;
       overflow-y: auto;
+    }
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
     }
     ha-alert {
       margin-bottom: 8px;
