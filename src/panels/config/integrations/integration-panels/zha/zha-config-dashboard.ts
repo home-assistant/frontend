@@ -8,6 +8,7 @@ import {
   mdiPlus,
   mdiShape,
   mdiTune,
+  mdiVectorPolyline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -30,6 +31,7 @@ import type {
 import {
   createZHANetworkBackup,
   fetchDevices,
+  fetchGroups,
   fetchZHAConfiguration,
   fetchZHANetworkSettings,
 } from "../../../../../data/zha";
@@ -58,6 +60,8 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _offlineDevices = 0;
 
+  @state() private _totalGroups = 0;
+
   @state() private _networkSettings?: ZHANetworkSettings;
 
   @state() private _error?: string;
@@ -69,6 +73,7 @@ class ZHAConfigDashboard extends LitElement {
       this._fetchConfigEntry();
       this._fetchConfiguration();
       this._fetchDevicesAndUpdateStatus();
+      this._fetchGroups();
       this._fetchNetworkSettings();
     }
   }
@@ -141,6 +146,19 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private _renderMyNetworkCard() {
+    const deviceIds = this._configEntry
+      ? new Set(
+          Object.values(this.hass.devices)
+            .filter((device) =>
+              device.config_entries.includes(this._configEntry!.entry_id)
+            )
+            .map((device) => device.id)
+        )
+      : new Set<string>();
+    const entityCount = Object.values(this.hass.entities).filter(
+      (entity) => entity.device_id && deviceIds.has(entity.device_id)
+    ).length;
+
     return html`
       <ha-card class="nav-card">
         <div class="card-header">
@@ -148,7 +166,10 @@ class ZHAConfigDashboard extends LitElement {
             "ui.panel.config.zha.configuration_page.my_network_title"
           )}
           <ha-button appearance="filled" href="/config/zha/visualization">
-            ${this.hass.localize("ui.panel.config.zha.visualization.caption")}
+            <ha-svg-icon slot="start" .path=${mdiVectorPolyline}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.show_map"
+            )}
           </ha-button>
         </div>
         <div class="card-content">
@@ -159,7 +180,10 @@ class ZHAConfigDashboard extends LitElement {
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
               <div slot="headline">
-                ${this.hass.localize("ui.panel.config.devices.caption")}
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.device_count",
+                  { count: deviceIds.size }
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -169,7 +193,10 @@ class ZHAConfigDashboard extends LitElement {
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
               <div slot="headline">
-                ${this.hass.localize("ui.panel.config.entities.caption")}
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.entity_count",
+                  { count: entityCount }
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -179,7 +206,10 @@ class ZHAConfigDashboard extends LitElement {
                 .path=${mdiFolderMultipleOutline}
               ></ha-svg-icon>
               <div slot="headline">
-                ${this.hass.localize("ui.panel.config.zha.groups.caption")}
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.group_count",
+                  { count: this._totalGroups }
+                )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -368,6 +398,15 @@ class ZHAConfigDashboard extends LitElement {
       return;
     }
     showOptionsFlowDialog(this, this._configEntry);
+  }
+
+  private async _fetchGroups(): Promise<void> {
+    try {
+      const groups = await fetchGroups(this.hass);
+      this._totalGroups = groups.length;
+    } catch (_err) {
+      // Groups are optional
+    }
   }
 
   private async _fetchDevicesAndUpdateStatus(): Promise<void> {
