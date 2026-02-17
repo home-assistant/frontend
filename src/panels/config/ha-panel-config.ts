@@ -8,6 +8,7 @@ import {
   mdiCog,
   mdiDatabase,
   mdiDevices,
+  mdiFire,
   mdiFlask,
   mdiHammer,
   mdiInformationOutline,
@@ -31,6 +32,7 @@ import {
   mdiTools,
   mdiUpdate,
   mdiViewDashboard,
+  mdiWater,
   mdiZigbee,
   mdiZWave,
 } from "@mdi/js";
@@ -305,13 +307,26 @@ export const configSections: Record<string, PageNavigation[]> = {
       core: true,
     },
   ],
-  // Not used as a tab, but this way it will stay in the quick bar
   energy: [
     {
       component: "energy",
-      path: "/config/energy",
-      translationKey: "ui.panel.config.energy.caption",
+      path: "/config/energy/electricity",
+      translationKey: "ui.panel.config.energy.tabs.electricity",
       iconPath: mdiLightningBolt,
+      iconColor: "#F1C447",
+    },
+    {
+      component: "energy",
+      path: "/config/energy/gas",
+      translationKey: "ui.panel.config.energy.tabs.gas",
+      iconPath: mdiFire,
+      iconColor: "#F1C447",
+    },
+    {
+      component: "energy",
+      path: "/config/energy/water",
+      translationKey: "ui.panel.config.energy.tabs.water",
+      iconPath: mdiWater,
       iconColor: "#F1C447",
     },
   ],
