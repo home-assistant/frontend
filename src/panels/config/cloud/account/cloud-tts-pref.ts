@@ -85,7 +85,7 @@ export class CloudTTSPref extends LitElement {
               .disabled=${this.savingPreferences}
               .value=${defaultVoice[0]}
               .languages=${languages}
-              .minWidth=${"0"}
+              .minWidth=${""}
               @value-changed=${this._handleLanguageChange}
             >
             </ha-language-picker>
