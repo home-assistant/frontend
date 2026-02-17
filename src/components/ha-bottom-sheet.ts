@@ -171,42 +171,30 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
     const path = ev.composedPath();
 
-    if (this._isSwipeLockedByComponent(path)) {
-      return;
-    }
-
-    // Check if any element inside drawer in the composed path has scrollTop > 0
     for (const target of path) {
-      const el = target as HTMLElement;
-      if (el === this._drawer) {
+      if (target === this._drawer) {
         break;
       }
-      if (el.scrollTop > 0) {
+
+      if (!(target instanceof HTMLElement)) {
+        continue;
+      }
+
+      if (
+        // Check if any element inside drawer in the composed path has scrollTop > 0 (list)
+        target.scrollTop > 0 ||
+        // Check if the element is a swipe locked component or has a swipe locked class
+        SWIPE_LOCKED_COMPONENTS.has(target.localName) ||
+        Array.from(target.classList).some((cls) =>
+          SWIPE_LOCKED_CLASSES.has(cls)
+        )
+      ) {
         return;
       }
     }
 
     this._startResizing(ev.touches[0].clientY);
   };
-
-  private _isSwipeLockedByComponent(path: EventTarget[]) {
-    for (const target of path) {
-      if (target === this._drawer) {
-        break;
-      }
-      if (
-        target instanceof HTMLElement &&
-        (SWIPE_LOCKED_COMPONENTS.has(target.localName) ||
-          Array.from(target.classList).some((cls) =>
-            SWIPE_LOCKED_CLASSES.has(cls)
-          ))
-      ) {
-        return true;
-      }
-    }
-
-    return false;
-  }
 
   private _startResizing(clientY: number) {
     // register event listeners for drag handling
