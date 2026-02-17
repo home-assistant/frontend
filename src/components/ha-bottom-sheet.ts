@@ -11,7 +11,14 @@ import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
 
-const SWIPE_LOCKED_COMPONENTS = new Set(["ha-control-slider", "ha-slider"]);
+const SWIPE_LOCKED_COMPONENTS = new Set([
+  "ha-control-slider",
+  "ha-slider",
+  "ha-control-switch",
+  "ha-control-circular-slider",
+  "ha-hs-color-picker",
+  "ha-map",
+]);
 
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
