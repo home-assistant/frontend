@@ -1,6 +1,7 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-icon-button-prev";
@@ -15,7 +16,7 @@ import type { HaDrawer } from "../../components/ha-drawer";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("notification-drawer")
-export class HuiNotificationDrawer extends LitElement {
+export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _notifications: PersistentNotification[] = [];
@@ -29,13 +30,11 @@ export class HuiNotificationDrawer extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this.closeDialog);
-    window.addEventListener("keydown", this._handleKeyDown);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("location-changed", this.closeDialog);
-    window.removeEventListener("keydown", this._handleKeyDown);
   }
 
   showDialog({ narrow }) {
@@ -145,16 +144,15 @@ export class HuiNotificationDrawer extends LitElement {
     this._open = false;
   }
 
-  private _handleKeyDown = (ev: KeyboardEvent) => {
-    if (ev.key === "Escape" && this._open) {
-      ev.stopPropagation();
-      this.closeDialog();
-    }
-  };
-
   private _dismissAll() {
     this.hass.callService("persistent_notification", "dismiss_all");
     this.closeDialog();
+  }
+
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    return {
+      Escape: () => this.closeDialog(),
+    };
   }
 
   static styles = css`
