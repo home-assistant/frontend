@@ -22,6 +22,13 @@ export type HighlightedText =
 const HIGHLIGHT_NAME_PREFIX = "ha-search";
 const ACTIVE_HOST_CLASS = "custom-highlight-active";
 
+/**
+ * Search highlighting helper with two integration paths:
+ * 1) call `renderHighlightedText` + `applyFromMarks` when updates are driven
+ * by known state changes (like filter changes),
+ * 2) call `startAutoSyncFromMarks` when highlighted DOM can change
+ * independently of filter changes (like virtualized rows).
+ */
 export class SearchHighlight {
   // `CSS.highlights` is document-global, not per shadow root.
   // Each instance needs a unique key so that components do not overwrite each
@@ -186,17 +193,17 @@ export class SearchHighlight {
   }
 
   // Cache the last apply inputs to avoid re-registering identical highlights.
-  private _lastKey?: string;
+  private _lastCacheKey?: string;
 
   private _lastFingerprint?: string;
 
   private readonly _highlightName?: string;
 
-  private _marksObserver?: MutationObserver;
+  private _autoSyncObserver?: MutationObserver;
 
-  private _marksSyncQueued = false;
+  private _autoSyncQueued = false;
 
-  private _marksKeyProvider?: () => string | null | undefined;
+  private _autoSyncCacheKeyProvider?: () => string | null | undefined;
 
   public constructor(private readonly _root?: ShadowRoot) {
     // Use Custom Highlight API for a cleaner paint path.
@@ -206,6 +213,10 @@ export class SearchHighlight {
     }
   }
 
+  /**
+   * Return text ranges that should be highlighted for the given query.
+   * Useful when the caller needs ranges without rendering `<mark>` output.
+   */
   public getHighlightRanges(
     text: string,
     query: string,
@@ -284,60 +295,95 @@ export class SearchHighlight {
   }
 
   /**
-   * Build highlight ranges from rendered mark nodes in the shadow root and
-   * apply them using the Custom Highlight API when available.
+   * Read rendered `<mark>` nodes from the root and apply matching
+   * `CSS.highlights` ranges.
+   * `cacheKey` should represent the current query/filter used to build marks.
    */
-  public applyFromMarks(key?: string): void {
+  public applyFromMarks(cacheKey?: string): void {
     if (!this._root) {
       return;
     }
 
-    this._applyFromRanges(
+    this.applyFromRanges(
       SearchHighlight._getHighlightRangesFromMarks(this._root),
-      key
+      cacheKey
     );
   }
 
-  public applyFromRanges(ranges: Range[], key?: string): void {
-    if (!this._root) {
+  /**
+   * Apply precomputed ranges directly to `CSS.highlights`.
+   * Use this when ranges are built outside this class.
+   * `cacheKey` should represent the inputs used to build `ranges`.
+   */
+  public applyFromRanges(ranges: Range[], cacheKey?: string): void {
+    if (
+      !this._root ||
+      !SearchHighlight._supportsCustomHighlights() ||
+      !this._highlightName
+    ) {
       return;
     }
 
-    this._applyFromRanges(ranges, key);
+    if (!ranges.length) {
+      this.clear();
+      return;
+    }
+
+    const fingerprint = SearchHighlight._getRangesFingerprint(ranges);
+    // Skip writes only when both the caller key and concrete range positions
+    // are unchanged.
+    if (
+      cacheKey === this._lastCacheKey &&
+      fingerprint === this._lastFingerprint
+    ) {
+      return;
+    }
+
+    this._lastCacheKey = cacheKey;
+    this._lastFingerprint = fingerprint;
+
+    CSS.highlights.set(this._highlightName, new Highlight(...ranges));
+    (this._root.host as HTMLElement).classList.add(ACTIVE_HOST_CLASS);
   }
 
   /**
-   * Observe rendered `<mark>` changes and keep custom highlights in sync.
+   * Auto-sync `CSS.highlights` from `<mark>` nodes whenever marked DOM changes.
+   * Use this for components where highlighted DOM can change without filter
+   * changes (for example, virtualized lists).
+   * `cacheKeyProvider` should return the current query/filter string.
    */
-  public startMarkObservation(
-    keyProvider: () => string | null | undefined
+  public startAutoSyncFromMarks(
+    cacheKeyProvider: () => string | null | undefined
   ): void {
     if (!this._root || !this._highlightName) {
       return;
     }
 
-    this._marksKeyProvider = keyProvider;
+    this._autoSyncCacheKeyProvider = cacheKeyProvider;
 
-    if (!this._marksObserver) {
-      this._marksObserver = new MutationObserver(() => {
-        this._queueMarkSync();
+    if (!this._autoSyncObserver) {
+      this._autoSyncObserver = new MutationObserver(() => {
+        this._queueAutoSyncFromMarks();
       });
     }
 
-    this._marksObserver.disconnect();
-    this._marksObserver.observe(this._root, {
+    this._autoSyncObserver.disconnect();
+    this._autoSyncObserver.observe(this._root, {
       childList: true,
       subtree: true,
       characterData: true,
     });
 
-    this._queueMarkSync();
+    this._queueAutoSyncFromMarks();
   }
 
-  public stopMarkObservation(): void {
-    this._marksObserver?.disconnect();
-    this._marksSyncQueued = false;
-    this._marksKeyProvider = undefined;
+  /**
+   * Stop auto-sync started via `startAutoSyncFromMarks`.
+   */
+  public stopAutoSyncFromMarks(): void {
+    this._autoSyncObserver?.disconnect();
+    this._autoSyncQueued = false;
+    this._autoSyncCacheKeyProvider = undefined;
   }
 
   public clear(): void {
@@ -350,7 +396,7 @@ export class SearchHighlight {
     }
 
     (this._root.host as HTMLElement).classList.remove(ACTIVE_HOST_CLASS);
-    this._lastKey = undefined;
+    this._lastCacheKey = undefined;
     this._lastFingerprint = undefined;
   }
 
@@ -382,58 +428,26 @@ export class SearchHighlight {
     return parts;
   }
 
-  private _queueMarkSync(): void {
-    if (this._marksSyncQueued) {
+  private _queueAutoSyncFromMarks(): void {
+    if (this._autoSyncQueued) {
       return;
     }
 
-    this._marksSyncQueued = true;
+    this._autoSyncQueued = true;
     queueMicrotask(() => {
-      this._marksSyncQueued = false;
+      this._autoSyncQueued = false;
       if (!this._root || !(this._root.host as HTMLElement).isConnected) {
         return;
       }
 
-      const key = this._marksKeyProvider?.()?.trim();
-      if (!key) {
+      const cacheKey = this._autoSyncCacheKeyProvider?.()?.trim();
+      if (!cacheKey) {
         this.clear();
         return;
       }
 
-      this.applyFromMarks(key);
+      this.applyFromMarks(cacheKey);
     });
-  }
-
-  /**
-   * Register custom highlight ranges and skip no-op updates using cached key
-   * and range fingerprint.
-   */
-  private _applyFromRanges(ranges: Range[], key?: string): void {
-    if (
-      !this._root ||
-      !SearchHighlight._supportsCustomHighlights() ||
-      !this._highlightName
-    ) {
-      return;
-    }
-
-    if (!ranges.length) {
-      this.clear();
-      return;
-    }
-
-    const fingerprint = SearchHighlight._getRangesFingerprint(ranges);
-    // Skip writes only when both the caller key and concrete range positions
-    // are unchanged.
-    if (key === this._lastKey && fingerprint === this._lastFingerprint) {
-      return;
-    }
-
-    this._lastKey = key;
-    this._lastFingerprint = fingerprint;
-
-    CSS.highlights.set(this._highlightName, new Highlight(...ranges));
-    (this._root.host as HTMLElement).classList.add(ACTIVE_HOST_CLASS);
   }
 
   /**

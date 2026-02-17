@@ -257,7 +257,7 @@ describe("search highlight custom highlight API integration", () => {
     mark.append(document.createTextNode("Alpha"));
     root.append(mark);
 
-    searchHighlight.startMarkObservation(() => "key");
+    searchHighlight.startAutoSyncFromMarks(() => "key");
     await flushMutationObserver();
     expect(highlights.set).toHaveBeenCalledTimes(1);
 
@@ -276,11 +276,11 @@ describe("search highlight custom highlight API integration", () => {
     mark.append(document.createTextNode("Alpha"));
     root.append(mark);
 
-    searchHighlight.startMarkObservation(() => "key");
+    searchHighlight.startAutoSyncFromMarks(() => "key");
     await flushMutationObserver();
     expect(highlights.set).toHaveBeenCalledTimes(1);
 
-    searchHighlight.stopMarkObservation();
+    searchHighlight.stopAutoSyncFromMarks();
     (mark.firstChild as Text).textContent = "Alphabet";
     await flushMutationObserver();
     expect(highlights.set).toHaveBeenCalledTimes(1);
@@ -297,7 +297,7 @@ describe("search highlight custom highlight API integration", () => {
     root.append(mark);
 
     let key = "key";
-    searchHighlight.startMarkObservation(() => key);
+    searchHighlight.startAutoSyncFromMarks(() => key);
     await flushMutationObserver();
     expect(highlights.set).toHaveBeenCalledTimes(1);
     expect(host.classList.contains("custom-highlight-active")).toBe(true);

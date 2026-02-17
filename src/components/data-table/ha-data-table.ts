@@ -240,19 +240,19 @@ export class HaDataTable extends LitElement {
 
     // Re-attach observer when the element reconnects.
     if (this.hasUpdated) {
-      this._getSearchHighlight().startMarkObservation(() => this._filter);
+      this._getSearchHighlight().startAutoSyncFromMarks(() => this._filter);
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._searchHighlight?.stopMarkObservation();
+    this._searchHighlight?.stopAutoSyncFromMarks();
     this._searchHighlight?.clear();
   }
 
   protected firstUpdated() {
     this.updateComplete.then(() => this._calcTableHeight());
-    this._getSearchHighlight().startMarkObservation(() => this._filter);
+    this._getSearchHighlight().startAutoSyncFromMarks(() => this._filter);
   }
 
   protected updated() {
