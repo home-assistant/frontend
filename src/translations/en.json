@@ -6958,7 +6958,7 @@
             "network_info_description": "View driver, server, and home ID details",
             "visualization_description": "Visualize the network topology and device connections",
             "statistics_description": "View adapter and network communication statistics",
-            "logs_description": "View and download Z-Wave JS driver logs",
+            "logs_description": "View and download Z-Wave logs",
             "analytics_title": "Analytics",
             "analytics_description": "Share anonymized telemetry and statistics with Z-Wave JS",
             "analytics_on": "On",
@@ -7414,7 +7414,8 @@
             }
           },
           "logs": {
-            "title": "Z-Wave JS logs",
+            "caption": "Logs",
+            "title": "Z-Wave logs",
             "log_level": "Log level",
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
             "log_level_changed": "Log level changed to: {level}",

@@ -65,7 +65,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.config.zwave_js.logs.title")}
+        .header=${this.hass.localize("ui.panel.config.zwave_js.logs.caption")}
         back-path="/config/zwave_js/dashboard?config_entry=${this
           .configEntryId}"
       >
