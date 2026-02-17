@@ -11,6 +11,8 @@ import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
 
+const SWIPE_LOCKED_COMPONENTS = new Set(["ha-control-slider", "ha-slider"]);
+
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -158,9 +160,15 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
+    const path = ev.composedPath();
+
+    if (this._isSwipeLockedByComponent(path)) {
+      return;
+    }
+
     // Check if any element inside drawer in the composed path has scrollTop > 0
-    for (const path of ev.composedPath()) {
-      const el = path as HTMLElement;
+    for (const target of path) {
+      const el = target as HTMLElement;
       if (el === this._drawer) {
         break;
       }
@@ -171,6 +179,22 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
     this._startResizing(ev.touches[0].clientY);
   };
+
+  private _isSwipeLockedByComponent(path: EventTarget[]) {
+    for (const target of path) {
+      if (target === this._drawer) {
+        break;
+      }
+      if (
+        target instanceof HTMLElement &&
+        SWIPE_LOCKED_COMPONENTS.has(target.localName)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   private _startResizing(clientY: number) {
     // register event listeners for drag handling
