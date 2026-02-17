@@ -85,6 +85,7 @@ export class CloudTTSPref extends LitElement {
               .disabled=${this.savingPreferences}
               .value=${defaultVoice[0]}
               .languages=${languages}
+              .minWidth=${"0"}
               @value-changed=${this._handleLanguageChange}
             >
             </ha-language-picker>
@@ -229,7 +230,6 @@ export class CloudTTSPref extends LitElement {
     .row {
       display: flex;
       gap: var(--ha-space-2);
-      --ha-generic-picker-min-width: 0;
     }
     .row > * {
       flex: 1;
