@@ -81,7 +81,7 @@ describe("search highlight text rendering", () => {
 
   it("maps matches to original indexes for multi-unit characters", () => {
     expect(searchHighlight.getHighlightRanges("A😀B", "😀")).toEqual([
-      { start: 1, end: 4 },
+      { start: 1, end: 3 },
     ]);
   });
 

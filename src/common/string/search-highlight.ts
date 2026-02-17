@@ -43,10 +43,12 @@ const buildNormalizedIndexMap = (
     const end = start + char.length;
     const normalizedChar = normalizeSearchText(char, language);
 
-    // One original character can normalize into multiple characters.
-    // Keep a mapping for every normalized character back to original indexes.
-    for (const normalizedPart of normalizedChar) {
-      normalizedText += normalizedPart;
+    normalizedText += normalizedChar;
+
+    // One original character can normalize into multiple UTF-16 code units.
+    // Keep a mapping entry for each normalized code unit because String#indexOf
+    // and String#length operate on UTF-16 indexes.
+    for (let index = 0; index < normalizedChar.length; index++) {
       normalizedIndexMap.push({ start, end });
     }
 
@@ -232,7 +234,7 @@ export class SearchHighlight {
       while (matchIndex !== -1) {
         // Convert normalized-text match indexes back to original-text indexes.
         // `indexOf` guarantees the full normalized term is within bounds, and
-        // we append one mapping item per normalized character.
+        // we append one mapping item per normalized UTF-16 code unit.
         const start = normalizedIndexMap[matchIndex]!.start;
         const end =
           normalizedIndexMap[matchIndex + normalizedTerm.length - 1]!.end;
