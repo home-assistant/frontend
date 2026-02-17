@@ -1,6 +1,6 @@
 import "../../../layouts/hass-error-screen";
 import { mdiDownload, mdiFire, mdiLightningBolt, mdiWater } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -88,11 +88,16 @@ class HaConfigEnergy extends LitElement {
     return this.route.path.substring(1) || "electricity";
   }
 
-  protected firstUpdated() {
-    const tab = this.route.path.substring(1);
-    if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {
-      navigate(`${this.route.prefix}/electricity`, { replace: true });
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("route")) {
+      const tab = this.route.path.substring(1);
+      if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {
+        navigate(`${this.route.prefix}/electricity`, { replace: true });
+      }
     }
+  }
+
+  protected firstUpdated() {
     this._fetchConfig();
   }
 
