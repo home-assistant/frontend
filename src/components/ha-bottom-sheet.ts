@@ -20,6 +20,8 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
   "ha-map",
 ]);
 
+const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
+
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -194,7 +196,10 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       }
       if (
         target instanceof HTMLElement &&
-        SWIPE_LOCKED_COMPONENTS.has(target.localName)
+        (SWIPE_LOCKED_COMPONENTS.has(target.localName) ||
+          Array.from(target.classList).some((cls) =>
+            SWIPE_LOCKED_CLASSES.has(cls)
+          ))
       ) {
         return true;
       }
