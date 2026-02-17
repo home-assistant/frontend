@@ -111,7 +111,7 @@ export class HaLanguagePicker extends LitElement {
 
   @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
 
-  @property() public minWidth = "200px";
+  @property({ attribute: false }) public minWidth = "200px";
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
