@@ -1,3 +1,4 @@
+import type { HassEntityBase } from "home-assistant-js-websocket";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -6,8 +7,10 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeKeys } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
 import { deepEqual } from "../common/util/deep-equal";
+import { FILTER_NONE_OF_LISTED } from "../common/const";
 import { getFloorAreaLookup } from "../data/floor_registry";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
@@ -36,6 +39,8 @@ export class HaFilterFloorAreas extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
+
+  @property({ attribute: false }) public allEntities!: HassEntityBase[];
 
   @state() private _shouldRender = false;
 
@@ -76,6 +81,16 @@ export class HaFilterFloorAreas extends LitElement {
         ${this._shouldRender
           ? html`
               <ha-list class="ha-scrollbar">
+                <ha-check-list-item
+                  .value=${FILTER_NONE_OF_LISTED}
+                  .type=${FILTER_NONE_OF_LISTED}
+                  .selected=${this.value?.areas?.[0] === FILTER_NONE_OF_LISTED}
+                  @request-selected=${this._handleItemClick}
+                >
+                  ${this.hass.localize(
+                    `ui.panel.config.areas.${FILTER_NONE_OF_LISTED}` as LocalizeKeys
+                  )}
+                </ha-check-list-item>
                 ${repeat(
                   areas?.floors || [],
                   (floor) => floor.floor_id,
@@ -157,25 +172,55 @@ export class HaFilterFloorAreas extends LitElement {
     const value = listItem?.value;
 
     if (ev.detail.selected === listItem.selected || !value) {
+      // after deselect
       return;
     }
 
-    if (this.value?.[type]?.includes(value)) {
-      this.value = {
-        ...this.value,
-        [type]: this.value[type].filter((val) => val !== value),
-      };
-    } else {
-      if (!this.value) {
-        this.value = {};
+    if (type !== FILTER_NONE_OF_LISTED) {
+      if (this.value?.[type]?.includes(value)) {
+        // deselect, remove item
+        this.value = {
+          ...this.value,
+          [type]: this.value[type].filter((val) => val !== value),
+        };
+      } else {
+        // select
+        if (!this.value) {
+          this.value = {};
+        }
+        // add item
+        if (type === "areas") {
+          this.value = {
+            floors: this.value.floors,
+            areas: [
+              ...(this.value.areas?.filter(
+                (val) => val !== FILTER_NONE_OF_LISTED
+              ) || []),
+              value,
+            ],
+          };
+        } else {
+          this.value = {
+            floors: [...(this.value.floors || []), value],
+            areas: [
+              ...(this.value.areas?.filter(
+                (val) => val !== FILTER_NONE_OF_LISTED
+              ) || []),
+            ],
+          };
+        }
       }
+      listItem.selected = this.value[type]?.includes(value);
+    } else if (this.value?.areas?.includes(FILTER_NONE_OF_LISTED)) {
+      this.value = {};
+      listItem.selected = false;
+    } else {
       this.value = {
-        ...this.value,
-        [type]: [...(this.value[type] || []), value],
+        floors: [],
+        areas: [...[FILTER_NONE_OF_LISTED]],
       };
+      listItem.selected = true;
     }
-
-    listItem.selected = this.value[type]?.includes(value);
   }
 
   protected updated(changed) {
@@ -230,15 +275,25 @@ export class HaFilterFloorAreas extends LitElement {
       return;
     }
 
-    if (this.value.areas) {
-      for (const areaId of this.value.areas) {
+    const filterNoneOfListed = this.value.areas?.[0] === FILTER_NONE_OF_LISTED;
+
+    if (this.value.areas?.length) {
+      let requestedAreas;
+      if (!filterNoneOfListed) {
+        requestedAreas = this.value.areas;
+      } else {
+        requestedAreas = Object.keys(this.hass.areas);
+      }
+      for (const areaId of requestedAreas) {
         if (this.type) {
           relatedPromises.push(findRelated(this.hass, "area", areaId));
         }
       }
     }
 
-    if (this.value.floors) {
+    if (this.value.floors?.length) {
+      // will not be executed if filterNoneOfListed
+      // since this.value.floors will be empty
       for (const floorId of this.value.floors) {
         if (this.type) {
           relatedPromises.push(findRelated(this.hass, "floor", floorId));
@@ -248,10 +303,23 @@ export class HaFilterFloorAreas extends LitElement {
 
     const results = await Promise.all(relatedPromises);
     const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
+    if (!filterNoneOfListed) {
+      for (const result of results) {
+        if (result[this.type!]) {
+          result[this.type!]!.forEach((item) => items.add(item));
+        }
       }
+    } else {
+      const allEntityIds = this.allEntities.map((entity) => entity.entity_id);
+      const allRelatedToAreas: string[] = [];
+      for (const result of results) {
+        if (result[this.type!]) {
+          result[this.type!]!.forEach((item) => allRelatedToAreas.push(item));
+        }
+      }
+      allEntityIds
+        .filter((entity) => !allRelatedToAreas.includes(entity))
+        .forEach((item) => items.add(item));
     }
 
     fireEvent(this, "data-table-filter-changed", {
