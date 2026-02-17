@@ -98,6 +98,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-dialog-header show-border slot="header">
