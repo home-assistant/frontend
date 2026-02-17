@@ -155,7 +155,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const maxColumnCount = this._columnsController.value ?? 1;
 
-    const columnCount = Math.min(maxColumnCount, totalSectionCount);
+    const columnCount = Math.max(
+      Math.min(maxColumnCount, totalSectionCount),
+      1
+    );
     // On mobile with sidebar, use full width for whichever view is active
     const contentColumnCount =
       hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
