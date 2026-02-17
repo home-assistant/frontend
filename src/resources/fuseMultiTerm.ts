@@ -6,6 +6,10 @@ import type {
   IFuseOptions,
 } from "fuse.js";
 import Fuse from "fuse.js";
+import {
+  normalizeSearchText,
+  splitSearchTerms,
+} from "../common/string/search-query";
 
 export interface FuseWeightedKey {
   name: string | string[];
@@ -74,10 +78,7 @@ export function multiTermSearch<T>(
   fuseIndex?: FuseIndex<T>,
   options: IFuseOptions<T> = {}
 ): T[] {
-  const terms = search
-    .toLowerCase()
-    .split(" ")
-    .filter((t) => t.trim());
+  const terms = splitSearchTerms(normalizeSearchText(search));
 
   if (!terms.length) {
     return items;
@@ -147,10 +148,7 @@ export function multiTermSortedSearch<T>(
   fuseIndex?: FuseIndex<T>,
   options: IFuseOptions<T> = {}
 ) {
-  const terms = search
-    .toLowerCase()
-    .split(" ")
-    .filter((t) => t.trim());
+  const terms = splitSearchTerms(normalizeSearchText(search));
 
   if (!terms.length) {
     return items;
@@ -170,10 +168,6 @@ export function multiTermSortedSearch<T>(
   let termHits = 0;
 
   terms.forEach((term) => {
-    if (!term.trim()) {
-      return;
-    }
-
     const termResults = searchTerm<T>(items, term, fuseIndex, {
       ...options,
       shouldSort: false,

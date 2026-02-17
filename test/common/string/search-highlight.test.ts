@@ -173,20 +173,20 @@ describe("search highlight custom highlight API integration", () => {
     const style = root.querySelector("style");
     expect(style).toBeTruthy();
     expect(style!.textContent).toContain("::highlight(ha-search-");
-    expect(style!.textContent).toContain(".custom-highlight-active");
+    expect(style!.textContent).toContain(".ha-highlight");
   });
 
-  it("does not inject style when custom highlights are unavailable", () => {
+  it("still injects marker style when custom highlights are unavailable", () => {
     (globalThis as any).CSS = {};
     const { root } = createShadowRoot();
     const searchHighlight = new SearchHighlight(root);
     expect(searchHighlight).toBeDefined();
-    expect(root.querySelector("style")).toBeNull();
+    expect(root.querySelector("style")).toBeTruthy();
   });
 
   it("applies and clears highlights based on mark nodes", () => {
     const highlights = installMockCustomHighlights();
-    const { host, root } = createShadowRoot();
+    const { root } = createShadowRoot();
     const searchHighlight = new SearchHighlight(root);
 
     const mark = document.createElement("mark");
@@ -203,7 +203,6 @@ describe("search highlight custom highlight API integration", () => {
 
     searchHighlight.applyFromMarks("k1");
     expect(highlights.set).toHaveBeenCalledTimes(1);
-    expect(host.classList.contains("custom-highlight-active")).toBe(true);
 
     searchHighlight.applyFromMarks("k1");
     expect(highlights.set).toHaveBeenCalledTimes(1);
@@ -215,12 +214,11 @@ describe("search highlight custom highlight API integration", () => {
     nonTextMark.remove();
     searchHighlight.applyFromMarks("k3");
     expect(highlights.delete).toHaveBeenCalledTimes(1);
-    expect(host.classList.contains("custom-highlight-active")).toBe(false);
   });
 
   it("applies range highlights and skips only exact duplicate range positions", () => {
     const highlights = installMockCustomHighlights();
-    const { host, root } = createShadowRoot();
+    const { root } = createShadowRoot();
     const searchHighlight = new SearchHighlight(root);
 
     const textNode = document.createTextNode("abcdef");
@@ -237,14 +235,12 @@ describe("search highlight custom highlight API integration", () => {
     searchHighlight.applyFromRanges([range], "same");
     searchHighlight.applyFromRanges([range], "same");
     expect(highlights.set).toHaveBeenCalledTimes(1);
-    expect(host.classList.contains("custom-highlight-active")).toBe(true);
 
     searchHighlight.applyFromRanges([movedRange], "same");
     expect(highlights.set).toHaveBeenCalledTimes(2);
 
     searchHighlight.applyFromRanges([], "clear");
     expect(highlights.delete).toHaveBeenCalledTimes(1);
-    expect(host.classList.contains("custom-highlight-active")).toBe(false);
   });
 
   it("observes mark mutations and re-applies highlights", async () => {
@@ -288,7 +284,7 @@ describe("search highlight custom highlight API integration", () => {
 
   it("clears highlights when observed key becomes empty", async () => {
     const highlights = installMockCustomHighlights();
-    const { host, root } = createShadowRoot();
+    const { root } = createShadowRoot();
     const searchHighlight = new SearchHighlight(root);
 
     const mark = document.createElement("mark");
@@ -300,16 +296,14 @@ describe("search highlight custom highlight API integration", () => {
     searchHighlight.startAutoSyncFromMarks(() => key);
     await flushMutationObserver();
     expect(highlights.set).toHaveBeenCalledTimes(1);
-    expect(host.classList.contains("custom-highlight-active")).toBe(true);
 
     key = " ";
     (mark.firstChild as Text).textContent = "Alphabet";
     await flushMutationObserver();
     expect(highlights.delete).toHaveBeenCalledTimes(1);
-    expect(host.classList.contains("custom-highlight-active")).toBe(false);
   });
 
-  it("cannot apply highlights if support is added after construction", () => {
+  it("can apply highlights if support is added after construction", () => {
     (globalThis as any).CSS = {};
     const { root } = createShadowRoot();
     const searchHighlight = new SearchHighlight(root);
@@ -322,19 +316,15 @@ describe("search highlight custom highlight API integration", () => {
     range.setEnd(textNode, 1);
 
     searchHighlight.applyFromRanges([range], "late-support");
-    expect(highlights.set).not.toHaveBeenCalled();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
   });
 
-  it("clear still removes host class even without CSS.highlights", () => {
+  it("clear is safe even without CSS.highlights", () => {
     installMockCustomHighlights();
-    const { host, root } = createShadowRoot();
+    const { root } = createShadowRoot();
     const searchHighlight = new SearchHighlight(root);
 
-    host.classList.add("custom-highlight-active");
-
     (globalThis as any).CSS = {};
-    searchHighlight.clear();
-
-    expect(host.classList.contains("custom-highlight-active")).toBe(false);
+    expect(() => searchHighlight.clear()).not.toThrow();
   });
 });

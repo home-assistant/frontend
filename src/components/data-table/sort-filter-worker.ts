@@ -3,7 +3,10 @@ import type { FuseOptionKey, IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import memoizeOne from "memoize-one";
 import { ipCompare, stringCompare } from "../../common/string/compare";
-import { stripDiacritics } from "../../common/string/strip-diacritics";
+import {
+  normalizeSearchText,
+  splitSearchTerms,
+} from "../../common/string/search-query";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
@@ -47,10 +50,10 @@ const getSearchableValue = (
     const stringValues = value
       .filter((item) => item != null && typeof item !== "object")
       .map(String);
-    return stripDiacritics(stringValues.join(" ").toLowerCase());
+    return normalizeSearchText(stringValues.join(" "));
   }
 
-  return stripDiacritics(String(value).toLowerCase());
+  return normalizeSearchText(String(value));
 };
 
 /** Filters data using exact substring matching (all terms must match). */
@@ -141,7 +144,7 @@ const filterData = (
   columns: SortableColumnContainer,
   filter: string
 ): DataTableRowData[] => {
-  const normalizedFilter = stripDiacritics(filter.toLowerCase().trim());
+  const normalizedFilter = normalizeSearchText(filter).trim();
 
   if (!normalizedFilter) {
     return data;
@@ -153,7 +156,7 @@ const filterData = (
     return data;
   }
 
-  const terms = normalizedFilter.split(/\s+/);
+  const terms = splitSearchTerms(normalizedFilter);
 
   // First, try exact substring matching
   const exactMatches = filterDataExact(data, filterKeys, terms);

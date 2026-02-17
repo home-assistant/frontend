@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, unsafeCSS } from "lit";
-import { stripDiacritics } from "./strip-diacritics";
+import { normalizeSearchText, splitSearchTerms } from "./search-query";
 
 export interface HighlightRange {
   start: number;
@@ -20,7 +20,137 @@ export type HighlightedText =
   | undefined;
 
 const HIGHLIGHT_NAME_PREFIX = "ha-search";
-const ACTIVE_HOST_CLASS = "custom-highlight-active";
+
+const tokenizeSearchQuery = (query: string): string[] => [
+  ...new Set(splitSearchTerms(query)),
+];
+
+/**
+ * Build normalized text and an index map back to original indexes.
+ * Needed because normalization can change character length/index positions.
+ */
+const buildNormalizedIndexMap = (
+  text: string,
+  language?: string
+): NormalizedIndexMap => {
+  let normalizedText = "";
+  const normalizedIndexMap: HighlightRange[] = [];
+
+  let originalIndex = 0;
+
+  for (const char of text) {
+    const start = originalIndex;
+    const end = start + char.length;
+    const normalizedChar = normalizeSearchText(char, language);
+
+    // One original character can normalize into multiple characters.
+    // Keep a mapping for every normalized character back to original indexes.
+    for (const normalizedPart of normalizedChar) {
+      normalizedText += normalizedPart;
+      normalizedIndexMap.push({ start, end });
+    }
+
+    originalIndex = end;
+  }
+
+  return { normalizedText, normalizedIndexMap };
+};
+
+const mergeHighlightRanges = (ranges: HighlightRange[]): HighlightRange[] => {
+  if (!ranges.length) {
+    return [];
+  }
+
+  const sortedRanges = [...ranges].sort((a, b) => a.start - b.start);
+  const mergedRanges: HighlightRange[] = [{ ...sortedRanges[0] }];
+
+  // Merge overlapping/adjacent ranges so the rendered marks stay minimal.
+  for (let i = 1; i < sortedRanges.length; i++) {
+    const previousRange = mergedRanges[mergedRanges.length - 1];
+    const currentRange = sortedRanges[i];
+
+    if (currentRange.start <= previousRange.end) {
+      previousRange.end = Math.max(previousRange.end, currentRange.end);
+      continue;
+    }
+
+    mergedRanges.push({ ...currentRange });
+  }
+
+  return mergedRanges;
+};
+
+/**
+ * Convert rendered `<mark>` nodes into DOM Ranges for `CSS.highlights`.
+ */
+const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
+  const ranges: Range[] = [];
+
+  root.querySelectorAll("mark.ha-highlight").forEach((mark) => {
+    const textNode = mark.firstChild;
+    if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+      return;
+    }
+
+    const text = textNode.textContent;
+    if (!text) {
+      return;
+    }
+
+    const range = new Range();
+    range.setStart(textNode, 0);
+    range.setEnd(textNode, text.length);
+    ranges.push(range);
+  });
+
+  return ranges;
+};
+
+const createHighlightStyle = (highlightName: string): string => css`
+  .ha-highlight {
+    background-color: transparent;
+    color: inherit;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  ::highlight(${unsafeCSS(highlightName)}) {
+    background-color: var(
+      --ha-highlight-bg,
+      var(--ha-color-fill-primary-normal-hover)
+    );
+    color: var(--ha-highlight-color, var(--primary-text-color));
+  }
+`.cssText;
+
+const renderHighlightedParts = (
+  text: string,
+  ranges: HighlightRange[]
+): (string | TemplateResult)[] => {
+  const parts: (string | TemplateResult)[] = [];
+  let previousIndex = 0;
+
+  for (const range of ranges) {
+    if (range.start > previousIndex) {
+      parts.push(text.slice(previousIndex, range.start));
+    }
+
+    parts.push(
+      html`<mark class="ha-highlight"
+        >${text.slice(range.start, range.end)}</mark
+      >`
+    );
+
+    previousIndex = range.end;
+  }
+
+  if (previousIndex < text.length) {
+    parts.push(text.slice(previousIndex));
+  }
+
+  return parts;
+};
 
 /**
  * Search highlighting helper with two integration paths:
@@ -40,158 +170,6 @@ export class SearchHighlight {
 
   private static _nextNodeId = 0;
 
-  private static _normalizeForSearch(text: string, language?: string): string {
-    return stripDiacritics(text).toLocaleLowerCase(language);
-  }
-
-  private static _supportsCustomHighlights(): boolean {
-    return typeof CSS !== "undefined" && CSS.highlights !== undefined;
-  }
-
-  private static _tokenizeSearchQuery(query: string): string[] {
-    const terms = query.trim().split(/\s+/).filter(Boolean);
-    return [...new Set(terms)];
-  }
-
-  /**
-   * Build normalized text and an index map back to original indexes.
-   * Needed because normalization can change character length/index positions.
-   */
-  private static _buildNormalizedIndexMap(
-    text: string,
-    language?: string
-  ): NormalizedIndexMap {
-    let normalizedText = "";
-    const normalizedIndexMap: HighlightRange[] = [];
-
-    let originalIndex = 0;
-
-    for (const char of text) {
-      const start = originalIndex;
-      const end = start + char.length;
-      const normalizedChar = SearchHighlight._normalizeForSearch(
-        char,
-        language
-      );
-
-      // One original character can normalize into multiple characters.
-      // Keep a mapping for every normalized character back to original indexes.
-      for (const normalizedPart of normalizedChar) {
-        normalizedText += normalizedPart;
-        normalizedIndexMap.push({ start, end });
-      }
-
-      originalIndex = end;
-    }
-
-    return { normalizedText, normalizedIndexMap };
-  }
-
-  private static _mergeHighlightRanges(
-    ranges: HighlightRange[]
-  ): HighlightRange[] {
-    if (!ranges.length) {
-      return [];
-    }
-
-    const sortedRanges = [...ranges].sort((a, b) => a.start - b.start);
-    const mergedRanges: HighlightRange[] = [{ ...sortedRanges[0] }];
-
-    // Merge overlapping/adjacent ranges so the rendered marks stay minimal.
-    for (let i = 1; i < sortedRanges.length; i++) {
-      const previousRange = mergedRanges[mergedRanges.length - 1];
-      const currentRange = sortedRanges[i];
-
-      if (currentRange.start <= previousRange.end) {
-        previousRange.end = Math.max(previousRange.end, currentRange.end);
-        continue;
-      }
-
-      mergedRanges.push({ ...currentRange });
-    }
-
-    return mergedRanges;
-  }
-
-  /**
-   * Convert rendered `<mark>` fallback nodes into DOM Ranges for `CSS.highlights`.
-   */
-  private static _getHighlightRangesFromMarks(root: ShadowRoot): Range[] {
-    const ranges: Range[] = [];
-
-    root.querySelectorAll("mark.ha-highlight").forEach((mark) => {
-      const textNode = mark.firstChild;
-      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
-        return;
-      }
-
-      const text = textNode.textContent;
-      if (!text) {
-        return;
-      }
-
-      const range = new Range();
-      range.setStart(textNode, 0);
-      range.setEnd(textNode, text.length);
-      ranges.push(range);
-    });
-
-    return ranges;
-  }
-
-  private static _createHighlightStyle(highlightName: string): string {
-    return css`
-      .ha-highlight {
-        background-color: var(
-          --ha-highlight-bg,
-          var(--ha-color-fill-primary-normal-hover)
-        );
-        color: var(--ha-highlight-color, var(--primary-text-color));
-        border-radius: 2px;
-        padding: 0;
-        box-shadow: inset 0 0 0 1px transparent;
-      }
-
-      :host(.${unsafeCSS(ACTIVE_HOST_CLASS)}) .ha-highlight {
-        background-color: transparent;
-        color: inherit;
-      }
-
-      ::highlight(${unsafeCSS(highlightName)}) {
-        background-color: var(
-          --ha-highlight-bg,
-          var(--ha-color-fill-primary-normal-hover)
-        );
-        color: var(--ha-highlight-color, var(--primary-text-color));
-      }
-    `.cssText;
-  }
-
-  private static _getNodeId(node: Node): number {
-    let nodeId = SearchHighlight._nodeIds.get(node);
-    if (nodeId !== undefined) {
-      return nodeId;
-    }
-
-    nodeId = SearchHighlight._nextNodeId++;
-    SearchHighlight._nodeIds.set(node, nodeId);
-    return nodeId;
-  }
-
-  /**
-   * Build a stable signature for a set of ranges so we can detect real range
-   * changes even when the count stays the same.
-   */
-  private static _getRangesFingerprint(ranges: Range[]): string {
-    return ranges
-      .map((range) => {
-        const startNodeId = SearchHighlight._getNodeId(range.startContainer);
-        const endNodeId = SearchHighlight._getNodeId(range.endContainer);
-        return `${startNodeId}:${range.startOffset}-${endNodeId}:${range.endOffset}`;
-      })
-      .join("|");
-  }
-
   // Cache the last apply inputs to avoid re-registering identical highlights.
   private _lastCacheKey?: string;
 
@@ -206,8 +184,7 @@ export class SearchHighlight {
   private _autoSyncCacheKeyProvider?: () => string | null | undefined;
 
   public constructor(private readonly _root?: ShadowRoot) {
-    // Use Custom Highlight API for a cleaner paint path.
-    if (this._root && SearchHighlight._supportsCustomHighlights()) {
+    if (this._root) {
       this._highlightName = `${HIGHLIGHT_NAME_PREFIX}-${SearchHighlight._nextHighlightId++}`;
       this._addHighlightStyle();
     }
@@ -226,13 +203,15 @@ export class SearchHighlight {
       return [];
     }
 
-    const terms = SearchHighlight._tokenizeSearchQuery(query);
+    const terms = tokenizeSearchQuery(query);
     if (!terms.length) {
       return [];
     }
 
-    const { normalizedText, normalizedIndexMap } =
-      SearchHighlight._buildNormalizedIndexMap(text, language);
+    const { normalizedText, normalizedIndexMap } = buildNormalizedIndexMap(
+      text,
+      language
+    );
 
     // Text can normalize to empty (for example, combining marks only).
     if (!normalizedText) {
@@ -242,10 +221,7 @@ export class SearchHighlight {
     const ranges: HighlightRange[] = [];
 
     for (const term of terms) {
-      const normalizedTerm = SearchHighlight._normalizeForSearch(
-        term,
-        language
-      );
+      const normalizedTerm = normalizeSearchText(term, language);
       // Some tokens normalize to empty (like combining marks); skip them.
       if (!normalizedTerm) {
         continue;
@@ -269,13 +245,12 @@ export class SearchHighlight {
       }
     }
 
-    return SearchHighlight._mergeHighlightRanges(ranges);
+    return mergeHighlightRanges(ranges);
   }
 
   /**
    * Render plain text with matching segments wrapped in `<mark>`.
-   * This is the baseline highlight path and has fallbacks for when Custom Highlights
-   * are not supported by the browser.
+   * `<mark>` nodes are used as stable anchors for range extraction.
    */
   public renderHighlightedText(
     text: string | null | undefined,
@@ -291,7 +266,7 @@ export class SearchHighlight {
       return text;
     }
 
-    return SearchHighlight._renderHighlightedParts(text, ranges);
+    return renderHighlightedParts(text, ranges);
   }
 
   /**
@@ -304,10 +279,7 @@ export class SearchHighlight {
       return;
     }
 
-    this.applyFromRanges(
-      SearchHighlight._getHighlightRangesFromMarks(this._root),
-      cacheKey
-    );
+    this.applyFromRanges(getHighlightRangesFromMarks(this._root), cacheKey);
   }
 
   /**
@@ -316,11 +288,12 @@ export class SearchHighlight {
    * `cacheKey` should represent the inputs used to build `ranges`.
    */
   public applyFromRanges(ranges: Range[], cacheKey?: string): void {
-    if (
-      !this._root ||
-      !SearchHighlight._supportsCustomHighlights() ||
-      !this._highlightName
-    ) {
+    if (!this._root || !this._highlightName) {
+      return;
+    }
+
+    const highlightRegistry = globalThis.CSS?.highlights;
+    if (!highlightRegistry || typeof Highlight === "undefined") {
       return;
     }
 
@@ -329,7 +302,7 @@ export class SearchHighlight {
       return;
     }
 
-    const fingerprint = SearchHighlight._getRangesFingerprint(ranges);
+    const fingerprint = this._getRangesFingerprint(ranges);
     // Skip writes only when both the caller key and concrete range positions
     // are unchanged.
     if (
@@ -342,8 +315,7 @@ export class SearchHighlight {
     this._lastCacheKey = cacheKey;
     this._lastFingerprint = fingerprint;
 
-    CSS.highlights.set(this._highlightName, new Highlight(...ranges));
-    (this._root.host as HTMLElement).classList.add(ACTIVE_HOST_CLASS);
+    highlightRegistry.set(this._highlightName, new Highlight(...ranges));
   }
 
   /**
@@ -391,41 +363,34 @@ export class SearchHighlight {
       return;
     }
 
-    if (SearchHighlight._supportsCustomHighlights() && this._highlightName) {
-      CSS.highlights.delete(this._highlightName);
-    }
-
-    (this._root.host as HTMLElement).classList.remove(ACTIVE_HOST_CLASS);
+    globalThis.CSS?.highlights?.delete(this._highlightName!);
     this._lastCacheKey = undefined;
     this._lastFingerprint = undefined;
   }
 
-  private static _renderHighlightedParts(
-    text: string,
-    ranges: HighlightRange[]
-  ): (string | TemplateResult)[] {
-    const parts: (string | TemplateResult)[] = [];
-    let previousIndex = 0;
-
-    for (const range of ranges) {
-      if (range.start > previousIndex) {
-        parts.push(text.slice(previousIndex, range.start));
-      }
-
-      parts.push(
-        html`<mark class="ha-highlight"
-          >${text.slice(range.start, range.end)}</mark
-        >`
-      );
-
-      previousIndex = range.end;
+  private _getNodeId(node: Node): number {
+    let nodeId = SearchHighlight._nodeIds.get(node);
+    if (nodeId !== undefined) {
+      return nodeId;
     }
 
-    if (previousIndex < text.length) {
-      parts.push(text.slice(previousIndex));
-    }
+    nodeId = SearchHighlight._nextNodeId++;
+    SearchHighlight._nodeIds.set(node, nodeId);
+    return nodeId;
+  }
 
-    return parts;
+  /**
+   * Build a stable signature for a set of ranges so we can detect real range
+   * changes even when the count stays the same.
+   */
+  private _getRangesFingerprint(ranges: Range[]): string {
+    return ranges
+      .map((range) => {
+        const startNodeId = this._getNodeId(range.startContainer);
+        const endNodeId = this._getNodeId(range.endContainer);
+        return `${startNodeId}:${range.startOffset}-${endNodeId}:${range.endOffset}`;
+      })
+      .join("|");
   }
 
   private _queueAutoSyncFromMarks(): void {
@@ -451,7 +416,7 @@ export class SearchHighlight {
   }
 
   /**
-   * Inject shared styles for both `<mark>` fallback and `::highlight()` rendering.
+   * Inject marker styles and `::highlight()` theme colors.
    */
   private _addHighlightStyle(): void {
     if (!this._root || !this._highlightName) {
@@ -459,9 +424,7 @@ export class SearchHighlight {
     }
 
     const style = document.createElement("style");
-    style.textContent = SearchHighlight._createHighlightStyle(
-      this._highlightName
-    );
+    style.textContent = createHighlightStyle(this._highlightName);
     this._root.appendChild(style);
   }
 }
