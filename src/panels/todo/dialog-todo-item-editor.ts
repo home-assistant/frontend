@@ -123,6 +123,7 @@ class DialogTodoItemEditor extends LitElement {
         header-title=${this.hass.localize(
           `ui.components.todo.item.${isCreate ? "add" : "edit"}`
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div class="content">
