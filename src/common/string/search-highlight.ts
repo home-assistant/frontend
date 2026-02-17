@@ -342,7 +342,9 @@ export class SearchHighlight {
 
     if (!this._autoSyncObserver) {
       this._autoSyncObserver = new MutationObserver((records) => {
-        if (!records.some((record) => this._mutationAffectsHighlights(record))) {
+        if (
+          !records.some((record) => this._mutationAffectsHighlights(record))
+        ) {
           return;
         }
         this._queueAutoSyncFromMarks();
