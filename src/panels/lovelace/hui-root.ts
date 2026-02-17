@@ -1370,6 +1370,7 @@ class HUIRoot extends LitElement {
           padding: 0;
         }
         ha-tab-group::part(scroll-button) {
+          inset-block-end: var(--safe-track-width);
           background-color: var(--app-header-background-color);
           background: linear-gradient(
             90deg,
@@ -1393,7 +1394,7 @@ class HUIRoot extends LitElement {
             transparent
           );
         }
-        .edit-mode ha-tab-group::part(scroll-button--end) {
+        .edit-mode ha-tab-group::part(scroll-button-end) {
           background: linear-gradient(
             270deg,
             var(--app-header-edit-background-color, #455a64),

@@ -1187,7 +1187,6 @@ export class HaScriptEditor extends SubscribeMixin(
             --ha-automation-editor-width,
             1540px
           );
-          --hass-subpage-bottom-inset: 0px;
         }
         .yaml-mode {
           height: 100%;
