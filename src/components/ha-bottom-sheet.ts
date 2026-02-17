@@ -169,20 +169,19 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
-    for (const target of ev.composedPath()) {
-      if (!(target instanceof HTMLElement)) {
-        continue;
-      }
+    const path = ev.composedPath();
 
-      if (target !== this._drawer && !this._drawer.contains(target)) {
-        continue;
-      }
+    if (this._isSwipeLockedByComponent(path)) {
+      return;
+    }
 
-      if (this._isSwipeLockedTarget(target)) {
-        return;
+    // Check if any element inside drawer in the composed path has scrollTop > 0
+    for (const target of path) {
+      const el = target as HTMLElement;
+      if (el === this._drawer) {
+        break;
       }
-
-      if (target !== this._drawer && target.scrollTop > 0) {
+      if (el.scrollTop > 0) {
         return;
       }
     }
@@ -190,11 +189,23 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     this._startResizing(ev.touches[0].clientY);
   };
 
-  private _isSwipeLockedTarget(target: HTMLElement) {
-    return (
-      SWIPE_LOCKED_COMPONENTS.has(target.localName) ||
-      Array.from(target.classList).some((cls) => SWIPE_LOCKED_CLASSES.has(cls))
-    );
+  private _isSwipeLockedByComponent(path: EventTarget[]) {
+    for (const target of path) {
+      if (target === this._drawer) {
+        break;
+      }
+      if (
+        target instanceof HTMLElement &&
+        (SWIPE_LOCKED_COMPONENTS.has(target.localName) ||
+          Array.from(target.classList).some((cls) =>
+            SWIPE_LOCKED_CLASSES.has(cls)
+          ))
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private _startResizing(clientY: number) {
