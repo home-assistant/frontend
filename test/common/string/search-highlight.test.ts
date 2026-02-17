@@ -15,6 +15,13 @@ const createShadowRoot = () => {
   return { host, root: host.attachShadow({ mode: "open" }) };
 };
 
+const flushMutationObserver = async () => {
+  await Promise.resolve();
+  await new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+};
+
 const installMockCustomHighlights = (): MockHighlightApi => {
   const highlights: MockHighlightApi = {
     set: vi.fn(),
@@ -211,7 +218,7 @@ describe("search highlight custom highlight API integration", () => {
     expect(host.classList.contains("custom-highlight-active")).toBe(false);
   });
 
-  it("applies range highlights and skips duplicate calls by key and count", () => {
+  it("applies range highlights and skips only exact duplicate range positions", () => {
     const highlights = installMockCustomHighlights();
     const { host, root } = createShadowRoot();
     const searchHighlight = new SearchHighlight(root);
@@ -223,12 +230,81 @@ describe("search highlight custom highlight API integration", () => {
     range.setStart(textNode, 1);
     range.setEnd(textNode, 3);
 
+    const movedRange = new Range();
+    movedRange.setStart(textNode, 2);
+    movedRange.setEnd(textNode, 4);
+
     searchHighlight.applyFromRanges([range], "same");
     searchHighlight.applyFromRanges([range], "same");
     expect(highlights.set).toHaveBeenCalledTimes(1);
     expect(host.classList.contains("custom-highlight-active")).toBe(true);
 
+    searchHighlight.applyFromRanges([movedRange], "same");
+    expect(highlights.set).toHaveBeenCalledTimes(2);
+
     searchHighlight.applyFromRanges([], "clear");
+    expect(highlights.delete).toHaveBeenCalledTimes(1);
+    expect(host.classList.contains("custom-highlight-active")).toBe(false);
+  });
+
+  it("observes mark mutations and re-applies highlights", async () => {
+    const highlights = installMockCustomHighlights();
+    const { root } = createShadowRoot();
+    const searchHighlight = new SearchHighlight(root);
+
+    const mark = document.createElement("mark");
+    mark.className = "ha-highlight";
+    mark.append(document.createTextNode("Alpha"));
+    root.append(mark);
+
+    searchHighlight.startMarkObservation(() => "key");
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
+
+    (mark.firstChild as Text).textContent = "Alphabet";
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(2);
+  });
+
+  it("stops observing mark mutations when stopped", async () => {
+    const highlights = installMockCustomHighlights();
+    const { root } = createShadowRoot();
+    const searchHighlight = new SearchHighlight(root);
+
+    const mark = document.createElement("mark");
+    mark.className = "ha-highlight";
+    mark.append(document.createTextNode("Alpha"));
+    root.append(mark);
+
+    searchHighlight.startMarkObservation(() => "key");
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
+
+    searchHighlight.stopMarkObservation();
+    (mark.firstChild as Text).textContent = "Alphabet";
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
+  });
+
+  it("clears highlights when observed key becomes empty", async () => {
+    const highlights = installMockCustomHighlights();
+    const { host, root } = createShadowRoot();
+    const searchHighlight = new SearchHighlight(root);
+
+    const mark = document.createElement("mark");
+    mark.className = "ha-highlight";
+    mark.append(document.createTextNode("Alpha"));
+    root.append(mark);
+
+    let key = "key";
+    searchHighlight.startMarkObservation(() => key);
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
+    expect(host.classList.contains("custom-highlight-active")).toBe(true);
+
+    key = " ";
+    (mark.firstChild as Text).textContent = "Alphabet";
+    await flushMutationObserver();
     expect(highlights.delete).toHaveBeenCalledTimes(1);
     expect(host.classList.contains("custom-highlight-active")).toBe(false);
   });

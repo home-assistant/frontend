@@ -237,15 +237,22 @@ export class HaDataTable extends LitElement {
       // Force update of location of rows
       this._filteredData = [...this._filteredData];
     }
+
+    // Re-attach observer when the element reconnects.
+    if (this.hasUpdated) {
+      this._getSearchHighlight().startMarkObservation(() => this._filter);
+    }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._searchHighlight?.stopMarkObservation();
     this._searchHighlight?.clear();
   }
 
   protected firstUpdated() {
     this.updateComplete.then(() => this._calcTableHeight());
+    this._getSearchHighlight().startMarkObservation(() => this._filter);
   }
 
   protected updated() {
@@ -257,8 +264,6 @@ export class HaDataTable extends LitElement {
         this.style.removeProperty("--table-row-width");
       }
     }
-
-    this._getSearchHighlight().applyFromMarks(this._filter);
   }
 
   public willUpdate(properties: PropertyValues) {

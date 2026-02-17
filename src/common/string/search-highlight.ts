@@ -28,6 +28,11 @@ export class SearchHighlight {
   // other's highlight ranges.
   private static _nextHighlightId = 0;
 
+  // Fingerprints include Node identity, so map nodes to stable numeric IDs.
+  private static _nodeIds = new WeakMap<Node, number>();
+
+  private static _nextNodeId = 0;
+
   private static _normalizeForSearch(text: string, language?: string): string {
     return stripDiacritics(text).toLocaleLowerCase(language);
   }
@@ -155,13 +160,43 @@ export class SearchHighlight {
     `.cssText;
   }
 
-  // Cache the last apply inputs to avoid re-registering identical highlights
-  // on every Lit update.
+  private static _getNodeId(node: Node): number {
+    let nodeId = SearchHighlight._nodeIds.get(node);
+    if (nodeId !== undefined) {
+      return nodeId;
+    }
+
+    nodeId = SearchHighlight._nextNodeId++;
+    SearchHighlight._nodeIds.set(node, nodeId);
+    return nodeId;
+  }
+
+  /**
+   * Build a stable signature for a set of ranges so we can detect real range
+   * changes even when the count stays the same.
+   */
+  private static _getRangesFingerprint(ranges: Range[]): string {
+    return ranges
+      .map((range) => {
+        const startNodeId = SearchHighlight._getNodeId(range.startContainer);
+        const endNodeId = SearchHighlight._getNodeId(range.endContainer);
+        return `${startNodeId}:${range.startOffset}-${endNodeId}:${range.endOffset}`;
+      })
+      .join("|");
+  }
+
+  // Cache the last apply inputs to avoid re-registering identical highlights.
   private _lastKey?: string;
 
-  private _lastCount = -1;
+  private _lastFingerprint?: string;
 
   private readonly _highlightName?: string;
+
+  private _marksObserver?: MutationObserver;
+
+  private _marksSyncQueued = false;
+
+  private _marksKeyProvider?: () => string | null | undefined;
 
   public constructor(private readonly _root?: ShadowRoot) {
     // Use Custom Highlight API for a cleaner paint path.
@@ -271,6 +306,40 @@ export class SearchHighlight {
     this._applyFromRanges(ranges, key);
   }
 
+  /**
+   * Observe rendered `<mark>` changes and keep custom highlights in sync.
+   */
+  public startMarkObservation(
+    keyProvider: () => string | null | undefined
+  ): void {
+    if (!this._root || !this._highlightName) {
+      return;
+    }
+
+    this._marksKeyProvider = keyProvider;
+
+    if (!this._marksObserver) {
+      this._marksObserver = new MutationObserver(() => {
+        this._queueMarkSync();
+      });
+    }
+
+    this._marksObserver.disconnect();
+    this._marksObserver.observe(this._root, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    this._queueMarkSync();
+  }
+
+  public stopMarkObservation(): void {
+    this._marksObserver?.disconnect();
+    this._marksSyncQueued = false;
+    this._marksKeyProvider = undefined;
+  }
+
   public clear(): void {
     if (!this._root) {
       return;
@@ -282,7 +351,7 @@ export class SearchHighlight {
 
     (this._root.host as HTMLElement).classList.remove(ACTIVE_HOST_CLASS);
     this._lastKey = undefined;
-    this._lastCount = -1;
+    this._lastFingerprint = undefined;
   }
 
   private static _renderHighlightedParts(
@@ -313,8 +382,31 @@ export class SearchHighlight {
     return parts;
   }
 
+  private _queueMarkSync(): void {
+    if (this._marksSyncQueued) {
+      return;
+    }
+
+    this._marksSyncQueued = true;
+    queueMicrotask(() => {
+      this._marksSyncQueued = false;
+      if (!this._root || !(this._root.host as HTMLElement).isConnected) {
+        return;
+      }
+
+      const key = this._marksKeyProvider?.()?.trim();
+      if (!key) {
+        this.clear();
+        return;
+      }
+
+      this.applyFromMarks(key);
+    });
+  }
+
   /**
-   * Register custom highlight ranges and skip no-op updates using cached inputs.
+   * Register custom highlight ranges and skip no-op updates using cached key
+   * and range fingerprint.
    */
   private _applyFromRanges(ranges: Range[], key?: string): void {
     if (
@@ -325,20 +417,20 @@ export class SearchHighlight {
       return;
     }
 
-    const rangeCount = ranges.length;
-    // If caller key and number of ranges are unchanged, skip redundant writes
-    // into the document-wide highlight registry.
-    if (key === this._lastKey && rangeCount === this._lastCount) {
+    if (!ranges.length) {
+      this.clear();
+      return;
+    }
+
+    const fingerprint = SearchHighlight._getRangesFingerprint(ranges);
+    // Skip writes only when both the caller key and concrete range positions
+    // are unchanged.
+    if (key === this._lastKey && fingerprint === this._lastFingerprint) {
       return;
     }
 
     this._lastKey = key;
-    this._lastCount = rangeCount;
-
-    if (!rangeCount) {
-      this.clear();
-      return;
-    }
+    this._lastFingerprint = fingerprint;
 
     CSS.highlights.set(this._highlightName, new Highlight(...ranges));
     (this._root.host as HTMLElement).classList.add(ACTIVE_HOST_CLASS);
