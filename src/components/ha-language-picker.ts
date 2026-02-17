@@ -168,7 +168,7 @@ export class HaLanguagePicker extends LitElement {
         .searchKeys=${SEARCH_KEYS}
         @value-changed=${this._changed}
         hide-clear-icon
-        style="min-width: ${this.minWidth}"
+        style=${this.minWidth ? `min-width: ${this.minWidth}` : ""}
       >
         ${this.buttonStyle
           ? html`<ha-button
