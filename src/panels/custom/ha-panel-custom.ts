@@ -51,6 +51,7 @@ export class HaPanelCustom extends ReactiveElement {
       route: this.route,
     });
     this._setProperties = setProperties;
+    this.querySelector("iframe")?.classList.add("loaded");
   }
 
   public disconnectedCallback() {
@@ -91,6 +92,8 @@ export class HaPanelCustom extends ReactiveElement {
   }
 
   private _createPanel(panel: CustomPanelInfo) {
+    this.style.backgroundColor = "var(--primary-background-color)";
+
     const config = panel.config!._panel_custom;
     const panelUrl = getUrl(config);
 
@@ -153,6 +156,11 @@ export class HaPanelCustom extends ReactiveElement {
           height: 100dvh;
           display: block;
           background-color: var(--primary-background-color);
+          opacity: 0;
+          transition: opacity var(--ha-animation-duration-normal) ease;
+        }
+        iframe.loaded {
+          opacity: 1;
         }
       </style>
       <iframe ${titleAttr}></iframe>`.trim();
