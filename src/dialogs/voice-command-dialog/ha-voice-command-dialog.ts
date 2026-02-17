@@ -168,7 +168,7 @@ export class HaVoiceCommandDialog extends LitElement {
             href=${documentationUrl(this.hass, "/docs/assist/")}
             slot="actionItems"
             target="_blank"
-            rel="noopener noreferer"
+            rel="noopener noreferrer"
           >
             <ha-icon-button
               .label=${this.hass.localize("ui.common.help")}

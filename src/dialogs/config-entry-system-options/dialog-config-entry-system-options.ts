@@ -69,6 +69,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
               ) || this._params.entry.domain,
           }
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}

@@ -434,6 +434,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           --wa-space-l: 0;
         }
 
+        wa-popover::part(dialog)::backdrop {
+          background: none;
+        }
+
         wa-popover::part(body) {
           width: max(var(--body-width), 250px);
           max-width: var(

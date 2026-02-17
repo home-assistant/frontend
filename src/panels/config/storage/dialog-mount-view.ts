@@ -220,6 +220,7 @@ class ViewMountDialog extends LitElement {
           : this.hass.localize(
               "ui.panel.config.storage.network_mounts.add_title"
             )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <a
