@@ -90,20 +90,20 @@ const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
   const ranges: Range[] = [];
 
   root.querySelectorAll(HIGHLIGHT_MARK_SELECTOR).forEach((mark) => {
-    const textNode = mark.firstChild;
-    if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
-      return;
-    }
+    const textWalker = document.createTreeWalker(mark, NodeFilter.SHOW_TEXT);
+    let textNode = textWalker.nextNode();
 
-    const text = textNode.textContent;
-    if (!text) {
-      return;
-    }
+    while (textNode) {
+      const text = textNode.textContent;
+      if (text) {
+        const range = new Range();
+        range.setStart(textNode, 0);
+        range.setEnd(textNode, text.length);
+        ranges.push(range);
+      }
 
-    const range = new Range();
-    range.setStart(textNode, 0);
-    range.setEnd(textNode, text.length);
-    ranges.push(range);
+      textNode = textWalker.nextNode();
+    }
   });
 
   return ranges;
@@ -437,6 +437,10 @@ export class SearchHighlight {
       return false;
     }
 
+    if (this._nodeContainsHighlightMark(mutation.target)) {
+      return true;
+    }
+
     for (const node of mutation.addedNodes) {
       if (this._nodeContainsHighlightMark(node)) {
         return true;
@@ -461,9 +465,18 @@ export class SearchHighlight {
       );
     }
 
-    if (node.nodeType === Node.TEXT_NODE) {
-      const parent = (node as Text).parentElement;
-      return Boolean(parent?.closest(HIGHLIGHT_MARK_SELECTOR));
+    if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+      return Boolean(
+        (node as DocumentFragment).querySelector?.(HIGHLIGHT_MARK_SELECTOR)
+      );
+    }
+
+    if (
+      node.nodeType === Node.TEXT_NODE ||
+      node.nodeType === Node.COMMENT_NODE
+    ) {
+      const parentElement = (node as ChildNode).parentElement;
+      return Boolean(parentElement?.closest(HIGHLIGHT_MARK_SELECTOR));
     }
 
     return false;

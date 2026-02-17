@@ -191,6 +191,7 @@ describe("search highlight custom highlight API integration", () => {
 
     const mark = document.createElement("mark");
     mark.className = "ha-highlight";
+    mark.append(document.createComment("?lit$marker$"));
     mark.append(document.createTextNode("Alpha"));
 
     const nonTextMark = document.createElement("mark");
@@ -266,6 +267,7 @@ describe("search highlight custom highlight API integration", () => {
     const highlights = installMockCustomHighlights();
     const { root } = createShadowRoot();
     const searchHighlight = new SearchHighlight(root);
+    const applyFromMarksSpy = vi.spyOn(searchHighlight, "applyFromMarks");
 
     const mark = document.createElement("mark");
     mark.className = "ha-highlight";
@@ -279,10 +281,12 @@ describe("search highlight custom highlight API integration", () => {
     searchHighlight.startAutoSyncFromMarks(() => "key");
     await flushMutationObserver();
     expect(highlights.set).toHaveBeenCalledTimes(1);
+    expect(applyFromMarksSpy).toHaveBeenCalledTimes(1);
 
     (unrelated.firstChild as Text).textContent = "outside-updated";
     await flushMutationObserver();
     expect(highlights.set).toHaveBeenCalledTimes(1);
+    expect(applyFromMarksSpy).toHaveBeenCalledTimes(1);
   });
 
   it("can observe a specific subtree", async () => {
