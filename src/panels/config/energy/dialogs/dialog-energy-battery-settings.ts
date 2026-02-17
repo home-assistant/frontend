@@ -127,6 +127,7 @@ export class DialogEnergyBatterySettings
         header-title=${this.hass.localize(
           "ui.panel.config.energy.battery.dialog.header"
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : nothing}

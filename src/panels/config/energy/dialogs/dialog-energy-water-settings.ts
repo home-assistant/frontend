@@ -104,6 +104,7 @@ export class DialogEnergyWaterSettings
         header-title=${this.hass.localize(
           "ui.panel.config.energy.water.dialog.header"
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
