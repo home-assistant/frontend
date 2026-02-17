@@ -738,7 +738,14 @@ export class HaDataTable extends LitElement {
       return;
     }
 
-    this._getSearchHighlight().startAutoSyncFromMarks(() => this._filter);
+    const observedTarget =
+      this.renderRoot.querySelector("lit-virtualizer") ||
+      (this.renderRoot as ShadowRoot);
+
+    this._getSearchHighlight().startAutoSyncFromMarks(
+      () => this._filter,
+      observedTarget
+    );
   }
 
   private async _sortFilterData() {

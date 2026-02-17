@@ -262,6 +262,61 @@ describe("search highlight custom highlight API integration", () => {
     expect(highlights.set).toHaveBeenCalledTimes(2);
   });
 
+  it("ignores unrelated mutations while auto-syncing", async () => {
+    const highlights = installMockCustomHighlights();
+    const { root } = createShadowRoot();
+    const searchHighlight = new SearchHighlight(root);
+
+    const mark = document.createElement("mark");
+    mark.className = "ha-highlight";
+    mark.append(document.createTextNode("Alpha"));
+    root.append(mark);
+
+    const unrelated = document.createElement("div");
+    unrelated.append(document.createTextNode("outside"));
+    root.append(unrelated);
+
+    searchHighlight.startAutoSyncFromMarks(() => "key");
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
+
+    (unrelated.firstChild as Text).textContent = "outside-updated";
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
+  });
+
+  it("can observe a specific subtree", async () => {
+    const highlights = installMockCustomHighlights();
+    const { root } = createShadowRoot();
+    const searchHighlight = new SearchHighlight(root);
+
+    const observed = document.createElement("div");
+    const unobserved = document.createElement("div");
+    root.append(observed, unobserved);
+
+    const observedMark = document.createElement("mark");
+    observedMark.className = "ha-highlight";
+    observedMark.append(document.createTextNode("Alpha"));
+    observed.append(observedMark);
+
+    const unobservedMark = document.createElement("mark");
+    unobservedMark.className = "ha-highlight";
+    unobservedMark.append(document.createTextNode("Beta"));
+    unobserved.append(unobservedMark);
+
+    searchHighlight.startAutoSyncFromMarks(() => "key", observed);
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
+
+    (unobservedMark.firstChild as Text).textContent = "Beta-updated";
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(1);
+
+    (observedMark.firstChild as Text).textContent = "Alpha-updated";
+    await flushMutationObserver();
+    expect(highlights.set).toHaveBeenCalledTimes(2);
+  });
+
   it("stops observing mark mutations when stopped", async () => {
     const highlights = installMockCustomHighlights();
     const { root } = createShadowRoot();

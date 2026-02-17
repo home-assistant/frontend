@@ -20,6 +20,7 @@ export type HighlightedText =
   | undefined;
 
 const HIGHLIGHT_NAME_PREFIX = "ha-search";
+const HIGHLIGHT_MARK_SELECTOR = "mark.ha-highlight";
 
 const tokenizeSearchQuery = (query: string): string[] => [
   ...new Set(splitSearchTerms(query)),
@@ -88,7 +89,7 @@ const mergeHighlightRanges = (ranges: HighlightRange[]): HighlightRange[] => {
 const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
   const ranges: Range[] = [];
 
-  root.querySelectorAll("mark.ha-highlight").forEach((mark) => {
+  root.querySelectorAll(HIGHLIGHT_MARK_SELECTOR).forEach((mark) => {
     const textNode = mark.firstChild;
     if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
       return;
@@ -184,6 +185,8 @@ export class SearchHighlight {
   private _autoSyncQueued = false;
 
   private _autoSyncCacheKeyProvider?: () => string | null | undefined;
+
+  private _autoSyncObservedTarget?: Node;
 
   public constructor(private readonly _root?: ShadowRoot) {
     if (this._root) {
@@ -327,22 +330,27 @@ export class SearchHighlight {
    * `cacheKeyProvider` should return the current query/filter string.
    */
   public startAutoSyncFromMarks(
-    cacheKeyProvider: () => string | null | undefined
+    cacheKeyProvider: () => string | null | undefined,
+    observedTarget?: Node
   ): void {
     if (!this._root || !this._highlightName) {
       return;
     }
 
     this._autoSyncCacheKeyProvider = cacheKeyProvider;
+    this._autoSyncObservedTarget = observedTarget ?? this._root;
 
     if (!this._autoSyncObserver) {
-      this._autoSyncObserver = new MutationObserver(() => {
+      this._autoSyncObserver = new MutationObserver((records) => {
+        if (!records.some((record) => this._mutationAffectsHighlights(record))) {
+          return;
+        }
         this._queueAutoSyncFromMarks();
       });
     }
 
     this._autoSyncObserver.disconnect();
-    this._autoSyncObserver.observe(this._root, {
+    this._autoSyncObserver.observe(this._autoSyncObservedTarget, {
       childList: true,
       subtree: true,
       characterData: true,
@@ -358,6 +366,7 @@ export class SearchHighlight {
     this._autoSyncObserver?.disconnect();
     this._autoSyncQueued = false;
     this._autoSyncCacheKeyProvider = undefined;
+    this._autoSyncObservedTarget = undefined;
   }
 
   public clear(): void {
@@ -415,6 +424,47 @@ export class SearchHighlight {
 
       this.applyFromMarks(cacheKey);
     });
+  }
+
+  private _mutationAffectsHighlights(mutation: MutationRecord): boolean {
+    if (mutation.type === "characterData") {
+      return this._nodeContainsHighlightMark(mutation.target);
+    }
+
+    if (mutation.type !== "childList") {
+      return false;
+    }
+
+    for (const node of mutation.addedNodes) {
+      if (this._nodeContainsHighlightMark(node)) {
+        return true;
+      }
+    }
+
+    for (const node of mutation.removedNodes) {
+      if (this._nodeContainsHighlightMark(node)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private _nodeContainsHighlightMark(node: Node): boolean {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const element = node as Element;
+      return (
+        element.matches(HIGHLIGHT_MARK_SELECTOR) ||
+        Boolean(element.querySelector(HIGHLIGHT_MARK_SELECTOR))
+      );
+    }
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      const parent = (node as Text).parentElement;
+      return Boolean(parent?.closest(HIGHLIGHT_MARK_SELECTOR));
+    }
+
+    return false;
   }
 
   /**
