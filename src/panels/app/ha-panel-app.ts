@@ -51,6 +51,8 @@ class HaPanelApp extends LitElement {
 
   @state() private _kioskMode = false;
 
+  @state() private _iframeLoaded = false;
+
   private _enabledKioskMode = false;
 
   private _sessionKeepAlive?: number;
@@ -128,6 +130,7 @@ class HaPanelApp extends LitElement {
           `
         : nothing}
       <iframe
+        class=${classMap({ loaded: this._iframeLoaded })}
         title=${this._addon.name}
         src=${this._addon.ingress_url!}
         @load=${this._checkLoaded}
@@ -156,6 +159,7 @@ class HaPanelApp extends LitElement {
 
     if (addon && addon !== oldAddon) {
       this._loadingMessage = undefined;
+      this._iframeLoaded = false;
       // Reset state when switching apps
       if (this._enabledKioskMode) {
         fireEvent(window, "hass-kiosk-mode", { enable: false });
@@ -320,6 +324,8 @@ class HaPanelApp extends LitElement {
 
   private async _checkLoaded(ev: Event): Promise<void> {
     const iframe = ev.target as HTMLIFrameElement;
+    this._iframeLoaded = true;
+
     if (
       !this._addon ||
       iframe.contentDocument?.body.textContent !== "502: Bad Gateway"
@@ -352,6 +358,7 @@ class HaPanelApp extends LitElement {
 
   private async _reloadIframe(): Promise<void> {
     const addonSlug = this._addon!.slug;
+    this._iframeLoaded = false;
     this._addon = undefined;
     await Promise.all([
       this.updateComplete,
@@ -431,6 +438,13 @@ class HaPanelApp extends LitElement {
       width: 100%;
       height: 100%;
       border: 0;
+      background-color: var(--primary-background-color);
+      opacity: 0;
+      transition: opacity var(--ha-animation-base-duration) ease;
+    }
+
+    iframe.loaded {
+      opacity: 1;
     }
 
     .header + iframe {
