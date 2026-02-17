@@ -440,7 +440,7 @@ class HaPanelApp extends LitElement {
       border: 0;
       background-color: var(--primary-background-color);
       opacity: 0;
-      transition: opacity var(--ha-animation-base-duration) ease;
+      transition: opacity var(--ha-animation-duration-normal) ease;
     }
 
     iframe.loaded {
