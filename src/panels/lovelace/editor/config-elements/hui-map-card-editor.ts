@@ -78,6 +78,7 @@ const cardConfigStruct = assign(
     fit_zones: optional(boolean()),
     theme_mode: optional(string()),
     conditions: optional(any()),
+    split_antimeridian_crossing_paths: optional(boolean()),
   })
 );
 
@@ -141,6 +142,11 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
                   selector: { number: { mode: "box", min: 0 } },
                 },
               ],
+            },
+            {
+              name: "split_antimeridian_crossing_paths",
+              default: false,
+              selector: { boolean: {} },
             },
           ],
         },
@@ -357,6 +363,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           `ui.panel.lovelace.editor.card.map.${schema.name}`
         );
       case "default_zoom":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.map.${schema.name}`
+        );
+      case "split_antimeridian_crossing_paths":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.map.${schema.name}`
         );
