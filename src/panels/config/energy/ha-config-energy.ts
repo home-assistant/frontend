@@ -1,5 +1,5 @@
 import "../../../layouts/hass-error-screen";
-import { mdiDownload } from "@mdi/js";
+import { mdiDownload, mdiFire, mdiLightningBolt, mdiWater } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -31,7 +31,7 @@ import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
 import { fileDownload } from "../../../util/file_download";
-import { configSections } from "../ha-panel-config";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
@@ -39,7 +39,26 @@ const INITIAL_CONFIG: EnergyPreferences = {
   device_consumption_water: [],
 };
 
-const TABS = ["electricity", "gas", "water"];
+const TABS: PageNavigation[] = [
+  {
+    path: "/config/energy/electricity",
+    translationKey: "ui.panel.config.energy.tabs.electricity",
+    iconPath: mdiLightningBolt,
+    iconColor: "#F1C447",
+  },
+  {
+    path: "/config/energy/gas",
+    translationKey: "ui.panel.config.energy.tabs.gas",
+    iconPath: mdiFire,
+    iconColor: "#F1C447",
+  },
+  {
+    path: "/config/energy/water",
+    translationKey: "ui.panel.config.energy.tabs.water",
+    iconPath: mdiWater,
+    iconColor: "#F1C447",
+  },
+];
 
 @customElement("ha-config-energy")
 class HaConfigEnergy extends LitElement {
@@ -71,7 +90,7 @@ class HaConfigEnergy extends LitElement {
 
   protected firstUpdated() {
     const tab = this.route.path.substring(1);
-    if (!tab || !TABS.includes(tab)) {
+    if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {
       navigate(`${this.route.prefix}/electricity`, { replace: true });
     }
     this._fetchConfig();
@@ -101,7 +120,7 @@ class HaConfigEnergy extends LitElement {
           ? undefined
           : "/config/lovelace/dashboards"}
         .route=${this.route}
-        .tabs=${configSections.energy}
+        .tabs=${TABS}
       >
         <ha-icon-button
           slot="toolbar-icon"

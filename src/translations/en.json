@@ -3784,6 +3784,7 @@
           }
         },
         "energy": {
+          "caption": "Energy",
           "description": "Monitor your energy production and consumption",
           "new_device_info": "After setting up a new device, it can take up to 2 hours for new data to arrive in your energy dashboard.",
           "tabs": {
