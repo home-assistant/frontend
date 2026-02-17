@@ -194,13 +194,13 @@ The View Transitions API creates smooth animations between DOM state changes. Wh
 - **Utility wrapper**: `src/common/util/view-transition.ts` - `withViewTransition()` function with graceful fallback
 - **Real-world example**: `src/util/launch-screen.ts` - Launch screen fade pattern with browser support detection
 - **Animation keyframes**: `src/resources/theme/animations.globals.ts` - Global `fade-in`, `fade-out`, `scale` animations
-- **Animation duration**: `src/resources/theme/core.globals.ts` - `--ha-animation-base-duration` (350ms, respects `prefers-reduced-motion`)
+- **Animation duration**: `src/resources/theme/core.globals.ts` - `--ha-animation-duration-fast` (150ms), `--ha-animation-duration-normal` (250ms), `--ha-animation-duration-slow` (350ms) (all respect `prefers-reduced-motion`)
 
 **Implementation Guidelines:**
 
 1. Always use `withViewTransition()` wrapper for automatic fallback
 2. Keep transitions simple (subtle crossfades and fades work best)
-3. Use `--ha-animation-base-duration` CSS variable for consistent timing
+3. Use `--ha-animation-duration-*` CSS variables for consistent timing (`fast`, `normal`, `slow`)
 4. Assign unique `view-transition-name` to elements (must be unique at any given time)
 5. For Lit components: Override `performUpdate()` or use `::part()` for internal elements
 
