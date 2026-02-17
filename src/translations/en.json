@@ -1499,7 +1499,10 @@
         "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
         "not_supported_microphone_documentation_link": "the documentation",
         "unknown_error_load_assist": "Loading the Assist pipeline failed",
-        "not_found_error_load_assist": "Cannot find the Assist pipeline"
+        "not_found_error_load_assist": "Cannot find the Assist pipeline",
+        "show_details": "Show details",
+        "thinking": "Thinking…",
+        "calling_tool": "Calling {tool_name}…"
       },
       "generic": {
         "default_confirmation_title": "Are you sure?"

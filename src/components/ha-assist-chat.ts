@@ -39,7 +39,6 @@ interface AssistMessage {
     {
       tool_name: string;
       tool_args: any;
-      status: "calling" | "result";
       result?: any;
     }
   >;
@@ -179,7 +178,7 @@ export class HaAssistChat extends LitElement {
                                   .path=${mdiCommentProcessingOutline}
                                 ></ha-svg-icon>
                                 <span class="thinking-label"
-                                  >Show thinking</span
+                                  >${this.hass.localize("ui.dialogs.voice_command.show_details")}</span
                                 >
                                 <ha-svg-icon
                                   .path=${message.thinking_expanded
@@ -199,16 +198,8 @@ export class HaAssistChat extends LitElement {
                                       <div class="tool-calls">
                                         ${Object.values(message.tool_calls).map(
                                           (toolCall) => html`
-                                            <div
-                                              class="tool-call ${toolCall.status}"
-                                            >
+                                            <div class="tool-call">
                                               <div class="tool-name">
-                                                ${toolCall.status === "calling"
-                                                  ? html`<ha-circular-progress
-                                                      size="tiny"
-                                                      active
-                                                    ></ha-circular-progress>`
-                                                  : nothing}
                                                 ${toolCall.tool_name}
                                               </div>
                                               <div class="tool-data">
@@ -621,6 +612,8 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
       progress.hassMessage = {
         who: "hass",
         text: "…",
+        thinking: "",
+        tool_calls: {},
         error: false,
       };
       this._addMessage(progress.hassMessage);
@@ -690,7 +683,6 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
                 progress.hassMessage.tool_calls[toolCall.id] = {
                   tool_name: toolCall.tool_name,
                   tool_args: toolCall.tool_args,
-                  status: "calling",
                 };
               }
             }
@@ -701,7 +693,6 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
                 ...progress.hassMessage.tool_calls,
                 [delta.tool_call_id]: {
                   ...progress.hassMessage.tool_calls[delta.tool_call_id],
-                  status: "result",
                   result: delta.tool_result,
                 },
               };
@@ -848,6 +839,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
         }
         .thinking-label {
           font-size: var(--ha-font-size-m);
+  display: flex;
+  align - items: center;
+  gap: var(--ha - space - 2);
         }
         .thinking-header ha-svg-icon {
           --mdc-icon-size: 16px;
@@ -879,12 +873,6 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
           padding: var(--ha-space-1) var(--ha-space-2);
           border-left: 2px solid var(--divider-color);
           margin-bottom: var(--ha-space-1);
-        }
-        .tool-call.calling {
-          border-left-color: var(--primary-color);
-        }
-        .tool-call.result {
-          border-left-color: var(--success-color);
         }
         .tool-name {
           font-weight: bold;
