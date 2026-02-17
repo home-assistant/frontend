@@ -1,7 +1,7 @@
 import "../../../layouts/hass-error-screen";
 import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { navigate } from "../../../common/navigate";
@@ -119,7 +119,7 @@ class HaConfigEnergy extends LitElement {
     `;
   }
 
-  private _renderTabContent(): TemplateResult {
+  private _renderTabContent(): TemplateResult | typeof nothing {
     switch (this._currTab) {
       case "electricity":
         return html`
@@ -181,7 +181,7 @@ class HaConfigEnergy extends LitElement {
           ></ha-energy-device-settings-water>
         `;
       default:
-        return html``;
+        return nothing;
     }
   }
 
