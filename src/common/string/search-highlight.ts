@@ -20,6 +20,7 @@ export type HighlightedText =
   | undefined;
 
 const HIGHLIGHT_NAME_PREFIX = "ha-search";
+// Shared selector so range extraction and mutation checks stay in sync.
 const HIGHLIGHT_MARK_SELECTOR = "mark.ha-highlight";
 
 const tokenizeSearchQuery = (query: string): string[] => [
@@ -85,6 +86,8 @@ const mergeHighlightRanges = (ranges: HighlightRange[]): HighlightRange[] => {
 
 /**
  * Convert rendered `<mark>` nodes into DOM Ranges for `CSS.highlights`.
+ * We walk text nodes because Lit templates can place comment markers before
+ * text inside `<mark>`, so `firstChild` is not reliably the text node.
  */
 const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
   const ranges: Range[] = [];
@@ -111,6 +114,7 @@ const getHighlightRangesFromMarks = (root: ShadowRoot): Range[] => {
 
 const createHighlightStyle = (highlightName: string): string => css`
   .ha-highlight {
+    /* Visual highlight comes from ::highlight(...), not the <mark> itself. */
     background-color: transparent;
     color: inherit;
     border-radius: 0;
@@ -328,6 +332,7 @@ export class SearchHighlight {
    * Use this for components where highlighted DOM can change without filter
    * changes (for example, virtualized lists).
    * `cacheKeyProvider` should return the current query/filter string.
+   * `observedTarget` allows callers to scope observation to a subtree.
    */
   public startAutoSyncFromMarks(
     cacheKeyProvider: () => string | null | undefined,
@@ -412,6 +417,7 @@ export class SearchHighlight {
     }
 
     this._autoSyncQueued = true;
+    // Coalesce bursts of mutations into a single highlight recomputation.
     queueMicrotask(() => {
       this._autoSyncQueued = false;
       if (!this._root || !(this._root.host as HTMLElement).isConnected) {
@@ -456,6 +462,10 @@ export class SearchHighlight {
     return false;
   }
 
+  /**
+   * Returns true when a node is a highlight mark, contains one, or is a text/comment
+   * node inside one. The text/comment case covers Lit marker nodes.
+   */
   private _nodeContainsHighlightMark(node: Node): boolean {
     if (node.nodeType === Node.ELEMENT_NODE) {
       const element = node as Element;
