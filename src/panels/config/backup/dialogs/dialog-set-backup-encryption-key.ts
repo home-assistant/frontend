@@ -90,7 +90,6 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
-        width="medium"
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >

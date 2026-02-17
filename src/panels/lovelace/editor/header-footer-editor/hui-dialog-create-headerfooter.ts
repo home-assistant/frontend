@@ -58,7 +58,6 @@ export class HuiCreateDialogHeaderFooter
             ),
           }
         )}
-        width="medium"
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
       >

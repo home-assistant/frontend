@@ -89,7 +89,6 @@ class DialogExposeEntity extends LitElement {
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
-        width="medium"
         header-title=${header}
         header-subtitle=${subtitle}
         prevent-scrim-close
