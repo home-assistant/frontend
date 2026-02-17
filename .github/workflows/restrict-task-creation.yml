@@ -41,10 +41,11 @@ jobs:
     if: github.event.issue.type.name == 'Task'
     steps:
       - name: Check if user is authorized
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
             const issueAuthor = context.payload.issue.user.login;
+
             // Check if user is an organization member
             try {
               await github.rest.orgs.checkMembershipForUser({
@@ -56,6 +57,7 @@ jobs:
             } catch (error) {
               console.log(`❌ ${issueAuthor} is not authorized to create Task issues`);
             }
+
             // Close the issue with a comment
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -67,4 +69,19 @@ jobs:
                     `- Report a bug: Please use the [bug report form](https://github.com/home-assistant/frontend/issues/new?template=bug_report.yml)\n` +
                     `- Request a feature: Please submit to [Feature Requests](https://github.com/orgs/home-assistant/discussions)\n\n` +
                     `If you believe you should have access to create Task issues, please contact the maintainers.`
+            });
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed'
+            });
+
+            // Add a label to indicate this was auto-closed
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['auto-closed']
             });
