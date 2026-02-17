@@ -49,7 +49,7 @@ const buildNormalizedIndexMap = (
     // One original character can normalize into multiple UTF-16 code units.
     // Keep a mapping entry for each normalized code unit because String#indexOf
     // and String#length operate on UTF-16 indexes.
-    for (let index = 0; index < normalizedChar.length; index++) {
+    for (const _codeUnit of normalizedChar.split("")) {
       normalizedIndexMap.push({ start, end });
     }
 
