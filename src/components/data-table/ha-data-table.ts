@@ -240,7 +240,7 @@ export class HaDataTable extends LitElement {
 
     // Re-attach observer when the element reconnects.
     if (this.hasUpdated) {
-      this._getSearchHighlight().startAutoSyncFromMarks(() => this._filter);
+      this._updateSearchHighlightSync();
     }
   }
 
@@ -252,10 +252,14 @@ export class HaDataTable extends LitElement {
 
   protected firstUpdated() {
     this.updateComplete.then(() => this._calcTableHeight());
-    this._getSearchHighlight().startAutoSyncFromMarks(() => this._filter);
+    this._updateSearchHighlightSync();
   }
 
-  protected updated() {
+  protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has("_filter")) {
+      this._updateSearchHighlightSync();
+    }
+
     const header = this.renderRoot.querySelector(".mdc-data-table__header-row");
     if (header) {
       if (header.scrollWidth > header.clientWidth) {
@@ -725,6 +729,16 @@ export class HaDataTable extends LitElement {
       );
     }
     return this._searchHighlight;
+  }
+
+  private _updateSearchHighlightSync(): void {
+    if (!this._filter.trim()) {
+      this._searchHighlight?.stopAutoSyncFromMarks();
+      this._searchHighlight?.clear();
+      return;
+    }
+
+    this._getSearchHighlight().startAutoSyncFromMarks(() => this._filter);
   }
 
   private async _sortFilterData() {
