@@ -14,7 +14,6 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-provisioned")
 class ZWaveJSProvisioned extends LitElement {
@@ -34,7 +33,8 @@ class ZWaveJSProvisioned extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${configTabs}
+        back-path="/config/zwave_js/dashboard?config_entry=${this
+          .configEntryId}"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._provisioningEntries}
       >

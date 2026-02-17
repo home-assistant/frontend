@@ -1,32 +1,7 @@
-import { mdiCogOutline, mdiLan, mdiPoll, mdiTextBoxOutline } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-
-export const configTabs: PageNavigation[] = [
-  {
-    translationKey: "ui.panel.config.zwave_js.navigation.general",
-    path: `/config/zwave_js/dashboard`,
-    iconPath: mdiCogOutline,
-  },
-  {
-    translationKey: "ui.panel.config.zwave_js.navigation.statistics",
-    path: `/config/zwave_js/statistics`,
-    iconPath: mdiPoll,
-  },
-  {
-    translationKey: "ui.panel.config.zwave_js.navigation.logs",
-    path: `/config/zwave_js/logs`,
-    iconPath: mdiTextBoxOutline,
-  },
-  {
-    translationKey: "ui.panel.config.zwave_js.navigation.visualization",
-    path: `/config/zwave_js/visualization`,
-    iconPath: mdiLan,
-  },
-];
 
 @customElement("zwave_js-config-router")
 class ZWaveJSConfigRouter extends HassRouterPage {
@@ -93,6 +68,14 @@ class ZWaveJSConfigRouter extends HassRouterPage {
       provisioned: {
         tag: "zwave_js-provisioned",
         load: () => import("./zwave_js-provisioned"),
+      },
+      "network-info": {
+        tag: "zwave_js-network-info-page",
+        load: () => import("./zwave_js-network-info-page"),
+      },
+      options: {
+        tag: "zwave_js-options-page",
+        load: () => import("./zwave_js-options-page"),
       },
       visualization: {
         tag: "zwave_js-network-visualization",

@@ -7,11 +7,10 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import type { ZWaveJSControllerStatisticsUpdatedMessage } from "../../../../../data/zwave_js";
 import { subscribeZwaveControllerStatistics } from "../../../../../data/zwave_js";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-controller-statistics")
 class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
@@ -49,18 +48,17 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.navigation.statistics"
+        )}
+        back-path="/config/zwave_js/dashboard?config_entry=${this
+          .configEntryId}"
       >
         <div class="container">
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.config.zwave_js.dashboard.statistics.title"
-            )}
-          >
+          <ha-card>
             <ha-md-list>
               ${this._renderStat("messages_tx")}
               ${this._renderStat("messages_rx")}
@@ -73,7 +71,7 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
             </ha-md-list>
           </ha-card>
         </div>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
