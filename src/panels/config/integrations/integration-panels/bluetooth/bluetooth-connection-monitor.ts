@@ -24,7 +24,6 @@ import type { DeviceRegistryEntry } from "../../../../../data/device/device_regi
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { bluetoothTabs } from "./bluetooth-config-dashboard";
 
 @customElement("bluetooth-connection-monitor")
 export class BluetoothConnectionMonitorPanel extends LitElement {
@@ -215,7 +214,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${bluetoothTabs}
+        back-path="/config/bluetooth/dashboard"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
         .initialGroupColumn=${this._activeGrouping}

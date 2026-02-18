@@ -6692,11 +6692,18 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
-          "tabs": {
-            "overview": "Overview",
+          "adapters_count": "{count} {count, plural,\n  one {adapter}\n  other {adapters}\n}",
+          "connections_summary": "{used}/{total} connections active",
+          "adapter_info_title": "Bluetooth adapters",
+          "navigation": {
+            "adapter_info": "Adapters",
+            "adapter_info_description": "View scanning modes, connection allocations, and adapter settings",
             "advertisements": "Advertisements",
+            "advertisements_description": "Monitor discovered Bluetooth Low Energy devices",
+            "connections": "Connections",
+            "connections_description": "View active Bluetooth connections per scanner",
             "visualization": "Visualization",
-            "connections": "Connections"
+            "visualization_description": "Interactive network graph of scanners and devices"
           },
           "settings_title": "Bluetooth adapters",
           "option_flow": "Configure Bluetooth options",

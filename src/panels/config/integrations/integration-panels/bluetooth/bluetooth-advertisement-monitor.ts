@@ -26,7 +26,6 @@ import type { DeviceRegistryEntry } from "../../../../../data/device/device_regi
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { bluetoothTabs } from "./bluetooth-config-dashboard";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
 
 @customElement("bluetooth-advertisement-monitor")
@@ -221,7 +220,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         @collapsed-changed=${this._handleCollapseChanged}
         filter=${this.address || ""}
         clickable
-        .tabs=${bluetoothTabs}
+        back-path="/config/bluetooth/dashboard"
       ></hass-tabs-subpage-data-table>
     `;
   }
