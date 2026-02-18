@@ -211,7 +211,7 @@ export class HuiDialogEditBadge
               <ha-icon-button
                 .path=${mdiHelpCircleOutline}
                 slot="headerActionItems"
-                href=${this._documentationURL}
+                .href=${this._documentationURL}
                 title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                 target="_blank"
                 rel="noreferrer"
