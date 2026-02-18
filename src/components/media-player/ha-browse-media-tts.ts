@@ -243,6 +243,9 @@ class BrowseMediaTTS extends LitElement {
         display: flex;
         justify-content: space-between;
       }
+      ha-language-picker {
+        width: 100%;
+      }
       ha-textarea {
         width: 100%;
       }
