@@ -242,6 +242,7 @@ class BrowseMediaTTS extends LitElement {
         margin-top: 16px;
         display: flex;
         justify-content: space-between;
+        gap: var(--ha-space-2);
       }
       ha-language-picker {
         width: 100%;
