@@ -6881,7 +6881,7 @@
             "network_info_description": "View channel and coordinator details",
             "backup_restore_title": "Backup and restore",
             "backup_restore_description_short": "Download or migrate your Zigbee network backup",
-            "backup_restore_description": "Back up or restore your Zigbee adapter. The backup contains your network information. It's recommended to create a backup before making any major changes to your Zigbee network.",
+            "backup_restore_description": "Back up or restore your Zigbee adapter. The backup only contains your network information.",
             "group_members_assume_state_description": "The group entity state is optimistically based on the states of its members",
             "enable_identify_on_join_description": "Show an identify effect on devices when they join the network",
             "channel_description": "The Zigbee channel used by the network",
