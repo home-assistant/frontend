@@ -6977,7 +6977,7 @@
             "rebuild_routes_description": "Rebuilding routes creates heavy traffic and may degrade performance for minutes to hours",
             "rebuild_routes_action": "Rebuild",
             "remove_node_description": "Useful when a device is stuck in another network and must be excluded before it can be included again",
-            "remove_node_action": "Remove foreign device",
+            "remove_node_action": "Remove",
             "nvm_backup": {
               "title": "Backup and restore",
               "download_backup": "Download backup",
