@@ -72,7 +72,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
           <ha-icon-button
             .path=${mdiHelpCircleOutline}
             .label=${this.hass!.localize("ui.common.help")}
-            href=${documentationUrl(this.hass!, "/lovelace/")}
+            .href=${documentationUrl(this.hass!, "/lovelace/")}
             title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
             target="_blank"
             rel="noreferrer"
