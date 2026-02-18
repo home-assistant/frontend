@@ -9555,7 +9555,7 @@
       },
       "notfound": {
         "no_access_title": "No access",
-        "no_access_content": "You don't have access to this page. Contact the administrator or change your default dashboard in your profile settings.",
+        "no_access_content": "You don't have access to this page. Contact an administrator or change the default dashboard in your profile settings.",
         "no_access_go_to_profile": "Go to profile"
       },
       "profile": {
