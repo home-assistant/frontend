@@ -410,10 +410,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           content: "";
           border-radius: var(--ha-border-radius-md);
           height: 4px;
-          background: var(
-            --ha-bottom-sheet-handle-color,
-            var(--divider-color)
-          );
+          background: var(--ha-bottom-sheet-handle-color, var(--divider-color));
           width: 80px;
         }
         .content-wrapper {
