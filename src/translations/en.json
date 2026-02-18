@@ -7289,6 +7289,8 @@
             }
           },
           "provisioned": {
+            "caption": "Provisioned devices",
+            "name": "Name",
             "dsk": "DSK",
             "security_classes": "Security classes",
             "unprovision": "Unprovision",
