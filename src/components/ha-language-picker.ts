@@ -111,8 +111,6 @@ export class HaLanguagePicker extends LitElement {
 
   @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
 
-  @property({ attribute: false }) public minWidth = "200px";
-
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._computeDefaultLanguageOptions();
@@ -168,7 +166,6 @@ export class HaLanguagePicker extends LitElement {
         .searchKeys=${SEARCH_KEYS}
         @value-changed=${this._changed}
         hide-clear-icon
-        style=${this.minWidth ? `min-width: ${this.minWidth}` : ""}
       >
         ${this.buttonStyle
           ? html`<ha-button
