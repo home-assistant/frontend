@@ -6,6 +6,11 @@ import { STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import { domainToName } from "../../../data/integration";
+import type { StatisticsValidationResult } from "../../../data/recorder";
+import {
+  STATISTIC_TYPES,
+  updateStatisticsIssues,
+} from "../../../data/recorder";
 import {
   fetchRepairsIssueData,
   type RepairsIssue,
@@ -16,11 +21,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import { fixStatisticsIssue } from "../developer-tools/statistics/fix-statistics";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
-import type { StatisticsValidationResult } from "../../../data/recorder";
-import {
-  STATISTIC_TYPES,
-  updateStatisticsIssues,
-} from "../../../data/recorder";
+import { showVacuumSegmentMappingDialog } from "../entities/dialogs/show-dialog-vacuum-segment-mapping";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {
@@ -138,6 +139,23 @@ class HaConfigRepairs extends LitElement {
       if ("flow_id" in data.issue_data) {
         showConfigFlowDialog(this, {
           continueFlowId: data.issue_data.flow_id as string,
+        });
+      }
+    } else if (
+      issue.domain === "vacuum" &&
+      issue.translation_key === "segments_changed"
+    ) {
+      const data = await fetchRepairsIssueData(
+        this.hass.connection,
+        issue.domain,
+        issue.issue_id
+      );
+      if (
+        "entity_id" in data.issue_data &&
+        typeof data.issue_data.entity_id === "string"
+      ) {
+        showVacuumSegmentMappingDialog(this, {
+          entityId: data.issue_data.entity_id,
         });
       }
     } else if (
