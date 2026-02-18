@@ -3,6 +3,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-attributes";
 import "../../../state-control/ha-state-control-toggle";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-state-header";
@@ -32,6 +33,10 @@ class MoreInfoSwitch extends LitElement {
           .iconPathOff=${mdiPowerOff}
         ></ha-state-control-toggle>
       </div>
+      <ha-attributes
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+      ></ha-attributes>
     `;
   }
 

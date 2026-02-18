@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import type { CoverEntity } from "../../../data/cover";
@@ -175,6 +176,11 @@ class MoreInfoCover extends LitElement {
           }
         </div>
       </div>
+      <ha-attributes
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        extra-filters="current_position,current_tilt_position"
+      ></ha-attributes>
     `;
   }
 

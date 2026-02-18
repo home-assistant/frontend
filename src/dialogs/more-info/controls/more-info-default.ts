@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-attributes";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-default")
@@ -14,7 +15,10 @@ class MoreInfoDefault extends LitElement {
       return nothing;
     }
 
-    return nothing;
+    return html`<ha-attributes
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+    ></ha-attributes>`;
   }
 }
 

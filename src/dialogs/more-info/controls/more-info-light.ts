@@ -11,6 +11,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
+import "../../../components/ha-attributes";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
@@ -286,6 +287,11 @@ class MoreInfoLight extends LitElement {
               `
             : nothing}
         </ha-more-info-control-select-container>
+        <ha-attributes
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          extra-filters="brightness,color_temp,color_temp_kelvin,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,min_color_temp_kelvin,max_color_temp_kelvin,entity_id,supported_color_modes,color_mode"
+        ></ha-attributes>
       </div>
     `;
   }

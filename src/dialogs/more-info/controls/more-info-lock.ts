@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-attributes";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-outlined-icon-button";
@@ -150,6 +151,11 @@ class MoreInfoLock extends LitElement {
               </ha-control-button-group>
             `
           : nothing}
+        <ha-attributes
+          .hass=${this.hass}
+          .stateObj=${this.stateObj}
+          extra-filters="code_format"
+        ></ha-attributes>
       </div>
     `;
   }
@@ -184,6 +190,9 @@ class MoreInfoLock extends LitElement {
           width: 100%;
           max-width: 400px;
           margin: 0 auto;
+        }
+        ha-control-button-group + ha-attributes:not([empty]) {
+          margin-top: var(--ha-space-4);
         }
         @keyframes pulse {
           0% {

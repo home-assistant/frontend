@@ -14,6 +14,7 @@ import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-attributes";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -108,6 +109,9 @@ class MoreInfoVacuum extends LitElement {
 
     const stateObj = this.stateObj;
 
+    const filterExtraAttributes =
+      "fan_speed,fan_speed_list,status,battery_level,battery_icon";
+
     return html`
       ${stateObj.state !== UNAVAILABLE
         ? html` <div class="flex-horizontal">
@@ -199,6 +203,12 @@ class MoreInfoVacuum extends LitElement {
             </div>
           `
         : ""}
+
+      <ha-attributes
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        .extraFilters=${filterExtraAttributes}
+      ></ha-attributes>
     `;
   }
 
