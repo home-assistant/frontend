@@ -10,7 +10,7 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { PanelMutableParams } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -68,7 +68,7 @@ export class DialogPanelDetail extends LitElement {
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -122,7 +122,7 @@ export class DialogPanelDetail extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
