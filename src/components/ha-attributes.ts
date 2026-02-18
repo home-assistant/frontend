@@ -107,31 +107,38 @@ class HaAttributes extends LitElement {
       haStyle,
       css`
         .attribute-container {
-          margin-bottom: 8px;
           direction: ltr;
+          padding: var(--ha-space-2) var(--ha-space-4);
         }
+
         .data-entry {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
+          padding: var(--ha-space-2) 0;
+          border-bottom: 1px solid var(--divider-color);
         }
+
+        .data-entry:last-of-type {
+          border-bottom: none;
+        }
+
         .data-entry .value {
           max-width: 60%;
           overflow-wrap: break-word;
           text-align: right;
         }
+
         .key {
           flex-grow: 1;
+          color: var(--secondary-text-color);
         }
+
         .attribution {
           color: var(--secondary-text-color);
           text-align: center;
-          margin-top: 16px;
-        }
-        hr {
-          border-color: var(--divider-color);
-          border-bottom: none;
-          margin: 16px 0;
+          margin-top: var(--ha-space-4);
+          font-size: var(--ha-font-size-s);
         }
       `,
     ];
