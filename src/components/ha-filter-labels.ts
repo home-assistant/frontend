@@ -180,7 +180,10 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
     let value;
-    if ([...ev.detail.index][ev.detail.index.size - 1] === 0) {
+    if (
+      ev.detail.index.size &&
+      [...ev.detail.index][ev.detail.index.size - 1] === 0
+    ) {
       value = [...[FILTER_NONE_OF_LISTED]];
     } else {
       const filteredLabels = this._filteredLabels(
