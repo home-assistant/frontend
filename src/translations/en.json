@@ -7198,7 +7198,9 @@
           },
           "network_status": {
             "online": "Online",
-            "offline": "Offline"
+            "offline": "Offline",
+            "online_named": "{name} online",
+            "offline_named": "{name} offline"
           },
           "add_node": {
             "title": "Add a Z-Wave device",

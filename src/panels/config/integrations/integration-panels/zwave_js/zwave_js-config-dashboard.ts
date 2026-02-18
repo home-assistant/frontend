@@ -82,6 +82,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _dataCollectionOptIn?: boolean;
 
+  @state() private _multipleNetworks = false;
+
   private _dialogOpen = false;
 
   private _s2InclusionUnsubscribe?: Promise<UnsubscribeFunc>;
@@ -213,9 +215,14 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               ></ha-svg-icon>
             </div>
             <div class="details">
-              ${this.hass.localize(
-                `ui.panel.config.zwave_js.network_status.${deviceOnline ? "online" : "offline"}`
-              )}<br />
+              ${this._multipleNetworks && this._configEntry
+                ? this.hass.localize(
+                    `ui.panel.config.zwave_js.network_status.${deviceOnline ? "online" : "offline"}_named`,
+                    { name: this._configEntry.title }
+                  )
+                : this.hass.localize(
+                    `ui.panel.config.zwave_js.network_status.${deviceOnline ? "online" : "offline"}`
+                  )}<br />
               <small>
                 ${this.hass.localize(
                   `ui.panel.config.zwave_js.dashboard.devices`,
@@ -600,6 +607,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "zwave_js",
     });
+    this._multipleNetworks =
+      configEntries.filter(
+        (entry) => entry.disabled_by === null && entry.source !== "ignore"
+      ).length > 1;
     this._configEntry = configEntries.find(
       (entry) => entry.entry_id === this.configEntryId
     );
