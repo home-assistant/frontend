@@ -79,7 +79,6 @@ class DialogRestartWait extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this._title}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div class="content">
