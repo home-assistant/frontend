@@ -41,7 +41,7 @@ function computeTimelineStateColor(
   // otherwise return undefined to get unique colors from the generic color handler.
   if (
     (domain === "person" || domain === "device_tracker") &&
-    !(FIXED_DOMAIN_STATES[domain] as readonly string[]).includes(state)
+    !((FIXED_DOMAIN_STATES[domain] || []) as readonly string[]).includes(state)
   ) {
     return computeCssValue(
       `--state-${domain}-${slugify(state, "_")}-color`,
