@@ -146,7 +146,7 @@ export const PANEL_ICON_PATHS = {
 export const getPanelIconPath = (panel: PanelInfo): string | undefined =>
   PANEL_ICON_PATHS[panel.url_path];
 
-export const FIXED_PANELS = ["profile", "config"];
+export const FIXED_PANELS = [PROFILE_PANEL, "config", NOT_FOUND_PANEL];
 
 export interface PanelMutableParams {
   title?: string | null;
