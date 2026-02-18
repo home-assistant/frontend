@@ -225,6 +225,13 @@ export class HuiEnergyDevicesDetailGraphCard
           data: this._legendData,
           selected,
         },
+        grid: {
+          top: 15,
+          bottom: 0,
+          left: 1,
+          right: 1,
+          containLabel: true,
+        },
       };
     }
   );
