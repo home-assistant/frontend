@@ -410,7 +410,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
-    const attributesMenuData = this._computeAttributesMenuData(stateObj);
+    const { hasAdditionalAttributes, hasMainViewAttributes } =
+      this._computeAttributesMenuData(stateObj);
 
     const isAdmin = this.hass.user!.is_admin;
 
@@ -607,14 +608,14 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                           "ui.dialogs.more_info_control.related"
                         )}
                       </ha-dropdown-item>
-                      ${attributesMenuData.hasAdditionalAttributes
+                      ${hasAdditionalAttributes
                         ? html`
                             <ha-dropdown-item value="attributes">
                               <ha-svg-icon
                                 slot="icon"
                                 .path=${mdiFormatListBulletedSquare}
                               ></ha-svg-icon>
-                              ${attributesMenuData.hasMainViewAttributes
+                              ${hasMainViewAttributes
                                 ? this.hass.localize(
                                     "ui.dialogs.more_info_control.all_attributes"
                                   )
