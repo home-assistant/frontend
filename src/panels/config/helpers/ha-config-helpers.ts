@@ -383,6 +383,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         title: "",
         label: this.hass.localize("ui.panel.config.generic.headers.actions"),
         type: "overflow-menu",
+        hideable: false,
+        moveable: false,
         showNarrow: true,
         template: (helper) => html`
           <ha-icon-overflow-menu
