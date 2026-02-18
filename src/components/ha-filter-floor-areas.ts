@@ -39,7 +39,7 @@ export class HaFilterFloorAreas extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @property({ attribute: false }) public allItems: string[];
+  @property({ attribute: false }) public allItems: string[] = [];
 
   @state() private _shouldRender = false;
 
