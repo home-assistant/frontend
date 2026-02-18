@@ -61,7 +61,34 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   private _escapePressed = false;
 
-  private _handleShow = async () => {
+  private _openDropdowns = new Set<HTMLElement>();
+
+  private _lastDropdownHideTime = 0;
+
+  private _isDropdownInteractionActive() {
+    for (const dropdown of this._openDropdowns) {
+      if (!dropdown.isConnected) {
+        this._openDropdowns.delete(dropdown);
+      }
+    }
+
+    return (
+      this._openDropdowns.size > 0 ||
+      (this._lastDropdownHideTime > 0 &&
+        performance.now() - this._lastDropdownHideTime <
+          BOTTOM_SHEET_ANIMATION_DURATION_MS)
+    );
+  }
+
+  private _handleShow = async (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      const dropdown = this._findDropdownInPath(ev.composedPath());
+      if (dropdown) {
+        this._openDropdowns.add(dropdown);
+      }
+      return;
+    }
+
     this._drawerOpen = true;
     this.open = true;
     fireEvent(this, "opened");
@@ -102,33 +129,82 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     this._sliderInteractionActive = false;
   };
 
-  private _handleAfterHide = () => {
+  private _handleAfterHide = (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      const dropdown = this._findDropdownInPath(ev.composedPath());
+      if (dropdown) {
+        this._openDropdowns.delete(dropdown);
+      }
+      return;
+    }
+
+    const afterHideEvent = ev as CustomEvent<{ source: Element }>;
+
     if (this._sliderInteractionActive) {
       this._drawerOpen = true;
       this.open = true;
       return;
     }
+
+    const isScrimOrEscapeDismiss =
+      afterHideEvent.detail.source === (ev.target as WaDrawer).drawer;
+
+    if (isScrimOrEscapeDismiss && this._isDropdownInteractionActive()) {
+      this._drawerOpen = true;
+      this.open = true;
+      return;
+    }
+
     this.open = false;
     this._drawerOpen = false;
     fireEvent(this, "closed");
   };
 
-  private _handleHide = (ev: CustomEvent<{ source: Element }>) => {
+  private _handleHide = (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      const dropdown = this._findDropdownInPath(ev.composedPath());
+      if (dropdown) {
+        this._lastDropdownHideTime = performance.now();
+      }
+      return;
+    }
+
+    const hideEvent = ev as CustomEvent<{ source: Element }>;
+
     if (this._sliderInteractionActive) {
       ev.preventDefault();
       this._drawerOpen = true;
       this.open = true;
       return;
     }
+    const isScrimOrEscapeDismiss =
+      hideEvent.detail.source === (ev.target as WaDrawer).drawer;
+
+    if (isScrimOrEscapeDismiss && this._isDropdownInteractionActive()) {
+      ev.preventDefault();
+      this._drawerOpen = true;
+      this.open = true;
+      return;
+    }
+
     if (
       this.preventScrimClose &&
       this._escapePressed &&
-      ev.detail.source === (ev.target as WaDrawer).drawer
+      isScrimOrEscapeDismiss
     ) {
       ev.preventDefault();
     }
     this._escapePressed = false;
   };
+
+  private _findDropdownInPath(path: EventTarget[]): HTMLElement | null {
+    for (const target of path) {
+      if (target instanceof HTMLElement && target.localName === "ha-dropdown") {
+        return target;
+      }
+    }
+    return null;
+  }
 
   private _handleKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === "Escape") {
@@ -345,6 +421,8 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       }
     );
     this._unregisterResizeHandlers();
+    this._openDropdowns.clear();
+    this._lastDropdownHideTime = 0;
     this._isDragging = false;
   }
 
