@@ -413,7 +413,6 @@ export interface MapCardConfig extends LovelaceCardConfig {
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
   cluster?: boolean;
-  split_antimeridian_crossing_paths?: boolean;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

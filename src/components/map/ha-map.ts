@@ -94,9 +94,6 @@ export class HaMap extends ReactiveElement {
   @property({ attribute: "cluster-markers", type: Boolean })
   public clusterMarkers = true;
 
-  @property({ attribute: "split-antimeridian-crossing-paths", type: Boolean })
-  public split_antimeridian_crossing_paths = false;
-
   @state() private _loaded = false;
 
   public leafletMap?: Map;
@@ -443,10 +440,7 @@ export class HaMap extends ReactiveElement {
         );
 
         // DRAW line between this and next point
-        if (
-          !this.split_antimeridian_crossing_paths ||
-          Math.abs(thisPoint.point[1] - nextPoint.point[1]) <= 180
-        ) {
+        if (Math.abs(thisPoint.point[1] - nextPoint.point[1]) <= 180) {
           // if the path does not cross the antimeridian, draw a simple line
           // between the two points
           this._mapPaths.push(
@@ -459,7 +453,6 @@ export class HaMap extends ReactiveElement {
         } else {
           // if the path crosses the antimeridian, split the line into two, to
           // avoid it being drawn across the entire map
-
           const longitudeDifference =
             ((nextPoint.point[1] - thisPoint.point[1] + 540) % 360) - 180;
           const intersectionLatitude =

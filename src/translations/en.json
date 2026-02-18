@@ -8910,8 +8910,7 @@
               },
               "default_zoom": "Default zoom",
               "source": "Source",
-              "description": "The Map card allows you to display entities on a map.",
-              "split_antimeridian_crossing_paths": "Split antimeridian-crossing paths"
+              "description": "The Map card allows you to display entities on a map."
             },
             "markdown": {
               "name": "Markdown",
