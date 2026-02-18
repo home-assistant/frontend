@@ -410,7 +410,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         <pre><code>&lt;ha-adaptive-dialog
   .hass=\${this.hass}
   open
-  width="medium"
   header-title="Dialog title"
   header-subtitle="Dialog subtitle"
 &gt;

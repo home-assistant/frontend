@@ -95,7 +95,6 @@ export class DialogAddUser extends LitElement {
         header-title=${this.hass.localize(
           "ui.panel.config.users.add_user.caption"
         )}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div>
