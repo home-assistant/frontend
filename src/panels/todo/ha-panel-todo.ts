@@ -122,9 +122,7 @@ class PanelTodo extends LitElement {
     if (changedProperties.has("_entityId") || !this.hasUpdated) {
       this._setupTodoElement();
     }
-  }
 
-  protected updated(): void {
     if (!this._openAddItemFromUrl || !this._entityId) {
       return;
     }
