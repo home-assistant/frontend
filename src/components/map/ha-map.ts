@@ -455,13 +455,20 @@ export class HaMap extends ReactiveElement {
           // avoid it being drawn across the entire map
           const longitudeDifference =
             ((nextPoint.point[1] - thisPoint.point[1] + 540) % 360) - 180;
-          const intersectionLatitude =
-            thisPoint.point[0] +
-            ((nextPoint.point[0] - thisPoint.point[0]) *
-              (thisPoint.point[1] > 0
-                ? 180 - thisPoint.point[1]
-                : -180 - thisPoint.point[1])) /
-              longitudeDifference;
+          let intersectionLatitude: number;
+          if (longitudeDifference === 0) {
+            // very, very unlikely edge case
+            intersectionLatitude =
+              (thisPoint.point[0] + nextPoint.point[0]) / 2;
+          } else {
+            intersectionLatitude =
+              thisPoint.point[0] +
+              ((nextPoint.point[0] - thisPoint.point[0]) *
+                (thisPoint.point[1] > 0
+                  ? 180 - thisPoint.point[1]
+                  : -180 - thisPoint.point[1])) /
+                longitudeDifference;
+          }
 
           const intersectionPoint1: LatLngTuple = [
             intersectionLatitude,
