@@ -17,7 +17,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-vacuum-segment-area-mapper";
 import type { HaVacuumSegmentAreaMapper } from "../../../../components/ha-vacuum-segment-area-mapper";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type {
   ExtEntityRegistryEntry,
   VacuumEntityOptions,
@@ -155,7 +155,7 @@ export class DialogVacuumSegmentMapping
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -189,7 +189,7 @@ export class DialogVacuumSegmentMapping
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
