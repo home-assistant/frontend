@@ -4276,7 +4276,7 @@
               "set_default_confirm_text": "This dashboard will be shown to all users when opening Home Assistant.",
               "set_default_confirm_note": "Users who have chosen a specific dashboard in their profile will not be affected. They must set it back to \"Auto (use system settings)\" to use this dashboard.",
               "set_default_admin_only_title": "Can't set as default",
-              "set_default_admin_only_text": "This dashboard is set to admin-only. Disable admin-only before setting it as default."
+              "set_default_admin_only_text": "This dashboard is set to admin-only. Disable this limitation before setting it as default."
             },
             "panel_detail": {
               "edit_panel": "Edit panel",
