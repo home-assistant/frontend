@@ -1,4 +1,3 @@
-import type { HassEntityBase } from "home-assistant-js-websocket";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -40,7 +39,7 @@ export class HaFilterFloorAreas extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @property({ attribute: false }) public allEntities!: HassEntityBase[];
+  @property({ attribute: false }) public allItems: string[];
 
   @state() private _shouldRender = false;
 
@@ -310,14 +309,13 @@ export class HaFilterFloorAreas extends LitElement {
         }
       }
     } else {
-      const allEntityIds = this.allEntities.map((entity) => entity.entity_id);
       const allRelatedToAreas: string[] = [];
       for (const result of results) {
         if (result[this.type!]) {
           result[this.type!]!.forEach((item) => allRelatedToAreas.push(item));
         }
       }
-      allEntityIds
+      this.allItems
         .filter((entity) => !allRelatedToAreas.includes(entity))
         .forEach((item) => items.add(item));
     }
