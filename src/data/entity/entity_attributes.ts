@@ -190,6 +190,46 @@ export const NON_NUMERIC_ATTRIBUTES = [
   "xy_color",
 ];
 
+const MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS: Record<string, string[]> = {
+  default: [],
+  cover: ["current_position", "current_tilt_position"],
+  input_boolean: [],
+  light: [
+    "brightness",
+    "color_temp",
+    "color_temp_kelvin",
+    "white_value",
+    "effect_list",
+    "effect",
+    "hs_color",
+    "rgb_color",
+    "rgbw_color",
+    "rgbww_color",
+    "xy_color",
+    "min_mireds",
+    "max_mireds",
+    "min_color_temp_kelvin",
+    "max_color_temp_kelvin",
+    "entity_id",
+    "supported_color_modes",
+    "color_mode",
+  ],
+  lock: ["code_format"],
+  person: ["id", "user_id", "editable", "device_trackers"],
+  remote: ["activity_list", "current_activity"],
+  siren: [],
+  switch: [],
+  timer: ["remaining", "restore"],
+  vacuum: [
+    "fan_speed",
+    "fan_speed_list",
+    "status",
+    "battery_level",
+    "battery_icon",
+  ],
+  valve: ["current_position", "current_tilt_position"],
+};
+
 export const computeShownAttributes = (stateObj: HassEntity) => {
   const domain = computeStateDomain(stateObj);
   const filtersArray = STATE_ATTRIBUTES.concat(
@@ -199,5 +239,35 @@ export const computeShownAttributes = (stateObj: HassEntity) => {
   );
   return Object.keys(stateObj.attributes).filter(
     (key) => filtersArray.indexOf(key) === -1
+  );
+};
+
+export const computeMainViewShownAttributes = (
+  stateObj: HassEntity,
+  moreInfoType: string
+) => {
+  const mainViewExtraFilters =
+    MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS[moreInfoType];
+
+  if (!mainViewExtraFilters) {
+    return [];
+  }
+
+  return computeShownAttributes(stateObj).filter(
+    (attribute) => mainViewExtraFilters.indexOf(attribute) === -1
+  );
+};
+
+export const computeAdditionalMoreInfoAttributes = (
+  stateObj: HassEntity,
+  moreInfoType: string
+) => {
+  const shownAttributes = computeShownAttributes(stateObj);
+  const mainViewAttributes = new Set(
+    computeMainViewShownAttributes(stateObj, moreInfoType)
+  );
+
+  return shownAttributes.filter(
+    (attribute) => !mainViewAttributes.has(attribute)
   );
 };

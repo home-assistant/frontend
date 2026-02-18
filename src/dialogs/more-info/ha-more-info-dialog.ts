@@ -44,7 +44,7 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
-import { computeShownAttributes } from "../../data/entity/entity_attributes";
+import { computeAdditionalMoreInfoAttributes } from "../../data/entity/entity_attributes";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -75,6 +75,7 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
+import { stateMoreInfoType } from "./state_more_info_control";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -366,7 +367,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     if (!stateObj) {
       return false;
     }
-    return computeShownAttributes(stateObj).length > 0;
+    return (
+      computeAdditionalMoreInfoAttributes(stateObj, stateMoreInfoType(stateObj))
+        .length > 0
+    );
   }
 
   private _goToAddEntityTo(ev) {
