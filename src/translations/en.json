@@ -8732,7 +8732,7 @@
               "name": "Energy date picker",
               "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
               "disable_compare": "Disable data comparison",
-              "vertical_opening_direction": "Vertical Opening Direction",
+              "vertical_opening_direction": "Vertical opening direction",
               "vertical_opening_directions": {
                 "auto": "Automatic",
                 "up": "Up",
@@ -8741,7 +8741,7 @@
             },
             "energy-distribution": {
               "name": "Energy distribution",
-              "description": "The energy distribution card shows how the energy flowed betweeen energy sources and the home.",
+              "description": "The energy distribution card shows how the energy flowed between energy sources and the home.",
               "link_dashboard": "Link to energy dashboard"
             },
             "energy-usage-graph": {
@@ -8786,7 +8786,7 @@
               "type": "Type of Sankey graph",
               "group_by_floor": "Group entities by floor",
               "group_by_area": "Group entities by area",
-              "layout": "Graph Direction",
+              "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
                 "vertical": "Vertical",
@@ -8910,7 +8910,7 @@
                 "live": "Live"
               },
               "energy_date_selection": "Link to energy date selector",
-              "collection_key": "Energy Collection Name",
+              "collection_key": "Energy collection name",
               "collection_key_description": "Connect a collection of date selection, statistics graphs and energy cards. All cards with matching key will respond to the connected date selection card.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
