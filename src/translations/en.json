@@ -216,6 +216,11 @@
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}"
       },
+      "toggle-group": {
+        "all_off": "All off",
+        "all_on": "All on",
+        "some_on": "{on_count} of {total_count} on"
+      },
       "discovered-devices": {
         "title": "Devices discovered",
         "count_devices": "{count} {count, plural,\n one {device to add}\n other {devices to add}\n}",
@@ -3789,41 +3794,53 @@
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
             "learn_more": "More information on how to get started.",
-            "grid_consumption": "Grid consumption",
-            "edit_consumption": "Edit consumption",
-            "delete_consumption": "Remove consumption",
-            "add_consumption": "Add consumption",
-            "return_to_grid": "Return to grid",
-            "edit_return": "Edit return",
-            "delete_return": "Remove return",
-            "add_return": "Add return",
+            "grid_connections": "Grid connections",
+            "add_connection": "Add grid connection",
+            "edit_connection": "Edit grid connection",
+            "delete_connection": "Delete grid connection",
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
             "add_co2_signal": "Add Electricity Maps integration",
-            "grid_power": "Grid power",
-            "add_power": "Add power sensor",
-            "edit_power": "Edit power sensor",
-            "delete_power": "Delete power sensor",
-            "power_dialog": {
-              "header": "Configure grid power",
-              "sensor_type": "Type of power measurement",
-              "type_standard": "Standard",
-              "type_inverted": "Inverted",
+            "dialog": {
+              "header": "Configure grid connection",
+              "energy": "Energy",
+              "energy_from_grid": "Energy imported from grid",
+              "energy_from_helper": "Pick a sensor which measures grid import in either of {unit}.",
+              "energy_to_grid": "Energy exported to grid",
+              "energy_to_helper": "Pick a sensor which measures grid export in either of {unit}.",
+              "import_cost": "Cost tracking",
+              "import_cost_para": "Select how Home Assistant should keep track of the costs of the imported energy.",
+              "no_cost_tracking": "Do not track costs",
+              "cost_stat": "Use an entity tracking the total costs",
+              "cost_stat_label": "Entity with the total costs",
+              "cost_entity": "Use an entity with current price",
+              "cost_entity_label": "Entity with the current price",
+              "cost_number": "Use a static price",
+              "cost_number_label": "Price",
+              "export_compensation": "Export compensation",
+              "export_compensation_para": "Do you get money back when you export energy to the grid?",
+              "no_compensation_tracking": "Do not track compensation",
+              "compensation_stat": "Use an entity tracking the total compensation",
+              "compensation_stat_label": "Entity with the total compensation",
+              "compensation_entity": "Use an entity with current rate",
+              "compensation_entity_label": "Entity with the current rate",
+              "compensation_number": "Use a static rate",
+              "compensation_number_label": "Rate",
+              "power": "Power measurement",
+              "sensor_type": "[%key:ui::panel::config::energy::battery::dialog::sensor_type%]",
+              "sensor_type_para": "[%key:ui::panel::config::energy::battery::dialog::sensor_type_para%]",
+              "type_none": "[%key:ui::panel::config::energy::battery::dialog::type_none%]",
+              "type_standard": "[%key:ui::panel::config::energy::battery::dialog::type_standard%]",
+              "type_inverted": "[%key:ui::panel::config::energy::battery::dialog::type_inverted%]",
               "type_inverted_description": "Positive values indicate exporting to the grid, negative values indicate importing from the grid.",
-              "type_two_sensors": "Two sensors",
+              "type_two_sensors": "[%key:ui::panel::config::energy::battery::dialog::type_two_sensors%]",
               "power_stat": "Power sensor",
-              "power_helper": "Pick a sensor which measures grid power in either of {unit}. Positive values indicate importing electricity from the grid, negative values indicate exporting electricity to the grid.",
-              "power_from_grid": "Power from grid",
-              "power_to_grid": "Power to grid"
+              "power_helper": "Pick a sensor which measures grid power in either of {unit}.",
+              "power_from": "Power imported from grid",
+              "power_to": "Power exported to grid"
             },
             "flow_dialog": {
-              "cost_entity_helper": "Any sensor with a unit of `{currency}/(valid energy unit)` (e.g. `{currency}/Wh` or `{currency}/kWh`) may be used and will be automatically converted.",
               "from": {
-                "header": "Configure grid consumption",
-                "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
-                "entity_para": "Pick a sensor which measures grid consumption in either of {unit}.",
-                "energy_stat": "Consumed energy",
-                "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
                 "no_cost": "Do not track costs",
                 "cost_stat": "Use an entity tracking the total costs",
                 "cost_stat_input": "Entity with the total costs",
@@ -3831,20 +3848,6 @@
                 "cost_entity_input": "Entity with the current price",
                 "cost_number": "Use a static price",
                 "cost_number_input": "Price"
-              },
-              "to": {
-                "header": "Configure grid production",
-                "paragraph": "Grid production is the energy that flows from your solar panels to the grid.",
-                "entity_para": "Pick a sensor which measures grid production in either of {unit}.",
-                "energy_stat": "Energy returned to the grid",
-                "cost_para": "Do you get money back when you return energy to the grid?",
-                "no_cost": "I do not get money back",
-                "cost_stat": "Use an entity tracking the total received money",
-                "cost_stat_input": "Entity with the total compensation",
-                "cost_entity": "Use an entity with current rate",
-                "cost_entity_input": "Entity with the current rate",
-                "cost_number": "Use a static rate",
-                "cost_number_input": "Rate"
               }
             }
           },
@@ -3888,13 +3891,14 @@
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
               "sensor_type": "Type of power measurement",
+              "sensor_type_para": "Power sensors show the rate of energy flow (in watts), while energy sensors show total consumption (in kWh). Adding a power sensor enables real-time monitoring.",
               "type_none": "No power sensor",
               "type_standard": "Standard",
               "type_inverted": "Inverted",
               "type_inverted_description": "Positive values indicate charging, negative values indicate discharging.",
               "type_two_sensors": "Two sensors",
-              "power_discharge": "Discharge power",
-              "power_charge": "Charge power"
+              "power_from": "Discharge power",
+              "power_to": "Charge power"
             }
           },
           "gas": {
@@ -3949,7 +3953,7 @@
             }
           },
           "device_consumption": {
-            "title": "Individual devices",
+            "title": "Individual electrical devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
             "learn_more": "More information on how to get started.",
             "add_stat": "Pick entity to track energy of",
@@ -7955,7 +7959,8 @@
           },
           "light": {
             "lights": "Lights",
-            "other_lights": "Other lights"
+            "other_lights": "Other lights",
+            "all_lights": "All lights"
           },
           "security": {
             "devices": "Devices",
@@ -8097,7 +8102,6 @@
               "water": "Water",
               "solar": "Solar",
               "low_carbon": "Low-carbon",
-              "home": "Home",
               "battery": "Battery",
               "go_to_energy_dashboard": "Go to the energy dashboard"
             },
@@ -9540,7 +9544,8 @@
             "now": "Now",
             "previous": "Previous",
             "next": "Next",
-            "compare": "Compare data"
+            "compare": "Compare data",
+            "download_data": "[%key:ui::panel::history::download_data%]"
           }
         },
         "reload_lovelace": "Reload UI"
@@ -10195,7 +10200,6 @@
           "water": "Water",
           "now": "Now"
         },
-        "download_data": "[%key:ui::panel::history::download_data%]",
         "configure": "[%key:ui::dialogs::quick-bar::commands::navigation::energy%]",
         "setup": {
           "next": "Next",

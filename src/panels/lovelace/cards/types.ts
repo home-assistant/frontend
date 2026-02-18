@@ -665,6 +665,13 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface ToggleGroupCardConfig extends LovelaceCardConfig {
+  title: string;
+  entities: string[];
+  color?: string;
+  vertical?: boolean;
+}
+
 export interface DistributionEntityConfig extends EntityConfig {
   color?: string;
 }

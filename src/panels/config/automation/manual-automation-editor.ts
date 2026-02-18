@@ -1,5 +1,5 @@
 import { ContextProvider } from "@lit/context";
-import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
+import { mdiContentSave } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -55,7 +55,6 @@ import { configEntriesContext } from "../../../data/context";
 import { getActionType, type Action } from "../../../data/script";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
@@ -168,18 +167,6 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
             "ui.panel.config.automation.editor.triggers.header"
           )}
         </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/automation/trigger/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.learn_more"
-            )}
-          ></ha-icon-button>
-        </a>
       </div>
       ${!ensureArray(this.config.triggers)?.length
         ? html`<p>
@@ -214,18 +201,6 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
             >(${this.hass.localize("ui.common.optional")})</span
           >
         </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/automation/condition/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.learn_more"
-            )}
-          ></ha-icon-button>
-        </a>
       </div>
       ${!ensureArray(this.config.conditions)?.length
         ? html`<p>
@@ -258,20 +233,6 @@ export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
             "ui.panel.config.automation.editor.actions.header"
           )}
         </h2>
-        <div>
-          <a
-            href=${documentationUrl(this.hass, "/docs/automation/action/")}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <ha-icon-button
-              .path=${mdiHelpCircle}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.learn_more"
-              )}
-            ></ha-icon-button>
-          </a>
-        </div>
       </div>
       ${!ensureArray(this.config.actions)?.length
         ? html`<p>

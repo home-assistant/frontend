@@ -9,7 +9,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-markdown";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
 import type { WaterSourceTypeEnergyPreference } from "../../../../data/energy";
@@ -98,12 +98,13 @@ export class DialogEnergyWaterSettings
       isExternalStatistic(this._source.stat_energy_from);
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.water.dialog.header"
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -250,7 +251,7 @@ export class DialogEnergyWaterSettings
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

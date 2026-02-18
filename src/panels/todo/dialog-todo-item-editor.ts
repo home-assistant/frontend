@@ -14,7 +14,7 @@ import "../../components/ha-dialog-footer";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
@@ -117,13 +117,12 @@ class DialogTodoItemEditor extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           `ui.components.todo.item.${isCreate ? "add" : "edit"}`
         )}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -246,7 +245,7 @@ class DialogTodoItemEditor extends LitElement {
                   : ""}
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

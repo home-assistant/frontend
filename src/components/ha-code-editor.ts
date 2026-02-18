@@ -20,7 +20,7 @@ import {
   mdiUndo,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, ReactiveElement, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -28,6 +28,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { copyToClipboard } from "../common/util/copy-clipboard";
+import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
 import "./ha-code-editor-completion-items";
@@ -309,6 +310,11 @@ export class HaCodeEditor extends ReactiveElement {
       parent: this.renderRoot,
     });
     this._canCopy = this._value?.length > 0;
+
+    const cmScroller = this.codemirror.dom.querySelector(".cm-scroller");
+    if (cmScroller) {
+      cmScroller.classList.add("ha-scrollbar");
+    }
 
     // Update the toolbar. Creating it if required
     this._updateToolbar();
@@ -802,100 +808,105 @@ export class HaCodeEditor extends ReactiveElement {
     return [];
   };
 
-  static styles = css`
-    :host {
-      position: relative;
-      display: block;
-      --code-editor-toolbar-height: 28px;
-    }
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleScrollbar,
+      css`
+        :host {
+          position: relative;
+          display: block;
+          --code-editor-toolbar-height: 28px;
+        }
 
-    :host(.error-state) .cm-gutters {
-      border-color: var(--error-state-color, var(--error-color)) !important;
-    }
+        :host(.error-state) .cm-gutters {
+          border-color: var(--error-state-color, var(--error-color)) !important;
+        }
 
-    :host(.hasToolbar) .cm-gutters {
-      padding-top: 0;
-    }
+        :host(.hasToolbar) .cm-gutters {
+          padding-top: 0;
+        }
 
-    :host(.hasToolbar) .cm-focused .cm-gutters {
-      padding-top: 1px;
-    }
+        :host(.hasToolbar) .cm-focused .cm-gutters {
+          padding-top: 1px;
+        }
 
-    :host(.error-state) .cm-content {
-      border-color: var(--error-state-color, var(--error-color)) !important;
-    }
+        :host(.error-state) .cm-content {
+          border-color: var(--error-state-color, var(--error-color)) !important;
+        }
 
-    :host(.hasToolbar) .cm-content {
-      border: none;
-      border-top: 1px solid var(--secondary-text-color);
-    }
+        :host(.hasToolbar) .cm-content {
+          border: none;
+          border-top: 1px solid var(--secondary-text-color);
+        }
 
-    :host(.hasToolbar) .cm-focused .cm-content {
-      border-top: 2px solid var(--primary-color);
-      padding-top: 15px;
-    }
+        :host(.hasToolbar) .cm-focused .cm-content {
+          border-top: 2px solid var(--primary-color);
+          padding-top: 15px;
+        }
 
-    :host(.fullscreen) {
-      position: fixed !important;
-      top: calc(var(--header-height, 56px) + 8px) !important;
-      left: 8px !important;
-      right: 8px !important;
-      bottom: 8px !important;
-      z-index: 6;
-      border-radius: var(--ha-border-radius-lg) !important;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
-      overflow: hidden !important;
-      background-color: var(
-        --code-editor-background-color,
-        var(--card-background-color)
-      ) !important;
-      margin: 0 !important;
-      padding-top: var(--safe-area-inset-top) !important;
-      padding-left: var(--safe-area-inset-left) !important;
-      padding-right: var(--safe-area-inset-right) !important;
-      padding-bottom: var(--safe-area-inset-bottom) !important;
-      box-sizing: border-box !important;
-      display: block !important;
-    }
+        :host(.fullscreen) {
+          position: fixed !important;
+          top: calc(var(--header-height, 56px) + 8px) !important;
+          left: 8px !important;
+          right: 8px !important;
+          bottom: 8px !important;
+          z-index: 6;
+          border-radius: var(--ha-border-radius-lg) !important;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+          overflow: hidden !important;
+          background-color: var(
+            --code-editor-background-color,
+            var(--card-background-color)
+          ) !important;
+          margin: 0 !important;
+          padding-top: var(--safe-area-inset-top) !important;
+          padding-left: var(--safe-area-inset-left) !important;
+          padding-right: var(--safe-area-inset-right) !important;
+          padding-bottom: var(--safe-area-inset-bottom) !important;
+          box-sizing: border-box !important;
+          display: block !important;
+        }
 
-    :host(.hasToolbar) .cm-editor {
-      padding-top: var(--code-editor-toolbar-height);
-    }
+        :host(.hasToolbar) .cm-editor {
+          padding-top: var(--code-editor-toolbar-height);
+        }
 
-    :host(.fullscreen) .cm-editor {
-      height: 100% !important;
-      max-height: 100% !important;
-      border-radius: var(--ha-border-radius-square) !important;
-    }
+        :host(.fullscreen) .cm-editor {
+          height: 100% !important;
+          max-height: 100% !important;
+          border-radius: var(--ha-border-radius-square) !important;
+        }
 
-    :host(:not(.hasToolbar)) .code-editor-toolbar {
-      display: none !important;
-    }
+        :host(:not(.hasToolbar)) .code-editor-toolbar {
+          display: none !important;
+        }
 
-    .code-editor-toolbar {
-      --icon-button-toolbar-height: var(--code-editor-toolbar-height);
-      --icon-button-toolbar-color: var(
-        --code-editor-gutter-color,
-        var(--secondary-background-color, whitesmoke)
-      );
-      border-top-left-radius: var(--ha-border-radius-sm);
-      border-top-right-radius: var(--ha-border-radius-sm);
-    }
+        .code-editor-toolbar {
+          --icon-button-toolbar-height: var(--code-editor-toolbar-height);
+          --icon-button-toolbar-color: var(
+            --code-editor-gutter-color,
+            var(--secondary-background-color, whitesmoke)
+          );
+          border-top-left-radius: var(--ha-border-radius-sm);
+          border-top-right-radius: var(--ha-border-radius-sm);
+        }
 
-    .completion-info {
-      display: grid;
-      gap: 3px;
-      padding: 8px;
-    }
+        .completion-info {
+          display: grid;
+          gap: 3px;
+          padding: 8px;
+        }
 
-    /* Hide completion info on narrow screens */
-    @media (max-width: 600px) {
-      .cm-completionInfo,
-      .completion-info {
-        display: none;
-      }
-    }
-  `;
+        /* Hide completion info on narrow screens */
+        @media (max-width: 600px) {
+          .cm-completionInfo,
+          .completion-info {
+            display: none;
+          }
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

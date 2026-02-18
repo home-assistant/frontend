@@ -6,7 +6,7 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiInformationOutline,
   mdiMenuDown,
   mdiOpenInNew,
@@ -495,7 +495,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
 
         <ha-filter-floor-areas
