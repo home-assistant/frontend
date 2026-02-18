@@ -37,7 +37,6 @@ import {
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { formatNumber } from "../common/number/format_number";
-import { getPanelTitleFromUrlPath } from "./panel";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
@@ -60,11 +59,7 @@ export function createEnergyCollectionKey(key: string): string {
 export function getCurrentDashboardDefaultCollectionKey(
   hass: HomeAssistant
 ): string | undefined {
-  const dashboardTitle = getPanelTitleFromUrlPath(hass, hass.panelUrl);
-  if (dashboardTitle) {
-    return createEnergyCollectionKey(dashboardTitle);
-  }
-  return undefined;
+  return hass.panelUrl ? createEnergyCollectionKey(hass.panelUrl) : undefined;
 }
 
 // Validate that a string is a valid energy collection key.
