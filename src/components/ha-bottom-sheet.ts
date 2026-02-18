@@ -149,7 +149,11 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     const isScrimOrEscapeDismiss =
       afterHideEvent.detail.source === (ev.target as WaDrawer).drawer;
 
-    if (isScrimOrEscapeDismiss && this._isDropdownInteractionActive()) {
+    if (
+      this.open &&
+      isScrimOrEscapeDismiss &&
+      this._isDropdownInteractionActive()
+    ) {
       this._drawerOpen = true;
       this.open = true;
       return;
@@ -180,7 +184,11 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     const isScrimOrEscapeDismiss =
       hideEvent.detail.source === (ev.target as WaDrawer).drawer;
 
-    if (isScrimOrEscapeDismiss && this._isDropdownInteractionActive()) {
+    if (
+      this.open &&
+      isScrimOrEscapeDismiss &&
+      this._isDropdownInteractionActive()
+    ) {
       ev.preventDefault();
       this._drawerOpen = true;
       this.open = true;
