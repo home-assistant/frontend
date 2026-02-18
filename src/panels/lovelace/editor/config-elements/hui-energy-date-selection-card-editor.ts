@@ -19,11 +19,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { EnergyDateSelectorCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import {
-  createEnergyCollectionKey,
-  stripEnergyCollectionKeyPrefix,
-  validateEnergyCollectionKey,
-} from "../../../../data/energy";
+import { createEnergyCollectionKey } from "../../../../data/energy";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -49,9 +45,6 @@ export class HuiEnergyDateSelectionCardEditor
 
   public setConfig(config: EnergyDateSelectorCardConfig): void {
     assert(config, cardConfigStruct);
-    if (config.collection_key) {
-      validateEnergyCollectionKey(config.collection_key, true);
-    }
     this._config = config;
   }
 
@@ -77,7 +70,7 @@ export class HuiEnergyDateSelectionCardEditor
           },
           {
             type: "string",
-            name: "collection_group",
+            name: "collection_key",
             required: false,
           },
           {
@@ -100,12 +93,6 @@ export class HuiEnergyDateSelectionCardEditor
       ...this._config,
     };
 
-    if (data.collection_key) {
-      data.collection_group = stripEnergyCollectionKeyPrefix(
-        data.collection_key
-      );
-    }
-
     const schema = this._schema(this.hass.localize);
 
     return html` <ha-form
@@ -120,20 +107,22 @@ export class HuiEnergyDateSelectionCardEditor
 
   private _valueChanged(ev: CustomEvent): void {
     const config = { ...ev.detail.value };
-    if (config.collection_group) {
-      config.collection_key = createEnergyCollectionKey(
-        config.collection_group
-      );
-    } else {
-      config.collection_key = undefined;
+    if (
+      config.collection_key &&
+      config.collection_key.length > (this._config?.collection_key?.length ?? 0)
+    ) {
+      // If a key has been populated, and it is longer than the value previously
+      // set, ensure it has the correct prefix. The length check ensures the user
+      // can use backspace to delete the contents - otherwise this would repeatedly
+      // restores the prefix.
+      config.collection_key = createEnergyCollectionKey(config.collection_key);
     }
-    delete config.collection_group;
     fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeHelperCallback = (schema) => {
     switch (schema.name) {
-      case "collection_group":
+      case "collection_key":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.collection_key_description`
         );
@@ -146,12 +135,9 @@ export class HuiEnergyDateSelectionCardEditor
     switch (schema.name) {
       case "vertical_opening_direction":
       case "disable_compare":
+      case "collection_key":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.energy-date-selection.${schema.name}`
-        );
-      case "collection_group":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.energy-date-selection.collection_key`
         );
       default:
         return this.hass!.localize(

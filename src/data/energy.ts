@@ -41,20 +41,15 @@ import { getPanelTitleFromUrlPath } from "./panel";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
-// Collection keys used in user dashboards should have this prefix
-export const ENERGY_COLLECTION_KEY_UI_PREFIX = `${ENERGY_COLLECTION_KEY_PREFIX}ui_`;
-
 // All collection keys created this session
 const energyCollectionKeys = new Set<string | undefined>();
 
 // Create an energy collection key.
 // This will add the required prefix if not already present.
-// If the supplied key has an valid non-user prefix, that will
-// remain unchanged to support dashboards made in YAML.
 export function createEnergyCollectionKey(key: string): string {
   if (!key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
-    // No collection key prefix, so add UI prefix.
-    key = ENERGY_COLLECTION_KEY_UI_PREFIX + key;
+    // No collection key prefix, so add prefix.
+    key = ENERGY_COLLECTION_KEY_PREFIX + key;
   }
   return key;
 }
@@ -72,45 +67,28 @@ export function getCurrentDashboardDefaultCollectionKey(
   return undefined;
 }
 
-// Does the opposite of createEnergyCollectionKey, removing the collection key
-// prefix if present.
-export function stripEnergyCollectionKeyPrefix(key: string) {
-  if (key.startsWith(ENERGY_COLLECTION_KEY_UI_PREFIX)) {
-    return key.slice(ENERGY_COLLECTION_KEY_UI_PREFIX.length);
-  }
-  if (key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
-    return key.slice(ENERGY_COLLECTION_KEY_PREFIX.length);
-  }
-  return key;
-}
-
 // Validate that a string is a valid energy collection key.
 // By default allows any valid collection key. Can optionally can select that
 // the key has the UI prefix. Will throw an error if invalid.
-export function validateEnergyCollectionKey(
-  key: string | undefined,
-  requireUiKey = false
-) {
-  const prefix = requireUiKey
-    ? ENERGY_COLLECTION_KEY_UI_PREFIX
-    : ENERGY_COLLECTION_KEY_PREFIX;
-  if (!key?.startsWith(prefix)) {
-    throw new Error(`Collection keys must start with ${prefix}.`);
+export function validateEnergyCollectionKey(key: string | undefined) {
+  if (!key?.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
+    throw new Error(
+      `Collection keys must start with ${ENERGY_COLLECTION_KEY_PREFIX}.`
+    );
   }
 }
 
 // Return all currently active energy collections, optionally selecting between
 // only ui keys, or all keys.
 export function getActiveEnergyCollectionKeys(
-  hass: HomeAssistant,
-  uiKeysOnly = true
+  hass: HomeAssistant
 ): string[] | undefined {
   if (!energyCollectionKeys.size) return undefined;
   return [...energyCollectionKeys].filter((key) => {
     if (
       key !== null &&
       key !== undefined &&
-      (!uiKeysOnly || key.startsWith(ENERGY_COLLECTION_KEY_UI_PREFIX))
+      key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)
     ) {
       const energyCollection = findEnergyDataCollection(hass, key);
       return energyCollection && energyCollection.isActive();

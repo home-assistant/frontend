@@ -13,11 +13,7 @@ import type {
 } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import {
-  getActiveEnergyCollectionKeys,
-  stripEnergyCollectionKeyPrefix,
-  validateEnergyCollectionKey,
-} from "../../../../data/energy";
+import { getActiveEnergyCollectionKeys } from "../../../../data/energy";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -44,9 +40,6 @@ export class HuiEnergyGraphCardEditor
 
   public setConfig(config: EnergyGraphCardConfig): void {
     assert(config, cardConfigStruct);
-    if (config.collection_key) {
-      validateEnergyCollectionKey(config.collection_key, true);
-    }
     this._config = config;
   }
 
@@ -61,12 +54,7 @@ export class HuiEnergyGraphCardEditor
           selector: {
             select: {
               mode: "dropdown",
-              options: collectionKeys
-                ? collectionKeys.map((key) => ({
-                    value: key,
-                    label: stripEnergyCollectionKeyPrefix(key),
-                  }))
-                : [""],
+              options: collectionKeys ?? [""],
             },
           },
         },
