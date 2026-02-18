@@ -636,10 +636,9 @@ class HUIRoot extends LitElement {
   }
 
   private _handleContainerScroll = () => {
-    const viewRoot = this._viewRoot;
     this.toggleAttribute(
       "scrolled",
-      viewRoot ? viewRoot.scrollTop !== 0 : false
+      this._viewRoot ? this._viewRoot.scrollTop !== 0 : false
     );
   };
 
@@ -696,10 +695,9 @@ class HUIRoot extends LitElement {
     this._viewRoot?.removeEventListener("scroll", this._handleContainerScroll);
     window.removeEventListener("popstate", this._handlePopState);
     window.removeEventListener("location-changed", this._locationChanged);
-    const viewRoot = this._viewRoot;
     this.toggleAttribute(
       "scrolled",
-      viewRoot ? viewRoot.scrollTop !== 0 : false
+      this._viewRoot ? this._viewRoot.scrollTop !== 0 : false
     );
     // Re-enable history scroll restoration when leaving the page
     window.history.scrollRestoration = "auto";
@@ -834,9 +832,8 @@ class HUIRoot extends LitElement {
             0;
           this._restoreScroll = false;
           requestAnimationFrame(() => {
-            const viewRoot = this._viewRoot;
-            if (viewRoot) {
-              viewRoot.scrollTo({ behavior: "auto", top: position });
+            if (this._viewRoot) {
+              this._viewRoot.scrollTo({ behavior: "auto", top: position });
             }
           });
         }
@@ -1174,8 +1171,7 @@ class HUIRoot extends LitElement {
 
     // Save scroll position of current view
     if (this._curView != null) {
-      const viewRoot = this._viewRoot;
-      this._viewScrollPositions[this._curView] = viewRoot?.scrollTop ?? 0;
+      this._viewScrollPositions[this._curView] = this._viewRoot?.scrollTop ?? 0;
     }
 
     viewIndex = viewIndex === undefined ? 0 : viewIndex;
