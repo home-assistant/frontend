@@ -133,7 +133,14 @@ class PanelTodo extends LitElement {
     navigate(constructUrlCurrentPath(removeSearchParam("add_item")), {
       replace: true,
     });
-    this._addItem();
+    if (
+      supportsFeature(
+        this.hass.states[this._entityId],
+        TodoListEntityFeature.CREATE_TODO_ITEM
+      )
+    ) {
+      this._addItem();
+    }
   }
 
   private _setupTodoElement(): void {
