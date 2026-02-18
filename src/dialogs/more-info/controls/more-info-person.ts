@@ -6,8 +6,12 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-attributes";
 import "../../../components/ha-button";
 import "../../../components/map/ha-map";
+import { MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS } from "../../../data/entity/entity_attributes";
 import { showZoneEditor } from "../../../data/zone";
 import type { HomeAssistant } from "../../../types";
+
+const EXTRA_FILTERS =
+  MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS.person.join(",");
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {
@@ -53,7 +57,7 @@ class MoreInfoPerson extends LitElement {
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        extra-filters="id,user_id,editable,device_trackers"
+        .extraFilters=${EXTRA_FILTERS}
       ></ha-attributes>
     `;
   }

@@ -20,6 +20,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity/entity";
+import { MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS } from "../../../data/entity/entity_attributes";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
@@ -96,6 +97,9 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
 ];
 
+const EXTRA_FILTERS =
+  MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS.vacuum.join(",");
+
 @customElement("more-info-vacuum")
 class MoreInfoVacuum extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -108,9 +112,6 @@ class MoreInfoVacuum extends LitElement {
     }
 
     const stateObj = this.stateObj;
-
-    const filterExtraAttributes =
-      "fan_speed,fan_speed_list,status,battery_level,battery_icon";
 
     return html`
       ${stateObj.state !== UNAVAILABLE
@@ -207,7 +208,7 @@ class MoreInfoVacuum extends LitElement {
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        .extraFilters=${filterExtraAttributes}
+        .extraFilters=${EXTRA_FILTERS}
       ></ha-attributes>
     `;
   }

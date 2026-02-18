@@ -4,11 +4,13 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-select";
+import { MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS } from "../../../data/entity/entity_attributes";
 import type { RemoteEntity } from "../../../data/remote";
 import { REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
 import type { HomeAssistant } from "../../../types";
 
-const filterExtraAttributes = "activity_list,current_activity";
+const EXTRA_FILTERS =
+  MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS.remote.join(",");
 
 @customElement("more-info-remote")
 class MoreInfoRemote extends LitElement {
@@ -48,7 +50,7 @@ class MoreInfoRemote extends LitElement {
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        .extraFilters=${filterExtraAttributes}
+        .extraFilters=${EXTRA_FILTERS}
       ></ha-attributes>
     `;
   }

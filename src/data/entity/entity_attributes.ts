@@ -190,7 +190,7 @@ export const NON_NUMERIC_ATTRIBUTES = [
   "xy_color",
 ];
 
-const MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS: Record<string, string[]> = {
+export const MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS = {
   default: [],
   cover: ["current_position", "current_tilt_position"],
   input_boolean: [],
@@ -228,7 +228,7 @@ const MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS: Record<string, string[]> = {
     "battery_icon",
   ],
   valve: ["current_position", "current_tilt_position"],
-};
+} as const satisfies Record<string, readonly string[]>;
 
 export const computeShownAttributes = (stateObj: HassEntity) => {
   const domain = computeStateDomain(stateObj);

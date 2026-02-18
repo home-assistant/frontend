@@ -10,6 +10,7 @@ import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-state-icon";
+import { MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS } from "../../../data/entity/entity_attributes";
 import type { LockEntity } from "../../../data/lock";
 import {
   LockEntityFeature,
@@ -26,6 +27,9 @@ const CONFIRM_TIMEOUT_SECOND = 5;
 const DONE_TIMEOUT_SECOND = 2;
 
 type ButtonState = "normal" | "confirm" | "done";
+
+const EXTRA_FILTERS =
+  MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS.lock.join(",");
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
@@ -154,7 +158,7 @@ class MoreInfoLock extends LitElement {
         <ha-attributes
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-          extra-filters="code_format"
+          .extraFilters=${EXTRA_FILTERS}
         ></ha-attributes>
       </div>
     `;

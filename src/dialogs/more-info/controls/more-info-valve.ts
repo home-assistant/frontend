@@ -6,6 +6,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
+import { MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS } from "../../../data/entity/entity_attributes";
 import type { ValveEntity } from "../../../data/valve";
 import {
   ValveEntityFeature,
@@ -19,6 +20,9 @@ import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type Mode = "position" | "button";
+
+const EXTRA_FILTERS =
+  MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS.valve.join(",");
 
 @customElement("more-info-valve")
 class MoreInfoValve extends LitElement {
@@ -158,7 +162,7 @@ class MoreInfoValve extends LitElement {
       <ha-attributes
         .hass=${this.hass}
         .stateObj=${this.stateObj}
-        extra-filters="current_position,current_tilt_position"
+        .extraFilters=${EXTRA_FILTERS}
       ></ha-attributes>
     `;
   }

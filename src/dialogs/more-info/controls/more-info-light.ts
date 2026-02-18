@@ -17,6 +17,7 @@ import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
+import { MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS } from "../../../data/entity/entity_attributes";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LightEntity } from "../../../data/light";
@@ -41,6 +42,9 @@ import { moreInfoControlStyle } from "../components/more-info-control-style";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type MainControl = "brightness" | "color_temp" | "color";
+
+const EXTRA_FILTERS =
+  MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS.light.join(",");
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -290,7 +294,7 @@ class MoreInfoLight extends LitElement {
         <ha-attributes
           .hass=${this.hass}
           .stateObj=${this.stateObj}
-          extra-filters="brightness,color_temp,color_temp_kelvin,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,min_color_temp_kelvin,max_color_temp_kelvin,entity_id,supported_color_modes,color_mode"
+          .extraFilters=${EXTRA_FILTERS}
         ></ha-attributes>
       </div>
     `;
