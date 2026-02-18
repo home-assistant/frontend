@@ -164,8 +164,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
-    const hideEvent = ev;
-
     if (this._sliderInteractionActive) {
       ev.preventDefault();
       this._drawerOpen = true;
@@ -173,7 +171,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       return;
     }
     const isScrimOrEscapeDismiss =
-      hideEvent.detail.source === (ev.target as WaDrawer).drawer;
+      ev.detail.source === (ev.target as WaDrawer).drawer;
 
     if (
       this.open &&
