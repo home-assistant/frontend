@@ -197,6 +197,13 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         without-header
         @touchstart=${this._handleTouchStart}
       >
+        <div
+          class="handle-wrapper"
+          aria-hidden="true"
+          @mousedown=${this._handleMouseDown}
+        >
+          <div class="handle"></div>
+        </div>
         <slot name="header"></slot>
         <div class="content-wrapper">
           <div id="body" class="body ha-scrollbar">
@@ -241,7 +248,22 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     this._startResizing(ev.touches[0].clientY);
   };
 
-  private _startResizing(clientY: number) {
+  private _handleMouseDown = (ev: MouseEvent) => {
+    if (this.preventScrimClose) {
+      return;
+    }
+
+    // Prevent selecting text while dragging the handle.
+    ev.preventDefault();
+    this._startResizing(ev.clientY, true);
+  };
+
+  private _startResizing(clientY: number, includeMouse = false) {
+    if (includeMouse) {
+      document.addEventListener("mousemove", this._handleMouseMove);
+      document.addEventListener("mouseup", this._handleMouseUp);
+    }
+
     // register event listeners for drag handling
     document.addEventListener("touchmove", this._handleTouchMove, {
       passive: false,
@@ -253,21 +275,37 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleTouchMove = (ev: TouchEvent) => {
-    const currentY = ev.touches[0].clientY;
-    const delta = this._gestureRecognizer.move(currentY);
+    this._handleDragMove(ev.touches[0].clientY);
 
-    if (delta < 0) {
+    if (this._isDragging) {
       ev.preventDefault();
-      this._isDragging = true;
-      requestAnimationFrame(() => {
-        if (this._isDragging) {
-          this.style.setProperty(
-            "--dialog-transform",
-            `translateY(${delta * -1}px)`
-          );
-        }
-      });
     }
+  };
+
+  private _handleMouseMove = (ev: MouseEvent) => {
+    this._handleDragMove(ev.clientY);
+  };
+
+  private _handleDragMove(clientY: number) {
+    const delta = this._gestureRecognizer.move(clientY);
+
+    if (delta >= 0) {
+      return;
+    }
+
+    this._isDragging = true;
+    requestAnimationFrame(() => {
+      if (this._isDragging) {
+        this.style.setProperty(
+          "--dialog-transform",
+          `translateY(${delta * -1}px)`
+        );
+      }
+    });
+  }
+
+  private _handleMouseUp = () => {
+    this._handleTouchEnd();
   };
 
   private _animateSnapBack() {
@@ -326,6 +364,8 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   };
 
   private _unregisterResizeHandlers = () => {
+    document.removeEventListener("mousemove", this._handleMouseMove);
+    document.removeEventListener("mouseup", this._handleMouseUp);
     document.removeEventListener("touchmove", this._handleTouchMove);
     document.removeEventListener("touchend", this._handleTouchEnd);
     document.removeEventListener("touchcancel", this._handleTouchEnd);
@@ -393,6 +433,39 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         :host([flexcontent]) wa-drawer::part(body) {
           display: flex;
           flex-direction: column;
+        }
+        :host([prevent-scrim-close]) .handle-wrapper {
+          display: none;
+        }
+        .handle-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: grab;
+          touch-action: none;
+          padding-top: var(--ha-space-2);
+          padding-bottom: var(--ha-space-2);
+        }
+        .handle-wrapper .handle {
+          height: 20px;
+          width: 200px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1;
+        }
+        .handle-wrapper .handle::after {
+          content: "";
+          border-radius: var(--ha-border-radius-md);
+          height: 4px;
+          background: var(
+            --ha-bottom-sheet-handle-color,
+            var(--divider-color, #e0e0e0)
+          );
+          width: 80px;
+        }
+        .handle-wrapper .handle:active::after {
+          cursor: grabbing;
         }
         .content-wrapper {
           position: relative;
