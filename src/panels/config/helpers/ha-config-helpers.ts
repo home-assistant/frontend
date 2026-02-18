@@ -383,8 +383,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         title: "",
         label: this.hass.localize("ui.panel.config.generic.headers.actions"),
         type: "overflow-menu",
-        hideable: false,
-        moveable: false,
         showNarrow: true,
         template: (helper) => html`
           <ha-icon-overflow-menu
@@ -675,6 +673,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .type=${"entity"}
           .value=${this._filters["ha-filter-floor-areas"]}
+          .allItems=${this._helperEntities.map((entity) => entity.entity_id)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
