@@ -3924,7 +3924,7 @@
               "cost_entity_helper_volume": "volume",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
-              "gas_usage": "Gas usage",
+              "gas_usage": "Gas consumption",
               "gas_flow_rate": "Gas flow rate",
               "flow_rate_para": "Optionally pick a sensor which measures the gas flow rate in either of {unit}."
             }
@@ -3950,7 +3950,7 @@
               "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (e.g. `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
-              "water_usage": "Water usage",
+              "water_usage": "Water consumption",
               "water_flow_rate": "Water flow rate",
               "flow_rate_para": "Optionally pick a sensor which measures the water flow rate in either of {unit}."
             }
@@ -3985,7 +3985,7 @@
               "display_name": "Display name",
               "device_consumption_water": "Device water consumption",
               "device_consumption_water_flow_rate": "Device water flow rate",
-              "selected_stat_intro": "Select the water sensor that measures the device's water usage in either of {unit}.",
+              "selected_stat_intro": "Select the water sensor that measures the device's water consumption in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
               "no_upstream_devices": "No eligible upstream devices"
