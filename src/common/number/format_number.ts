@@ -122,11 +122,11 @@ export const getNumberFormatOptions = (
       minimumFractionDigits: precision,
     };
   }
-  if (
-    Number.isInteger(Number(entityState?.attributes?.step)) &&
-    Number.isInteger(Number(entityState?.state))
-  ) {
-    return { maximumFractionDigits: 0 };
+  if (Number.isInteger(Number(entityState?.state))) {
+    const step = entityState?.attributes?.step;
+    if (step === undefined || Number.isInteger(Number(step))) {
+      return { maximumFractionDigits: 0 };
+    }
   }
   return undefined;
 };

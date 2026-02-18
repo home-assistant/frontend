@@ -169,10 +169,10 @@ describe("formatNumber", () => {
     );
   });
 
-  it("Does not set any Intl.NumberFormatOptions when there is no step attribute", () => {
-    assert.strictEqual(
+  it("Sets maximumFractionDigits to 0 when state is integer and there is no step attribute", () => {
+    assert.deepStrictEqual(
       getNumberFormatOptions({ state: "3.0" } as unknown as HassEntity),
-      undefined
+      { maximumFractionDigits: 0 }
     );
   });
 });
