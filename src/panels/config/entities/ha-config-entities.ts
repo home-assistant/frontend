@@ -803,7 +803,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   protected render() {
     if (!this.hass || this._entities === undefined) {
-      return html` <hass-loading-screen></hass-loading-screen> `;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
     const { filteredEntities, filteredDomains } =
@@ -998,6 +998,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           type="entity"
           .value=${this._filters["ha-filter-floor-areas"]}
+          .allItems=${this._entities.map((entity) => entity.entity_id)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
