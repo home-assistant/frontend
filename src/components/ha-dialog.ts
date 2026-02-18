@@ -281,8 +281,8 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         }
         @media (prefers-reduced-motion: reduce) {
           wa-dialog {
-            --show-duration: 1ms;
-            --hide-duration: 1ms;
+            --show-duration: 0ms;
+            --hide-duration: 0ms;
           }
         }
 
