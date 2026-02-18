@@ -486,7 +486,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .type=${"automation"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
-          .allEntities=${this.automations}
+          .allItems=${this.automations.map((entity) => entity.entity_id)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
