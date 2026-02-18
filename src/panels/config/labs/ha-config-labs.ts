@@ -111,7 +111,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
           ? html`
               <ha-icon-button
                 slot="toolbar-icon"
-                href=${documentationUrl(this.hass, "/integrations/labs/")}
+                .href=${documentationUrl(this.hass, "/integrations/labs/")}
                 target="_blank"
                 rel="noopener noreferrer"
                 .title=${this.hass.localize("ui.common.help")}
