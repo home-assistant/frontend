@@ -78,7 +78,6 @@ export class HuiEnergyDateSelectionCardEditor
           {
             type: "string",
             name: "collection_group",
-            ignoreOnInput: true,
             required: false,
           },
           {
