@@ -82,6 +82,7 @@ import {
   getSensorDeviceClassConvertibleUnits,
   getSensorNumericDeviceClasses,
 } from "../../../data/sensor";
+import { VacuumEntityFeature } from "../../../data/vacuum";
 import type { WeatherUnits } from "../../../data/weather";
 import { getWeatherConvertibleUnits } from "../../../data/weather";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
@@ -89,6 +90,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showVacuumSegmentMappingView } from "../../../dialogs/more-info/components/vacuum/show-view-vacuum-segment-mapping";
 import { showVoiceAssistantsView } from "../../../dialogs/more-info/components/voice/show-view-voice-assistants";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle } from "../../../resources/styles";
@@ -893,6 +895,31 @@ export class EntityRegistrySettingsEditor extends LitElement {
         <ha-icon-next slot="meta"></ha-icon-next>
       </ha-list-item>
 
+      ${domain === "vacuum" &&
+      stateObj &&
+      supportsFeature(stateObj, VacuumEntityFeature.CLEAN_AREA)
+        ? html`
+            <ha-list-item
+              class="menu-item"
+              twoline
+              hasMeta
+              .disabled=${this.disabled}
+              @click=${this._handleVacuumSegmentMappingClicked}
+            >
+              <span
+                >${this.hass.localize(
+                  "ui.dialogs.vacuum_segment_mapping.title"
+                )}</span
+              >
+              <span slot="secondary">
+                ${this.hass.localize(
+                  "ui.dialogs.vacuum_segment_mapping.description"
+                )}
+              </span>
+              <ha-icon-next slot="meta"></ha-icon-next>
+            </ha-list-item>
+          `
+        : nothing}
       ${this._disabledBy &&
       this._disabledBy !== "user" &&
       this._disabledBy !== "integration"
@@ -1481,6 +1508,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
     showVoiceAssistantsView(
       this,
       this.hass.localize("ui.dialogs.entity_registry.editor.voice_assistants")
+    );
+  }
+
+  private _handleVacuumSegmentMappingClicked() {
+    showVacuumSegmentMappingView(
+      this,
+      this.hass.localize,
+      this.entry.entity_id
     );
   }
 
