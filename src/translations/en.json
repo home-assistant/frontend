@@ -6945,7 +6945,7 @@
             "add_node": "Add device",
             "remove_node": "Remove foreign device",
             "remove_a_node": "Remove a device",
-            "rebuild_network_routes": "Rebuild network routes",
+            "rebuild_network_routes": "Discover and assign new routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
           },
@@ -6974,7 +6974,7 @@
             "provisioned_count": "{count} {count, plural,\n  one {provisioned device}\n  other {provisioned devices}\n}",
             "not_included": "{count} not included",
             "devices_offline": "{count} offline",
-            "rebuild_routes_description": "Optimize communication paths between all devices in your network",
+            "rebuild_routes_description": "Rebuilding routes creates heavy traffic and may degrade performance for minutes to hours",
             "rebuild_routes_action": "Rebuild",
             "remove_node_description": "Useful when a device is stuck in another network and must be excluded before it can be included again",
             "remove_node_action": "Remove foreign device",
