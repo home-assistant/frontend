@@ -22,6 +22,7 @@ import {
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 
@@ -34,6 +35,13 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  private _tabs: PageNavigation[] = [
+    {
+      translationKey: "ui.panel.config.bluetooth.navigation.connections",
+      path: "/config/bluetooth/connection-monitor",
+    },
+  ];
 
   @state() private _data: BluetoothConnectionData[] = [];
 
@@ -193,16 +201,20 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
       const scannerDevice = this._sourceDevices[row.source];
       const scanner = this._scanners[row.source];
       const name = this._addressNames[row.address] || row.address;
+      const sourceName =
+        scannerDevice?.name_by_user ||
+        scannerDevice?.name ||
+        scanner?.name ||
+        row.source;
+      const areaName = scannerDevice?.area_id
+        ? this.hass.areas[scannerDevice.area_id]?.name
+        : undefined;
       return {
         ...row,
         id: row.address,
         name: name,
         source_address: row.source,
-        source:
-          scannerDevice?.name_by_user ||
-          scannerDevice?.name ||
-          scanner?.name ||
-          row.source,
+        source: areaName ? `${sourceName} (${areaName})` : sourceName,
         device: device?.name_by_user || device?.name || undefined,
       };
     })
@@ -214,6 +226,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        .tabs=${this._tabs}
         back-path="/config/bluetooth/dashboard"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}

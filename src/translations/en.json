@@ -6693,8 +6693,12 @@
         "bluetooth": {
           "title": "Bluetooth",
           "adapters_count": "{count} {count, plural,\n  one {adapter}\n  other {adapters}\n}",
+          "connections_count": "{count} {count, plural,\n  one {connection}\n  other {connections}\n}",
+          "advertisements_count": "{count} {count, plural,\n  one {advertisement}\n  other {advertisements}\n}",
           "connections_summary": "{used}/{total} connections active",
           "adapter_info_title": "Bluetooth adapters",
+          "my_network": "My network",
+          "show_map": "Show map",
           "navigation": {
             "adapter_info": "Adapters",
             "adapter_info_description": "View scanning modes, connection allocations, and adapter settings",
@@ -6705,6 +6709,8 @@
             "visualization": "Visualization",
             "visualization_description": "Interactive network graph of scanners and devices"
           },
+          "disabled_adapters": "Disabled adapter(s)",
+          "disabled_by_user": "Disabled by user",
           "settings_title": "Bluetooth adapters",
           "option_flow": "Configure Bluetooth options",
           "no_connections": "No active connections",

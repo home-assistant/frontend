@@ -1,24 +1,28 @@
 import {
   mdiAccessPoint,
-  mdiBroadcast,
-  mdiCheckCircleOutline,
   mdiAlertCircleOutline,
+  mdiBroadcast,
+  mdiCheck,
   mdiLan,
   mdiLinkVariant,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type {
   BluetoothAllocationsData,
+  BluetoothDeviceData,
   BluetoothScannerState,
 } from "../../../../../data/bluetooth";
 import {
+  subscribeBluetoothAdvertisements,
   subscribeBluetoothConnectionAllocations,
   subscribeBluetoothScannerState,
 } from "../../../../../data/bluetooth";
@@ -44,9 +48,13 @@ export class BluetoothConfigDashboard extends LitElement {
 
   @state() private _scannerStates: Record<string, BluetoothScannerState> = {};
 
+  @state() private _advertisementData: BluetoothDeviceData[] = [];
+
   private _unsubConnectionAllocations?: (() => Promise<void>) | undefined;
 
   private _unsubScannerState?: (() => Promise<void>) | undefined;
+
+  private _unsubAdvertisements?: UnsubscribeFunc;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -54,6 +62,7 @@ export class BluetoothConfigDashboard extends LitElement {
       this._loadConfigEntries();
       this._subscribeBluetoothConnectionAllocations();
       this._subscribeBluetoothScannerState();
+      this._subscribeBluetoothAdvertisements();
     }
   }
 
@@ -91,6 +100,18 @@ export class BluetoothConfigDashboard extends LitElement {
     );
   }
 
+  private _subscribeBluetoothAdvertisements(): void {
+    if (this._unsubAdvertisements) {
+      return;
+    }
+    this._unsubAdvertisements = subscribeBluetoothAdvertisements(
+      this.hass.connection,
+      (data) => {
+        this._advertisementData = data;
+      }
+    );
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsubConnectionAllocations) {
@@ -101,10 +122,17 @@ export class BluetoothConfigDashboard extends LitElement {
       this._unsubScannerState();
       this._unsubScannerState = undefined;
     }
+    if (this._unsubAdvertisements) {
+      this._unsubAdvertisements();
+      this._unsubAdvertisements = undefined;
+    }
   }
 
   protected render(): TemplateResult {
-    const adapterCount = this._configEntries.length;
+    const enabledEntries = this._configEntries.filter(
+      (e) => e.disabled_by === null
+    );
+    const adapterCount = enabledEntries.length;
     const totalSlots = this._connectionAllocationData.reduce(
       (sum, a) => sum + a.slots,
       0
@@ -124,110 +152,89 @@ export class BluetoothConfigDashboard extends LitElement {
         .header=${this.hass.localize("ui.panel.config.bluetooth.title")}
       >
         <div class="container">
-          <ha-card class="network-status">
+          <ha-card class="content network-status">
             <div class="card-content">
               <div class="heading">
                 <div class="icon ${hasMismatch ? "warning" : "online"}">
                   <ha-svg-icon
-                    .path=${hasMismatch
-                      ? mdiAlertCircleOutline
-                      : mdiCheckCircleOutline}
+                    .path=${hasMismatch ? mdiAlertCircleOutline : mdiCheck}
                   ></ha-svg-icon>
                 </div>
                 <div class="details">
-                  <span class="title">
-                    ${this.hass.localize("ui.panel.config.bluetooth.title")}
-                  </span>
-                  <span class="secondary">
+                  ${this.hass.localize("ui.panel.config.bluetooth.title")}<br />
+                  <small>
                     ${this.hass.localize(
-                      "ui.panel.config.bluetooth.adapters_count",
-                      { count: adapterCount }
-                    )}${totalSlots > 0
-                      ? ` · ${this.hass.localize(
-                          "ui.panel.config.bluetooth.connections_summary",
-                          { used: usedSlots, total: totalSlots }
-                        )}`
-                      : nothing}
-                  </span>
+                      "ui.panel.config.bluetooth.connections_summary",
+                      { used: usedSlots, total: totalSlots }
+                    )}
+                  </small>
                 </div>
               </div>
             </div>
           </ha-card>
 
-          <ha-card>
-            <ha-md-list>
-              <ha-md-list-item
-                type="link"
-                href="/config/bluetooth/adapter-info"
-              >
-                <ha-svg-icon slot="start" .path=${mdiAccessPoint}></ha-svg-icon>
-                <div slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.navigation.adapter_info"
-                  )}
-                </div>
-                <div slot="supporting-text">
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.navigation.adapter_info_description"
-                  )}
-                </div>
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-list-item>
-
-              <ha-md-list-item
-                type="link"
-                href="/config/bluetooth/advertisement-monitor"
-              >
-                <ha-svg-icon slot="start" .path=${mdiBroadcast}></ha-svg-icon>
-                <div slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.navigation.advertisements"
-                  )}
-                </div>
-                <div slot="supporting-text">
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.navigation.advertisements_description"
-                  )}
-                </div>
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-list-item>
-
-              <ha-md-list-item
-                type="link"
-                href="/config/bluetooth/connection-monitor"
-              >
-                <ha-svg-icon slot="start" .path=${mdiLinkVariant}></ha-svg-icon>
-                <div slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.navigation.connections"
-                  )}
-                </div>
-                <div slot="supporting-text">
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.navigation.connections_description"
-                  )}
-                </div>
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-list-item>
-
-              <ha-md-list-item
-                type="link"
+          <ha-card class="network-card">
+            <div class="card-header">
+              ${this.hass.localize("ui.panel.config.bluetooth.my_network")}
+              <ha-button
+                appearance="filled"
                 href="/config/bluetooth/visualization"
               >
                 <ha-svg-icon slot="start" .path=${mdiLan}></ha-svg-icon>
-                <div slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.navigation.visualization"
-                  )}
-                </div>
-                <div slot="supporting-text">
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.navigation.visualization_description"
-                  )}
-                </div>
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-list-item>
-            </ha-md-list>
+                ${this.hass.localize("ui.panel.config.bluetooth.show_map")}
+              </ha-button>
+            </div>
+            <div class="card-content network-card-content">
+              <ha-md-list>
+                <ha-md-list-item
+                  type="link"
+                  href="/config/bluetooth/adapter-info"
+                >
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiAccessPoint}
+                  ></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.bluetooth.adapters_count",
+                      { count: adapterCount }
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
+
+                <ha-md-list-item
+                  type="link"
+                  href="/config/bluetooth/connection-monitor"
+                >
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiLinkVariant}
+                  ></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.bluetooth.connections_count",
+                      { count: usedSlots }
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
+
+                <ha-md-list-item
+                  type="link"
+                  href="/config/bluetooth/advertisement-monitor"
+                >
+                  <ha-svg-icon slot="start" .path=${mdiBroadcast}></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.bluetooth.advertisements_count",
+                      { count: this._advertisementData.length }
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
+              </ha-md-list>
+            </div>
           </ha-card>
         </div>
       </hass-subpage>
@@ -243,8 +250,12 @@ export class BluetoothConfigDashboard extends LitElement {
         }
 
         ha-card {
+          margin: 0px auto var(--ha-space-4);
           max-width: 600px;
-          margin: 0 auto var(--ha-space-4);
+        }
+
+        .content {
+          margin-top: var(--ha-space-6);
         }
 
         ha-md-list {
@@ -252,36 +263,75 @@ export class BluetoothConfigDashboard extends LitElement {
           padding: 0;
         }
 
-        .network-status .heading {
+        .network-card {
+          overflow: hidden;
+        }
+
+        .network-card .card-content {
+          padding: 0;
+        }
+
+        .network-card .card-header {
           display: flex;
           align-items: center;
-          gap: var(--ha-space-4);
+          justify-content: space-between;
+          padding-bottom: var(--ha-space-2);
         }
 
-        .network-status .icon ha-svg-icon {
-          --mdc-icon-size: 48px;
-        }
-
-        .network-status .icon.online {
-          color: var(--success-color);
-        }
-
-        .network-status .icon.warning {
-          color: var(--warning-color);
-        }
-
-        .network-status .details {
+        .network-status div.heading {
           display: flex;
-          flex-direction: column;
+          align-items: center;
+          column-gap: var(--ha-space-4);
         }
 
-        .network-status .details .title {
+        .network-status div.heading .icon {
+          position: relative;
+          border-radius: var(--ha-border-radius-2xl);
+          width: var(--ha-space-10);
+          height: var(--ha-space-10);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          flex-shrink: 0;
+          --icon-color: var(--primary-color);
+        }
+
+        .network-status div.heading .icon.online {
+          --icon-color: var(--success-color);
+        }
+
+        .network-status div.heading .icon.warning {
+          --icon-color: var(--warning-color);
+        }
+
+        .network-status div.heading .icon::before {
+          display: block;
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--icon-color, var(--primary-color));
+          opacity: 0.2;
+        }
+
+        .network-status div.heading .icon ha-svg-icon {
+          color: var(--icon-color, var(--primary-color));
+          width: var(--ha-space-6);
+          height: var(--ha-space-6);
+        }
+
+        .network-status div.heading .details {
           font-size: var(--ha-font-size-xl);
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--primary-text-color);
         }
 
-        .network-status .details .secondary {
+        .network-status small {
           font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          letter-spacing: 0.25px;
           color: var(--secondary-text-color);
         }
       `,
