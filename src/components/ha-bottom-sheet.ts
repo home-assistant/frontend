@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import type WaDrawer from "@home-assistant/webawesome/dist/components/drawer/drawer";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -10,6 +11,19 @@ import type { HomeAssistant } from "../types";
 import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
+
+const SWIPE_LOCKED_COMPONENTS = new Set([
+  "ha-control-slider",
+  "ha-slider",
+  "ha-control-switch",
+  "ha-control-circular-slider",
+  "ha-hs-color-picker",
+  "ha-map",
+  "ha-more-info-control-select-container",
+  "ha-filter-chip",
+]);
+
+const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
 
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
@@ -30,6 +44,8 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   public preventScrimClose = false;
 
   @state() private _drawerOpen = false;
+
+  @state() private _sliderInteractionActive = false;
 
   @query("#drawer") private _drawer!: HTMLElement;
 
@@ -87,6 +103,12 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   };
 
   private _handleHide = (ev: CustomEvent<{ source: Element }>) => {
+    if (this._sliderInteractionActive) {
+      ev.preventDefault();
+      this._drawerOpen = true;
+      this.open = true;
+      return;
+    }
     if (
       this.preventScrimClose &&
       this._escapePressed &&
@@ -118,6 +140,24 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     }
   };
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener(
+      "slider-interaction-start",
+      this._handleSliderInteractionStart,
+      {
+        capture: true,
+      }
+    );
+    this.addEventListener(
+      "slider-interaction-stop",
+      this._handleSliderInteractionStop,
+      {
+        capture: true,
+      }
+    );
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has("open")) {
@@ -141,13 +181,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         @wa-after-hide=${this._handleAfterHide}
         @click=${this._handleCloseAction}
         without-header
+        @touchstart=${this._handleTouchStart}
       >
-        <div
-          class="handle-wrapper"
-          aria-hidden="true"
-          @touchstart=${this._handleTouchStart}
-          @mousedown=${this._handleMouseDown}
-        >
+        <div class="handle-wrapper" aria-hidden="true">
           <div class="handle"></div>
         </div>
         <slot name="header"></slot>
@@ -167,26 +203,34 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
-    ev.preventDefault();
+    const path = ev.composedPath();
+
+    for (const target of path) {
+      if (target === this._drawer) {
+        break;
+      }
+
+      if (!(target instanceof HTMLElement)) {
+        continue;
+      }
+
+      if (
+        // Check if any element inside drawer in the composed path has scrollTop > 0 (list)
+        target.scrollTop > 0 ||
+        // Check if the element is a swipe locked component or has a swipe locked class
+        SWIPE_LOCKED_COMPONENTS.has(target.localName) ||
+        Array.from(target.classList).some((cls) =>
+          SWIPE_LOCKED_CLASSES.has(cls)
+        )
+      ) {
+        return;
+      }
+    }
+
     this._startResizing(ev.touches[0].clientY);
   };
 
-  private _handleMouseDown = (ev: MouseEvent) => {
-    if (this.preventScrimClose) {
-      return;
-    }
-
-    // Prevent selecting text while dragging the handle.
-    ev.preventDefault();
-    this._startResizing(ev.clientY, true);
-  };
-
-  private _startResizing(clientY: number, includeMouse = false) {
-    if (includeMouse) {
-      document.addEventListener("mousemove", this._handleMouseMove);
-      document.addEventListener("mouseup", this._handleMouseUp);
-    }
-
+  private _startResizing(clientY: number) {
     // register event listeners for drag handling
     document.addEventListener("touchmove", this._handleTouchMove, {
       passive: false,
@@ -198,37 +242,21 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleTouchMove = (ev: TouchEvent) => {
-    this._handleDragMove(ev.touches[0].clientY);
+    const currentY = ev.touches[0].clientY;
+    const delta = this._gestureRecognizer.move(currentY);
 
-    if (this._isDragging) {
+    if (delta < 0) {
       ev.preventDefault();
+      this._isDragging = true;
+      requestAnimationFrame(() => {
+        if (this._isDragging) {
+          this.style.setProperty(
+            "--dialog-transform",
+            `translateY(${delta * -1}px)`
+          );
+        }
+      });
     }
-  };
-
-  private _handleMouseMove = (ev: MouseEvent) => {
-    this._handleDragMove(ev.clientY);
-  };
-
-  private _handleDragMove(clientY: number) {
-    const delta = this._gestureRecognizer.move(clientY);
-
-    if (delta >= 0) {
-      return;
-    }
-
-    this._isDragging = true;
-    requestAnimationFrame(() => {
-      if (this._isDragging) {
-        this.style.setProperty(
-          "--dialog-transform",
-          `translateY(${delta * -1}px)`
-        );
-      }
-    });
-  }
-
-  private _handleMouseUp = () => {
-    this._handleTouchEnd();
   };
 
   private _animateSnapBack() {
@@ -287,8 +315,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   };
 
   private _unregisterResizeHandlers = () => {
-    document.removeEventListener("mousemove", this._handleMouseMove);
-    document.removeEventListener("mouseup", this._handleMouseUp);
     document.removeEventListener("touchmove", this._handleTouchMove);
     document.removeEventListener("touchend", this._handleTouchEnd);
     document.removeEventListener("touchcancel", this._handleTouchEnd);
@@ -296,6 +322,20 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this.removeEventListener(
+      "slider-interaction-start",
+      this._handleSliderInteractionStart,
+      {
+        capture: true,
+      }
+    );
+    this.removeEventListener(
+      "slider-interaction-stop",
+      this._handleSliderInteractionStop,
+      {
+        capture: true,
+      }
+    );
     this._unregisterResizeHandlers();
     this._isDragging = false;
   }
@@ -321,6 +361,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         wa-drawer::part(body) {
           max-width: var(--ha-bottom-sheet-max-width);
           width: 100%;
+          position: relative;
           border-top-left-radius: var(
             --ha-bottom-sheet-border-radius,
             var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
@@ -347,13 +388,16 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           display: none;
         }
         .handle-wrapper {
+          position: absolute;
+          top: 0;
+          inset-inline-start: 0;
+          width: 100%;
+          padding-bottom: 2px;
           display: flex;
           justify-content: center;
           align-items: center;
-          cursor: grab;
-          touch-action: none;
-          padding-top: var(--ha-space-2);
-          padding-bottom: var(--ha-space-2);
+          pointer-events: none;
+          z-index: 1;
         }
         .handle-wrapper .handle {
           height: 20px;
@@ -361,7 +405,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           display: flex;
           justify-content: center;
           align-items: center;
-          z-index: 1;
         }
         .handle-wrapper .handle::after {
           content: "";
@@ -372,9 +415,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
             var(--divider-color, #e0e0e0)
           );
           width: 80px;
-        }
-        .handle-wrapper .handle:active::after {
-          cursor: grabbing;
         }
         .content-wrapper {
           position: relative;
@@ -425,6 +465,18 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 }
 
 declare global {
+  interface HASSDomEvents {
+    "slider-interaction-start": undefined;
+    "slider-interaction-stop": undefined;
+  }
+  interface HTMLElementEventMap {
+    "slider-interaction-start": HASSDomEvent<
+      HASSDomEvents["slider-interaction-start"]
+    >;
+    "slider-interaction-stop": HASSDomEvent<
+      HASSDomEvents["slider-interaction-stop"]
+    >;
+  }
   interface HTMLElementTagNameMap {
     "ha-bottom-sheet": HaBottomSheet;
   }
