@@ -502,6 +502,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .type=${"scene"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
+          .allItems=${this.scenes.map((entity) => entity.entity_id)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
