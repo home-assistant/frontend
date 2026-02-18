@@ -46,7 +46,7 @@ export class HaIconButton extends LitElement {
         title=${ifDefined(this.hideTitle ? undefined : this.label)}
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
         .disabled=${this.disabled}
-        .iconTag=${"ha-svg-icon"}
+        iconTag=${this.path ? "ha-svg-icon" : "span"}
         .href=${this.href}
         .target=${this.target}
         .rel=${this.rel}
@@ -54,7 +54,7 @@ export class HaIconButton extends LitElement {
       >
         ${this.path
           ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>`
-          : html`<slot></slot>`}
+          : html`<span><slot></slot></span>`}
       </ha-button>
     `;
   }
