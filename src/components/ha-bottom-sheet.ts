@@ -19,6 +19,8 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
   "ha-control-circular-slider",
   "ha-hs-color-picker",
   "ha-map",
+  "ha-more-info-control-select-container",
+  "ha-filter-chip",
 ]);
 
 const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
