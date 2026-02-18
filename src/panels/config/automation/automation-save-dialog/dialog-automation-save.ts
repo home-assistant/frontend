@@ -222,12 +222,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             )
           : nothing}
         ${this._renderOptionalChip(
-          "area",
-          this.hass.localize(
-            "ui.panel.config.automation.editor.dialog.add_area"
-          )
-        )}
-        ${this._renderOptionalChip(
           "category",
           this.hass.localize(
             "ui.panel.config.automation.editor.dialog.add_category"
@@ -237,6 +231,12 @@ class DialogAutomationSave extends LitElement implements HassDialog {
           "labels",
           this.hass.localize(
             "ui.panel.config.automation.editor.dialog.add_labels"
+          )
+        )}
+        ${this._renderOptionalChip(
+          "area",
+          this.hass.localize(
+            "ui.panel.config.automation.editor.dialog.add_area"
           )
         )}
       </ha-chip-set>
