@@ -2,7 +2,6 @@ import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import type WaDrawer from "@home-assistant/webawesome/dist/components/drawer/drawer";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -11,19 +10,6 @@ import type { HomeAssistant } from "../types";
 import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
-
-const SWIPE_LOCKED_COMPONENTS = new Set([
-  "ha-control-slider",
-  "ha-slider",
-  "ha-control-switch",
-  "ha-control-circular-slider",
-  "ha-hs-color-picker",
-  "ha-map",
-  "ha-more-info-control-select-container",
-  "ha-filter-chip",
-]);
-
-const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
 
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
@@ -44,8 +30,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   public preventScrimClose = false;
 
   @state() private _drawerOpen = false;
-
-  @state() private _sliderInteractionActive = false;
 
   @query("#drawer") private _drawer!: HTMLElement;
 
@@ -94,21 +78,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "after-show");
   };
 
-  private _handleSliderInteractionStart = () => {
-    this._sliderInteractionActive = true;
-  };
-
-  private _handleSliderInteractionStop = () => {
-    this._sliderInteractionActive = false;
-  };
-
   private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
-    if (this._sliderInteractionActive) {
-      this._drawerOpen = true;
-      this.open = true;
-      return;
-    }
-
     if (ev.eventPhase === Event.AT_TARGET) {
       this.open = false;
       this._drawerOpen = false;
@@ -117,12 +87,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   };
 
   private _handleHide = (ev: CustomEvent<{ source: Element }>) => {
-    if (this._sliderInteractionActive) {
-      ev.preventDefault();
-      this._drawerOpen = true;
-      this.open = true;
-      return;
-    }
     if (
       this.preventScrimClose &&
       this._escapePressed &&
@@ -154,24 +118,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     }
   };
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener(
-      "slider-interaction-start",
-      this._handleSliderInteractionStart,
-      {
-        capture: true,
-      }
-    );
-    this.addEventListener(
-      "slider-interaction-stop",
-      this._handleSliderInteractionStop,
-      {
-        capture: true,
-      }
-    );
-  }
-
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has("open")) {
@@ -195,11 +141,11 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         @wa-after-hide=${this._handleAfterHide}
         @click=${this._handleCloseAction}
         without-header
-        @touchstart=${this._handleTouchStart}
       >
         <div
           class="handle-wrapper"
           aria-hidden="true"
+          @touchstart=${this._handleTouchStart}
           @mousedown=${this._handleMouseDown}
         >
           <div class="handle"></div>
@@ -221,30 +167,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
-    const path = ev.composedPath();
-
-    for (const target of path) {
-      if (target === this._drawer) {
-        break;
-      }
-
-      if (!(target instanceof HTMLElement)) {
-        continue;
-      }
-
-      if (
-        // Check if any element inside drawer in the composed path has scrollTop > 0 (list)
-        target.scrollTop > 0 ||
-        // Check if the element is a swipe locked component or has a swipe locked class
-        SWIPE_LOCKED_COMPONENTS.has(target.localName) ||
-        Array.from(target.classList).some((cls) =>
-          SWIPE_LOCKED_CLASSES.has(cls)
-        )
-      ) {
-        return;
-      }
-    }
-
+    ev.preventDefault();
     this._startResizing(ev.touches[0].clientY);
   };
 
@@ -373,20 +296,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.removeEventListener(
-      "slider-interaction-start",
-      this._handleSliderInteractionStart,
-      {
-        capture: true,
-      }
-    );
-    this.removeEventListener(
-      "slider-interaction-stop",
-      this._handleSliderInteractionStop,
-      {
-        capture: true,
-      }
-    );
     this._unregisterResizeHandlers();
     this._isDragging = false;
   }
@@ -516,18 +425,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 }
 
 declare global {
-  interface HASSDomEvents {
-    "slider-interaction-start": undefined;
-    "slider-interaction-stop": undefined;
-  }
-  interface HTMLElementEventMap {
-    "slider-interaction-start": HASSDomEvent<
-      HASSDomEvents["slider-interaction-start"]
-    >;
-    "slider-interaction-stop": HASSDomEvent<
-      HASSDomEvents["slider-interaction-stop"]
-    >;
-  }
   interface HTMLElementTagNameMap {
     "ha-bottom-sheet": HaBottomSheet;
   }
