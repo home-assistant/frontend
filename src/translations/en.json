@@ -1522,7 +1522,7 @@
         "related": "Related",
         "add_entity_to": "Add to",
         "attributes": "Attributes",
-        "all_attributes": "All attributes",
+        "extra_attributes": "Extra attributes",
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",

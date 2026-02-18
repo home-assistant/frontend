@@ -617,7 +617,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                               ></ha-svg-icon>
                               ${hasMainViewAttributes
                                 ? this.hass.localize(
-                                    "ui.dialogs.more_info_control.all_attributes"
+                                    "ui.dialogs.more_info_control.extra_attributes"
                                   )
                                 : this.hass.localize(
                                     "ui.dialogs.more_info_control.attributes"
