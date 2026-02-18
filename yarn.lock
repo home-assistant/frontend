@@ -2894,17 +2894,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-icon-button@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-icon-button@npm:0.27.0"
-  dependencies:
-    "@material/mwc-ripple": "npm:^0.27.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/593e31b2142dd129df4dddd72fb4b89ae97667fdda1cf340f1b304e09191a3ef4831c1f4e12c59dbb78840d8f804282f22f3d50ae16f6ee4e41a6a14eeaf6130
-  languageName: node
-  linkType: hard
-
 "@material/mwc-icon@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-icon@npm:0.27.0"
@@ -9192,7 +9181,6 @@ __metadata:
     "@material/mwc-fab": "npm:0.27.0"
     "@material/mwc-floating-label": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
-    "@material/mwc-icon-button": "npm:0.27.0"
     "@material/mwc-linear-progress": "npm:0.27.0"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/mwc-radio": "npm:0.27.0"

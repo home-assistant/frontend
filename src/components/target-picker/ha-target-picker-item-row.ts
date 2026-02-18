@@ -641,7 +641,7 @@ export class HaTargetPickerItemRow extends LitElement {
         z-index: 1;
       }
       ha-icon-button {
-        --mdc-icon-button-size: 32px;
+        --ha-icon-button-size: 32px;
       }
       .summary {
         display: flex;

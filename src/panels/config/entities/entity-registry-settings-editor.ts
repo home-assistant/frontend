@@ -1597,7 +1597,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         ha-textfield.entityId ha-icon-button {
           position: relative;
           right: calc(var(--ha-space-2) * -1);
-          --mdc-icon-button-size: 36px;
+          --ha-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
           inset-inline-start: initial;

@@ -143,11 +143,10 @@ class HassTabsSubpage extends LitElement {
                 `
               : this.backPath
                 ? html`
-                    <a href=${this.backPath}>
-                      <ha-icon-button-arrow-prev
-                        .hass=${this.hass}
-                      ></ha-icon-button-arrow-prev>
-                    </a>
+                    <ha-icon-button-arrow-prev
+                      .href=${this.backPath}
+                      .hass=${this.hass}
+                    ></ha-icon-button-arrow-prev>
                   `
                 : html`
                     <ha-icon-button-arrow-prev

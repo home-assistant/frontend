@@ -10,6 +10,7 @@ import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
 
 import { formatDate } from "../../../../common/datetime/format_date";
+import "../../../../components/ha-copy-textfield";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import {
@@ -19,9 +20,8 @@ import {
 } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 import { obfuscateUrl } from "../../../../util/url";
-import "../../../../components/ha-copy-textfield";
+import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
@@ -81,19 +81,16 @@ export class CloudRemotePref extends LitElement {
         )}
       >
         <div class="header-actions">
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircleOutline}
             href="https://www.nabucasa.com/config/remote/"
             target="_blank"
             rel="noreferrer"
             class="icon-link"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircleOutline}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
           <ha-switch
             .checked=${remote_enabled}
             @change=${this._toggleChanged}
@@ -241,9 +238,6 @@ export class CloudRemotePref extends LitElement {
   static styles = css`
     .preparing {
       padding: 0 16px 16px;
-    }
-    a {
-      color: var(--primary-color);
     }
     .header-actions {
       position: absolute;

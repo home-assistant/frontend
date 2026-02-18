@@ -4,8 +4,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-switch";
@@ -69,16 +69,14 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
-        <a
-          href=${documentationUrl(this.hass!, "/lovelace/")}
-          title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-          target="_blank"
-          rel="noreferrer"
-          slot="headerActionItems"
-        >
           <ha-icon-button
             .path=${mdiHelpCircleOutline}
             .label=${this.hass!.localize("ui.common.help")}
+            .href=${documentationUrl(this.hass!, "/lovelace/")}
+            title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+            target="_blank"
+            rel="noreferrer"
+            slot="headerActionItems"
           ></ha-icon-button>
         </a>
         <div>
@@ -86,24 +84,71 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
             ${this.hass!.localize("ui.panel.lovelace.editor.save_config.para")}
           </p>
 
-          ${this._params.mode === "storage"
-            ? html`
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.para_sure"
-                  )}
-                </p>
-                <ha-formfield
-                  .label=${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.empty_config"
-                  )}
-                >
-                  <ha-switch
-                    .checked=${this._emptyConfig}
-                    @change=${this._emptyConfigChanged}
+          ${
+            this._params.mode === "storage"
+              ? html`
+                  <p>
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.para_sure"
+                    )}
+                  </p>
+                  <ha-formfield
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.empty_config"
+                    )}
+                  >
+                    <ha-switch
+                      .checked=${this._emptyConfig}
+                      @change=${this._emptyConfigChanged}
+                      autofocus
+                    ></ha-switch
+                  ></ha-formfield>
+                `
+              : html`
+                  <p>
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.yaml_mode"
+                    )}
+                  </p>
+                  <p>
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.yaml_control"
+                    )}
+                  </p>
+                  <p>
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.yaml_config"
+                    )}
+                  </p>
+                  <ha-yaml-editor
+                    .hass=${this.hass}
+                    .defaultValue=${this._params!.lovelace.config}
                     autofocus
-                  ></ha-switch
-                ></ha-formfield>
+                  ></ha-yaml-editor>
+                `
+          }
+        </div>
+        ${
+          this._params.mode === "storage"
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass!.localize("ui.common.cancel")}
+                  </ha-button>
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._saveConfig}
+                    .loading=${this._saving}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.save"
+                    )}
+                  </ha-button>
+                </ha-dialog-footer>
               `
             : html`
                 <p>
@@ -126,38 +171,41 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                   .defaultValue=${this._params!.lovelace.config}
                   autofocus
                 ></ha-yaml-editor>
-              `}
+              `
+        }
         </div>
-        ${this._params.mode === "storage"
-          ? html`
-              <ha-dialog-footer slot="footer">
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this.closeDialog}
-                >
-                  ${this.hass!.localize("ui.common.cancel")}
-                </ha-button>
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._saveConfig}
-                  .loading=${this._saving}
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.save"
-                  )}
-                </ha-button>
-              </ha-dialog-footer>
-            `
-          : html`
-              <ha-dialog-footer slot="footer">
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.close"
-                  )}
-                </ha-button>
-              </ha-dialog-footer>
-            `}
+        ${
+          this._params.mode === "storage"
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass!.localize("ui.common.cancel")}
+                  </ha-button>
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._saveConfig}
+                    .loading=${this._saving}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.save"
+                    )}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+            : html`
+                <ha-dialog-footer slot="footer">
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.save_config.close"
+                    )}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+        }
       </ha-dialog>
     `;
   }
@@ -195,9 +243,8 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
           --dialog-content-padding: 0 24px 24px 24px;
         }
 
-        ha-dialog [slot="headerActionItems"] {
-          color: inherit;
-          text-decoration: none;
+        ha-dialog ha-icon-button[slot="headerActionItems"] {
+          color: var(--secondary-text-color);
         }
       `,
     ];

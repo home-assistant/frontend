@@ -11,6 +11,7 @@ import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
@@ -68,7 +69,6 @@ import type {
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];
 
@@ -532,7 +532,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: var(--ha-space-9);
+      --ha-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 

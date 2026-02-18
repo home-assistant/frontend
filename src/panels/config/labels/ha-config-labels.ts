@@ -155,7 +155,7 @@ export class HaConfigLabels extends LitElement {
         type: "overflow-menu",
         template: (label) => html`
           <ha-icon-button
-            .selected=${label}
+            .selectedLabel=${label}
             .label=${this.hass.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
             @click=${this._toggleOverflowMenu}
@@ -184,7 +184,7 @@ export class HaConfigLabels extends LitElement {
     }
     this._openingOverflow = true;
     this._overflowMenu.anchorElement = ev.target;
-    this._overflowLabel = ev.target.selected;
+    this._overflowLabel = ev.target.selectedLabel;
     this._overflowMenu.open = true;
   };
 
