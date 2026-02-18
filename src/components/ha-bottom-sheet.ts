@@ -63,8 +63,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   private _openDropdowns = new Set<HTMLElement>();
 
-  private _lastDropdownHideTime = 0;
-
   private _isDropdownInteractionActive() {
     for (const dropdown of this._openDropdowns) {
       if (!dropdown.isConnected) {
@@ -72,12 +70,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       }
     }
 
-    return (
-      this._openDropdowns.size > 0 ||
-      (this._lastDropdownHideTime > 0 &&
-        performance.now() - this._lastDropdownHideTime <
-          BOTTOM_SHEET_ANIMATION_DURATION_MS)
-    );
+    return this._openDropdowns.size > 0;
   }
 
   private _isDrawerEvent(ev: Event): ev is CustomEvent<{ source: Element }> {
@@ -156,7 +149,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     }
 
     this._openDropdowns.clear();
-    this._lastDropdownHideTime = 0;
     this.open = false;
     this._drawerOpen = false;
     fireEvent(this, "closed");
@@ -165,7 +157,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   private _handleHide = (ev: Event) => {
     const dropdown = this._findDropdownInPath(ev.composedPath());
     if (dropdown) {
-      this._lastDropdownHideTime = performance.now();
       return;
     }
 
@@ -435,7 +426,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     );
     this._unregisterResizeHandlers();
     this._openDropdowns.clear();
-    this._lastDropdownHideTime = 0;
     this._isDragging = false;
   }
 
