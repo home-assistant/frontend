@@ -823,6 +823,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           type="device"
           .value=${this._filters["ha-filter-floor-areas"]?.value}
+          .allItems=${Object.keys(this.hass.devices)}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-floor-areas"}
