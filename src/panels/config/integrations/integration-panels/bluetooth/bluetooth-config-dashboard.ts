@@ -3,6 +3,7 @@ import {
   mdiAlertCircleOutline,
   mdiBroadcast,
   mdiCheck,
+  mdiCloseCircleOutline,
   mdiLan,
   mdiLinkVariant,
 } from "@mdi/js";
@@ -144,6 +145,13 @@ export class BluetoothConfigDashboard extends LitElement {
     const hasMismatch = Object.values(this._scannerStates).some(
       (s) => s.current_mode !== s.requested_mode
     );
+    const isOffline = adapterCount === 0;
+    const status = isOffline ? "offline" : hasMismatch ? "warning" : "online";
+    const statusIcon = isOffline
+      ? mdiCloseCircleOutline
+      : hasMismatch
+        ? mdiAlertCircleOutline
+        : mdiCheck;
 
     return html`
       <hass-subpage
@@ -155,13 +163,13 @@ export class BluetoothConfigDashboard extends LitElement {
           <ha-card class="content network-status">
             <div class="card-content">
               <div class="heading">
-                <div class="icon ${hasMismatch ? "warning" : "online"}">
-                  <ha-svg-icon
-                    .path=${hasMismatch ? mdiAlertCircleOutline : mdiCheck}
-                  ></ha-svg-icon>
+                <div class="icon ${status}">
+                  <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
                 </div>
                 <div class="details">
-                  ${this.hass.localize("ui.panel.config.bluetooth.title")}<br />
+                  ${this.hass.localize(
+                    `ui.panel.config.bluetooth.status_${status}`
+                  )}<br />
                   <small>
                     ${this.hass.localize(
                       "ui.panel.config.bluetooth.connections_summary",
@@ -303,6 +311,10 @@ export class BluetoothConfigDashboard extends LitElement {
 
         .network-status div.heading .icon.warning {
           --icon-color: var(--warning-color);
+        }
+
+        .network-status div.heading .icon.offline {
+          --icon-color: var(--error-color);
         }
 
         .network-status div.heading .icon::before {
