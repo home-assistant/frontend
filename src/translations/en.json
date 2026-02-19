@@ -6709,10 +6709,8 @@
             "advertisements_description": "Monitor discovered Bluetooth Low Energy devices",
             "connections": "Connections",
             "connections_description": "View active Bluetooth connections per scanner",
-            "visualization": "Visualization",
-            "visualization_description": "Interactive network graph of scanners and devices"
+            "visualization": "Visualization"
           },
-          "disabled_adapters": "Disabled adapter(s)",
           "disabled_by_user": "Disabled by user",
           "manage_integration": "Manage integration",
           "option_flow": "Configure Bluetooth options",
