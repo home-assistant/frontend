@@ -3,9 +3,11 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { FILTER_NONE_OF_LISTED } from "../common/const";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeKeys } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
@@ -28,6 +30,8 @@ export class HaFilterDevices extends LitElement {
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public allItems = [];
 
   @state() private _shouldRender = false;
 
@@ -96,12 +100,21 @@ export class HaFilterDevices extends LitElement {
   private _renderItem = (device) =>
     !device
       ? nothing
-      : html`<ha-check-list-item
-          .value=${device.id}
-          .selected=${this.value?.includes(device.id) ?? false}
-        >
-          ${computeDeviceNameDisplay(device, this.hass)}
-        </ha-check-list-item>`;
+      : typeof device === "string" && device === FILTER_NONE_OF_LISTED
+        ? html`<ha-check-list-item
+            .value=${FILTER_NONE_OF_LISTED}
+            .selected=${this.value?.[0] === FILTER_NONE_OF_LISTED}
+          >
+            ${this.hass.localize(
+              `ui.panel.config.devices.${FILTER_NONE_OF_LISTED}` as LocalizeKeys
+            )}
+          </ha-check-list-item>`
+        : html`<ha-check-list-item
+            .value=${device.id}
+            .selected=${this.value?.includes(device.id) ?? false}
+          >
+            ${computeDeviceNameDisplay(device, this.hass)}
+          </ha-check-list-item>`;
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");
@@ -109,12 +122,31 @@ export class HaFilterDevices extends LitElement {
     if (!value) {
       return;
     }
-    if (this.value?.includes(value)) {
-      this.value = this.value?.filter((val) => val !== value);
+    if (value !== FILTER_NONE_OF_LISTED) {
+      if (this.value?.includes(value)) {
+        // deselect, remove item
+        this.value = this.value?.filter((val) => val !== value);
+      } else {
+        // select
+        if (!this.value) {
+          this.value = [];
+        }
+        // add item
+        this.value = [
+          ...(this.value.filter((val) => val !== FILTER_NONE_OF_LISTED) || []),
+          value,
+        ];
+      }
+      listItem.selected = this.value?.includes(value);
+    } else if (this.value?.includes(FILTER_NONE_OF_LISTED)) {
+      // deselect
+      this.value = [];
+      listItem.selected = false;
     } else {
-      this.value = [...(this.value || []), value];
+      // select
+      this.value = [...[FILTER_NONE_OF_LISTED]];
+      listItem.selected = true;
     }
-    listItem.selected = this.value?.includes(value);
   }
 
   protected updated(changed) {
@@ -145,49 +177,109 @@ export class HaFilterDevices extends LitElement {
   private _devices = memoizeOne(
     (devices: HomeAssistant["devices"], filter: string, _value) => {
       const values = Object.values(devices);
-      return values
-        .filter(
-          (device) =>
-            !filter ||
-            computeDeviceNameDisplay(device, this.hass)
-              .toLowerCase()
-              .includes(filter)
-        )
-        .sort((a, b) =>
-          stringCompare(
-            computeDeviceNameDisplay(a, this.hass),
-            computeDeviceNameDisplay(b, this.hass),
-            this.hass.locale.language
+      return [
+        ...[FILTER_NONE_OF_LISTED],
+        ...values
+          .filter(
+            (device) =>
+              !filter ||
+              computeDeviceNameDisplay(device, this.hass)
+                .toLowerCase()
+                .includes(filter)
           )
-        );
+          .sort((a, b) =>
+            stringCompare(
+              computeDeviceNameDisplay(a, this.hass),
+              computeDeviceNameDisplay(b, this.hass),
+              this.hass.locale.language
+            )
+          ),
+      ];
     }
   );
 
   private async _findRelated() {
-    const relatedPromises: Promise<RelatedResult>[] = [];
-
     if (!this.value?.length) {
       this.value = [];
       fireEvent(this, "data-table-filter-changed", {
-        value: [],
+        value: undefined,
         items: undefined,
       });
       return;
     }
 
+    const filterNoneOfListed = this.value[0] === FILTER_NONE_OF_LISTED;
     const value: string[] = [];
-
-    for (const deviceId of this.value) {
-      value.push(deviceId);
-      if (this.type) {
-        relatedPromises.push(findRelated(this.hass, "device", deviceId));
-      }
-    }
-    const results = await Promise.all(relatedPromises);
     const items = new Set<string>();
-    for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
+    type EntityStub = Record<string, string>;
+
+    if (this.type === "entity") {
+      // filter out by device_id
+      if (filterNoneOfListed) {
+        value.push(FILTER_NONE_OF_LISTED);
+        // find entities w/o device_id
+        Object.values(this.allItems)
+          .filter((entity: EntityStub) => !entity.device_id)
+          .map((entity: EntityStub) => items.add(entity.entity_id));
+      } else {
+        for (const deviceId of this.value) {
+          value.push(deviceId);
+        }
+        // find entities with selected device_ids
+        Object.values(this.allItems)
+          .filter(
+            (entity: EntityStub) =>
+              entity.device_id && this.value!.includes(entity.device_id)
+          )
+          .map((entity: EntityStub) => items.add(entity.entity_id));
+      }
+    } else {
+      // filter out by findRelated()
+      const relatedPromises: Promise<RelatedResult>[] = [];
+      let requestedDevices;
+      if (filterNoneOfListed) {
+        value.push(FILTER_NONE_OF_LISTED);
+        // request "related" for all devices
+        requestedDevices = Object.values(this.hass.devices).map(
+          (device) => device.id
+        );
+      } else {
+        // request "related" for selected devices
+        requestedDevices = this.value;
+      }
+      for (const deviceId of requestedDevices) {
+        if (!filterNoneOfListed) {
+          value.push(deviceId);
+        }
+        if (this.type) {
+          relatedPromises.push(findRelated(this.hass, "device", deviceId));
+        }
+      }
+      const results = await Promise.all(relatedPromises);
+      if (filterNoneOfListed) {
+        const allRelatedToDevices: string[] = [];
+        // collect "related items" for all devices
+        for (const result of results) {
+          if (result[this.type!]) {
+            result[this.type!]!.forEach((item) =>
+              allRelatedToDevices.push(item)
+            );
+          }
+        }
+        // exclude "related items" from "all items"
+        this.allItems
+          .filter(
+            (entity: EntityStub) =>
+              !allRelatedToDevices.includes(entity.entity_id)
+          )
+          .forEach((entity: EntityStub) => items.add(entity.entity_id));
+      } else {
+        // collect "related items" for selected devices
+        for (const result of results) {
+          if (result[this.type!]) {
+            result[this.type!]!.forEach((item) => items.add(item));
+          }
+        }
       }
     }
 
