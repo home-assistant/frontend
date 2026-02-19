@@ -1,3 +1,4 @@
+import type { LitElement } from "lit";
 import { ancestorsWithProperty } from "../common/dom/ancestors-with-property";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import type { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
@@ -23,7 +24,14 @@ export interface HassDialog<
   T = HASSDomEvents[ValidHassDomEvent],
 > extends HTMLElement {
   showDialog(params: T);
-  closeDialog?: (historyState?: any) => boolean;
+  closeDialog?: (historyState?: any) => Promise<boolean> | boolean;
+}
+
+export interface HassDialogNext<
+  T = HASSDomEvents[ValidHassDomEvent],
+> extends HTMLElement {
+  params?: T;
+  closeDialog?: (historyState?: any) => Promise<boolean> | boolean;
 }
 
 interface ShowDialogParams<T> {
@@ -39,7 +47,6 @@ export interface DialogClosedParams {
 
 export interface DialogState {
   element: HTMLElement & ProvideHassElement;
-  root: ShadowRoot | HTMLElement;
   dialogTag: string;
   dialogParams: unknown;
   dialogImport?: () => Promise<unknown>;
@@ -47,7 +54,7 @@ export interface DialogState {
 }
 
 interface LoadedDialogInfo {
-  element: Promise<HassDialog>;
+  element: Promise<HassDialogNext | HassDialog> | null;
   closedFocusTargets?: Set<Element>;
 }
 
@@ -58,8 +65,8 @@ const OPEN_DIALOG_STACK: DialogState[] = [];
 export const FOCUS_TARGET = Symbol.for("HA focus target");
 
 export const showDialog = async (
+  eventTarget: LitElement,
   element: HTMLElement & ProvideHassElement,
-  root: ShadowRoot | HTMLElement,
   dialogTag: string,
   dialogParams: unknown,
   dialogImport?: () => Promise<unknown>,
@@ -77,10 +84,18 @@ export const showDialog = async (
     }
     LOADED[dialogTag] = {
       element: dialogImport().then(() => {
-        const dialogEl = document.createElement(dialogTag) as HassDialog;
-        element.provideHass(dialogEl);
+        const dialogEl = document.createElement(dialogTag) as
+          | HassDialogNext
+          | HassDialog;
+
+        if ("showDialog" in dialogEl) {
+          // provide hass for legacy persistent dialogs
+          element.provideHass(dialogEl);
+        }
+
         dialogEl.addEventListener("dialog-closed", _handleClosed);
         dialogEl.addEventListener("dialog-closed", _handleClosedFocus);
+
         return dialogEl;
       }),
     };
@@ -95,8 +110,8 @@ export const showDialog = async (
         setTimeout(resolve);
       });
       return showDialog(
+        eventTarget,
         element,
-        root,
         dialogTag,
         dialogParams,
         dialogImport,
@@ -111,7 +126,6 @@ export const showDialog = async (
     }
     OPEN_DIALOG_STACK.push({
       element,
-      root,
       dialogTag,
       dialogParams,
       dialogImport,
@@ -134,12 +148,27 @@ export const showDialog = async (
     FOCUS_TARGET
   );
 
-  const dialogElement = await LOADED[dialogTag].element;
+  let dialogElement: HassDialogNext | HassDialog | null;
+
+  if (LOADED[dialogTag] && LOADED[dialogTag].element === null) {
+    dialogElement = document.createElement(dialogTag) as HassDialogNext;
+    dialogElement.addEventListener("dialog-closed", _handleClosed);
+    dialogElement.addEventListener("dialog-closed", _handleClosedFocus);
+    LOADED[dialogTag].element = Promise.resolve(dialogElement);
+  } else {
+    dialogElement = await LOADED[dialogTag].element;
+  }
 
   // Append it again so it's the last element in the root,
   // so it's guaranteed to be on top of the other elements
-  root.appendChild(dialogElement);
-  dialogElement.showDialog(dialogParams);
+
+  eventTarget.shadowRoot!.appendChild(dialogElement!);
+
+  if ("showDialog" in dialogElement!) {
+    dialogElement.showDialog(dialogParams);
+  } else {
+    dialogElement!.params = dialogParams;
+  }
 
   return true;
 };
@@ -152,7 +181,7 @@ export const closeDialog = async (
     return true;
   }
   const dialogElement = await LOADED[dialogTag].element;
-  if (dialogElement.closeDialog) {
+  if (dialogElement && dialogElement.closeDialog) {
     return dialogElement.closeDialog(historyState) !== false;
   }
   return true;
@@ -214,19 +243,27 @@ const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
       mainWindow.history.back();
     }
   }
+
+  // cleanup element
+  if (ev.currentTarget && "params" in ev.currentTarget) {
+    const dialogElement = ev.currentTarget as HassDialogNext;
+    dialogElement.removeEventListener("dialog-closed", _handleClosed);
+    dialogElement.removeEventListener("dialog-closed", _handleClosedFocus);
+    dialogElement.remove();
+    LOADED[ev.detail.dialog].element = null;
+  }
 };
 
 export const makeDialogManager = (
-  element: HTMLElement & ProvideHassElement,
-  root: ShadowRoot | HTMLElement
+  element: HTMLElement & ProvideHassElement
 ) => {
   element.addEventListener(
     "show-dialog",
     (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
       const { dialogTag, dialogImport, dialogParams, addHistory } = e.detail;
       showDialog(
+        e.target as LitElement,
         element,
-        root,
         dialogTag,
         dialogParams,
         dialogImport,

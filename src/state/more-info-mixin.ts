@@ -1,4 +1,4 @@
-import type { PropertyValues } from "lit";
+import type { LitElement, PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { showDialog } from "../dialogs/make-dialog-manager";
@@ -27,8 +27,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     private async _handleMoreInfo(ev: HASSDomEvent<MoreInfoDialogParams>) {
       showDialog(
+        ev.target as LitElement,
         this,
-        this.shadowRoot!,
         "ha-more-info-dialog",
         {
           entityId: ev.detail.entityId,

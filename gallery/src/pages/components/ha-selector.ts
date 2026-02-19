@@ -614,8 +614,8 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
   private _dialogManager = (e) => {
     const { dialogTag, dialogImport, dialogParams, addHistory } = e.detail;
     showDialog(
+      e.target as LitElement,
       this,
-      this.shadowRoot!,
       dialogTag,
       dialogParams,
       dialogImport,
