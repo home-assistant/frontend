@@ -13,6 +13,11 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import type { HassioAddonDetails } from "../../../data/hassio/addon";
 import { fetchHassioAddonInfo } from "../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
+import {
+  addStoreRepository,
+  fetchSupervisorStore,
+} from "../../../data/supervisor/store";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
@@ -39,6 +44,8 @@ class HaConfigAppDashboard extends LitElement {
 
   @state() private _fromStore = false;
 
+  private _repositoryUrl?: string | null;
+
   private _computeTail = memoizeOne((route: Route) => {
     const pathParts = route.path.split("/").filter(Boolean);
     // Path is like /<slug>/info or /<slug>/config
@@ -53,6 +60,7 @@ class HaConfigAppDashboard extends LitElement {
 
   protected async firstUpdated(): Promise<void> {
     this._fromStore = extractSearchParam("store") === "true";
+    this._repositoryUrl = extractSearchParam("repository_url");
     await this._loadAddon();
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
@@ -148,7 +156,51 @@ class HaConfigAppDashboard extends LitElement {
     try {
       this._addon = await fetchHassioAddonInfo(this.hass, slug);
     } catch (err: any) {
-      this._error = `Error loading addon: ${extractApiErrorMessage(err)}`;
+      if (this._repositoryUrl) {
+        await this._handleMissingRepository(slug, this._repositoryUrl);
+        if (this._addon) {
+          return;
+        }
+      }
+      this._error = `Error loading app: ${extractApiErrorMessage(err)}`;
+    }
+  }
+
+  private async _handleMissingRepository(
+    slug: string,
+    repositoryUrl: string
+  ): Promise<void> {
+    try {
+      const storeInfo = await fetchSupervisorStore(this.hass);
+      if (
+        storeInfo.repositories.some((repo) => repo.source === repositoryUrl)
+      ) {
+        // Repository is already installed, addon just doesn't exist
+        return;
+      }
+
+      if (
+        !(await showConfirmationDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.apps.my.add_repository_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.apps.my.add_repository_description",
+            { repository: this._repositoryUrl! }
+          ),
+          confirmText: this.hass.localize("ui.common.add"),
+          dismissText: this.hass.localize("ui.common.cancel"),
+        }))
+      ) {
+        this._error = this.hass.localize(
+          "ui.panel.config.apps.my.error_repository_not_found"
+        );
+      }
+
+      await addStoreRepository(this.hass, repositoryUrl);
+      this._addon = await fetchHassioAddonInfo(this.hass, slug);
+    } catch (err: any) {
+      this._error = extractApiErrorMessage(err);
     }
   }
 
