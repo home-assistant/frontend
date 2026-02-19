@@ -177,18 +177,6 @@ export class QuickBar extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   };
 
-  // fallback in case the closed event is not fired
-  private _dialogCloseStarted = () => {
-    setTimeout(
-      () => {
-        if (this._opened) {
-          this._dialogClosed();
-        }
-      },
-      350 // close animation timeout is 300ms
-    );
-  };
-
   // #endregion lifecycle
 
   // #region render
@@ -238,13 +226,14 @@ export class QuickBar extends LitElement {
     return html`
       <ha-adaptive-dialog
         without-header
+        allow-mode-change
+        flexcontent
         .hass=${this.hass}
         aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}
         hideActions
         @wa-show=${this._showTriggered}
         @wa-after-show=${this._dialogOpened}
-        @wa-hide=${this._dialogCloseStarted}
         @closed=${this._dialogClosed}
       >
         ${!this._loading && this._opened

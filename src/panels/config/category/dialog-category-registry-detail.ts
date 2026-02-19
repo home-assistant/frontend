@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-button";
@@ -65,12 +65,13 @@ class DialogCategoryDetail extends LitElement {
     const entry = this._params.entry;
     const nameInvalid = !this._isNameValid();
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${entry
           ? this.hass.localize("ui.panel.config.category.editor.edit")
           : this.hass.localize("ui.panel.config.category.editor.create")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error
@@ -113,7 +114,7 @@ class DialogCategoryDetail extends LitElement {
               : this.hass.localize("ui.common.add")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

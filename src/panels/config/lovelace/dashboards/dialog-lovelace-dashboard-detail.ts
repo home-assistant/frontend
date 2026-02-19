@@ -7,7 +7,7 @@ import { slugify } from "../../../../common/string/slugify";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type {
   LovelaceDashboard,
@@ -69,8 +69,18 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
+    const cancelButton = html`
+      <ha-button
+        appearance="plain"
+        slot="secondaryAction"
+        @click=${this.closeDialog}
+      >
+        ${this.hass.localize("ui.common.cancel")}
+      </ha-button>
+    `;
+
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.urlPath
@@ -81,6 +91,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           : this.hass.localize(
               "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
             )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div>
@@ -117,9 +128,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                         )}
                       </ha-button>
                     `
-                  : nothing}
+                  : cancelButton}
               `
-            : nothing}
+            : cancelButton}
           <ha-button
             slot="primaryAction"
             @click=${this._updateDashboard}
@@ -139,7 +150,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                 )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

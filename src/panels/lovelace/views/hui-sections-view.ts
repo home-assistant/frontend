@@ -155,7 +155,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const maxColumnCount = this._columnsController.value ?? 1;
 
-    const columnCount = Math.min(maxColumnCount, totalSectionCount);
+    const columnCount = Math.max(
+      Math.min(maxColumnCount, totalSectionCount),
+      1
+    );
     // On mobile with sidebar, use full width for whichever view is active
     const contentColumnCount =
       hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
@@ -408,11 +411,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _toggleView() {
+    // The scroll container is the hui-view-container parent
+    const scrollContainer = this.closest("hui-view-container");
+    const scrollTop = scrollContainer?.scrollTop ?? 0;
+
     // Save current scroll position
     if (this._sidebarTabActive) {
-      this._sidebarScrollTop = window.scrollY;
+      this._sidebarScrollTop = scrollTop;
     } else {
-      this._contentScrollTop = window.scrollY;
+      this._contentScrollTop = scrollTop;
     }
 
     this._sidebarTabActive = !this._sidebarTabActive;
@@ -428,7 +435,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       const scrollY = this._sidebarTabActive
         ? this._sidebarScrollTop
         : this._contentScrollTop;
-      window.scrollTo(0, scrollY);
+      scrollContainer?.scrollTo(0, scrollY);
     });
   }
 

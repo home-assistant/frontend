@@ -13,7 +13,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
@@ -155,9 +155,10 @@ export class HuiDialogEditSection
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         class=${classMap({
@@ -233,7 +234,7 @@ export class HuiDialogEditSection
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -426,10 +427,10 @@ export class HuiDialogEditSection
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: var(--ha-space-6);
         }
-        ha-wa-dialog.yaml-mode {
+        ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
         ha-tab-group-tab {

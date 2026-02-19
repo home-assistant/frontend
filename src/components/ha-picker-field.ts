@@ -184,8 +184,8 @@ export class HaPickerField extends PickerMixin(LitElement) {
 
         .clear {
           margin: 0 -8px;
-          --mdc-icon-button-size: 32px;
-          --mdc-icon-size: 20px;
+          --ha-icon-button-size: 32px;
+          --ha-icon-button-padding-inline: var(--ha-space-1);
         }
         .arrow {
           --mdc-icon-size: 20px;

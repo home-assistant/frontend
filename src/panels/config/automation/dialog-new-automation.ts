@@ -13,7 +13,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-tip";
@@ -104,7 +104,7 @@ class DialogNewAutomation extends LitElement {
     const processedBlueprints = this._processedBlueprints(this.blueprints);
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -203,7 +203,7 @@ class DialogNewAutomation extends LitElement {
                 </ha-tip>
               `}
         </ha-list>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -235,13 +235,13 @@ class DialogNewAutomation extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
           --mdc-dialog-max-height: 60vh;
           --mdc-dialog-max-height: 60dvh;
         }
         @media all and (min-width: 550px) {
-          ha-wa-dialog {
+          ha-dialog {
             --mdc-dialog-min-width: 500px;
           }
         }

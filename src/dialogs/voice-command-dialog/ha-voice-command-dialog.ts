@@ -14,6 +14,7 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../../components/ha-alert";
 import "../../components/ha-assist-chat";
 import "../../components/ha-button";
+import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
@@ -21,7 +22,6 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-next";
 import "../../components/ha-spinner";
-import "../../components/ha-wa-dialog";
 import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
   getAssistPipeline,
@@ -98,7 +98,7 @@ export class HaVoiceCommandDialog extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -164,17 +164,14 @@ export class HaVoiceCommandDialog extends LitElement {
                 : nothing}
             </ha-dropdown>
           </div>
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize("ui.common.help")}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/docs/assist/")}
             slot="actionItems"
             target="_blank"
-            rel="noopener noreferer"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize("ui.common.help")}
-              .path=${mdiHelpCircleOutline}
-            ></ha-icon-button>
-          </a>
+            rel="noopener noreferrer"
+          ></ha-icon-button>
         </ha-dialog-header>
 
         ${this._errorLoadAssist
@@ -195,7 +192,7 @@ export class HaVoiceCommandDialog extends LitElement {
             : html`<div class="pipelines-loading">
                 <ha-spinner size="large"></ha-spinner>
               </div>`}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -258,7 +255,7 @@ export class HaVoiceCommandDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         ha-dialog-header a {

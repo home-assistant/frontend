@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-yaml-editor";
 
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
@@ -45,7 +45,7 @@ class DialogPasteReplace extends LitElement {
         ? "ui.panel.config.developer-tools.tabs.blueprints"
         : `ui.panel.config.${this._params.domain}`;
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -77,7 +77,7 @@ class DialogPasteReplace extends LitElement {
             ${this.hass.localize("ui.common.replace")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

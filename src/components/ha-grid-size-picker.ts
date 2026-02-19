@@ -1,14 +1,14 @@
+import { mdiRestore } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
-import "./ha-icon-button";
-import { mdiRestore } from "@mdi/js";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
 import type { CardGridSize } from "../panels/lovelace/common/compute-card-grid-size";
 import { DEFAULT_GRID_SIZE } from "../panels/lovelace/common/compute-card-grid-size";
+import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
 import type { HomeAssistant } from "../types";
+import "./ha-icon-button";
 
 @customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {
@@ -245,7 +245,7 @@ export class HaGridSizeEditor extends LitElement {
       }
       .reset {
         grid-area: reset;
-        --mdc-icon-button-size: 36px;
+        --ha-icon-button-size: 36px;
       }
       .preview {
         position: relative;

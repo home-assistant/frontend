@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../../types";
 import type { DialogThreadDatasetParams } from "./show-dialog-thread-dataset";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 
 @customElement("ha-dialog-thread-dataset")
 class DialogThreadDataset extends LitElement {
@@ -42,7 +42,7 @@ class DialogThreadDataset extends LitElement {
       dataset.extended_pan_id &&
       otbrInfo.active_dataset_tlvs?.includes(dataset.extended_pan_id);
 
-    return html`<ha-wa-dialog
+    return html`<ha-dialog
       .hass=${this.hass}
       .open=${this._open}
       header-title=${network.name}
@@ -60,7 +60,7 @@ class DialogThreadDataset extends LitElement {
               Active dataset TLVs: ${otbrInfo.active_dataset_tlvs}`
           : nothing}
       </div>
-    </ha-wa-dialog>`;
+    </ha-dialog>`;
   }
 }
 
