@@ -6889,7 +6889,7 @@
             "enhanced_light_transition_description": "Lights fade in directly to the chosen color or warmth, without briefly flashing the old setting",
             "light_transitioning_flag_description": "Keeps the brightness slider at the chosen level during light fades so it does not jump around",
             "consider_unavailable_mains_description": "How long to wait before showing a mains-powered device as unavailable when it stops responding",
-            "consider_unavailable_battery_description": "How long to wait before showing a battery device as unavailable when it stops responding",
+            "consider_unavailable_battery_description": "How long to wait before showing a battery-powered device as unavailable when it stops responding",
             "enable_mains_startup_polling_description": "Get the current state of mains-powered devices when Home Assistant starts",
             "channel_label": "Channel",
             "radio_type": "Radio type",
