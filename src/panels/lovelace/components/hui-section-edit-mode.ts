@@ -124,7 +124,7 @@ export class HuiSectionEditMode extends LitElement {
           border-bottom-left-radius: 0px;
           border-bottom-right-radius: 0px;
           background: var(--secondary-background-color);
-          --mdc-icon-button-size: 36px;
+          --ha-icon-button-size: 36px;
           --mdc-icon-size: 20px;
           color: var(--primary-text-color);
         }

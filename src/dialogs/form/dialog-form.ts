@@ -4,7 +4,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
@@ -69,7 +69,7 @@ export class DialogForm
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title}
@@ -98,7 +98,7 @@ export class DialogForm
             ${this._params.submitText || this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

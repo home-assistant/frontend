@@ -215,7 +215,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
           <li>
             <strong>Dialog mode:</strong> Used on larger screens (width &gt;
             870px and height &gt; 500px). Renders as a centered dialog using
-            <code>ha-wa-dialog</code>.
+            <code>ha-dialog</code>.
           </li>
           <li>
             <strong>Bottom sheet mode:</strong> Used on mobile devices and
@@ -394,7 +394,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
 
         <p>
           If you don't need responsive behavior, use
-          <code>ha-wa-dialog</code> directly for desktop-only dialogs or
+          <code>ha-dialog</code> directly for desktop-only dialogs or
           <code>ha-bottom-sheet</code> for mobile-only sheets.
         </p>
 
@@ -410,7 +410,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         <pre><code>&lt;ha-adaptive-dialog
   .hass=\${this.hass}
   open
-  width="medium"
   header-title="Dialog title"
   header-subtitle="Dialog subtitle"
 &gt;
@@ -447,7 +446,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
         <h3>API</h3>
 
         <p>
-          This component combines <code>ha-wa-dialog</code> and
+          This component combines <code>ha-dialog</code> and
           <code>ha-bottom-sheet</code> with automatic mode switching based on
           screen size.
         </p>

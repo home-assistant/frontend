@@ -1,4 +1,3 @@
-import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,32 +8,17 @@ import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
-import type {
-  BatterySourceTypeEnergyPreference,
-  DeviceConsumptionEnergyPreference,
-  EnergyPreferences,
-  GasSourceTypeEnergyPreference,
-  GridSourceTypeEnergyPreference,
-  SolarSourceTypeEnergyPreference,
-  WaterSourceTypeEnergyPreference,
-} from "../../data/energy";
-import {
-  computeConsumptionData,
-  getEnergyDataCollection,
-  getSummedData,
-} from "../../data/energy";
+import type { EnergyPreferences } from "../../data/energy";
+import { getEnergyDataCollection } from "../../data/energy";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import {
   isStrategyView,
   type LovelaceViewConfig,
 } from "../../data/lovelace/config/view";
-import type { StatisticValue } from "../../data/recorder";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
-import { fileDownload } from "../../util/file_download";
 import "../lovelace/components/hui-energy-period-selector";
 import "../lovelace/hui-root";
-import type { ExtraActionItem } from "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
@@ -120,16 +104,6 @@ class PanelEnergy extends LitElement {
 
   @state()
   private _error?: string;
-
-  private get _extraActionItems(): ExtraActionItem[] {
-    return [
-      {
-        icon: mdiDownload,
-        labelKey: "ui.panel.energy.download_data",
-        action: this._dumpCSV,
-      },
-    ];
-  }
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -253,7 +227,6 @@ class PanelEnergy extends LitElement {
         .panel=${this.panel}
         .backButton=${this._searchParms.has("historyBack")}
         .backPath=${this._searchParms.get("backPath") || "/"}
-        .extraActionItems=${this._extraActionItems}
         @reload-energy-panel=${this._reloadConfig}
         class=${classMap({ "has-period-selector": showEnergySelector })}
       >
@@ -290,12 +263,14 @@ class PanelEnergy extends LitElement {
       ["grid", "solar", "battery"].includes(source.type)
     );
 
-    const hasPowerSource = this._prefs.energy_sources.some(
-      (source) =>
-        (source.type === "solar" && source.stat_rate) ||
-        (source.type === "battery" && source.stat_rate) ||
-        (source.type === "grid" && source.power?.length)
-    );
+    const hasPowerSource = this._prefs.energy_sources.some((source) => {
+      if (source.type === "solar" && source.stat_rate) return true;
+      if (source.type === "battery" && source.stat_rate) return true;
+      if (source.type === "grid") {
+        return !!source.stat_rate || !!source.power_config;
+      }
+      return false;
+    });
 
     const hasDevicePower = this._prefs.device_consumption.some(
       (device) => device.stat_rate
@@ -348,320 +323,6 @@ class PanelEnergy extends LitElement {
     ev?.stopPropagation();
     navigate("/config/energy?historyBack=1");
   }
-
-  private _dumpCSV = async () => {
-    const energyData = getEnergyDataCollection(this.hass, {
-      key: DEFAULT_ENERGY_COLLECTION_KEY,
-    });
-
-    if (!energyData.prefs || !energyData.state.stats) {
-      return;
-    }
-
-    const gasUnit = energyData.state.gasUnit;
-    const electricUnit = "kWh";
-
-    const energy_sources = energyData.prefs.energy_sources;
-    const device_consumption = energyData.prefs.device_consumption;
-    const device_consumption_water = energyData.prefs.device_consumption_water;
-    const stats = energyData.state.stats;
-
-    const timeSet = new Set<number>();
-    Object.values(stats).forEach((stat) => {
-      stat.forEach((datapoint) => {
-        timeSet.add(datapoint.start);
-      });
-    });
-    const times = Array.from(timeSet).sort();
-
-    const headers =
-      "entity_id,type,unit," +
-      times.map((t) => new Date(t).toISOString()).join(",") +
-      "\n";
-    const csv: string[] = [];
-    csv[0] = headers;
-
-    const processCsvRow = function (
-      id: string,
-      type: string,
-      unit: string,
-      data: StatisticValue[]
-    ) {
-      let n = 0;
-      const row: string[] = [];
-      row.push(id);
-      row.push(type);
-      row.push(unit.normalize("NFKD"));
-      times.forEach((t) => {
-        if (n < data.length && data[n].start === t) {
-          row.push((data[n].change ?? "").toString());
-          n++;
-        } else {
-          row.push("");
-        }
-      });
-      csv.push(row.join(",") + "\n");
-    };
-
-    const processStat = function (stat: string, type: string, unit: string) {
-      if (!stats[stat]) {
-        return;
-      }
-
-      processCsvRow(stat, type, unit, stats[stat]);
-    };
-
-    const currency = this.hass.config.currency;
-
-    const printCategory = function (
-      type: string,
-      statIds: string[],
-      unit: string,
-      costType?: string,
-      costStatIds?: string[]
-    ) {
-      if (statIds.length) {
-        statIds.forEach((stat) => processStat(stat, type, unit));
-        if (costType && costStatIds) {
-          costStatIds.forEach((stat) => processStat(stat, costType, currency));
-        }
-      }
-    };
-
-    const grid_consumptions: string[] = [];
-    const grid_productions: string[] = [];
-    const grid_consumptions_cost: string[] = [];
-    const grid_productions_cost: string[] = [];
-    energy_sources
-      .filter((s) => s.type === "grid")
-      .forEach((source) => {
-        source = source as GridSourceTypeEnergyPreference;
-        source.flow_from.forEach((flowFrom) => {
-          const statId = flowFrom.stat_energy_from;
-          grid_consumptions.push(statId);
-          const costId =
-            flowFrom.stat_cost || energyData.state.info.cost_sensors[statId];
-          if (costId) {
-            grid_consumptions_cost.push(costId);
-          }
-        });
-        source.flow_to.forEach((flowTo) => {
-          const statId = flowTo.stat_energy_to;
-          grid_productions.push(statId);
-          const costId =
-            flowTo.stat_compensation ||
-            energyData.state.info.cost_sensors[statId];
-          if (costId) {
-            grid_productions_cost.push(costId);
-          }
-        });
-      });
-
-    printCategory(
-      "grid_consumption",
-      grid_consumptions,
-      electricUnit,
-      "grid_consumption_cost",
-      grid_consumptions_cost
-    );
-    printCategory(
-      "grid_return",
-      grid_productions,
-      electricUnit,
-      "grid_return_compensation",
-      grid_productions_cost
-    );
-
-    const battery_ins: string[] = [];
-    const battery_outs: string[] = [];
-    energy_sources
-      .filter((s) => s.type === "battery")
-      .forEach((source) => {
-        source = source as BatterySourceTypeEnergyPreference;
-        battery_ins.push(source.stat_energy_to);
-        battery_outs.push(source.stat_energy_from);
-      });
-
-    printCategory("battery_in", battery_ins, electricUnit);
-    printCategory("battery_out", battery_outs, electricUnit);
-
-    const solar_productions: string[] = [];
-    energy_sources
-      .filter((s) => s.type === "solar")
-      .forEach((source) => {
-        source = source as SolarSourceTypeEnergyPreference;
-        solar_productions.push(source.stat_energy_from);
-      });
-
-    printCategory("solar_production", solar_productions, electricUnit);
-
-    const gas_consumptions: string[] = [];
-    const gas_consumptions_cost: string[] = [];
-    energy_sources
-      .filter((s) => s.type === "gas")
-      .forEach((source) => {
-        source = source as GasSourceTypeEnergyPreference;
-        const statId = source.stat_energy_from;
-        gas_consumptions.push(statId);
-        const costId =
-          source.stat_cost || energyData.state.info.cost_sensors[statId];
-        if (costId) {
-          gas_consumptions_cost.push(costId);
-        }
-      });
-
-    printCategory(
-      "gas_consumption",
-      gas_consumptions,
-      gasUnit,
-      "gas_consumption_cost",
-      gas_consumptions_cost
-    );
-
-    const water_consumptions: string[] = [];
-    const water_consumptions_cost: string[] = [];
-    energy_sources
-      .filter((s) => s.type === "water")
-      .forEach((source) => {
-        source = source as WaterSourceTypeEnergyPreference;
-        const statId = source.stat_energy_from;
-        water_consumptions.push(statId);
-        const costId =
-          source.stat_cost || energyData.state.info.cost_sensors[statId];
-        if (costId) {
-          water_consumptions_cost.push(costId);
-        }
-      });
-
-    printCategory(
-      "water_consumption",
-      water_consumptions,
-      energyData.state.waterUnit,
-      "water_consumption_cost",
-      water_consumptions_cost
-    );
-
-    const devices: string[] = [];
-    device_consumption.forEach((source) => {
-      source = source as DeviceConsumptionEnergyPreference;
-      devices.push(source.stat_consumption);
-    });
-
-    printCategory("device_consumption", devices, electricUnit);
-
-    if (device_consumption_water) {
-      const waterDevices: string[] = [];
-      device_consumption_water.forEach((source) => {
-        source = source as DeviceConsumptionEnergyPreference;
-        waterDevices.push(source.stat_consumption);
-      });
-
-      printCategory(
-        "device_consumption_water",
-        waterDevices,
-        energyData.state.waterUnit
-      );
-    }
-
-    const { summedData, compareSummedData: _ } = getSummedData(
-      energyData.state
-    );
-    const { consumption, compareConsumption: __ } = computeConsumptionData(
-      summedData,
-      undefined
-    );
-
-    const processConsumptionData = function (
-      type: string,
-      unit: string,
-      data: Record<number, number>
-    ) {
-      const data2: StatisticValue[] = [];
-
-      Object.entries(data).forEach(([t, value]) => {
-        data2.push({
-          start: Number(t),
-          end: NaN,
-          change: value,
-        });
-      });
-
-      processCsvRow("", type, unit, data2);
-    };
-
-    const hasSolar = !!solar_productions.length;
-    const hasBattery = !!battery_ins.length;
-    const hasGridReturn = !!grid_productions.length;
-    const hasGridSource = !!grid_consumptions.length;
-
-    if (hasGridSource) {
-      processConsumptionData(
-        "calculated_consumed_grid",
-        electricUnit,
-        consumption.used_grid
-      );
-      if (hasBattery) {
-        processConsumptionData(
-          "calculated_grid_to_battery",
-          electricUnit,
-          consumption.grid_to_battery
-        );
-      }
-    }
-    if (hasGridReturn && hasBattery) {
-      processConsumptionData(
-        "calculated_battery_to_grid",
-        electricUnit,
-        consumption.battery_to_grid
-      );
-    }
-    if (hasBattery) {
-      processConsumptionData(
-        "calculated_consumed_battery",
-        electricUnit,
-        consumption.used_battery
-      );
-    }
-
-    if (hasSolar) {
-      processConsumptionData(
-        "calculated_consumed_solar",
-        electricUnit,
-        consumption.used_solar
-      );
-      if (hasBattery) {
-        processConsumptionData(
-          "calculated_solar_to_battery",
-          electricUnit,
-          consumption.solar_to_battery
-        );
-      }
-      if (hasGridReturn) {
-        processConsumptionData(
-          "calculated_solar_to_grid",
-          electricUnit,
-          consumption.solar_to_grid
-        );
-      }
-    }
-
-    if (
-      (hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) >
-      1
-    ) {
-      processConsumptionData(
-        "calculated_total_consumption",
-        electricUnit,
-        consumption.used_total
-      );
-    }
-
-    const blob = new Blob(csv, {
-      type: "text/csv",
-    });
-    const url = window.URL.createObjectURL(blob);
-    fileDownload(url, "energy.csv");
-  };
 
   private _reloadConfig() {
     this._loadConfig();

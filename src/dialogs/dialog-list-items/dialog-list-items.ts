@@ -6,7 +6,7 @@ import "../../components/ha-icon";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-svg-icon";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
 import type { ListItemsDialogParams } from "./show-list-items-dialog";
@@ -102,19 +102,19 @@ export class ListItemsDialog
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title ?? " "}
         @closed=${this._dialogClosed}
       >
         ${content}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
   static styles = css`
-    ha-wa-dialog {
+    ha-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
       --dialog-content-padding: 0;

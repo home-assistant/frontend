@@ -11,7 +11,7 @@ import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import { createAuthForUser } from "../../../data/auth";
 import type { User } from "../../../data/user";
 import {
@@ -88,14 +88,13 @@ export class DialogAddUser extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         header-title=${this.hass.localize(
           "ui.panel.config.users.add_user.caption"
         )}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div>
@@ -219,7 +218,7 @@ export class DialogAddUser extends LitElement {
             ${this.hass.localize("ui.panel.config.users.add_user.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -312,7 +311,7 @@ export class DialogAddUser extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-z-index: 10;
         }
         .row {

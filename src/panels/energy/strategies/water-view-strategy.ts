@@ -1,11 +1,12 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getEnergyDataCollection } from "../../../data/energy";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
+import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
+import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("water-view-strategy")
 export class WaterViewStrategy extends ReactiveElement {
@@ -52,9 +53,6 @@ export class WaterViewStrategy extends ReactiveElement {
         type: "energy-water-graph",
         collection_key: collectionKey,
       });
-    }
-
-    if (hasWaterSources) {
       section.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_sources_table_title"
@@ -67,15 +65,17 @@ export class WaterViewStrategy extends ReactiveElement {
 
     // Only include if we have at least 1 water device in the config.
     if (hasWaterDevices) {
-      const showFloorsNAreas = !prefs.device_consumption_water.some(
-        (d) => d.included_in_stat
+      const showFloorsAndAreas = shouldShowFloorsAndAreas(
+        prefs.device_consumption_water,
+        hass,
+        (d) => d.stat_consumption
       );
       section.cards!.push({
         title: hass.localize("ui.panel.energy.cards.water_sankey_title"),
         type: "water-sankey",
         collection_key: collectionKey,
-        group_by_floor: showFloorsNAreas,
-        group_by_area: showFloorsNAreas,
+        group_by_floor: showFloorsAndAreas,
+        group_by_area: showFloorsAndAreas,
       });
     }
 

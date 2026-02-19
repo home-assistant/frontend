@@ -157,6 +157,12 @@ export class ZHAManageClusters extends LitElement {
     return [
       haStyle,
       css`
+        .content {
+          padding: var(--ha-space-4) 0 0;
+          border: none;
+          outline: none;
+        }
+
         ha-select {
           margin-top: 16px;
         }
@@ -168,9 +174,13 @@ export class ZHAManageClusters extends LitElement {
         }
         .node-picker {
           align-items: center;
+          margin: 0 var(--ha-space-5);
           padding-bottom: 10px;
         }
 
+        ha-tab-group {
+          margin: 0 var(--ha-space-5);
+        }
         ha-tab-group-tab {
           flex: 1;
         }

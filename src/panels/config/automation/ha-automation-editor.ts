@@ -1292,7 +1292,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
             --ha-automation-editor-width,
             1540px
           );
-          --hass-subpage-bottom-inset: 0px;
         }
         ha-fade-in {
           display: flex;

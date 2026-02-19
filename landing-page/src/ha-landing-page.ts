@@ -222,6 +222,9 @@ class HaLandingPage extends LandingPageBaseElement {
         flex-direction: column;
         gap: var(--ha-space-4);
       }
+      ha-language-picker {
+        min-width: 200px;
+      }
       ha-alert p {
         text-align: unset;
       }
