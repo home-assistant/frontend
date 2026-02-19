@@ -2614,6 +2614,11 @@
               "password": "Password"
             }
           },
+          "my": {
+            "add_repository_title": "Add app repository?",
+            "add_repository_description": "This app requires a repository that is currently not known. Do you want to add the repository {repository}?",
+            "error_repository_not_found": "The repository for this app was not found"
+          },
           "panel": {
             "info": "Info",
             "documentation": "Documentation",
