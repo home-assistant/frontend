@@ -44,7 +44,7 @@ class HaConfigAppDashboard extends LitElement {
 
   @state() private _fromStore = false;
 
-  private _repositoryUrl?: string | null;
+  @state() private _repositoryUrl: string | null = null;
 
   private _computeTail = memoizeOne((route: Route) => {
     const pathParts = route.path.split("/").filter(Boolean);
@@ -162,7 +162,7 @@ class HaConfigAppDashboard extends LitElement {
           return;
         }
       }
-      this._error = `Error loading app: ${extractApiErrorMessage(err)}`;
+      this._error ??= `Error loading app: ${extractApiErrorMessage(err)}`;
     }
   }
 
@@ -186,7 +186,7 @@ class HaConfigAppDashboard extends LitElement {
           ),
           text: this.hass.localize(
             "ui.panel.config.apps.my.add_repository_description",
-            { repository: this._repositoryUrl! }
+            { repository: repositoryUrl }
           ),
           confirmText: this.hass.localize("ui.common.add"),
           dismissText: this.hass.localize("ui.common.cancel"),
@@ -195,6 +195,7 @@ class HaConfigAppDashboard extends LitElement {
         this._error = this.hass.localize(
           "ui.panel.config.apps.my.error_repository_not_found"
         );
+        return;
       }
 
       await addStoreRepository(this.hass, repositoryUrl);
