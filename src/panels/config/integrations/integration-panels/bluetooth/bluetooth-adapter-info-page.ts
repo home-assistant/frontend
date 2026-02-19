@@ -185,18 +185,24 @@ export class BluetoothAdapterInfoPage extends LitElement {
           <ha-card>
             <ha-md-list>
               ${this._renderAdaptersList(enabledDevices)}
-              ${disabledDevices.map(
-                ({ device, entry }) => html`
+              ${disabledDevices.map(({ device, entry }) => {
+                const areaName =
+                  device.area_id && this.hass.areas[device.area_id]
+                    ? this.hass.areas[device.area_id].name
+                    : undefined;
+                const disabledText = this.hass.localize(
+                  "ui.panel.config.bluetooth.disabled_by_user"
+                );
+                const supportingText = [areaName, disabledText]
+                  .filter(Boolean)
+                  .join(" · ");
+                return html`
                   <ha-md-list-item class="disabled">
                     <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
                     <div slot="headline">
                       ${computeDeviceName(device) || entry.title}
                     </div>
-                    ${device.area_id && this.hass.areas[device.area_id]
-                      ? html`<div slot="supporting-text">
-                          ${this.hass.areas[device.area_id].name}
-                        </div>`
-                      : nothing}
+                    <div slot="supporting-text">${supportingText}</div>
                     <ha-button
                       slot="end"
                       .entry=${entry}
@@ -205,13 +211,18 @@ export class BluetoothAdapterInfoPage extends LitElement {
                       ${this.hass.localize("ui.common.enable")}
                     </ha-button>
                   </ha-md-list-item>
-                `
-              )}
+                `;
+              })}
               ${disabledEntriesWithoutDevice.map(
                 (entry) => html`
                   <ha-md-list-item class="disabled">
                     <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
                     <div slot="headline">${entry.title}</div>
+                    <div slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.panel.config.bluetooth.disabled_by_user"
+                      )}
+                    </div>
                     <ha-button
                       slot="end"
                       .entry=${entry}
@@ -223,6 +234,16 @@ export class BluetoothAdapterInfoPage extends LitElement {
                 `
               )}
             </ha-md-list>
+            <div class="card-actions">
+              <ha-button
+                appearance="plain"
+                href="/config/integrations/integration/bluetooth"
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.bluetooth.manage_integration"
+                )}
+              </ha-button>
+            </div>
           </ha-card>
         </div>
       </hass-subpage>
@@ -461,12 +482,17 @@ export class BluetoothAdapterInfoPage extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-md-list-item.disabled {
+        ha-md-list-item.disabled ha-svg-icon[slot="start"],
+        ha-md-list-item.disabled [slot="headline"],
+        ha-md-list-item.disabled [slot="supporting-text"] {
           opacity: 0.5;
         }
 
-        ha-md-list-item.disabled ha-button {
-          opacity: calc(1 / 0.5);
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
+          border-top: 1px solid var(--divider-color);
+          padding: var(--ha-space-2) var(--ha-space-4);
         }
       `,
     ];

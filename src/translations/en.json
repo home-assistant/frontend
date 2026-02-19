@@ -6711,6 +6711,7 @@
           },
           "disabled_adapters": "Disabled adapter(s)",
           "disabled_by_user": "Disabled by user",
+          "manage_integration": "Manage integration",
           "settings_title": "Bluetooth adapters",
           "option_flow": "Configure Bluetooth options",
           "no_connections": "No active connections",
