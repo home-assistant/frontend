@@ -128,14 +128,26 @@ class HuiTargetTemperatureCardFeature
   }
 
   private async _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
+    const eventElement = ev.target as any;
+    const value = eventElement.value;
     if (isNaN(value)) return;
-    const target = (ev.currentTarget as any).target ?? "value";
+    const target = eventElement.target ?? "value";
 
-    this._targetTemperature = {
-      ...this._targetTemperature,
-      [target]: value,
-    };
+    const newTemp = { ...this._targetTemperature };
+
+    if (this._supportsTarget()) {
+      newTemp.value = value;
+    } else if (this._supportsTargetRange()) {
+      if (target === "low") {
+        newTemp.low = Math.min(value, newTemp.high);
+        eventElement.value = newTemp.low
+      } else if (target === "high") {
+        newTemp.high = Math.max(value, newTemp.low);
+        eventElement.value = newTemp.high
+      }
+    }
+
+    this._targetTemperature = newTemp;
     this._debouncedCallService(target);
   }
 
@@ -146,7 +158,7 @@ class HuiTargetTemperatureCardFeature
 
   private _callService(type: string) {
     const domain = computeStateDomain(this._stateObj!);
-    if (type === "high" || type === "low") {
+    if (type === "low" || type === "high") {
       this.hass!.callService(domain, "set_temperature", {
         entity_id: this._stateObj!.entity_id,
         target_temp_low: this._targetTemperature.low,
@@ -343,7 +355,7 @@ class HuiTargetTemperatureCardFeature
             .target=${"high"}
             .value=${this._targetTemperature.high}
             .unit=${this.hass.config.unit_system.temperature}
-            .min=${Math.max(
+             .min=${Math.max(
               this._min,
               this._targetTemperature.low ?? this._min
             )}
