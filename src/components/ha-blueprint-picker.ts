@@ -3,8 +3,12 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import type { Blueprint, BlueprintDomain, Blueprints } from "../data/blueprint";
-import { fetchBlueprints } from "../data/blueprint";
+import type {
+  BlueprintDomain,
+  Blueprints,
+  ServerBlueprint,
+} from "../data/blueprint";
+import { isValidBlueprint, fetchBlueprints } from "../data/blueprint";
 import type { HomeAssistant } from "../types";
 import type { HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
@@ -36,7 +40,9 @@ class HaBluePrintPicker extends LitElement {
       return [];
     }
     const result = Object.entries(blueprints)
-      .filter((entry): entry is [string, Blueprint] => !("error" in entry[1]))
+      .filter((entry): entry is [string, ServerBlueprint] =>
+        isValidBlueprint(entry[1])
+      )
       .map(([path, blueprint]) => ({
         ...blueprint.metadata,
         path,

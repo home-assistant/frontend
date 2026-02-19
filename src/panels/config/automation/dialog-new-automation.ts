@@ -19,12 +19,13 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-tip";
 import { showAutomationEditor } from "../../../data/automation";
 import type {
-  Blueprint,
   BlueprintDomain,
   BlueprintSourceType,
   Blueprints,
+  ServerBlueprint,
 } from "../../../data/blueprint";
 import {
+  isValidBlueprint,
   fetchBlueprints,
   getBlueprintSourceType,
 } from "../../../data/blueprint";
@@ -78,7 +79,9 @@ class DialogNewAutomation extends LitElement {
       return [];
     }
     const result = Object.entries(blueprints)
-      .filter((entry): entry is [string, Blueprint] => !("error" in entry[1]))
+      .filter((entry): entry is [string, ServerBlueprint] =>
+        isValidBlueprint(entry[1])
+      )
       .map(([path, blueprint]) => {
         const sourceType = getBlueprintSourceType(blueprint);
 

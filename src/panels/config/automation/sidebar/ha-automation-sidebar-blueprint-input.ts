@@ -340,10 +340,10 @@ export default class HaAutomationSidebarBlueprintInput extends LitElement {
         }
         break;
       case "cut":
-        this.config.cut(this._path);
+        this.config.cutAtPath(this._path);
         break;
       case "copy":
-        this.config.copy(this._path);
+        this.config.copyAtPath(this._path);
         break;
       case "toggle_yaml_mode":
         this._toggleYamlMode();

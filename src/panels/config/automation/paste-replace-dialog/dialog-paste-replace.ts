@@ -37,7 +37,10 @@ class DialogPasteReplace extends LitElement {
       return nothing;
     }
 
-    const localizationNamespace =
+    const localizationNamespace:
+      | "ui.panel.config.developer-tools.tabs.blueprints"
+      | "ui.panel.config.automation"
+      | "ui.panel.config.script" =
       this._params.domain === "blueprint"
         ? "ui.panel.config.developer-tools.tabs.blueprints"
         : `ui.panel.config.${this._params.domain}`;

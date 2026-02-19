@@ -6,7 +6,10 @@ import type { HomeAssistant } from "../../../../../types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
-import type { Blueprint, BlueprintDomain } from "../../../../../data/blueprint";
+import type {
+  BlueprintDomain,
+  ServerBlueprint,
+} from "../../../../../data/blueprint";
 import { isValidBlueprint } from "../../../../../data/blueprint";
 
 import "../../../../../components/ha-textfield";
@@ -100,7 +103,7 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
       this._parameters.blueprints[this._pickType]
     ).filter(([_, blueprint]) => isValidBlueprint(blueprint)) as [
       string,
-      Blueprint,
+      ServerBlueprint,
     ][];
     return html`
       <ha-md-list

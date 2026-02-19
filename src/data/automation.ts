@@ -664,8 +664,8 @@ export interface BlueprintInputSidebarConfig extends BaseSidebarConfig {
   rename: (path: string[] | undefined) => void;
   save: (value: BlueprintInput | BlueprintInputSection) => void;
   duplicate: (path: string[] | undefined) => void;
-  cut: (path: string[] | undefined) => void;
-  copy: (path: string[] | undefined) => void;
+  cutAtPath: (path: string[] | undefined) => void;
+  copyAtPath: (path: string[] | undefined) => void;
   deleteAtPath: (path: string[] | undefined) => void;
   id: string;
   config: BlueprintInput | BlueprintInputSection;

@@ -171,9 +171,9 @@ export const deleteBlueprint = (
 export type BlueprintSourceType = "local" | "community" | "homeassistant";
 
 export const getBlueprintSourceType = (
-  blueprint: Blueprint
+  blueprint: ServerBlueprint
 ): BlueprintSourceType => {
-  const sourceUrl = blueprint.blueprint.source_url;
+  const sourceUrl = blueprint.metadata.source_url;
 
   if (!sourceUrl) {
     return "local";
