@@ -139,11 +139,11 @@ class HuiTargetTemperatureCardFeature
       newTemp.value = value;
     } else if (this._supportsTargetRange()) {
       if (target === "low") {
-        newTemp.low = Math.min(value, newTemp.high);
-        eventElement.value = newTemp.low
+        newTemp.low = Math.min(value, newTemp.high ?? this._max);
+        eventElement.value = newTemp.low;
       } else if (target === "high") {
-        newTemp.high = Math.max(value, newTemp.low);
-        eventElement.value = newTemp.high
+        newTemp.high = Math.max(value, newTemp.low ?? this._min);
+        eventElement.value = newTemp.high;
       }
     }
 
@@ -355,7 +355,7 @@ class HuiTargetTemperatureCardFeature
             .target=${"high"}
             .value=${this._targetTemperature.high}
             .unit=${this.hass.config.unit_system.temperature}
-             .min=${Math.max(
+            .min=${Math.max(
               this._min,
               this._targetTemperature.low ?? this._min
             )}
