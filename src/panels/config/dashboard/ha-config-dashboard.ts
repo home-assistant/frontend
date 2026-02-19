@@ -419,7 +419,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                 0px
               ) - var(--safe-area-inset-bottom, 0px)
           );
-          padding-bottom: var(--safe-area-inset-bottom, 0px);
           box-sizing: border-box;
           overflow-x: hidden;
         }
