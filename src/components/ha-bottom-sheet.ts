@@ -197,6 +197,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         without-header
         @touchstart=${this._handleTouchStart}
       >
+        <div class="handle-wrapper" aria-hidden="true">
+          <div class="handle"></div>
+        </div>
         <slot name="header"></slot>
         <div class="content-wrapper">
           <div id="body" class="body ha-scrollbar">
@@ -372,6 +375,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         wa-drawer::part(body) {
           max-width: var(--ha-bottom-sheet-max-width);
           width: 100%;
+          position: relative;
           border-top-left-radius: var(
             --ha-bottom-sheet-border-radius,
             var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
@@ -393,6 +397,35 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         :host([flexcontent]) wa-drawer::part(body) {
           display: flex;
           flex-direction: column;
+        }
+        :host([prevent-scrim-close]) .handle-wrapper {
+          display: none;
+        }
+        .handle-wrapper {
+          position: absolute;
+          top: 0;
+          inset-inline-start: 0;
+          width: 100%;
+          padding-bottom: 2px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          pointer-events: none;
+          z-index: 1;
+        }
+        .handle-wrapper .handle {
+          height: 16px;
+          width: 200px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .handle-wrapper .handle::after {
+          content: "";
+          border-radius: var(--ha-border-radius-md);
+          height: 4px;
+          background: var(--ha-bottom-sheet-handle-color, var(--divider-color));
+          width: 40px;
         }
         .content-wrapper {
           position: relative;
