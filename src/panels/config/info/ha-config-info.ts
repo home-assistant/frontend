@@ -16,7 +16,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-logo-svg";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
@@ -123,14 +122,14 @@ class HaConfigInfo extends LitElement {
               target="_blank"
               rel="noreferrer"
             >
-              <ha-logo-svg
-                title=${this.hass.localize(
-                  "ui.panel.config.info.home_assistant_logo"
-                )}
-              >
-              </ha-logo-svg>
+              <img
+                class="ha-lockup"
+                src=${isDark
+                  ? "/static/images/ha-lockup-dark.svg"
+                  : "/static/images/ha-lockup-light.svg"}
+                alt="Home Assistant"
+              />
             </a>
-            <p>Home Assistant</p>
             <ul class="versions">
               <li>
                 <span class="version-label"
@@ -188,7 +187,7 @@ class HaConfigInfo extends LitElement {
                 : nothing}
             </ul>
           </ha-card>
-          <ha-card outlined class="ohf ${isDark ? "dark" : ""}">
+          <ha-card outlined class="ohf">
             <div>
               ${this.hass.localize("ui.panel.config.info.proud_part_of")}
             </div>
@@ -197,7 +196,12 @@ class HaConfigInfo extends LitElement {
               target="_blank"
               rel="noreferrer"
             >
-              <img src="/static/icons/ohf.svg" alt="Open Home Foundation" />
+              <img
+                src=${isDark
+                  ? "/static/images/ohf-lockup-dark.svg"
+                  : "/static/images/ohf-lockup-light.svg"}
+                alt="Open Home Foundation"
+              />
             </a>
           </ha-card>
 
@@ -310,9 +314,9 @@ class HaConfigInfo extends LitElement {
           margin: 0 auto;
         }
 
-        ha-logo-svg {
-          height: 56px;
-          width: 56px;
+        .ha-lockup {
+          width: 100%;
+          max-width: 250px;
         }
 
         ha-card {
@@ -330,26 +334,18 @@ class HaConfigInfo extends LitElement {
           padding: 32px 8px 16px 8px;
         }
 
-        .header p {
-          font-size: var(--ha-font-size-xl);
-          font-weight: var(--ha-font-weight-normal);
-          line-height: var(--ha-line-height-condensed);
-          text-align: center;
-          margin: 24px;
+        .header .ha-lockup {
+          margin-bottom: 16px;
         }
 
         .ohf {
           text-align: center;
-          padding-bottom: 5px;
+          padding-bottom: 16px;
         }
 
         .ohf img {
           width: 100%;
           max-width: 250px;
-        }
-
-        .ohf.dark img {
-          color-scheme: dark;
         }
 
         .versions {

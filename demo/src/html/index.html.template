@@ -68,7 +68,7 @@
       }
       #ha-launch-screen .ha-launch-screen-spacer-top {
         flex: 1;
-        margin-top: calc( 2 * max(var(--safe-area-inset-top, 0px), 48px) + 46px );
+        margin-top: calc( 2 * max(var(--safe-area-inset-top, 0px), 48px) + 24px );
         padding-top: 48px;
       }
       #ha-launch-screen .ha-launch-screen-spacer-bottom {
@@ -82,11 +82,6 @@
         align-items: center;
         opacity: .66;
       }
-      @media (prefers-color-scheme: dark) {
-        .ohf-logo {
-          filter: invert(1);
-        }
-      }
     </style>
   </head>
   <body>
@@ -98,7 +93,7 @@
       </svg>
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer-bottom"></div>
       <div class="ohf-logo">
-        <img src="/static/images/ohf-badge.svg" alt="Home Assistant is a project by the Open Home Foundation" height="46">
+        <img src="/static/images/ohf-inline.svg" alt="Open Home Foundation" height="24">
       </div>
     </div>
     <ha-demo></ha-demo>
