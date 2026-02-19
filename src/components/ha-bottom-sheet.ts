@@ -400,7 +400,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           z-index: 1;
         }
         .handle-wrapper .handle {
-          height: 20px;
+          height: 16px;
           width: 200px;
           display: flex;
           justify-content: center;
