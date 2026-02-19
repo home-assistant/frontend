@@ -6902,6 +6902,7 @@
             "timeout_6_hours": "6 hours{default}",
             "timeout_12_hours": "12 hours{default}",
             "timeout_24_hours": "24 hours{default}",
+            "timeout_default": "default",
             "timeout_custom": "Custom",
             "change_channel": "Change channel",
             "channel_dialog": {
