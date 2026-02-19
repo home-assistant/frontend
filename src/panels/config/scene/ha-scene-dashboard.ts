@@ -512,6 +512,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .type=${"scene"}
           .value=${this._filters["ha-filter-devices"]?.value}
+          .allItems=${this.scenes}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-devices"}
