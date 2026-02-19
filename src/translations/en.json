@@ -6078,6 +6078,7 @@
           "caption": "Devices",
           "description": "Manage configured devices",
           "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
+          "filter_none_of_listed": "None",
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "restore_entity_ids": "Recreate entity IDs",
