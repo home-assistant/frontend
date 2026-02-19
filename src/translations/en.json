@@ -6942,9 +6942,10 @@
         },
         "zwave_js": {
           "navigation": {
-            "network": "Network",
+            "general": "Z-Wave",
+            "statistics": "Statistics",
             "logs": "Logs",
-            "visualization": "Visualization"
+            "visualization": "Z-Wave visualization"
           },
           "common": {
             "network": "Network",
@@ -6953,36 +6954,64 @@
             "source": "Source",
             "back": "Back",
             "add_node": "Add device",
-            "remove_node": "Remove device",
+            "remove_node": "Remove foreign device",
             "remove_a_node": "Remove a device",
-            "rebuild_network_routes": "Rebuild network routes",
+            "rebuild_network_routes": "Discover and assign new routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
           },
           "dashboard": {
+            "network_card_title": "My network",
+            "show_map": "Show map",
+            "options_title": "Options",
+            "options_description": "Manage network routes and remove devices",
+            "network_info_title": "Network information",
+            "network_info_description": "View driver, server, and home ID details",
+            "visualization_description": "Visualize the network topology and device connections",
+            "statistics_description": "View adapter and network communication statistics",
+            "logs_description": "View and download Z-Wave logs",
+            "analytics_title": "Analytics",
+            "analytics_description": "Share anonymized telemetry and statistics with Z-Wave JS",
+            "analytics_on": "On",
+            "analytics_off": "Off",
             "driver_version": "Driver version",
             "server_version": "Server version",
             "home_id": "Home ID",
             "server_url": "Server URL",
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "device_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "entity_count": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "provisioned_devices": "Provisioned devices",
-            "not_ready": "{count} not ready",
+            "provisioned_count": "{count} {count, plural,\n  one {provisioned device}\n  other {provisioned devices}\n}",
+            "not_included": "{count} not included",
+            "devices_offline": "{count} offline",
+            "rebuild_routes_description": "Rebuilding routes creates heavy traffic and may degrade performance for minutes to hours",
+            "rebuild_routes_action": "Rebuild",
+            "remove_node_description": "Useful when a device is stuck in another network and must be excluded before it can be included again",
+            "remove_node_action": "Remove",
             "nvm_backup": {
               "title": "Backup and restore",
-              "description": "Back up or restore your Z-Wave adapter's non-volatile memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
               "download_backup": "Download backup",
+              "download_backup_description": "Create and download a backup of your Z-Wave adapter",
+              "download_action": "Download",
               "restore_backup": "Restore from backup",
+              "restore_backup_description": "Restore a previously downloaded backup to your Z-Wave adapter",
+              "restore_action": "Restore",
               "backup_failed": "Failed to download backup",
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
               "creating": "Creating backup",
               "restoring": "Restoring backup",
-              "migrate": "Migrate adapter"
+              "migrate": "Migrate adapter",
+              "migrate_description": "Move your Z-Wave network to a different adapter",
+              "migrate_action": "Migrate"
             },
             "data_collection": {
-              "title": "Third-party data reporting",
-              "description": "Enable the reporting of anonymized telemetry and statistics to the Z-Wave JS organization. This data will be used to focus development efforts and improve the user experience. Information about the data that is collected and how it is used, including an example of the data collected, can be found in the {documentation_link}.",
-              "documentation_link": "Z-Wave JS data collection documentation"
+              "title": "Z-Wave JS analytics",
+              "info": "Enable the reporting of anonymized telemetry and statistics to the Z-Wave JS organization. This data will be used to focus development efforts and improve the user experience. Information about the data that is collected and how it is used, including an example of the data collected, can be found in the {documentation_link}.",
+              "documentation_link": "Z-Wave JS data collection documentation",
+              "toggle_title": "Data reporting",
+              "toggle_description": "Share anonymized telemetry and statistics with Z-Wave JS"
             },
             "statistics": {
               "title": "Adapter statistics",
@@ -7179,9 +7208,10 @@
             "default": "Default"
           },
           "network_status": {
-            "connected": "status: connected",
-            "connecting": "status: connecting",
-            "unknown": "status: unknown"
+            "online": "Online",
+            "offline": "Offline",
+            "online_named": "{name} online",
+            "offline_named": "{name} offline"
           },
           "add_node": {
             "title": "Add a Z-Wave device",
@@ -7272,13 +7302,16 @@
             }
           },
           "provisioned": {
+            "caption": "Provisioned devices",
+            "name": "Name",
             "dsk": "DSK",
             "security_classes": "Security classes",
             "unprovision": "Unprovision",
             "included": "Included",
             "not_included": "Not included",
             "confirm_unprovision_title": "Remove device?",
-            "confirm_unprovision_text": "{name} will be permanently removed from Home Assistant and your Z-Wave network.",
+            "confirm_unprovision_text": "This device will be permanently removed from your Z-Wave network.",
+            "confirm_unprovision_text_included": "This device will be permanently removed from Home Assistant and your Z-Wave network.",
             "active": "Active"
           },
           "security_classes": {
@@ -7396,7 +7429,8 @@
             }
           },
           "logs": {
-            "title": "Z-Wave JS logs",
+            "caption": "Logs",
+            "title": "Z-Wave logs",
             "log_level": "Log level",
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
             "log_level_changed": "Log level changed to: {level}",
@@ -7641,12 +7675,12 @@
         },
         "analytics": {
           "caption": "Analytics",
-          "header": "Home Assistant analytics",
+          "header": "Home Assistant",
           "description": "Learn how to share data to improve Home Assistant",
           "preferences": {
             "base": {
               "title": "Basic analytics",
-              "description": "This includes information about your system."
+              "description": "This includes information about your system"
             },
             "usage": {
               "title": "Usage",
@@ -7654,16 +7688,16 @@
             },
             "statistics": {
               "title": "Statistical data",
-              "description": "Counts containing total number of datapoints."
+              "description": "Counts containing total number of datapoints"
             },
             "diagnostics": {
               "title": "Diagnostics",
-              "description": "Share crash reports when unexpected errors occur."
+              "description": "Share crash reports when unexpected errors occur"
             },
             "snapshots": {
               "title": "Devices",
-              "description": "Generic information about your devices.",
-              "header": "Device analytics",
+              "description": "Generic information about your devices",
+              "header": "Device database",
               "info": "Anonymously share data about your devices to help build the Open Home Foundation's device database. This free, open source resource helps users find useful information about smart home devices. Only device-specific details (like model or manufacturer) are shared — never personally identifying information (like the names you assign). Learn more about the device database and how we process your data in our {data_use_statement}, which you accept by opting in.",
               "data_use_statement": "Data Use Statement",
               "alert": {
