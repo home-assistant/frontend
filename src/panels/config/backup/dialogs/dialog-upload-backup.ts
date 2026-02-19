@@ -11,7 +11,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-file-upload";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
@@ -74,7 +74,7 @@ export class DialogUploadBackup
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -120,7 +120,7 @@ export class DialogUploadBackup
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

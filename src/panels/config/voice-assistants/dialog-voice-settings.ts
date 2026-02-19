@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -51,7 +51,7 @@ class DialogVoiceSettings extends LitElement {
       this.hass.localize("ui.panel.config.entities.picker.unnamed_entity");
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
@@ -73,7 +73,7 @@ class DialogVoiceSettings extends LitElement {
             @exposed-entities-changed=${this._exposedEntitiesChanged}
           ></entity-voice-settings>
         </div>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -90,7 +90,7 @@ class DialogVoiceSettings extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
       `,

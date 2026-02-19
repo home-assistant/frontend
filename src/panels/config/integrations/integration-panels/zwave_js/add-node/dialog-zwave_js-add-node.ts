@@ -46,7 +46,7 @@ import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-fade-in";
 import "../../../../../../components/ha-icon-button";
 import "../../../../../../components/ha-qr-scanner";
-import "../../../../../../components/ha-wa-dialog";
+import "../../../../../../components/ha-dialog";
 
 import { navigate } from "../../../../../../common/navigate";
 import type { EntityRegistryEntry } from "../../../../../../data/entity/entity_registry";
@@ -140,7 +140,7 @@ class DialogZWaveJSAddNode extends LitElement {
     const actions = this._renderStepActions();
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         ?prevent-scrim-close=${preventClose}
@@ -151,7 +151,7 @@ class DialogZWaveJSAddNode extends LitElement {
         ${actions === nothing
           ? nothing
           : html`<ha-dialog-footer slot="footer">${actions}</ha-dialog-footer>`}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

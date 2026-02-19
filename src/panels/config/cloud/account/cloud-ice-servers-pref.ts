@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -33,19 +33,16 @@ export class CloudICEServersPref extends LitElement {
         )}
       >
         <div class="header-actions">
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.ice_servers.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircleOutline}
             href="https://www.nabucasa.com/config/webrtc/"
             target="_blank"
             rel="noreferrer"
             class="icon-link"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.ice_servers.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
           <ha-switch
             .checked=${cloudICEServersEnabled}
             @change=${this._toggleCloudICEServersEnabledChanged}
@@ -78,9 +75,6 @@ export class CloudICEServersPref extends LitElement {
   }
 
   static styles = css`
-    a {
-      color: var(--primary-color);
-    }
     .header-actions {
       position: absolute;
       right: 16px;

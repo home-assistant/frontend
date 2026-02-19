@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { LovelaceStrategyConfig } from "../../../../data/lovelace/config/strategy";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -47,7 +47,7 @@ export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
@@ -75,7 +75,7 @@ export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
             ${this.hass.localize("ui.common.next")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

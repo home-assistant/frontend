@@ -7,7 +7,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../common/language/format_language";
 import "../../components/chips/ha-assist-chip";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
@@ -142,7 +142,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
       (this._step === STEP.UPDATE && !this._previousSteps.length);
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title="Voice Satellite setup"
@@ -286,7 +286,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                                   ></ha-voice-assistant-setup-step-success>`
                                 : nothing}
         </div>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -371,7 +371,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {

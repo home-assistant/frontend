@@ -29,7 +29,7 @@ import type {
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 import "../components/ha-button";
 import "../components/ha-dialog-footer";
-import "../components/ha-wa-dialog";
+import "../components/ha-dialog";
 import "../components/ha-dropdown";
 import "../components/ha-icon-button";
 import "../components/ha-svg-icon";
@@ -538,7 +538,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
       ${this.showFilters && !showPane
-        ? html`<ha-wa-dialog
+        ? html`<ha-dialog
             .hass=${this.hass}
             .open=${true}
             width="full"
@@ -573,7 +573,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 })}
               </ha-button>
             </ha-dialog-footer>
-          </ha-wa-dialog>`
+          </ha-dialog>`
         : nothing}
     `;
   }
@@ -898,7 +898,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       --md-assist-chip-trailing-space: 8px;
     }
 
-    ha-wa-dialog {
+    ha-dialog {
       --dialog-content-padding: 0;
     }
 
