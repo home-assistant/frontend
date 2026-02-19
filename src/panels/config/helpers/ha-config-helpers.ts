@@ -685,6 +685,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .type=${"entity"}
           .value=${this._filters["ha-filter-devices"]}
+          .allItems=${this._helperEntities}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-devices"}
