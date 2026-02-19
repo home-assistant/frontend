@@ -94,7 +94,21 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "after-show");
   };
 
+  private _handleSliderInteractionStart = () => {
+    this._sliderInteractionActive = true;
+  };
+
+  private _handleSliderInteractionStop = () => {
+    this._sliderInteractionActive = false;
+  };
+
   private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
+    if (this._sliderInteractionActive) {
+      this._drawerOpen = true;
+      this.open = true;
+      return;
+    }
+
     if (ev.eventPhase === Event.AT_TARGET) {
       this.open = false;
       this._drawerOpen = false;
