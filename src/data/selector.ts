@@ -825,10 +825,7 @@ export const filterSelectorEntities = (
   filterEntity: EntitySelectorFilter,
   entity: HassEntity,
   entitySources?: EntitySources,
-  entityRegistry?:
-    | HomeAssistant["entities"]
-    | EntityRegistryDisplayEntry[]
-    | EntityRegistryEntry[],
+  entityRegistry?: HomeAssistant["entities"],
   devices?: HomeAssistant["devices"] | DeviceRegistryEntry[]
 ): boolean => {
   const {
@@ -878,10 +875,7 @@ export const filterSelectorEntities = (
       return false;
     }
 
-    const registryEntry = Array.isArray(entityRegistry)
-      ? entityRegistry.find((entry) => entry.entity_id === entity.entity_id)
-      : entityRegistry[entity.entity_id];
-    const deviceId = registryEntry?.device_id;
+    const deviceId = entityRegistry[entity.entity_id]?.device_id;
     if (!deviceId) {
       return false;
     }
@@ -891,13 +885,16 @@ export const filterSelectorEntities = (
     if (!device) {
       return false;
     }
-    if (filterManufacturer && device.manufacturer !== filterManufacturer) {
-      return false;
-    }
-    if (filterModel && device.model !== filterModel) {
-      return false;
-    }
-    if (filterModelId && device.model_id !== filterModelId) {
+    if (
+      !filterSelectorDevices(
+        {
+          manufacturer: filterManufacturer,
+          model: filterModel,
+          model_id: filterModelId,
+        },
+        device
+      )
+    ) {
       return false;
     }
   }
