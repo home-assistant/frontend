@@ -3896,7 +3896,7 @@
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
               "sensor_type": "Type of power measurement",
-              "sensor_type_para": "Power sensors show the rate of energy flow (in watts), while energy sensors show total consumption (in kWh). Adding a power sensor enables real-time monitoring.",
+              "sensor_type_para": "Power sensors show the rate of energy flow (in watts), while energy sensors show total usage (in kWh). Adding a power sensor enables real-time monitoring.",
               "type_none": "No power sensor",
               "type_standard": "Standard",
               "type_inverted": "Inverted",
