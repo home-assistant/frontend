@@ -4,8 +4,8 @@ import {
   mdiBroadcast,
   mdiCheck,
   mdiCloseCircleOutline,
-  mdiLan,
   mdiLinkVariant,
+  mdiVectorPolyline,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
@@ -188,7 +188,10 @@ export class BluetoothConfigDashboard extends LitElement {
                 appearance="filled"
                 href="/config/bluetooth/visualization"
               >
-                <ha-svg-icon slot="start" .path=${mdiLan}></ha-svg-icon>
+                <ha-svg-icon
+                  slot="start"
+                  .path=${mdiVectorPolyline}
+                ></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.bluetooth.show_map")}
               </ha-button>
             </div>
