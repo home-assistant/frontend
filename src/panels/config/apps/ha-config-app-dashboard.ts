@@ -9,6 +9,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import type { HassioAddonDetails } from "../../../data/hassio/addon";
 import { fetchHassioAddonInfo } from "../../../data/hassio/addon";
@@ -44,6 +45,8 @@ class HaConfigAppDashboard extends LitElement {
 
   @state() private _fromStore = false;
 
+  @state() private _loading = true;
+
   private _computeTail = memoizeOne((route: Route) => {
     const pathParts = route.path.split("/").filter(Boolean);
     // Path is like /<slug>/info or /<slug>/config
@@ -59,8 +62,14 @@ class HaConfigAppDashboard extends LitElement {
   protected async firstUpdated(): Promise<void> {
     this._fromStore = extractSearchParam("store") === "true";
     const repositoryUrl = extractSearchParam("repository_url");
+    if (repositoryUrl) {
+      navigate(`/config/app/${this.route.path.split("/")[1]}`, {
+        replace: true,
+      });
+    }
     await this._loadAddon(repositoryUrl);
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
+    this._loading = false;
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -69,7 +78,7 @@ class HaConfigAppDashboard extends LitElement {
       const oldSlug = oldRoute?.path.split("/")[1];
       const newSlug = this.route.path.split("/")[1];
 
-      if (oldSlug !== newSlug && newSlug) {
+      if (oldSlug !== newSlug && newSlug && !this._loading) {
         this._loadAddon();
       }
     }
