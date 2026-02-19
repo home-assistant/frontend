@@ -129,8 +129,12 @@ export class BluetoothAdapterInfoPage extends LitElement {
     }
   }
 
-  private _getBluetoothDevices() {
-    const entryMap = new Map(this._configEntries.map((e) => [e.entry_id, e]));
+  private _getBluetoothDevices = memoizeOne(
+  (
+    devices: HomeAssistant["devices"],
+    configEntries: ConfigEntry[]
+  ) => {
+    const entryMap = new Map(configEntries.map((e) => [e.entry_id, e]));
 
     const enabledDevices: {
       device: DeviceRegistryEntry;
@@ -142,7 +146,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
     }[] = [];
     const matchedEntryIds = new Set<string>();
 
-    for (const device of Object.values(this.hass.devices)) {
+    for (const device of Object.values(devices)) {
       const btConnection = device.connections.find((c) => c[0] === "bluetooth");
       if (!btConnection) {
         continue;
@@ -161,12 +165,13 @@ export class BluetoothAdapterInfoPage extends LitElement {
       }
     }
 
-    const disabledEntriesWithoutDevice = this._configEntries.filter(
+    const disabledEntriesWithoutDevice = configEntries.filter(
       (e) => e.disabled_by !== null && !matchedEntryIds.has(e.entry_id)
     );
 
     return { enabledDevices, disabledDevices, disabledEntriesWithoutDevice };
   }
+);
 
   protected render(): TemplateResult {
     const { enabledDevices, disabledDevices, disabledEntriesWithoutDevice } =
