@@ -13,6 +13,7 @@ import "../../../../../components/ha-svg-icon";
 import type { BackupAgent } from "../../../../../data/backup";
 import {
   BackupAgentSupportedFeature,
+  compareAgents,
   computeBackupAgentName,
   fetchAgentsUploadProgress,
   isLocalAgent,
@@ -175,19 +176,23 @@ export class HaBackupOverviewProgress extends LitElement {
       return nothing;
     }
 
-    const agentsWithProgress = this.agents.filter((agent) =>
-      supportsBackupAgentFeature(
-        agent,
-        BackupAgentSupportedFeature.UPLOAD_PROGRESS
-      )
-    );
-    const agentsWithoutProgress = this.agents.filter(
-      (agent) =>
-        !supportsBackupAgentFeature(
+    const agentsWithProgress = this.agents
+      .filter((agent) =>
+        supportsBackupAgentFeature(
           agent,
           BackupAgentSupportedFeature.UPLOAD_PROGRESS
         )
-    );
+      )
+      .sort((a, b) => compareAgents(a.agent_id, b.agent_id));
+    const agentsWithoutProgress = this.agents
+      .filter(
+        (agent) =>
+          !supportsBackupAgentFeature(
+            agent,
+            BackupAgentSupportedFeature.UPLOAD_PROGRESS
+          )
+      )
+      .sort((a, b) => compareAgents(a.agent_id, b.agent_id));
 
     // If no agents support progress, don't show agent details
     if (agentsWithProgress.length === 0) {
