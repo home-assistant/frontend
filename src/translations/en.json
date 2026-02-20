@@ -8797,6 +8797,7 @@
                 "day": "Day",
                 "month": "Month",
                 "week": "Week",
+                "year": "Year",
                 "5minute": "5 minutes"
               },
               "pick_statistic": "Add a statistic",
