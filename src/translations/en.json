@@ -5316,7 +5316,7 @@
                 "play_media": {
                   "label": "Play media",
                   "description": {
-                    "picker": "Play media on a media player.",
+                    "picker": "Plays media on a media player.",
                     "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
                   }
                 },
@@ -5324,7 +5324,7 @@
                   "label": "Wait for time to pass (delay)",
                   "delay": "Duration",
                   "description": {
-                    "picker": "Wait some time before continuing the sequence of actions.",
+                    "picker": "Waits some time before continuing the sequence of actions.",
                     "full": "Delay {duration}",
                     "duration_string": "for {string}",
                     "duration_template": "based on a template",
@@ -5337,7 +5337,7 @@
                   "timeout": "Timeout (optional)",
                   "continue_timeout": "Continue on timeout",
                   "description": {
-                    "picker": "Wait for a template to be evaluated to true to perform a sequence of actions.",
+                    "picker": "Waits for a template to be evaluated to true to perform a sequence of actions.",
                     "full": "Wait for a template to evaluate to true"
                   }
                 },
@@ -5346,7 +5346,7 @@
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
                   "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
                   "description": {
-                    "picker": "Wait for a trigger to perform a sequence of actions.",
+                    "picker": "Waits for a trigger to perform a sequence of actions.",
                     "wait_for_a_trigger": "Wait for a trigger",
                     "wait_for_triggers": "Wait for {count} {count, plural,\n one {trigger}\n other {triggers}\n}"
                   }
@@ -5354,7 +5354,7 @@
                 "condition": {
                   "label": "Condition",
                   "description": {
-                    "picker": "Test a condition (and stop the sequence if the condition is not met)."
+                    "picker": "Tests a condition (and stops the sequence if the condition is not met)."
                   }
                 },
                 "event": {
@@ -5362,7 +5362,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
-                    "picker": "Fire an event manually (event is an advanced concept in Home Assistant).",
+                    "picker": "Fires an event manually (event is an advanced concept in Home Assistant).",
                     "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
@@ -5371,7 +5371,7 @@
                   "label": "Device",
                   "action": "Action",
                   "description": {
-                    "picker": "Do something on a device. Great way to start.",
+                    "picker": "Does something on a device. Great way to start.",
                     "no_device": "Device action",
                     "perform_device_action": "Perform action with {device}"
                   }
@@ -5397,7 +5397,7 @@
                   },
                   "sequence": "Actions",
                   "description": {
-                    "picker": "Repeat a sequence of actions.",
+                    "picker": "Repeats a sequence of actions.",
                     "full": "Repeat an action {chosenAction}",
                     "count": "{count} {count, plural,\n one {time}\n other {times}\n}",
                     "while_count": "while {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
@@ -5408,25 +5408,25 @@
                 "repeat_count": {
                   "label": "Repeat multiple times",
                   "description": {
-                    "picker": "Repeat a sequence of actions a fixed number of times."
+                    "picker": "Repeats a sequence of actions a fixed number of times."
                   }
                 },
                 "repeat_while": {
                   "label": "Repeat while",
                   "description": {
-                    "picker": "Repeat a sequence of actions as long as a condition is satisfied. The condition is checked before each run of the sequence."
+                    "picker": "Repeats a sequence of actions as long as a condition is satisfied. The condition is checked before each run of the sequence."
                   }
                 },
                 "repeat_until": {
                   "label": "Repeat until",
                   "description": {
-                    "picker": "Repeat a sequence of actions until a condition is satisfied. The condition is checked after each run of the sequence."
+                    "picker": "Repeats a sequence of actions until a condition is satisfied. The condition is checked after each run of the sequence."
                   }
                 },
                 "repeat_for_each": {
                   "label": "Repeat for each",
                   "description": {
-                    "picker": "Repeat a sequence for each element of a list."
+                    "picker": "Repeats a sequence for each element of a list."
                   }
                 },
                 "choose": {
@@ -5448,7 +5448,7 @@
                   "option_description": "Choose actions based on conditions",
                   "default_option_description": "Optional actions to run if no other options match",
                   "description": {
-                    "picker": "Choose what to do based on conditions (Similar to If-then, but more powerful).",
+                    "picker": "Chooses what to do based on conditions (Similar to If-then, but more powerful).",
                     "full": "Choose {number, plural,\n one {an option}\n other{between {number} options}\n}",
                     "no_action": "Choose an option"
                   }
@@ -5460,7 +5460,7 @@
                   "else": "Else",
                   "add_else": "Add else",
                   "description": {
-                    "picker": "Do something conditionally.",
+                    "picker": "Does something conditionally.",
                     "if": "Conditionally execute an action",
                     "if_else": "Conditionally execute an action and default to another action"
                   }
@@ -5471,28 +5471,28 @@
                   "response_variable": "The name of the variable to use as response",
                   "error": "Stop because of an unexpected error",
                   "description": {
-                    "picker": "Stop the sequence of actions.",
+                    "picker": "Stops the sequence of actions.",
                     "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
                 "sequence": {
                   "label": "Run in sequence",
                   "description": {
-                    "picker": "Run a group of actions in sequence.",
+                    "picker": "Runs a group of actions in sequence.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in sequence"
                   }
                 },
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
-                    "picker": "Perform actions in parallel.",
+                    "picker": "Performs actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
                 "variables": {
                   "label": "Define variables",
                   "description": {
-                    "picker": "Define variables to be used later in the sequence.",
+                    "picker": "Defines variables to be used later in the sequence.",
                     "full": "Define variables {names}"
                   }
                 },
@@ -5504,7 +5504,7 @@
                 "set_conversation_response": {
                   "label": "Set conversation response",
                   "description": {
-                    "picker": "Set response of conversation if automation was triggered by conversation trigger.",
+                    "picker": "Sets the response of a conversation if the automation was triggered by conversation trigger.",
                     "template": "Set response of conversation to a template",
                     "full": "Set response of conversation to ''{response}''"
                   }
