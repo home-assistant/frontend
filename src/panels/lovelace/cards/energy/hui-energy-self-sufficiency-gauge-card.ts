@@ -1,4 +1,4 @@
-import { mdiInformation } from "@mdi/js";
+import { mdiInformationOutline } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -131,7 +131,10 @@ class HuiEnergySelfSufficiencyGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <ha-svg-icon
+                id="info"
+                .path=${mdiInformationOutline}
+              ></ha-svg-icon>
               <ha-tooltip for="info" placement="left">
                 ${this.hass.localize(
                   "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"

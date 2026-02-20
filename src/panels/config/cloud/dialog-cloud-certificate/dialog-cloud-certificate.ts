@@ -47,7 +47,6 @@ class DialogCloudCertificate extends LitElement {
           "ui.panel.config.cloud.dialog_certificate.certificate_information"
         )}
         @closed=${this._dialogClosed}
-        width="medium"
       >
         <div>
           <p>

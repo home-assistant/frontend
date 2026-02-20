@@ -320,7 +320,7 @@ class HuiEnergyDistrubutionCard
                         class="circle"
                         href=${electricityMapUrl}
                         target="_blank"
-                        rel="noopener no referrer"
+                        rel="noopener noreferrer"
                       >
                         <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
                         ${formatConsumptionShort(

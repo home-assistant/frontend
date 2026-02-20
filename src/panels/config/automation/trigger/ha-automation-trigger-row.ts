@@ -8,7 +8,7 @@ import {
   mdiContentCut,
   mdiDelete,
   mdiDotsVertical,
-  mdiInformation,
+  mdiInformationOutline,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
@@ -460,7 +460,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.triggered"
           )}
-          <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
         </div>
       </ha-card>
     `;

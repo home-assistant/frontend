@@ -3,8 +3,8 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
 import "../../../../components/ha-button";
+import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
@@ -69,7 +69,7 @@ export class EnergyGridSettings extends LitElement {
     });
 
     return html`
-      <ha-card outlined>
+      <ha-card>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.energy.grid.title")}
@@ -104,58 +104,63 @@ export class EnergyGridSettings extends LitElement {
               "ui.panel.config.energy.grid.grid_connections"
             )}
           </h3>
-          ${gridSources.map((source, idx) => {
-            // At least one of import/export/power must exist (enforced by validation)
-            const primaryStat = (source.stat_energy_from ||
-              source.stat_energy_to ||
-              source.stat_rate)!;
-            const primaryEntityState = this.hass.states[primaryStat];
-            return html`
-              <div class="row" .source=${source} .sourceIndex=${idx}>
-                ${primaryEntityState?.attributes.icon
-                  ? html`<ha-icon
-                      .icon=${primaryEntityState.attributes.icon}
-                    ></ha-icon>`
-                  : html`<ha-svg-icon
-                      .path=${mdiTransmissionTower}
-                    ></ha-svg-icon>`}
-                <div class="content">
-                  <span class="label"
-                    >${getStatisticLabel(
-                      this.hass,
-                      primaryStat,
-                      this.statsMetadata?.[primaryStat]
-                    )}</span
-                  >
-                  ${source.stat_energy_from && source.stat_energy_to
-                    ? html`<span class="label secondary"
-                        >${getStatisticLabel(
-                          this.hass,
-                          source.stat_energy_to,
-                          this.statsMetadata?.[source.stat_energy_to]
-                        )}</span
-                      >`
-                    : nothing}
+          ${gridSources.length > 0
+            ? html`
+                <div class="items-container">
+                  ${gridSources.map((source, idx) => {
+                    // At least one of import/export/power must exist (enforced by validation)
+                    const primaryStat = (source.stat_energy_from ||
+                      source.stat_energy_to ||
+                      source.stat_rate)!;
+                    const primaryEntityState = this.hass.states[primaryStat];
+                    return html`
+                      <div class="row" .source=${source} .sourceIndex=${idx}>
+                        ${primaryEntityState?.attributes.icon
+                          ? html`<ha-icon
+                              .icon=${primaryEntityState.attributes.icon}
+                            ></ha-icon>`
+                          : html`<ha-svg-icon
+                              .path=${mdiTransmissionTower}
+                            ></ha-svg-icon>`}
+                        <div class="content">
+                          <span class="label"
+                            >${getStatisticLabel(
+                              this.hass,
+                              primaryStat,
+                              this.statsMetadata?.[primaryStat]
+                            )}</span
+                          >
+                          ${source.stat_energy_from && source.stat_energy_to
+                            ? html`<span class="label secondary"
+                                >${getStatisticLabel(
+                                  this.hass,
+                                  source.stat_energy_to,
+                                  this.statsMetadata?.[source.stat_energy_to]
+                                )}</span
+                              >`
+                            : nothing}
+                        </div>
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.edit_connection"
+                          )}
+                          @click=${this._editSource}
+                          .path=${mdiPencil}
+                        ></ha-icon-button>
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.delete_connection"
+                          )}
+                          @click=${this._deleteSource}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </div>
+                    `;
+                  })}
                 </div>
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.edit_connection"
-                  )}
-                  @click=${this._editSource}
-                  .path=${mdiPencil}
-                ></ha-icon-button>
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.delete_connection"
-                  )}
-                  @click=${this._deleteSource}
-                  .path=${mdiDelete}
-                ></ha-icon-button>
-              </div>
-            `;
-          })}
-          <div class="row border-bottom">
-            <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
+              `
+            : nothing}
+          <div class="row">
             <ha-button
               @click=${this._addSource}
               appearance="filled"
@@ -174,43 +179,37 @@ export class EnergyGridSettings extends LitElement {
             )}
           </h3>
           ${this._co2ConfigEntry
-            ? html`<div class="row" .entry=${this._co2ConfigEntry}>
-                <img
-                  alt=""
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${brandsUrl({
-                    domain: "co2signal",
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
-                />
-                <span class="content">${this._co2ConfigEntry.title}</span>
-                <a
-                  href=${`/config/integrations/integration/${this._co2ConfigEntry?.domain}`}
-                >
-                  <ha-icon-button .path=${mdiPencil}></ha-icon-button>
-                </a>
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.energy.grid.remove_co2_signal"
-                  )}
-                  @click=${this._removeCO2Sensor}
-                  .path=${mdiDelete}
-                ></ha-icon-button>
-              </div>`
+            ? html`
+                <div class="items-container">
+                  <div class="row" .entry=${this._co2ConfigEntry}>
+                    <img
+                      alt=""
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                      src=${brandsUrl({
+                        domain: "co2signal",
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      })}
+                    />
+                    <span class="content">${this._co2ConfigEntry.title}</span>
+                    <ha-icon-button
+                      .path=${mdiPencil}
+                      href=${`/config/integrations/integration/${this._co2ConfigEntry?.domain}`}
+                    >
+                    </ha-icon-button>
+                    <ha-icon-button
+                      .label=${this.hass.localize(
+                        "ui.panel.config.energy.grid.remove_co2_signal"
+                      )}
+                      @click=${this._removeCO2Sensor}
+                      .path=${mdiDelete}
+                    ></ha-icon-button>
+                  </div>
+                </div>
+              `
             : html`
-                <div class="row border-bottom">
-                  <img
-                    alt=""
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    src=${brandsUrl({
-                      domain: "co2signal",
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
-                  />
+                <div class="row">
                   <ha-button
                     @click=${this._addCO2Sensor}
                     appearance="filled"

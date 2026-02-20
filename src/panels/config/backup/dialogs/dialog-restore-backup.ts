@@ -140,7 +140,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div class="content">

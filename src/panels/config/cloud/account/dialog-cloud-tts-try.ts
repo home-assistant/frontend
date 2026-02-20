@@ -97,7 +97,6 @@ export class DialogTryTts extends LitElement {
         header-title=${this.hass.localize(
           "ui.panel.config.cloud.account.tts.dialog.header"
         )}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div>

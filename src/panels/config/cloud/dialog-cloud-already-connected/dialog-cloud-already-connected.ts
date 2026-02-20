@@ -55,7 +55,6 @@ class DialogCloudAlreadyConnected extends LitElement {
           "ui.panel.config.cloud.dialog_already_connected.heading"
         )}
         @closed=${this._dialogClosed}
-        width="medium"
       >
         <div class="intro">
           <span>

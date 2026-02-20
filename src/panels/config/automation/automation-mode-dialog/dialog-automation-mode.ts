@@ -1,15 +1,15 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-md-list";
+import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-radio";
-import "../../../../components/ha-button";
 import "../../../../components/ha-textfield";
 
 import {
@@ -73,19 +73,16 @@ class DialogAutomationMode extends LitElement implements HassDialog {
         header-title=${title}
         @closed=${this._dialogClosed}
       >
-        <a
+        <ha-icon-button
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.modes.learn_more"
+          )}
+          .path=${mdiHelpCircleOutline}
           href=${documentationUrl(this.hass, "/docs/automation/modes/")}
           slot="headerActionItems"
           target="_blank"
-          rel="noopener noreferer"
-        >
-          <ha-icon-button
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.modes.learn_more"
-            )}
-            .path=${mdiHelpCircle}
-          ></ha-icon-button>
-        </a>
+          rel="noopener noreferrer"
+        ></ha-icon-button>
         <ha-md-list
           role="listbox"
           tabindex="0"
@@ -212,6 +209,9 @@ class DialogAutomationMode extends LitElement implements HassDialog {
         }
         .options {
           padding: 0 24px 24px 24px;
+        }
+        ha-wa-dialog ha-icon-button[slot="headerActionItems"] {
+          color: var(--secondary-text-color);
         }
       `,
     ];

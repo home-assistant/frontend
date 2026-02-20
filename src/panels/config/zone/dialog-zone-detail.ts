@@ -94,6 +94,7 @@ class DialogZoneDetail extends LitElement {
               name: this._params.entry.name,
             })
           : this.hass!.localize("ui.panel.config.zone.detail.new_zone")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-form

@@ -76,7 +76,6 @@ export class HuiDialogSelectView extends LitElement {
         .open=${this._open}
         header-title=${this._params.header ||
         this.hass.localize("ui.panel.lovelace.editor.select_view.header")}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         ${this._params.allowDashboardChange

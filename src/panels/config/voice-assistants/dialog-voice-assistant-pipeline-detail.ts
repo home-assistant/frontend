@@ -146,6 +146,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${!this._hideWakeWord ||
@@ -223,6 +224,13 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
               ></assist-pipeline-detail-wakeword>`}
         </div>
         <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
           <ha-button
             slot="primaryAction"
             @click=${this._updatePipeline}

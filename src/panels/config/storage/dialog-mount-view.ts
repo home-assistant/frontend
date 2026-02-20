@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiHelpCircleOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -220,6 +220,7 @@ class ViewMountDialog extends LitElement {
           : this.hass.localize(
               "ui.panel.config.storage.network_mounts.add_title"
             )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <a
@@ -236,7 +237,7 @@ class ViewMountDialog extends LitElement {
           rel="noreferrer"
           dir=${computeRTLDirection(this.hass)}
         >
-          <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+          <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
         </a>
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`

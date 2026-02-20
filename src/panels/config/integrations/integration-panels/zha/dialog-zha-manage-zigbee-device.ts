@@ -98,6 +98,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <ha-dialog-header show-border slot="header">
@@ -149,7 +150,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                             .bindableDevices=${this._bindableDevices}
                           ></zha-device-binding-control>
                         `
-                      : ""}
+                      : nothing}
                     ${this._device && this._groups.length > 0
                       ? html`
                           <zha-group-binding-control
@@ -158,7 +159,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                             .groups=${this._groups}
                           ></zha-group-binding-control>
                         `
-                      : ""}
+                      : nothing}
                   `
                 : this._currTab === "signature"
                   ? html`
@@ -222,6 +223,10 @@ class DialogZHAManageZigbeeDevice extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
+        ha-dialog {
+          --dialog-content-padding: 0;
+        }
+
         .content {
           outline: none;
           display: flex;

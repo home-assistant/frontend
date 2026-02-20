@@ -127,6 +127,7 @@ export class DialogEnergyBatterySettings
         header-title=${this.hass.localize(
           "ui.panel.config.energy.battery.dialog.header"
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
@@ -175,7 +176,7 @@ export class DialogEnergyBatterySettings
           .powerType=${this._powerType}
           .powerConfig=${this._powerConfig}
           .excludeList=${this._excludeListPower}
-          localizeBaseKey="ui.panel.config.energy.battery.dialog"
+          .localizeBaseKey=${"ui.panel.config.energy.battery.dialog"}
           @power-config-changed=${this._handlePowerConfigChanged}
         ></ha-energy-power-config>
 
