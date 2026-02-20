@@ -6717,7 +6717,7 @@
           "no_connections": "No active connections",
           "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
-          "no_connection_slot_allocations": "No connection slot allocations information available",
+          "no_connection_slot_allocations": "Can listen for Bluetooth broadcasts but cannot connect to devices",
           "no_connection_slots": "No connection slots",
           "no_scanner_state_available": "No scanner state available",
           "scanner_state_unknown": "State unknown",

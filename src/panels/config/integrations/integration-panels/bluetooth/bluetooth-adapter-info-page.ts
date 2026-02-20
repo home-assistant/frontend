@@ -2,11 +2,13 @@ import { mdiCogOutline, mdiDevices } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
@@ -130,52 +132,51 @@ export class BluetoothAdapterInfoPage extends LitElement {
   }
 
   private _getBluetoothDevices = memoizeOne(
-  (
-    devices: HomeAssistant["devices"],
-    configEntries: ConfigEntry[]
-  ) => {
-    const entryMap = new Map(configEntries.map((e) => [e.entry_id, e]));
+    (devices: HomeAssistant["devices"], configEntries: ConfigEntry[]) => {
+      const entryMap = new Map(configEntries.map((e) => [e.entry_id, e]));
 
-    const enabledDevices: {
-      device: DeviceRegistryEntry;
-      entry: ConfigEntry;
-    }[] = [];
-    const disabledDevices: {
-      device: DeviceRegistryEntry;
-      entry: ConfigEntry;
-    }[] = [];
-    const matchedEntryIds = new Set<string>();
+      const enabledDevices: {
+        device: DeviceRegistryEntry;
+        entry: ConfigEntry;
+      }[] = [];
+      const disabledDevices: {
+        device: DeviceRegistryEntry;
+        entry: ConfigEntry;
+      }[] = [];
+      const matchedEntryIds = new Set<string>();
 
-    for (const device of Object.values(devices)) {
-      const btConnection = device.connections.find((c) => c[0] === "bluetooth");
-      if (!btConnection) {
-        continue;
+      for (const device of Object.values(devices)) {
+        const btConnection = device.connections.find(
+          (c) => c[0] === "bluetooth"
+        );
+        if (!btConnection) {
+          continue;
+        }
+        const entry = device.config_entries
+          .map((id) => entryMap.get(id))
+          .find((e) => e !== undefined);
+        if (!entry) {
+          continue;
+        }
+        matchedEntryIds.add(entry.entry_id);
+        if (entry.disabled_by !== null) {
+          disabledDevices.push({ device, entry });
+        } else {
+          enabledDevices.push({ device, entry });
+        }
       }
-      const entry = device.config_entries
-        .map((id) => entryMap.get(id))
-        .find((e) => e !== undefined);
-      if (!entry) {
-        continue;
-      }
-      matchedEntryIds.add(entry.entry_id);
-      if (entry.disabled_by !== null) {
-        disabledDevices.push({ device, entry });
-      } else {
-        enabledDevices.push({ device, entry });
-      }
+
+      const disabledEntriesWithoutDevice = configEntries.filter(
+        (e) => e.disabled_by !== null && !matchedEntryIds.has(e.entry_id)
+      );
+
+      return { enabledDevices, disabledDevices, disabledEntriesWithoutDevice };
     }
-
-    const disabledEntriesWithoutDevice = configEntries.filter(
-      (e) => e.disabled_by !== null && !matchedEntryIds.has(e.entry_id)
-    );
-
-    return { enabledDevices, disabledDevices, disabledEntriesWithoutDevice };
-  }
-);
+  );
 
   protected render(): TemplateResult {
     const { enabledDevices, disabledDevices, disabledEntriesWithoutDevice } =
-      this._getBluetoothDevices();
+      this._getBluetoothDevices(this.hass.devices, this._configEntries);
 
     return html`
       <hass-subpage
@@ -299,18 +300,24 @@ export class BluetoothAdapterInfoPage extends LitElement {
         ? this.hass.areas[device.area_id]?.name
         : undefined;
       const modeText = this._formatScannerModeText(scannerState);
+      const hasConnections = allocations && allocations.slots > 0;
       const connectionText = allocations
-        ? allocations.slots > 0
+        ? hasConnections
           ? `${allocations.slots - allocations.free}/${allocations.slots} ${this.hass.localize("ui.panel.config.bluetooth.active_connections")}`
           : this.hass.localize("ui.panel.config.bluetooth.no_connection_slots")
-        : undefined;
+        : this.hass.localize(
+            "ui.panel.config.bluetooth.no_connection_slot_allocations"
+          );
 
       const supportingParts = [areaName, modeText, connectionText].filter(
         Boolean
       );
 
       return html`
-        <ha-md-list-item>
+        <ha-md-list-item
+          type="link"
+          href=${`/config/bluetooth/connection-monitor?source=${btAddress}`}
+        >
           <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
           <div slot="headline">${deviceName}</div>
           <div slot="supporting-text">${supportingParts.join(" · ")}</div>
@@ -325,6 +332,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
                 )}
               ></ha-icon-button>`
             : nothing}
+          <ha-icon-next slot="end"></ha-icon-next>
         </ha-md-list-item>
         ${hasMismatch && scannerDetails
           ? this._renderScannerMismatchWarning(
@@ -457,6 +465,8 @@ export class BluetoothAdapterInfoPage extends LitElement {
   }
 
   private _openOptionFlow(ev: Event) {
+    ev.preventDefault();
+    ev.stopPropagation();
     const button = ev.currentTarget as HTMLElement & { entry: ConfigEntry };
     showOptionsFlowDialog(this, button.entry);
   }

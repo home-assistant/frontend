@@ -1,10 +1,11 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../../common/decorators/storage";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
@@ -35,6 +36,8 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @state() private _filter?: string;
 
   private _tabs: PageNavigation[] = [
     {
@@ -152,6 +155,19 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
     }
   }
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (this.hasUpdated) {
+      return;
+    }
+
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.source) {
+      this._filter = searchParams.source;
+    }
+  }
+
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<BluetoothConnectionData> = {
@@ -237,6 +253,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        filter=${this._filter || ""}
       ></hass-tabs-subpage-data-table>
     `;
   }
