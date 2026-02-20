@@ -5122,7 +5122,7 @@
                 "and": {
                   "label": "And",
                   "description": {
-                    "picker": "Test if multiple conditions are true.",
+                    "picker": "Tests if multiple conditions are true.",
                     "no_conditions": "If multiple conditions match",
                     "full": "If {count} {count, plural,\n one {condition matches}\n other {conditions match}\n}"
                   }
@@ -5137,7 +5137,7 @@
                 "not": {
                   "label": "Not",
                   "description": {
-                    "picker": "Test if a condition is not true.",
+                    "picker": "Tests if a condition is not true.",
                     "no_conditions": "If no condition matches",
                     "one_condition": "If 1 condition does not match",
                     "full": "If none of {count} conditions match"
@@ -5162,7 +5162,7 @@
                 "or": {
                   "label": "Or",
                   "description": {
-                    "picker": "Test if any condition is true.",
+                    "picker": "Tests if any condition is true.",
                     "no_conditions": "If any condition matches",
                     "full": "If any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
                   }
