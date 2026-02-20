@@ -94,10 +94,21 @@ export interface BackupAgentConfig {
   retention?: Retention | null;
 }
 
+export const enum BackupAgentSupportedFeature {
+  UPLOAD_PROGRESS = 1,
+}
+
 export interface BackupAgent {
   agent_id: string;
   name: string;
+  supported_features?: BackupAgentSupportedFeature;
 }
+
+export const supportsBackupAgentFeature = (
+  agent: BackupAgent,
+  feature: BackupAgentSupportedFeature
+  // eslint-disable-next-line no-bitwise
+): boolean => ((agent.supported_features ?? 0) & feature) !== 0;
 
 export interface BackupContentAgent {
   size: number;
@@ -215,6 +226,17 @@ export const fetchBackupAgentsInfo = (
 ): Promise<BackupAgentsInfo> =>
   hass.callWS({
     type: "backup/agents/info",
+  });
+
+export interface AgentUploadProgress {
+  agent_upload_progress: Record<string, number>;
+}
+
+export const fetchAgentsUploadProgress = (
+  hass: HomeAssistant
+): Promise<AgentUploadProgress> =>
+  hass.callWS({
+    type: "backup/agents/upload_progress",
   });
 
 export const deleteBackup = (hass: HomeAssistant, id: string): Promise<void> =>

@@ -182,6 +182,7 @@ class HaConfigBackupOverview extends LitElement {
                 <ha-backup-overview-progress
                   .hass=${this.hass}
                   .manager=${this.manager}
+                  .agents=${this.agents}
                 >
                 </ha-backup-overview-progress>
               `

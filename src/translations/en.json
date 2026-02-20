@@ -3288,6 +3288,9 @@
                   "receive_file": "Receiving file",
                   "upload_to_agents": "Uploading to locations"
                 }
+              },
+              "agent_progress": {
+                "title": "Location details"
               }
             },
             "summary": {
