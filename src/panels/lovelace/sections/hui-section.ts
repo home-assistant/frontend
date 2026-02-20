@@ -4,6 +4,7 @@ import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { deepEqual } from "../../../common/util/deep-equal";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
@@ -105,6 +106,20 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       (!oldConfig || this.config !== oldConfig)
     ) {
       this._initializeConfig();
+    }
+
+    // Apply theme when config changes or when theme/darkMode changes
+    if (changedProperties.has("config")) {
+      this._applyTheme();
+    } else if (changedProperties.has("hass") && this.hass) {
+      const oldHass = changedProperties.get("hass");
+      if (
+        !oldHass ||
+        this.hass.themes !== oldHass.themes ||
+        this.hass.selectedTheme !== oldHass.selectedTheme
+      ) {
+        this._applyTheme();
+      }
     }
   }
 
@@ -359,6 +374,32 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     this._cards = config.cards.map((cardConfig) =>
       this._createCardElement(cardConfig)
     );
+  }
+
+  private _applyTheme(): void {
+    if (!this.hass || !this._config) {
+      return;
+    }
+
+    // For proper CSS cascade with nested themes, clear any previously applied
+    // theme variables from this section element before applying the new theme.
+    // This ensures that variables not defined in the section theme will inherit
+    // from the parent view theme (including dark mode overrides).
+    if (this._config.theme) {
+      // Remove all CSS custom properties previously set by themes on this element
+      const currentStyles = Array.from(this.style);
+      currentStyles.forEach((property) => {
+        if (property.startsWith("--")) {
+          this.style.removeProperty(property);
+        }
+      });
+      // Clear theme tracking to prevent applyThemesOnElement from trying to reset old keys
+      this["__themes"] = undefined;
+    }
+
+    // Apply the section's theme. Properties not defined in the section theme
+    // will naturally cascade from the parent view theme via CSS inheritance.
+    applyThemesOnElement(this, this.hass.themes, this._config.theme);
   }
 }
 

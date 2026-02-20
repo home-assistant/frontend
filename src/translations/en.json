@@ -8852,7 +8852,9 @@
               "background_enabled_helper": "Display a colored background behind the section",
               "background_color": "Color",
               "background_color_default": "Default",
-              "background_opacity": "Opacity"
+              "background_opacity": "Opacity",
+              "theme": "Theme",
+              "theme_helper": "Override the view theme for this section only"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
