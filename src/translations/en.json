@@ -8767,7 +8767,7 @@
             },
             "energy-devices-graph": {
               "name": "Devices energy graph",
-              "description": "The devices energy graph show the energy usage per device, it is sorted by usage.",
+              "description": "The devices energy graph shows the energy usage per device, it is sorted by usage.",
               "max_devices": "Maximum devices allowed",
               "hide_compound_stats": "Hide higher level devices",
               "modes": "Chart display mode",
