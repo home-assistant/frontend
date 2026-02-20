@@ -30,7 +30,6 @@ const HIDDEN_ATTRIBUTES = [
   "access_token",
   "available_modes",
   "battery_icon",
-  "battery_level",
   "code_arm_required",
   "code_format",
   "color_modes",
