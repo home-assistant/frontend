@@ -160,8 +160,6 @@ class HaConfigBackup extends SubscribeMixin(HassRouterPage) {
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     return [
       subscribeBackupEvents(this.hass!, (event) => {
-        // eslint-disable-next-line no-console
-        console.log("backup event", event);
         if ("agent_id" in event) {
           this._uploadProgress = {
             ...this._uploadProgress,
