@@ -65,6 +65,13 @@ interface RestoreBackupEvent {
   state: RestoreBackupState;
 }
 
+export interface UploadBackupEvent {
+  manager_state: BackupManagerState;
+  agent_id: string;
+  uploaded_bytes: number;
+  total_bytes: number;
+}
+
 export type ManagerState =
   | "idle"
   | "create_backup"
@@ -75,7 +82,8 @@ export type ManagerStateEvent =
   | IdleEvent
   | CreateBackupEvent
   | ReceiveBackupEvent
-  | RestoreBackupEvent;
+  | RestoreBackupEvent
+  | UploadBackupEvent;
 
 export const subscribeBackupEvents = (
   hass: HomeAssistant,

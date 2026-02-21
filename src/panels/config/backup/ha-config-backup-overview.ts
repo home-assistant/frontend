@@ -63,6 +63,11 @@ class HaConfigBackupOverview extends LitElement {
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
 
+  @property({ attribute: false }) public uploadProgress: Record<
+    string,
+    { uploaded_bytes: number; total_bytes: number }
+  > = {};
+
   private _uploadBackup = async () => {
     await showUploadBackupDialog(this, {});
   };
@@ -183,6 +188,7 @@ class HaConfigBackupOverview extends LitElement {
                   .hass=${this.hass}
                   .manager=${this.manager}
                   .agents=${this.agents}
+                  .uploadProgress=${this.uploadProgress}
                 >
                 </ha-backup-overview-progress>
               `

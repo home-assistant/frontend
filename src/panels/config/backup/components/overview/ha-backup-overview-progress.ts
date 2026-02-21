@@ -1,8 +1,8 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiHarddisk, mdiNas } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
 import "../../../../../components/ha-expansion-panel";
@@ -12,21 +12,16 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import type { BackupAgent } from "../../../../../data/backup";
 import {
-  BackupAgentSupportedFeature,
   compareAgents,
   computeBackupAgentName,
-  fetchAgentsUploadProgress,
   isLocalAgent,
   isNetworkMountAgent,
-  supportsBackupAgentFeature,
 } from "../../../../../data/backup";
 import type { ManagerStateEvent } from "../../../../../data/backup_manager";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import "../ha-backup-summary-card";
-
-const PROGRESS_POLL_INTERVAL = 1000;
 
 @customElement("ha-backup-overview-progress")
 export class HaBackupOverviewProgress extends LitElement {
@@ -36,9 +31,10 @@ export class HaBackupOverviewProgress extends LitElement {
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
 
-  @state() private _agentProgress: Record<string, number> = {};
-
-  private _pollInterval?: ReturnType<typeof setInterval>;
+  @property({ attribute: false }) public uploadProgress: Record<
+    string,
+    { uploaded_bytes: number; total_bytes: number }
+  > = {};
 
   private get _heading() {
     const managerState = this.manager.manager_state;
@@ -55,15 +51,6 @@ export class HaBackupOverviewProgress extends LitElement {
       return false;
     }
     return this.manager.stage === "upload_to_agents";
-  }
-
-  private get _hasAgentsWithProgress(): boolean {
-    return this.agents.some((agent) =>
-      supportsBackupAgentFeature(
-        agent,
-        BackupAgentSupportedFeature.UPLOAD_PROGRESS
-      )
-    );
   }
 
   private get _description() {
@@ -95,63 +82,31 @@ export class HaBackupOverviewProgress extends LitElement {
     }
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this._isUploadStage && this._hasAgentsWithProgress) {
-      this._startPolling();
+  private _computeAgentPercent(agentId: string): number | undefined {
+    const progress = this.uploadProgress[agentId];
+    if (!progress || progress.total_bytes === 0) {
+      return undefined;
     }
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._stopPolling();
-  }
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    if (changedProps.has("manager")) {
-      if (this._isUploadStage && this._hasAgentsWithProgress) {
-        this._startPolling();
-      } else {
-        this._stopPolling();
-        this._agentProgress = {};
-      }
-    }
-  }
-
-  private _startPolling(): void {
-    if (this._pollInterval) {
-      return;
-    }
-    this._pollProgress();
-    this._pollInterval = setInterval(
-      () => this._pollProgress(),
-      PROGRESS_POLL_INTERVAL
-    );
-  }
-
-  private _stopPolling(): void {
-    if (this._pollInterval) {
-      clearInterval(this._pollInterval);
-      this._pollInterval = undefined;
-    }
-  }
-
-  private async _pollProgress(): Promise<void> {
-    try {
-      const result = await fetchAgentsUploadProgress(this.hass);
-      this._agentProgress = result.agent_upload_progress;
-    } catch {
-      // Ignore errors during polling
-    }
+    return Math.round((progress.uploaded_bytes / progress.total_bytes) * 100);
   }
 
   private _computeOverallProgress(): number | undefined {
-    const progressValues = Object.values(this._agentProgress);
+    const progressValues = Object.values(this.uploadProgress);
     if (progressValues.length === 0) {
       return undefined;
     }
-    const sum = progressValues.reduce((acc, val) => acc + val, 0);
-    return Math.round(sum / progressValues.length);
+    const totalBytes = progressValues.reduce(
+      (acc, val) => acc + val.total_bytes,
+      0
+    );
+    if (totalBytes === 0) {
+      return undefined;
+    }
+    const uploadedBytes = progressValues.reduce(
+      (acc, val) => acc + val.uploaded_bytes,
+      0
+    );
+    return Math.round((uploadedBytes / totalBytes) * 100);
   }
 
   private _renderAgentIcon(agentId: string) {
@@ -185,15 +140,10 @@ export class HaBackupOverviewProgress extends LitElement {
       return nothing;
     }
 
-    const hasAgentsWithProgress = this.agents.some((agent) =>
-      supportsBackupAgentFeature(
-        agent,
-        BackupAgentSupportedFeature.UPLOAD_PROGRESS
-      )
-    );
+    const hasProgress = Object.keys(this.uploadProgress).length > 0;
 
-    // If no agents support progress, don't show agent details
-    if (!hasAgentsWithProgress) {
+    // If no upload progress events received yet, don't show agent details
+    if (!hasProgress) {
       return nothing;
     }
 
@@ -235,13 +185,11 @@ export class HaBackupOverviewProgress extends LitElement {
                       agent.agent_id,
                       this.agents
                     );
-                    const hasProgress = supportsBackupAgentFeature(
-                      agent,
-                      BackupAgentSupportedFeature.UPLOAD_PROGRESS
+                    const agentPercent = this._computeAgentPercent(
+                      agent.agent_id
                     );
 
-                    if (hasProgress) {
-                      const progress = this._agentProgress[agent.agent_id];
+                    if (agentPercent !== undefined) {
                       return html`
                         <ha-md-list-item>
                           ${this._renderAgentIcon(agent.agent_id)}
@@ -249,19 +197,14 @@ export class HaBackupOverviewProgress extends LitElement {
                           <div slot="supporting-text">
                             <div class="agent-progress">
                               <mwc-linear-progress
-                                .indeterminate=${progress === undefined}
-                                .progress=${progress !== undefined
-                                  ? progress / 100
-                                  : undefined}
+                                .progress=${agentPercent / 100}
                                 buffer=""
                               ></mwc-linear-progress>
-                              ${progress !== undefined
-                                ? html`<span class="progress-percentage">
-                                    ${Math.round(progress)}${blankBeforePercent(
-                                      this.hass.locale
-                                    )}%
-                                  </span>`
-                                : nothing}
+                              <span class="progress-percentage">
+                                ${agentPercent}${blankBeforePercent(
+                                  this.hass.locale
+                                )}%
+                              </span>
                             </div>
                           </div>
                         </ha-md-list-item>
