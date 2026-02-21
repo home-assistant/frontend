@@ -12,13 +12,11 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import type { BackupAgent } from "../../../../../data/backup";
 import {
-  compareAgents,
   computeBackupAgentName,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../../../data/backup";
 import type { ManagerStateEvent } from "../../../../../data/backup_manager";
-import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import "../ha-backup-summary-card";
@@ -95,17 +93,15 @@ export class HaBackupOverviewProgress extends LitElement {
     if (progressValues.length === 0) {
       return undefined;
     }
-    const totalBytes = progressValues.reduce(
-      (acc, val) => acc + val.total_bytes,
-      0
-    );
+    let totalBytes = 0;
+    let uploadedBytes = 0;
+    for (const val of progressValues) {
+      totalBytes += val.total_bytes;
+      uploadedBytes += val.uploaded_bytes;
+    }
     if (totalBytes === 0) {
       return undefined;
     }
-    const uploadedBytes = progressValues.reduce(
-      (acc, val) => acc + val.uploaded_bytes,
-      0
-    );
     return Math.round((uploadedBytes / totalBytes) * 100);
   }
 
@@ -147,10 +143,6 @@ export class HaBackupOverviewProgress extends LitElement {
       return nothing;
     }
 
-    const sortedAgents = [...this.agents].sort((a, b) =>
-      compareAgents(a.agent_id, b.agent_id)
-    );
-
     const overallProgress = this._computeOverallProgress();
 
     return html`
@@ -170,7 +162,7 @@ export class HaBackupOverviewProgress extends LitElement {
             : nothing}
         </div>
 
-        ${sortedAgents.length > 1
+        ${this.agents.length > 1
           ? html`
               <ha-expansion-panel
                 .header=${this.hass.localize(
@@ -179,7 +171,7 @@ export class HaBackupOverviewProgress extends LitElement {
                 left-chevron
               >
                 <ha-md-list>
-                  ${sortedAgents.map((agent) => {
+                  ${this.agents.map((agent) => {
                     const name = computeBackupAgentName(
                       this.hass.localize,
                       agent.agent_id,
@@ -242,7 +234,6 @@ export class HaBackupOverviewProgress extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
       css`
         .upload-progress {
           padding: 0 var(--ha-space-4) var(--ha-space-4);
