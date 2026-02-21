@@ -57,6 +57,15 @@ export class HaBackupOverviewProgress extends LitElement {
     return this.manager.stage === "upload_to_agents";
   }
 
+  private get _hasAgentsWithProgress(): boolean {
+    return this.agents.some((agent) =>
+      supportsBackupAgentFeature(
+        agent,
+        BackupAgentSupportedFeature.UPLOAD_PROGRESS
+      )
+    );
+  }
+
   private get _description() {
     switch (this.manager.manager_state) {
       case "create_backup":
@@ -88,7 +97,7 @@ export class HaBackupOverviewProgress extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (this._isUploadStage) {
+    if (this._isUploadStage && this._hasAgentsWithProgress) {
       this._startPolling();
     }
   }
@@ -100,7 +109,7 @@ export class HaBackupOverviewProgress extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues): void {
     if (changedProps.has("manager")) {
-      if (this._isUploadStage) {
+      if (this._isUploadStage && this._hasAgentsWithProgress) {
         this._startPolling();
       } else {
         this._stopPolling();
@@ -209,6 +218,7 @@ export class HaBackupOverviewProgress extends LitElement {
             .progress=${overallProgress !== undefined
               ? overallProgress / 100
               : undefined}
+            buffer=""
           ></mwc-linear-progress>
           ${overallProgress !== undefined
             ? html`<span class="progress-percentage">
@@ -238,20 +248,23 @@ export class HaBackupOverviewProgress extends LitElement {
                         ${this._renderAgentIcon(agent.agent_id)}
                         <div slot="headline">${name}</div>
                         <div slot="supporting-text">
-                          <mwc-linear-progress
-                            .indeterminate=${progress === undefined}
-                            .progress=${progress !== undefined
-                              ? progress / 100
-                              : undefined}
-                          ></mwc-linear-progress>
+                          <div class="agent-progress">
+                            <mwc-linear-progress
+                              .indeterminate=${progress === undefined}
+                              .progress=${progress !== undefined
+                                ? progress / 100
+                                : undefined}
+                              buffer=""
+                            ></mwc-linear-progress>
+                            ${progress !== undefined
+                              ? html`<span class="progress-percentage">
+                                  ${Math.round(progress)}${blankBeforePercent(
+                                    this.hass.locale
+                                  )}%
+                                </span>`
+                              : nothing}
+                          </div>
                         </div>
-                        <span slot="trailing-supporting-text">
-                          ${progress !== undefined
-                            ? html`${Math.round(progress)}${blankBeforePercent(
-                                this.hass.locale
-                              )}%`
-                            : nothing}
-                        </span>
                       </ha-md-list-item>
                     `;
                   })}
@@ -335,8 +348,13 @@ export class HaBackupOverviewProgress extends LitElement {
           display: flex;
           align-items: center;
         }
-        ha-md-list-item [slot="trailing-supporting-text"] {
-          min-width: 40px;
+        .agent-progress {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-1);
+          width: 100%;
+        }
+        .agent-progress .progress-percentage {
           text-align: end;
         }
       `,
