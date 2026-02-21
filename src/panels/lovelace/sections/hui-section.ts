@@ -388,13 +388,13 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     if (this._config.theme) {
       // Remove all CSS custom properties previously set by themes on this element
       const currentStyles = Array.from(this.style);
-      currentStyles.forEach((property) => {
-        if (property.startsWith("--")) {
-          this.style.removeProperty(property);
+      currentStyles.forEach((prop) => {
+        if (prop.startsWith("--")) {
+          this.style.removeProperty(prop);
         }
       });
       // Clear theme tracking to prevent applyThemesOnElement from trying to reset old keys
-      this["__themes"] = undefined;
+      this.__themes = undefined;
     }
 
     // Apply the section's theme. Properties not defined in the section theme
