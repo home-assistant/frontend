@@ -185,28 +185,21 @@ export class HaBackupOverviewProgress extends LitElement {
       return nothing;
     }
 
-    const agentsWithProgress = this.agents
-      .filter((agent) =>
-        supportsBackupAgentFeature(
-          agent,
-          BackupAgentSupportedFeature.UPLOAD_PROGRESS
-        )
+    const hasAgentsWithProgress = this.agents.some((agent) =>
+      supportsBackupAgentFeature(
+        agent,
+        BackupAgentSupportedFeature.UPLOAD_PROGRESS
       )
-      .sort((a, b) => compareAgents(a.agent_id, b.agent_id));
-    const agentsWithoutProgress = this.agents
-      .filter(
-        (agent) =>
-          !supportsBackupAgentFeature(
-            agent,
-            BackupAgentSupportedFeature.UPLOAD_PROGRESS
-          )
-      )
-      .sort((a, b) => compareAgents(a.agent_id, b.agent_id));
+    );
 
     // If no agents support progress, don't show agent details
-    if (agentsWithProgress.length === 0) {
+    if (!hasAgentsWithProgress) {
       return nothing;
     }
+
+    const sortedAgents = [...this.agents].sort((a, b) =>
+      compareAgents(a.agent_id, b.agent_id)
+    );
 
     const overallProgress = this._computeOverallProgress();
 
@@ -227,7 +220,7 @@ export class HaBackupOverviewProgress extends LitElement {
             : nothing}
         </div>
 
-        ${agentsWithProgress.length + agentsWithoutProgress.length > 1
+        ${sortedAgents.length > 1
           ? html`
               <ha-expansion-panel
                 .header=${this.hass.localize(
@@ -236,44 +229,45 @@ export class HaBackupOverviewProgress extends LitElement {
                 left-chevron
               >
                 <ha-md-list>
-                  ${agentsWithProgress.map((agent) => {
-                    const progress = this._agentProgress[agent.agent_id];
+                  ${sortedAgents.map((agent) => {
                     const name = computeBackupAgentName(
                       this.hass.localize,
                       agent.agent_id,
                       this.agents
                     );
-                    return html`
-                      <ha-md-list-item>
-                        ${this._renderAgentIcon(agent.agent_id)}
-                        <div slot="headline">${name}</div>
-                        <div slot="supporting-text">
-                          <div class="agent-progress">
-                            <mwc-linear-progress
-                              .indeterminate=${progress === undefined}
-                              .progress=${progress !== undefined
-                                ? progress / 100
-                                : undefined}
-                              buffer=""
-                            ></mwc-linear-progress>
-                            ${progress !== undefined
-                              ? html`<span class="progress-percentage">
-                                  ${Math.round(progress)}${blankBeforePercent(
-                                    this.hass.locale
-                                  )}%
-                                </span>`
-                              : nothing}
+                    const hasProgress = supportsBackupAgentFeature(
+                      agent,
+                      BackupAgentSupportedFeature.UPLOAD_PROGRESS
+                    );
+
+                    if (hasProgress) {
+                      const progress = this._agentProgress[agent.agent_id];
+                      return html`
+                        <ha-md-list-item>
+                          ${this._renderAgentIcon(agent.agent_id)}
+                          <div slot="headline">${name}</div>
+                          <div slot="supporting-text">
+                            <div class="agent-progress">
+                              <mwc-linear-progress
+                                .indeterminate=${progress === undefined}
+                                .progress=${progress !== undefined
+                                  ? progress / 100
+                                  : undefined}
+                                buffer=""
+                              ></mwc-linear-progress>
+                              ${progress !== undefined
+                                ? html`<span class="progress-percentage">
+                                    ${Math.round(progress)}${blankBeforePercent(
+                                      this.hass.locale
+                                    )}%
+                                  </span>`
+                                : nothing}
+                            </div>
                           </div>
-                        </div>
-                      </ha-md-list-item>
-                    `;
-                  })}
-                  ${agentsWithoutProgress.map((agent) => {
-                    const name = computeBackupAgentName(
-                      this.hass.localize,
-                      agent.agent_id,
-                      this.agents
-                    );
+                        </ha-md-list-item>
+                      `;
+                    }
+
                     return html`
                       <ha-md-list-item>
                         ${this._renderAgentIcon(agent.agent_id)}
