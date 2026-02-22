@@ -8464,8 +8464,8 @@
           },
           "move_section": {
             "header": "Choose a view to move the section to",
-            "strategy_error_title": "Impossible to move the section",
-            "strategy_error_text_strategy": "Moving a section to an auto-generated view is not supported.",
+            "error_title": "Impossible to move the section",
+            "error_text": "Moving a section to a non-sections view is not supported.",
             "success": "Section moved successfully",
             "error": "Error while moving section"
           },
