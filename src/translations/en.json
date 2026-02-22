@@ -8955,7 +8955,22 @@
                 "dark": "Dark"
               },
               "default_zoom": "Default zoom",
+              "auto_fit": "Auto fit",
+              "fit_zones": " Fit zones",
+              "cluster": "Cluster markers",
+              "show_all": "Show all",
+              "show_all_helper": "Automatically add all entities with coordinates",
               "source": "Source",
+              "label_mode": "Label mode",
+              "label_modes": {
+                "name": "Name",
+                "icon": "Icon",
+                "state": "State",
+                "attribute": "Attribute"
+              },
+              "attribute": "Attribute",
+              "unit": "Unit",
+              "focus": "Focus",
               "description": "The Map card allows you to display entities on a map."
             },
             "markdown": {
