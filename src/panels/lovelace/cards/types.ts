@@ -384,8 +384,17 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   state_filter?: string[];
 }
 
+export const MAP_CARD_MARKER_LABEL_MODES = [
+  "name",
+  "state",
+  "attribute",
+  "icon",
+] as const;
+export type MapCardMarkerLabelMode =
+  (typeof MAP_CARD_MARKER_LABEL_MODES)[number];
+
 export interface MapEntityConfig extends EntityConfig {
-  label_mode?: "state" | "attribute" | "name";
+  label_mode?: MapCardMarkerLabelMode;
   attribute?: string;
   unit?: string;
   focus?: boolean;
@@ -394,7 +403,7 @@ export interface MapEntityConfig extends EntityConfig {
 
 export interface GeoLocationSourceConfig {
   source: string;
-  label_mode?: "name" | "state" | "attribute" | "icon";
+  label_mode?: MapCardMarkerLabelMode;
   attribute?: string;
   unit?: string;
   focus?: boolean;
@@ -407,6 +416,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   auto_fit?: boolean;
   fit_zones?: boolean;
   default_zoom?: number;
+  show_all?: boolean;
   entities?: (MapEntityConfig | string)[];
   hours_to_show?: number;
   geo_location_sources?: (GeoLocationSourceConfig | string)[];
