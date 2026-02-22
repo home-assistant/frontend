@@ -6,6 +6,7 @@ import { computeGroupDomain } from "../../data/group";
 import { computeCssVariable } from "../../resources/css-variables";
 import { slugify } from "../string/slugify";
 import { batteryStateColorProperty } from "./color/battery_color";
+import { thresholdStateColorProperty } from "./color/threshold_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
@@ -108,6 +109,14 @@ export const stateColorProperties = (
   // Special rules for battery coloring
   if (domain === "sensor" && dc === "battery") {
     const property = batteryStateColorProperty(compareState);
+    if (property) {
+      return [property];
+    }
+  }
+
+  // Special rules for threshold coloring
+  if (domain === "sensor") {
+    const property = thresholdStateColorProperty(compareState);
     if (property) {
       return [property];
     }

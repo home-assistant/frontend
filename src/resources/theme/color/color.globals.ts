@@ -235,6 +235,9 @@ export const colorStyles = css`
     --state-sensor-battery-high-color: var(--green-color);
     --state-sensor-battery-low-color: var(--red-color);
     --state-sensor-battery-medium-color: var(--orange-color);
+    --state-sensor-threshold-green-color: var(--success-color);
+    --state-sensor-threshold-yellow-color: var(--warning-color);
+    --state-sensor-threshold-red-color: var(--error-color);
     --state-water_heater-eco-color: var(--green-color);
     --state-water_heater-electric-color: var(--orange-color);
     --state-water_heater-gas-color: var(--orange-color);
