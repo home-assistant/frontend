@@ -1,11 +1,13 @@
 /** Return a color representing a state. */
 import type { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
 import { computeCssVariable } from "../../resources/css-variables";
 import { slugify } from "../string/slugify";
 import { batteryStateColorProperty } from "./color/battery_color";
+import { thresholdStateColorProperty } from "./color/threshold_color";
 import { computeDomain } from "./compute_domain";
 import { stateActive } from "./state_active";
 
@@ -43,13 +45,17 @@ const STATE_COLORED_DOMAIN = new Set([
   "weather",
 ]);
 
-export const stateColorCss = (stateObj: HassEntity, state?: string) => {
+export const stateColorCss = (
+  stateObj: HassEntity,
+  state?: string,
+  entityEntry?: EntityRegistryDisplayEntry
+) => {
   const compareState = state !== undefined ? state : stateObj?.state;
   if (compareState === UNAVAILABLE) {
     return `var(--state-unavailable-color)`;
   }
 
-  const properties = stateColorProperties(stateObj, state);
+  const properties = stateColorProperties(stateObj, state, entityEntry);
   if (properties) {
     return computeCssVariable(properties);
   }
@@ -99,7 +105,8 @@ export const domainColorProperties = (
 
 export const stateColorProperties = (
   stateObj: HassEntity,
-  state?: string
+  state?: string,
+  entityEntry?: EntityRegistryDisplayEntry
 ): string[] | undefined => {
   const compareState = state !== undefined ? state : stateObj?.state;
   const domain = computeDomain(stateObj.entity_id);
@@ -108,6 +115,14 @@ export const stateColorProperties = (
   // Special rules for battery coloring
   if (domain === "sensor" && dc === "battery") {
     const property = batteryStateColorProperty(compareState);
+    if (property) {
+      return [property];
+    }
+  }
+
+  // Special rules for threshold coloring
+  if (domain === "sensor" && entityEntry?.translation_key === "threshold") {
+    const property = thresholdStateColorProperty(compareState);
     if (property) {
       return [property];
     }

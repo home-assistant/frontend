@@ -274,7 +274,12 @@ class HaLogbookRenderer extends LitElement {
 
     const color =
       item.state !== undefined
-        ? computeTimelineColor(item.state, computedStyles, stateObj)
+        ? computeTimelineColor(
+            item.state,
+            computedStyles,
+            stateObj,
+            this.hass.entities[item.entity_id!]
+          )
         : undefined;
 
     const style = {
