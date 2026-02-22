@@ -59,28 +59,24 @@ export class HaCameraStream extends LitElement {
   @state() private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
 
   public willUpdate(changedProps: PropertyValues): void {
-    if (
+    const entityChanged =
       changedProps.has("stateObj") &&
       this.stateObj &&
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
-        this.stateObj.entity_id
-    ) {
+        this.stateObj.entity_id;
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const backendStarted =
+      changedProps.has("hass") &&
+      this.hass &&
+      this.stateObj &&
+      oldHass &&
+      this.hass.config.state === STATE_RUNNING &&
+      oldHass.config?.state !== STATE_RUNNING;
+
+    if (entityChanged || backendStarted) {
       this._getCapabilities();
       this._getPosterUrl();
-    }
-
-    // When the backend finishes starting (all integrations loaded),
-    // re-fetch capabilities to re-initialize the camera stream.
-    if (changedProps.has("hass") && this.hass && this.stateObj) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        oldHass &&
-        this.hass.config.state === STATE_RUNNING &&
-        oldHass.config?.state !== STATE_RUNNING
-      ) {
-        this._getCapabilities();
-        this._getPosterUrl();
-      }
     }
   }
 
