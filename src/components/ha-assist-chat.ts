@@ -177,9 +177,11 @@ export class HaAssistChat extends LitElement {
                                 <ha-svg-icon
                                   .path=${mdiCommentProcessingOutline}
                                 ></ha-svg-icon>
-                                <span class="thinking-label"
-                                  >${this.hass.localize("ui.dialogs.voice_command.show_details")}</span
-                                >
+                                <span class="thinking-label">
+                                  ${this.hass.localize(
+                                    "ui.dialogs.voice_command.show_details"
+                                  )}
+                                </span>
                                 <ha-svg-icon
                                   .path=${message.thinking_expanded
                                     ? mdiChevronUp
