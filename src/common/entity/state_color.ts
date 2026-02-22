@@ -1,7 +1,6 @@
 /** Return a color representing a state. */
 import type { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE } from "../../data/entity/entity";
-import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
 import { computeCssVariable } from "../../resources/css-variables";
@@ -45,17 +44,13 @@ const STATE_COLORED_DOMAIN = new Set([
   "weather",
 ]);
 
-export const stateColorCss = (
-  stateObj: HassEntity,
-  state?: string,
-  entityEntry?: EntityRegistryDisplayEntry
-) => {
+export const stateColorCss = (stateObj: HassEntity, state?: string) => {
   const compareState = state !== undefined ? state : stateObj?.state;
   if (compareState === UNAVAILABLE) {
     return `var(--state-unavailable-color)`;
   }
 
-  const properties = stateColorProperties(stateObj, state, entityEntry);
+  const properties = stateColorProperties(stateObj, state);
   if (properties) {
     return computeCssVariable(properties);
   }
@@ -105,8 +100,7 @@ export const domainColorProperties = (
 
 export const stateColorProperties = (
   stateObj: HassEntity,
-  state?: string,
-  entityEntry?: EntityRegistryDisplayEntry
+  state?: string
 ): string[] | undefined => {
   const compareState = state !== undefined ? state : stateObj?.state;
   const domain = computeDomain(stateObj.entity_id);
@@ -121,7 +115,7 @@ export const stateColorProperties = (
   }
 
   // Special rules for threshold coloring
-  if (domain === "sensor" && entityEntry?.translation_key === "threshold") {
+  if (domain === "sensor") {
     const property = thresholdStateColorProperty(compareState);
     if (property) {
       return [property];

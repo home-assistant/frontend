@@ -322,8 +322,7 @@ export class StateHistoryChartTimeline extends LitElement {
           const color = computeTimelineColor(
             prevState,
             computedStyles,
-            this.hass.states[stateInfo.entity_id],
-            this.hass.entities[stateInfo.entity_id]
+            this.hass.states[stateInfo.entity_id]
           );
           dataRow.push({
             value: [
@@ -349,8 +348,7 @@ export class StateHistoryChartTimeline extends LitElement {
         const color = computeTimelineColor(
           prevState,
           computedStyles,
-          this.hass.states[stateInfo.entity_id],
-          this.hass.entities[stateInfo.entity_id]
+          this.hass.states[stateInfo.entity_id]
         );
         dataRow.push({
           value: [

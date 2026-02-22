@@ -8,7 +8,6 @@ import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
 import { stateColorProperties } from "../../common/entity/state_color";
 import { slugify } from "../../common/string/slugify";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
-import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { computeCssValue } from "../../resources/css-variables";
 
 const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
@@ -24,8 +23,7 @@ const DOMAIN_STATE_SHADES: Record<string, Record<string, number>> = {
 function computeTimelineStateColor(
   state: string,
   computedStyles: CSSStyleDeclaration,
-  stateObj?: HassEntity,
-  entityEntry?: EntityRegistryDisplayEntry
+  stateObj?: HassEntity
 ): string | undefined {
   if (!stateObj || state === UNAVAILABLE) {
     return computeCssValue("--history-unavailable-color", computedStyles);
@@ -51,7 +49,7 @@ function computeTimelineStateColor(
     );
   }
 
-  const properties = stateColorProperties(stateObj, state, entityEntry);
+  const properties = stateColorProperties(stateObj, state);
 
   if (!properties) {
     return undefined;
@@ -108,11 +106,10 @@ function computeTimeLineGenericColor(
 export function computeTimelineColor(
   state: string,
   computedStyles: CSSStyleDeclaration,
-  stateObj?: HassEntity,
-  entityEntry?: EntityRegistryDisplayEntry
+  stateObj?: HassEntity
 ): string {
   return (
-    computeTimelineStateColor(state, computedStyles, stateObj, entityEntry) ||
+    computeTimelineStateColor(state, computedStyles, stateObj) ||
     computeTimelineEnumColor(state, computedStyles, stateObj) ||
     computeTimeLineGenericColor(state, computedStyles)
   );
