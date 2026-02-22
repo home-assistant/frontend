@@ -8956,7 +8956,7 @@
               },
               "default_zoom": "Default zoom",
               "auto_fit": "Auto fit",
-              "fit_zones": " Fit zones",
+              "fit_zones": "Fit zones",
               "cluster": "Cluster markers",
               "show_all": "Show all",
               "show_all_helper": "Automatically add all entities with coordinates",
