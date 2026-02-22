@@ -394,7 +394,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
         }
       });
       // Clear theme tracking to prevent applyThemesOnElement from trying to reset old keys
-      this.__themes = undefined;
+      (this as any).__themes = undefined;
     }
 
     // Apply the section's theme. Properties not defined in the section theme
