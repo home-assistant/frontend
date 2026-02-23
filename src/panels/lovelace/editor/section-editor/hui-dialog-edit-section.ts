@@ -46,6 +46,8 @@ import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { getViewType } from "../../views/get-view-type";
+import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -290,13 +292,16 @@ export class HuiDialogEditSection
 
     const toView = selectedDashConfig.views[viewIndex];
 
-    if (isStrategyView(toView)) {
+    if (
+      isStrategyView(toView) ||
+      getViewType(toView) !== SECTIONS_VIEW_LAYOUT
+    ) {
       showAlertDialog(this, {
         title: this.hass!.localize(
           "ui.panel.lovelace.editor.move_section.error_title"
         ),
         text: this.hass!.localize(
-          "ui.panel.lovelace.editor.move_section.error_text_strategy"
+          "ui.panel.lovelace.editor.move_section.error_text"
         ),
         warning: true,
       });
