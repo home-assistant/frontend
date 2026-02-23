@@ -8,8 +8,10 @@ import "../card-features/hui-climate-swing-modes-card-feature";
 import "../card-features/hui-counter-actions-card-feature";
 import "../card-features/hui-cover-open-close-card-feature";
 import "../card-features/hui-cover-position-card-feature";
+import "../card-features/hui-cover-position-preset-card-feature";
 import "../card-features/hui-cover-tilt-card-feature";
 import "../card-features/hui-cover-tilt-position-card-feature";
+import "../card-features/hui-cover-tilt-preset-card-feature";
 import "../card-features/hui-date-set-card-feature";
 import "../card-features/hui-fan-direction-card-feature";
 import "../card-features/hui-fan-oscillate-card-feature";
@@ -58,7 +60,9 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "counter-actions",
   "cover-open-close",
   "cover-position",
+  "cover-position-preset",
   "cover-tilt-position",
+  "cover-tilt-preset",
   "cover-tilt",
   "date-set",
   "fan-direction",

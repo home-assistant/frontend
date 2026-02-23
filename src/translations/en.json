@@ -9350,11 +9350,23 @@
               "cover-position": {
                 "label": "Cover position"
               },
+              "cover-position-preset": {
+                "label": "Cover position preset",
+                "position": "Position",
+                "add_position": "Add position",
+                "remove_position": "Remove position"
+              },
               "cover-tilt": {
                 "label": "Cover tilt"
               },
               "cover-tilt-position": {
                 "label": "Cover tilt position"
+              },
+              "cover-tilt-preset": {
+                "label": "Cover tilt preset",
+                "position": "Tilt position",
+                "add_position": "Add tilt position",
+                "remove_position": "Remove tilt position"
               },
               "date-set": {
                 "label": "Set date"
