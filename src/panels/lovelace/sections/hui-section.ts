@@ -376,7 +376,6 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       this._createCardElement(cardConfig)
     );
   }
-
 }
 
 declare global {
