@@ -1,10 +1,11 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../../common/decorators/storage";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
@@ -22,9 +23,9 @@ import {
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { bluetoothTabs } from "./bluetooth-config-dashboard";
 
 @customElement("bluetooth-connection-monitor")
 export class BluetoothConnectionMonitorPanel extends LitElement {
@@ -35,6 +36,15 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @state() private _filter?: string;
+
+  private _tabs: PageNavigation[] = [
+    {
+      translationKey: "ui.panel.config.bluetooth.navigation.connections",
+      path: "/config/bluetooth/connection-monitor",
+    },
+  ];
 
   @state() private _data: BluetoothConnectionData[] = [];
 
@@ -145,6 +155,19 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
     }
   }
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (this.hasUpdated) {
+      return;
+    }
+
+    const searchParams = extractSearchParamsObject();
+    if (searchParams.source) {
+      this._filter = searchParams.source;
+    }
+  }
+
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<BluetoothConnectionData> = {
@@ -194,16 +217,20 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
       const scannerDevice = this._sourceDevices[row.source];
       const scanner = this._scanners[row.source];
       const name = this._addressNames[row.address] || row.address;
+      const sourceName =
+        scannerDevice?.name_by_user ||
+        scannerDevice?.name ||
+        scanner?.name ||
+        row.source;
+      const areaName = scannerDevice?.area_id
+        ? this.hass.areas[scannerDevice.area_id]?.name
+        : undefined;
       return {
         ...row,
         id: row.address,
         name: name,
         source_address: row.source,
-        source:
-          scannerDevice?.name_by_user ||
-          scannerDevice?.name ||
-          scanner?.name ||
-          row.source,
+        source: areaName ? `${sourceName} (${areaName})` : sourceName,
         device: device?.name_by_user || device?.name || undefined,
       };
     })
@@ -215,7 +242,8 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${bluetoothTabs}
+        .tabs=${this._tabs}
+        back-path="/config/bluetooth/dashboard"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
         .initialGroupColumn=${this._activeGrouping}
@@ -225,6 +253,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         )}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        filter=${this._filter || ""}
       ></hass-tabs-subpage-data-table>
     `;
   }

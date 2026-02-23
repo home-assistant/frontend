@@ -64,6 +64,11 @@ const SELECTOR_SCHEMAS = {
       name: "enable_millisecond",
       selector: { boolean: {} },
     },
+    {
+      name: "enable_second",
+      default: true,
+      selector: { boolean: {} },
+    },
   ] as const,
   entity: [
     {
