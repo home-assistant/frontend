@@ -38,6 +38,7 @@ export class HuiCoverTiltPresetCardFeatureEditor
       <ha-multi-textfield
         .hass=${this.hass}
         .value=${stringValues}
+        .max=${6}
         .label=${this.hass.localize(
           "ui.panel.lovelace.editor.features.types.cover-tilt-preset.position"
         )}
