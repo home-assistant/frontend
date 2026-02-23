@@ -103,11 +103,9 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                   .value=${FILTER_NONE_OF_LISTED}
                   .selected=${this.value?.[0] === FILTER_NONE_OF_LISTED}
                 >
-                  <div>
-                    ${this.hass.localize(
-                      `ui.panel.config.labels.${FILTER_NONE_OF_LISTED}` as LocalizeKeys
-                    )}
-                  </div>
+                  ${this.hass.localize(
+                    `ui.panel.config.labels.${FILTER_NONE_OF_LISTED}` as LocalizeKeys
+                  )}
                 </ha-check-list-item>
                 ${repeat(
                   this._filteredLabels(this._labels, this._filter, this.value),
