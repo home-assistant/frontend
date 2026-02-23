@@ -103,7 +103,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                   .value=${FILTER_NONE_OF_LISTED}
                   .selected=${this.value?.[0] === FILTER_NONE_OF_LISTED}
                 >
-                  <div class="none-of-listed">
+                  <div>
                     ${this.hass.localize(
                       `ui.panel.config.labels.${FILTER_NONE_OF_LISTED}` as LocalizeKeys
                     )}
@@ -287,9 +287,6 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
         search-input-outlined {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
-        }
-        .none-of-listed {
-          margin-inline-start: var(--ha-space-4);
         }
       `,
     ];
