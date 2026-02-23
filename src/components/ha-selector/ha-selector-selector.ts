@@ -69,6 +69,10 @@ const SELECTOR_SCHEMAS = {
       default: true,
       selector: { boolean: {} },
     },
+    {
+      name: "allow_negative",
+      selector: { boolean: {} },
+    },
   ] as const,
   entity: [
     {
