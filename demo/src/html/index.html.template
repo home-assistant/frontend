@@ -80,7 +80,10 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        opacity: .66;
+      }
+      .ohf-logo img {
+        width: 100%;
+        max-width: 320px;
       }
     </style>
   </head>
@@ -93,7 +96,7 @@
       </svg>
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer-bottom"></div>
       <div class="ohf-logo">
-        <img src="/static/images/ohf-inline.svg" alt="Open Home Foundation" height="24">
+        <img src="/static/images/ohf-badge-monochrome.svg" alt="Open Home Foundation">
       </div>
     </div>
     <ha-demo></ha-demo>

@@ -194,7 +194,7 @@ class HaConfigInfo extends LitElement {
               rel="noreferrer"
             >
               <img
-                src="/static/images/ohf-badge.svg"
+                src="/static/images/ohf-badge-monochrome.svg"
                 alt="Open Home Foundation"
               />
             </a>
@@ -340,7 +340,7 @@ class HaConfigInfo extends LitElement {
 
         .ohf img {
           width: 100%;
-          max-width: 250px;
+          max-width: 320px;
         }
 
         .versions {
