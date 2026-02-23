@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
+import { consume } from "@lit/context";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -11,6 +12,7 @@ import {
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
+import { authExternalContext, localizeContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -75,8 +77,6 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  */
 @customElement("ha-dialog")
 export class HaDialog extends ScrollableFadeMixin(LitElement) {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: "aria-labelledby" })
   public ariaLabelledBy?: string;
 
@@ -114,6 +114,14 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   private _open = false;
 
   @query(".body") public bodyContainer!: HTMLDivElement;
+
+  @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private localize?: HomeAssistant["localize"];
+
+  @state()
+  @consume({ context: authExternalContext, subscribe: true })
+  private authExternal?: HomeAssistant["auth"]["external"];
 
   @state()
   private _bodyScrolled = false;
@@ -160,7 +168,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
                 <slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
-                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                    .label=${this.localize?.("ui.common.close") ?? "Close"}
                     .path=${mdiClose}
                   ></ha-icon-button>
                 </slot>
@@ -194,13 +202,13 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass)) {
+      if (isIosApp(this.authExternal)) {
         const element = this.querySelector("[autofocus]");
         if (element !== null) {
           if (!element.id) {
             element.id = "ha-dialog-autofocus";
           }
-          this.hass?.auth.external?.fireMessage({
+          this.authExternal?.fireMessage({
             type: "focus_element",
             payload: {
               element_id: element.id,

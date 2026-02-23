@@ -34,3 +34,6 @@ export const labelsContext = createContext<LabelRegistryEntry[]>("labels");
 
 export const configEntriesContext =
   createContext<ConfigEntry[]>("configEntries");
+
+export const authExternalContext =
+  createContext<HomeAssistant["auth"]["external"]>("authExternal");

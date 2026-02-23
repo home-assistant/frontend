@@ -1,11 +1,13 @@
+import { consume } from "@lit/context";
 import { mdiInvertColorsOff, mdiPalette } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
+import { localizeContext } from "../data/context";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
@@ -13,8 +15,6 @@ import type { PickerValueRenderer } from "./ha-picker-field";
 
 @customElement("ha-color-picker")
 export class HaColorPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property() public helper?: string;
@@ -34,12 +34,15 @@ export class HaColorPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private localize?: HomeAssistant["localize"];
+
   render() {
     const effectiveValue = this.value ?? this.defaultColor ?? "";
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .required=${this.required}
         .hideClearIcon=${!this.value && !!this.defaultColor}
@@ -50,7 +53,7 @@ export class HaColorPicker extends LitElement {
         .rowRenderer=${this._rowRenderer}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
-        .notFoundLabel=${this.hass.localize(
+        .notFoundLabel=${this.localize?.(
           "ui.components.color-picker.no_colors_found"
         )}
         .getAdditionalItems=${this._getAdditionalItems}
@@ -78,7 +81,9 @@ export class HaColorPicker extends LitElement {
     return [
       {
         id: searchString,
-        primary: this.hass.localize("ui.components.color-picker.custom_color"),
+        primary:
+          this.localize?.("ui.components.color-picker.custom_color") ||
+          "Custom color",
         secondary: searchString,
       },
     ];
@@ -101,16 +106,15 @@ export class HaColorPicker extends LitElement {
     ): PickerComboBoxItem[] => {
       const items: PickerComboBoxItem[] = [];
 
-      const defaultSuffix = this.hass.localize(
-        "ui.components.color-picker.default"
-      );
+      const defaultSuffix =
+        this.localize?.("ui.components.color-picker.default") || "Default";
 
       const addDefaultSuffix = (label: string, isDefault: boolean) =>
         isDefault && defaultSuffix ? `${label} (${defaultSuffix})` : label;
 
       if (includeNone) {
         const noneLabel =
-          this.hass.localize("ui.components.color-picker.none") || "None";
+          this.localize?.("ui.components.color-picker.none") || "None";
         items.push({
           id: "none",
           primary: addDefaultSuffix(noneLabel, defaultColor === "none"),
@@ -120,7 +124,7 @@ export class HaColorPicker extends LitElement {
 
       if (includeState) {
         const stateLabel =
-          this.hass.localize("ui.components.color-picker.state") || "State";
+          this.localize?.("ui.components.color-picker.state") || "State";
         items.push({
           id: "state",
           primary: addDefaultSuffix(stateLabel, defaultColor === "state"),
@@ -130,7 +134,7 @@ export class HaColorPicker extends LitElement {
 
       Array.from(THEME_COLORS).forEach((color) => {
         const themeLabel =
-          this.hass.localize(
+          this.localize?.(
             `ui.components.color-picker.colors.${color}` as LocalizeKeys
           ) || color;
         items.push({
@@ -184,7 +188,7 @@ export class HaColorPicker extends LitElement {
       return html`
         <ha-svg-icon slot="start" .path=${mdiInvertColorsOff}></ha-svg-icon>
         <span slot="headline">
-          ${this.hass.localize("ui.components.color-picker.none")}
+          ${this.localize?.("ui.components.color-picker.none") || "None"}
         </span>
       `;
     }
@@ -192,7 +196,7 @@ export class HaColorPicker extends LitElement {
       return html`
         <ha-svg-icon slot="start" .path=${mdiPalette}></ha-svg-icon>
         <span slot="headline">
-          ${this.hass.localize("ui.components.color-picker.state")}
+          ${this.localize?.("ui.components.color-picker.state") || "State"}
         </span>
       `;
     }
@@ -200,7 +204,7 @@ export class HaColorPicker extends LitElement {
     return html`
       <span slot="start">${this._renderColorCircle(value)}</span>
       <span slot="headline">
-        ${this.hass.localize(
+        ${this.localize?.(
           `ui.components.color-picker.colors.${value}` as LocalizeKeys
         ) || value}
       </span>

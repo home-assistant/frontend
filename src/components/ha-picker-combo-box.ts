@@ -1,5 +1,6 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { consume } from "@lit/context";
 import { mdiClose, mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
@@ -14,6 +15,7 @@ import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { localeContext, localizeContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
   multiTermSortedSearch,
@@ -90,8 +92,6 @@ export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
 
 @customElement("ha-picker-combo-box")
 export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
@@ -162,6 +162,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @query("ha-textfield") private _searchFieldElement?: HaTextField;
 
+  @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private localize?: HomeAssistant["localize"];
+
+  @state()
+  @consume({ context: localeContext, subscribe: true })
+  private locale?: HomeAssistant["locale"];
+
   @state() private _items: PickerComboBoxItem[] = [];
 
   @state() private _selectedSection?: string;
@@ -215,9 +223,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const searchLabel =
       this.label ??
       (this.allowCustomValue
-        ? (this.hass?.localize("ui.components.combo-box.search_or_custom") ??
+        ? (this.localize?.("ui.components.combo-box.search_or_custom") ??
           "Search | Add custom value")
-        : (this.hass?.localize("ui.common.search") ?? "Search"));
+        : (this.localize?.("ui.common.search") ?? "Search"));
 
     return html`<ha-textfield
         .label=${searchLabel}
@@ -228,7 +236,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         <ha-icon-button
           @click=${this._clearSearch}
           slot="trailingIcon"
-          .label=${this.hass?.localize("ui.common.clear") || "Clear"}
+          .label=${this.localize?.("ui.common.clear") || "Clear"}
           .path=${mdiClose}
         ></ha-icon-button>
       </ha-textfield>
@@ -350,7 +358,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         return caseInsensitiveStringCompare(
           sortLabelA,
           sortLabelB,
-          this.hass?.locale.language ?? navigator.language
+          this.locale?.language ?? navigator.language
         );
       });
     }
@@ -367,7 +375,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         id: this._search,
         primary:
           this.customValueLabel ??
-          this.hass?.localize("ui.components.combo-box.add_custom_item") ??
+          this.localize?.("ui.components.combo-box.add_custom_item") ??
           "Add custom item",
         secondary: `"${this._search}"`,
         icon_path: mdiPlus,
@@ -401,10 +409,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
                 ? typeof this.notFoundLabel === "function"
                   ? this.notFoundLabel(this._search)
                   : this.notFoundLabel ||
-                    this.hass?.localize("ui.components.combo-box.no_match") ||
+                    this.localize?.("ui.components.combo-box.no_match") ||
                     "No matching items found"
                 : this.emptyLabel ||
-                  this.hass?.localize("ui.components.combo-box.no_items") ||
+                  this.localize?.("ui.components.combo-box.no_items") ||
                   "No items available"}</span
             >
           </ha-combo-box-item>
@@ -507,7 +515,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           id: searchString,
           primary:
             this.customValueLabel ??
-            this.hass?.localize("ui.components.combo-box.add_custom_item") ??
+            this.localize?.("ui.components.combo-box.add_custom_item") ??
             "Add custom item",
           secondary: `"${searchString}"`,
           icon_path: mdiPlus,

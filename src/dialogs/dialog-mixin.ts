@@ -4,8 +4,15 @@ import type { HaDialog } from "../components/ha-dialog";
 import type { Constructor } from "../types";
 import type { HassDialogNext } from "./make-dialog-manager";
 
-export const DialogMixin = <T extends Constructor<LitElement>>(superClass: T) =>
-  class extends superClass implements HassDialogNext {
+export const DialogMixin = <
+  P = unknown,
+  T extends Constructor<LitElement> = Constructor<LitElement>,
+>(
+  superClass: T
+) =>
+  class extends superClass implements HassDialogNext<P> {
+    declare public params?: P;
+
     private _closePromise?: Promise<boolean>;
 
     private _closeResolve?: (value: boolean) => void;
@@ -31,7 +38,7 @@ export const DialogMixin = <T extends Constructor<LitElement>>(superClass: T) =>
       this._closeResolve?.(true);
       this._closePromise = undefined;
       this._closeResolve = undefined;
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
+      this.remove();
     };
 
     connectedCallback() {
@@ -40,6 +47,7 @@ export const DialogMixin = <T extends Constructor<LitElement>>(superClass: T) =>
     }
 
     disconnectedCallback() {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
       this.removeEventListener("closed", this._removeDialog);
       super.disconnectedCallback();
     }

@@ -26,8 +26,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private async _handleMoreInfo(ev: HASSDomEvent<MoreInfoDialogParams>) {
+      const target = (ev.composedPath()[0] || ev.target) as LitElement;
       showDialog(
-        ev.target as LitElement,
+        target,
         this,
         "ha-more-info-dialog",
         {

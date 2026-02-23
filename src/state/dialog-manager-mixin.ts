@@ -42,8 +42,10 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
       addHistory = true,
     }: RegisterDialogParams) {
       this.addEventListener(dialogShowEvent, (showEv) => {
+        const target = (showEv.composedPath()[0] ||
+          showEv.target) as LitElement;
         showDialog(
-          showEv.target as LitElement,
+          target,
           this,
           dialogTag,
           (showEv as HASSDomEvent<unknown>).detail,

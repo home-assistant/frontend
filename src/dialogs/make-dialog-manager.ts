@@ -159,16 +159,13 @@ export const showDialog = async (
     dialogElement = await LOADED[dialogTag].element;
   }
 
-  // Append it again so it's the last element in the root,
-  // so it's guaranteed to be on top of the other elements
-
-  eventTarget.shadowRoot!.appendChild(dialogElement!);
-
   if ("showDialog" in dialogElement!) {
     dialogElement.showDialog(dialogParams);
   } else {
     dialogElement!.params = dialogParams;
   }
+
+  eventTarget.shadowRoot!.appendChild(dialogElement!);
 
   return true;
 };
@@ -249,7 +246,6 @@ const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
     const dialogElement = ev.currentTarget as HassDialogNext;
     dialogElement.removeEventListener("dialog-closed", _handleClosed);
     dialogElement.removeEventListener("dialog-closed", _handleClosedFocus);
-    dialogElement.remove();
     LOADED[ev.detail.dialog].element = null;
   }
 };
@@ -261,8 +257,10 @@ export const makeDialogManager = (
     "show-dialog",
     (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
       const { dialogTag, dialogImport, dialogParams, addHistory } = e.detail;
+      const target = (e.composedPath()[0] || e.target) as LitElement;
+
       showDialog(
-        e.target as LitElement,
+        target,
         element,
         dialogTag,
         dialogParams,
