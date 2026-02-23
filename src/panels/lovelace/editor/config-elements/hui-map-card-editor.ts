@@ -323,8 +323,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     newEntities[index] = newEntityConfig;
     let config = this._config!;
     config = { ...config, entities: newEntities };
-    this._config = config;
-    this._config = this._orderProperties(this._config!);
+    this._config = this._orderProperties(config);
 
     // update sub-element editor config
     this._subElementEditorConfig = {
