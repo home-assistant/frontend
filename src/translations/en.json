@@ -5122,7 +5122,7 @@
                 "and": {
                   "label": "And",
                   "description": {
-                    "picker": "Test if multiple conditions are true.",
+                    "picker": "Tests if multiple conditions are true.",
                     "no_conditions": "If multiple conditions match",
                     "full": "If {count} {count, plural,\n one {condition matches}\n other {conditions match}\n}"
                   }
@@ -5137,7 +5137,7 @@
                 "not": {
                   "label": "Not",
                   "description": {
-                    "picker": "Test if a condition is not true.",
+                    "picker": "Tests if a condition is not true.",
                     "no_conditions": "If no condition matches",
                     "one_condition": "If 1 condition does not match",
                     "full": "If none of {count} conditions match"
@@ -5153,7 +5153,7 @@
                   "upper_limit": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::upper_limit%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
-                    "picker": "If the numeric value of an entity's state (or attribute's value) is above or below a given threshold.",
+                    "picker": "Tests if the numeric value of an entity's state (or attribute's value) is above or below a given threshold.",
                     "above": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
                     "below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
                     "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
@@ -5162,7 +5162,7 @@
                 "or": {
                   "label": "Or",
                   "description": {
-                    "picker": "Test if any condition is true.",
+                    "picker": "Tests if any condition is true.",
                     "no_conditions": "If any condition matches",
                     "full": "If any of {count} {count, plural,\n  one {condition}\n other {conditions}\n} matches"
                   }
@@ -5171,7 +5171,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "description": {
-                    "picker": "If an entity (or attribute) is in a specific state.",
+                    "picker": "Tests if an entity (or attribute) is in a specific state.",
                     "no_entity": "If state confirmed",
                     "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
@@ -5185,7 +5185,7 @@
                   "sunrise": "Sunrise",
                   "sunset": "Sunset",
                   "description": {
-                    "picker": "If the sun is above or below the horizon.",
+                    "picker": "Tests if the sun is above or below the horizon.",
                     "full": "If the sun{afterChoice, select, \n sunrise { after sunrise}\n sunset { after sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { offset by {afterOffset}}\n other {}\n}{beforeChoice, select, \n sunrise { before sunrise}\n sunset { before sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { offset by {beforeOffset}}\n other {}\n}"
                   }
                 },
@@ -5193,7 +5193,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::template::value_template%]",
                   "description": {
-                    "picker": "If a template evaluates to true.",
+                    "picker": "Tests if a template evaluates to true.",
                     "full": "If template renders a value equal to true"
                   }
                 },
@@ -5216,7 +5216,7 @@
                     "sun": "[%key:ui::weekdays::sunday%]"
                   },
                   "description": {
-                    "picker": "If the current time is before or after a specified time.",
+                    "picker": "Tests if the current time is before or after a specified time.",
                     "full": "If the {hasTime, select, \n after {time is after {time_after}}\n before {time is before {time_before}}\n after_before {time is after {time_after} and before {time_before}} \n other {}\n }{hasTimeAndDay, select, \n true { and the }\n other {}\n}{hasDay, select, \n true { day is {day}}\n other {}\n}"
                   }
                 },
@@ -5225,7 +5225,7 @@
                   "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
                   "id": "Trigger",
                   "description": {
-                    "picker": "If the automation has been triggered by a specific trigger.",
+                    "picker": "Tests if the automation has been triggered by a specific trigger.",
                     "full": "If triggered by {id}"
                   }
                 },
@@ -5234,7 +5234,7 @@
                   "entity": "[%key:ui::panel::config::automation::editor::triggers::type::zone::entity%]",
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
-                    "picker": "If someone (or something) is in a zone.",
+                    "picker": "Tests if someone (or something) is in a zone.",
                     "full": "If {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
@@ -5316,7 +5316,7 @@
                 "play_media": {
                   "label": "Play media",
                   "description": {
-                    "picker": "Play media on a media player.",
+                    "picker": "Plays media on a media player.",
                     "full": "Play {hasMedia, select, \n true {{media}} \n other {media}\n } on {hasMediaPlayer, select, \n true {{mediaPlayer}} \n other {a media player}\n }"
                   }
                 },
@@ -5324,7 +5324,7 @@
                   "label": "Wait for time to pass (delay)",
                   "delay": "Duration",
                   "description": {
-                    "picker": "Wait some time before continuing the sequence of actions.",
+                    "picker": "Waits some time before continuing the sequence of actions.",
                     "full": "Delay {duration}",
                     "duration_string": "for {string}",
                     "duration_template": "based on a template",
@@ -5337,7 +5337,7 @@
                   "timeout": "Timeout (optional)",
                   "continue_timeout": "Continue on timeout",
                   "description": {
-                    "picker": "Wait for a template to be evaluated to true to perform a sequence of actions.",
+                    "picker": "Waits for a template to be evaluated to true to perform a sequence of actions.",
                     "full": "Wait for a template to evaluate to true"
                   }
                 },
@@ -5346,7 +5346,7 @@
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
                   "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]",
                   "description": {
-                    "picker": "Wait for a trigger to perform a sequence of actions.",
+                    "picker": "Waits for a trigger to perform a sequence of actions.",
                     "wait_for_a_trigger": "Wait for a trigger",
                     "wait_for_triggers": "Wait for {count} {count, plural,\n one {trigger}\n other {triggers}\n}"
                   }
@@ -5354,7 +5354,7 @@
                 "condition": {
                   "label": "Condition",
                   "description": {
-                    "picker": "Test a condition (and stop the sequence if the condition is not met)."
+                    "picker": "Tests a condition (and stops the sequence if the condition is not met)."
                   }
                 },
                 "event": {
@@ -5362,7 +5362,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
-                    "picker": "Fire an event manually (event is an advanced concept in Home Assistant).",
+                    "picker": "Fires an event manually (event is an advanced concept in Home Assistant).",
                     "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
@@ -5371,7 +5371,7 @@
                   "label": "Device",
                   "action": "Action",
                   "description": {
-                    "picker": "Do something on a device. Great way to start.",
+                    "picker": "Does something on a device. Great way to start.",
                     "no_device": "Device action",
                     "perform_device_action": "Perform action with {device}"
                   }
@@ -5397,7 +5397,7 @@
                   },
                   "sequence": "Actions",
                   "description": {
-                    "picker": "Repeat a sequence of actions.",
+                    "picker": "Repeats a sequence of actions.",
                     "full": "Repeat an action {chosenAction}",
                     "count": "{count} {count, plural,\n one {time}\n other {times}\n}",
                     "while_count": "while {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
@@ -5408,25 +5408,25 @@
                 "repeat_count": {
                   "label": "Repeat multiple times",
                   "description": {
-                    "picker": "Repeat a sequence of actions a fixed number of times."
+                    "picker": "Repeats a sequence of actions a fixed number of times."
                   }
                 },
                 "repeat_while": {
                   "label": "Repeat while",
                   "description": {
-                    "picker": "Repeat a sequence of actions as long as a condition is satisfied. The condition is checked before each run of the sequence."
+                    "picker": "Repeats a sequence of actions as long as a condition is satisfied. The condition is checked before each run of the sequence."
                   }
                 },
                 "repeat_until": {
                   "label": "Repeat until",
                   "description": {
-                    "picker": "Repeat a sequence of actions until a condition is satisfied. The condition is checked after each run of the sequence."
+                    "picker": "Repeats a sequence of actions until a condition is satisfied. The condition is checked after each run of the sequence."
                   }
                 },
                 "repeat_for_each": {
                   "label": "Repeat for each",
                   "description": {
-                    "picker": "Repeat a sequence for each element of a list."
+                    "picker": "Repeats a sequence for each element of a list."
                   }
                 },
                 "choose": {
@@ -5448,7 +5448,7 @@
                   "option_description": "Choose actions based on conditions",
                   "default_option_description": "Optional actions to run if no other options match",
                   "description": {
-                    "picker": "Choose what to do based on conditions (Similar to If-then, but more powerful).",
+                    "picker": "Chooses what to do based on conditions (Similar to If-then, but more powerful).",
                     "full": "Choose {number, plural,\n one {an option}\n other{between {number} options}\n}",
                     "no_action": "Choose an option"
                   }
@@ -5460,7 +5460,7 @@
                   "else": "Else",
                   "add_else": "Add else",
                   "description": {
-                    "picker": "Do something conditionally.",
+                    "picker": "Does something conditionally.",
                     "if": "Conditionally execute an action",
                     "if_else": "Conditionally execute an action and default to another action"
                   }
@@ -5471,28 +5471,28 @@
                   "response_variable": "The name of the variable to use as response",
                   "error": "Stop because of an unexpected error",
                   "description": {
-                    "picker": "Stop the sequence of actions.",
+                    "picker": "Stops the sequence of actions.",
                     "full": "Stop {hasReason, select, \n true { because: {reason}} \n other {}\n }"
                   }
                 },
                 "sequence": {
                   "label": "Run in sequence",
                   "description": {
-                    "picker": "Run a group of actions in sequence.",
+                    "picker": "Runs a group of actions in sequence.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in sequence"
                   }
                 },
                 "parallel": {
                   "label": "Run in parallel",
                   "description": {
-                    "picker": "Perform actions in parallel.",
+                    "picker": "Performs actions in parallel.",
                     "full": "Run {number} {number, plural,\n one {action}\n other {actions}\n} in parallel"
                   }
                 },
                 "variables": {
                   "label": "Define variables",
                   "description": {
-                    "picker": "Define variables to be used later in the sequence.",
+                    "picker": "Defines variables to be used later in the sequence.",
                     "full": "Define variables {names}"
                   }
                 },
@@ -5504,7 +5504,7 @@
                 "set_conversation_response": {
                   "label": "Set conversation response",
                   "description": {
-                    "picker": "Set response of conversation if automation was triggered by conversation trigger.",
+                    "picker": "Sets the response of a conversation if the automation was triggered by conversation trigger.",
                     "template": "Set response of conversation to a template",
                     "full": "Set response of conversation to ''{response}''"
                   }
@@ -6692,18 +6692,32 @@
         },
         "bluetooth": {
           "title": "Bluetooth",
-          "tabs": {
-            "overview": "Overview",
+          "adapters_count": "{count} {count, plural,\n  one {adapter}\n  other {adapters}\n}",
+          "connections_count": "{count} {count, plural,\n  one {connection}\n  other {connections}\n}",
+          "advertisements_count": "{count} {count, plural,\n  one {advertisement}\n  other {advertisements}\n}",
+          "status_online": "Online",
+          "status_warning": "Warning",
+          "status_offline": "Offline",
+          "connections_summary": "{used}/{total} connections active",
+          "adapter_info_title": "Bluetooth adapters",
+          "my_network": "My network",
+          "show_map": "Show map",
+          "navigation": {
+            "adapter_info": "Adapters",
+            "adapter_info_description": "View scanning modes, connection allocations, and adapter settings",
             "advertisements": "Advertisements",
-            "visualization": "Visualization",
-            "connections": "Connections"
+            "advertisements_description": "Monitor discovered Bluetooth Low Energy devices",
+            "connections": "Connections",
+            "connections_description": "View active Bluetooth connections per scanner",
+            "visualization": "Visualization"
           },
-          "settings_title": "Bluetooth adapters",
+          "disabled_by_user": "Disabled by user",
+          "manage_integration": "Manage integration",
           "option_flow": "Configure Bluetooth options",
           "no_connections": "No active connections",
           "active_connections": "connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
-          "no_connection_slot_allocations": "No connection slot allocations information available",
+          "no_connection_slot_allocations": "Can listen for Bluetooth broadcasts but cannot connect to devices",
           "no_connection_slots": "No connection slots",
           "no_scanner_state_available": "No scanner state available",
           "scanner_state_unknown": "State unknown",
@@ -7549,20 +7563,32 @@
         },
         "matter": {
           "panel": {
-            "thread_panel": "Visit Thread panel",
+            "thread_panel": "Thread settings",
+            "thread_panel_description": "Manage Thread network settings",
             "add_device": "Add device",
-            "status_title": "status",
-            "status_online": "online",
-            "status_offline": "offline",
+            "status_online": "Online",
+            "status_offline": "Offline",
+            "my_network_title": "My network",
             "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
-            "developer_tools_title": "Developer tools",
-            "developer_tools_description": "Advanced commissioning options for development",
-            "developer_tools_info": "These options are intended for developers and advanced users. In most cases, use the \"Add device\" button in the bottom right corner instead.",
-            "mobile_app_commisioning": "Commission device with mobile app",
-            "commission_device": "Commission device",
+            "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+            "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
+            "options_title": "Options",
+            "options_description": "Adding devices and network settings",
+            "mobile_app_commisioning": "Add with Companion app",
+            "mobile_app_commisioning_description": "Add a device by scanning its setup code",
+            "mobile_app_commisioning_action": "Start",
+            "commission_device": "Add manually",
+            "commission_device_description": "Add a device by entering its setup code",
+            "commission_device_action": "Add",
             "add_shared_device": "Add shared device",
+            "add_shared_device_description": "Accept a device shared from another controller",
+            "add_shared_device_action": "Add",
             "set_wifi_credentials": "Set Wi-Fi credentials",
+            "set_wifi_credentials_description": "Set the Wi-Fi credentials for Matter devices",
+            "set_wifi_credentials_action": "Set",
             "set_thread_credentials": "Set Thread credentials",
+            "set_thread_credentials_description": "Set the Thread operation dataset for Matter devices",
+            "set_thread_credentials_action": "Set",
             "prompts": {
               "network_name": {
                 "title": "Network name",
@@ -7575,9 +7601,9 @@
                 "confirm": "Set Wi-Fi"
               },
               "commission_device": {
-                "title": "Commission device",
+                "title": "Add device",
                 "input_label": "Code",
-                "confirm": "Commission"
+                "confirm": "Add"
               },
               "add_shared_device": {
                 "title": "Add shared device",
@@ -8886,6 +8912,7 @@
                 "day": "Day",
                 "month": "Month",
                 "week": "Week",
+                "year": "Year",
                 "5minute": "5 minutes"
               },
               "pick_statistic": "Add a statistic",
