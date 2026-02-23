@@ -126,6 +126,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
           );
         }
         ha-combo-box-item {
+          position: relative;
           background-color: var(--mdc-text-field-fill-color, whitesmoke);
           border-radius: var(--ha-border-radius-sm);
           border-end-end-radius: 0;
