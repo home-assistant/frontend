@@ -27,7 +27,6 @@ export class HaNumericStateTrigger extends LitElement {
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      entityId: string | string[],
       inputAboveIsEntity?: boolean,
       inputBelowIsEntity?: boolean
     ) =>
@@ -275,7 +274,6 @@ export class HaNumericStateTrigger extends LitElement {
   public render() {
     const schema = this._schema(
       this.hass.localize,
-      this.trigger.entity_id,
       this._inputAboveIsEntity,
       this._inputBelowIsEntity
     );
