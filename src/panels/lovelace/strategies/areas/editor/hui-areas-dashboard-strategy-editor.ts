@@ -295,7 +295,7 @@ export class HuiAreasDashboardStrategyEditor
           display: flex;
           align-items: center;
           margin: 0 -20px 8px -20px;
-          --mdc-icon-button-size: 36px;
+          --ha-icon-button-size: 36px;
           padding: 0 16px;
         }
         .toolbar p {

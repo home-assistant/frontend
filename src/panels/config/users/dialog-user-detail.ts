@@ -71,7 +71,6 @@ class DialogUserDetail extends LitElement {
         .open=${this._open}
         prevent-scrim-close
         header-title=${user.name}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div>
@@ -244,33 +243,26 @@ class DialogUserDetail extends LitElement {
         </div>
 
         <ha-dialog-footer slot="footer">
-        <ha-button
-          slot="secondaryAction"
-          variant="danger"
-          appearance="plain"
-          @click=${this._deleteEntry}
-            .disabled=${
-              this._submitting || user.system_generated || user.is_owner
-            }
-        >
-          ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
-        </ha-button>
-        <ha-button
+          <ha-button
             slot="secondaryAction"
-          appearance="plain"
-          @click=${this._close}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-            .disabled=${
-              !this._name || this._submitting || user.system_generated
-            }
-        >
-          ${this.hass!.localize("ui.common.save")}
-        </ha-button>
+            variant="danger"
+            appearance="plain"
+            @click=${this._deleteEntry}
+              .disabled=${
+                this._submitting || user.system_generated || user.is_owner
+              }
+          >
+            ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+              .disabled=${
+                !this._name || this._submitting || user.system_generated
+              }
+          >
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;

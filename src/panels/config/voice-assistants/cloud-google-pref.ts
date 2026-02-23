@@ -78,19 +78,16 @@ export class CloudGooglePref extends LitElement {
           >${this.hass.localize("ui.panel.config.cloud.account.google.title")}
         </h1>
         <div class="header-actions">
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.google.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircleOutline}
             href="https://www.nabucasa.com/config/google_assistant/"
             target="_blank"
             rel="noreferrer"
             class="icon-link"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.google.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircleOutline}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
           <ha-switch
             .checked=${google_enabled}
             @change=${this._enabledToggleChanged}

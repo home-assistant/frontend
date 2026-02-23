@@ -69,6 +69,16 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
+    const cancelButton = html`
+      <ha-button
+        appearance="plain"
+        slot="secondaryAction"
+        @click=${this.closeDialog}
+      >
+        ${this.hass.localize("ui.common.cancel")}
+      </ha-button>
+    `;
+
     return html`
       <ha-dialog
         .hass=${this.hass}
@@ -81,6 +91,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           : this.hass.localize(
               "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
             )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div>
@@ -117,9 +128,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                         )}
                       </ha-button>
                     `
-                  : nothing}
+                  : cancelButton}
               `
-            : nothing}
+            : cancelButton}
           <ha-button
             slot="primaryAction"
             @click=${this._updateDashboard}

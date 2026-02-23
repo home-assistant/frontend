@@ -39,6 +39,7 @@ import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -93,7 +94,6 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 interface ActionItem {
   icon: string;
@@ -221,17 +221,13 @@ class HUIRoot extends LitElement {
           >
             ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
           </ha-button>
-          <a
+          <ha-icon-button
+            .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/dashboards/")}
             rel="noreferrer"
-            class="menu-link"
             target="_blank"
-          >
-            <ha-icon-button
-              .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-              .path=${mdiHelpCircleOutline}
-            ></ha-icon-button>
-          </a>`
+          ></ha-icon-button>`
       );
     }
 
@@ -635,8 +631,11 @@ class HUIRoot extends LitElement {
     `;
   }
 
-  private _handleWindowScroll = () => {
-    this.toggleAttribute("scrolled", window.scrollY !== 0);
+  private _handleContainerScroll = () => {
+    this.toggleAttribute(
+      "scrolled",
+      this._viewRoot ? this._viewRoot.scrollTop !== 0 : false
+    );
   };
 
   private _locationChanged = () => {
@@ -667,7 +666,7 @@ class HUIRoot extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    window.addEventListener("scroll", this._handleWindowScroll, {
+    this._viewRoot?.addEventListener("scroll", this._handleContainerScroll, {
       passive: true,
     });
     this._handleUrlChanged();
@@ -678,7 +677,7 @@ class HUIRoot extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    window.addEventListener("scroll", this._handleWindowScroll, {
+    this._viewRoot?.addEventListener("scroll", this._handleContainerScroll, {
       passive: true,
     });
     window.addEventListener("popstate", this._handlePopState);
@@ -689,10 +688,13 @@ class HUIRoot extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    window.removeEventListener("scroll", this._handleWindowScroll);
+    this._viewRoot?.removeEventListener("scroll", this._handleContainerScroll);
     window.removeEventListener("popstate", this._handlePopState);
     window.removeEventListener("location-changed", this._locationChanged);
-    this.toggleAttribute("scrolled", window.scrollY !== 0);
+    this.toggleAttribute(
+      "scrolled",
+      this._viewRoot ? this._viewRoot.scrollTop !== 0 : false
+    );
     // Re-enable history scroll restoration when leaving the page
     window.history.scrollRestoration = "auto";
   }
@@ -825,9 +827,11 @@ class HUIRoot extends LitElement {
             (this._restoreScroll && this._viewScrollPositions[newSelectView]) ||
             0;
           this._restoreScroll = false;
-          requestAnimationFrame(() =>
-            scrollTo({ behavior: "auto", top: position })
-          );
+          requestAnimationFrame(() => {
+            if (this._viewRoot) {
+              this._viewRoot.scrollTo({ behavior: "auto", top: position });
+            }
+          });
         }
         this._selectView(newSelectView, force);
       });
@@ -1152,7 +1156,7 @@ class HUIRoot extends LitElement {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
     } else if (!this._editMode) {
-      scrollTo({ behavior: "smooth", top: 0 });
+      this._viewRoot?.scrollTo({ behavior: "smooth", top: 0 });
     }
   }
 
@@ -1163,7 +1167,7 @@ class HUIRoot extends LitElement {
 
     // Save scroll position of current view
     if (this._curView != null) {
-      this._viewScrollPositions[this._curView] = window.scrollY;
+      this._viewScrollPositions[this._curView] = this._viewRoot?.scrollTop ?? 0;
     }
 
     viewIndex = viewIndex === undefined ? 0 : viewIndex;
@@ -1370,6 +1374,7 @@ class HUIRoot extends LitElement {
           padding: 0;
         }
         ha-tab-group::part(scroll-button) {
+          inset-block-end: var(--safe-track-width);
           background-color: var(--app-header-background-color);
           background: linear-gradient(
             90deg,
@@ -1393,7 +1398,7 @@ class HUIRoot extends LitElement {
             transparent
           );
         }
-        .edit-mode ha-tab-group::part(scroll-button--end) {
+        .edit-mode ha-tab-group::part(scroll-button-end) {
           background: linear-gradient(
             270deg,
             var(--app-header-edit-background-color, #455a64),
@@ -1414,6 +1419,7 @@ class HUIRoot extends LitElement {
         }
         ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--header-height, 56px);
+          height: var(--ha-tab-group-tab-height);
         }
         .tab-bar ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--tab-bar-height, 56px);
@@ -1469,9 +1475,14 @@ class HUIRoot extends LitElement {
         hui-view-container {
           position: relative;
           display: flex;
-          min-height: 100vh;
+          height: calc(
+            100vh - var(--header-height) - var(--safe-area-inset-top) - var(
+                --view-container-padding-top,
+                0px
+              )
+          );
           box-sizing: border-box;
-          padding-top: calc(
+          margin-top: calc(
             var(--header-height) + var(--safe-area-inset-top) +
               var(--view-container-padding-top, 0px)
           );
@@ -1494,7 +1505,12 @@ class HUIRoot extends LitElement {
          * In edit mode we have the tab bar on a new line *
          */
         hui-view-container.has-tab-bar {
-          padding-top: calc(
+          height: calc(
+            100vh - var(--header-height, 56px) - calc(
+                var(--tab-bar-height, 56px) - 2px
+              ) - var(--safe-area-inset-top, 0px)
+          );
+          margin-top: calc(
             var(--header-height, 56px) +
               calc(var(--tab-bar-height, 56px) - 2px) +
               var(--safe-area-inset-top, 0px)
@@ -1502,9 +1518,6 @@ class HUIRoot extends LitElement {
         }
         .hide-tab {
           display: none;
-        }
-        .menu-link {
-          text-decoration: none;
         }
         .exit-edit-mode {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);

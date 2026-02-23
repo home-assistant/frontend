@@ -4,10 +4,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import type { HaSelectSelectEvent } from "./ha-select";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-select";
+import type { HaSelectSelectEvent } from "./ha-select";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -368,7 +368,7 @@ export class HaBaseTimeInput extends LitElement {
     }
     ha-icon-button {
       position: relative;
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);

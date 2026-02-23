@@ -6,11 +6,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { withViewTransition } from "../../../../common/util/view-transition";
+import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-button";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { ensureBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -37,7 +38,6 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-badge-element-editor";
 import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
 import type { EditBadgeDialogParams } from "./show-edit-badge-dialog";
-import { withViewTransition } from "../../../../common/util/view-transition";
 
 declare global {
   // for fire event
@@ -82,8 +82,6 @@ export class HuiDialogEditBadge
 
   @state() private _dirty = false;
 
-  @state() private _isEscapeEnabled = true;
-
   public async showDialog(params: EditBadgeDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -126,9 +124,6 @@ export class HuiDialogEditBadge
 
   private _dialogClosed(): void {
     this._open = false;
-    this._isEscapeEnabled = true;
-    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
-    window.removeEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._params = undefined;
     this._badgeConfig = undefined;
     this._error = undefined;
@@ -154,16 +149,6 @@ export class HuiDialogEditBadge
         : undefined;
     }
   }
-
-  private _enableEscapeKeyClose = (ev: any) => {
-    if (ev.detail.dialog === "ha-more-info-dialog") {
-      this._isEscapeEnabled = true;
-    }
-  };
-
-  private _disableEscapeKeyClose = () => {
-    this._isEscapeEnabled = false;
-  };
 
   protected render() {
     if (!this._params) {
@@ -209,7 +194,7 @@ export class HuiDialogEditBadge
         .hass=${this.hass}
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
-        ?prevent-scrim-close=${!this._isEscapeEnabled}
+        prevent-scrim-close
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}
@@ -223,16 +208,15 @@ export class HuiDialogEditBadge
         <span slot="headerTitle" @click=${this._enlarge}>${heading}</span>
         ${this._documentationURL !== undefined
           ? html`
-              <a
+              <ha-icon-button
+                .path=${mdiHelpCircleOutline}
                 slot="headerActionItems"
-                href=${this._documentationURL}
+                .href=${this._documentationURL}
                 title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
                 target="_blank"
                 rel="noreferrer"
                 dir=${computeRTLDirection(this.hass)}
-              >
-                <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
-              </a>
+              ></ha-icon-button>
             `
           : nothing}
         <div class="content">
@@ -334,8 +318,6 @@ export class HuiDialogEditBadge
   }
 
   private _opened() {
-    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
-    window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._badgeEditorEl?.focusYamlEditor();
   }
 
@@ -496,9 +478,8 @@ export class HuiDialogEditBadge
           margin-inline-end: auto;
           margin-inline-start: initial;
         }
-        ha-dialog a[slot="headerActionItems"] {
-          color: inherit;
-          text-decoration: none;
+        ha-dialog ha-icon-button[slot="headerActionItems"] {
+          color: var(--secondary-text-color);
         }
       `,
     ];
