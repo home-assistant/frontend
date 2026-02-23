@@ -9,7 +9,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -88,8 +88,6 @@ class ZHAConfigDashboard extends LitElement {
   @state() private _error?: string;
 
   @state() private _generatingBackup = false;
-
-  @query("#config-save-button") private _configSaveButton?: HaProgressButton;
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
@@ -292,7 +290,6 @@ class ZHAConfigDashboard extends LitElement {
                     </div>
                     <div class="card-actions">
                       <ha-progress-button
-                        id="config-save-button"
                         appearance="filled"
                         variant="brand"
                         @click=${this._updateConfiguration}
@@ -417,15 +414,16 @@ class ZHAConfigDashboard extends LitElement {
     this._configuration!.data[ev.currentTarget!.section] = ev.detail.value;
   }
 
-  private async _updateConfiguration(): Promise<any> {
-    this._configSaveButton!.progress = true;
+  private async _updateConfiguration(ev): Promise<any> {
+    const button = ev.currentTarget as HaProgressButton;
+    button.progress = true;
     try {
       await updateZHAConfiguration(this.hass!, this._configuration!.data);
-      this._configSaveButton!.actionSuccess();
+      button.actionSuccess();
     } catch (_err: any) {
-      this._configSaveButton!.actionError();
+      button.actionError();
     } finally {
-      this._configSaveButton!.progress = false;
+      button.progress = false;
     }
   }
 
