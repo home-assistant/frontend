@@ -107,20 +107,6 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     ) {
       this._initializeConfig();
     }
-
-    // Apply theme when config changes or when theme/darkMode changes
-    if (changedProperties.has("config")) {
-      this._applyTheme();
-    } else if (changedProperties.has("hass") && this.hass) {
-      const oldHass = changedProperties.get("hass");
-      if (
-        !oldHass ||
-        this.hass.themes !== oldHass.themes ||
-        this.hass.selectedTheme !== oldHass.selectedTheme
-      ) {
-        this._applyTheme();
-      }
-    }
   }
 
   public disconnectedCallback() {
@@ -138,6 +124,10 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       "card-visibility-changed",
       this._cardVisibilityChanged
     );
+    // Reapply theme on reconnect (e.g., after navigating away and back)
+    if (this.hass && this._config) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   protected update(changedProperties) {
@@ -151,6 +141,15 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
           element.hass = this.hass;
         });
         this._layoutElement.hass = this.hass;
+        // React to theme or dark mode changes
+        const oldHass = changedProperties.get("hass");
+        if (
+          !oldHass ||
+          this.hass.themes !== oldHass.themes ||
+          this.hass.selectedTheme !== oldHass.selectedTheme
+        ) {
+          applyThemesOnElement(this, this.hass.themes, this._config?.theme);
+        }
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
@@ -199,6 +198,8 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     }
 
     this._config = sectionConfig;
+    // Apply theme now that config is set (after potential strategy await)
+    applyThemesOnElement(this, this.hass!.themes, this._config.theme);
 
     // Create a new layout element if necessary.
     let addLayoutElement = false;
@@ -376,31 +377,6 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     );
   }
 
-  private _applyTheme(): void {
-    if (!this.hass || !this._config) {
-      return;
-    }
-
-    // For proper CSS cascade with nested themes, clear any previously applied
-    // theme variables from this section element before applying the new theme.
-    // This ensures that variables not defined in the section theme will inherit
-    // from the parent view theme (including dark mode overrides).
-    if (this._config.theme) {
-      // Remove all CSS custom properties previously set by themes on this element
-      const currentStyles = Array.from(this.style);
-      currentStyles.forEach((prop) => {
-        if (prop.startsWith("--")) {
-          this.style.removeProperty(prop);
-        }
-      });
-      // Clear theme tracking to prevent applyThemesOnElement from trying to reset old keys
-      (this as any).__themes = undefined;
-    }
-
-    // Apply the section's theme. Properties not defined in the section theme
-    // will naturally cascade from the parent view theme via CSS inheritance.
-    applyThemesOnElement(this, this.hass.themes, this._config.theme);
-  }
 }
 
 declare global {
