@@ -237,17 +237,18 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   private _handleKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Escape") {
       this._escapePressed = true;
+      ev.stopPropagation();
+      (ev.currentTarget as WaDialog).open = false;
     }
   }
 
   private _handleHide(ev: CustomEvent<{ source: Element }>) {
-    if (
-      this.preventScrimClose &&
-      this._escapePressed &&
-      ev.detail.source === (ev.target as WaDialog).dialog
-    ) {
+    const sourceIsDialog = ev.detail.source === (ev.target as WaDialog).dialog;
+
+    if (this.preventScrimClose && this._escapePressed && sourceIsDialog) {
       ev.preventDefault();
     }
+
     this._escapePressed = false;
   }
 

@@ -117,25 +117,27 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   };
 
   private _handleHide = (ev: CustomEvent<{ source: Element }>) => {
+    const sourceIsDrawer = ev.detail.source === (ev.target as WaDrawer).drawer;
+
     if (this._sliderInteractionActive) {
       ev.preventDefault();
       this._drawerOpen = true;
       this.open = true;
+      this._escapePressed = false;
       return;
     }
-    if (
-      this.preventScrimClose &&
-      this._escapePressed &&
-      ev.detail.source === (ev.target as WaDrawer).drawer
-    ) {
+    if (this.preventScrimClose && this._escapePressed && sourceIsDrawer) {
       ev.preventDefault();
     }
+
     this._escapePressed = false;
   };
 
   private _handleKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === "Escape") {
       this._escapePressed = true;
+      ev.stopPropagation();
+      (ev.currentTarget as WaDrawer).open = false;
     }
   };
 
