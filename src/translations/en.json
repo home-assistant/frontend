@@ -7563,20 +7563,32 @@
         },
         "matter": {
           "panel": {
-            "thread_panel": "Visit Thread panel",
+            "thread_panel": "Thread settings",
+            "thread_panel_description": "Manage Thread network settings",
             "add_device": "Add device",
-            "status_title": "status",
-            "status_online": "online",
-            "status_offline": "offline",
+            "status_online": "Online",
+            "status_offline": "Offline",
+            "my_network_title": "My network",
             "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
-            "developer_tools_title": "Developer tools",
-            "developer_tools_description": "Advanced commissioning options for development",
-            "developer_tools_info": "These options are intended for developers and advanced users. In most cases, use the \"Add device\" button in the bottom right corner instead.",
-            "mobile_app_commisioning": "Commission device with mobile app",
-            "commission_device": "Commission device",
+            "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+            "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
+            "options_title": "Options",
+            "options_description": "Adding devices and network settings",
+            "mobile_app_commisioning": "Add with Companion app",
+            "mobile_app_commisioning_description": "Add a device by scanning its setup code",
+            "mobile_app_commisioning_action": "Start",
+            "commission_device": "Add manually",
+            "commission_device_description": "Add a device by entering its setup code",
+            "commission_device_action": "Add",
             "add_shared_device": "Add shared device",
+            "add_shared_device_description": "Accept a device shared from another controller",
+            "add_shared_device_action": "Add",
             "set_wifi_credentials": "Set Wi-Fi credentials",
+            "set_wifi_credentials_description": "Set the Wi-Fi credentials for Matter devices",
+            "set_wifi_credentials_action": "Set",
             "set_thread_credentials": "Set Thread credentials",
+            "set_thread_credentials_description": "Set the Thread operation dataset for Matter devices",
+            "set_thread_credentials_action": "Set",
             "prompts": {
               "network_name": {
                 "title": "Network name",
@@ -7589,9 +7601,9 @@
                 "confirm": "Set Wi-Fi"
               },
               "commission_device": {
-                "title": "Commission device",
+                "title": "Add device",
                 "input_label": "Code",
-                "confirm": "Commission"
+                "confirm": "Add"
               },
               "add_shared_device": {
                 "title": "Add shared device",
