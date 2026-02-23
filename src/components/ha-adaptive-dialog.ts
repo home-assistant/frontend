@@ -220,6 +220,7 @@ export class HaAdaptiveDialog extends LitElement {
     return [
       css`
         ha-bottom-sheet {
+          --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
           --ha-bottom-sheet-surface-background: var(
             --ha-dialog-surface-background,
             var(--card-background-color, var(--ha-color-surface-default))
