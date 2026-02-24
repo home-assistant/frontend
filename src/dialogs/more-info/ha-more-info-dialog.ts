@@ -44,10 +44,7 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
-import {
-  computeAdditionalMoreInfoAttributes,
-  computeMainViewShownAttributes,
-} from "../../data/entity/entity_attributes";
+import { computeAdditionalMoreInfoAttributes } from "../../data/entity/entity_attributes";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -362,27 +359,17 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     };
   }
 
-  private _computeAttributesMenuData(stateObj: HassEntity | undefined): {
-    hasAdditionalAttributes: boolean;
-    hasMainViewAttributes: boolean;
-  } {
+  private _computeAttributesMenuData(
+    stateObj: HassEntity | undefined
+  ): boolean {
     if (!stateObj) {
-      return { hasAdditionalAttributes: false, hasMainViewAttributes: false };
+      return false;
     }
 
     const moreInfoType = stateMoreInfoType(stateObj);
-    const hasAdditionalAttributes =
-      computeAdditionalMoreInfoAttributes(stateObj, moreInfoType).length > 0;
-
-    if (!hasAdditionalAttributes) {
-      return { hasAdditionalAttributes: false, hasMainViewAttributes: false };
-    }
-
-    return {
-      hasAdditionalAttributes: true,
-      hasMainViewAttributes:
-        computeMainViewShownAttributes(stateObj, moreInfoType).length > 0,
-    };
+    return (
+      computeAdditionalMoreInfoAttributes(stateObj, moreInfoType).length > 0
+    );
   }
 
   private _goToAddEntityTo(ev) {
@@ -410,8 +397,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
-    const { hasAdditionalAttributes, hasMainViewAttributes } =
-      this._computeAttributesMenuData(stateObj);
+    const hasAdditionalAttributes = this._computeAttributesMenuData(stateObj);
 
     const isAdmin = this.hass.user!.is_admin;
 
@@ -615,13 +601,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 slot="icon"
                                 .path=${mdiFormatListBulletedSquare}
                               ></ha-svg-icon>
-                              ${hasMainViewAttributes
-                                ? this.hass.localize(
-                                    "ui.dialogs.more_info_control.extra_attributes"
-                                  )
-                                : this.hass.localize(
-                                    "ui.dialogs.more_info_control.attributes"
-                                  )}
+                              ${this.hass.localize(
+                                "ui.dialogs.more_info_control.attributes"
+                              )}
                             </ha-dropdown-item>
                           `
                         : nothing}
