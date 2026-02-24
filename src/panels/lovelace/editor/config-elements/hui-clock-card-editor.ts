@@ -107,16 +107,7 @@ export class HuiClockCardEditor
           name: "date_format",
           required: false,
           selector: {
-            select: {
-              multiple: true,
-              reorder: true,
-              options: CLOCK_CARD_DATE_PARTS.map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.clock.date.parts.${value}`
-                ),
-              })),
-            },
+            ui_clock_date_format: {},
           },
         },
         ...(clockStyle === "digital"
