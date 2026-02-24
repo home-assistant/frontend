@@ -1,12 +1,13 @@
 import { mdiMenu } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { createRef, ref } from "lit/directives/ref";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
+import { computeRouteTail } from "../../common/url/route";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-icon-button";
 import type { HassioAddonDetails } from "../../data/hassio/addon";
@@ -24,7 +25,6 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/hass-loading-screen";
-import { computeRouteTail } from "../../common/url/route";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 
 interface AppPanelConfig {
@@ -43,7 +43,7 @@ class HaPanelApp extends LitElement {
 
   @property({ attribute: false }) public panel!: PanelInfo<AppPanelConfig>;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _addon?: HassioAddonDetails;
 
@@ -464,6 +464,11 @@ class HaPanelApp extends LitElement {
       border-bottom: var(--app-header-border-bottom, none);
       box-sizing: border-box;
       --mdc-icon-size: 20px;
+    }
+
+    :host([narrow]) .header {
+      height: calc(40px + var(--safe-area-inset-top, 0px));
+      padding-top: var(--safe-area-inset-top, 0);
     }
 
     .main-title {
