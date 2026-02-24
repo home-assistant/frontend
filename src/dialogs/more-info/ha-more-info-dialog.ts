@@ -44,7 +44,10 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
-import { computeAdditionalMoreInfoAttributes } from "../../data/entity/entity_attributes";
+import {
+  MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS,
+  computeShownAttributes,
+} from "../../data/entity/entity_attributes";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -366,10 +369,29 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       return false;
     }
 
+    const shownAttributes = computeShownAttributes(stateObj);
+    if (shownAttributes.length === 0) {
+      return false;
+    }
+
     const moreInfoType = stateMoreInfoType(stateObj);
-    return (
-      computeAdditionalMoreInfoAttributes(stateObj, moreInfoType).length > 0
+    const hasMainViewAttributesSection = Object.prototype.hasOwnProperty.call(
+      MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS,
+      moreInfoType
     );
+
+    if (!hasMainViewAttributesSection) {
+      return true;
+    }
+
+    const mainViewExtraFilters =
+      MORE_INFO_MAIN_VIEW_EXTRA_ATTRIBUTE_FILTERS[moreInfoType] || [];
+
+    const hasVisibleMainViewAttributes = shownAttributes.some(
+      (attribute) => mainViewExtraFilters.indexOf(attribute) === -1
+    );
+
+    return !hasVisibleMainViewAttributes;
   }
 
   private _goToAddEntityTo(ev) {
@@ -397,7 +419,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
-    const hasAdditionalAttributes = this._computeAttributesMenuData(stateObj);
+    const showAttributesMenuItem = this._computeAttributesMenuData(stateObj);
 
     const isAdmin = this.hass.user!.is_admin;
 
@@ -594,7 +616,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                           "ui.dialogs.more_info_control.related"
                         )}
                       </ha-dropdown-item>
-                      ${hasAdditionalAttributes
+                      ${showAttributesMenuItem
                         ? html`
                             <ha-dropdown-item value="attributes">
                               <ha-svg-icon
