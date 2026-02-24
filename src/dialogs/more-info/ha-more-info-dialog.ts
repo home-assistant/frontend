@@ -83,6 +83,7 @@ export interface MoreInfoDialogParams {
   tab?: View;
   large?: boolean;
   data?: Record<string, any>;
+  parentElement?: LitElement;
 }
 
 type View = "info" | "history" | "settings" | "related" | "add_to";

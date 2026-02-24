@@ -1,4 +1,4 @@
-import type { LitElement, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { showDialog } from "../dialogs/make-dialog-manager";
@@ -26,9 +26,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private async _handleMoreInfo(ev: HASSDomEvent<MoreInfoDialogParams>) {
-      const target = (ev.composedPath()[0] || ev.target) as LitElement;
       showDialog(
-        target,
         this,
         "ha-more-info-dialog",
         {
@@ -43,7 +41,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
               : false),
           data: ev.detail.data,
         },
-        () => import("../dialogs/more-info/ha-more-info-dialog")
+        () => import("../dialogs/more-info/ha-more-info-dialog"),
+        ev.detail.parentElement
       );
     }
   };

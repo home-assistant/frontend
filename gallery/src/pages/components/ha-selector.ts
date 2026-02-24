@@ -8,6 +8,7 @@ import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
+import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
@@ -16,7 +17,10 @@ import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
-import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
+import {
+  showDialog,
+  type ShowDialogParams,
+} from "../../../../src/dialogs/make-dialog-manager";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
@@ -611,10 +615,17 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     };
   };
 
-  private _dialogManager = (e) => {
-    const { dialogTag, dialogImport, dialogParams, addHistory } = e.detail;
-    const target = (e.composedPath()[0] || e.target) as LitElement;
-    showDialog(target, this, dialogTag, dialogParams, dialogImport, addHistory);
+  private _dialogManager = (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
+    const { dialogTag, dialogImport, dialogParams, addHistory, parentElement } =
+      e.detail;
+    showDialog(
+      this,
+      dialogTag,
+      dialogParams,
+      dialogImport,
+      parentElement,
+      addHistory
+    );
   };
 
   protected render(): TemplateResult {

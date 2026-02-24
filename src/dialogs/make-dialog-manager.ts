@@ -30,11 +30,12 @@ export interface HassDialogNext<T = unknown> extends HTMLElement {
   closeDialog?: (historyState?: any) => Promise<boolean> | boolean;
 }
 
-interface ShowDialogParams<T> {
+export interface ShowDialogParams<T> {
   dialogTag: keyof HTMLElementTagNameMap;
   dialogImport: () => Promise<unknown>;
   dialogParams: T;
   addHistory?: boolean;
+  parentElement?: LitElement;
 }
 
 export interface DialogClosedParams {
@@ -60,12 +61,24 @@ const LOADED: LoadedDialogsDict = {};
 const OPEN_DIALOG_STACK: DialogState[] = [];
 export const FOCUS_TARGET = Symbol.for("HA focus target");
 
+/**
+ * Shows a dialog element, lazy-loading it if needed, and optionally integrates
+ * dialog open/close behavior with browser history.
+ *
+ * @param element The host element that can provide `hass` and receives the dialog by default.
+ * @param dialogTag The custom element tag name of the dialog.
+ * @param dialogParams The params passed to the dialog via `showDialog()` or `params`.
+ * @param dialogImport Optional lazy import used when the dialog has not been loaded yet.
+ * @param parentElement Optional parent to append the dialog to instead of root element.
+ * @param addHistory Whether to add/update browser history so back navigation closes dialogs.
+ * @returns `true` if the dialog was shown (or could be shown), `false` if it could not be loaded.
+ */
 export const showDialog = async (
-  eventTarget: LitElement,
-  element: HTMLElement & ProvideHassElement,
+  element: LitElement & ProvideHassElement,
   dialogTag: string,
   dialogParams: unknown,
   dialogImport?: () => Promise<unknown>,
+  parentElement?: LitElement,
   addHistory = true
 ): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
@@ -106,11 +119,11 @@ export const showDialog = async (
         setTimeout(resolve);
       });
       return showDialog(
-        eventTarget,
         element,
         dialogTag,
         dialogParams,
         dialogImport,
+        parentElement,
         addHistory
       );
     }
@@ -161,7 +174,7 @@ export const showDialog = async (
     dialogElement!.params = dialogParams;
   }
 
-  eventTarget.shadowRoot!.appendChild(dialogElement!);
+  (parentElement || element).shadowRoot!.appendChild(dialogElement!);
 
   return true;
 };
@@ -246,21 +259,24 @@ const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
   }
 };
 
-export const makeDialogManager = (
-  element: HTMLElement & ProvideHassElement
-) => {
+export const makeDialogManager = (element: LitElement & ProvideHassElement) => {
   element.addEventListener(
     "show-dialog",
     (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
-      const { dialogTag, dialogImport, dialogParams, addHistory } = e.detail;
-      const target = (e.composedPath()[0] || e.target) as LitElement;
+      const {
+        dialogTag,
+        dialogImport,
+        dialogParams,
+        addHistory,
+        parentElement,
+      } = e.detail;
 
       showDialog(
-        target,
         element,
         dialogTag,
         dialogParams,
         dialogImport,
+        parentElement,
         addHistory
       );
     }
