@@ -302,8 +302,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         --ha-card-border-radius,
         var(--ha-border-radius-lg)
       );
-      margin-bottom: 16px;
       overflow: hidden;
+    }
+    .header:not(:has(> hui-buttons-header-footer)) {
+      margin-bottom: var(--ha-space-4);
     }
 
     .footer {
