@@ -219,7 +219,7 @@
       "toggle-group": {
         "all_off": "All off",
         "all_on": "All on",
-        "some_on": "{on_count} of {total_count} on"
+        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}"
       },
       "discovered-devices": {
         "title": "Devices discovered",
@@ -8086,8 +8086,7 @@
           },
           "light": {
             "lights": "Lights",
-            "other_lights": "Other lights",
-            "all_lights": "All lights"
+            "other_lights": "Other lights"
           },
           "security": {
             "devices": "Devices",
