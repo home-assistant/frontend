@@ -119,7 +119,7 @@ class HaPanelApp extends LitElement {
       ${!this._kioskMode &&
       (this.narrow || this.hass.dockedSidebar === "always_hidden")
         ? html`
-            <div class="header ${classMap({ narrow: this.narrow })}">
+            <div class="header">
               <ha-icon-button
                 .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
                 .path=${mdiMenu}
@@ -130,7 +130,10 @@ class HaPanelApp extends LitElement {
           `
         : nothing}
       <iframe
-        class=${classMap({ loaded: this._iframeLoaded })}
+        class=${classMap({
+          loaded: this._iframeLoaded,
+          "kiosk-mode": this._kioskMode,
+        })}
         title=${this._addon.name}
         src=${this._addon.ingress_url!}
         @load=${this._checkLoaded}
@@ -443,16 +446,22 @@ class HaPanelApp extends LitElement {
       transition: opacity var(--ha-animation-duration-normal) ease;
     }
 
-    :host([narrow]) iframe {
-      --safe-area-inset-top: 0px;
-    }
-
     iframe.loaded {
       opacity: 1;
     }
 
     .header + iframe {
       height: calc(100% - 40px);
+    }
+
+    :host([narrow]) iframe {
+      padding-top: var(--safe-area-inset-top);
+      height: calc(100% - var(--safe-area-inset-top, 0px));
+    }
+
+    :host([narrow]) .header + iframe {
+      padding-top: 0;
+      height: calc(100% - 40px - var(--safe-area-inset-top, 0px));
     }
 
     .header {
