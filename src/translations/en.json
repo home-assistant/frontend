@@ -219,7 +219,7 @@
       "toggle-group": {
         "all_off": "All off",
         "all_on": "All on",
-        "some_on": "{on_count} sur {total_count} {on_count, plural, one {on} other {on}}"
+        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}"
       },
       "discovered-devices": {
         "title": "Devices discovered",
