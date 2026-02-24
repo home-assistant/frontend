@@ -443,6 +443,10 @@ class HaPanelApp extends LitElement {
       transition: opacity var(--ha-animation-duration-normal) ease;
     }
 
+    :host([narrow]) iframe {
+      --safe-area-inset-top: 0px;
+    }
+
     iframe.loaded {
       opacity: 1;
     }
