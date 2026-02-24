@@ -26,12 +26,12 @@ import { showCategoryRegistryDetailDialog } from "../panels/config/category/show
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-dropdown";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-list";
 import "./ha-list-item";
-import type { HaDropdownSelectEvent } from "./ha-dropdown";
 
 @customElement("ha-filter-categories")
 export class HaFilterCategories extends SubscribeMixin(LitElement) {
@@ -317,7 +317,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
           --mdc-list-item-meta-size: auto;
           --mdc-list-side-padding-right: var(--ha-space-1);
           --mdc-list-side-padding-left: var(--ha-space-4);
-          --mdc-icon-button-size: 36px;
+          --ha-icon-button-size: 36px;
         }
         ha-list-item {
           --mdc-list-item-graphic-margin: var(--ha-space-4);

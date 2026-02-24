@@ -73,7 +73,7 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
     return stateColorCss(onEntities[0]);
   }
 
-  private _computeSecondary(): string {
+  private _computeLabel(): string {
     if (!this.hass || !this._config) return "";
     const onCount = this._getOnEntities().length;
     const total = this._config.entities.length;
@@ -117,6 +117,10 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
     const style = {
       "--tile-color": color,
     };
+
+    const label = this._computeLabel();
+    const primary = this._config.title || label;
+    const secondary = this._config.title ? label : undefined;
     return html`
       <ha-card style=${styleMap(style)}>
         <ha-tile-container .vertical=${Boolean(this._config.vertical)}>
@@ -128,8 +132,8 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
           ></ha-tile-icon>
           <ha-tile-info
             slot="info"
-            .primary=${this._config.title}
-            .secondary=${this._computeSecondary()}
+            .primary=${primary}
+            .secondary=${secondary}
           ></ha-tile-info>
         </ha-tile-container>
       </ha-card>

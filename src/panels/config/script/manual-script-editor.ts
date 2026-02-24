@@ -1,5 +1,5 @@
 import { ContextProvider } from "@lit/context";
-import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
+import { mdiContentSave, mdiHelpCircleOutline } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -175,21 +175,18 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
                   "ui.panel.config.script.editor.field.fields"
                 )}
               </h2>
-              <a
+              <ha-icon-button
+                .path=${mdiHelpCircleOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.script.editor.field.link_help_fields"
+                )}
                 href=${documentationUrl(
                   this.hass,
                   "/integrations/script/#fields"
                 )}
                 target="_blank"
                 rel="noreferrer"
-              >
-                <ha-icon-button
-                  .path=${mdiHelpCircle}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.script.editor.field.link_help_fields"
-                  )}
-                ></ha-icon-button>
-              </a>
+              ></ha-icon-button>
             </div>
 
             <ha-script-fields
@@ -212,18 +209,6 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
       <h2 id="sequence-heading" class="name">
         ${this.hass.localize("ui.panel.config.script.editor.sequence")}
       </h2>
-      <a
-        href=${documentationUrl(this.hass, "/docs/scripts/")}
-        target="_blank"
-        rel="noreferrer"
-      >
-        <ha-icon-button
-          .path=${mdiHelpCircle}
-          .label=${this.hass.localize(
-            "ui.panel.config.script.editor.link_available_actions"
-          )}
-        ></ha-icon-button>
-      </a>
     </div>
 
     <ha-automation-action
@@ -666,6 +651,10 @@ export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
 
         .description {
           margin-top: 16px;
+        }
+
+        ha-icon-button {
+          color: var(--secondary-text-color);
         }
       `,
     ];

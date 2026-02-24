@@ -41,10 +41,10 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     }
 
     const hasGrid = prefs.energy_sources.find(
-      (source) =>
+      (source): source is GridSourceTypeEnergyPreference =>
         source.type === "grid" &&
-        (source.flow_from?.length || source.flow_to?.length)
-    ) as GridSourceTypeEnergyPreference;
+        (!!source.stat_energy_from || !!source.stat_energy_to)
+    );
     const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
@@ -56,12 +56,14 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       (source) => source.type === "water"
     );
     const hasWaterDevices = prefs.device_consumption_water?.length;
-    const hasPowerSources = prefs.energy_sources.find(
-      (source) =>
-        (source.type === "solar" && source.stat_rate) ||
-        (source.type === "battery" && source.stat_rate) ||
-        (source.type === "grid" && source.power?.length)
-    );
+    const hasPowerSources = prefs.energy_sources.find((source) => {
+      if (source.type === "solar" && source.stat_rate) return true;
+      if (source.type === "battery" && source.stat_rate) return true;
+      if (source.type === "grid") {
+        return !!source.stat_rate || !!source.power_config;
+      }
+      return false;
+    });
 
     if (hasGrid || hasBattery || hasSolar) {
       view.sections!.push({
@@ -119,7 +121,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
               "ui.panel.energy.cards.energy_usage_graph_title"
             ),
             type: "energy-usage-graph",
-            collection_key: "energy_dashboard",
+            collection_key: collectionKey,
           },
         ],
       });

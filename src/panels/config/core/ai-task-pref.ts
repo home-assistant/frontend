@@ -1,8 +1,10 @@
-import { mdiHelpCircle, mdiStarFourPoints } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { mdiHelpCircleOutline, mdiStarFourPoints } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
@@ -17,8 +19,6 @@ import {
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 
 const filterGenData = (entity: HassEntity) =>
   computeDomain(entity.entity_id) === "ai_task" &&
@@ -65,19 +65,16 @@ export class AITaskPref extends LitElement {
           />${this.hass.localize("ui.panel.config.ai_task.header")}
         </h1>
         <div class="header-actions">
-          <a
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
+            )}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/integrations/ai_task/")}
             target="_blank"
             rel="noreferrer"
             class="icon-link"
-          >
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>
+          ></ha-icon-button>
         </div>
         <div class="card-content">
           <p>
@@ -178,9 +175,6 @@ export class AITaskPref extends LitElement {
     .card-header img {
       max-width: 28px;
       margin-right: 16px;
-    }
-    a {
-      color: var(--primary-color);
     }
     ha-settings-row {
       padding: 0;

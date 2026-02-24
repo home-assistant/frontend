@@ -126,6 +126,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
           );
         }
         ha-combo-box-item {
+          position: relative;
           background-color: var(--mdc-text-field-fill-color, whitesmoke);
           border-radius: var(--ha-border-radius-sm);
           border-end-end-radius: 0;
@@ -184,8 +185,8 @@ export class HaPickerField extends PickerMixin(LitElement) {
 
         .clear {
           margin: 0 -8px;
-          --mdc-icon-button-size: 32px;
-          --mdc-icon-size: 20px;
+          --ha-icon-button-size: 32px;
+          --ha-icon-button-padding-inline: var(--ha-space-1);
         }
         .arrow {
           --mdc-icon-size: 20px;

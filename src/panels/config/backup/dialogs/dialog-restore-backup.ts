@@ -11,7 +11,7 @@ import "../../../../components/ha-password-field";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { RestoreBackupParams } from "../../../../data/backup";
 import {
   fetchBackupConfig,
@@ -136,11 +136,10 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
-        width="medium"
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -163,7 +162,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
           : this._step === "confirm" || this._step === "encryption"
             ? this._renderConfirmActions()
             : nothing}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

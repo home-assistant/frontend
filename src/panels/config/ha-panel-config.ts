@@ -10,7 +10,6 @@ import {
   mdiDevices,
   mdiFlask,
   mdiHammer,
-  mdiInformation,
   mdiInformationOutline,
   mdiLabel,
   mdiLightningBolt,
@@ -297,6 +296,15 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#3263C3",
     },
   ],
+  developer_tools: [
+    {
+      path: "/config/developer-tools",
+      translationKey: "ui.panel.config.dashboard.developer_tools.main",
+      iconPath: mdiHammer,
+      iconColor: "#7A5AA6",
+      core: true,
+    },
+  ],
   // Not used as a tab, but this way it will stay in the quick bar
   energy: [
     {
@@ -483,7 +491,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "info",
       path: "/config/info",
       translationKey: "ui.panel.config.info.caption",
-      iconPath: mdiInformation,
+      iconPath: mdiInformationOutline,
       iconColor: "#4A5963",
       core: true,
     },

@@ -10,7 +10,7 @@ import "../../components/ha-textfield";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-svg-icon";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
 import { showToast } from "../../util/toast";
@@ -70,7 +70,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._token
@@ -171,7 +171,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
                 ${this.hass.localize("ui.common.close")}
               </ha-button>`}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

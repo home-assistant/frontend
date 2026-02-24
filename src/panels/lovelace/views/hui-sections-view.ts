@@ -30,6 +30,7 @@ import {
 import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
 import { generateDefaultSection } from "./default-section";
+import "./hui-view-footer";
 import "./hui-view-header";
 import "./hui-view-sidebar";
 
@@ -155,7 +156,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const maxColumnCount = this._columnsController.value ?? 1;
 
-    const columnCount = Math.min(maxColumnCount, totalSectionCount);
+    const columnCount = Math.max(
+      Math.min(maxColumnCount, totalSectionCount),
+      1
+    );
     // On mobile with sidebar, use full width for whichever view is active
     const contentColumnCount =
       hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
@@ -305,6 +309,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               `
             : nothing}
         </div>
+        <hui-view-footer
+          .hass=${this.hass}
+          .lovelace=${this.lovelace}
+          .viewIndex=${this.index}
+          .config=${this._config?.footer}
+        ></hui-view-footer>
         <div class="imported-cards-section">
           ${editMode && this._config?.cards?.length
             ? html`
@@ -408,11 +418,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _toggleView() {
+    // The scroll container is the hui-view-container parent
+    const scrollContainer = this.closest("hui-view-container");
+    const scrollTop = scrollContainer?.scrollTop ?? 0;
+
     // Save current scroll position
     if (this._sidebarTabActive) {
-      this._sidebarScrollTop = window.scrollY;
+      this._sidebarScrollTop = scrollTop;
     } else {
-      this._contentScrollTop = window.scrollY;
+      this._contentScrollTop = scrollTop;
     }
 
     this._sidebarTabActive = !this._sidebarTabActive;
@@ -428,7 +442,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       const scrollY = this._sidebarTabActive
         ? this._sidebarScrollTop
         : this._contentScrollTop;
-      window.scrollTo(0, scrollY);
+      scrollContainer?.scrollTo(0, scrollY);
     });
   }
 
@@ -647,6 +661,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     hui-view-header {
       display: block;
       padding-top: var(--row-gap);
+    }
+
+    hui-view-footer {
+      display: block;
     }
 
     .imported-cards {

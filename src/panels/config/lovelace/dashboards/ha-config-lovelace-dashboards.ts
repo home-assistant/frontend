@@ -50,8 +50,12 @@ import {
   DEFAULT_PANEL,
   getPanelIcon,
   getPanelTitle,
+  updatePanel,
 } from "../../../../data/panel";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../../types";
@@ -60,6 +64,7 @@ import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboar
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
+import { showPanelDetailDialog } from "./show-dialog-panel-detail";
 
 export const PANEL_DASHBOARDS = [
   "home",
@@ -282,6 +287,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 action: () => this._handleSetAsDefault(dashboard),
                 disabled: dashboard.default,
               },
+              ...(dashboard.type === "built_in"
+                ? [
+                    {
+                      path: mdiPencil,
+                      label: this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.picker.edit"
+                      ),
+                      action: () => this._handleEditPanel(dashboard),
+                    },
+                  ]
+                : []),
               ...(dashboard.type === "user_created" &&
               dashboard.mode === "storage"
                 ? [
@@ -313,23 +329,27 @@ export class HaConfigLovelaceDashboards extends LitElement {
   );
 
   private _getItems = memoize(
-    (dashboards: LovelaceDashboard[], defaultUrlPath: string | null) => {
+    (
+      dashboards: LovelaceDashboard[],
+      defaultUrlPath: string | null,
+      panels: HomeAssistant["panels"]
+    ) => {
       const result: DataTableItem[] = [];
 
       PANEL_DASHBOARDS.forEach((panel) => {
-        const panelInfo = this.hass.panels[panel];
+        const panelInfo = panels[panel];
         if (!panelInfo) {
           return;
         }
         const item: DataTableItem = {
           icon: getPanelIcon(panelInfo),
           title: getPanelTitle(this.hass, panelInfo) || panelInfo.url_path,
-          show_in_sidebar: true,
+          show_in_sidebar: panelInfo.title != null,
           mode: "storage",
           url_path: panelInfo.url_path,
           filename: "",
           default: defaultUrlPath === panelInfo.url_path,
-          require_admin: false,
+          require_admin: panelInfo.require_admin || false,
           type: "built_in",
           localized_type: this._localizeType("built_in"),
         };
@@ -381,7 +401,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
           this._dashboards,
           this.hass.localize
         )}
-        .data=${this._getItems(this._dashboards, defaultPanel)}
+        .data=${this._getItems(
+          this._dashboards,
+          defaultPanel,
+          this.hass.panels
+        )}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
@@ -452,8 +476,39 @@ export class HaConfigLovelaceDashboards extends LitElement {
     this._openDetailDialog(dashboard, urlPath);
   }
 
+  private _handleEditPanel(item: DataTableItem) {
+    const panelInfo = this.hass.panels[item.url_path];
+    if (!panelInfo) {
+      return;
+    }
+    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
+    showPanelDetailDialog(this, {
+      urlPath: panelInfo.url_path,
+      title: getPanelTitle(this.hass, panelInfo) || panelInfo.url_path,
+      icon: getPanelIcon(panelInfo),
+      requireAdmin: panelInfo.require_admin || false,
+      showInSidebar: panelInfo.title != null,
+      isDefault: panelInfo.url_path === defaultPanel,
+      updatePanel: async (values) => {
+        await updatePanel(this.hass!, panelInfo.url_path, values);
+      },
+    });
+  }
+
   private _handleSetAsDefault = async (item: DataTableItem) => {
     if (item.default) {
+      return;
+    }
+
+    if (item.require_admin) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.detail.set_default_admin_only_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.detail.set_default_admin_only_text"
+        ),
+      });
       return;
     }
 
@@ -524,9 +579,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
     urlPath?: string,
     defaultConfig?: LovelaceRawConfig
   ): Promise<void> {
+    const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
     showDashboardDetailDialog(this, {
       dashboard,
       urlPath,
+      isDefault: dashboard?.url_path === defaultPanel,
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
         this._dashboards = this._dashboards!.concat(created).sort(

@@ -194,7 +194,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   .image=${this.image}
                   .label=${label}
                   .placeholder=${this.placeholder}
-                  .helper=${this.helper}
                   .value=${this.value}
                   .valueRenderer=${this.valueRenderer}
                   .required=${this.required}
@@ -432,6 +431,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
         wa-popover {
           --wa-space-l: 0;
+        }
+
+        wa-popover::part(dialog)::backdrop {
+          background: none;
         }
 
         wa-popover::part(body) {
