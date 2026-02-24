@@ -1,7 +1,7 @@
 import type { LitElement } from "lit";
 import { ancestorsWithProperty } from "../common/dom/ancestors-with-property";
 import { deepActiveElement } from "../common/dom/deep-active-element";
-import type { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { nextRender } from "../common/util/render-status";
 import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
@@ -20,16 +20,12 @@ declare global {
   }
 }
 
-export interface HassDialog<
-  T = HASSDomEvents[ValidHassDomEvent],
-> extends HTMLElement {
+export interface HassDialog<T = unknown> extends HTMLElement {
   showDialog(params: T);
   closeDialog?: (historyState?: any) => Promise<boolean> | boolean;
 }
 
-export interface HassDialogNext<
-  T = HASSDomEvents[ValidHassDomEvent],
-> extends HTMLElement {
+export interface HassDialogNext<T = unknown> extends HTMLElement {
   params?: T;
   closeDialog?: (historyState?: any) => Promise<boolean> | boolean;
 }
