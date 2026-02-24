@@ -8883,7 +8883,7 @@
             },
             "energy-date-selection": {
               "name": "Energy date picker",
-              "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
+              "description": "The Energy data picker card allows you to pick what data to show on linked statistics graphs and other energy cards.",
               "disable_compare": "Disable data comparison",
               "vertical_opening_direction": "Vertical opening direction",
               "vertical_opening_directions": {
@@ -8894,33 +8894,33 @@
             },
             "energy-distribution": {
               "name": "Energy distribution",
-              "description": "The energy distribution card shows how the energy flowed between energy sources and the home.",
+              "description": "The Energy distribution card shows how the energy flowed between energy sources and the home.",
               "link_dashboard": "Link to energy dashboard"
             },
             "energy-usage-graph": {
               "name": "Energy usage graph",
-              "description": "The energy usage graph card shows the amount of energy your house has consumed, and from what source this energy came."
+              "description": "The Energy usage graph card shows the amount of energy your house has consumed, and from what source this energy came."
             },
             "energy-solar-graph": {
               "name": "Solar production graph",
-              "description": "The solar production graph card shows the amount of energy your solar panels have produced."
+              "description": "The Solar production graph card shows the amount of energy your solar panels have produced."
             },
             "energy-gas-graph": {
               "name": "Gas consumption graph",
-              "description": "The gas consumption graph card shows the amount of gas consumed per source."
+              "description": "The Gas consumption graph card shows the amount of gas consumed per source."
             },
             "energy-water-graph": {
               "name": "Water consumption graph",
-              "description": "The water consumption graph card shows the amount of water consumed per source."
+              "description": "The Water consumption graph card shows the amount of water consumed per source."
             },
             "power-sources-graph": {
               "name": "Power sources graph",
-              "description": "The power sources graph shows historical power data.",
+              "description": "The Power sources graph card shows historical power data.",
               "show_legend": "Show legend"
             },
             "energy-devices-graph": {
-              "name": "Devices energy graph",
-              "description": "The devices energy graph shows the energy usage per device, it is sorted by usage.",
+              "name": "Device energy graph",
+              "description": "The Device energy graph card shows the energy usage per device, it is sorted by usage.",
               "max_devices": "Maximum devices allowed",
               "hide_compound_stats": "Hide higher level devices",
               "modes": "Chart display mode",
@@ -8930,12 +8930,12 @@
               }
             },
             "energy-devices-detail-graph": {
-              "name": "Detail devices energy graph",
-              "description": "Similar to the Devices energy graph card, but shows the individual usage on a time scale."
+              "name": "Device energy detail graph",
+              "description": "The Device energy detail graph card shows energy usage per device over time."
             },
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
-              "description": "The Sankey energy graph shows the flow of energy in your home.",
+              "description": "The Electrical energy Sankey graph card shows the flow of energy in your home.",
               "type": "Type of Sankey graph",
               "group_by_floor": "Group entities by floor",
               "group_by_area": "Group entities by area",
@@ -8948,27 +8948,27 @@
             },
             "power-sankey": {
               "name": "Power Sankey graph",
-              "description": "The power Sankey graph shows the real-time flow of power in your home."
+              "description": "The Power Sankey graph card shows the real-time flow of power in your home."
             },
             "water-sankey": {
               "name": "Water Sankey graph",
-              "description": "The water Sankey graph shows the flow of water consumption in your home."
+              "description": "The Water Sankey graph card shows the flow of water consumption in your home."
             },
             "energy-solar-consumed-gauge": {
               "name": "Solar consumed gauge",
-              "description": "Represents how much of the solar energy was used by your home and was not returned to the grid."
+              "description": "The Solar consumed gauge card shows how much of the solar energy was used by your home and was not returned to the grid."
             },
             "energy-self-sufficiency-gauge": {
               "name": "Self-sufficiency gauge",
-              "description": "Represents how self-sufficient from the grid your home is."
+              "description": "The Self-sufficiency gauge card shows how self-sufficient from the grid your home is."
             },
             "energy-grid-neutrality-gauge": {
               "name": "Grid neutrality gauge",
-              "description": "Represents your energy dependency on the grid."
+              "description": "The Grid neutrality gauge card shows your energy dependency on the grid."
             },
             "energy-carbon-consumed-gauge": {
               "name": "Carbon consumed gauge",
-              "description": "Represents how much of the energy consumed by your home was generated using non-fossil fuels."
+              "description": "The Carbon consumed gauge card shows how much of the energy consumed by your home was generated using non-fossil fuels."
             },
             "statistics-graph": {
               "name": "Statistics graph",
