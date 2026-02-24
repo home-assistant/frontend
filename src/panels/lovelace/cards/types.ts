@@ -235,21 +235,33 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-carbon-consumed-gauge";
 }
 
+export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
+  type: "power-sources-graph";
+  show_legend?: boolean;
+}
+
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
   type: "energy-sankey";
+}
+
+export interface PowerSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "power-sankey";
 }
 
 export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "water-sankey";
 }
 
-export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
-  type: "power-sources-graph";
-  show_legend?: boolean;
+export interface PowerTotalCardConfig extends EnergyCardBaseConfig {
+  type: "power-total";
 }
 
-export interface PowerSankeyCardConfig extends EnergyCardSankeyConfig {
-  type: "power-sankey";
+export interface WaterTotalCardConfig extends EnergyCardBaseConfig {
+  type: "water-total";
+}
+
+export interface GasTotalCardConfig extends EnergyCardBaseConfig {
+  type: "gas-total";
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
