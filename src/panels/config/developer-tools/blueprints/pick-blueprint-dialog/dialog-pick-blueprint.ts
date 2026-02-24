@@ -4,19 +4,19 @@ import { mdiPencilOutline, mdiRobot, mdiScript } from "@mdi/js";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type {
   BlueprintDomain,
   ServerBlueprint,
 } from "../../../../../data/blueprint";
 import { isValidBlueprint } from "../../../../../data/blueprint";
+import type { PickBlueprintDialogParams } from "./show-dialog-pick-blueprint";
 
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import type { PickBlueprintDialogParams } from "./show-dialog-pick-blueprint";
+import "../../../../../components/ha-dialog";
 
 @customElement("ha-dialog-pick-blueprint")
 class HaDialogPickBlueprint extends LitElement implements HassDialog {
@@ -149,11 +149,8 @@ class HaDialogPickBlueprint extends LitElement implements HassDialog {
         open
         hideActions
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            `ui.panel.config.developer-tools.tabs.blueprints.dialog_pick.header`
-          )
+        header-title=${this.hass.localize(
+          `ui.panel.config.developer-tools.tabs.blueprints.dialog_pick.header`
         )}
       >
         ${this._renderList()}

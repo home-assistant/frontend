@@ -4,13 +4,13 @@ import memoizeOne from "memoize-one";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../../types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import type { ShowDialogNewInputParams } from "./show-dialog-new-input";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import { haStyleDialog } from "../../../../../resources/styles";
 
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-button";
-import { haStyleDialog } from "../../../../../resources/styles";
+import "../../../../../components/ha-dialog";
 
 @customElement("ha-dialog-new-input")
 class DialogNewInput extends LitElement implements HassDialog {
@@ -95,11 +95,8 @@ class DialogNewInput extends LitElement implements HassDialog {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            `ui.panel.config.developer-tools.tabs.blueprints.editor.inputs.add`
-          )
+        header-title=${this.hass.localize(
+          `ui.panel.config.developer-tools.tabs.blueprints.editor.inputs.add`
         )}
       >
         <ha-form
