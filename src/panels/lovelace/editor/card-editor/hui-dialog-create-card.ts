@@ -127,26 +127,30 @@ export class HuiCreateDialogCard
           ></ha-icon-button>
           <span slot="title">${title}</span>
 
-          <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-            <ha-tab-group-tab
-              slot="nav"
-              .active=${this._currTab === "card"}
-              panel="card"
-              ?autofocus=${this._narrow}
-            >
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.by_card"
-              )}
-            </ha-tab-group-tab>
-            <ha-tab-group-tab
-              slot="nav"
-              .active=${this._currTab === "entity"}
-              panel="entity"
-              >${this.hass!.localize(
-                "ui.panel.lovelace.editor.cardpicker.by_entity"
-              )}</ha-tab-group-tab
-            >
-          </ha-tab-group>
+          ${!this._params.saveCard
+            ? html`
+                <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+                  <ha-tab-group-tab
+                    slot="nav"
+                    .active=${this._currTab === "card"}
+                    panel="card"
+                    ?autofocus=${this._narrow}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.cardpicker.by_card"
+                    )}
+                  </ha-tab-group-tab>
+                  <ha-tab-group-tab
+                    slot="nav"
+                    .active=${this._currTab === "entity"}
+                    panel="entity"
+                    >${this.hass!.localize(
+                      "ui.panel.lovelace.editor.cardpicker.by_entity"
+                    )}</ha-tab-group-tab
+                  >
+                </ha-tab-group>
+              `
+            : nothing}
         </ha-dialog-header>
         ${cache(
           this._currTab === "card"
@@ -253,6 +257,17 @@ export class HuiCreateDialogCard
       } else if ("entity" in config) {
         config.entity = this._params!.entities[0];
       }
+    }
+
+    if (this._params!.saveCard) {
+      showEditCardDialog(this, {
+        lovelaceConfig: this._params!.lovelaceConfig,
+        saveCardConfig: this._params!.saveCard,
+        cardConfig: config,
+        isNew: true,
+      });
+      this.closeDialog();
+      return;
     }
 
     const lovelaceConfig = this._params!.lovelaceConfig;
