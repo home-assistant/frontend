@@ -257,6 +257,11 @@ export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
   show_legend?: boolean;
 }
 
+export interface PowerTotalCardConfig extends EnergyCardBaseConfig {
+  type: "power-total";
+  title?: string;
+}
+
 export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {
   type: "power-sankey";
   title?: string;

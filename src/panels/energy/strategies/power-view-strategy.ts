@@ -1,7 +1,7 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getEnergyDataCollection } from "../../../data/energy";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
@@ -14,11 +14,6 @@ export class PowerViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const view: LovelaceViewConfig = {
-      type: "sections",
-      sections: [{ type: "grid", cards: [] }],
-    };
-
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
 
@@ -40,15 +35,26 @@ export class PowerViewStrategy extends ReactiveElement {
       (device) => device.stat_rate
     );
 
+    const cards: LovelaceCardConfig[] = [];
+
+    const view: LovelaceViewConfig = {
+      type: "sections",
+      sections: [{ type: "grid", cards }],
+    };
+
     // No power sources configured
     if (!prefs || (!hasPowerSources && !hasPowerDevices)) {
       return view;
     }
 
-    const section = view.sections![0] as LovelaceSectionConfig;
+    cards.push({
+      type: "power-total",
+      collection_key: collectionKey,
+      grid_options: { columns: 12 },
+    });
 
     if (hasPowerSources) {
-      section.cards!.push({
+      cards.push({
         title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
         type: "power-sources-graph",
         collection_key: collectionKey,
@@ -64,7 +70,7 @@ export class PowerViewStrategy extends ReactiveElement {
         hass,
         (d) => d.stat_rate
       );
-      section.cards!.push({
+      cards.push({
         title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
         type: "power-sankey",
         collection_key: collectionKey,
