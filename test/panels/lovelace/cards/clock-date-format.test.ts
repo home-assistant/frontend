@@ -114,6 +114,25 @@ describe("clock-date-format", () => {
     assert.equal(result, "8.11 2024");
   });
 
+  it("supports using the same separator style multiple times", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: [
+          "month-numeric",
+          "separator-slash",
+          "day-2-digit",
+          "separator-slash",
+          "year-2-digit",
+        ],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "11/08/24");
+  });
+
   it("allows multiple variants for the same date part", () => {
     const result = formatClockCardDate(
       date,

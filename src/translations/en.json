@@ -9367,7 +9367,7 @@
               },
               "show_seconds": "Display seconds",
               "date": {
-                "label": "Date format",
+                "label": "Date",
                 "description": "Select and order the date parts shown on the clock. Add a separator to control punctuation.",
                 "parts": {
                   "weekday-short": "Weekday (short)",
