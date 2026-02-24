@@ -10306,8 +10306,8 @@
           "power_sankey_title": "Current power flow",
           "power_sources_graph_title": "Power sources",
           "power_total_title": "Power consumption",
-          "water_total_title": "[%key:ui::panel::config::energy::water::water_flow_rate%]",
-          "gas_total_title": "[%key:ui::panel::config::energy::gas::gas_flow_rate%]"
+          "water_total_title": "[%key:ui::panel::config::energy::water::dialog::water_flow_rate%]",
+          "gas_total_title": "[%key:ui::panel::config::energy::gas::dialog::gas_flow_rate%]"
         }
       },
       "history": {
