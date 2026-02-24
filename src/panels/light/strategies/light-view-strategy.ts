@@ -109,18 +109,35 @@ const processAreasForLight = (
       // Toggle group card for desktop
       cards.push({
         type: "toggle-group",
-        title: hass.localize("ui.panel.lovelace.strategy.light.all_lights"),
         color: "amber",
         entities: areaLights,
         visibility: [LARGE_SCREEN_CONDITION],
         grid_options: {
           columns: 6,
           rows: 1,
-          min_columns: 6,
         },
       } as ToggleGroupCardConfig);
 
-      cards.push(...areaCards);
+      areaCards.forEach((card) => {
+        // Insert a blank card before every 3rd card to align the individual
+        // cards with the toggle group card on desktop
+        if (
+          areaCards.indexOf(card) % 3 === 0 &&
+          areaCards.indexOf(card) !== 0
+        ) {
+          cards.push({
+            type: "vertical-stack",
+            cards: [],
+            visibility: [LARGE_SCREEN_CONDITION],
+            grid_options: {
+              columns: 6,
+              rows: 1,
+            },
+          });
+        }
+
+        cards.push(card);
+      });
     }
   }
 
