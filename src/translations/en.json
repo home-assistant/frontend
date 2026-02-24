@@ -6867,7 +6867,7 @@
             "migrate_radio_description": "Move your Zigbee network to a different adapter",
             "migrate_radio_action": "Migrate",
             "group_members_assume_state_label": "Assume state of group",
-            "enable_identify_on_join_label": "Identify effect",
+            "enable_identify_on_join_label": "Identify on join",
             "default_light_transition_label": "Light transition time",
             "enhanced_light_transition_label": "Smooth transition power-on",
             "light_transitioning_flag_label": "Prevent slider jumping during transitions",
