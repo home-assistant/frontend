@@ -10,7 +10,7 @@ import type { ClockCardConfig } from "../types";
 import {
   formatClockCardDate,
   getClockCardDateConfig,
-  getClockCardDateTimeFormatOptions,
+  hasClockCardDate,
 } from "./clock-date-format";
 
 function romanize12HourClock(num: number) {
@@ -56,6 +56,10 @@ export class HuiClockCardAnalog extends LitElement {
 
   private _tickInterval?: undefined | number;
 
+  private _timeZone?: string;
+
+  private _language?: string;
+
   public connectedCallback() {
     super.connectedCallback();
     document.addEventListener("visibilitychange", this._handleVisibilityChange);
@@ -100,22 +104,24 @@ export class HuiClockCardAnalog extends LitElement {
       locale = { ...locale, time_format: this.config.time_format };
     }
 
-    const dateConfig = getClockCardDateConfig(this.config);
+    const timeZone =
+      this.config.time_zone ||
+      resolveTimeZone(locale.time_zone, this.hass.config?.time_zone);
+
+    this._language = this.hass.locale.language;
+    this._timeZone = timeZone;
 
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
-      ...getClockCardDateTimeFormatOptions(dateConfig),
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hourCycle: "h12",
-      timeZone:
-        this.config.time_zone ||
-        resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
+      timeZone,
     });
 
     this._computeDateTime();
 
-    if (this.isConnected && dateConfig.parts.length > 0) {
+    if (this.isConnected && hasClockCardDate(this.config)) {
       this._startTick();
     } else {
       this._stopTick();
@@ -159,8 +165,8 @@ export class HuiClockCardAnalog extends LitElement {
 
     const dateConfig = getClockCardDateConfig(this.config);
     this._date =
-      dateConfig.parts.length > 0
-        ? formatClockCardDate(parts, dateConfig)
+      hasClockCardDate(this.config) && this._language
+        ? formatClockCardDate(date, dateConfig, this._language, this._timeZone)
         : undefined;
   }
 
@@ -171,7 +177,7 @@ export class HuiClockCardAnalog extends LitElement {
   private _computeClock = memoizeOne((config: ClockCardConfig) => {
     const faceParts = config.face_style?.split("_");
     const dateConfig = getClockCardDateConfig(config);
-    const showDate = dateConfig.parts.length > 0;
+    const showDate = hasClockCardDate(config);
     const isLongDate =
       dateConfig.parts.includes("month-long") ||
       dateConfig.parts.includes("weekday-long");

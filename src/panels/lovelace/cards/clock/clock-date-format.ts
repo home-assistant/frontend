@@ -1,5 +1,12 @@
 import type { ClockCardConfig, ClockCardDatePart } from "../types";
 
+type ClockCardSeparatorPart = Extract<
+  ClockCardDatePart,
+  "separator-dash" | "separator-slash" | "separator-dot"
+>;
+
+type ClockCardValuePart = Exclude<ClockCardDatePart, ClockCardSeparatorPart>;
+
 /**
  * Normalized date configuration used by clock card renderers.
  */
@@ -26,27 +33,8 @@ export const CLOCK_CARD_DATE_PARTS: readonly ClockCardDatePart[] = [
   "separator-dot",
 ];
 
-const DATE_PART_GROUPS: Record<
-  ClockCardDatePart,
-  "weekday" | "day" | "month" | "year" | "separator"
-> = {
-  "weekday-short": "weekday",
-  "weekday-long": "weekday",
-  "day-numeric": "day",
-  "day-2-digit": "day",
-  "month-short": "month",
-  "month-long": "month",
-  "month-numeric": "month",
-  "month-2-digit": "month",
-  "year-2-digit": "year",
-  "year-numeric": "year",
-  "separator-dash": "separator",
-  "separator-slash": "separator",
-  "separator-dot": "separator",
-};
-
 const DATE_PART_OPTIONS: Record<
-  ClockCardDatePart,
+  ClockCardValuePart,
   Pick<Intl.DateTimeFormatOptions, "weekday" | "day" | "month" | "year">
 > = {
   "weekday-short": { weekday: "short" },
@@ -59,58 +47,64 @@ const DATE_PART_OPTIONS: Record<
   "month-2-digit": { month: "2-digit" },
   "year-2-digit": { year: "2-digit" },
   "year-numeric": { year: "numeric" },
-  "separator-dash": {},
-  "separator-slash": {},
-  "separator-dot": {},
 };
 
-const DATE_SEPARATORS: Record<
-  Extract<
-    ClockCardDatePart,
-    "separator-dash" | "separator-slash" | "separator-dot"
-  >,
-  string
-> = {
+const DATE_SEPARATORS: Record<ClockCardSeparatorPart, string> = {
   "separator-dash": "-",
   "separator-slash": "/",
   "separator-dot": ".",
 };
+
+const DATE_SEPARATOR_PARTS = new Set<ClockCardSeparatorPart>([
+  "separator-dash",
+  "separator-slash",
+  "separator-dot",
+]);
+
+const DATE_PART_FORMATTERS = new Map<string, Intl.DateTimeFormat>();
 
 const isClockCardDatePart = (value: string): value is ClockCardDatePart =>
   CLOCK_CARD_DATE_PARTS.includes(value as ClockCardDatePart);
 
 const isDateSeparatorPart = (
   part: ClockCardDatePart
-): part is Extract<
-  ClockCardDatePart,
-  "separator-dash" | "separator-slash" | "separator-dot"
-> => DATE_PART_GROUPS[part] === "separator";
+): part is ClockCardSeparatorPart =>
+  DATE_SEPARATOR_PARTS.has(part as ClockCardSeparatorPart);
 
-const isDateValuePart = (part: ClockCardDatePart): boolean =>
-  DATE_PART_GROUPS[part] !== "separator";
+const isDateValuePart = (part: ClockCardDatePart): part is ClockCardValuePart =>
+  !isDateSeparatorPart(part);
 
 /**
- * Maps a date token to the Intl part type used in formatToParts output.
+ * Returns a reusable formatter for a specific date token.
  */
-const getDatePartType = (
-  part: ClockCardDatePart
-): Intl.DateTimeFormatPartTypes => {
-  const group = DATE_PART_GROUPS[part];
+const getDatePartFormatter = (
+  part: ClockCardValuePart,
+  language: string,
+  timeZone?: string
+): Intl.DateTimeFormat => {
+  const cacheKey = `${language}|${timeZone || ""}|${part}`;
+  const cached = DATE_PART_FORMATTERS.get(cacheKey);
 
-  if (group === "weekday") {
-    return "weekday";
+  if (cached) {
+    return cached;
   }
 
-  if (group === "day") {
-    return "day";
-  }
+  const formatter = new Intl.DateTimeFormat(language, {
+    ...DATE_PART_OPTIONS[part],
+    ...(timeZone ? { timeZone } : {}),
+  });
 
-  if (group === "month") {
-    return "month";
-  }
+  DATE_PART_FORMATTERS.set(cacheKey, formatter);
 
-  return "year";
+  return formatter;
 };
+
+const formatDatePart = (
+  part: ClockCardValuePart,
+  date: Date,
+  language: string,
+  timeZone?: string
+) => getDatePartFormatter(part, language, timeZone).format(date);
 
 /**
  * Applies a single date token to Intl.DateTimeFormat options.
@@ -119,6 +113,10 @@ const applyDatePartOption = (
   options: Intl.DateTimeFormatOptions,
   part: ClockCardDatePart
 ) => {
+  if (isDateSeparatorPart(part)) {
+    return;
+  }
+
   const partOptions = DATE_PART_OPTIONS[part];
 
   if (partOptions.weekday) {
@@ -139,42 +137,14 @@ const applyDatePartOption = (
 };
 
 /**
- * Sanitizes configured date tokens and keeps at most one variant per group.
- *
- * If multiple variants from the same group are present, the latest one wins
- * and its position defines the final output order.
+ * Sanitizes configured date tokens while preserving their literal order.
  */
 const normalizeDateParts = (
   parts: ClockCardConfig["date_format"]
-): ClockCardDatePart[] => {
-  if (!parts) {
-    return [];
-  }
-
-  const normalized: ClockCardDatePart[] = [];
-
-  parts.forEach((part) => {
-    if (!isClockCardDatePart(part)) {
-      return;
-    }
-
-    const partGroup = DATE_PART_GROUPS[part];
-
-    const existingPartIndex = normalized.findIndex(
-      (item) => DATE_PART_GROUPS[item] === partGroup
-    );
-
-    if (existingPartIndex !== -1) {
-      normalized.splice(existingPartIndex, 1);
-    }
-
-    if (!normalized.includes(part)) {
-      normalized.push(part);
-    }
-  });
-
-  return normalized;
-};
+): ClockCardDatePart[] =>
+  parts
+    ?.filter((part): part is ClockCardDatePart => isClockCardDatePart(part))
+    .slice() || [];
 
 /**
  * Returns a normalized date config from a card configuration object.
@@ -194,6 +164,9 @@ export const hasClockCardDate = (
 
 /**
  * Converts normalized date tokens into Intl.DateTimeFormat options.
+ *
+ * Separator tokens are ignored. If multiple tokens target the same Intl field,
+ * the last one wins.
  */
 export const getClockCardDateTimeFormatOptions = (
   dateConfig: ClockCardDateConfig
@@ -208,29 +181,37 @@ export const getClockCardDateTimeFormatOptions = (
 };
 
 /**
- * Builds the final date string by reading selected tokens in configured order.
+ * Builds the final date string from literal date tokens.
+ *
+ * Value tokens are localized through Intl.DateTimeFormat. Separator tokens only
+ * replace the next automatic space between value tokens.
  */
 export const formatClockCardDate = (
-  dateTimeParts: Intl.DateTimeFormatPart[],
-  dateConfig: ClockCardDateConfig
+  date: Date,
+  dateConfig: ClockCardDateConfig,
+  language: string,
+  timeZone?: string
 ): string => {
-  const separatorPart = [...dateConfig.parts]
-    .reverse()
-    .find((part) => isDateSeparatorPart(part));
+  let result = "";
+  let hasValue = false;
+  let nextSeparator = " ";
 
-  const separator = separatorPart ? DATE_SEPARATORS[separatorPart] : " ";
+  dateConfig.parts.forEach((part) => {
+    if (isDateSeparatorPart(part)) {
+      nextSeparator = DATE_SEPARATORS[part];
+      return;
+    }
 
-  const valueParts = dateConfig.parts.filter(isDateValuePart);
+    const value = formatDatePart(part, date, language, timeZone);
 
-  if (valueParts.length === 0) {
-    return "";
-  }
+    if (!value) {
+      return;
+    }
 
-  return valueParts
-    .map((part) => {
-      const type = getDatePartType(part);
-      return dateTimeParts.find((datePart) => datePart.type === type)?.value;
-    })
-    .filter((part): part is string => Boolean(part))
-    .join(separator);
+    result += hasValue ? `${nextSeparator}${value}` : value;
+    hasValue = true;
+    nextSeparator = " ";
+  });
+
+  return result;
 };

@@ -8,28 +8,32 @@ import {
 } from "../../../../src/panels/lovelace/cards/clock/clock-date-format";
 
 describe("clock-date-format", () => {
+  const date = new Date("2024-11-08T10:20:30.000Z");
+
   it("returns an empty config when date format is missing", () => {
     assert.deepEqual(getClockCardDateConfig(), { parts: [] });
   });
 
-  it("keeps one variant per date group and last variant wins", () => {
+  it("preserves literal token order", () => {
     const config = getClockCardDateConfig({
       date_format: [
         "day-numeric",
-        "month-short",
-        "separator-dash",
-        "day-2-digit",
-        "month-long",
         "separator-dot",
+        "month-short",
+        "month-long",
+        "separator-slash",
         "year-2-digit",
         "year-numeric",
       ],
     });
 
     assert.deepEqual(config.parts, [
-      "day-2-digit",
-      "month-long",
+      "day-numeric",
       "separator-dot",
+      "month-short",
+      "month-long",
+      "separator-slash",
+      "year-2-digit",
       "year-numeric",
     ]);
   });
@@ -52,6 +56,7 @@ describe("clock-date-format", () => {
         "weekday-short",
         "separator-slash",
         "day-2-digit",
+        "month-long",
         "month-numeric",
         "year-2-digit",
       ],
@@ -72,23 +77,67 @@ describe("clock-date-format", () => {
     assert.equal(hasClockCardDate({ date_format: ["weekday-short"] }), true);
   });
 
-  it("formats output in configured part order with separator", () => {
-    const dateTimeParts: Intl.DateTimeFormatPart[] = [
-      { type: "weekday", value: "Sat" },
-      { type: "day", value: "08" },
-      { type: "month", value: "11" },
-      { type: "year", value: "24" },
-    ];
+  it("formats output in configured part order with literal separators", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: [
+          "month-numeric",
+          "separator-slash",
+          "day-2-digit",
+          "separator-dash",
+          "year-2-digit",
+        ],
+      },
+      "en",
+      "UTC"
+    );
 
-    const result = formatClockCardDate(dateTimeParts, {
-      parts: [
+    assert.equal(result, "11/08-24");
+  });
+
+  it("uses separator only for the next gap", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: [
+          "day-numeric",
+          "separator-dot",
+          "month-numeric",
+          "year-numeric",
+        ],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "8.11 2024");
+  });
+
+  it("allows multiple variants for the same date part", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: ["month-short", "month-long", "year-numeric"],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "Nov November 2024");
+  });
+
+  it("filters invalid tokens when formatting", () => {
+    const config = getClockCardDateConfig({
+      date_format: [
         "month-numeric",
-        "separator-slash",
-        "day-2-digit",
-        "year-2-digit",
-      ],
+        "invalid",
+        "year-numeric",
+      ] as unknown as ClockCardDatePart[],
     });
 
-    assert.equal(result, "11/08/24");
+    const result = formatClockCardDate(date, config, "en", "UTC");
+
+    assert.equal(result, "11 2024");
   });
 });
