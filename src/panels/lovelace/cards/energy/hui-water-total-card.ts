@@ -138,7 +138,9 @@ export class HuiWaterTotalCard
       })} L/min`;
     }
 
-    const name = this._config.title || "Current Water Flow";
+    const name =
+      this._config.title ||
+      this.hass.localize("ui.panel.energy.cards.water_total_title");
 
     return html`
       <ha-card>

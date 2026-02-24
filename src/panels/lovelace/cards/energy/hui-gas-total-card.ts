@@ -138,7 +138,9 @@ export class HuiGasTotalCard
       })} L/min`;
     }
 
-    const name = this._config.title || "Current Gas Flow";
+    const name =
+      this._config.title ||
+      this.hass.localize("ui.panel.energy.cards.gas_total_title");
 
     return html`
       <ha-card>
