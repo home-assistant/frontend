@@ -8736,7 +8736,7 @@
             "alarm-panel": {
               "name": "Alarm panel",
               "available_states": "Available states",
-              "description": "The Alarm panel card allows you to arm and disarm your alarm control panel integrations."
+              "description": "This card allows you to arm and disarm your alarm control panel integrations."
             },
             "area": {
               "name": "Area",
@@ -8746,7 +8746,7 @@
               "sensor_classes": "Sensor classes",
               "sum": "sum",
               "median": "median",
-              "description": "The Area card automatically displays entities of a specific area.",
+              "description": "This card automatically displays entities of a specific area.",
               "display_type": "Display type",
               "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
               "content_layout_options": {
@@ -8763,7 +8763,7 @@
             },
             "calendar": {
               "name": "Calendar",
-              "description": "The Calendar card displays a calendar including day, week, and list views",
+              "description": "This card displays a calendar including day, week, and list views",
               "initial_view": "Initial view",
               "calendar_entities": "Calendar entities",
               "views": {
@@ -8775,7 +8775,7 @@
             },
             "conditional": {
               "name": "Conditional",
-              "description": "The Conditional card displays another card based on entity states.",
+              "description": "This card displays another card based on entity states.",
               "conditions": "Conditions",
               "card": "Card",
               "change_type": "Change type"
@@ -8788,7 +8788,7 @@
               "name": "Entities",
               "show_header_toggle": "Show header toggle",
               "toggle": "Toggle entities.",
-              "description": "The Entities card is the most common type of card. It groups items together into lists.",
+              "description": "This card is the most common type of card. It groups items together into lists.",
               "special_row": "special row",
               "edit_special_row": "View the details of this row by pressing the edit button",
               "entity_row_editor": "Entity row editor",
@@ -8819,11 +8819,11 @@
             },
             "entity": {
               "name": "Entity",
-              "description": "The Entity card gives you a quick overview of your entity's state."
+              "description": "This card gives you a quick overview of your entity's state."
             },
             "empty_state": {
               "name": "Empty state",
-              "description": "The Empty state card displays a centered message with an optional icon and action buttons.",
+              "description": "This card displays a centered message with an optional icon and action buttons.",
               "style": "Style",
               "style_options": {
                 "card": "Card",
@@ -8834,12 +8834,12 @@
             },
             "button": {
               "name": "Button",
-              "description": "The Button card allows you to add buttons to perform tasks.",
+              "description": "This card allows you to add buttons to perform tasks.",
               "default_action_help": "The default depends on the entity's capabilities, it will either be toggled or the more info dialog will be shown."
             },
             "entity-filter": {
               "name": "Entity filter",
-              "description": "The Entity filter card allows you to define a list of entities that you want to track only when in a certain state."
+              "description": "This card allows you to define a list of entities that you want to track only when in a certain state."
             },
             "entity-row": {
               "secondary_info": "Secondary information"
@@ -8853,28 +8853,28 @@
                 "red": "Red",
                 "yellow": "Yellow"
               },
-              "description": "The Gauge card is a basic card that allows visually seeing sensor data."
+              "description": "This card is a basic card that allows visually seeing sensor data."
             },
             "glance": {
               "name": "Glance",
               "columns": "Columns",
-              "description": "The Glance card is useful to group multiple sensors in a compact overview."
+              "description": "This card is useful to group multiple sensors in a compact overview."
             },
             "grid": {
               "name": "Grid",
-              "description": "The Grid card allows you to show multiple cards in a grid.",
+              "description": "This card allows you to show multiple cards in a grid.",
               "title": "Title",
               "columns": "Columns",
               "square": "Render cards as squares"
             },
             "logbook": {
               "name": "Activity",
-              "description": "The Activity card shows a list of events for entities.",
+              "description": "This card shows a list of events for entities.",
               "state_filter": "State filter"
             },
             "history-graph": {
               "name": "History graph",
-              "description": "The History graph card allows you to display a graph for each of the entities listed.",
+              "description": "This card allows you to display a graph for each of the entities listed.",
               "logarithmic_scale": "Logarithmic scale",
               "min_y_axis": "Y axis minimum",
               "max_y_axis": "Y axis maximum",
@@ -8882,7 +8882,7 @@
             },
             "statistics-graph": {
               "name": "Statistics graph",
-              "description": "The Statistics graph card allows you to display a graph of the statistics for each of the entities listed.",
+              "description": "This card allows you to display a graph of the statistics for each of the entities listed.",
               "period": "Period",
               "unit": "Unit",
               "stat_types": "Show stat types",
@@ -8917,7 +8917,7 @@
             },
             "statistic": {
               "name": "Statistic",
-              "description": "The Statistic card allows you to display a statistical value of an entity of a certain period.",
+              "description": "This card allows you to display a statistical value of an entity of a certain period.",
               "period": "Period",
               "stat_types": "Show stat",
               "stat_type_labels": {
@@ -8940,26 +8940,26 @@
             "horizontal-stack": {
               "name": "Horizontal stack",
               "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
-              "description": "The Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
+              "description": "This card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
             "distribution": {
               "name": "Distribution",
-              "description": "The Distribution card displays multiple numerical entities as a proportional chart with an interactive legend."
+              "description": "This card displays multiple numerical entities as a proportional chart with an interactive legend."
             },
             "humidifier": {
               "name": "Humidifier",
-              "description": "The Humidifier card gives control of a humidifier entity for humidifying or dehumidifying, allowing you to set its mode and desired humidity.",
+              "description": "This card gives control of a humidifier entity for humidifying or dehumidifying, allowing you to set its mode and desired humidity.",
               "show_current_as_primary": "Show current humidity as primary information"
             },
             "iframe": {
               "name": "Webpage",
-              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant.",
+              "description": "This card allows you to embed your favorite webpage right into Home Assistant.",
               "hide_background": "Hide background",
               "hide_background_helper": "Useful for pages which allow a transparent background."
             },
             "light": {
               "name": "Light",
-              "description": "The Light card allows you to change the brightness of a light."
+              "description": "This card allows you to change the brightness of a light."
             },
             "generic": {
               "alt_text": "Alternative text",
@@ -9020,7 +9020,7 @@
             },
             "heading": {
               "name": "Heading",
-              "description": "The heading card structures your dashboard by providing title, icon and navigation.",
+              "description": "This card structures your dashboard by providing title, icon and navigation.",
               "heading": "Heading",
               "heading_style": "Heading style",
               "heading_style_options": {
@@ -9063,7 +9063,7 @@
               },
               "default_zoom": "Default zoom",
               "source": "Source",
-              "description": "The Map card allows you to display entities on a map."
+              "description": "This card allows you to display entities on a map."
             },
             "markdown": {
               "name": "Markdown",
@@ -9073,11 +9073,11 @@
                 "card": "Card",
                 "text-only": "Text only"
               },
-              "description": "The Markdown card is used to render Markdown."
+              "description": "This card is used to render Markdown."
             },
             "clock": {
               "name": "Clock",
-              "description": "The Clock card displays the current time using your desired size and format.",
+              "description": "This card displays the current time using your desired size and format.",
               "clock_style": "Clock style",
               "clock_styles": {
                 "digital": "Digital",
@@ -9158,16 +9158,16 @@
             },
             "media-control": {
               "name": "Media control",
-              "description": "The Media control card is used to display media player entities on an interface with easy to use controls."
+              "description": "This card is used to display media player entities on an interface with easy to use controls."
             },
             "picture": {
               "name": "Picture",
-              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
+              "description": "This card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
               "content_id_helper": "Enter a media_source id or a URL for the image to be displayed."
             },
             "picture-elements": {
               "name": "Picture elements",
-              "description": "The Picture elements card is one of the most versatile types of cards. The card allows you to position icons or text and even actions on an image based on coordinates.",
+              "description": "This card is one of the most versatile types of cards. It allows you to position icons or text and even actions on an image based on coordinates.",
               "card_options": "Card options",
               "elements": "Elements",
               "new_element": "Add new element",
@@ -9189,16 +9189,16 @@
             },
             "picture-entity": {
               "name": "Picture entity",
-              "description": "The Picture entity card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of camera entities."
+              "description": "This card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of camera entities."
             },
             "picture-glance": {
               "name": "Picture glance",
-              "description": "The Picture glance card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
+              "description": "This card allows you to set an image to use for navigation to various paths in your interface or to perform an action.",
               "state_entity": "State entity"
             },
             "plant-status": {
               "name": "Plant status",
-              "description": "The Plant status card is for all the lovely botanists out there."
+              "description": "This card is for all the lovely botanists out there."
             },
             "sensor": {
               "name": "Sensor",
@@ -9208,13 +9208,13 @@
                 "none": "None",
                 "line": "Line"
               },
-              "description": "The Sensor card gives you a quick overview of a sensor's state with an optional graph to visualize change over time.",
+              "description": "This card gives you a quick overview of a sensor's state with an optional graph to visualize change over time.",
               "limit_min": "Minimum value",
               "limit_max": "Maximum value"
             },
             "todo-list": {
               "name": "To-do list",
-              "description": "The To-do list card allows you to add, edit, check-off, and remove items from your to-do list.",
+              "description": "This card allows you to add, edit, check-off, and remove items from your to-do list.",
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
@@ -9237,12 +9237,12 @@
             },
             "thermostat": {
               "name": "Thermostat",
-              "description": "The Thermostat card gives control of a climate or water heater entity for heating or cooling, allowing you to set its mode and desired temperature.",
+              "description": "This card gives control of a climate or water heater entity for heating or cooling, allowing you to set its mode and desired temperature.",
               "show_current_as_primary": "Show current temperature as primary information"
             },
             "tile": {
               "name": "Tile",
-              "description": "The Tile card gives you a quick overview of an entity. The card allows you to toggle the entity, show the More info dialog or trigger custom actions.",
+              "description": "This card gives you a quick overview of an entity. It allows you to toggle the entity, show the More info dialog or trigger custom actions.",
               "color": "Color",
               "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
@@ -9268,11 +9268,11 @@
             "vertical-stack": {
               "name": "Vertical stack",
               "title": "[%key:ui::panel::lovelace::editor::card::grid::title%]",
-              "description": "The Vertical stack card allows you to group multiple cards so they always sit in the same column."
+              "description": "This card allows you to group multiple cards so they always sit in the same column."
             },
             "weather-forecast": {
               "name": "Weather forecast",
-              "description": "The Weather forecast card displays the weather. Very useful to include on interfaces that people display on the wall.",
+              "description": "This card displays the weather. Very useful to include on interfaces that people display on the wall.",
               "weather_to_show": "Weather to show",
               "show_both": "Show current weather and forecast",
               "show_only_current": "Show only current Weather",
