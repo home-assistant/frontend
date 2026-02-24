@@ -282,6 +282,12 @@ export class HuiCardPicker extends LitElement {
       if (!a.isSuggested && b.isSuggested) {
         return 1;
       }
+      if (!a.sortAtEnd && b.sortAtEnd) {
+        return -1;
+      }
+      if (a.sortAtEnd && !b.sortAtEnd) {
+        return 1;
+      }
       return stringCompare(
         a.name || a.type,
         b.name || b.type,
