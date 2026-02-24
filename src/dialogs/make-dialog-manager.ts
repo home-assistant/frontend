@@ -33,7 +33,7 @@ export interface HassDialogNext<T = unknown> extends HTMLElement {
 export interface ShowDialogParams<T> {
   dialogTag: keyof HTMLElementTagNameMap;
   dialogImport: () => Promise<unknown>;
-  dialogParams: T;
+  dialogParams?: T;
   addHistory?: boolean;
   parentElement?: LitElement;
 }
