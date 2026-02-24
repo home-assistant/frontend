@@ -117,25 +117,32 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   };
 
   private _handleHide = (ev: CustomEvent<{ source: Element }>) => {
+    // Ignore bubbled wa-hide events from nested drawers (e.g., picker bottom sheet)
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
+
+    const sourceIsDrawer = ev.detail.source === (ev.target as WaDrawer).drawer;
+
     if (this._sliderInteractionActive) {
       ev.preventDefault();
       this._drawerOpen = true;
       this.open = true;
+      this._escapePressed = false;
       return;
     }
-    if (
-      this.preventScrimClose &&
-      this._escapePressed &&
-      ev.detail.source === (ev.target as WaDrawer).drawer
-    ) {
+    if (this.preventScrimClose && this._escapePressed && sourceIsDrawer) {
       ev.preventDefault();
     }
+
     this._escapePressed = false;
   };
 
   private _handleKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === "Escape") {
       this._escapePressed = true;
+      ev.stopPropagation();
+      (ev.currentTarget as WaDrawer).open = false;
     }
   };
 
@@ -241,6 +248,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       }
     }
 
+    // Stop propagation so parent bottom sheets don't also start tracking
+    // this gesture (same pattern as _handleKeyDown for Escape)
+    ev.stopPropagation();
     this._startResizing(ev.touches[0].clientY);
   };
 

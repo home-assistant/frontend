@@ -159,6 +159,9 @@ export interface GasSourceTypeEnergyPreference {
   // kWh/volume meter
   stat_energy_from: string;
 
+  // Flow rate (m³/h, L/min, etc.)
+  stat_rate?: string;
+
   // $ meter
   stat_cost: string | null;
 
@@ -173,6 +176,9 @@ export interface WaterSourceTypeEnergyPreference {
 
   // volume meter
   stat_energy_from: string;
+
+  // Flow rate (L/min, gal/min, m³/h, etc.)
+  stat_rate?: string;
 
   // $ meter
   stat_cost: string | null;
@@ -368,6 +374,9 @@ export const getReferencedStatisticIdsPower = (
 
   for (const source of prefs.energy_sources) {
     if (source.type === "gas" || source.type === "water") {
+      if (source.stat_rate) {
+        statIDs.push(source.stat_rate);
+      }
       continue;
     }
 
@@ -389,6 +398,7 @@ export const getReferencedStatisticIdsPower = (
     }
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
+  statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };

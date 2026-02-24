@@ -1419,6 +1419,7 @@ class HUIRoot extends LitElement {
         }
         ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--header-height, 56px);
+          height: var(--ha-tab-group-tab-height);
         }
         .tab-bar ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--tab-bar-height, 56px);
