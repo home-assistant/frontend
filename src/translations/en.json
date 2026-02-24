@@ -10306,8 +10306,8 @@
           "power_sankey_title": "Current power flow",
           "power_sources_graph_title": "Power sources",
           "power_total_title": "Power consumption",
-          "water_total_title": "Current water flow",
-          "gas_total_title": "Current gas flow"
+          "water_total_title": "Water flow",
+          "gas_total_title": "Gas flow"
         }
       },
       "history": {
