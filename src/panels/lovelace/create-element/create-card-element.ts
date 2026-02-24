@@ -70,6 +70,8 @@ const LAZY_LOAD_TYPES = {
   "power-sources-graph": () =>
     import("../cards/energy/hui-power-sources-graph-card"),
   "power-total": () => import("../cards/energy/hui-power-total-card"),
+  "water-total": () => import("../cards/energy/hui-water-total-card"),
+  "gas-total": () => import("../cards/energy/hui-gas-total-card"),
   "power-sankey": () => import("../cards/energy/hui-power-sankey-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   error: () => import("../cards/hui-error-card"),
