@@ -81,8 +81,6 @@ export class PowerViewStrategy extends ReactiveElement {
         collection_key: collectionKey,
       };
       tiles.push(card);
-      tiles.push({ ...card });
-      tiles.push({ ...card });
 
       chartsSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
