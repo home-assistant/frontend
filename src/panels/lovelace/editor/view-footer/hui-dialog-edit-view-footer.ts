@@ -26,7 +26,7 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("hui-dialog-edit-view-footer")
 export class HuiDialogEditViewFooter extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: EditViewFooterDialogParams;
 
@@ -77,7 +77,7 @@ export class HuiDialogEditViewFooter extends LitElement {
       return nothing;
     }
 
-    let content;
+    let content: TemplateResult;
 
     if (this._yamlMode) {
       content = html`
@@ -107,11 +107,9 @@ export class HuiDialogEditViewFooter extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
-        width="large"
+        .width=${this._yamlMode ? "full" : "large"}
         @closed=${this._dialogClosed}
-        class=${classMap({
-          "yaml-mode": this._yamlMode,
-        })}
+        class=${this._yamlMode ? "yaml-mode" : ""}
       >
         <ha-dropdown
           slot="headerActionItems"
@@ -134,7 +132,7 @@ export class HuiDialogEditViewFooter extends LitElement {
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="primaryAction"
-            .disabled=${!this._config || this._saving || !this._dirty}
+            .disabled=${!this._config || !this._dirty}
             @click=${this._save}
             .loading=${this._saving}
           >

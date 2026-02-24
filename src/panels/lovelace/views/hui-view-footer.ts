@@ -266,7 +266,7 @@ export class HuiViewFooter extends LitElement {
     }
 
     .container.edit-mode {
-      padding: 8px;
+      padding: var(--ha-space-2);
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
@@ -276,6 +276,7 @@ export class HuiViewFooter extends LitElement {
       position: relative;
       grid-column: 1 / -1;
       grid-row: span var(--row-size, 1);
+      max-height: 25vh;
       max-height: 25dvh;
     }
 
