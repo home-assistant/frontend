@@ -55,8 +55,6 @@ export class HuiClockCardAnalog extends LitElement {
 
   private _tickInterval?: undefined | number;
 
-  private _currentDate = new Date();
-
   public connectedCallback() {
     super.connectedCallback();
     document.addEventListener("visibilitychange", this._handleVisibilityChange);
@@ -146,16 +144,12 @@ export class HuiClockCardAnalog extends LitElement {
     }
   }
 
-  private _updateDate() {
-    this._currentDate = new Date();
-  }
-
   private _computeDateTime() {
     if (!this._dateTimeFormat) return;
 
-    this._updateDate();
+    const date = new Date();
 
-    const parts = this._dateTimeFormat.formatToParts(this._currentDate);
+    const parts = this._dateTimeFormat.formatToParts(date);
     const hourStr = parts.find((p) => p.type === "hour")?.value;
     const minuteStr = parts.find((p) => p.type === "minute")?.value;
     const secondStr = parts.find((p) => p.type === "second")?.value;
@@ -163,7 +157,7 @@ export class HuiClockCardAnalog extends LitElement {
     const hour = hourStr ? parseInt(hourStr, 10) : 0;
     const minute = minuteStr ? parseInt(minuteStr, 10) : 0;
     const second = secondStr ? parseInt(secondStr, 10) : 0;
-    const ms = this._currentDate.getMilliseconds();
+    const ms = date.getMilliseconds();
     const secondsWithMs = second + ms / 1000;
 
     const hour12 = hour % 12;
