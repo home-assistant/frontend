@@ -8921,7 +8921,7 @@
               "name": "Device energy graph",
               "description": "This card shows the energy usage per device, it is sorted by usage.",
               "max_devices": "Maximum devices allowed",
-              "hide_compound_stats": "Hide higher level devices",
+              "hide_compound_stats": "Hide upstream devices",
               "modes": "Chart display mode",
               "mode_options": {
                 "bar": "Bar",
