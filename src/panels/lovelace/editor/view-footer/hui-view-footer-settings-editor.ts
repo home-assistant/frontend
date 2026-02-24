@@ -35,10 +35,6 @@ export class HuiViewFooterSettingsEditor extends LitElement {
   );
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     const data = {
       column_span: this.config?.column_span || 1,
     };
