@@ -3,16 +3,15 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
+  array,
   assert,
   assign,
   boolean,
   defaulted,
   enums,
-  literal,
   object,
   optional,
   string,
-  union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
@@ -26,60 +25,32 @@ import type { ClockCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { TimeFormat } from "../../../../data/translation";
+import {
+  CLOCK_CARD_DATE_PARTS,
+  getClockCardDateConfig,
+} from "../../cards/clock/clock-date-format";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     title: optional(string()),
-    clock_style: optional(union([literal("digital"), literal("analog")])),
-    clock_size: optional(
-      union([literal("small"), literal("medium"), literal("large")])
-    ),
+    clock_style: optional(enums(["digital", "analog"])),
+    clock_size: optional(enums(["small", "medium", "large"])),
     time_format: optional(enums(Object.values(TimeFormat))),
     time_zone: optional(enums(Object.keys(timezones))),
     show_seconds: optional(boolean()),
     no_background: optional(boolean()),
-    date: optional(
-      defaulted(
-        union([
-          literal("none"),
-          literal("short"),
-          literal("long"),
-          literal("day"),
-          literal("day-month"),
-          literal("day-month-long"),
-        ]),
-        literal("none")
-      )
-    ),
+    date_format: optional(defaulted(array(enums(CLOCK_CARD_DATE_PARTS)), [])),
     // Analog clock options
     border: optional(defaulted(boolean(), false)),
     ticks: optional(
-      defaulted(
-        union([
-          literal("none"),
-          literal("quarter"),
-          literal("hour"),
-          literal("minute"),
-        ]),
-        literal("hour")
-      )
+      defaulted(enums(["none", "quarter", "hour", "minute"]), "hour")
     ),
     seconds_motion: optional(
-      defaulted(
-        union([literal("continuous"), literal("tick")]),
-        literal("continuous")
-      )
+      defaulted(enums(["continuous", "tick"]), "continuous")
     ),
     face_style: optional(
-      defaulted(
-        union([
-          literal("markers"),
-          literal("numbers_upright"),
-          literal("roman"),
-        ]),
-        literal("markers")
-      )
+      defaulted(enums(["markers", "numbers_upright", "roman"]), "markers")
     ),
   })
 );
@@ -133,21 +104,16 @@ export class HuiClockCardEditor
         { name: "show_seconds", selector: { boolean: {} } },
         { name: "no_background", selector: { boolean: {} } },
         {
-          name: "date",
+          name: "date_format",
+          required: false,
           selector: {
             select: {
-              mode: "dropdown",
-              options: [
-                "none",
-                "short",
-                "long",
-                "day",
-                "day-month",
-                "day-month-long",
-              ].map((value) => ({
+              multiple: true,
+              reorder: true,
+              options: CLOCK_CARD_DATE_PARTS.map((value) => ({
                 value,
                 label: localize(
-                  `ui.panel.lovelace.editor.card.clock.dates.${value}`
+                  `ui.panel.lovelace.editor.card.clock.date.parts.${value}`
                 ),
               })),
             },
@@ -275,19 +241,28 @@ export class HuiClockCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _data = memoizeOne((config: ClockCardConfig) => ({
-    clock_style: "digital",
-    clock_size: "small",
-    time_format: "auto",
-    show_seconds: false,
-    no_background: false,
-    date: "none",
-    // Analog clock options
-    border: false,
-    ticks: "hour",
-    face_style: "markers",
-    ...config,
-  }));
+  private _data = memoizeOne((config: ClockCardConfig) => {
+    const dateConfig = getClockCardDateConfig(config);
+
+    const data = {
+      clock_style: "digital",
+      clock_size: "small",
+      time_format: "auto",
+      show_seconds: false,
+      no_background: false,
+      // Analog clock options
+      border: false,
+      ticks: "hour",
+      face_style: "markers",
+      ...config,
+    };
+
+    if (config.date_format === undefined) {
+      data.date_format = dateConfig.parts;
+    }
+
+    return data;
+  });
 
   public setConfig(config: ClockCardConfig): void {
     assert(config, cardConfigStruct);
@@ -318,6 +293,12 @@ export class HuiClockCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
+    const config = ev.detail.value as ClockCardConfig;
+
+    if (!config.date_format || config.date_format.length === 0) {
+      delete config.date_format;
+    }
+
     if (ev.detail.value.time_format === "auto") {
       delete ev.detail.value.time_format;
     }
@@ -345,7 +326,7 @@ export class HuiClockCardEditor
       delete ev.detail.value.face_style;
     }
 
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (
@@ -380,7 +361,7 @@ export class HuiClockCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.no_background`
         );
-      case "date":
+      case "date_format":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.date.label`
         );
@@ -409,7 +390,7 @@ export class HuiClockCardEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
-      case "date":
+      case "date_format":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.date.description`
         );

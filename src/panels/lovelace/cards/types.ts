@@ -441,12 +441,27 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
-  date?: "none" | "short" | "long" | "day" | "day-month" | "day-month-long";
+  date_format?: ClockCardDatePart[];
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
   face_style?: "markers" | "numbers_upright" | "roman";
 }
+
+export type ClockCardDatePart =
+  | "weekday-short"
+  | "weekday-long"
+  | "day-numeric"
+  | "day-2-digit"
+  | "month-short"
+  | "month-long"
+  | "month-numeric"
+  | "month-2-digit"
+  | "year-2-digit"
+  | "year-numeric"
+  | "separator-dash"
+  | "separator-slash"
+  | "separator-dot";
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;

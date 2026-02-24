@@ -5,6 +5,12 @@ import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
+import {
+  formatClockCardDate,
+  getClockCardDateConfig,
+  getClockCardDateTimeFormatOptions,
+  hasClockCardDate,
+} from "./clock-date-format";
 
 const INTERVAL = 1000;
 
@@ -39,29 +45,11 @@ export class HuiClockCardDigital extends LitElement {
       locale = { ...locale, time_format: this.config.time_format };
     }
 
+    const dateConfig = getClockCardDateConfig(this.config);
+
     const h12 = useAmPm(locale);
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
-      ...(this.config.date && this.config.date !== "none"
-        ? this.config.date === "day"
-          ? {
-              day: "numeric",
-            }
-          : this.config.date === "day-month"
-            ? {
-                month: "short",
-                day: "numeric",
-              }
-            : this.config.date === "day-month-long"
-              ? {
-                  month: "long",
-                  day: "numeric",
-                }
-              : {
-                  year: "numeric",
-                  month: this.config.date === "long" ? "long" : "short",
-                  day: "numeric",
-                }
-        : {}),
+      ...getClockCardDateTimeFormatOptions(dateConfig),
       hour: h12 ? "numeric" : "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -75,9 +63,13 @@ export class HuiClockCardDigital extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("hass")) {
+    if (changedProps.has("config") || changedProps.has("hass")) {
       const oldHass = changedProps.get("hass");
-      if (!oldHass || oldHass.locale !== this.hass?.locale) {
+      if (
+        changedProps.has("config") ||
+        !oldHass ||
+        oldHass.locale !== this.hass?.locale
+      ) {
         this._initDate();
       }
     }
@@ -94,6 +86,7 @@ export class HuiClockCardDigital extends LitElement {
   }
 
   private _startTick() {
+    this._stopTick();
     this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
     this._tick();
   }
@@ -117,15 +110,11 @@ export class HuiClockCardDigital extends LitElement {
       : undefined;
     this._timeAmPm = parts.find((part) => part.type === "dayPeriod")?.value;
 
-    this._date = this.config?.date
-      ? [
-          parts.find((part) => part.type === "day")?.value,
-          parts.find((part) => part.type === "month")?.value,
-          parts.find((part) => part.type === "year")?.value,
-        ]
-          .filter(Boolean)
-          .join(" ")
-      : undefined;
+    const dateConfig = getClockCardDateConfig(this.config);
+    this._date =
+      dateConfig.parts.length > 0
+        ? formatClockCardDate(parts, dateConfig)
+        : undefined;
   }
 
   render() {
@@ -134,6 +123,7 @@ export class HuiClockCardDigital extends LitElement {
     const sizeClass = this.config.clock_size
       ? `size-${this.config.clock_size}`
       : "";
+    const showDate = hasClockCardDate(this.config);
 
     return html`
       <div class="time-parts ${sizeClass}">
@@ -146,7 +136,7 @@ export class HuiClockCardDigital extends LitElement {
           ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
           : nothing}
       </div>
-      ${this.config.date && this.config.date !== "none"
+      ${showDate
         ? html`<div class="date ${sizeClass}">${this._date}</div>`
         : nothing}
     `;
