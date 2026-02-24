@@ -345,12 +345,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           `,
         },
         actions: {
+          lastFixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "icon-button",
           showNarrow: true,
-          moveable: false,
-          hideable: false,
           template: (automation) => html`
             <ha-icon-button
               .automation=${automation}
