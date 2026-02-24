@@ -61,6 +61,7 @@ export class HuiViewFooter extends LitElement {
   private _checkHidden() {
     const hidden = !this.card && !this.lovelace?.editMode;
     this.toggleAttribute("hidden", hidden);
+    this.toggleAttribute("sticky", Boolean(this.card));
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
@@ -225,7 +226,7 @@ export class HuiViewFooter extends LitElement {
       display: none !important;
     }
 
-    :host {
+    :host([sticky]) {
       position: sticky;
       bottom: 0;
       z-index: 4;
