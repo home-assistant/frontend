@@ -119,7 +119,7 @@ export class HuiPowerTotalCard
   }
 
   protected render() {
-    if (!this._config || !this.hass || !this._data) {
+    if (!this._config || !this._data) {
       return nothing;
     }
 
@@ -138,7 +138,7 @@ export class HuiPowerTotalCard
 
     const name =
       this._config.title ||
-      this.hass.localize("ui.panel.energy.cards.power_total_title");
+      this.hass.localize("ui.panel.lovelace.cards.energy.power_total_title");
 
     return html`
       <ha-card>

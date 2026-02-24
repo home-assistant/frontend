@@ -106,16 +106,20 @@ export class HuiWaterTotalCard
   }
 
   protected render() {
-    if (!this._config || !this.hass || !this._data) {
+    if (!this._config || !this._data) {
       return nothing;
     }
 
     const flowRate = this._computeTotalFlowRate(this._data.prefs);
-    const displayValue = formatFlowRateShort(this.hass, flowRate);
+    const displayValue = formatFlowRateShort(
+      this.hass.locale,
+      this.hass.config.unit_system.length,
+      flowRate
+    );
 
     const name =
       this._config.title ||
-      this.hass.localize("ui.panel.energy.cards.water_total_title");
+      this.hass.localize("ui.panel.lovelace.cards.energy.water_total_title");
 
     return html`
       <ha-card>

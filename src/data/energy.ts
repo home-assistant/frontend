@@ -1417,6 +1417,10 @@ export const calculateSolarConsumedGauge = (
  *   gal/d  → 3.78541/1440 L/min
  *   mL/s   → 0.06     L/min
  */
+
+/** Exact number of liters in one US gallon */
+const LITERS_PER_GALLON = 3.785411784;
+
 const FLOW_RATE_TO_LMIN: Record<string, number> = {
   "m³/h": 1000 / 60,
   "m³/min": 1000,
@@ -1425,9 +1429,9 @@ const FLOW_RATE_TO_LMIN: Record<string, number> = {
   "L/h": 1 / 60,
   "L/min": 1,
   "L/s": 60,
-  "gal/h": 3.785411784 / 60,
-  "gal/min": 3.785411784,
-  "gal/d": 3.785411784 / 1440,
+  "gal/h": LITERS_PER_GALLON / 60,
+  "gal/min": LITERS_PER_GALLON,
+  "gal/d": LITERS_PER_GALLON / 1440,
   "mL/s": 60 / 1000,
 };
 
@@ -1436,7 +1440,7 @@ const FLOW_RATE_TO_LMIN: Record<string, number> = {
  * @returns Flow rate in L/min, or undefined if unavailable/invalid.
  */
 export const getFlowRateFromState = (
-  stateObj: HassEntity
+  stateObj?: HassEntity
 ): number | undefined => {
   if (!stateObj) {
     return undefined;
@@ -1459,15 +1463,16 @@ export const getFlowRateFromState = (
  * the preferred unit system: metric → L/min, imperial → gal/min.
  */
 export const formatFlowRateShort = (
-  hass: HomeAssistant,
+  hassLocale: HomeAssistant["locale"],
+  lengthUnitSystem: string,
   litersPerMin: number
 ): string => {
-  const isMetric = hass.config.unit_system.length === "km";
+  const isMetric = lengthUnitSystem === "km";
   if (isMetric) {
-    return `${formatNumber(litersPerMin, hass.locale, { maximumFractionDigits: 1 })} L/min`;
+    return `${formatNumber(litersPerMin, hassLocale, { maximumFractionDigits: 1 })} L/min`;
   }
-  const galPerMin = litersPerMin / 3.785411784;
-  return `${formatNumber(galPerMin, hass.locale, { maximumFractionDigits: 1 })} gal/min`;
+  const galPerMin = litersPerMin / LITERS_PER_GALLON;
+  return `${formatNumber(galPerMin, hassLocale, { maximumFractionDigits: 1 })} gal/min`;
 };
 
 /**
