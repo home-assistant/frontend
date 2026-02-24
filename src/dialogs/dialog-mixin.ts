@@ -34,7 +34,8 @@ export const DialogMixin = <
       return this._closePromise || true;
     }
 
-    private _removeDialog = () => {
+    private _removeDialog = (ev) => {
+      ev.stopPropagation();
       this._closeResolve?.(true);
       this._closePromise = undefined;
       this._closeResolve = undefined;
