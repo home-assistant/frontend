@@ -46,70 +46,6 @@ export const coreCards: Card[] = [
     showElement: false,
   },
   {
-    type: "energy-date-selection",
-    showElement: true,
-  },
-  {
-    type: "energy-distribution",
-    showElement: false,
-  },
-  {
-    type: "energy-usage-graph",
-    showElement: false,
-  },
-  {
-    type: "energy-solar-graph",
-    showElement: false,
-  },
-  {
-    type: "energy-gas-graph",
-    showElement: false,
-  },
-  {
-    type: "energy-water-graph",
-    showElement: false,
-  },
-  {
-    type: "power-sources-graph",
-    showElement: false,
-  },
-  {
-    type: "energy-devices-graph",
-    showElement: false,
-  },
-  {
-    type: "energy-devices-detail-graph",
-    showElement: false,
-  },
-  {
-    type: "energy-sankey",
-    showElement: false,
-  },
-  {
-    type: "power-sankey",
-    showElement: false,
-  },
-  {
-    type: "water-sankey",
-    showElement: false,
-  },
-  {
-    type: "energy-solar-consumed-gauge",
-    showElement: false,
-  },
-  {
-    type: "energy-self-sufficiency-gauge",
-    showElement: false,
-  },
-  {
-    type: "energy-grid-neutrality-gauge",
-    showElement: false,
-  },
-  {
-    type: "energy-carbon-consumed-gauge",
-    showElement: false,
-  },
-  {
     type: "statistic",
     showElement: true,
   },
@@ -204,18 +140,68 @@ export const coreCards: Card[] = [
 ];
 
 export const energyCards: Card[] = [
-  { type: "energy-date-selection" },
-  { type: "energy-usage-graph" },
-  { type: "energy-solar-graph" },
-  { type: "energy-solar-graph" },
-  { type: "energy-gas-graph" },
-  { type: "energy-water-graph" },
-  { type: "energy-distribution" },
-  { type: "energy-sources-table" },
-  { type: "energy-grid-neutrality-gauge" },
-  { type: "energy-solar-consumed-gauge" },
-  { type: "energy-carbon-consumed-gauge" },
-  { type: "energy-self-sufficiency-gauge" },
-  { type: "energy-devices-graph" },
-  { type: "energy-devices-detail-graph" },
+  {
+    type: "energy-date-selection",
+    showElement: true,
+  },
+  {
+    type: "energy-distribution",
+    showElement: false,
+  },
+  {
+    type: "energy-usage-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-solar-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-gas-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-water-graph",
+    showElement: false,
+  },
+  {
+    type: "power-sources-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-devices-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-devices-detail-graph",
+    showElement: false,
+  },
+  {
+    type: "energy-sankey",
+    showElement: false,
+  },
+  {
+    type: "power-sankey",
+    showElement: false,
+  },
+  {
+    type: "water-sankey",
+    showElement: false,
+  },
+  {
+    type: "energy-solar-consumed-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-self-sufficiency-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-grid-neutrality-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-carbon-consumed-gauge",
+    showElement: false,
+  },
 ];
