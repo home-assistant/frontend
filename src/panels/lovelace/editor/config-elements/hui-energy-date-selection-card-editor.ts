@@ -107,14 +107,9 @@ export class HuiEnergyDateSelectionCardEditor
 
   private _valueChanged(ev: CustomEvent): void {
     const config = { ...ev.detail.value };
-    if (
-      config.collection_key &&
-      config.collection_key.length > (this._config?.collection_key?.length ?? 0)
-    ) {
-      // If a key has been populated, and it is longer than the value previously
-      // set, ensure it has the correct prefix. The length check ensures the user
-      // can use backspace to delete the contents - otherwise this would repeatedly
-      // restores the prefix.
+    if (config.collection_key && !this._config?.collection_key?.length) {
+      // If a key has been populated, and the old value was empty or missing,
+      // then automatically add the collection key prefix if not present.
       config.collection_key = createEnergyCollectionKey(config.collection_key);
     }
     fireEvent(this, "config-changed", { config: config });

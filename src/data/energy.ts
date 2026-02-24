@@ -65,8 +65,6 @@ export function getCurrentDashboardDefaultCollectionKey(
 }
 
 // Validate that a string is a valid energy collection key.
-// By default allows any valid collection key. Can optionally can select that
-// the key has the UI prefix. Will throw an error if invalid.
 export function validateEnergyCollectionKey(key: string | undefined) {
   if (!key?.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
     throw new Error(
@@ -75,8 +73,7 @@ export function validateEnergyCollectionKey(key: string | undefined) {
   }
 }
 
-// Return all currently active energy collections, optionally selecting between
-// only ui keys, or all keys.
+// Return all currently active energy collections
 export function getActiveEnergyCollectionKeys(
   hass: HomeAssistant
 ): string[] | undefined {

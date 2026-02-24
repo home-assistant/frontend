@@ -19,7 +19,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { EnergyCardSankeyConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { getActiveEnergyCollectionKeys } from "../../../../data/energy";
+import { createEnergyCollectionKey } from "../../../../data/energy";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -55,65 +55,54 @@ export class HuiEnergySankeyCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (localize: LocalizeFunc, collectionKeys: string[] | undefined) => {
-      const schema: HaFormSchema[] = [
-        { name: "title", selector: { text: {} } },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "layout",
-              required: false,
-              selector: {
-                select: {
-                  options: layoutDirections.map((direction) => ({
-                    value: direction,
-                    label: localize(
-                      `ui.panel.lovelace.editor.card.energy-sankey.layout_directions.${direction}`
-                    ),
-                  })),
-                },
+  private _schema = memoizeOne((localize: LocalizeFunc) => {
+    const schema: HaFormSchema[] = [
+      { name: "title", selector: { text: {} } },
+      {
+        name: "",
+        type: "grid",
+        schema: [
+          {
+            name: "layout",
+            required: false,
+            selector: {
+              select: {
+                options: layoutDirections.map((direction) => ({
+                  value: direction,
+                  label: localize(
+                    `ui.panel.lovelace.editor.card.energy-sankey.layout_directions.${direction}`
+                  ),
+                })),
               },
             },
-            {
-              name: "collection_key",
-              required: false,
-              disabled: !collectionKeys?.length,
-              selector: {
-                select: {
-                  mode: "dropdown",
-                  options: collectionKeys ?? [""],
-                },
-              },
-            },
-            {
-              name: "group_by_floor",
-              required: false,
-              selector: { boolean: {} },
-            },
-            {
-              name: "group_by_area",
-              required: false,
-              selector: { boolean: {} },
-            },
-          ],
-        },
-      ];
-      return schema;
-    }
-  );
+          },
+          {
+            type: "string",
+            name: "collection_key",
+            required: false,
+          },
+          {
+            name: "group_by_floor",
+            required: false,
+            selector: { boolean: {} },
+          },
+          {
+            name: "group_by_area",
+            required: false,
+            selector: { boolean: {} },
+          },
+        ],
+      },
+    ];
+    return schema;
+  });
 
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const schema = this._schema(
-      this.hass.localize,
-      getActiveEnergyCollectionKeys(this.hass)
-    );
+    const schema = this._schema(this.hass.localize);
 
     const data = {
       ...this._config,
@@ -130,7 +119,13 @@ export class HuiEnergySankeyCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const config = { ...ev.detail.value };
+    if (config.collection_key && !this._config?.collection_key?.length) {
+      // If a key has been populated, and the old value was empty or missing,
+      // then automatically add the collection key prefix if not present.
+      config.collection_key = createEnergyCollectionKey(config.collection_key);
+    }
+    fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeHelperCallback = (schema) => {

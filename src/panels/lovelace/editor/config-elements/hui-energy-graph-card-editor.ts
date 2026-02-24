@@ -13,7 +13,7 @@ import type {
 } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { getActiveEnergyCollectionKeys } from "../../../../data/energy";
+import { createEnergyCollectionKey } from "../../../../data/energy";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -43,53 +43,42 @@ export class HuiEnergyGraphCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (type: string, collectionKeys: string[] | undefined) => {
-      const schema: HaFormSchema[] = [
-        { name: "title", selector: { text: {} } },
-        {
-          name: "collection_key",
-          required: false,
-          disabled: !collectionKeys?.length,
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: collectionKeys ?? [""],
+  private _schema = memoizeOne((type: string) => {
+    const schema: HaFormSchema[] = [
+      { name: "title", selector: { text: {} } },
+      {
+        type: "string",
+        name: "collection_key",
+        required: false,
+      },
+      ...(type === "power-sources-graph"
+        ? [
+            {
+              name: "show_legend",
+              required: false,
+              selector: { boolean: {} },
             },
-          },
-        },
-        ...(type === "power-sources-graph"
-          ? [
-              {
-                name: "show_legend",
-                required: false,
-                selector: { boolean: {} },
-              },
-            ]
-          : []),
-        ...(type === "energy-distribution"
-          ? [
-              {
-                name: "link_dashboard",
-                required: false,
-                selector: { boolean: {} },
-              },
-            ]
-          : []),
-      ];
-      return schema;
-    }
-  );
+          ]
+        : []),
+      ...(type === "energy-distribution"
+        ? [
+            {
+              name: "link_dashboard",
+              required: false,
+              selector: { boolean: {} },
+            },
+          ]
+        : []),
+    ];
+    return schema;
+  });
 
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const schema = this._schema(
-      this._config.type,
-      getActiveEnergyCollectionKeys(this.hass)
-    );
+    const schema = this._schema(this._config.type);
 
     const data = {
       ...this._config,
@@ -106,7 +95,13 @@ export class HuiEnergyGraphCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const config = { ...ev.detail.value };
+    if (config.collection_key && !this._config?.collection_key?.length) {
+      // If a key has been populated, and the old value was empty or missing,
+      // then automatically add the collection key prefix if not present.
+      config.collection_key = createEnergyCollectionKey(config.collection_key);
+    }
+    fireEvent(this, "config-changed", { config: config });
   }
 
   private _computeHelperCallback = (schema) => {
