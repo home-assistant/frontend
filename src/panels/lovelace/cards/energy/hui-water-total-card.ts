@@ -1,37 +1,24 @@
 import { mdiWater } from "@mdi/js";
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatNumber } from "../../../../common/number/format_number";
-import { normalizeValueBySIPrefix } from "../../../../common/number/normalize-by-si-prefix";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/tile/ha-tile-container";
 import "../../../../components/tile/ha-tile-icon";
 import "../../../../components/tile/ha-tile-info";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  formatFlowRateShort,
+  getEnergyDataCollection,
+  getFlowRateFromState,
+} from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import { tileCardStyle } from "../tile/tile-card-style";
 import type { WaterTotalCardConfig } from "../types";
-
-const getFlowRateFromState = (stateObj: HassEntity): number | undefined => {
-  if (!stateObj) {
-    return undefined;
-  }
-  const value = parseFloat(stateObj.state);
-  if (isNaN(value)) {
-    return undefined;
-  }
-
-  return normalizeValueBySIPrefix(
-    value,
-    stateObj.attributes.unit_of_measurement
-  );
-};
 
 @customElement("hui-water-total-card")
 export class HuiWaterTotalCard
@@ -124,19 +111,7 @@ export class HuiWaterTotalCard
     }
 
     const flowRate = this._computeTotalFlowRate(this._data.prefs);
-
-    // Display in L/min or m³/h depending on magnitude
-    let displayValue = "";
-    if (flowRate >= 1000) {
-      // Display in m³/h (convert from L/min if needed)
-      displayValue = `${formatNumber(flowRate / 1000, this.hass.locale, {
-        maximumFractionDigits: 2,
-      })} m³/h`;
-    } else {
-      displayValue = `${formatNumber(flowRate, this.hass.locale, {
-        maximumFractionDigits: 1,
-      })} L/min`;
-    }
+    const displayValue = formatFlowRateShort(this.hass, flowRate);
 
     const name =
       this._config.title ||
