@@ -1,14 +1,14 @@
 import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
@@ -22,7 +22,6 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import "./hui-view-footer-settings-editor";
 import type { EditViewFooterDialogParams } from "./show-edit-view-footer-dialog";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("hui-dialog-edit-view-footer")
 export class HuiDialogEditViewFooter extends LitElement {
