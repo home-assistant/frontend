@@ -48,82 +48,66 @@ export const coreCards: Card[] = [
   {
     type: "energy-date-selection",
     showElement: true,
-    sortAtEnd: true,
   },
   {
     type: "energy-distribution",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-usage-graph",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-solar-graph",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-gas-graph",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-water-graph",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "power-sources-graph",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-devices-graph",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-devices-detail-graph",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-sankey",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "power-sankey",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "water-sankey",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-solar-consumed-gauge",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-self-sufficiency-gauge",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-grid-neutrality-gauge",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "energy-carbon-consumed-gauge",
     showElement: false,
-    sortAtEnd: true,
   },
   {
     type: "statistic",

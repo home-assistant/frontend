@@ -67,7 +67,6 @@ export interface Card {
   name?: string;
   description?: string;
   showElement?: boolean;
-  sortAtEnd?: boolean;
   isCustom?: boolean;
   isSuggested?: boolean;
 }
