@@ -8,7 +8,6 @@ import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
 import {
   formatClockCardDate,
   getClockCardDateConfig,
-  getClockCardDateTimeFormatOptions,
   hasClockCardDate,
 } from "./clock-date-format";
 
@@ -34,6 +33,10 @@ export class HuiClockCardDigital extends LitElement {
 
   private _tickInterval?: undefined | number;
 
+  private _timeZone?: string;
+
+  private _language?: string;
+
   private _initDate() {
     if (!this.config || !this.hass) {
       return;
@@ -45,18 +48,20 @@ export class HuiClockCardDigital extends LitElement {
       locale = { ...locale, time_format: this.config.time_format };
     }
 
-    const dateConfig = getClockCardDateConfig(this.config);
+    const timeZone =
+      this.config?.time_zone ||
+      resolveTimeZone(locale.time_zone, this.hass.config?.time_zone);
 
     const h12 = useAmPm(locale);
+    this._language = this.hass.locale.language;
+    this._timeZone = timeZone;
+
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
-      ...getClockCardDateTimeFormatOptions(dateConfig),
       hour: h12 ? "numeric" : "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hourCycle: h12 ? "h12" : "h23",
-      timeZone:
-        this.config?.time_zone ||
-        resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
+      timeZone,
     });
 
     this._tick();
@@ -101,7 +106,8 @@ export class HuiClockCardDigital extends LitElement {
   private _tick() {
     if (!this._dateTimeFormat) return;
 
-    const parts = this._dateTimeFormat.formatToParts();
+    const date = new Date();
+    const parts = this._dateTimeFormat.formatToParts(date);
 
     this._timeHour = parts.find((part) => part.type === "hour")?.value;
     this._timeMinute = parts.find((part) => part.type === "minute")?.value;
@@ -112,8 +118,8 @@ export class HuiClockCardDigital extends LitElement {
 
     const dateConfig = getClockCardDateConfig(this.config);
     this._date =
-      dateConfig.parts.length > 0
-        ? formatClockCardDate(parts, dateConfig)
+      hasClockCardDate(this.config) && this._language
+        ? formatClockCardDate(date, dateConfig, this._language, this._timeZone)
         : undefined;
   }
 
