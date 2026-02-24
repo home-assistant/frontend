@@ -92,17 +92,17 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasWaterSources) {
+    if (hasGasSources) {
       const card = {
-        type: "water-total",
+        type: "gas-total",
         collection_key: collectionKey,
       };
       tiles.push({ ...card });
     }
 
-    if (hasGasSources) {
+    if (hasWaterSources) {
       const card = {
-        type: "gas-total",
+        type: "water-total",
         collection_key: collectionKey,
       };
       tiles.push({ ...card });
