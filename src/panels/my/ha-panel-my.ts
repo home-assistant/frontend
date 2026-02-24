@@ -139,7 +139,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   config_energy: {
     component: "energy",
-    redirect: "/config/energy/dashboard",
+    redirect: "/config/energy",
   },
   config_ssdp: {
     component: "ssdp",

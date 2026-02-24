@@ -144,6 +144,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize(
           "ui.panel.config.zwave_js.navigation.general"
         )}
+        back-path="/config"
         has-fab
       >
         <ha-icon-button

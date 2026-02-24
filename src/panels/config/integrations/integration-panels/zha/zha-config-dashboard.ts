@@ -109,6 +109,7 @@ class ZHAConfigDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${zhaTabs}
+        back-path="/config"
         has-fab
       >
         <div class="container">
