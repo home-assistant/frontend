@@ -9368,7 +9368,7 @@
               "show_seconds": "Display seconds",
               "date": {
                 "label": "Date",
-                "description": "Whether to show the date on the clock. Can also be a custom date format."
+                "description": "Whether to show the date on the clock."
               },
               "dates": {
                 "none": "No date",
