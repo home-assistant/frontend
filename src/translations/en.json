@@ -15,7 +15,8 @@
     "light": "Lights",
     "security": "Security",
     "climate": "Climate",
-    "home": "Overview"
+    "home": "Overview",
+    "notfound": "Page not found"
   },
   "state": {
     "default": {
@@ -3798,6 +3799,11 @@
           "caption": "Energy",
           "description": "Monitor your energy production and consumption",
           "new_device_info": "After setting up a new device, it can take up to 2 hours for new data to arrive in your energy dashboard.",
+          "tabs": {
+            "electricity": "Electricity",
+            "gas": "Gas",
+            "water": "Water"
+          },
           "delete_source": "Are you sure you want to remove this source?",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
@@ -3935,7 +3941,9 @@
               "cost_entity_helper_volume": "volume",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
-              "gas_usage": "Gas usage"
+              "gas_usage": "Gas consumption",
+              "gas_flow_rate": "Gas flow rate",
+              "flow_rate_para": "Optionally pick a sensor which measures the gas flow rate in either of {unit}."
             }
           },
           "water": {
@@ -3959,7 +3967,9 @@
               "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (e.g. `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
-              "water_usage": "Water usage"
+              "water_usage": "Water consumption",
+              "water_flow_rate": "Water flow rate",
+              "flow_rate_para": "Optionally pick a sensor which measures the water flow rate in either of {unit}."
             }
           },
           "device_consumption": {
@@ -3991,7 +4001,8 @@
               "header": "Add a water device",
               "display_name": "Display name",
               "device_consumption_water": "Device water consumption",
-              "selected_stat_intro": "Select the water sensor that measures the device's water usage in either of {unit}.",
+              "device_consumption_water_flow_rate": "Device water flow rate",
+              "selected_stat_intro": "Select the water sensor that measures the device's water consumption in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
               "no_upstream_devices": "No eligible upstream devices"
@@ -4251,7 +4262,7 @@
                 "title": "Title",
                 "conf_mode": "Configuration method",
                 "default": "Default",
-                "require_admin": "Admin only",
+                "require_admin": "Admin-only",
                 "sidebar": "In sidebar",
                 "filename": "Filename",
                 "url": "Open",
@@ -4280,7 +4291,7 @@
               "title_required": "Title is required.",
               "url": "URL",
               "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -",
-              "require_admin": "Admin only",
+              "require_admin": "Admin-only",
               "delete": "Delete",
               "update": "Update",
               "create": "Create",
@@ -4288,7 +4299,18 @@
               "remove_default": "Remove as default",
               "set_default_confirm_title": "Set as default dashboard?",
               "set_default_confirm_text": "This dashboard will be shown to all users when opening Home Assistant.",
-              "set_default_confirm_note": "Users who have chosen a specific dashboard in their profile will not be affected. They must set it back to \"Auto (use system settings)\" to use this dashboard."
+              "set_default_confirm_note": "Users who have chosen a specific dashboard in their profile will not be affected. They must set it back to \"Auto (use system settings)\" to use this dashboard.",
+              "set_default_admin_only_title": "Can't set as default",
+              "set_default_admin_only_text": "This dashboard is set to admin-only. Disable this limitation before setting it as default."
+            },
+            "panel_detail": {
+              "edit_panel": "Edit panel",
+              "title": "[%key:ui::panel::config::lovelace::dashboards::detail::title%]",
+              "icon": "[%key:ui::panel::config::lovelace::dashboards::detail::icon%]",
+              "require_admin": "[%key:ui::panel::config::lovelace::dashboards::detail::require_admin%]",
+              "show_in_sidebar": "[%key:ui::panel::config::lovelace::dashboards::detail::show_sidebar%]",
+              "reset_to_default": "Reset to default",
+              "require_admin_helper": "Can't be enabled because this dashboard is set as default"
             }
           },
           "resources": {
@@ -9618,6 +9640,11 @@
       "map": {
         "edit_zones": "Edit zones"
       },
+      "notfound": {
+        "no_access_title": "No access",
+        "no_access_content": "You don't have access to this page. Contact an administrator or change the default dashboard in your profile settings.",
+        "no_access_go_to_profile": "Go to profile"
+      },
       "profile": {
         "tabs": {
           "general": "General",
@@ -10250,7 +10277,7 @@
       "energy": {
         "title": {
           "overview": "Summary",
-          "electricity": "Energy",
+          "electricity": "Electricity",
           "gas": "Gas",
           "water": "Water",
           "now": "Now"

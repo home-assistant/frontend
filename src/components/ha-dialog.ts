@@ -22,6 +22,8 @@ import "./ha-icon-button";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
 
+type DialogHideEvent = CustomEvent<{ source?: Element }>;
+
 /**
  * Home Assistant dialog component
  *
@@ -225,7 +227,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "after-show");
   };
 
-  private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
+  private _handleAfterHide = (ev: DialogHideEvent) => {
     if (ev.eventPhase === Event.AT_TARGET) {
       this._open = false;
       fireEvent(this, "closed");
@@ -250,8 +252,8 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     }
   }
 
-  private _handleHide(ev: CustomEvent<{ source: Element }>) {
-    const sourceIsDialog = ev.detail.source === (ev.target as WaDialog).dialog;
+  private _handleHide(ev: DialogHideEvent) {
+    const sourceIsDialog = ev.detail?.source === (ev.target as WaDialog).dialog;
 
     if (this.preventScrimClose && this._escapePressed && sourceIsDialog) {
       ev.preventDefault();
