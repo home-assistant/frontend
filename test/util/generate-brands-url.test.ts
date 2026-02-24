@@ -1,27 +1,42 @@
 import { assert, describe, it } from "vitest";
-import { brandsUrl } from "../../src/util/brands-url";
+import { addBrandsAuth, brandsUrl } from "../../src/util/brands-url";
 
 describe("Generate brands Url", () => {
   it("Generate logo brands url for cloud component", () => {
     assert.strictEqual(
-      // @ts-ignore
       brandsUrl({ domain: "cloud", type: "logo" }),
-      "https://brands.home-assistant.io/_/cloud/logo.png"
+      "/api/brands/integration/cloud/logo.png?fallback=placeholder"
     );
   });
   it("Generate icon brands url for cloud component", () => {
     assert.strictEqual(
-      // @ts-ignore
       brandsUrl({ domain: "cloud", type: "icon" }),
-      "https://brands.home-assistant.io/_/cloud/icon.png"
+      "/api/brands/integration/cloud/icon.png?fallback=placeholder"
     );
   });
 
   it("Generate dark theme optimized logo brands url for cloud component", () => {
     assert.strictEqual(
-      // @ts-ignore
       brandsUrl({ domain: "cloud", type: "logo", darkOptimized: true }),
-      "https://brands.home-assistant.io/_/cloud/dark_logo.png"
+      "/api/brands/integration/cloud/dark_logo.png?fallback=placeholder"
+    );
+  });
+});
+
+describe("addBrandsAuth", () => {
+  it("Returns non-brands URLs unchanged", () => {
+    assert.strictEqual(
+      addBrandsAuth("/api/camera_proxy/camera.foo?token=abc"),
+      "/api/camera_proxy/camera.foo?token=abc"
+    );
+  });
+
+  it("Returns brands URL unchanged when no token is available", () => {
+    assert.strictEqual(
+      addBrandsAuth(
+        "/api/brands/integration/demo/icon.png?fallback=placeholder"
+      ),
+      "/api/brands/integration/demo/icon.png?fallback=placeholder"
     );
   });
 });

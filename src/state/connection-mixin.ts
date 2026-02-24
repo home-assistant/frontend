@@ -30,6 +30,7 @@ import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_displ
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
+import { fetchBrandsAccessToken } from "../util/brands-url";
 import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
@@ -319,6 +320,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         this._updateHass({ systemData: {} });
       });
       clearInterval(this.__backendPingInterval);
+
+      // Fetch the brands access token for authenticated brand image requests
+      fetchBrandsAccessToken(this.hass!);
+
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
           // If the backend is busy, or the connection is latent,
@@ -342,6 +347,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
 
       this._updateHass({ connected: true });
       broadcastConnectionStatus("connected");
+
+      // Refresh the brands access token on reconnect
+      fetchBrandsAccessToken(this.hass!);
 
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
