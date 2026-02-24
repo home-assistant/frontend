@@ -3890,6 +3890,27 @@
               "add_forecast": "Add forecast"
             }
           },
+          "wind": {
+            "title": "Wind turbines",
+            "sub": "Let Home Assistant monitor your wind turbines and optimize energy usage with Home Assistant.",
+            "learn_more": "More information on how to get started.",
+            "add_wind_production": "Add wind production",
+            "edit_wind_production": "Edit wind production",
+            "delete_wind_production": "Delete wind production",
+            "dialog": {
+              "header": "Configure wind turbines",
+              "entity_para": "Pick a sensor which measures wind production in either of {unit}.",
+              "wind_production_energy": "Wind production energy",
+              "wind_production_power": "Wind production power",
+              "wind_production_forecast": "Wind production forecast",
+              "wind_production_forecast_description": "Adding wind production forecast information will allow you to quickly see your expected production for today.",
+              "wind_forecast_description": "Would you like to include a forecast for this wind production source? This will help you plan energy usage.",
+              "dont_forecast_production": "Don't forecast production",
+              "forecast_production": "Forecast production",
+              "add_forecast": "Add forecast",
+              "create_forecast": "Create a wind production forecast"
+            }
+          },
           "battery": {
             "title": "Home battery storage",
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
@@ -8182,6 +8203,7 @@
               "grid_total": "Grid total",
               "gas_total": "Gas total",
               "solar_total": "Solar total",
+              "wind_total": "Wind total",
               "water_total": "Water total",
               "source": "Source",
               "energy": "Usage",
@@ -8192,6 +8214,11 @@
               "total_costs": "Total costs"
             },
             "energy_solar_graph": {
+              "production": "Production {name}",
+              "forecast": "Forecast {name}",
+              "total_produced": "Total produced {num} kWh"
+            },
+            "energy_wind_graph": {
               "production": "Production {name}",
               "forecast": "Forecast {name}",
               "total_produced": "Total produced {num} kWh"
@@ -8252,6 +8279,7 @@
             "power_graph": {
               "grid": "Grid",
               "solar": "Solar",
+              "wind": "Wind production",
               "battery": "Battery",
               "usage": "Consumption"
             },
@@ -10358,6 +10386,7 @@
         "cards": {
           "energy_usage_graph_title": "Electricity usage",
           "energy_solar_graph_title": "Solar production",
+          "energy_wind_graph_title": "Wind production",
           "energy_gas_graph_title": "Gas consumption",
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",

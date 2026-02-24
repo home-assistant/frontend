@@ -30,6 +30,7 @@ export class PowerViewStrategy extends ReactiveElement {
 
     const hasPowerSources = prefs?.energy_sources.some((source) => {
       if (source.type === "solar" && source.stat_rate) return true;
+      if (source.type === "wind" && source.stat_rate) return true;
       if (source.type === "battery" && source.stat_rate) return true;
       if (source.type === "grid") {
         return !!source.stat_rate || !!source.power_config;

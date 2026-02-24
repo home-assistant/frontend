@@ -32,6 +32,7 @@ const colorPropertyMap = {
   battery_in: "--energy-battery-in-color",
   battery_out: "--energy-battery-out-color",
   solar: "--energy-solar-color",
+  wind: "--energy-wind-color",
   gas: "--energy-gas-color",
   water: "--energy-water-color",
 };
@@ -247,11 +248,13 @@ export class HuiEnergySourcesTableCard
       gas: 0,
       water: 0,
       solar: 0,
+      wind: 0,
     };
     const totalsCompare = {
       gas: 0,
       water: 0,
       solar: 0,
+      wind: 0,
     };
     const totalCosts = {
       gas: 0,
@@ -303,6 +306,7 @@ export class HuiEnergySourcesTableCard
 
     const units = {
       solar: "kWh",
+      wind: "kWh",
       gas: this._data.gasUnit,
       water: this._data.waterUnit,
     };
@@ -357,7 +361,7 @@ export class HuiEnergySourcesTableCard
 
     const showOnlyTotals = this._config.show_only_totals;
 
-    const _renderSimpleCategory = (type: "solar" | "gas" | "water") =>
+    const _renderSimpleCategory = (type: "solar" | "wind" | "gas" | "water") =>
       html` ${types[type]?.map((source, idx) => {
         const cost_stat =
           type in hasCosts &&
@@ -496,7 +500,7 @@ export class HuiEnergySourcesTableCard
               </tr>
             </thead>
             <tbody class="mdc-data-table__content">
-              ${_renderSimpleCategory("solar")}
+              ${_renderSimpleCategory("solar")} ${_renderSimpleCategory("wind")}
               ${types.battery?.map((source, idx) => {
                 const {
                   hasData: hasFromData,

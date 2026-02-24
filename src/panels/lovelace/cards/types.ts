@@ -184,6 +184,11 @@ export interface EnergySolarGraphCardConfig extends EnergyCardBaseConfig {
   title?: string;
 }
 
+export interface EnergyWindGraphCardConfig extends EnergyCardBaseConfig {
+  type: "energy-wind-graph";
+  title?: string;
+}
+
 export interface EnergyGasGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-gas-graph";
   title?: string;

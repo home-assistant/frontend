@@ -52,6 +52,9 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     const hasSolar = prefs.energy_sources.some(
       (source) => source.type === "solar"
     );
+    const hasWind = prefs.energy_sources.some(
+      (source) => source.type === "wind"
+    );
     const hasWaterSources = prefs.energy_sources.some(
       (source) => source.type === "water"
     );
@@ -65,7 +68,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       return false;
     });
 
-    if (hasGrid || hasBattery || hasSolar) {
+    if (hasGrid || hasBattery || hasSolar || hasWind) {
       view.sections!.push({
         type: "grid",
         cards: [

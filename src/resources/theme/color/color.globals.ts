@@ -60,6 +60,7 @@ export const colorStyles = css`
     --energy-grid-consumption-color: #488fc2;
     --energy-grid-return-color: #8353d1;
     --energy-solar-color: #ff9800;
+    --energy-wind-color: #78909c;
     --energy-non-fossil-color: #0f9d58;
     --energy-battery-out-color: #4db6ac;
     --energy-battery-in-color: #f06292;

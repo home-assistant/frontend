@@ -63,6 +63,13 @@ export const emptySolarEnergyPreference =
     config_entry_solar_forecast: null,
   });
 
+export const emptyWindEnergyPreference =
+  (): WindSourceTypeEnergyPreference => ({
+    type: "wind",
+    stat_energy_from: "",
+    config_entry_wind_forecast: null,
+  });
+
 export const emptyBatteryEnergyPreference =
   (): BatterySourceTypeEnergyPreference => ({
     type: "battery",
@@ -91,6 +98,11 @@ interface EnergySolarForecast {
   wh_hours: Record<string, number>;
 }
 export type EnergySolarForecasts = Record<string, EnergySolarForecast>;
+
+interface EnergyWindForecast {
+  wh_hours: Record<string, number>;
+}
+export type EnergyWindForecasts = Record<string, EnergyWindForecast>;
 
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
@@ -146,6 +158,14 @@ export interface SolarSourceTypeEnergyPreference {
   config_entry_solar_forecast: string[] | null;
 }
 
+export interface WindSourceTypeEnergyPreference {
+  type: "wind";
+
+  stat_energy_from: string;
+  stat_rate?: string;
+  config_entry_wind_forecast: string[] | null;
+}
+
 export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
@@ -191,6 +211,7 @@ export interface WaterSourceTypeEnergyPreference {
 
 export type EnergySource =
   | SolarSourceTypeEnergyPreference
+  | WindSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
@@ -205,6 +226,7 @@ export interface EnergyPreferences {
 export interface EnergyInfo {
   cost_sensors: Record<string, string>;
   solar_forecast_domains: string[];
+  wind_forecast_domains: string[];
 }
 
 export interface EnergyValidationIssue {
@@ -270,6 +292,7 @@ export const getFossilEnergyConsumption = async (
 export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
+  wind?: WindSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
@@ -309,6 +332,11 @@ export const getReferencedStatisticIds = (
     }
 
     if (source.type === "solar") {
+      statIDs.push(source.stat_energy_from);
+      continue;
+    }
+
+    if (source.type === "wind") {
       statIDs.push(source.stat_energy_from);
       continue;
     }
@@ -381,6 +409,11 @@ export const getReferencedStatisticIdsPower = (
     }
 
     if (source.type === "solar") {
+      statIDs.push(source.stat_rate);
+      continue;
+    }
+
+    if (source.type === "wind") {
       statIDs.push(source.stat_rate);
       continue;
     }
@@ -862,6 +895,11 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
     type: "energy/solar_forecast",
   });
 
+export const getEnergyWindForecasts = (hass: HomeAssistant) =>
+  hass.callWS<EnergyWindForecasts>({
+    type: "energy/wind_forecast",
+  });
+
 const energyGasUnitClass = ["volume", "energy"] as const;
 export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 
@@ -957,12 +995,14 @@ export interface EnergySumData {
   to_battery?: Record<number, number>;
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
+  wind?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
     to_battery?: number;
     from_battery?: number;
     solar?: number;
+    wind?: number;
   };
   timestamps: number[];
 }
@@ -1008,6 +1048,7 @@ const getSummedDataPartial = (
     to_grid?: string[];
     from_grid?: string[];
     solar?: string[];
+    wind?: string[];
     to_battery?: string[];
     from_battery?: string[];
   } = {};
@@ -1018,6 +1059,15 @@ const getSummedDataPartial = (
         statIds.solar.push(source.stat_energy_from);
       } else {
         statIds.solar = [source.stat_energy_from];
+      }
+      continue;
+    }
+
+    if (source.type === "wind") {
+      if (statIds.wind) {
+        statIds.wind.push(source.stat_energy_from);
+      } else {
+        statIds.wind = [source.stat_energy_from];
       }
       continue;
     }
@@ -1140,7 +1190,11 @@ const computeConsumptionDataPartial = (
     } = computeConsumptionSingle({
       from_grid: data.from_grid && (data.from_grid[t] ?? 0),
       to_grid: data.to_grid && (data.to_grid[t] ?? 0),
-      solar: data.solar && (data.solar[t] ?? 0),
+      solar:
+        data.solar || data.wind
+          ? (data.solar ? (data.solar[t] ?? 0) : 0) +
+            (data.wind ? (data.wind[t] ?? 0) : 0)
+          : undefined,
       to_battery: data.to_battery && (data.to_battery[t] ?? 0),
       from_battery: data.from_battery && (data.from_battery[t] ?? 0),
     });
@@ -1320,7 +1374,7 @@ export const calculateSolarConsumedGauge = (
   hasBattery: boolean,
   data: EnergySumData
 ): number | undefined => {
-  if (!data.total.solar) {
+  if (!data.total.solar && !data.total.wind) {
     return undefined;
   }
   const { consumption, compareConsumption: _ } = computeConsumptionData(
@@ -1328,7 +1382,7 @@ export const calculateSolarConsumedGauge = (
     undefined
   );
   if (!hasBattery) {
-    const solarProduction = data.total.solar;
+    const solarProduction = (data.total.solar ?? 0) + (data.total.wind ?? 0);
     return (consumption.total.used_solar / solarProduction) * 100;
   }
 
@@ -1691,6 +1745,16 @@ export const downloadEnergyData = (
     });
 
   printCategory("solar_production", solar_productions, electricUnit);
+
+  const wind_productions: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "wind")
+    .forEach((source) => {
+      source = source as WindSourceTypeEnergyPreference;
+      wind_productions.push(source.stat_energy_from);
+    });
+
+  printCategory("wind_production", wind_productions, electricUnit);
 
   const gas_consumptions: string[] = [];
   const gas_consumptions_cost: string[] = [];

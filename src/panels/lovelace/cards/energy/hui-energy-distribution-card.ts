@@ -115,6 +115,7 @@ class HuiEnergyDistrubutionCard
       !!types.grid?.[0] &&
       (!!types.grid[0].stat_energy_from || !!types.grid[0].stat_energy_to);
     const hasSolarProduction = types.solar !== undefined;
+    const hasWindProduction = types.wind !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
@@ -148,8 +149,10 @@ class HuiEnergyDistrubutionCard
 
     let totalSolarProduction: number | null = null;
 
-    if (hasSolarProduction) {
-      totalSolarProduction = summedData.total.solar ?? 0;
+    if (hasSolarProduction || hasWindProduction) {
+      totalSolarProduction =
+        (hasSolarProduction ? (summedData.total.solar ?? 0) : 0) +
+        (hasWindProduction ? (summedData.total.wind ?? 0) : 0);
     }
 
     let totalBatteryIn: number | null = null;

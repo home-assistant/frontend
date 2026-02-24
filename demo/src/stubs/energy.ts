@@ -103,7 +103,11 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
   );
   hass.mockWS(
     "energy/info",
-    (): EnergyInfo => ({ cost_sensors: {}, solar_forecast_domains: [] })
+    (): EnergyInfo => ({
+      cost_sensors: {},
+      solar_forecast_domains: [],
+      wind_forecast_domains: [],
+    })
   );
   hass.mockWS(
     "energy/fossil_energy_consumption",

@@ -156,6 +156,13 @@ export class HuiPowerSourcesGraphCard
           "ui.panel.lovelace.cards.energy.power_graph.solar"
         ),
       },
+      wind: {
+        stats: [] as string[],
+        color: "--energy-wind-color",
+        name: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.power_graph.wind"
+        ),
+      },
       grid: {
         stats: [] as string[],
         color: "--energy-grid-consumption-color",
@@ -178,6 +185,13 @@ export class HuiPowerSourcesGraphCard
       if (source.type === "solar") {
         if (source.stat_rate) {
           statIds.solar.stats.push(source.stat_rate);
+        }
+        continue;
+      }
+
+      if (source.type === "wind") {
+        if (source.stat_rate) {
+          statIds.wind.stats.push(source.stat_rate);
         }
         continue;
       }
@@ -250,7 +264,7 @@ export class HuiPowerSourcesGraphCard
           data: positive,
           z: 3 - keyIndex, // draw in reverse order so 0 value lines are overwritten
         });
-        if (key !== "solar") {
+        if (key !== "solar" && key !== "wind") {
           datasets.push({
             ...commonSeriesOptions,
             id: `${key}-negative`,
@@ -275,7 +289,8 @@ export class HuiPowerSourcesGraphCard
         }
         this._legendData!.push({
           id: key,
-          secondaryIds: key !== "solar" ? [`${key}-negative`] : [],
+          secondaryIds:
+            key !== "solar" && key !== "wind" ? [`${key}-negative`] : [],
           name: statIds[key].name,
           itemStyle: {
             color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,

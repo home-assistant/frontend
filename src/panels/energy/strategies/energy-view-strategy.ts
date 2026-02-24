@@ -47,6 +47,9 @@ export class EnergyViewStrategy extends ReactiveElement {
     const hasSolar = prefs.energy_sources.some(
       (source) => source.type === "solar"
     );
+    const hasWind = prefs.energy_sources.some(
+      (source) => source.type === "wind"
+    );
     const hasBattery = prefs.energy_sources.some(
       (source) => source.type === "battery"
     );
@@ -73,6 +76,15 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
+    // Only include if we have a wind source.
+    if (hasWind) {
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.energy_wind_graph_title"),
+        type: "energy-wind-graph",
+        collection_key: collectionKey,
+      });
+    }
+
     // Only include if we have a grid or battery.
     if (hasGrid || hasBattery) {
       view.cards!.push({
@@ -90,7 +102,7 @@ export class EnergyViewStrategy extends ReactiveElement {
         ),
         type: "energy-sources-table",
         collection_key: collectionKey,
-        types: ["grid", "solar", "battery"],
+        types: ["grid", "solar", "wind", "battery"],
       });
     }
 
@@ -103,8 +115,8 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
-    // Only include if we have a solar source.
-    if (hasSolar) {
+    // Only include if we have a solar or wind source.
+    if (hasSolar || hasWind) {
       if (hasReturn) {
         view.cards!.push({
           type: "energy-solar-consumed-gauge",

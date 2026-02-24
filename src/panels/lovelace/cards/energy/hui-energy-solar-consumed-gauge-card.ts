@@ -75,7 +75,7 @@ class HuiEnergySolarGaugeCard
     }
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
-    if (!("solar" in summedData.total)) {
+    if (!("solar" in summedData.total) && !("wind" in summedData.total)) {
       return nothing;
     }
 

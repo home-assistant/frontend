@@ -105,7 +105,8 @@ class HuiEnergyCarbonGaugeCard
           )
         : 0;
 
-      const totalSolarProduction = summedData.total.solar ?? 0;
+      const totalSolarProduction =
+        (summedData.total.solar ?? 0) + (summedData.total.wind ?? 0);
 
       const totalGridReturned = summedData.total.to_grid ?? 0;
 

@@ -11,6 +11,7 @@ const NON_STANDARD_URLS = {
   "energy-date-selection": "energy/#energy-date-picker",
   "energy-usage-graph": "energy/#energy-usage-graph",
   "energy-solar-graph": "energy/#solar-production-graph",
+  "energy-wind-graph": "energy/#wind-production-graph",
   "energy-gas-graph": "energy/#gas-consumption-graph",
   "energy-water-graph": "energy/#water-consumption-graph",
   "energy-distribution": "energy/#energy-distribution",
