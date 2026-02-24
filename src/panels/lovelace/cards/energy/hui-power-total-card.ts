@@ -3,7 +3,6 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -129,7 +128,7 @@ export class HuiPowerTotalCard
     let displayValue = "";
     if (power >= 1000) {
       displayValue = `${formatNumber(power / 1000, this.hass.locale, {
-        maximumFractionDigits: 1,
+        maximumFractionDigits: 2,
       })} kW`;
     } else {
       displayValue = `${formatNumber(power, this.hass.locale, {
@@ -141,13 +140,8 @@ export class HuiPowerTotalCard
       this._config.title ||
       this.hass.localize("ui.panel.energy.cards.power_total_title");
 
-    // We try to mock a basic tile card appearance
-    const style = {
-      "--tile-color": "var(--state-sensor-color, var(--state-icon-color))",
-    };
-
     return html`
-      <ha-card style=${styleMap(style)}>
+      <ha-card>
         <ha-tile-container .interactive=${false}>
           <ha-tile-icon slot="icon" data-domain="sensor" data-state="active">
             <ha-svg-icon
@@ -167,12 +161,8 @@ export class HuiPowerTotalCard
   static styles = [
     tileCardStyle,
     css`
-      ha-card {
-        height: 100%;
-        box-sizing: border-box;
-      }
-      ha-tile-container {
-        --tile-icon-color: var(--tile-color);
+      :host {
+        --tile-color: var(--primary-color);
       }
     `,
   ];
