@@ -105,9 +105,11 @@ class MoreInfoContent extends LitElement {
         if (!stateObj) {
           return null;
         }
-        const entityName = entry
-          ? computeEntityName(stateObj, hass.entities, hass.devices)
-          : undefined;
+        const entityName = computeEntityName(
+          stateObj,
+          hass.entities,
+          hass.devices
+        );
         const { area } = getEntityContext(
           stateObj,
           hass.entities,
