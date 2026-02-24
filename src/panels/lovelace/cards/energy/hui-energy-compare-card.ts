@@ -7,7 +7,6 @@ import { formatDate } from "../../../../common/datetime/format_date";
 import type { EnergyData } from "../../../../data/energy";
 import {
   CompareMode,
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -35,13 +34,12 @@ export class HuiEnergyCompareCard
   @state() private _config?: EnergyCardBaseConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): EnergyCardBaseConfig {
     return {
       type: "energy-compare",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
     };
   }
 

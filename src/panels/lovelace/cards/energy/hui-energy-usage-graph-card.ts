@@ -23,7 +23,6 @@ import type {
 } from "../../../../data/energy";
 import {
   computeConsumptionData,
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -67,13 +66,12 @@ export class HuiEnergyUsageGraphCard
   @state() private _config?: EnergyUsageGraphCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): EnergyUsageGraphCardConfig {
     return {
       type: "energy-usage-graph",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
     };
   }
 

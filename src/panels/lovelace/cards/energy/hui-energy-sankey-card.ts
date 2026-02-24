@@ -9,7 +9,6 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
   energySourcesByType,
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -51,13 +50,12 @@ class HuiEnergySankeyCard
   @state() private _config?: EnergySankeyCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): EnergySankeyCardConfig {
     return {
       type: "energy-sankey",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
       layout: "auto",
       ...DEFAULT_CONFIG,
     };

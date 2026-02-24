@@ -7,7 +7,6 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -48,13 +47,12 @@ class HuiWaterSankeyCard
   @state() private _config?: WaterSankeyCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): WaterSankeyCardConfig {
     return {
       type: "water-sankey",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
       layout: "auto",
       ...DEFAULT_CONFIG,
     };

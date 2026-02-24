@@ -14,7 +14,6 @@ import type {
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -51,13 +50,12 @@ export class HuiEnergyWaterGraphCard
   @state() private _config?: EnergyWaterGraphCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): EnergyWaterGraphCardConfig {
     return {
       type: "energy-water-graph",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
     };
   }
 

@@ -15,7 +15,6 @@ import type {
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -51,13 +50,12 @@ export class HuiEnergyGasGraphCard
   @state() private _config?: EnergyGasGraphCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): EnergyGasGraphCardConfig {
     return {
       type: "energy-gas-graph",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
     };
   }
 

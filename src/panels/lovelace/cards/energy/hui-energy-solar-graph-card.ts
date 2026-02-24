@@ -16,7 +16,6 @@ import type {
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getEnergySolarForecasts,
   getSuggestedPeriod,
@@ -54,13 +53,12 @@ export class HuiEnergySolarGraphCard
   @state() private _config?: EnergySolarGraphCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): EnergySolarGraphCardConfig {
     return {
       type: "energy-solar-graph",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
     };
   }
 

@@ -11,7 +11,6 @@ import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getPowerFromState,
   validateEnergyCollectionKey,
@@ -43,13 +42,12 @@ export class HuiPowerSourcesGraphCard
   @state() private _config?: PowerSourcesGraphCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): PowerSourcesGraphCardConfig {
     return {
       type: "power-sources-graph",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
     };
   }
 

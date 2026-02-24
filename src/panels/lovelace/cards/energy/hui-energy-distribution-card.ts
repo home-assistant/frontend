@@ -24,7 +24,6 @@ import {
   computeConsumptionData,
   energySourcesByType,
   formatConsumptionShort,
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -53,13 +52,12 @@ class HuiEnergyDistrubutionCard
   @state() private _config?: EnergyDistributionCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): EnergyDistributionCardConfig {
     return {
       type: "energy-distribution",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
     };
   }
 

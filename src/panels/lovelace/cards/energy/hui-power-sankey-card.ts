@@ -9,7 +9,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
   formatPowerShort,
-  getCurrentDashboardDefaultCollectionKey,
   getEnergyDataCollection,
   getPowerFromState,
   validateEnergyCollectionKey,
@@ -74,13 +73,12 @@ class HuiPowerSankeyCard
   @state() private _config?: PowerSankeyCardConfig;
 
   public static getStubConfig(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     _entities: string[],
     _entitiesFill: string[]
   ): PowerSankeyCardConfig {
     return {
       type: "power-sankey",
-      collection_key: getCurrentDashboardDefaultCollectionKey(hass),
       layout: "auto",
       ...DEFAULT_CONFIG,
     };
