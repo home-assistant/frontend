@@ -1,6 +1,6 @@
 import "@home-assistant/webawesome/dist/components/dialog/dialog";
 import type WaDialog from "@home-assistant/webawesome/dist/components/dialog/dialog";
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -12,7 +12,7 @@ import {
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import { authExternalContext, localizeContext } from "../data/context";
+import { authContext, localizeContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -122,8 +122,8 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   private localize?: HomeAssistant["localize"];
 
   @state()
-  @consume({ context: authExternalContext, subscribe: true })
-  private authExternal?: HomeAssistant["auth"]["external"];
+  @consume({ context: authContext, subscribe: true })
+  private auth?: ContextType<typeof authContext>;
 
   @state()
   private _bodyScrolled = false;
@@ -204,13 +204,13 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (isIosApp(this.authExternal)) {
+      if (this.auth?.external && isIosApp(this.auth.external)) {
         const element = this.querySelector("[autofocus]");
         if (element !== null) {
           if (!element.id) {
             element.id = "ha-dialog-autofocus";
           }
-          this.authExternal?.fireMessage({
+          this.auth.external.fireMessage({
             type: "focus_element",
             payload: {
               element_id: element.id,

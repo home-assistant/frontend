@@ -1,6 +1,6 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
 import {
   css,
@@ -14,10 +14,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
-import { authExternalContext } from "../data/context";
+import { authContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
-import type { HomeAssistant } from "../types";
 import { isIosApp } from "../util/is_ios";
 import "./ha-bottom-sheet";
 import "./ha-button";
@@ -113,8 +112,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
   @state()
-  @consume({ context: authExternalContext, subscribe: true })
-  private authExternal?: HomeAssistant["auth"]["external"] | undefined;
+  @consume({ context: authContext, subscribe: true })
+  private auth?: ContextType<typeof authContext>;
 
   @state() private _opened = false;
 
@@ -312,8 +311,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         this._comboBox?.setFieldValue(this._initialFieldValue);
         this._initialFieldValue = undefined;
       }
-      if (isIosApp(this.authExternal)) {
-        this.authExternal!.fireMessage({
+      if (this.auth?.external && isIosApp(this.auth.external)) {
+        this.auth.external.fireMessage({
           type: "focus_element",
           payload: {
             element_id: "combo-box",
