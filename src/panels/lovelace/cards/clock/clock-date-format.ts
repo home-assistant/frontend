@@ -184,8 +184,8 @@ export const getClockCardDateTimeFormatOptions = (
  * Builds the final date string from literal date tokens.
  *
  * Value tokens are localized through Intl.DateTimeFormat. Separator tokens are
- * always rendered literally. When a default space between values is pending,
- * the separator replaces that space.
+ * always rendered literally. A default space is only inserted between adjacent
+ * value tokens.
  */
 export const formatClockCardDate = (
   date: Date,
@@ -194,23 +194,12 @@ export const formatClockCardDate = (
   timeZone?: string
 ): string => {
   let result = "";
-  let pendingGap: string | undefined;
+  let previousRenderedPartWasValue = false;
 
   dateConfig.parts.forEach((part) => {
     if (isDateSeparatorPart(part)) {
-      const separator = DATE_SEPARATORS[part];
-
-      if (pendingGap === " ") {
-        pendingGap = separator;
-        return;
-      }
-
-      if (pendingGap) {
-        pendingGap += separator;
-        return;
-      }
-
-      result += separator;
+      result += DATE_SEPARATORS[part];
+      previousRenderedPartWasValue = false;
       return;
     }
 
@@ -220,18 +209,13 @@ export const formatClockCardDate = (
       return;
     }
 
-    if (pendingGap) {
-      result += pendingGap;
-      pendingGap = undefined;
+    if (previousRenderedPartWasValue) {
+      result += " ";
     }
 
     result += value;
-    pendingGap = " ";
+    previousRenderedPartWasValue = true;
   });
-
-  if (pendingGap && pendingGap !== " ") {
-    result += pendingGap;
-  }
 
   return result;
 };
