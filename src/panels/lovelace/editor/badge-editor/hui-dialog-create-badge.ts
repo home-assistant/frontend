@@ -142,7 +142,6 @@ export class HuiCreateDialogBadge
               `
             : html`
                 <hui-entity-picker-table
-                  no-label-float
                   .hass=${this.hass}
                   .narrow=${true}
                   @selected-changed=${this._handleSelectedChanged}

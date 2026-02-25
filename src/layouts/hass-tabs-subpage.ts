@@ -96,7 +96,6 @@ class HassTabsSubpage extends LitElement {
         (page) => html`
           <a href=${page.path} @click=${this._tabClicked}>
             <ha-tab
-              .hass=${this.hass}
               .active=${page.path === activeTab?.path}
               .narrow=${this.narrow}
               .name=${page.translationKey

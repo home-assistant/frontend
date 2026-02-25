@@ -165,7 +165,6 @@ export class HuiCreateDialogCard
               `
             : html`
                 <hui-entity-picker-table
-                  no-label-float
                   .hass=${this.hass}
                   narrow
                   @selected-changed=${this._handleSelectedChanged}
