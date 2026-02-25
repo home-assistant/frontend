@@ -39,6 +39,7 @@ export class HuiClockCardDigital extends LitElement {
 
   private _initDate() {
     if (!this.config || !this.hass) {
+      this._date = undefined;
       return;
     }
 

@@ -33,7 +33,7 @@ function romanize12HourClock(num: number) {
   return numerals[num];
 }
 
-const INTERVAL = 1000;
+const DATE_UPDATE_INTERVAL = 60_000;
 const QUARTER_TICKS = Array.from({ length: 4 }, (_, i) => i);
 const HOUR_TICKS = Array.from({ length: 12 }, (_, i) => i);
 const MINUTE_TICKS = Array.from({ length: 60 }, (_, i) => i);
@@ -54,7 +54,7 @@ export class HuiClockCardAnalog extends LitElement {
 
   @state() private _date?: string;
 
-  private _tickInterval?: undefined | number;
+  private _dateInterval?: number;
 
   private _timeZone?: string;
 
@@ -72,7 +72,7 @@ export class HuiClockCardAnalog extends LitElement {
       "visibilitychange",
       this._handleVisibilityChange
     );
-    this._stopTick();
+    this._stopDateTick();
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -90,12 +90,15 @@ export class HuiClockCardAnalog extends LitElement {
 
   private _handleVisibilityChange = () => {
     if (!document.hidden) {
-      this._computeDateTime();
+      this._computeOffsets();
+      this._updateDate();
     }
   };
 
   private _initDate() {
     if (!this.config || !this.hass) {
+      this._stopDateTick();
+      this._date = undefined;
       return;
     }
 
@@ -119,29 +122,32 @@ export class HuiClockCardAnalog extends LitElement {
       timeZone,
     });
 
-    this._computeDateTime();
+    this._computeOffsets();
+    this._updateDate();
 
     if (this.isConnected && hasClockCardDate(this.config)) {
-      this._startTick();
+      this._startDateTick();
     } else {
-      this._stopTick();
+      this._stopDateTick();
     }
   }
 
-  private _startTick() {
-    this._stopTick();
-    this._tick();
-    this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
+  private _startDateTick() {
+    this._stopDateTick();
+    this._dateInterval = window.setInterval(
+      () => this._updateDate(),
+      DATE_UPDATE_INTERVAL
+    );
   }
 
-  private _stopTick() {
-    if (this._tickInterval) {
-      clearInterval(this._tickInterval);
-      this._tickInterval = undefined;
+  private _stopDateTick() {
+    if (this._dateInterval) {
+      clearInterval(this._dateInterval);
+      this._dateInterval = undefined;
     }
   }
 
-  private _computeDateTime() {
+  private _computeOffsets() {
     if (!this._dateTimeFormat) return;
 
     const date = new Date();
@@ -162,16 +168,21 @@ export class HuiClockCardAnalog extends LitElement {
     this._secondOffsetSec = secondsWithMs;
     this._minuteOffsetSec = minute * 60 + secondsWithMs;
     this._hourOffsetSec = hour12 * 3600 + minute * 60 + secondsWithMs;
-
-    const dateConfig = getClockCardDateConfig(this.config);
-    this._date =
-      hasClockCardDate(this.config) && this._language
-        ? formatClockCardDate(date, dateConfig, this._language, this._timeZone)
-        : undefined;
   }
 
-  private _tick() {
-    this._computeDateTime();
+  private _updateDate() {
+    if (!this.config || !hasClockCardDate(this.config) || !this._language) {
+      this._date = undefined;
+      return;
+    }
+
+    const dateConfig = getClockCardDateConfig(this.config);
+    this._date = formatClockCardDate(
+      new Date(),
+      dateConfig,
+      this._language,
+      this._timeZone
+    );
   }
 
   private _computeClock = memoizeOne((config: ClockCardConfig) => {
