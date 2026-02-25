@@ -59,8 +59,6 @@ type ClockCardFormData = Omit<ClockCardConfig, "time_format"> & {
   time_format?: ClockCardConfig["time_format"] | "auto";
 };
 
-type ClockCardValueChangedEvent = ValueChangedEvent<ClockCardFormData>;
-
 @customElement("hui-clock-card-editor")
 export class HuiClockCardEditor
   extends LitElement
@@ -289,7 +287,7 @@ export class HuiClockCardEditor
     `;
   }
 
-  private _valueChanged(ev: ClockCardValueChangedEvent): void {
+  private _valueChanged(ev: ValueChangedEvent<ClockCardFormData>): void {
     const config = ev.detail.value;
 
     if (!config.date_format || config.date_format.length === 0) {
