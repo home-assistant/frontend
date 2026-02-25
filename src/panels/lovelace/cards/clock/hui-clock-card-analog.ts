@@ -523,7 +523,6 @@ export class HuiClockCardAnalog extends LitElement {
       left: 50%;
       transform: translate(-50%, -50%);
       display: block;
-      direction: ltr;
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
