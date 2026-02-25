@@ -73,10 +73,10 @@ describe("clock-date-format", () => {
   it("reports whether any date part is configured", () => {
     assert.equal(hasClockCardDate(), false);
     assert.equal(hasClockCardDate({ date_format: [] }), false);
-    assert.equal(hasClockCardDate({ date_format: ["separator-dot"] }), false);
+    assert.equal(hasClockCardDate({ date_format: ["separator-dot"] }), true);
     assert.equal(
       hasClockCardDate({ date_format: ["separator-new-line"] }),
-      false
+      true
     );
     assert.equal(hasClockCardDate({ date_format: ["weekday-short"] }), true);
   });
@@ -135,6 +135,45 @@ describe("clock-date-format", () => {
     );
 
     assert.equal(result, "11/08/24");
+  });
+
+  it("renders separators even when no value follows", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: ["day-numeric", "separator-dash", "separator-dot"],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "8-.");
+  });
+
+  it("renders separators even when no value precedes", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: ["separator-slash", "separator-dot", "day-numeric"],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "/.8");
+  });
+
+  it("renders separator-only configurations", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: ["separator-dash", "separator-slash", "separator-dot"],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "-/.");
   });
 
   it("supports inserting a new line between date values", () => {
