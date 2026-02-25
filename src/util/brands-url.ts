@@ -27,9 +27,9 @@ export const fetchBrandsAccessToken = async (
 export const brandsUrl = (options: BrandsOptions): string => {
   const base = `/api/brands/integration/${options.domain}/${
     options.darkOptimized ? "dark_" : ""
-  }${options.type}.png?fallback=placeholder`;
+  }${options.type}.png`;
   if (_brandsAccessToken) {
-    return `${base}&token=${_brandsAccessToken}`;
+    return `${base}?token=${_brandsAccessToken}`;
   }
   return base;
 };

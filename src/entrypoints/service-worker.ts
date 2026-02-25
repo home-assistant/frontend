@@ -35,7 +35,7 @@ const initRouting = () => {
   // Cache any brand images used for 1 day
   // Brands are proxied via the local API with backend caching.
   // Strip the rotating access token from cache keys so token rotation
-  // doesn't bust the cache, while preserving other params like fallback.
+  // doesn't bust the cache, while preserving other params like "placeholder".
   registerRoute(
     ({ url, request }) =>
       url.pathname.startsWith("/api/brands/") &&
