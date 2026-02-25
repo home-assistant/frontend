@@ -1627,13 +1627,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/css-tree@npm:^3.6.8":
-  version: 3.6.8
-  resolution: "@eslint/css-tree@npm:3.6.8"
+"@eslint/css-tree@npm:^3.6.9":
+  version: 3.6.9
+  resolution: "@eslint/css-tree@npm:3.6.9"
   dependencies:
     mdn-data: "npm:2.23.0"
     source-map-js: "npm:^1.0.1"
-  checksum: 10/dce5da0aef43b82375906b1760b1cbea29a424ec458564f3274295dd1625610809603f96dc5a7cccab85e4d943996b917347c9a3e84f2328c24912685f400053
+  checksum: 10/f3ce66f5c8ba1957b82e1c1df79b91092cde79d3c6d3abeb9facaccb4fecc21018bf352f75e39d614b7bb2e33dd4bebaa60f2d98468167237080b9e31b35e19d
   languageName: node
   linkType: hard
 
@@ -1979,63 +1979,74 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@html-eslint/eslint-plugin@npm:0.55.0":
-  version: 0.55.0
-  resolution: "@html-eslint/eslint-plugin@npm:0.55.0"
+"@html-eslint/core@npm:^0.56.0":
+  version: 0.56.0
+  resolution: "@html-eslint/core@npm:0.56.0"
+  dependencies:
+    "@html-eslint/types": "npm:^0.56.0"
+    eslint: "npm:^9.39.1"
+    html-standard: "npm:^0.0.13"
+  checksum: 10/0722e7405e56b256c471229dbd0ccb49cf0edd3e5224a087240f1954c74af0a6f289e5be0b83957480f1fa5abf6f7cbad7212134a6872a3fd66e1dc1ad879d66
+  languageName: node
+  linkType: hard
+
+"@html-eslint/eslint-plugin@npm:0.56.0":
+  version: 0.56.0
+  resolution: "@html-eslint/eslint-plugin@npm:0.56.0"
   dependencies:
     "@eslint/plugin-kit": "npm:^0.4.1"
-    "@html-eslint/parser": "npm:^0.55.0"
-    "@html-eslint/template-parser": "npm:^0.55.0"
-    "@html-eslint/template-syntax-parser": "npm:^0.55.0"
-    "@html-eslint/types": "npm:^0.55.0"
-    html-standard: "npm:^0.0.11"
+    "@html-eslint/core": "npm:^0.56.0"
+    "@html-eslint/parser": "npm:^0.56.0"
+    "@html-eslint/template-parser": "npm:^0.56.0"
+    "@html-eslint/template-syntax-parser": "npm:^0.56.0"
+    "@html-eslint/types": "npm:^0.56.0"
   peerDependencies:
     eslint: ">=8.0.0 || ^10.0.0-0"
-  checksum: 10/945a0f0b6f4007beade9d22b889984498d10aa7855d3087fd9fb71dc20b1da7b452a3877b55f7683ef12736b356279356d66e8a201b25ee4a332e139315f16ae
+  checksum: 10/16c5d638045266ca201b5dc154b3706262801668b2edde4f0905bdba9ba2e14b7175eacf9ca7d2ad5a5a03e3369843822d34ee607b6b7fbbeb020ac7f87629fb
   languageName: node
   linkType: hard
 
-"@html-eslint/parser@npm:^0.55.0":
-  version: 0.55.0
-  resolution: "@html-eslint/parser@npm:0.55.0"
+"@html-eslint/parser@npm:^0.56.0":
+  version: 0.56.0
+  resolution: "@html-eslint/parser@npm:0.56.0"
   dependencies:
-    "@eslint/css-tree": "npm:^3.6.8"
-    "@html-eslint/template-syntax-parser": "npm:^0.55.0"
-    "@html-eslint/types": "npm:^0.55.0"
+    "@eslint/css-tree": "npm:^3.6.9"
+    "@html-eslint/template-syntax-parser": "npm:^0.56.0"
+    "@html-eslint/types": "npm:^0.56.0"
     css-tree: "npm:^3.1.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/f763ffb6d33f7ae7b8873772fabcb93650cd0e160b8b855cb24c41e19d9b9d423781ba2eff5cbe25b3ffc628c592a4350e91c6c56af475d21429595d944a359d
+  checksum: 10/1fead2be97481f461ee7030f4ea9274e5f969540118b4429e3eea361f62138660c1b7538668c7f8d55a8ae6985deff3056968d71bae62b91fb001d4209a24b50
   languageName: node
   linkType: hard
 
-"@html-eslint/template-parser@npm:^0.55.0":
-  version: 0.55.0
-  resolution: "@html-eslint/template-parser@npm:0.55.0"
+"@html-eslint/template-parser@npm:^0.56.0":
+  version: 0.56.0
+  resolution: "@html-eslint/template-parser@npm:0.56.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.55.0"
+    "@html-eslint/types": "npm:^0.56.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/a8243200a347319d14614496790b1954b55dca148406c3af58d62c158b28934c4aa832e62e546961a99cfced551d0468dc5bae4455b005ea500fad7435427934
+  checksum: 10/45e41dc8fb46336f40d1b78ef55ee3150d7a1034d393529eb40ce37a7d0a8fa04f6ed8f9a63478ff884d9588b1359b97a799681a37cd485d237dce867b7f9d20
   languageName: node
   linkType: hard
 
-"@html-eslint/template-syntax-parser@npm:^0.55.0":
-  version: 0.55.0
-  resolution: "@html-eslint/template-syntax-parser@npm:0.55.0"
+"@html-eslint/template-syntax-parser@npm:^0.56.0":
+  version: 0.56.0
+  resolution: "@html-eslint/template-syntax-parser@npm:0.56.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.55.0"
-  checksum: 10/d2207b86abb86014aefb24e10e9d1b40719b4e884c146079704fb2dd95dcd5be909df9e71e18b0bbc365d7ae7b787a9d48a4d8126999bc5d109f8ae4a0a130bb
+    "@html-eslint/types": "npm:^0.56.0"
+  checksum: 10/2cc4f2cbfa58c6381b2542ca86e424a97429326aa0b8b6b09e0a51d27b0e26fd723a4550e4c17536e00cfd506cbd0c61d8fd3dff1c829714c4432406096b4a01
   languageName: node
   linkType: hard
 
-"@html-eslint/types@npm:^0.55.0":
-  version: 0.55.0
-  resolution: "@html-eslint/types@npm:0.55.0"
+"@html-eslint/types@npm:^0.56.0":
+  version: 0.56.0
+  resolution: "@html-eslint/types@npm:0.56.0"
   dependencies:
     "@types/css-tree": "npm:^2.3.11"
     "@types/estree": "npm:^1.0.6"
     es-html-parser: "npm:0.3.1"
     eslint: "npm:^9.39.1"
-  checksum: 10/10d6b53e0cbb3f529a20949040bc363722f6c91bd224d78c8df2d8e6ff8ac157186e23db7bff61e7c1927f110237fd669c9d910a72399aa8b9929445c288a3cb
+  checksum: 10/5359ccfb8f431ccedfe7d9c0b20d883d19bbb6a24eee925c036c7774d6f2177eda021826abbc6f947b59c2364d7cf25a596591e852c1141000a3fab6ea70acc9
   languageName: node
   linkType: hard
 
@@ -9164,7 +9175,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
     "@home-assistant/webawesome": "npm:3.2.1-ha.2"
-    "@html-eslint/eslint-plugin": "npm:0.55.0"
+    "@html-eslint/eslint-plugin": "npm:0.56.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
     "@lit-labs/observers": "npm:2.1.0"
@@ -9405,12 +9416,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-standard@npm:^0.0.11":
-  version: 0.0.11
-  resolution: "html-standard@npm:0.0.11"
+"html-standard@npm:^0.0.13":
+  version: 0.0.13
+  resolution: "html-standard@npm:0.0.13"
   dependencies:
     vscode-css-languageservice: "npm:^6.3.9"
-  checksum: 10/724cf7e7234edfda8bad776f2deaf430fa986fdb97fd41d491229aa1e5a1f01dbf6603efb1651b997487fc2c67a788bd6346266830ac4d860938dc3dc11e99b4
+    vscode-languageserver-textdocument: "npm:^1.0.12"
+  checksum: 10/a069a58cae3367c97ed82bd31bf166a6c93d746ae406df1428832a4187f93ff1b1b06317ffe178b6bc6b79a705c175ce977c7ba2471f5fb26a1c1b65baac5de5
   languageName: node
   linkType: hard
 
