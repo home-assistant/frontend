@@ -1380,7 +1380,7 @@
         "title": "Map vacuum segments to areas",
         "no_segments": "No segments available",
         "area_label": "Area",
-        "description": "Configure which areas each vacuum segment should clean"
+        "description": "Configure which areas correspond to each vacuum segment"
       },
       "safe_mode": {
         "title": "Safe mode",
