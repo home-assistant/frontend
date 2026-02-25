@@ -9387,9 +9387,9 @@
                   "month-2-digit": "2-digit",
                   "year-2-digit": "2-digit",
                   "year-numeric": "Numeric",
-                  "separator-dash": "-",
-                  "separator-slash": "/",
-                  "separator-dot": "."
+                  "separator-dash": "Dash",
+                  "separator-slash": "Slash",
+                  "separator-dot": "Dot"
                 }
               },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",

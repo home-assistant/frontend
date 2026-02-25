@@ -4,8 +4,12 @@ import { customElement, property, query } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
+import { resolveTimeZone } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
-import { CLOCK_CARD_DATE_PARTS } from "../panels/lovelace/cards/clock/clock-date-format";
+import {
+  CLOCK_CARD_DATE_PARTS,
+  formatClockCardDate,
+} from "../panels/lovelace/cards/clock/clock-date-format";
 import type { ClockCardDatePart } from "../panels/lovelace/cards/types";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-assist-chip";
@@ -19,6 +23,11 @@ import "./ha-sortable";
 
 type ClockDatePartSection = "weekday" | "day" | "month" | "year" | "separator";
 
+type ClockDateSeparatorPart = Extract<
+  ClockCardDatePart,
+  "separator-dash" | "separator-slash" | "separator-dot"
+>;
+
 const CLOCK_DATE_PART_SECTION_ORDER: readonly ClockDatePartSection[] = [
   "weekday",
   "day",
@@ -26,6 +35,12 @@ const CLOCK_DATE_PART_SECTION_ORDER: readonly ClockDatePartSection[] = [
   "year",
   "separator",
 ];
+
+const CLOCK_DATE_SEPARATOR_VALUES: Record<ClockDateSeparatorPart, string> = {
+  "separator-dash": "-",
+  "separator-slash": "/",
+  "separator-dot": ".",
+};
 
 const getClockDatePartSection = (
   part: ClockCardDatePart
@@ -199,7 +214,7 @@ export class HaClockDateFormatPicker extends LitElement {
   });
 
   private _buildSections = memoizeOne(
-    (_language: string): ClockDatePartSectionData[] => {
+    (language: string): ClockDatePartSectionData[] => {
       const itemsBySection: Record<ClockDatePartSection, PickerComboBoxItem[]> =
         {
           weekday: [],
@@ -209,15 +224,33 @@ export class HaClockDateFormatPicker extends LitElement {
           separator: [],
         };
 
+      const previewDate = new Date();
+      const previewTimeZone = resolveTimeZone(
+        this.hass.locale.time_zone,
+        this.hass.config.time_zone
+      );
+
       CLOCK_CARD_DATE_PARTS.forEach((part) => {
+        const section = getClockDatePartSection(part);
         const label =
           this.hass.localize(
             `ui.panel.lovelace.editor.card.clock.date.parts.${part}`
           ) || part;
 
-        itemsBySection[getClockDatePartSection(part)].push({
+        const secondary =
+          section === "separator"
+            ? CLOCK_DATE_SEPARATOR_VALUES[part as ClockDateSeparatorPart]
+            : formatClockCardDate(
+                previewDate,
+                { parts: [part] },
+                language,
+                previewTimeZone
+              );
+
+        itemsBySection[section].push({
           id: part,
           primary: label,
+          secondary,
           sorting_label: label,
         });
       });
@@ -258,6 +291,7 @@ export class HaClockDateFormatPicker extends LitElement {
           items: sectionData.items.filter(
             (item) =>
               item.primary.toLowerCase().includes(normalizedSearch) ||
+              item.secondary?.toLowerCase().includes(normalizedSearch) ||
               item.id.toLowerCase().includes(normalizedSearch)
           ),
         };
