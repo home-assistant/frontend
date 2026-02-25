@@ -351,10 +351,29 @@ export class HaClockDateFormatPicker extends LitElement {
   }
 
   private async _removeItem(ev: Event) {
+    ev.preventDefault();
     ev.stopPropagation();
+
+    const idx = parseInt(
+      (ev.currentTarget as HTMLElement).dataset.idx ?? "",
+      10
+    );
+
+    if (Number.isNaN(idx)) {
+      return;
+    }
+
     const value = [...this._value];
-    const idx = parseInt((ev.target as HTMLElement).dataset.idx || "", 10);
     value.splice(idx, 1);
+
+    if (this._editIndex !== undefined) {
+      if (this._editIndex === idx) {
+        this._editIndex = undefined;
+      } else if (this._editIndex > idx) {
+        this._editIndex -= 1;
+      }
+    }
+
     this._setValue(value);
   }
 
