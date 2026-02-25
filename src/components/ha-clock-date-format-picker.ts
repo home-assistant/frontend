@@ -127,7 +127,7 @@ export class HaClockDateFormatPicker extends LitElement {
                       data-idx=${idx}
                       @remove=${this._removeItem}
                       @click=${this._editItem}
-                      .label=${label || item}
+                      .label=${label ?? item}
                       .selected=${!this.disabled}
                       .disabled=${this.disabled}
                       class=${!isValid ? "invalid" : ""}
@@ -190,7 +190,7 @@ export class HaClockDateFormatPicker extends LitElement {
     }
 
     const idx = parseInt(
-      (ev.currentTarget as HTMLElement).dataset.idx || "",
+      (ev.currentTarget as HTMLElement).dataset.idx ?? "",
       10
     );
     this._editIndex = idx;
@@ -228,7 +228,7 @@ export class HaClockDateFormatPicker extends LitElement {
         const label =
           this.hass.localize(
             `ui.panel.lovelace.editor.card.clock.date.parts.${part}`
-          ) || part;
+          ) ?? part;
 
         const secondary =
           section === "separator"
@@ -253,7 +253,7 @@ export class HaClockDateFormatPicker extends LitElement {
         title:
           this.hass.localize(
             `ui.panel.lovelace.editor.card.clock.date.sections.${section}`
-          ) || section,
+          ) ?? section,
         items: itemsBySection[section],
       })).filter((section) => section.items.length > 0);
     }
@@ -314,7 +314,15 @@ export class HaClockDateFormatPicker extends LitElement {
         const item = section.items.find((candidate) => candidate.id === value);
 
         if (item) {
-          return `${section.title} [${item.primary}]`;
+          if (section.id === "separator") {
+            if (value === "separator-new-line") {
+              return item.primary;
+            }
+
+            return item.secondary ?? item.primary;
+          }
+
+          return `${item.secondary} [${item.primary} ${section.title}]`;
         }
       }
 
