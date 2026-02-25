@@ -321,9 +321,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
       clearInterval(this.__backendPingInterval);
 
-      // Fetch the brands access token for authenticated brand image requests
-      fetchBrandsAccessToken(this.hass!);
-
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
           // If the backend is busy, or the connection is latent,
@@ -349,7 +346,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       broadcastConnectionStatus("connected");
 
       // Refresh the brands access token on reconnect
-      fetchBrandsAccessToken(this.hass!);
+      fetchBrandsAccessToken(this.hass!).catch(() => {
+        // Ignore failures; older backends may not support this command
+      });
 
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore

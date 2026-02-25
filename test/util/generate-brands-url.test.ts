@@ -1,5 +1,10 @@
 import { assert, describe, it } from "vitest";
-import { addBrandsAuth, brandsUrl } from "../../src/util/brands-url";
+import type { HomeAssistant } from "../../src/types";
+import {
+  addBrandsAuth,
+  brandsUrl,
+  fetchBrandsAccessToken,
+} from "../../src/util/brands-url";
 
 describe("Generate brands Url", () => {
   it("Generate logo brands url for cloud component", () => {
@@ -35,6 +40,30 @@ describe("addBrandsAuth", () => {
     assert.strictEqual(
       addBrandsAuth("/api/brands/integration/demo/icon.png"),
       "/api/brands/integration/demo/icon.png"
+    );
+  });
+
+  it("Appends token to brands URL when token is available", async () => {
+    const mockHass = {
+      callWS: async () => ({ token: "test-token-123" }),
+    } as unknown as HomeAssistant;
+    await fetchBrandsAccessToken(mockHass);
+
+    assert.strictEqual(
+      addBrandsAuth("/api/brands/integration/demo/icon.png"),
+      "/api/brands/integration/demo/icon.png?token=test-token-123"
+    );
+  });
+
+  it("Replaces existing token param instead of duplicating", async () => {
+    const mockHass = {
+      callWS: async () => ({ token: "new-token" }),
+    } as unknown as HomeAssistant;
+    await fetchBrandsAccessToken(mockHass);
+
+    assert.strictEqual(
+      addBrandsAuth("/api/brands/integration/demo/icon.png?token=old-token"),
+      "/api/brands/integration/demo/icon.png?token=new-token"
     );
   });
 });

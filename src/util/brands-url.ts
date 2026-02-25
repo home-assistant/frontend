@@ -48,17 +48,26 @@ export const addBrandsAuth = (url: string): string => {
   if (!_brandsAccessToken || !url.startsWith("/api/brands/")) {
     return url;
   }
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}token=${_brandsAccessToken}`;
+  const fullUrl = new URL(url, location.origin);
+  fullUrl.searchParams.set("token", _brandsAccessToken);
+  return `${fullUrl.pathname}${fullUrl.search}`;
 };
 
 export const extractDomainFromBrandUrl = (url: string): string => {
   // Handle both new local API paths (/api/brands/integration/{domain}/...)
   // and legacy CDN URLs (https://brands.home-assistant.io/_/{domain}/...)
   if (url.startsWith("/api/brands/")) {
+    // /api/brands/integration/{domain}/... -> ["" ,"api", "brands", "integration", "{domain}", ...]
     return url.split("/")[4];
   }
-  return url.split("/")[4];
+  // https://brands.home-assistant.io/_/{domain}/... -> ["", "_", "{domain}", ...]
+  const parsed = new URL(url);
+  const segments = parsed.pathname.split("/").filter((s) => s.length > 0);
+  const underscoreIdx = segments.indexOf("_");
+  if (underscoreIdx !== -1 && underscoreIdx + 1 < segments.length) {
+    return segments[underscoreIdx + 1];
+  }
+  return segments[1] ?? "";
 };
 
 export const isBrandUrl = (thumbnail: string | ""): boolean =>
