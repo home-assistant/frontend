@@ -239,7 +239,7 @@ class HuiTargetTemperatureCardFeature
               "temperature"
             )}
             style=${styleMap({
-              "--control-number-buttons-focus-color": stateColor,
+              "--control-slider-color": stateColor,
             })}
             .disabled=${this._stateObj!.state === UNAVAILABLE}
             .locale=${this.hass.locale}
@@ -294,7 +294,7 @@ class HuiTargetTemperatureCardFeature
                 "target_temp_low"
               )}
               style=${styleMap({
-                "--control-number-buttons-focus-color": stateColor,
+                "--control-slider-color": stateColor,
               })}
               .disabled=${this._stateObj!.state === UNAVAILABLE}
               .locale=${this.hass.locale}
@@ -313,7 +313,7 @@ class HuiTargetTemperatureCardFeature
                 "target_temp_high"
               )}
               style=${styleMap({
-                "--control-number-buttons-focus-color": stateColor,
+                "--control-slider-color": stateColor,
               })}
               .disabled=${this._stateObj!.state === UNAVAILABLE}
               .locale=${this.hass.locale}
@@ -385,7 +385,7 @@ class HuiTargetTemperatureCardFeature
             "temperature"
           )}
           style=${styleMap({
-            "--control-number-buttons-focus-color": stateColor,
+            "--control-slider-color": stateColor,
           })}
           .locale=${this.hass.locale}
         >
