@@ -37,7 +37,7 @@ export interface PageNavigation {
 }
 
 @customElement("hass-tabs-subpage")
-class HassTabsSubpage extends LitElement {
+export class HassTabsSubpage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
