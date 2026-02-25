@@ -185,7 +185,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-webpack": "0.13.10",
     "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-lit": "2.1.1",
+    "eslint-plugin-lit": "2.2.1",
     "eslint-plugin-lit-a11y": "5.1.1",
     "eslint-plugin-unused-imports": "4.3.0",
     "eslint-plugin-wc": "3.0.2",

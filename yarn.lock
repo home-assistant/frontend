@@ -7940,15 +7940,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:2.1.1, eslint-plugin-lit@npm:^2.0.0":
-  version: 2.1.1
-  resolution: "eslint-plugin-lit@npm:2.1.1"
+"eslint-plugin-lit@npm:2.2.1, eslint-plugin-lit@npm:^2.0.0":
+  version: 2.2.1
+  resolution: "eslint-plugin-lit@npm:2.2.1"
   dependencies:
     parse5: "npm:^6.0.1"
     parse5-htmlparser2-tree-adapter: "npm:^6.0.1"
   peerDependencies:
     eslint: ">= 8"
-  checksum: 10/4eebb8612f5383e495bea277eda3bb86ed43d6532ec6c9443ca5048a848f96bf9b7e7f55d34dd43550d5e02cd815f19bd2e5e56c11b91d418b7948b379c78d08
+  checksum: 10/fc0f3c2bec52c2c1c2467b373a71e68f2bb101b3872b30be9f439660e735684bec016c6b83cea1ed71e6d94f9ec9621a805f3a188b618b84c2e25ae1adbde192
   languageName: node
   linkType: hard
 
@@ -9251,7 +9251,7 @@ __metadata:
     eslint-config-prettier: "npm:10.1.8"
     eslint-import-resolver-webpack: "npm:0.13.10"
     eslint-plugin-import: "npm:2.32.0"
-    eslint-plugin-lit: "npm:2.1.1"
+    eslint-plugin-lit: "npm:2.2.1"
     eslint-plugin-lit-a11y: "npm:5.1.1"
     eslint-plugin-unused-imports: "npm:4.3.0"
     eslint-plugin-wc: "npm:3.0.2"
