@@ -202,17 +202,9 @@ export class HaClockDateFormatPicker extends LitElement {
     return !this.value ? [] : ensureArray(this.value);
   }
 
-  private _toValue = memoizeOne((value: string[]): typeof this.value => {
-    if (value.length === 0) {
-      return undefined;
-    }
-
-    if (value.length === 1) {
-      return value[0];
-    }
-
-    return value;
-  });
+  private _toValue = memoizeOne((value: string[]): string[] | undefined =>
+    value.length === 0 ? undefined : value
+  );
 
   private _buildSections = memoizeOne(
     (language: string): ClockDatePartSectionData[] => {
