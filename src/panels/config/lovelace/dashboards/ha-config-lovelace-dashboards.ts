@@ -344,7 +344,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         const item: DataTableItem = {
           icon: getPanelIcon(panelInfo),
           title: getPanelTitle(this.hass, panelInfo) || panelInfo.url_path,
-          show_in_sidebar: panelInfo.title != null,
+          show_in_sidebar: panelInfo.show_in_sidebar || false,
           mode: "storage",
           url_path: panelInfo.url_path,
           filename: "",
@@ -487,7 +487,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       title: getPanelTitle(this.hass, panelInfo) || panelInfo.url_path,
       icon: getPanelIcon(panelInfo),
       requireAdmin: panelInfo.require_admin || false,
-      showInSidebar: panelInfo.title != null,
+      showInSidebar: panelInfo.show_in_sidebar || false,
       isDefault: panelInfo.url_path === defaultPanel,
       updatePanel: async (values) => {
         await updatePanel(this.hass!, panelInfo.url_path, values);

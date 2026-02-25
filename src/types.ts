@@ -142,6 +142,7 @@ export interface PanelInfo<T = Record<string, any> | null> {
   config_panel_domain?: string;
   default_visible?: boolean;
   require_admin?: boolean;
+  show_in_sidebar?: boolean;
 }
 
 export type Panels = Record<string, PanelInfo>;
