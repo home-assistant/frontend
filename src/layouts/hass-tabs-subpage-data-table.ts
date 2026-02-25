@@ -16,6 +16,8 @@ import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
@@ -186,6 +188,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @query("search-input-outlined") private _searchInput!: HTMLElement;
 
+  @query("hass-tabs-subpage") private _tabsSubpage!: HTMLElement;
+
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       f: () => this._searchInput.focus(),
@@ -195,6 +199,25 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
+
+  private _calcEmptyRowHeight = memoizeOne(
+    (narrow: boolean, hasFab: boolean, showTabs: boolean): string => {
+      const bottomTabs = narrow && showTabs;
+      // tabs in narrow view (bottom) already add padding for the safe area inset
+      // otherwise, add padding so last content row isn't cropped by rounded display
+      // corners or overlayed by home indicator on iOS
+      let height = bottomTabs ? "0px" : "var(--safe-area-inset-bottom, 0px)";
+
+      if (hasFab) {
+        // fab bottom margin in narrow tab view is bigger than otherwise
+        // double the margin to for equal top and bottom margin to fab
+        const fabHeight = 48;
+        const fabMargin = (bottomTabs ? 28 : 16) * 2;
+        height = `calc(${height} + ${fabHeight + fabMargin}px)`;
+      }
+      return height;
+    }
+  );
 
   public clearSelection() {
     this._dataTable.clearSelection();
@@ -491,7 +514,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 .noDataText=${this.noDataText}
                 .filter=${this.filter}
                 .selectable=${this._selectMode}
-                .hasFab=${this.hasFab}
                 .id=${this.id}
                 .clickable=${this.clickable}
                 .appendRow=${this.appendRow}
@@ -502,6 +524,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 .initialCollapsedGroups=${this.initialCollapsedGroups}
                 .columnOrder=${this.columnOrder}
                 .hiddenColumns=${this.hiddenColumns}
+                style=${styleMap({
+                  "--data-table-empty-row-height": this._calcEmptyRowHeight(
+                    this.narrow,
+                    this.hasFab,
+                    this._tabsSubpage?.hasAttribute("show-tabs")
+                  ),
+                })}
               >
                 ${!this.narrow
                   ? html`

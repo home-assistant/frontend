@@ -65,7 +65,17 @@ class HassTabsSubpage extends LitElement {
    */
   @property({ type: Boolean, attribute: "has-fab" }) public hasFab = false;
 
+  /**
+   * Whether tabs are shown (2 or more tabs visible).
+   * When both, show-tabs and narrow are true, tabs are shown as bottom bar.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean, attribute: "show-tabs", reflect: true })
+  public showTabs = false;
+
   @state() private _activeTab?: PageNavigation;
+
+  @state() private _tabs: TemplateResult[] | string[] = [""];
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -122,20 +132,29 @@ class HassTabsSubpage extends LitElement {
         this._isActiveTabPath(tab.path, currentPath)
       );
     }
+
+    if (
+      changedProperties.has("hass") ||
+      changedProperties.has("narrow") ||
+      changedProperties.has("route") ||
+      changedProperties.has("tabs")
+    ) {
+      this._tabs = this._getTabs(
+        this.tabs,
+        this._activeTab,
+        this.hass.config.components,
+        this.hass.language,
+        this.hass.userData,
+        this.narrow,
+        this.localizeFunc || this.hass.localize
+      );
+      this.showTabs = (this._tabs as any).length > 1;
+    }
+
     super.willUpdate(changedProperties);
   }
 
   protected render(): TemplateResult {
-    const tabs = this._getTabs(
-      this.tabs,
-      this._activeTab,
-      this.hass.config.components,
-      this.hass.language,
-      this.hass.userData,
-      this.narrow,
-      this.localizeFunc || this.hass.localize
-    );
-    const showTabs = tabs.length > 1;
     return html`
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <slot name="toolbar">
@@ -160,26 +179,26 @@ class HassTabsSubpage extends LitElement {
                       @click=${this._backTapped}
                     ></ha-icon-button-arrow-prev>
                   `}
-            ${this.narrow || !showTabs
+            ${this.narrow || !this.showTabs
               ? html`<div class="main-title">
-                  <slot name="header">${!showTabs ? tabs[0] : ""}</slot>
+                  <slot name="header"
+                    >${!this.showTabs ? this._tabs[0] : ""}</slot
+                  >
                 </div>`
               : ""}
-            ${showTabs && !this.narrow
-              ? html`<div id="tabbar">${tabs}</div>`
+            ${this.showTabs && !this.narrow
+              ? html`<div id="tabbar">${this._tabs}</div>`
               : ""}
             <div id="toolbar-icon">
               <slot name="toolbar-icon"></slot>
             </div>
           </div>
         </slot>
-        ${showTabs && this.narrow
-          ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
+        ${this.showTabs && this.narrow
+          ? html`<div id="tabbar" class="bottom-bar">${this._tabs}</div>`
           : ""}
       </div>
-      <div
-        class=${classMap({ container: true, tabs: showTabs && this.narrow })}
-      >
+      <div class="container">
         ${this.pane
           ? html`<div class="pane">
               <div class="shadow-container"></div>
@@ -188,15 +207,12 @@ class HassTabsSubpage extends LitElement {
               </div>
             </div>`
           : nothing}
-        <div
-          class="content ha-scrollbar ${classMap({ tabs: showTabs })}"
-          @scroll=${this._saveScrollPos}
-        >
+        <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
           <slot></slot>
           ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
         </div>
       </div>
-      <div id="fab" class=${classMap({ tabs: showTabs })}>
+      <div id="fab">
         <slot name="fab"></slot>
       </div>
     `;
@@ -373,7 +389,7 @@ class HassTabsSubpage extends LitElement {
           margin-left: var(--safe-area-inset-left);
           margin-inline-start: var(--safe-area-inset-left);
         }
-        :host([narrow]) .content.tabs {
+        :host([narrow][show-tabs]) .content {
           /* Bottom bar reuses header height */
           margin-bottom: calc(
             var(--header-height, 0px) + var(--safe-area-inset-bottom, 0px)
@@ -384,7 +400,7 @@ class HassTabsSubpage extends LitElement {
           height: calc(64px + var(--safe-area-inset-bottom, 0px));
         }
 
-        :host([narrow]) .content.tabs .fab-bottom-space {
+        :host([narrow][show-tabs]) .content .fab-bottom-space {
           height: calc(80px + var(--safe-area-inset-bottom, 0px));
         }
 
@@ -400,7 +416,7 @@ class HassTabsSubpage extends LitElement {
           justify-content: flex-end;
           gap: var(--ha-space-2);
         }
-        :host([narrow]) #fab.tabs {
+        :host([narrow][show-tabs]) #fab {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));
         }
         #fab[is-wide] {

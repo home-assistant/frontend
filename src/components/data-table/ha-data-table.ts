@@ -118,8 +118,6 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public clickable = false;
 
-  @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
-
   /**
    * Add an extra row at the bottom of the data table
    * @type {TemplateResult}
@@ -519,7 +517,6 @@ export class HaDataTable extends LitElement {
                     this._filteredData,
                     localize,
                     this.appendRow,
-                    this.hasFab,
                     this.groupColumn,
                     this.groupOrder,
                     this._collapsedGroups,
@@ -716,14 +713,13 @@ export class HaDataTable extends LitElement {
       data: DataTableRowData[],
       localize: LocalizeFunc,
       appendRow,
-      hasFab: boolean,
       groupColumn: string | undefined,
       groupOrder: string[] | undefined,
       collapsedGroups: string[],
       sortColumn: string | undefined,
       sortDirection: SortingDirection
     ) => {
-      if (appendRow || hasFab || groupColumn) {
+      if (appendRow || groupColumn) {
         let items = [...data];
 
         if (groupColumn) {
@@ -813,13 +809,11 @@ export class HaDataTable extends LitElement {
           items.push({ append: true, selectable: false, content: appendRow });
         }
 
-        if (hasFab) {
-          items.push({ empty: true });
-        }
+        items.push({ empty: true });
 
         return items;
       }
-      return data;
+      return [...data, { empty: true }];
     }
   );
 
@@ -871,7 +865,6 @@ export class HaDataTable extends LitElement {
       this._filteredData,
       this.localizeFunc || this.hass.localize,
       this.appendRow,
-      this.hasFab,
       this.groupColumn,
       this.groupOrder,
       this._collapsedGroups,
@@ -1089,11 +1082,8 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__row.empty-row {
-          height: max(
-            var(
-              --data-table-empty-row-height,
-              var(--data-table-row-height, 52px)
-            ),
+          height: var(
+            --data-table-empty-row-height,
             var(--safe-area-inset-bottom, 0px)
           );
         }
