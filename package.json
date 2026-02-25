@@ -83,7 +83,7 @@
     "@mdi/js": "7.4.47",
     "@mdi/svg": "7.4.47",
     "@replit/codemirror-indentation-markers": "6.5.3",
-    "@swc/helpers": "0.5.18",
+    "@swc/helpers": "0.5.19",
     "@thomasloven/round-slider": "0.6.0",
     "@tsparticles/engine": "3.9.1",
     "@tsparticles/preset-links": "3.2.0",
