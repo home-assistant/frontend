@@ -39,6 +39,9 @@ export class PowerViewStrategy extends ReactiveElement {
     const hasPowerDevices = prefs?.device_consumption.some(
       (device) => device.stat_rate
     );
+    const hasWaterDevices = prefs?.device_consumption_water.some(
+      (device) => device.stat_rate
+    );
     const hasWaterSources = prefs?.energy_sources.some(
       (source) => source.type === "water" && source.stat_rate
     );
@@ -64,11 +67,12 @@ export class PowerViewStrategy extends ReactiveElement {
       max_columns: 2,
     };
 
-    // No power sources configured
+    // No sources configured
     if (
       !prefs ||
       (!hasPowerSources &&
         !hasPowerDevices &&
+        !hasWaterDevices &&
         !hasWaterSources &&
         !hasGasSources)
     ) {
@@ -117,6 +121,24 @@ export class PowerViewStrategy extends ReactiveElement {
       chartsSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
         type: "power-sankey",
+        collection_key: collectionKey,
+        group_by_floor: showFloorsAndAreas,
+        group_by_area: showFloorsAndAreas,
+        grid_options: {
+          columns: 36,
+        },
+      });
+    }
+
+    if (hasWaterDevices) {
+      const showFloorsAndAreas = shouldShowFloorsAndAreas(
+        prefs.device_consumption_water,
+        hass,
+        (d) => d.stat_rate
+      );
+      chartsSection.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.water_flow_sankey_title"),
+        type: "water-flow-sankey",
         collection_key: collectionKey,
         group_by_floor: showFloorsAndAreas,
         group_by_area: showFloorsAndAreas,
