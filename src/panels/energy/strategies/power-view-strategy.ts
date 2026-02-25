@@ -39,7 +39,7 @@ export class PowerViewStrategy extends ReactiveElement {
     const hasPowerDevices = prefs?.device_consumption.some(
       (device) => device.stat_rate
     );
-    const hasWaterDevices = prefs?.device_consumption_water?.some(
+    const hasWaterDevices = prefs?.device_consumption_water.some(
       (device) => device.stat_rate
     );
     const hasWaterSources = prefs?.energy_sources.some(

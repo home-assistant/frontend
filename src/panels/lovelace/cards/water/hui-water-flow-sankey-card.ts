@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
-import "../../../../components/ha-svg-icon";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { EnergyData } from "../../../../data/energy";
 import {
@@ -137,8 +136,23 @@ class HuiWaterFlowSankeyCard
       }
     });
 
+    // When there are no source meters, pre-compute total device flow so the
+    // home node has the correct value (sum of all device consumption) rather
+    // than 0. This avoids a broken sankey where the root node has value=0
+    // while its children have positive values.
+    let totalDeviceFlow = 0;
+    if (waterSources.length === 0) {
+      prefs.device_consumption_water.forEach((device) => {
+        if (device.stat_rate) {
+          totalDeviceFlow += this._getCurrentFlowRate(device.stat_rate);
+        }
+      });
+    }
+    const effectiveTotalInflow =
+      waterSources.length === 0 ? totalDeviceFlow : totalInflow;
+
     // Calculate dynamic threshold
-    const minFlowThreshold = totalInflow * MIN_FLOW_THRESHOLD_FACTOR;
+    const minFlowThreshold = effectiveTotalInflow * MIN_FLOW_THRESHOLD_FACTOR;
 
     const nodes: Node[] = [];
     const links: Link[] = [];
@@ -181,8 +195,7 @@ class HuiWaterFlowSankeyCard
       const homeNode: Node = {
         id: "home",
         label: this.hass.config.location_name,
-        // Value will be the total inflow (or total device consumption if no sources)
-        value: Math.max(0, totalInflow),
+        value: Math.max(0, effectiveTotalInflow),
         color: primaryColor,
         index: 1,
       };
@@ -254,7 +267,7 @@ class HuiWaterFlowSankeyCard
       return undefined;
     };
 
-    let untrackedConsumption = totalInflow;
+    let untrackedConsumption = effectiveTotalInflow;
     const deviceNodes: Node[] = [];
     const parentLinks: Record<string, string> = {};
     const smallConsumersByParent = new Map<string, SmallConsumer[]>();
@@ -349,7 +362,7 @@ class HuiWaterFlowSankeyCard
       (node) => !parentLinks[node.id]
     );
 
-    const { group_by_area, group_by_floor } = this._config!;
+    const { group_by_area, group_by_floor, layout, title } = this._config;
     if (group_by_area || group_by_floor) {
       const { areas, floors } = this._groupByFloorAndArea(devicesWithoutParent);
 
@@ -445,12 +458,11 @@ class HuiWaterFlowSankeyCard
     const hasData = nodes.some((node) => node.value > 0);
 
     const vertical =
-      this._config!.layout === "vertical" ||
-      (this._config!.layout !== "horizontal" && this._isMobileSize);
+      layout === "vertical" || (layout !== "horizontal" && this._isMobileSize);
 
     return html`
       <ha-card
-        .header=${this._config!.title}
+        .header=${title}
         class=${classMap({
           "is-grid": this.layout === "grid",
           "is-panel": this.layout === "panel",
