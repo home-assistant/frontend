@@ -41,7 +41,7 @@ import "../components/search-input-outlined";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
-import type { PageNavigation } from "./hass-tabs-subpage";
+import type { HassTabsSubpage, PageNavigation } from "./hass-tabs-subpage";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
@@ -188,7 +188,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @query("search-input-outlined") private _searchInput!: HTMLElement;
 
-  @query("hass-tabs-subpage") private _tabsSubpage!: HTMLElement;
+  @query("hass-tabs-subpage") private _tabsSubpage!: HassTabsSubpage;
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
@@ -528,7 +528,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   "--data-table-empty-row-height": this._calcEmptyRowHeight(
                     this.narrow,
                     this.hasFab,
-                    this._tabsSubpage.hasAttribute("show-tabs")
+                    this._tabsSubpage.showTabs
                   ),
                 })}
               >
