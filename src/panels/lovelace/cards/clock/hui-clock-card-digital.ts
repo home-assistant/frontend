@@ -230,6 +230,7 @@ export class HuiClockCardDigital extends LitElement {
       opacity: 0.8;
       font-size: var(--ha-font-size-s);
       line-height: 1.1;
+      margin-top: var(--ha-space-1);
     }
 
     .date.size-medium {
