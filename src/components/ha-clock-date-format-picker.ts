@@ -29,10 +29,10 @@ type ClockDateSeparatorPart = Extract<
 >;
 
 const CLOCK_DATE_PART_SECTION_ORDER: readonly ClockDatePartSection[] = [
-  "weekday",
   "day",
   "month",
   "year",
+  "weekday",
   "separator",
 ];
 
