@@ -81,7 +81,7 @@ interface ClockDatePartValueItem {
 export class HaClockDateFormatPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public disabled = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
 
