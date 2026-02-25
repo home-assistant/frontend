@@ -6,6 +6,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import { CLOCK_CARD_DATE_PARTS } from "../panels/lovelace/cards/clock/clock-date-format";
+import type { ClockCardDatePart } from "../panels/lovelace/cards/types";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-assist-chip";
 import "./chips/ha-chip-set";
@@ -15,6 +16,44 @@ import type { HaGenericPicker } from "./ha-generic-picker";
 import "./ha-input-helper-text";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-sortable";
+
+type ClockDatePartSection = "weekday" | "day" | "month" | "year" | "separator";
+
+const CLOCK_DATE_PART_SECTION_ORDER: readonly ClockDatePartSection[] = [
+  "weekday",
+  "day",
+  "month",
+  "year",
+  "separator",
+];
+
+const getClockDatePartSection = (
+  part: ClockCardDatePart
+): ClockDatePartSection => {
+  if (part.startsWith("weekday-")) {
+    return "weekday";
+  }
+
+  if (part.startsWith("day-")) {
+    return "day";
+  }
+
+  if (part.startsWith("month-")) {
+    return "month";
+  }
+
+  if (part.startsWith("year-")) {
+    return "year";
+  }
+
+  return "separator";
+};
+
+interface ClockDatePartSectionData {
+  id: ClockDatePartSection;
+  title: string;
+  items: PickerComboBoxItem[];
+}
 
 @customElement("ha-clock-date-format-picker")
 export class HaClockDateFormatPicker extends LitElement {
@@ -44,6 +83,7 @@ export class HaClockDateFormatPicker extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}
+        .sections=${this._getSections(this.hass.locale.language)}
         .getItems=${this._getItems}
         @value-changed=${this._pickerValueChanged}
       >
@@ -158,28 +198,100 @@ export class HaClockDateFormatPicker extends LitElement {
     return value;
   });
 
-  private _buildItems = memoizeOne((_: string): PickerComboBoxItem[] =>
-    CLOCK_CARD_DATE_PARTS.map((part) => {
-      const label =
-        this.hass.localize(
-          `ui.panel.lovelace.editor.card.clock.date.parts.${part}`
-        ) || part;
+  private _buildSections = memoizeOne(
+    (_language: string): ClockDatePartSectionData[] => {
+      const itemsBySection: Record<ClockDatePartSection, PickerComboBoxItem[]> =
+        {
+          weekday: [],
+          day: [],
+          month: [],
+          year: [],
+          separator: [],
+        };
 
-      return {
-        id: part,
-        primary: label,
-        sorting_label: label,
-      } satisfies PickerComboBoxItem;
-    })
+      CLOCK_CARD_DATE_PARTS.forEach((part) => {
+        const label =
+          this.hass.localize(
+            `ui.panel.lovelace.editor.card.clock.date.parts.${part}`
+          ) || part;
+
+        itemsBySection[getClockDatePartSection(part)].push({
+          id: part,
+          primary: label,
+          sorting_label: label,
+        });
+      });
+
+      return CLOCK_DATE_PART_SECTION_ORDER.map((section) => ({
+        id: section,
+        title:
+          this.hass.localize(
+            `ui.panel.lovelace.editor.card.clock.date.sections.${section}`
+          ) || section,
+        items: itemsBySection[section],
+      })).filter((section) => section.items.length > 0);
+    }
   );
 
-  private _getItems = (): PickerComboBoxItem[] =>
-    this._buildItems(this.hass.locale.language);
+  private _getSections = memoizeOne(
+    (_language: string): { id: string; label: string }[] =>
+      this._buildSections(_language).map((section) => ({
+        id: section.id,
+        label: section.title,
+      }))
+  );
+
+  private _getItems = (
+    searchString?: string,
+    section?: string
+  ): (PickerComboBoxItem | string)[] => {
+    const normalizedSearch = searchString?.trim().toLowerCase();
+
+    const sections = this._buildSections(this.hass.locale.language)
+      .map((sectionData) => {
+        if (!normalizedSearch) {
+          return sectionData;
+        }
+
+        return {
+          ...sectionData,
+          items: sectionData.items.filter(
+            (item) =>
+              item.primary.toLowerCase().includes(normalizedSearch) ||
+              item.id.toLowerCase().includes(normalizedSearch)
+          ),
+        };
+      })
+      .filter((sectionData) => sectionData.items.length > 0);
+
+    if (section) {
+      return (
+        sections.find((candidate) => candidate.id === section)?.items || []
+      );
+    }
+
+    const groupedItems: (PickerComboBoxItem | string)[] = [];
+
+    sections.forEach((sectionData) => {
+      groupedItems.push(sectionData.title, ...sectionData.items);
+    });
+
+    return groupedItems;
+  };
 
   private _getItemLabel = memoizeOne(
     (value: string, language: string): string | undefined => {
-      const items = this._buildItems(language);
-      return items.find((item) => item.id === value)?.primary;
+      const sections = this._buildSections(language);
+
+      for (const section of sections) {
+        const item = section.items.find((candidate) => candidate.id === value);
+
+        if (item) {
+          return item.primary;
+        }
+      }
+
+      return undefined;
     }
   );
 
