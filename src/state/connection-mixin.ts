@@ -30,7 +30,10 @@ import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_displ
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
-import { fetchBrandsAccessToken } from "../util/brands-url";
+import {
+  clearBrandsTokenRefresh,
+  fetchAndScheduleBrandsAccessToken,
+} from "../util/brands-url";
 import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
@@ -321,6 +324,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
       clearInterval(this.__backendPingInterval);
 
+      // Fetch the brands access token on initial connect and schedule refresh
+      fetchAndScheduleBrandsAccessToken(this.hass!);
+
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
           // If the backend is busy, or the connection is latent,
@@ -345,10 +351,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       this._updateHass({ connected: true });
       broadcastConnectionStatus("connected");
 
-      // Refresh the brands access token on reconnect
-      fetchBrandsAccessToken(this.hass!).catch(() => {
-        // Ignore failures; older backends may not support this command
-      });
+      // Refresh the brands access token on reconnect and restart refresh schedule
+      fetchAndScheduleBrandsAccessToken(this.hass!);
 
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
@@ -367,5 +371,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       this._updateHass({ connected: false });
       broadcastConnectionStatus("disconnected");
       clearInterval(this.__backendPingInterval);
+      clearBrandsTokenRefresh();
     }
   };

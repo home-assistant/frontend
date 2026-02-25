@@ -1,9 +1,11 @@
-import { assert, describe, it } from "vitest";
+import { assert, describe, it, vi, afterEach } from "vitest";
 import type { HomeAssistant } from "../../src/types";
 import {
   addBrandsAuth,
   brandsUrl,
+  clearBrandsTokenRefresh,
   fetchBrandsAccessToken,
+  scheduleBrandsTokenRefresh,
 } from "../../src/util/brands-url";
 
 describe("Generate brands Url", () => {
@@ -65,5 +67,78 @@ describe("addBrandsAuth", () => {
       addBrandsAuth("/api/brands/integration/demo/icon.png?token=old-token"),
       "/api/brands/integration/demo/icon.png?token=new-token"
     );
+  });
+});
+
+describe("scheduleBrandsTokenRefresh", () => {
+  afterEach(() => {
+    clearBrandsTokenRefresh();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("Refreshes the token after 30 minutes", async () => {
+    vi.useFakeTimers();
+    let callCount = 0;
+    const mockHass = {
+      callWS: async () => {
+        callCount++;
+        return { token: `token-${callCount}` };
+      },
+    } as unknown as HomeAssistant;
+
+    await fetchBrandsAccessToken(mockHass);
+    assert.strictEqual(callCount, 1);
+    assert.strictEqual(
+      brandsUrl({ domain: "test", type: "icon" }),
+      "/api/brands/integration/test/icon.png?token=token-1"
+    );
+
+    scheduleBrandsTokenRefresh(mockHass);
+
+    // Advance 30 minutes
+    await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
+    assert.strictEqual(callCount, 2);
+    assert.strictEqual(
+      brandsUrl({ domain: "test", type: "icon" }),
+      "/api/brands/integration/test/icon.png?token=token-2"
+    );
+  });
+
+  it("Does not refresh before 30 minutes", async () => {
+    vi.useFakeTimers();
+    let callCount = 0;
+    const mockHass = {
+      callWS: async () => {
+        callCount++;
+        return { token: `token-${callCount}` };
+      },
+    } as unknown as HomeAssistant;
+
+    await fetchBrandsAccessToken(mockHass);
+    scheduleBrandsTokenRefresh(mockHass);
+
+    // Advance 29 minutes — should not have refreshed
+    await vi.advanceTimersByTimeAsync(29 * 60 * 1000);
+    assert.strictEqual(callCount, 1);
+  });
+
+  it("clearBrandsTokenRefresh stops the interval", async () => {
+    vi.useFakeTimers();
+    let callCount = 0;
+    const mockHass = {
+      callWS: async () => {
+        callCount++;
+        return { token: `token-${callCount}` };
+      },
+    } as unknown as HomeAssistant;
+
+    await fetchBrandsAccessToken(mockHass);
+    scheduleBrandsTokenRefresh(mockHass);
+    clearBrandsTokenRefresh();
+
+    // Advance 30 minutes — should not have refreshed because we cleared
+    await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
+    assert.strictEqual(callCount, 1);
   });
 });

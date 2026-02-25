@@ -14,6 +14,21 @@ export interface HardwareBrandsOptions {
 }
 
 let _brandsAccessToken: string | undefined;
+let _brandsRefreshInterval: ReturnType<typeof setInterval> | undefined;
+
+// Token refreshes every 30 minutes and is valid for 1 hour.
+// Re-fetch every 30 minutes to always have a valid token.
+const TOKEN_REFRESH_MS = 30 * 60 * 1000;
+
+export const fetchAndScheduleBrandsAccessToken = (
+  hass: HomeAssistant
+): Promise<void> =>
+  fetchBrandsAccessToken(hass).then(
+    () => scheduleBrandsTokenRefresh(hass),
+    () => {
+      // Ignore failures; older backends may not support this command
+    }
+  );
 
 export const fetchBrandsAccessToken = async (
   hass: HomeAssistant
@@ -22,6 +37,22 @@ export const fetchBrandsAccessToken = async (
     type: "brands/access_token",
   });
   _brandsAccessToken = result.token;
+};
+
+export const scheduleBrandsTokenRefresh = (hass: HomeAssistant): void => {
+  clearBrandsTokenRefresh();
+  _brandsRefreshInterval = setInterval(() => {
+    fetchBrandsAccessToken(hass).catch(() => {
+      // Ignore failures; older backends may not support this command
+    });
+  }, TOKEN_REFRESH_MS);
+};
+
+export const clearBrandsTokenRefresh = (): void => {
+  if (_brandsRefreshInterval) {
+    clearInterval(_brandsRefreshInterval);
+    _brandsRefreshInterval = undefined;
+  }
 };
 
 export const brandsUrl = (options: BrandsOptions): string => {
