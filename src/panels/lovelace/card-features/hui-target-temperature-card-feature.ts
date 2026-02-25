@@ -159,7 +159,7 @@ class HuiTargetTemperatureCardFeature
 
   private _callService(type: string) {
     const domain = computeStateDomain(this._stateObj!);
-    if (type === "low" || type === "high") {
+    if (type === "high" || type === "low") {
       this.hass!.callService(domain, "set_temperature", {
         entity_id: this._stateObj!.entity_id,
         target_temp_low: this._targetTemperature.low,
