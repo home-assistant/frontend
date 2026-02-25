@@ -33,6 +33,8 @@ export class HuiClockCardDigital extends LitElement {
 
   private _tickInterval?: undefined | number;
 
+  private _lastDateMinute?: string;
+
   private _timeZone?: string;
 
   private _language?: string;
@@ -40,6 +42,7 @@ export class HuiClockCardDigital extends LitElement {
   private _initDate() {
     if (!this.config || !this.hass) {
       this._date = undefined;
+      this._lastDateMinute = undefined;
       return;
     }
 
@@ -64,6 +67,8 @@ export class HuiClockCardDigital extends LitElement {
       hourCycle: h12 ? "h12" : "h23",
       timeZone,
     });
+
+    this._lastDateMinute = undefined;
 
     this._tick();
   }
@@ -117,11 +122,32 @@ export class HuiClockCardDigital extends LitElement {
       : undefined;
     this._timeAmPm = parts.find((part) => part.type === "dayPeriod")?.value;
 
+    this._updateDate(date);
+  }
+
+  private _updateDate(date: Date) {
+    if (!this.config || !hasClockCardDate(this.config) || !this._language) {
+      this._date = undefined;
+      this._lastDateMinute = undefined;
+      return;
+    }
+
+    if (
+      this._timeMinute !== undefined &&
+      this._timeMinute === this._lastDateMinute &&
+      this._date !== undefined
+    ) {
+      return;
+    }
+
     const dateConfig = getClockCardDateConfig(this.config);
-    this._date =
-      hasClockCardDate(this.config) && this._language
-        ? formatClockCardDate(date, dateConfig, this._language, this._timeZone)
-        : undefined;
+    this._date = formatClockCardDate(
+      date,
+      dateConfig,
+      this._language,
+      this._timeZone
+    );
+    this._lastDateMinute = this._timeMinute;
   }
 
   render() {
