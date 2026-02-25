@@ -44,7 +44,6 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
-import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -359,17 +358,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     };
   }
 
-  private _hasDisplayableAttributes(): boolean {
-    if (!this._entityId) {
-      return false;
-    }
-    const stateObj = this.hass.states[this._entityId];
-    if (!stateObj) {
-      return false;
-    }
-    return computeShownAttributes(stateObj).length > 0;
-  }
-
   private _goToAddEntityTo(ev) {
     // Only check for request-selected events (from menu items), not regular clicks (from icon button)
     if (ev.type === "request-selected" && !shouldHandleRequestSelectedEvent(ev))
@@ -591,19 +579,15 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                           "ui.dialogs.more_info_control.related"
                         )}
                       </ha-dropdown-item>
-                      ${this._hasDisplayableAttributes()
-                        ? html`
-                            <ha-dropdown-item value="details">
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiFormatListBulletedSquare}
-                              ></ha-svg-icon>
-                              ${this.hass.localize(
-                                "ui.dialogs.more_info_control.details"
-                              )}
-                            </ha-dropdown-item>
-                          `
-                        : nothing}
+                      <ha-dropdown-item value="details">
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiFormatListBulletedSquare}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.dialogs.more_info_control.details"
+                        )}
+                      </ha-dropdown-item>
                       ${this._shouldShowAddEntityTo()
                         ? html`
                             <ha-dropdown-item value="add_to">
