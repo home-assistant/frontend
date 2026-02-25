@@ -75,7 +75,7 @@ class HassTabsSubpage extends LitElement {
 
   @state() private _activeTab?: PageNavigation;
 
-  @state() private _tabs: TemplateResult[] | string[] = [""];
+  @state() private _tabs: (TemplateResult | string)[] = [""];
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -148,7 +148,7 @@ class HassTabsSubpage extends LitElement {
         this.narrow,
         this.localizeFunc || this.hass.localize
       );
-      this.showTabs = (this._tabs as any).length > 1;
+      this.showTabs = this._tabs.length > 1;
     }
 
     super.willUpdate(changedProperties);
