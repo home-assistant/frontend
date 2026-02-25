@@ -9386,7 +9386,7 @@
                   "month-numeric": "Numeric",
                   "month-2-digit": "2-digit",
                   "year-2-digit": "2-digit",
-                  "year-numeric": "Numeric",
+                  "year-numeric": "Full",
                   "separator-dash": "Dash",
                   "separator-slash": "Slash",
                   "separator-dot": "Dot"
