@@ -19,7 +19,7 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { ClockCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -54,6 +54,12 @@ const cardConfigStruct = assign(
     ),
   })
 );
+
+type ClockCardFormData = Omit<ClockCardConfig, "time_format"> & {
+  time_format?: ClockCardConfig["time_format"] | "auto";
+};
+
+type ClockCardValueChangedEvent = ValueChangedEvent<ClockCardFormData>;
 
 @customElement("hui-clock-card-editor")
 export class HuiClockCardEditor
@@ -232,20 +238,20 @@ export class HuiClockCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _data = memoizeOne((config: ClockCardConfig) => {
+  private _data = memoizeOne((config: ClockCardConfig): ClockCardFormData => {
     const dateConfig = getClockCardDateConfig(config);
 
-    const data = {
-      clock_style: "digital",
-      clock_size: "small",
-      time_format: "auto",
-      show_seconds: false,
-      no_background: false,
-      // Analog clock options
-      border: false,
-      ticks: "hour",
-      face_style: "markers",
+    const data: ClockCardFormData = {
       ...config,
+      clock_style: config.clock_style ?? "digital",
+      clock_size: config.clock_size ?? "small",
+      time_format: config.time_format ?? "auto",
+      show_seconds: config.show_seconds ?? false,
+      no_background: config.no_background ?? false,
+      // Analog clock options
+      border: config.border ?? false,
+      ticks: config.ticks ?? "hour",
+      face_style: config.face_style ?? "markers",
     };
 
     if (config.date_format === undefined) {
@@ -283,38 +289,37 @@ export class HuiClockCardEditor
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value as ClockCardConfig;
+  private _valueChanged(ev: ClockCardValueChangedEvent): void {
+    const config = ev.detail.value;
 
     if (!config.date_format || config.date_format.length === 0) {
       delete config.date_format;
     }
 
-    if (ev.detail.value.time_format === "auto") {
-      delete ev.detail.value.time_format;
+    if (config.time_format === "auto") {
+      delete config.time_format;
     }
 
-    if (ev.detail.value.clock_style === "analog") {
-      ev.detail.value.border = ev.detail.value.border ?? false;
-      ev.detail.value.ticks = ev.detail.value.ticks ?? "hour";
-      ev.detail.value.face_style = ev.detail.value.face_style ?? "markers";
-      if (ev.detail.value.show_seconds) {
-        ev.detail.value.seconds_motion =
-          ev.detail.value.seconds_motion ?? "continuous";
+    if (config.clock_style === "analog") {
+      config.border = config.border ?? false;
+      config.ticks = config.ticks ?? "hour";
+      config.face_style = config.face_style ?? "markers";
+      if (config.show_seconds) {
+        config.seconds_motion = config.seconds_motion ?? "continuous";
       } else {
-        delete ev.detail.value.seconds_motion;
+        delete config.seconds_motion;
       }
     } else {
-      delete ev.detail.value.border;
-      delete ev.detail.value.ticks;
-      delete ev.detail.value.face_style;
-      delete ev.detail.value.seconds_motion;
+      delete config.border;
+      delete config.ticks;
+      delete config.face_style;
+      delete config.seconds_motion;
     }
 
-    if (ev.detail.value.ticks !== "none") {
-      ev.detail.value.face_style = ev.detail.value.face_style ?? "markers";
+    if (config.ticks !== "none") {
+      config.face_style = config.face_style ?? "markers";
     } else {
-      delete ev.detail.value.face_style;
+      delete config.face_style;
     }
 
     fireEvent(this, "config-changed", { config });
