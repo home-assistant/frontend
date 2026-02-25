@@ -9368,7 +9368,7 @@
               "show_seconds": "Display seconds",
               "date": {
                 "label": "Date",
-                "description": "Select and order the date parts shown on the clock. Add a separator to control punctuation.",
+                "description": "Select and order the date parts. Add a separator to control punctuation.",
                 "sections": {
                   "weekday": "Weekday",
                   "day": "Day",
