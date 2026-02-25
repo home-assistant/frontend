@@ -132,21 +132,25 @@ export class HuiClockCardDigital extends LitElement {
     const showDate = hasClockCardDate(this.config);
 
     return html`
-      <div class="time-parts ${sizeClass}">
-        <div class="time-part hour">${this._timeHour}</div>
-        <div class="time-part minute">${this._timeMinute}</div>
-        ${this._timeSecond !== undefined
-          ? html`<div class="time-part second">${this._timeSecond}</div>`
-          : nothing}
-        ${this._timeAmPm !== undefined
-          ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
-          : nothing}
+      <div class="clock-container">
+        <div class="time-parts ${sizeClass}">
+          <div class="time-part hour">${this._timeHour}</div>
+          <div class="time-part minute">${this._timeMinute}</div>
+          ${this._timeSecond !== undefined
+            ? html`<div class="time-part second">${this._timeSecond}</div>`
+            : nothing}
+          ${this._timeAmPm !== undefined
+            ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
+            : nothing}
+        </div>
       </div>
       ${showDate
-        ? html`<div class="date ${sizeClass}">
-            ${this._date
-              ?.split("\n")
-              .map((line, index) => (index > 0 ? html`<br />${line}` : line))}
+        ? html`<div class="date-container">
+            <div class="date ${sizeClass}">
+              ${this._date
+                ?.split("\n")
+                .map((line, index) => (index > 0 ? html`<br />${line}` : line))}
+            </div>
           </div>`
         : nothing}
     `;
@@ -155,6 +159,17 @@ export class HuiClockCardDigital extends LitElement {
   static styles = css`
     :host {
       display: block;
+    }
+
+    .clock-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .date-container {
+      width: 100%;
+      margin-top: var(--ha-space-1);
     }
 
     .time-parts {
@@ -230,7 +245,6 @@ export class HuiClockCardDigital extends LitElement {
       opacity: 0.8;
       font-size: var(--ha-font-size-s);
       line-height: 1.1;
-      margin-top: var(--ha-space-1);
     }
 
     .date.size-medium {
