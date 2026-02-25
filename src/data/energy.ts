@@ -55,15 +55,6 @@ export function createEnergyCollectionKey(key: string): string {
   return key;
 }
 
-// Create default collection key for the current dashboard
-// This attempts to get the current dashboard title and forms a collection key
-// from it if a title is found.
-export function getCurrentDashboardDefaultCollectionKey(
-  hass: HomeAssistant
-): string | undefined {
-  return hass.panelUrl ? createEnergyCollectionKey(hass.panelUrl) : undefined;
-}
-
 // Validate that a string is a valid energy collection key.
 export function validateEnergyCollectionKey(key: string | undefined) {
   if (!key?.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
@@ -71,24 +62,6 @@ export function validateEnergyCollectionKey(key: string | undefined) {
       `Collection keys must start with ${ENERGY_COLLECTION_KEY_PREFIX}.`
     );
   }
-}
-
-// Return all currently active energy collections
-export function getActiveEnergyCollectionKeys(
-  hass: HomeAssistant
-): string[] | undefined {
-  if (!energyCollectionKeys.size) return undefined;
-  return [...energyCollectionKeys].filter((key) => {
-    if (
-      key !== null &&
-      key !== undefined &&
-      key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)
-    ) {
-      const energyCollection = findEnergyDataCollection(hass, key);
-      return energyCollection && energyCollection.isActive();
-    }
-    return false;
-  }) as string[];
 }
 
 export const emptyGridSourceEnergyPreference =
@@ -791,7 +764,7 @@ const convertCollectionKeyToConnection = (
     validateEnergyCollectionKey(collectionKey);
     key = `_${collectionKey}`;
   } else {
-    const defaultKey = getCurrentDashboardDefaultCollectionKey(hass);
+    const defaultKey = createEnergyCollectionKey(hass.panelUrl);
     if (defaultKey) {
       key = `_${defaultKey}`;
       collectionKey = defaultKey;
