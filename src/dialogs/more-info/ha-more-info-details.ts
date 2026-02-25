@@ -37,52 +37,96 @@ class HaMoreInfoDetails extends LitElement {
       return nothing;
     }
 
-    const attributes = computeShownAttributes(this._stateObj);
+    const translatedState = this.hass.formatEntityState(this._stateObj);
+    const detailsAttributes = computeShownAttributes(this._stateObj);
+    const detailsAttributeSet = new Set(detailsAttributes);
+    const builtInAttributes = Object.keys(this._stateObj.attributes).filter(
+      (attribute) => !detailsAttributeSet.has(attribute)
+    );
 
     return html`
       <div class="content">
-        <ha-card>
-          <div class="card-content">
-            <div class="data-entry state-entry">
-              <div class="key">
-                ${this.hass.localize(
-                  "ui.components.entity.entity-state-picker.state"
-                )}
-              </div>
-              <div class="value">${this._stateObj.state}</div>
-            </div>
-            ${attributes.map(
-              (attribute) => html`
+        <section class="section">
+          <h2 class="section-title">
+            ${this.hass.localize(
+              "ui.components.entity.entity-state-picker.state"
+            )}
+          </h2>
+          <ha-card>
+            <div class="card-content">
+              <div class="attribute-group">
                 <div class="data-entry">
                   <div class="key">
-                    ${computeAttributeNameDisplay(
-                      this.hass.localize,
-                      this._stateObj!,
-                      this.hass.entities,
-                      attribute
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.translated"
                     )}
                   </div>
-                  <div class="value">
-                    <ha-attribute-value
-                      .hass=${this.hass}
-                      .attribute=${attribute}
-                      .stateObj=${this._stateObj}
-                    ></ha-attribute-value>
-                  </div>
+                  <div class="value">${translatedState}</div>
                 </div>
-              `
-            )}
-          </div>
-        </ha-card>
-        ${this._stateObj.attributes.attribution
-          ? html`
-              <div class="attribution">
-                ${this._stateObj.attributes.attribution}
+                <div class="data-entry">
+                  <div class="key">
+                    ${this.hass.localize("ui.dialogs.more_info_control.raw")}
+                  </div>
+                  <div class="value">${this._stateObj.state}</div>
+                </div>
               </div>
-            `
-          : nothing}
+            </div>
+          </ha-card>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">
+            ${this.hass.localize("ui.dialogs.more_info_control.attributes")}
+          </h2>
+          <ha-card>
+            <div class="card-content">
+              <div class="attribute-group">
+                ${this._renderAttributes(detailsAttributes)}
+              </div>
+
+              <div class="subsection">
+                <h3 class="subsection-title">
+                  ${this.hass.localize("ui.dialogs.more_info_control.built_in")}
+                </h3>
+                <div class="attribute-group">
+                  ${this._renderAttributes(builtInAttributes)}
+                </div>
+              </div>
+            </div>
+          </ha-card>
+        </section>
       </div>
     `;
+  }
+
+  private _renderAttributes(attributes: string[]) {
+    if (attributes.length === 0) {
+      return html`<div class="empty">
+        ${this.hass.localize("ui.common.none")}
+      </div>`;
+    }
+
+    return attributes.map(
+      (attribute) => html`
+        <div class="data-entry">
+          <div class="key">
+            ${computeAttributeNameDisplay(
+              this.hass.localize,
+              this._stateObj!,
+              this.hass.entities,
+              attribute
+            )}
+          </div>
+          <div class="value">
+            <ha-attribute-value
+              .hass=${this.hass}
+              .attribute=${attribute}
+              .stateObj=${this._stateObj}
+            ></ha-attribute-value>
+          </div>
+        </div>
+      `
+    );
   }
 
   static styles: CSSResultGroup = css`
@@ -97,12 +141,33 @@ class HaMoreInfoDetails extends LitElement {
       padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
     }
 
+    .section + .section {
+      margin-top: var(--ha-space-4);
+    }
+
+    .section-title {
+      margin: 0 0 var(--ha-space-2);
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
+    }
+
     ha-card {
       direction: ltr;
     }
 
     .card-content {
       padding: var(--ha-space-2) var(--ha-space-4);
+    }
+
+    .subsection {
+      margin-top: var(--ha-space-4);
+    }
+
+    .subsection-title {
+      margin: 0 0 var(--ha-space-2);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-medium);
+      color: inherit;
     }
 
     .data-entry {
@@ -113,12 +178,8 @@ class HaMoreInfoDetails extends LitElement {
       border-bottom: 1px solid var(--divider-color);
     }
 
-    .data-entry:last-of-type {
+    .attribute-group .data-entry:last-of-type {
       border-bottom: none;
-    }
-
-    .state-entry .value {
-      font-weight: var(--ha-font-weight-medium);
     }
 
     .data-entry .value {
@@ -132,11 +193,10 @@ class HaMoreInfoDetails extends LitElement {
       color: var(--secondary-text-color);
     }
 
-    .attribution {
+    .empty {
       color: var(--secondary-text-color);
       text-align: center;
-      margin-top: var(--ha-space-4);
-      font-size: var(--ha-font-size-s);
+      padding: var(--ha-space-2) 0;
     }
   `;
 }
