@@ -152,7 +152,7 @@
     "@html-eslint/eslint-plugin": "0.55.0",
     "@lokalise/node-api": "15.6.1",
     "@octokit/auth-oauth-device": "8.0.3",
-    "@octokit/plugin-retry": "8.0.3",
+    "@octokit/plugin-retry": "8.1.0",
     "@octokit/rest": "22.0.1",
     "@rsdoctor/rspack-plugin": "1.5.2",
     "@rspack/core": "1.7.6",
