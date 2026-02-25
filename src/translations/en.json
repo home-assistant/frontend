@@ -9374,7 +9374,7 @@
                   "day": "Day",
                   "month": "Month",
                   "year": "Year",
-                  "separator": "Seperator"
+                  "separator": "Separator"
                 },
                 "parts": {
                   "weekday-short": "Short",

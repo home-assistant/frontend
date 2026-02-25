@@ -461,7 +461,7 @@ export class HaClockDateFormatPicker extends LitElement {
         --mdc-text-field-idle-line-color,
         rgba(0, 0, 0, 0.42)
       );
-      transform:
+      transition:
         height 180ms ease-in-out,
         background-color 180ms ease-in-out;
     }
