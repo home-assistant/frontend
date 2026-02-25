@@ -28,6 +28,7 @@ import {
   formatDateMonthYear,
   formatDateShort,
   formatDateVeryShort,
+  formatDateWeekdayShort,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
@@ -222,7 +223,7 @@ function formatTooltip(
   if (suggestedPeriod === "month") {
     period = `${formatDateMonthYear(date, locale, config)}`;
   } else if (suggestedPeriod === "day") {
-    period = `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}`;
+    period = `${formatDateWeekdayShort(date, locale, config)}, ${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}`;
   } else {
     period = `${
       compare
