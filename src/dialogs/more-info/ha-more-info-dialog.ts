@@ -344,16 +344,17 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       case "info":
         this._resetInitialView();
         break;
-      case "attributes":
-        this._showAttributes();
+      case "details":
+        this._showDetails();
         break;
     }
   }
 
-  private _showAttributes(): void {
-    import("./ha-more-info-attributes");
+  private _showDetails(): void {
+    import("./ha-more-info-details");
     this._childView = {
-      viewTag: "ha-more-info-attributes",
+      viewTag: "ha-more-info-details",
+      viewTitle: this.hass.localize("ui.dialogs.more_info_control.details"),
       viewParams: { entityId: this._entityId },
     };
   }
@@ -592,13 +593,13 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                       </ha-dropdown-item>
                       ${this._hasDisplayableAttributes()
                         ? html`
-                            <ha-dropdown-item value="attributes">
+                            <ha-dropdown-item value="details">
                               <ha-svg-icon
                                 slot="icon"
                                 .path=${mdiFormatListBulletedSquare}
                               ></ha-svg-icon>
                               ${this.hass.localize(
-                                "ui.dialogs.more_info_control.attributes"
+                                "ui.dialogs.more_info_control.details"
                               )}
                             </ha-dropdown-item>
                           `

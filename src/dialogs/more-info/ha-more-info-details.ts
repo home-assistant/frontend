@@ -9,17 +9,17 @@ import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
 
-interface AttributesViewParams {
+interface DetailsViewParams {
   entityId: string;
 }
 
-@customElement("ha-more-info-attributes")
-class HaMoreInfoAttributes extends LitElement {
+@customElement("ha-more-info-details")
+class HaMoreInfoDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
-  @property({ attribute: false }) public params?: AttributesViewParams;
+  @property({ attribute: false }) public params?: DetailsViewParams;
 
   @state() private _stateObj?: HassEntity;
 
@@ -43,6 +43,14 @@ class HaMoreInfoAttributes extends LitElement {
       <div class="content">
         <ha-card>
           <div class="card-content">
+            <div class="data-entry state-entry">
+              <div class="key">
+                ${this.hass.localize(
+                  "ui.components.entity.entity-state-picker.state"
+                )}
+              </div>
+              <div class="value">${this._stateObj.state}</div>
+            </div>
             ${attributes.map(
               (attribute) => html`
                 <div class="data-entry">
@@ -109,6 +117,10 @@ class HaMoreInfoAttributes extends LitElement {
       border-bottom: none;
     }
 
+    .state-entry .value {
+      font-weight: var(--ha-font-weight-medium);
+    }
+
     .data-entry .value {
       max-width: 60%;
       overflow-wrap: break-word;
@@ -131,6 +143,6 @@ class HaMoreInfoAttributes extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-more-info-attributes": HaMoreInfoAttributes;
+    "ha-more-info-details": HaMoreInfoDetails;
   }
 }
