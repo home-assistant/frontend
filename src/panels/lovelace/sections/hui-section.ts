@@ -125,7 +125,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       this._cardVisibilityChanged
     );
     // Reapply theme on reconnect (e.g., after navigating away and back)
-    if (this.hass && this._config) {
+    if (this.hass && this._config?.theme) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
