@@ -227,7 +227,6 @@ class HuiTargetTemperatureCardFeature
       if (this._config.style === "slider") {
         return html`
           <ha-control-slider
-            .formatOptions=${options}
             .target=${"value"}
             .value=${this._stateObj.attributes.temperature}
             .unit=${this.hass.config.unit_system.temperature}
@@ -283,7 +282,6 @@ class HuiTargetTemperatureCardFeature
         return html`
           <ha-control-button-group>
             <ha-control-slider
-              .formatOptions=${options}
               .target=${"low"}
               .value=${this._targetTemperature.low}
               .unit=${this.hass.config.unit_system.temperature}
@@ -303,7 +301,6 @@ class HuiTargetTemperatureCardFeature
             >
             </ha-control-slider>
             <ha-control-slider
-              .formatOptions=${options}
               .target=${"high"}
               .value=${this._targetTemperature.high}
               .unit=${this.hass.config.unit_system.temperature}
