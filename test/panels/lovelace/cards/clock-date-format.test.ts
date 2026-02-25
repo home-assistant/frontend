@@ -163,6 +163,44 @@ describe("clock-date-format", () => {
     assert.equal(result, "/.8");
   });
 
+  it("renders all consecutive separators between values", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: [
+          "day-numeric",
+          "separator-dash",
+          "separator-slash",
+          "separator-dot",
+          "month-numeric",
+        ],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "8-/.11");
+  });
+
+  it("renders repeated separators without deduplication", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: [
+          "day-numeric",
+          "separator-dash",
+          "separator-dash",
+          "separator-dash",
+          "month-numeric",
+        ],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "8---11");
+  });
+
   it("renders separator-only configurations", () => {
     const result = formatClockCardDate(
       date,
