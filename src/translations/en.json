@@ -9369,6 +9369,13 @@
               "date": {
                 "label": "Date",
                 "description": "Select and order the date parts shown on the clock. Add a separator to control punctuation.",
+                "sections": {
+                  "weekday": "Weekday",
+                  "day": "Day",
+                  "month": "Month",
+                  "year": "Year",
+                  "separator": "Separators"
+                },
                 "parts": {
                   "weekday-short": "Weekday (short)",
                   "weekday-long": "Weekday (long)",
