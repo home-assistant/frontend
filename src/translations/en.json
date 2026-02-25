@@ -8935,7 +8935,6 @@
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
               "description": "This card shows the flow of energy in your home.",
-              "type": "Type of Sankey graph",
               "group_by_floor": "Group entities by floor",
               "group_by_area": "Group entities by area",
               "layout": "Graph direction",

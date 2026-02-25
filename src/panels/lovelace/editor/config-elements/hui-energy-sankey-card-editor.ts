@@ -141,7 +141,6 @@ export class HuiEnergySankeyCardEditor
 
   private _computeLabelCallback = (schema) => {
     switch (schema.name) {
-      case "type":
       case "layout":
       case "group_by_floor":
       case "group_by_area":
