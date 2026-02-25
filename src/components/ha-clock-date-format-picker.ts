@@ -25,7 +25,7 @@ type ClockDatePartSection = "weekday" | "day" | "month" | "year" | "separator";
 
 type ClockDateSeparatorPart = Extract<
   ClockCardDatePart,
-  "separator-dash" | "separator-slash" | "separator-dot"
+  "separator-dash" | "separator-slash" | "separator-dot" | "separator-new-line"
 >;
 
 const CLOCK_DATE_PART_SECTION_ORDER: readonly ClockDatePartSection[] = [
@@ -40,6 +40,7 @@ const CLOCK_DATE_SEPARATOR_VALUES: Record<ClockDateSeparatorPart, string> = {
   "separator-dash": "-",
   "separator-slash": "/",
   "separator-dot": ".",
+  "separator-new-line": "",
 };
 
 const getClockDatePartSection = (
