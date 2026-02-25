@@ -75,8 +75,6 @@ export class HassTabsSubpage extends LitElement {
 
   @state() private _activeTab?: PageNavigation;
 
-  @state() private _tabs: (TemplateResult | string)[] = [""];
-
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
 
@@ -93,6 +91,7 @@ export class HassTabsSubpage extends LitElement {
       const shownTabs = tabs.filter((page) => canShowPage(this.hass, page));
 
       if (shownTabs.length < 2) {
+        this.showTabs = false;
         if (shownTabs.length === 1) {
           const page = shownTabs[0];
           return [
@@ -102,6 +101,7 @@ export class HassTabsSubpage extends LitElement {
         return [""];
       }
 
+      this.showTabs = true;
       return shownTabs.map(
         (page) => html`
           <a href=${page.path} @click=${this._tabClicked}>
@@ -132,29 +132,19 @@ export class HassTabsSubpage extends LitElement {
         this._isActiveTabPath(tab.path, currentPath)
       );
     }
-
-    if (
-      changedProperties.has("hass") ||
-      changedProperties.has("narrow") ||
-      changedProperties.has("route") ||
-      changedProperties.has("tabs")
-    ) {
-      this._tabs = this._getTabs(
-        this.tabs,
-        this._activeTab,
-        this.hass.config.components,
-        this.hass.language,
-        this.hass.userData,
-        this.narrow,
-        this.localizeFunc || this.hass.localize
-      );
-      this.showTabs = this._tabs.length > 1;
-    }
-
     super.willUpdate(changedProperties);
   }
 
   protected render(): TemplateResult {
+    const tabs = this._getTabs(
+      this.tabs,
+      this._activeTab,
+      this.hass.config.components,
+      this.hass.language,
+      this.hass.userData,
+      this.narrow,
+      this.localizeFunc || this.hass.localize
+    );
     return html`
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <slot name="toolbar">
@@ -181,13 +171,11 @@ export class HassTabsSubpage extends LitElement {
                   `}
             ${this.narrow || !this.showTabs
               ? html`<div class="main-title">
-                  <slot name="header"
-                    >${!this.showTabs ? this._tabs[0] : ""}</slot
-                  >
+                  <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
                 </div>`
               : ""}
             ${this.showTabs && !this.narrow
-              ? html`<div id="tabbar">${this._tabs}</div>`
+              ? html`<div id="tabbar">${tabs}</div>`
               : ""}
             <div id="toolbar-icon">
               <slot name="toolbar-icon"></slot>
@@ -195,7 +183,7 @@ export class HassTabsSubpage extends LitElement {
           </div>
         </slot>
         ${this.showTabs && this.narrow
-          ? html`<div id="tabbar" class="bottom-bar">${this._tabs}</div>`
+          ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
           : ""}
       </div>
       <div class="container">
