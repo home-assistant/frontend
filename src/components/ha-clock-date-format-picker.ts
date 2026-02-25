@@ -71,6 +71,12 @@ interface ClockDatePartSectionData {
   items: PickerComboBoxItem[];
 }
 
+interface ClockDatePartValueItem {
+  key: string;
+  item: string;
+  idx: number;
+}
+
 @customElement("ha-clock-date-format-picker")
 export class HaClockDateFormatPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -91,6 +97,7 @@ export class HaClockDateFormatPicker extends LitElement {
 
   protected render() {
     const value = this._value;
+    const valueItems = this._getValueItems(value);
 
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -113,32 +120,9 @@ export class HaClockDateFormatPicker extends LitElement {
           >
             <ha-chip-set>
               ${repeat(
-                this._value,
-                (_item, idx) => idx,
-                (item: string, idx) => {
-                  const label = this._getItemLabel(
-                    item,
-                    this.hass.locale.language
-                  );
-                  const isValid = !!label;
-
-                  return html`
-                    <ha-input-chip
-                      data-idx=${idx}
-                      @remove=${this._removeItem}
-                      @click=${this._editItem}
-                      .label=${label ?? item}
-                      .selected=${!this.disabled}
-                      .disabled=${this.disabled}
-                      class=${!isValid ? "invalid" : ""}
-                    >
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>
-                    </ha-input-chip>
-                  `;
-                }
+                valueItems,
+                (entry: ClockDatePartValueItem) => entry.key,
+                ({ item, idx }) => this._renderValueChip(item, idx)
               )}
               ${this.disabled
                 ? nothing
@@ -168,6 +152,45 @@ export class HaClockDateFormatPicker extends LitElement {
           </ha-input-helper-text>
         `
       : nothing;
+  }
+
+  private _getValueItems = memoizeOne(
+    (value: string[]): ClockDatePartValueItem[] => {
+      const occurrences = new Map<string, number>();
+
+      return value.map((item, idx) => {
+        const occurrence = occurrences.get(item) ?? 0;
+        occurrences.set(item, occurrence + 1);
+
+        return {
+          key: `${item}:${occurrence}`,
+          item,
+          idx,
+        };
+      });
+    }
+  );
+
+  private _renderValueChip(item: string, idx: number) {
+    const label = this._getItemLabel(item, this.hass.locale.language);
+    const isValid = !!label;
+
+    return html`
+      <ha-input-chip
+        data-idx=${idx}
+        @remove=${this._removeItem}
+        @click=${this._editItem}
+        .label=${label ?? item}
+        .selected=${!this.disabled}
+        .disabled=${this.disabled}
+        class=${!isValid ? "invalid" : ""}
+      >
+        <ha-svg-icon
+          slot="icon"
+          .path=${mdiDragHorizontalVariant}
+        ></ha-svg-icon>
+      </ha-input-chip>
+    `;
   }
 
   private async _addItem(ev: Event) {
