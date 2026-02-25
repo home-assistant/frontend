@@ -9377,19 +9377,19 @@
                   "separator": "Separators"
                 },
                 "parts": {
-                  "weekday-short": "Weekday (short)",
-                  "weekday-long": "Weekday (long)",
-                  "day-numeric": "Day (numeric)",
-                  "day-2-digit": "Day (2-digit)",
-                  "month-short": "Month (short)",
-                  "month-long": "Month (long)",
-                  "month-numeric": "Month (numeric)",
-                  "month-2-digit": "Month (2-digit)",
-                  "year-2-digit": "Year (2-digit)",
-                  "year-numeric": "Year (numeric)",
-                  "separator-dash": "Separator (-)",
-                  "separator-slash": "Separator (/)",
-                  "separator-dot": "Separator (.)"
+                  "weekday-short": "Short",
+                  "weekday-long": "Long",
+                  "day-numeric": "Numeric",
+                  "day-2-digit": "2-digit",
+                  "month-short": "Short",
+                  "month-long": "Long",
+                  "month-numeric": "Numeric",
+                  "month-2-digit": "2-digit",
+                  "year-2-digit": "2-digit",
+                  "year-numeric": "Numeric",
+                  "separator-dash": "-",
+                  "separator-slash": "/",
+                  "separator-dot": "."
                 }
               },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
