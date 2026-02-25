@@ -548,7 +548,7 @@
         },
         "template": {
           "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (e.g. '{{ states(sensor.test) > 0 }}' ).",
-          "learn_more": "Learn more about templating."
+          "learn_more": "Learn more about templating"
         },
         "text": {
           "show_password": "Show password",
@@ -3811,7 +3811,7 @@
           "grid": {
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "grid_connections": "Grid connections",
             "add_connection": "Add grid connection",
             "edit_connection": "Edit grid connection",
@@ -3872,7 +3872,7 @@
           "solar": {
             "title": "Solar panels",
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "solar_production": "Solar production",
             "edit_solar_production": "Edit solar production",
             "delete_solar_production": "Remove solar production",
@@ -3895,7 +3895,7 @@
           "battery": {
             "title": "Home battery storage",
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "battery_systems": "Battery systems",
             "edit_battery_system": "Edit battery system",
             "delete_battery_system": "Remove battery system",
@@ -3922,7 +3922,7 @@
           "gas": {
             "title": "Gas consumption",
             "sub": "Let Home Assistant monitor your gas usage.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "gas_consumption": "Gas consumption",
             "edit_gas_source": "Edit gas source",
             "delete_gas_source": "Remove gas source",
@@ -3951,7 +3951,7 @@
           "water": {
             "title": "Water consumption",
             "sub": "Let Home Assistant monitor your water usage.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "water_consumption": "Water consumption",
             "edit_water_source": "Edit water source",
             "delete_water_source": "Remove water source",
@@ -3977,7 +3977,7 @@
           "device_consumption": {
             "title": "Individual electrical devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "add_stat": "Pick entity to track energy of",
             "selected_stat": "Tracking energy for",
             "devices": "Devices",
@@ -3996,7 +3996,7 @@
           "device_consumption_water": {
             "title": "Individual water devices",
             "sub": "Tracking the water usage of individual devices allows Home Assistant to break down your water usage by device.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "devices": "Devices",
             "add_device": "Add device",
             "dialog": {
@@ -5748,7 +5748,7 @@
               "key_not_null": "The field key must not be empty.",
               "key_not_unique": "The field key must not be the same value as another field.",
               "fields": "Fields",
-              "link_help_fields": "Learn more about fields.",
+              "link_help_fields": "Learn more about fields",
               "add_fields": "Add fields",
               "add_field": "Add field",
               "field": "field",
@@ -5776,7 +5776,7 @@
             "delete_confirm_text": "{name} will be permanently deleted.",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
-            "link_available_actions": "Learn more about available actions.",
+            "link_available_actions": "Learn more about available actions",
             "leave": {
               "unsaved_new_title": "Save new script?",
               "unsaved_new_text": "You can save your changes, or delete this script. You can't undo this action.",
@@ -6049,7 +6049,7 @@
               "no_hooks_yet_link_integration": "webhook-based integration",
               "no_hooks_yet2": " or by creating a ",
               "no_hooks_yet_link_automation": "webhook automation",
-              "link_learn_more": "Learn more about creating webhook-powered automations.",
+              "link_learn_more": "Learn more about creating webhook-powered automations",
               "loading": "Loading…",
               "manage": "Manage",
               "disable_hook_error_msg": "Failed to disable webhook:"
