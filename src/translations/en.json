@@ -7041,7 +7041,7 @@
             "remove_node": "Remove foreign device",
             "remove_a_node": "Remove a device",
             "rebuild_network_routes": "Discover and assign new routes",
-            "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
+            "in_progress_inclusion_exclusion": "Z-Wave is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
           },
           "dashboard": {
@@ -7516,7 +7516,7 @@
             "caption": "Logs",
             "title": "Z-Wave logs",
             "log_level": "Log level",
-            "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
+            "subscribed_to_logs": "Subscribed to Z-Wave log messages…",
             "log_level_changed": "Log level changed to: {level}",
             "download_logs": "Download logs"
           },
@@ -7628,7 +7628,7 @@
           },
           "picker": {
             "title": "Select Z-Wave network",
-            "no_entries": "No Z-Wave networks configured. Set up the Z-Wave JS integration first."
+            "no_entries": "No Z-Wave networks configured. Set up the Z-Wave integration first."
           }
         },
         "matter": {
