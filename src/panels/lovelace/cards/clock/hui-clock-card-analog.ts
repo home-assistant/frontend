@@ -368,14 +368,6 @@ export class HuiClockCardAnalog extends LitElement {
       box-sizing: border-box;
     }
 
-    /* Modern browsers: Use container queries for responsive font sizing */
-    @supports (container-type: inline-size) {
-      .dial {
-        container-type: inline-size;
-        container-name: clock;
-      }
-    }
-
     .dial-border {
       border: 2px solid var(--divider-color);
       border-radius: var(--ha-border-radius-circle);
@@ -533,44 +525,16 @@ export class HuiClockCardAnalog extends LitElement {
       text-overflow: ellipsis;
     }
 
-    /* Modern browsers: Use container queries for responsive font sizing */
-    @supports (container-type: inline-size) {
-      /* Small clock with long date: reduce to xs */
-      @container clock (max-width: 139px) {
-        .date.long-date {
-          font-size: var(--ha-font-size-xs);
-        }
-      }
-
-      /* Medium clock: scale up */
-      @container clock (min-width: 140px) {
-        .date {
-          font-size: var(--ha-font-size-l);
-        }
-      }
-
-      /* Large clock: scale up more */
-      @container clock (min-width: 200px) {
-        .date {
-          font-size: var(--ha-font-size-xl);
-        }
-      }
+    .date.long-date:not(.size-medium):not(.size-large) {
+      font-size: var(--ha-font-size-xs);
     }
 
-    /* Legacy browsers: Use existing size classes */
-    @supports not (container-type: inline-size) {
-      /* Small clock (no size class) with long date */
-      .date.long-date:not(.size-medium):not(.size-large) {
-        font-size: var(--ha-font-size-xs);
-      }
+    .date.size-medium {
+      font-size: var(--ha-font-size-l);
+    }
 
-      .date.size-medium {
-        font-size: var(--ha-font-size-l);
-      }
-
-      .date.size-large {
-        font-size: var(--ha-font-size-xl);
-      }
+    .date.size-large {
+      font-size: var(--ha-font-size-xl);
     }
   `;
 }
