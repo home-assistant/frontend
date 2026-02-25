@@ -74,9 +74,6 @@ const isDateSeparatorPart = (
 ): part is ClockCardSeparatorPart =>
   DATE_SEPARATOR_PARTS.has(part as ClockCardSeparatorPart);
 
-const isDateValuePart = (part: ClockCardDatePart): part is ClockCardValuePart =>
-  !isDateSeparatorPart(part);
-
 /**
  * Returns a reusable formatter for a specific date token.
  */
@@ -159,11 +156,11 @@ export const getClockCardDateConfig = (
 });
 
 /**
- * Checks whether the clock configuration resolves to any visible date parts.
+ * Checks whether the clock configuration resolves to any visible date output.
  */
 export const hasClockCardDate = (
   config?: Pick<ClockCardConfig, "date_format">
-): boolean => getClockCardDateConfig(config).parts.some(isDateValuePart);
+): boolean => getClockCardDateConfig(config).parts.length > 0;
 
 /**
  * Converts normalized date tokens into Intl.DateTimeFormat options.
@@ -186,8 +183,9 @@ export const getClockCardDateTimeFormatOptions = (
 /**
  * Builds the final date string from literal date tokens.
  *
- * Value tokens are localized through Intl.DateTimeFormat. Separator tokens only
- * replace the next automatic space between value tokens.
+ * Value tokens are localized through Intl.DateTimeFormat. Separator tokens are
+ * always rendered literally. When a default space between values is pending,
+ * the separator replaces that space.
  */
 export const formatClockCardDate = (
   date: Date,
@@ -196,12 +194,23 @@ export const formatClockCardDate = (
   timeZone?: string
 ): string => {
   let result = "";
-  let hasValue = false;
-  let nextSeparator = " ";
+  let pendingGap: string | undefined;
 
   dateConfig.parts.forEach((part) => {
     if (isDateSeparatorPart(part)) {
-      nextSeparator = DATE_SEPARATORS[part];
+      const separator = DATE_SEPARATORS[part];
+
+      if (pendingGap === " ") {
+        pendingGap = separator;
+        return;
+      }
+
+      if (pendingGap) {
+        pendingGap += separator;
+        return;
+      }
+
+      result += separator;
       return;
     }
 
@@ -211,10 +220,18 @@ export const formatClockCardDate = (
       return;
     }
 
-    result += hasValue ? `${nextSeparator}${value}` : value;
-    hasValue = true;
-    nextSeparator = " ";
+    if (pendingGap) {
+      result += pendingGap;
+      pendingGap = undefined;
+    }
+
+    result += value;
+    pendingGap = " ";
   });
+
+  if (pendingGap && pendingGap !== " ") {
+    result += pendingGap;
+  }
 
   return result;
 };
