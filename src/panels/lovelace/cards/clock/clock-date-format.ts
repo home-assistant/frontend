@@ -142,9 +142,9 @@ const applyDatePartOption = (
 const normalizeDateParts = (
   parts: ClockCardConfig["date_format"]
 ): ClockCardDatePart[] =>
-  parts
-    ?.filter((part): part is ClockCardDatePart => isClockCardDatePart(part))
-    .slice() || [];
+  parts?.filter(
+    (part): part is ClockCardDatePart => isClockCardDatePart(part)
+  ) || [];
 
 /**
  * Returns a normalized date config from a card configuration object.
