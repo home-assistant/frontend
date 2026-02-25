@@ -18,6 +18,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { canShowPage } from "../common/config/can_show_page";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
@@ -41,7 +42,7 @@ import "../components/search-input-outlined";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
-import type { HassTabsSubpage, PageNavigation } from "./hass-tabs-subpage";
+import type { PageNavigation } from "./hass-tabs-subpage";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
@@ -188,8 +189,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @query("search-input-outlined") private _searchInput!: HTMLElement;
 
-  @query("hass-tabs-subpage") private _tabsSubpage!: HassTabsSubpage;
-
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       f: () => this._searchInput.focus(),
@@ -199,6 +198,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
+
+  private _showTabs = memoizeOne(
+    (tabs: PageNavigation[]): boolean =>
+      tabs.filter((page) => canShowPage(this.hass, page)).length > 1
+  );
 
   private _calcEmptyRowHeight = memoizeOne(
     (narrow: boolean, hasFab: boolean, showTabs: boolean): string => {
@@ -528,7 +532,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   "--data-table-empty-row-height": this._calcEmptyRowHeight(
                     this.narrow,
                     this.hasFab,
-                    this._tabsSubpage?.showTabs ?? false
+                    this._showTabs(this.tabs)
                   ),
                 })}
               >
