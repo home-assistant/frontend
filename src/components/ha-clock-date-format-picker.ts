@@ -321,7 +321,7 @@ export class HaClockDateFormatPicker extends LitElement {
         const item = section.items.find((candidate) => candidate.id === value);
 
         if (item) {
-          return item.primary;
+          return `${item.primary} [${section.title}]`;
         }
       }
 
