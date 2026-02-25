@@ -45,16 +45,6 @@ export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 // All collection keys created this session
 const energyCollectionKeys = new Set<string | undefined>();
 
-// Create an energy collection key.
-// This will add the required prefix if not already present.
-export function createEnergyCollectionKey(key: string): string {
-  if (!key.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
-    // No collection key prefix, so add prefix.
-    key = ENERGY_COLLECTION_KEY_PREFIX + key;
-  }
-  return key;
-}
-
 // Validate that a string is a valid energy collection key.
 export function validateEnergyCollectionKey(key: string | undefined) {
   if (!key?.startsWith(ENERGY_COLLECTION_KEY_PREFIX)) {
@@ -764,7 +754,7 @@ const convertCollectionKeyToConnection = (
     validateEnergyCollectionKey(collectionKey);
     key = `_${collectionKey}`;
   } else {
-    const defaultKey = createEnergyCollectionKey(hass.panelUrl);
+    const defaultKey = ENERGY_COLLECTION_KEY_PREFIX + hass.panelUrl;
     if (defaultKey) {
       key = `_${defaultKey}`;
       collectionKey = defaultKey;
@@ -778,8 +768,10 @@ const findEnergyDataCollection = (
   collectionKey: string | undefined
 ): EnergyCollection | undefined => {
   // Lookup the connection key and default key name
-  let key;
-  [key, collectionKey] = convertCollectionKeyToConnection(hass, collectionKey);
+  const [key, _collectionKey] = convertCollectionKeyToConnection(
+    hass,
+    collectionKey
+  );
   return (hass.connection as any)[key];
 };
 

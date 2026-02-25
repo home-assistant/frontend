@@ -25,7 +25,6 @@ import type {
 } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { createEnergyCollectionKey } from "../../../../data/energy";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -132,13 +131,7 @@ export class HuiEnergyDevicesCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = { ...ev.detail.value };
-    if (config.collection_key && !this._config?.collection_key?.length) {
-      // If a key has been populated, and the old value was empty or missing,
-      // then automatically add the collection key prefix if not present.
-      config.collection_key = createEnergyCollectionKey(config.collection_key);
-    }
-    fireEvent(this, "config-changed", { config: config });
+    fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
   private _computeHelperCallback = (schema) => {
