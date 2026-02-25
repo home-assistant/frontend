@@ -461,7 +461,8 @@ export type ClockCardDatePart =
   | "year-numeric"
   | "separator-dash"
   | "separator-slash"
-  | "separator-dot";
+  | "separator-dot"
+  | "separator-new-line";
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;

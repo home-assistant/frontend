@@ -74,6 +74,10 @@ describe("clock-date-format", () => {
     assert.equal(hasClockCardDate(), false);
     assert.equal(hasClockCardDate({ date_format: [] }), false);
     assert.equal(hasClockCardDate({ date_format: ["separator-dot"] }), false);
+    assert.equal(
+      hasClockCardDate({ date_format: ["separator-new-line"] }),
+      false
+    );
     assert.equal(hasClockCardDate({ date_format: ["weekday-short"] }), true);
   });
 
@@ -131,6 +135,24 @@ describe("clock-date-format", () => {
     );
 
     assert.equal(result, "11/08/24");
+  });
+
+  it("supports inserting a new line between date values", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: [
+          "month-numeric",
+          "separator-new-line",
+          "day-2-digit",
+          "year-numeric",
+        ],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "11\n08 2024");
   });
 
   it("allows multiple variants for the same date part", () => {

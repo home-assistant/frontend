@@ -143,7 +143,11 @@ export class HuiClockCardDigital extends LitElement {
           : nothing}
       </div>
       ${showDate
-        ? html`<div class="date ${sizeClass}">${this._date}</div>`
+        ? html`<div class="date ${sizeClass}">
+            ${this._date
+              ?.split("\n")
+              .map((line, index) => (index > 0 ? html`<br />${line}` : line))}
+          </div>`
         : nothing}
     `;
   }

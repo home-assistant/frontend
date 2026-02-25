@@ -292,7 +292,11 @@ export class HuiClockCardAnalog extends LitElement {
                   "long-date": isLongDate,
                 })}
               >
-                ${this._date}
+                ${this._date
+                  ?.split("\n")
+                  .map((line, index) =>
+                    index > 0 ? html`<br />${line}` : line
+                  )}
               </div>`
             : nothing}
 

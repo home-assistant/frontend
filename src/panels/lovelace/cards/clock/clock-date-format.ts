@@ -2,7 +2,7 @@ import type { ClockCardConfig, ClockCardDatePart } from "../types";
 
 type ClockCardSeparatorPart = Extract<
   ClockCardDatePart,
-  "separator-dash" | "separator-slash" | "separator-dot"
+  "separator-dash" | "separator-slash" | "separator-dot" | "separator-new-line"
 >;
 
 type ClockCardValuePart = Exclude<ClockCardDatePart, ClockCardSeparatorPart>;
@@ -31,6 +31,7 @@ export const CLOCK_CARD_DATE_PARTS: readonly ClockCardDatePart[] = [
   "separator-dash",
   "separator-slash",
   "separator-dot",
+  "separator-new-line",
 ];
 
 const DATE_PART_OPTIONS: Record<
@@ -53,12 +54,14 @@ const DATE_SEPARATORS: Record<ClockCardSeparatorPart, string> = {
   "separator-dash": "-",
   "separator-slash": "/",
   "separator-dot": ".",
+  "separator-new-line": "\n",
 };
 
 const DATE_SEPARATOR_PARTS = new Set<ClockCardSeparatorPart>([
   "separator-dash",
   "separator-slash",
   "separator-dot",
+  "separator-new-line",
 ]);
 
 const DATE_PART_FORMATTERS = new Map<string, Intl.DateTimeFormat>();
