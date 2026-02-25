@@ -528,7 +528,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   "--data-table-empty-row-height": this._calcEmptyRowHeight(
                     this.narrow,
                     this.hasFab,
-                    this._tabsSubpage.showTabs
+                    this._tabsSubpage?.showTabs ?? false
                   ),
                 })}
               >
