@@ -144,7 +144,7 @@ export const computePanels = memoizeOne(
       if (
         !isDefaultPanel &&
         (!panel.title ||
-          !panel.show_in_sidebar ||
+          panel.show_in_sidebar === false ||
           hiddenPanels.includes(panel.url_path) ||
           (panel.default_visible === false &&
             !panelsOrder.includes(panel.url_path)))
