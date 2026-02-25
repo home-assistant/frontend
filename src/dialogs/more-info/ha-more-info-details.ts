@@ -43,6 +43,7 @@ class HaMoreInfoDetails extends LitElement {
     const builtInAttributes = Object.keys(this._stateObj.attributes).filter(
       (attribute) => !detailsAttributeSet.has(attribute)
     );
+    const allAttributes = [...detailsAttributes, ...builtInAttributes];
 
     return html`
       <div class="content">
@@ -81,16 +82,7 @@ class HaMoreInfoDetails extends LitElement {
           <ha-card>
             <div class="card-content">
               <div class="attribute-group">
-                ${this._renderAttributes(detailsAttributes)}
-              </div>
-
-              <div class="subsection">
-                <h3 class="subsection-title">
-                  ${this.hass.localize("ui.dialogs.more_info_control.built_in")}
-                </h3>
-                <div class="attribute-group">
-                  ${this._renderAttributes(builtInAttributes)}
-                </div>
+                ${this._renderAttributes(allAttributes)}
               </div>
             </div>
           </ha-card>
@@ -157,17 +149,6 @@ class HaMoreInfoDetails extends LitElement {
 
     .card-content {
       padding: var(--ha-space-2) var(--ha-space-4);
-    }
-
-    .subsection {
-      margin-top: var(--ha-space-4);
-    }
-
-    .subsection-title {
-      margin: 0 0 var(--ha-space-2);
-      font-size: var(--ha-font-size-s);
-      font-weight: var(--ha-font-weight-medium);
-      color: inherit;
     }
 
     .data-entry {
