@@ -128,52 +128,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 `
           }
         </div>
-        ${
-          this._params.mode === "storage"
-            ? html`
-                <ha-dialog-footer slot="footer">
-                  <ha-button
-                    slot="secondaryAction"
-                    appearance="plain"
-                    @click=${this.closeDialog}
-                  >
-                    ${this.hass!.localize("ui.common.cancel")}
-                  </ha-button>
-                  <ha-button
-                    slot="primaryAction"
-                    @click=${this._saveConfig}
-                    .loading=${this._saving}
-                  >
-                    ${this.hass!.localize(
-                      "ui.panel.lovelace.editor.save_config.save"
-                    )}
-                  </ha-button>
-                </ha-dialog-footer>
-              `
-            : html`
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.yaml_mode"
-                  )}
-                </p>
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.yaml_control"
-                  )}
-                </p>
-                <p>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.save_config.yaml_config"
-                  )}
-                </p>
-                <ha-yaml-editor
-                  .hass=${this.hass}
-                  .defaultValue=${this._params!.lovelace.config}
-                  autofocus
-                ></ha-yaml-editor>
-              `
-        }
-        </div>
+
         ${
           this._params.mode === "storage"
             ? html`
