@@ -14,7 +14,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {

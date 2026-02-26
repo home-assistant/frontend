@@ -40,9 +40,6 @@ export const rowStyles = css`
   .warning ul {
     margin: 4px 0;
   }
-  ha-md-menu-item > ha-svg-icon {
-    --mdc-icon-size: 24px;
-  }
   ha-tooltip {
     cursor: default;
   }
@@ -271,8 +268,5 @@ export const overflowStyles = css`
     .shortcut-placeholder {
       display: none;
     }
-  }
-  ha-md-menu-item {
-    --mdc-icon-size: 24px;
   }
 `;

@@ -1,12 +1,15 @@
-import { mdiBatteryHigh } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
-import type { BatterySourceTypeEnergyPreference } from "../../../../data/energy";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
+import type {
+  BatterySourceTypeEnergyPreference,
+  PowerConfig,
+} from "../../../../data/energy";
 import {
   emptyBatteryEnergyPreference,
   energyStatisticHelpUrl,
@@ -14,11 +17,18 @@ import {
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import "./ha-energy-power-config";
+import {
+  buildPowerExcludeList,
+  getInitialPowerConfig,
+  getPowerTypeFromConfig,
+  type HaEnergyPowerConfig,
+  type PowerType,
+} from "./ha-energy-power-config";
 import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
-const powerUnitClasses = ["power"];
 
 @customElement("dialog-energy-battery-settings")
 export class DialogEnergyBatterySettings
@@ -29,11 +39,15 @@ export class DialogEnergyBatterySettings
 
   @state() private _params?: EnergySettingsBatteryDialogParams;
 
+  @state() private _open = false;
+
   @state() private _source?: BatterySourceTypeEnergyPreference;
 
-  @state() private _energy_units?: string[];
+  @state() private _powerType: PowerType = "none";
 
-  @state() private _power_units?: string[];
+  @state() private _powerConfig: PowerConfig = {};
+
+  @state() private _energy_units?: string[];
 
   @state() private _error?: string;
 
@@ -48,12 +62,22 @@ export class DialogEnergyBatterySettings
     this._source = params.source
       ? { ...params.source }
       : emptyBatteryEnergyPreference();
+
+    // Initialize power type and config from existing source
+    this._powerType = getPowerTypeFromConfig(
+      params.source?.power_config,
+      params.source?.stat_rate
+    );
+    this._powerConfig = getInitialPowerConfig(
+      params.source?.power_config,
+      params.source?.stat_rate
+    );
+
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
-    this._power_units = (
-      await getSensorDeviceClassConvertibleUnits(this.hass, "power")
-    ).units;
+
+    // Build energy exclude list
     const allSources: string[] = [];
     this._params.battery_sources.forEach((entry) => {
       allSources.push(entry.stat_energy_from);
@@ -64,18 +88,31 @@ export class DialogEnergyBatterySettings
         id !== this._source?.stat_energy_from &&
         id !== this._source?.stat_energy_to
     );
-    this._excludeListPower = this._params.battery_sources
-      .map((entry) => entry.stat_rate)
-      .filter((id) => id && id !== this._source?.stat_rate) as string[];
+
+    // Build power exclude list using shared helper
+    this._excludeListPower = buildPowerExcludeList(
+      this._params.battery_sources,
+      this._powerConfig,
+      params.source?.stat_rate
+    );
+
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     this._source = undefined;
+    this._powerType = "none";
+    this._powerConfig = {};
     this._error = undefined;
     this._excludeList = undefined;
+    this._excludeListPower = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -85,15 +122,15 @@ export class DialogEnergyBatterySettings
 
     return html`
       <ha-dialog
-        open
-        .heading=${html`<ha-svg-icon
-            .path=${mdiBatteryHigh}
-            style="--mdc-icon-size: 32px;"
-          ></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.battery.dialog.header")}`}
-        @closed=${this.closeDialog}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.energy.battery.dialog.header"
+        )}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
-        ${this._error ? html`<p class="error">${this._error}</p>` : ""}
+        ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -112,7 +149,7 @@ export class DialogEnergyBatterySettings
             "ui.panel.config.energy.battery.dialog.energy_helper_into",
             { unit: this._energy_units?.join(", ") || "" }
           )}
-          dialogInitialFocus
+          autofocus
         ></ha-statistic-picker>
 
         <ha-statistic-picker
@@ -134,55 +171,81 @@ export class DialogEnergyBatterySettings
           )}
         ></ha-statistic-picker>
 
-        <ha-statistic-picker
+        <ha-energy-power-config
           .hass=${this.hass}
-          .includeUnitClass=${powerUnitClasses}
-          .value=${this._source.stat_rate}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.power"
-          )}
-          .excludeStatistics=${this._excludeListPower}
-          @value-changed=${this._powerChanged}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.power_helper",
-            { unit: this._power_units?.join(", ") || "" }
-          )}
-        ></ha-statistic-picker>
+          .powerType=${this._powerType}
+          .powerConfig=${this._powerConfig}
+          .excludeList=${this._excludeListPower}
+          .localizeBaseKey=${"ui.panel.config.energy.battery.dialog"}
+          @power-config-changed=${this._handlePowerConfigChanged}
+        ></ha-energy-power-config>
 
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          @click=${this._save}
-          .disabled=${!this._source.stat_energy_from ||
-          !this._source.stat_energy_to}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            slot="secondaryAction"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._save}
+            .disabled=${!this._isValid()}
+            slot="primaryAction"
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
-  private _statisticToChanged(ev: CustomEvent<{ value: string }>) {
+  private _isValid(): boolean {
+    // Energy fields are always required
+    if (!this._source?.stat_energy_from || !this._source?.stat_energy_to) {
+      return false;
+    }
+
+    // Check power config validity
+    const powerConfigEl = this.shadowRoot?.querySelector(
+      "ha-energy-power-config"
+    ) as HaEnergyPowerConfig | null;
+    if (powerConfigEl && !powerConfigEl.isValid()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private _statisticToChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_to: ev.detail.value };
   }
 
-  private _statisticFromChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticFromChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
   }
 
-  private _powerChanged(ev: CustomEvent<{ value: string }>) {
-    this._source = { ...this._source!, stat_rate: ev.detail.value };
+  private _handlePowerConfigChanged(
+    ev: CustomEvent<{ powerType: PowerType; powerConfig: PowerConfig }>
+  ) {
+    this._powerType = ev.detail.powerType;
+    this._powerConfig = ev.detail.powerConfig;
   }
 
   private async _save() {
     try {
-      await this._params!.saveCallback(this._source!);
+      const source: BatterySourceTypeEnergyPreference = {
+        type: "battery",
+        stat_energy_from: this._source!.stat_energy_from,
+        stat_energy_to: this._source!.stat_energy_to,
+      };
+
+      // Only include power_config if a power type is selected
+      if (this._powerType !== "none") {
+        source.power_config = { ...this._powerConfig };
+      }
+
+      await this._params!.saveCallback(source);
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
@@ -194,9 +257,6 @@ export class DialogEnergyBatterySettings
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 430px;
-        }
         ha-statistic-picker {
           display: block;
           margin-bottom: var(--ha-space-4);

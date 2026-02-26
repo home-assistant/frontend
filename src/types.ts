@@ -37,7 +37,6 @@ declare global {
   var __VERSION__: string;
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
-  var __SUPERVISOR__: boolean;
   var __HASS_URL__: string;
   /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -142,6 +141,8 @@ export interface PanelInfo<T = Record<string, any> | null> {
   url_path: string;
   config_panel_domain?: string;
   default_visible?: boolean;
+  require_admin?: boolean;
+  show_in_sidebar?: boolean;
 }
 
 export type Panels = Record<string, PanelInfo>;
@@ -204,6 +205,11 @@ export interface Context {
   id: string;
   parent_id?: string;
   user_id?: string | null;
+}
+
+export interface ValuePart {
+  type: "value" | "literal" | "unit";
+  value: string;
 }
 
 export interface ServiceCallResponse<T = any> {
@@ -288,11 +294,17 @@ export interface HomeAssistant {
   ): Promise<LocalizeFunc>;
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
   formatEntityState(stateObj: HassEntity, state?: string): string;
+  formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
     stateObj: HassEntity,
     attribute: string,
     value?: any
   ): string;
+  formatEntityAttributeValueToParts(
+    stateObj: HassEntity,
+    attribute: string,
+    value?: any
+  ): ValuePart[];
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,

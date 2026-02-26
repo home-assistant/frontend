@@ -332,7 +332,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .maxYAxis=${this._config.max_y_axis}
             .startTime=${this._energyStart}
             .endTime=${this._energyEnd && this._energyStart
-              ? getSuggestedMax(this._period!, this._energyEnd)
+              ? getSuggestedMax(
+                  this._period!,
+                  this._energyEnd,
+                  (this._config.chart_type ?? "line") === "line"
+                )
               : undefined}
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
@@ -426,7 +430,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       padding-bottom: 0;
     }
     .card-header ha-icon-next {
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
       line-height: 24px;
       color: var(--primary-text-color);
     }

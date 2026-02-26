@@ -18,21 +18,26 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HaEntityPickerEntityFilterFunc } from "../../../../data/entity/entity";
 import type { HomeAssistant } from "../../../../types";
 import type { DistributionCardConfig } from "../../cards/types";
-import type { EntityConfig } from "../../entity-rows/types";
 import "../../components/hui-entity-editor";
+import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { entitiesConfigStruct } from "../structs/entities-struct";
+import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+
+const distributionEntityConfigStruct = object({
+  entity: string(),
+  name: optional(entityNameStruct),
+  color: optional(string()),
+});
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     title: optional(string()),
-    theme: optional(string()),
-    entities: array(union([string(), entitiesConfigStruct])),
+    entities: array(union([string(), distributionEntityConfigStruct])),
   })
 );
 
@@ -45,12 +50,13 @@ const SUB_SCHEMA = [
       entity: "entity",
     },
   },
+  {
+    name: "color",
+    selector: { ui_color: {} },
+  },
 ] as const;
 
-const SCHEMA = [
-  { name: "title", selector: { text: {} } },
-  { name: "theme", selector: { theme: {} } },
-] as const;
+const SCHEMA = [{ name: "title", selector: { text: {} } }] as const;
 
 @customElement("hui-distribution-card-editor")
 export class HuiDistributionCardEditor
@@ -196,12 +202,6 @@ export class HuiDistributionCardEditor
       case "title":
         return `${this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.title"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.optional"
-        )})`;
-      case "theme":
-        return `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.theme"
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;

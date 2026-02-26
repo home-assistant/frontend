@@ -26,6 +26,7 @@ import { showCategoryRegistryDetailDialog } from "../panels/config/category/show
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-dropdown";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -174,7 +175,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const categoryId = (ev.currentTarget as any).categoryId;
     const action = ev.detail.item.value;
     switch (action) {
@@ -314,8 +315,12 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         }
         ha-list {
           --mdc-list-item-meta-size: auto;
-          --mdc-list-side-padding-right: 4px;
-          --mdc-icon-button-size: 36px;
+          --mdc-list-side-padding-right: var(--ha-space-1);
+          --mdc-list-side-padding-left: var(--ha-space-4);
+          --ha-icon-button-size: 36px;
+        }
+        ha-list-item {
+          --mdc-list-item-graphic-margin: var(--ha-space-4);
         }
         ha-dropdown-item {
           font-size: var(--ha-font-size-m);

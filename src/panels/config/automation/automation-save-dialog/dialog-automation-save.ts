@@ -17,7 +17,7 @@ import type { SuggestWithAIGenerateTask } from "../../../../components/ha-sugges
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../category/ha-category-picker";
 
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
@@ -33,10 +33,10 @@ import type {
 } from "./show-dialog-automation-save";
 import {
   type MetadataSuggestionResult,
-  SUGGESTION_INCLUDE_ALL,
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
+import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -222,12 +222,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             )
           : nothing}
         ${this._renderOptionalChip(
-          "area",
-          this.hass.localize(
-            "ui.panel.config.automation.editor.dialog.add_area"
-          )
-        )}
-        ${this._renderOptionalChip(
           "category",
           this.hass.localize(
             "ui.panel.config.automation.editor.dialog.add_category"
@@ -237,6 +231,12 @@ class DialogAutomationSave extends LitElement implements HassDialog {
           "labels",
           this.hass.localize(
             "ui.panel.config.automation.editor.dialog.add_labels"
+          )
+        )}
+        ${this._renderOptionalChip(
+          "area",
+          this.hass.localize(
+            "ui.panel.config.automation.editor.dialog.add_area"
           )
         )}
       </ha-chip-set>
@@ -255,7 +255,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -297,7 +297,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -341,10 +341,14 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     }
     return generateMetadataSuggestionTask<AutomationConfig | ScriptConfig>(
       this.hass.connection,
-      this.hass.states,
       this.hass.language,
       this._params.domain,
-      this._params.config
+      this._params.config,
+      await buildEntityMetadataInspirations(
+        this.hass.connection,
+        this.hass.states,
+        this._params.domain
+      )
     );
   };
 
@@ -358,11 +362,12 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     const processed = await processMetadataSuggestion(
       this.hass.connection,
       this._params.domain,
-      result,
-      SUGGESTION_INCLUDE_ALL
+      result
     );
 
-    this._newName = processed.name;
+    if (processed.name) {
+      this._newName = processed.name;
+    }
 
     if (processed.description) {
       this._newDescription = processed.description;
@@ -431,8 +436,9 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
-          --dialog-content-padding: 0 24px 24px 24px;
+        ha-dialog {
+          --dialog-content-padding: 0 var(--ha-space-6) var(--ha-space-6)
+            var(--ha-space-6);
         }
 
         ha-textfield,
@@ -448,15 +454,15 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         ha-labels-picker,
         ha-area-picker,
         ha-chip-set:has(> ha-assist-chip) {
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
         ha-alert {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
 
         ha-suggest-with-ai-button {
-          margin: 8px 16px;
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
       `,
     ];

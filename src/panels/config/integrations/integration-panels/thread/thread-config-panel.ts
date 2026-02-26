@@ -49,6 +49,7 @@ import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 export interface ThreadNetwork {
   name: string;
@@ -74,7 +75,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
 
     return html`
-      <hass-subpage .narrow=${this.narrow} .hass=${this.hass} header="Thread">
+      <hass-subpage
+        .narrow=${this.narrow}
+        .hass=${this.hass}
+        header="Thread"
+        back-path="/config"
+      >
         <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
             .path=${mdiDotsVertical}
@@ -218,7 +224,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   slot="graphic"
                   .src=${brandsUrl({
                     domain: router.brand,
-                    brand: true,
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
@@ -483,7 +488,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleRouterAction(ev: CustomEvent<{ item: { value: string } }>) {
+  private _handleRouterAction(ev: HaDropdownSelectEvent) {
     const network = (ev.currentTarget as any).network as ThreadNetwork;
     const router = (ev.currentTarget as any).router as ThreadRouter;
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;

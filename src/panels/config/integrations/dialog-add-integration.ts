@@ -4,7 +4,6 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -16,10 +15,10 @@ import {
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-list";
 import "../../../components/ha-spinner";
+import "../../../components/ha-dialog";
 import "../../../components/search-input";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
@@ -91,6 +90,8 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _showDiscovered = false;
 
+  @state() private _openedDirectly = false;
+
   @state() private _navigateToResult = false;
 
   @state() private _open = false;
@@ -105,10 +106,19 @@ class AddIntegrationDialog extends LitElement {
     const loadPromise = this._load();
 
     if (params?.domain) {
-      // Just open the config flow dialog, do not show this dialog
+      // If we get here we clicked the button to add an entry for a specific integration
+      // If there is discovery in process, show this dialog to select a new flow
+      // or continue an existing flow.
+      // If no flow in process, just open the config flow dialog directly
       await loadPromise;
-      await this._createFlow(params.domain);
-      return;
+      const flowsInProgress = this._getFlowsInProgressForDomains([
+        params.domain,
+      ]);
+
+      if (!flowsInProgress.length) {
+        await this._createFlow(params.domain);
+        return;
+      }
     }
 
     if (params?.brand === "_discovered") {
@@ -117,10 +127,13 @@ class AddIntegrationDialog extends LitElement {
       this._showDiscovered = true;
     }
 
-    // Only open the dialog if no domain is provided
+    // Only open the dialog if no domain is provided or we need to select a flow
     this._open = true;
     this._pickedBrand =
-      params?.brand === "_discovered" ? undefined : params?.brand;
+      params?.brand === "_discovered"
+        ? undefined
+        : params?.domain || params?.brand;
+    this._openedDirectly = !!(params?.brand || params?.domain);
     this._initialFilter = params?.initialFilter;
     this._navigateToResult = params?.navigateToResult ?? false;
     this._narrow = matchMedia(
@@ -130,12 +143,17 @@ class AddIntegrationDialog extends LitElement {
 
   public closeDialog() {
     this._open = false;
+  }
+
+  private _dialogClosed() {
+    this._open = false;
     this._integrations = undefined;
     this._helpers = undefined;
     this._pickedBrand = undefined;
     this._prevPickedBrand = undefined;
     this._flowsInProgress = undefined;
     this._showDiscovered = false;
+    this._openedDirectly = false;
     this._navigateToResult = false;
     this._filter = undefined;
     this._width = undefined;
@@ -345,7 +363,7 @@ class AddIntegrationDialog extends LitElement {
   }
 
   protected render() {
-    if (!this._open) {
+    if (!this._open && !this._integrations && !this._helpers) {
       return nothing;
     }
     const integrations = this._integrations
@@ -357,18 +375,36 @@ class AddIntegrationDialog extends LitElement {
         findIntegration(this._integrations, this._pickedBrand)
       : undefined;
 
+    const showingBrandView =
+      (this._pickedBrand && (!this._integrations || pickedIntegration)) ||
+      this._showDiscovered;
+
+    const flowsInProgress = showingBrandView
+      ? this._getFlowsForCurrentView(pickedIntegration)
+      : [];
+
+    const headerTitle = showingBrandView
+      ? this._getBrandHeading(pickedIntegration, flowsInProgress)
+      : this.hass.localize("ui.panel.config.integrations.new");
+
     return html`<ha-dialog
-      open
-      @closed=${this.closeDialog}
-      hideActions
-      .heading=${createCloseHeading(
-        this.hass,
-        this.hass.localize("ui.panel.config.integrations.new")
-      )}
+      .hass=${this.hass}
+      .open=${this._open}
+      header-title=${headerTitle}
+      @closed=${this._dialogClosed}
     >
-      ${(this._pickedBrand && (!this._integrations || pickedIntegration)) ||
-      this._showDiscovered
-        ? this._renderBrandView(pickedIntegration)
+      ${showingBrandView
+        ? html`
+            ${!this._openedDirectly
+              ? html`
+                  <ha-icon-button-prev
+                    slot="headerNavigationIcon"
+                    @click=${this._prevClicked}
+                  ></ha-icon-button-prev>
+                `
+              : nothing}
+            ${this._renderBrandView(pickedIntegration, flowsInProgress)}
+          `
         : this._renderAll(integrations)}
     </ha-dialog>`;
   }
@@ -397,51 +433,53 @@ class AddIntegrationDialog extends LitElement {
     return this._getFlowsInProgressForDomains(domains);
   }
 
-  private _renderBrandView(
-    integration: Brand | Integration | undefined
-  ): TemplateResult {
-    const flowsInProgress = this._getFlowsForCurrentView(integration);
-
-    let heading: string;
+  private _getBrandHeading(
+    integration: Brand | Integration | undefined,
+    flowsInProgress: DataEntryFlowProgress[]
+  ): string {
     if (
       integration?.iot_standards &&
       !("integrations" in integration) &&
       !flowsInProgress.length
     ) {
-      heading = this.hass.localize(
+      return this.hass.localize(
         "ui.panel.config.integrations.what_device_type"
       );
-    } else if (
+    }
+
+    if (
       integration &&
       !integration?.iot_standards &&
       !("integrations" in integration) &&
       flowsInProgress.length
     ) {
-      heading = this.hass.localize(
+      return this.hass.localize(
         "ui.panel.config.integrations.confirm_add_discovered"
       );
-    } else {
-      heading = this.hass.localize("ui.panel.config.integrations.what_to_add");
     }
 
-    return html`<div slot="heading">
-        <ha-icon-button-prev @click=${this._prevClicked}></ha-icon-button-prev>
-        <h2 class="mdc-dialog__title">${heading}</h2>
-      </div>
-      <ha-domain-integrations
-        .hass=${this.hass}
-        .domain=${this._pickedBrand}
-        .integration=${integration}
-        .flowsInProgress=${flowsInProgress}
-        .navigateToResult=${this._navigateToResult}
-        style=${styleMap({
-          minWidth: `${this._width}px`,
-          minHeight: `581px`,
-        })}
-        @close-dialog=${this.closeDialog}
-        @supported-by=${this._handleSupportedByEvent}
-        @select-brand=${this._handleSelectBrandEvent}
-      ></ha-domain-integrations>`;
+    return this.hass.localize("ui.panel.config.integrations.what_to_add");
+  }
+
+  private _renderBrandView(
+    integration: Brand | Integration | undefined,
+    flowsInProgress: DataEntryFlowProgress[]
+  ): TemplateResult {
+    return html`<ha-domain-integrations
+      .hass=${this.hass}
+      .domain=${this._pickedBrand}
+      .integration=${integration}
+      .flowsInProgress=${flowsInProgress}
+      .navigateToResult=${this._navigateToResult}
+      .showManageLink=${this._showDiscovered}
+      style=${styleMap({
+        minWidth: `${this._width}px`,
+        minHeight: `581px`,
+      })}
+      @close-dialog=${this.closeDialog}
+      @supported-by=${this._handleSupportedByEvent}
+      @select-brand=${this._handleSelectBrandEvent}
+    ></ha-domain-integrations>`;
   }
 
   private _handleSelectBrandEvent(ev: CustomEvent) {
@@ -498,7 +536,7 @@ class AddIntegrationDialog extends LitElement {
   private _renderAll(integrations?: IntegrationListItem[]): TemplateResult {
     return html`<search-input
         .hass=${this.hass}
-        dialogInitialFocus=${ifDefined(this._narrow ? undefined : "")}
+        ?autofocus=${!this._narrow}
         .filter=${this._filter}
         @value-changed=${this._filterChanged}
         .label=${this.hass.localize(
@@ -507,9 +545,7 @@ class AddIntegrationDialog extends LitElement {
         @keypress=${this._maybeSubmit}
       ></search-input>
       ${integrations
-        ? html`<ha-list
-            dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
-          >
+        ? html`<ha-list ?autofocus=${this._narrow}>
             <lit-virtualizer
               scroller
               tabindex="-1"
@@ -542,7 +578,6 @@ class AddIntegrationDialog extends LitElement {
     }
     return html`
       <ha-integration-list-item
-        brand
         .hass=${this.hass}
         .integration=${integration}
         tabindex="0"
@@ -783,24 +818,15 @@ class AddIntegrationDialog extends LitElement {
     haStyleScrollbar,
     haStyleDialog,
     css`
-      @media all and (min-width: 550px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 500px;
-        }
-      }
       ha-dialog {
         --dialog-content-padding: 0;
       }
       search-input {
         display: block;
-        margin: 16px 16px 0;
+        margin: 0 16px;
       }
       .divider {
         border-bottom-color: var(--divider-color);
-      }
-      h2 {
-        padding-inline-end: 66px;
-        direction: var(--direction);
       }
       p {
         text-align: center;
@@ -826,42 +852,6 @@ class AddIntegrationDialog extends LitElement {
       }
       ha-integration-list-item {
         width: 100%;
-      }
-      ha-icon-button-prev {
-        color: var(--secondary-text-color);
-        position: absolute;
-        left: 16px;
-        top: 14px;
-        inset-inline-end: initial;
-        inset-inline-start: 16px;
-        direction: var(--direction);
-      }
-      .mdc-dialog__title {
-        margin: 0;
-        margin-bottom: 8px;
-        margin-left: 48px;
-        margin-inline-start: 48px;
-        margin-inline-end: initial;
-        padding: 24px 24px 0 24px;
-        color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
-        font-size: var(
-          --mdc-typography-headline6-font-size,
-          var(--ha-font-size-l)
-        );
-        line-height: var(--mdc-typography-headline6-line-height, 2rem);
-        font-weight: var(
-          --mdc-typography-headline6-font-weight,
-          var(--ha-font-weight-medium)
-        );
-        letter-spacing: var(
-          --mdc-typography-headline6-letter-spacing,
-          0.0125em
-        );
-        text-decoration: var(
-          --mdc-typography-headline6-text-decoration,
-          inherit
-        );
-        text-transform: var(--mdc-typography-headline6-text-transform, inherit);
       }
     `,
   ];

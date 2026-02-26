@@ -12,7 +12,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     strategy:
       matrix:
-        bundle: [frontend, supervisor]
+        bundle: [frontend]
         build: [modern, legacy]
     runs-on: ubuntu-latest
     steps:

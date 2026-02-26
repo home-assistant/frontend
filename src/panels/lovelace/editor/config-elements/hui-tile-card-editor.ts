@@ -30,6 +30,7 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
 import type { TileCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -189,6 +190,7 @@ export class HuiTileCardEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "icon_tap_action",
@@ -199,6 +201,7 @@ export class HuiTileCardEditor
                     : "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -218,6 +221,7 @@ export class HuiTileCardEditor
                     default_action: "none" as const,
                   },
                 },
+                context: ACTION_RELATED_CONTEXT,
               })),
             },
           ],

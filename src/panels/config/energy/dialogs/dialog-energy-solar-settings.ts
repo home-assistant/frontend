@@ -1,4 +1,4 @@
-import { mdiPlus, mdiSolarPower } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,11 +6,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { getConfigEntries } from "../../../../data/config_entries";
@@ -23,7 +24,7 @@ import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
 
@@ -38,6 +39,8 @@ export class DialogEnergySolarSettings
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: EnergySettingsSolarDialogParams;
+
+  @state() private _open = false;
 
   @state() private _source?: SolarSourceTypeEnergyPreference;
 
@@ -76,15 +79,21 @@ export class DialogEnergySolarSettings
     this._excludeListPower = this._params.solar_sources
       .map((entry) => entry.stat_rate)
       .filter((id) => id && id !== this._source?.stat_rate) as string[];
+
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
     this._params = undefined;
     this._source = undefined;
     this._error = undefined;
     this._excludeList = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -94,13 +103,13 @@ export class DialogEnergySolarSettings
 
     return html`
       <ha-dialog
-        open
-        .heading=${html`<ha-svg-icon
-            .path=${mdiSolarPower}
-            style="--mdc-icon-size: 32px;"
-          ></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.solar.dialog.header")}`}
-        @closed=${this.closeDialog}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.energy.solar.dialog.header"
+        )}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
@@ -118,7 +127,7 @@ export class DialogEnergySolarSettings
             "ui.panel.config.energy.solar.dialog.entity_para",
             { unit: this._energy_units?.join(", ") || "" }
           )}
-          dialogInitialFocus
+          autofocus
         ></ha-statistic-picker>
 
         <ha-statistic-picker
@@ -215,20 +224,22 @@ export class DialogEnergySolarSettings
             </div>`
           : ""}
 
-        <ha-button
-          appearance="plain"
-          @click=${this.closeDialog}
-          slot="secondaryAction"
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          @click=${this._save}
-          .disabled=${!this._source.stat_energy_from}
-          slot="primaryAction"
-        >
-          ${this.hass.localize("ui.common.save")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            slot="secondaryAction"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            @click=${this._save}
+            .disabled=${!this._source.stat_energy_from}
+            slot="primaryAction"
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -285,11 +296,11 @@ export class DialogEnergySolarSettings
     });
   }
 
-  private _statisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _statisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
   }
 
-  private _powerStatisticChanged(ev: CustomEvent<{ value: string }>) {
+  private _powerStatisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_rate: ev.detail.value };
   }
 
@@ -310,9 +321,6 @@ export class DialogEnergySolarSettings
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-max-width: 430px;
-        }
         ha-statistic-picker {
           display: block;
           margin-bottom: var(--ha-space-4);

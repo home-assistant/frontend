@@ -13,6 +13,7 @@ import type { HomeAssistant } from "../../types";
 const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
   addon: () => import("./ha-selector-addon"),
+  app: () => import("./ha-selector-app"),
   area: () => import("./ha-selector-area"),
   areas_display: () => import("./ha-selector-areas-display"),
   attribute: () => import("./ha-selector-attribute"),
@@ -52,6 +53,7 @@ const LOAD_ELEMENTS = {
   icon: () => import("./ha-selector-icon"),
   media: () => import("./ha-selector-media"),
   theme: () => import("./ha-selector-theme"),
+  timezone: () => import("./ha-selector-timezone"),
   button_toggle: () => import("./ha-selector-button-toggle"),
   trigger: () => import("./ha-selector-trigger"),
   tts: () => import("./ha-selector-tts"),

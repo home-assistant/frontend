@@ -65,6 +65,17 @@ class HuiEnergyDistrubutionCard
     ];
   }
 
+  private get _energyDashboardHref(): string {
+    const params = new URLSearchParams({
+      historyBack: "1",
+    });
+    const backPath = window.location.pathname;
+    if (backPath) {
+      params.append("backPath", backPath);
+    }
+    return `/energy?${params.toString()}`;
+  }
+
   public getCardSize(): Promise<number> | number {
     return 3;
   }
@@ -101,12 +112,13 @@ class HuiEnergyDistrubutionCard
     const types = energySourcesByType(prefs);
 
     const hasGrid =
-      !!types.grid?.[0].flow_from.length || !!types.grid?.[0].flow_to.length;
+      !!types.grid?.[0] &&
+      (!!types.grid[0].stat_energy_from || !!types.grid[0].stat_energy_to);
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
-    const hasReturnToGrid = !!types.grid?.[0].flow_to.length;
+    const hasReturnToGrid = !!types.grid?.[0] && !!types.grid[0].stat_energy_to;
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
     const { consumption, compareConsumption: __ } = computeConsumptionData(
@@ -287,7 +299,7 @@ class HuiEnergyDistrubutionCard
                         class="circle"
                         href=${electricityMapUrl}
                         target="_blank"
-                        rel="noopener no referrer"
+                        rel="noopener noreferrer"
                       >
                         <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
                         ${formatConsumptionShort(
@@ -527,9 +539,7 @@ class HuiEnergyDistrubutionCard
               ${hasGas && hasWater
                 ? ""
                 : html`<span class="label"
-                    >${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.energy_distribution.home"
-                    )}</span
+                    >${this.hass.config.location_name}</span
                   >`}
             </div>
           </div>
@@ -786,10 +796,14 @@ class HuiEnergyDistrubutionCard
             </svg>
           </div>
         </div>
-        ${this._config.link_dashboard
+        ${this._config.link_dashboard && this.hass.panels.energy
           ? html`
               <div class="card-actions">
-                <ha-button appearance="plain" size="small" href="/energy">
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  href=${this._energyDashboardHref}
+                >
                   ${this.hass.localize(
                     "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
                   )}

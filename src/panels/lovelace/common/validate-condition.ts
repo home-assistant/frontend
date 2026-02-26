@@ -105,6 +105,11 @@ function checkStateCondition(
       : UNKNOWN;
   let value = condition.state ?? condition.state_not;
 
+  // Guard against invalid/incomplete condition configuration
+  if (value === undefined) {
+    return false;
+  }
+
   // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
   if (Array.isArray(value)) {
     const entityValues = value

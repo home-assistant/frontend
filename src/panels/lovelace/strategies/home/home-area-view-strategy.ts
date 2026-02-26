@@ -27,6 +27,7 @@ import {
 export interface HomeAreaViewStrategyConfig {
   type: "home-area";
   area?: string;
+  home_panel?: boolean;
 }
 
 @customElement("home-area-view-strategy")
@@ -101,10 +102,12 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             type: "heading",
             heading: getSummaryLabel(hass.localize, "light"),
             icon: HOME_SUMMARIES_ICONS.light,
-            tap_action: {
-              action: "navigate",
-              navigation_path: "/light?historyBack=1",
-            },
+            tap_action: hass.panels.light
+              ? {
+                  action: "navigate",
+                  navigation_path: "/light?historyBack=1",
+                }
+              : undefined,
           } satisfies HeadingCardConfig,
           ...light.map(computeTileCard),
         ],
@@ -119,10 +122,12 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             type: "heading",
             heading: getSummaryLabel(hass.localize, "climate"),
             icon: HOME_SUMMARIES_ICONS.climate,
-            tap_action: {
-              action: "navigate",
-              navigation_path: "/climate?historyBack=1",
-            },
+            tap_action: hass.panels.climate
+              ? {
+                  action: "navigate",
+                  navigation_path: "/climate?historyBack=1",
+                }
+              : undefined,
           } satisfies HeadingCardConfig,
           ...climate.map(computeTileCard),
         ],
@@ -137,10 +142,12 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             type: "heading",
             heading: getSummaryLabel(hass.localize, "security"),
             icon: HOME_SUMMARIES_ICONS.security,
-            tap_action: {
-              action: "navigate",
-              navigation_path: "/security?historyBack=1",
-            },
+            tap_action: hass.panels.security
+              ? {
+                  action: "navigate",
+                  navigation_path: "/security?historyBack=1",
+                }
+              : undefined,
           } satisfies HeadingCardConfig,
           ...security.map(computeTileCard),
         ],
@@ -252,11 +259,6 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       device_class: "battery",
     });
 
-    const energyFilter = generateEntityFilter(hass, {
-      domain: "sensor",
-      device_class: ["energy", "power"],
-    });
-
     const primaryFilter = generateEntityFilter(hass, {
       entity_category: "none",
     });
@@ -268,7 +270,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         batteryFilter(e)
       );
       const entities = deviceEntities.entities.filter(
-        (e) => !batteryFilter(e) && !energyFilter(e) && primaryFilter(e)
+        (e) => !batteryFilter(e) && primaryFilter(e)
       );
 
       if (entities.length === 0) {
@@ -281,7 +283,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
       if (device) {
         heading =
           computeDeviceName(device) ||
-          hass.localize("ui.panel.lovelace.strategy.home.unamed_device");
+          hass.localize("ui.panel.lovelace.strategy.home.unnamed_device");
       } else {
         heading = hass.localize("ui.panel.lovelace.strategy.home.others");
       }
@@ -364,14 +366,47 @@ export class HomeAreaViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "empty-state",
-            icon: "mdi:sofa-outline",
+            icon: area.icon || "mdi:shape-square-rounded-plus",
+            icon_color: "primary",
             content_only: true,
             title: hass.localize(
-              "ui.panel.lovelace.strategy.areas.empty_state_title"
+              "ui.panel.lovelace.strategy.home-area.no_devices_title"
             ),
             content: hass.localize(
-              "ui.panel.lovelace.strategy.areas.empty_state_content"
+              "ui.panel.lovelace.strategy.home-area.no_devices_content"
             ),
+            ...(config.home_panel && hass.user?.is_admin
+              ? {
+                  buttons: [
+                    {
+                      icon: "mdi:plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home-area.no_devices_add_device"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "add_integration",
+                        },
+                      },
+                    },
+                    {
+                      icon: "mdi:home-plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home-area.no_devices_assign_device"
+                      ),
+                      appearance: "plain",
+                      variant: "brand",
+                      tap_action: {
+                        action: "navigate",
+                        navigation_path: "/home/other-devices",
+                      },
+                    },
+                  ],
+                }
+              : {}),
           } as EmptyStateCardConfig,
         ],
       };

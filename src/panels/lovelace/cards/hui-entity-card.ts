@@ -13,11 +13,6 @@ import {
   stateColorCss,
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import {
-  formatNumber,
-  getNumberFormatOptions,
-  isNumericState,
-} from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-attribute-value";
 import "../../../components/ha-card";
@@ -125,9 +120,31 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
-    const showUnit = this._config.attribute
-      ? this._config.attribute in stateObj.attributes
-      : !isUnavailableState(stateObj.state);
+    const stateParts = this.hass.formatEntityStateToParts(stateObj);
+
+    let unit;
+    if (
+      !isUnavailableState(stateObj.state) &&
+      (this._config.attribute ||
+        stateObj.attributes.device_class !== "duration")
+    ) {
+      unit = this._config.unit;
+      if (!unit) {
+        if (!this._config.attribute) {
+          unit = stateParts.find((part) => part.type === "unit")?.value;
+        } else {
+          const parts = this.hass.formatEntityAttributeValueToParts(
+            stateObj,
+            this._config.attribute
+          );
+          unit = parts.find((part) => part.type === "unit")?.value;
+        }
+      }
+    }
+
+    const indexUnit = stateParts.findIndex((part) => part.type === "unit");
+    const indexValue = stateParts.findIndex((part) => part.type === "value");
+    const reversedOrder = indexUnit !== -1 && indexUnit < indexValue;
 
     const name = computeLovelaceEntityName(
       this.hass,
@@ -177,7 +194,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="info">
-          <span class="value"
+          <span
+            class=${classMap({
+              value: true,
+              "first-part": !reversedOrder,
+            })}
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
                 ? html`<ha-attribute-value
@@ -188,28 +209,16 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   >
                   </ha-attribute-value>`
                 : this.hass.localize("state.default.unknown")
-              : (isNumericState(stateObj) || this._config.unit) &&
-                  stateObj.attributes.device_class !== "duration"
-                ? formatNumber(
-                    stateObj.state,
-                    this.hass.locale,
-                    getNumberFormatOptions(
-                      stateObj,
-                      this.hass.entities[this._config.entity]
-                    )
-                  )
-                : this.hass.formatEntityState(stateObj)}</span
-          >${showUnit
-            ? html`
-                <span class="measurement"
-                  >${this._config.unit ||
-                  (this._config.attribute ||
-                  stateObj.attributes.device_class === "duration"
-                    ? ""
-                    : stateObj.attributes.unit_of_measurement)}</span
-                >
-              `
-            : ""}
+              : stateParts.find((part) => part.type === "value")?.value}</span
+          >${unit
+            ? html`<span
+                class=${classMap({
+                  measurement: true,
+                  "first-part": reversedOrder,
+                })}
+                >${unit}</span
+              >`
+            : nothing}
         </div>
         <div
           class="footer"
@@ -328,24 +337,33 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .info {
+          display: flex;
+          align-items: baseline;
           padding: 0px 16px 16px;
           margin-top: -4px;
+          line-height: var(--ha-line-height-condensed);
+        }
+
+        .info > * {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: var(--ha-line-height-condensed);
         }
 
         .value {
           font-size: var(--ha-font-size-3xl);
-          margin-right: 4px;
-          margin-inline-end: 4px;
-          margin-inline-start: initial;
         }
 
         .measurement {
           font-size: var(--ha-font-size-l);
           color: var(--secondary-text-color);
+        }
+
+        .first-part {
+          order: -1; /* ? */
+          margin-right: 4px;
+          margin-inline-end: 4px;
+          margin-inline-start: initial;
         }
 
         .with-fixed-footer {

@@ -1,4 +1,4 @@
-import { mdiChevronLeft, mdiClose, mdiMenuDown } from "@mdi/js";
+import { mdiChevronLeft, mdiMenuDown } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,8 +8,10 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../common/language/format_language";
 import "../../components/chips/ha-assist-chip";
 import "../../components/ha-dialog";
+import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import { getLanguageOptions } from "../../components/ha-language-picker";
-import "../../components/ha-md-button-menu";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { getLanguageScores } from "../../data/conversation";
@@ -47,6 +49,8 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
 
   @state() private _params?: VoiceAssistantSetupDialogParams;
 
+  @state() private _open = false;
+
   @state() private _step: STEP = STEP.INIT;
 
   @state() private _assistConfiguration?: AssistSatelliteConfiguration;
@@ -67,14 +71,15 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     params: VoiceAssistantSetupDialogParams
   ): Promise<void> {
     this._params = params;
+    this._open = true;
 
     await this._fetchAssistConfiguration();
 
     this._step = STEP.UPDATE;
   }
 
-  public async closeDialog(): Promise<void> {
-    this.renderRoot.querySelector("ha-dialog")?.close();
+  public closeDialog(): void {
+    this._open = false;
   }
 
   protected willUpdate(changedProps) {
@@ -84,6 +89,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
   }
 
   private _dialogClosed() {
+    this._open = false;
     this._params = undefined;
     this._assistConfiguration = undefined;
     this._previousSteps = [];
@@ -131,80 +137,72 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
       ? this.hass.states[assistSatelliteEntityId]
       : undefined;
 
+    const hideNavigationIcon =
+      this._step === STEP.LOCAL ||
+      (this._step === STEP.UPDATE && !this._previousSteps.length);
+
     return html`
       <ha-dialog
-        open
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title="Voice Satellite setup"
+        prevent-scrim-close
         @closed=${this._dialogClosed}
-        .heading=${"Voice Satellite setup"}
-        hideActions
-        escapeKeyAction
-        scrimClickAction
       >
-        <ha-dialog-header slot="heading">
-          ${this._step === STEP.LOCAL
-            ? nothing
-            : this._previousSteps.length
-              ? html`<ha-icon-button
-                  slot="navigationIcon"
-                  .label=${this.hass.localize("ui.common.back") ?? "Back"}
-                  .path=${mdiChevronLeft}
-                  @click=${this._goToPreviousStep}
-                ></ha-icon-button>`
-              : this._step !== STEP.UPDATE
-                ? html`<ha-icon-button
-                    slot="navigationIcon"
-                    .label=${this.hass.localize("ui.common.close") ?? "Close"}
-                    .path=${mdiClose}
-                    @click=${this.closeDialog}
-                  ></ha-icon-button>`
-                : nothing}
-          ${this._step === STEP.WAKEWORD || this._step === STEP.AREA
-            ? html`<ha-button
-                @click=${this._goToNextStep}
-                class="skip-btn"
-                slot="actionItems"
-                >${this.hass.localize(
-                  "ui.panel.config.voice_assistants.satellite_wizard.skip"
-                )}</ha-button
-              >`
-            : this._step === STEP.PIPELINE
-              ? this._language
-                ? html`<ha-md-button-menu
-                    slot="actionItems"
-                    positioning="fixed"
-                  >
-                    <ha-assist-chip
-                      .label=${formatLanguageCode(
-                        this._language,
-                        this.hass.locale
-                      )}
-                      slot="trigger"
-                    >
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiMenuDown}
-                      ></ha-svg-icon
-                    ></ha-assist-chip>
-                    ${getLanguageOptions(
-                      this._languages,
-                      false,
-                      false,
+        ${hideNavigationIcon
+          ? html`<span slot="headerNavigationIcon"></span>`
+          : this._previousSteps.length
+            ? html`<ha-icon-button
+                slot="headerNavigationIcon"
+                .label=${this.hass.localize("ui.common.back") ?? "Back"}
+                .path=${mdiChevronLeft}
+                @click=${this._goToPreviousStep}
+              ></ha-icon-button>`
+            : nothing}
+        ${this._step === STEP.WAKEWORD || this._step === STEP.AREA
+          ? html`<ha-button
+              @click=${this._goToNextStep}
+              class="skip-btn"
+              slot="headerActionItems"
+              >${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.skip"
+              )}</ha-button
+            >`
+          : this._step === STEP.PIPELINE
+            ? this._language
+              ? html`<ha-dropdown
+                  slot="headerActionItems"
+                  @wa-select=${this._handlePickLanguage}
+                >
+                  <ha-assist-chip
+                    .label=${formatLanguageCode(
+                      this._language,
                       this.hass.locale
-                    ).map(
-                      (lang) =>
-                        html`<ha-md-menu-item
-                          .value=${lang.id}
-                          @click=${this._handlePickLanguage}
-                          @keydown=${this._handlePickLanguage}
-                          .selected=${this._language === lang.id}
-                        >
-                          ${lang.primary}
-                        </ha-md-menu-item>`
                     )}
-                  </ha-md-button-menu>`
-                : nothing
-              : nothing}
-        </ha-dialog-header>
+                    slot="trigger"
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon
+                  ></ha-assist-chip>
+                  ${getLanguageOptions(
+                    this._languages,
+                    false,
+                    false,
+                    this.hass.locale
+                  ).map(
+                    (lang) =>
+                      html`<ha-dropdown-item
+                        .value=${lang.id}
+                        .selected=${this._language === lang.id}
+                      >
+                        ${lang.primary}
+                      </ha-dropdown-item>`
+                  )}
+                </ha-dropdown>`
+              : nothing
+            : nothing}
         <div
           class="content"
           @next-step=${this._goToNextStep}
@@ -328,10 +326,8 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     }
   }
 
-  private _handlePickLanguage(ev) {
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") return;
-
-    this._language = ev.target.value;
+  private _handlePickLanguage(ev: HaDropdownSelectEvent) {
+    this._language = ev.detail.item.value;
   }
 
   private _languageChanged(ev: CustomEvent) {
@@ -378,17 +374,6 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
         }
-        @media all and (min-width: 450px) and (min-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 560px;
-            --mdc-dialog-max-width: 560px;
-            --mdc-dialog-min-width: min(560px, 95vw);
-            --mdc-dialog-max-width: min(560px, 95vw);
-          }
-        }
-        ha-dialog-header {
-          height: 56px;
-        }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           .content {
             height: calc(100vh - 56px);
@@ -401,7 +386,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
           margin: 24px;
           display: block;
         }
-        ha-md-button-menu {
+        ha-dropdown {
           height: 48px;
           display: flex;
           align-items: center;

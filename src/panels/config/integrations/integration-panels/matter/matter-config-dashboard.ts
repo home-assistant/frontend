@@ -1,31 +1,31 @@
-import { mdiAlertCircle, mdiCheckCircle, mdiPlus } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  mdiAlertCircleOutline,
+  mdiCheck,
+  mdiDevices,
+  mdiPlus,
+  mdiShape,
+  mdiTune,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
-import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
-import type { HomeAssistant } from "../../../../../types";
-import {
-  acceptSharedMatterDevice,
-  canCommissionMatterExternal,
-  commissionMatterDevice,
-  matterSetThread,
-  matterSetWifi,
-  redirectOnNewMatterDevice,
-  startExternalCommissioning,
-} from "../../../../../data/matter";
-import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant } from "../../../../../types";
+
+const THREAD_ICON =
+  "m 17.126982,8.0730792 c 0,-0.7297242 -0.593746,-1.32357 -1.323637,-1.32357 -0.729454,0 -1.323199,0.5938458 -1.323199,1.32357 v 1.3234242 l 1.323199,1.458e-4 c 0.729891,0 1.323637,-0.5937006 1.323637,-1.32357 z M 11.999709,0 C 5.3829818,0 0,5.3838955 0,12.001455 0,18.574352 5.3105455,23.927406 11.865164,24 V 12.012075 l -3.9275642,-2.91e-4 c -1.1669814,0 -2.1169453,0.949979 -2.1169453,2.118323 0,1.16718 0.9499639,2.116868 2.1169453,2.116868 v 2.615717 c -2.6093089,0 -4.732218,-2.12327 -4.732218,-4.732585 0,-2.61048 2.1229091,-4.7343308 4.732218,-4.7343308 l 3.9275642,5.82e-4 v -1.323279 c 0,-2.172296 1.766691,-3.9395777 3.938181,-3.9395777 2.171928,0 3.9392,1.7672817 3.9392,3.9395777 0,2.1721498 -1.767272,3.9395768 -3.9392,3.9395768 l -1.323199,-1.45e-4 V 23.744102 C 19.911127,22.597726 24,17.768833 24,12.001455 24,5.3838955 18.616727,0 11.999709,0 Z";
 
 @customElement("matter-config-dashboard")
 export class MatterConfigDashboard extends LitElement {
@@ -35,15 +35,6 @@ export class MatterConfigDashboard extends LitElement {
 
   @state() private _configEntry?: ConfigEntry;
 
-  @state() private _error?: string;
-
-  private _unsub?: UnsubscribeFunc;
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this._stopRedirect();
-  }
-
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
@@ -51,10 +42,26 @@ export class MatterConfigDashboard extends LitElement {
     }
   }
 
-  private _matterDeviceCount = memoizeOne(
-    (devices: HomeAssistant["devices"]): number =>
-      Object.values(devices).filter((device) =>
-        device.identifiers.some((identifier) => identifier[0] === "matter")
+  private _matterDeviceIds = memoizeOne(
+    (
+      devices: HomeAssistant["devices"],
+      configEntryId?: string
+    ): Set<string> => {
+      if (!configEntryId) {
+        return new Set();
+      }
+      return new Set(
+        Object.values(devices)
+          .filter((device) => device.config_entries.includes(configEntryId))
+          .map((device) => device.id)
+      );
+    }
+  );
+
+  private _entityCount = memoizeOne(
+    (entities: HomeAssistant["entities"], deviceIds: Set<string>): number =>
+      Object.values(entities).filter(
+        (entity) => entity.device_id && deviceIds.has(entity.device_id)
       ).length
   );
 
@@ -63,122 +70,24 @@ export class MatterConfigDashboard extends LitElement {
       return nothing;
     }
     const isOnline = this._configEntry.state === "loaded";
+    const deviceIds = this._matterDeviceIds(
+      this.hass.devices,
+      this._configEntry.entry_id
+    );
+    const entityCount = this._entityCount(this.hass.entities, deviceIds);
+
     return html`
       <hass-subpage
         .narrow=${this.narrow}
         .hass=${this.hass}
         header="Matter"
+        back-path="/config"
         has-fab
       >
-        ${isComponentLoaded(this.hass, "thread")
-          ? html`
-              <ha-button
-                appearance="plain"
-                size="small"
-                href="/config/thread"
-                slot="toolbar-icon"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.matter.panel.thread_panel"
-                )}</ha-button
-              >
-            `
-          : nothing}
         <div class="container">
-          <ha-card class="network-status">
-            <div class="card-content">
-              <div class="heading">
-                <div class="icon">
-                  <ha-svg-icon
-                    .path=${isOnline ? mdiCheckCircle : mdiAlertCircle}
-                    class=${isOnline ? "online" : "offline"}
-                  ></ha-svg-icon>
-                </div>
-                <div class="details">
-                  Matter
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.panel.status_title"
-                  )}:
-                  ${this.hass.localize(
-                    `ui.panel.config.matter.panel.status_${isOnline ? "online" : "offline"}`
-                  )}<br />
-                  <small>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.panel.devices",
-                      { count: this._matterDeviceCount(this.hass.devices) }
-                    )}
-                  </small>
-                </div>
-              </div>
-            </div>
-            <div class="card-actions">
-              <ha-button
-                href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
-                appearance="plain"
-                size="small"
-              >
-                ${this.hass.localize("ui.panel.config.devices.caption")}
-              </ha-button>
-              <ha-button
-                appearance="plain"
-                size="small"
-                href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
-              >
-                ${this.hass.localize("ui.panel.config.entities.caption")}
-              </ha-button>
-            </div>
-          </ha-card>
-          <ha-expansion-panel
-            outlined
-            .header=${this.hass.localize(
-              "ui.panel.config.matter.panel.developer_tools_title"
-            )}
-            .secondary=${this.hass.localize(
-              "ui.panel.config.matter.panel.developer_tools_description"
-            )}
-          >
-            ${this._error
-              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-              : nothing}
-            <div class="dev-tools-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.panel.developer_tools_info"
-                )}
-              </p>
-              <div class="dev-tools-actions">
-                ${canCommissionMatterExternal(this.hass)
-                  ? html`<ha-button
-                      appearance="plain"
-                      @click=${this._startMobileCommissioning}
-                      >${this.hass.localize(
-                        "ui.panel.config.matter.panel.mobile_app_commisioning"
-                      )}</ha-button
-                    >`
-                  : nothing}
-                <ha-button appearance="plain" @click=${this._commission}
-                  >${this.hass.localize(
-                    "ui.panel.config.matter.panel.commission_device"
-                  )}</ha-button
-                >
-                <ha-button appearance="plain" @click=${this._acceptSharedDevice}
-                  >${this.hass.localize(
-                    "ui.panel.config.matter.panel.add_shared_device"
-                  )}</ha-button
-                >
-                <ha-button appearance="plain" @click=${this._setWifi}
-                  >${this.hass.localize(
-                    "ui.panel.config.matter.panel.set_wifi_credentials"
-                  )}</ha-button
-                >
-                <ha-button appearance="plain" @click=${this._setThread}
-                  >${this.hass.localize(
-                    "ui.panel.config.matter.panel.set_thread_credentials"
-                  )}</ha-button
-                >
-              </div>
-            </div>
-          </ha-expansion-panel>
+          ${this._renderNetworkStatus(isOnline, deviceIds.size)}
+          ${this._renderMyNetworkCard(deviceIds.size, entityCount)}
+          ${this._renderNavigationCard()}
         </div>
 
         <a href="/config/matter/add" slot="fab">
@@ -195,147 +104,120 @@ export class MatterConfigDashboard extends LitElement {
     `;
   }
 
-  private _redirectOnNewMatterDevice() {
-    if (this._unsub) {
-      return;
-    }
-    this._unsub = redirectOnNewMatterDevice(this.hass, () => {
-      this._unsub = undefined;
-    });
+  private _renderNetworkStatus(isOnline: boolean, deviceCount: number) {
+    return html`
+      <ha-card class="content network-status">
+        <div class="card-content">
+          <div class="heading">
+            <div class="icon ${isOnline ? "success" : "error"}">
+              <ha-svg-icon
+                .path=${isOnline ? mdiCheck : mdiAlertCircleOutline}
+              ></ha-svg-icon>
+            </div>
+            <div class="details">
+              ${this.hass.localize(
+                `ui.panel.config.matter.panel.status_${isOnline ? "online" : "offline"}`
+              )}<br />
+              <small>
+                ${this.hass.localize("ui.panel.config.matter.panel.devices", {
+                  count: deviceCount,
+                })}
+              </small>
+            </div>
+          </div>
+        </div>
+      </ha-card>
+    `;
   }
 
-  private _stopRedirect() {
-    this._unsub?.();
-    this._unsub = undefined;
+  private _renderMyNetworkCard(deviceCount: number, entityCount: number) {
+    return html`
+      <ha-card class="nav-card">
+        <div class="card-header">
+          ${this.hass.localize("ui.panel.config.matter.panel.my_network_title")}
+        </div>
+        <div class="card-content">
+          <ha-md-list>
+            <ha-md-list-item
+              type="link"
+              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+            >
+              <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.panel.device_count",
+                  { count: deviceCount }
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item
+              type="link"
+              href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+            >
+              <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.panel.entity_count",
+                  { count: entityCount }
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+          </ha-md-list>
+        </div>
+      </ha-card>
+    `;
   }
 
-  private _startMobileCommissioning() {
-    this._redirectOnNewMatterDevice();
-    startExternalCommissioning(this.hass);
-  }
-
-  private async _setWifi(): Promise<void> {
-    this._error = undefined;
-    const networkName = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.network_name.title"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.network_name.input_label"
-      ),
-      inputType: "string",
-      confirmText: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.network_name.confirm"
-      ),
-    });
-    if (!networkName) {
-      return;
-    }
-    const psk = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.passcode.title"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.passcode.input_label"
-      ),
-      inputType: "password",
-      confirmText: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.passcode.confirm"
-      ),
-    });
-    if (!psk) {
-      return;
-    }
-    try {
-      await matterSetWifi(this.hass, networkName, psk);
-    } catch (err: any) {
-      this._error = err.message;
-    }
-  }
-
-  private async _commission(): Promise<void> {
-    const code = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.commission_device.title"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.commission_device.input_label"
-      ),
-      inputType: "string",
-      confirmText: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.commission_device.confirm"
-      ),
-    });
-    if (!code) {
-      return;
-    }
-    this._error = undefined;
-    this._redirectOnNewMatterDevice();
-    try {
-      await commissionMatterDevice(this.hass, code);
-    } catch (err: any) {
-      this._error = err.message;
-      this._stopRedirect();
-    }
-  }
-
-  private async _acceptSharedDevice(): Promise<void> {
-    const code = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.add_shared_device.title"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.add_shared_device.input_label"
-      ),
-      inputType: "number",
-      confirmText: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.add_shared_device.confirm"
-      ),
-    });
-    if (!code) {
-      return;
-    }
-    this._error = undefined;
-    this._redirectOnNewMatterDevice();
-    try {
-      await acceptSharedMatterDevice(this.hass, Number(code));
-    } catch (err: any) {
-      this._error = err.message;
-      this._stopRedirect();
-    }
-  }
-
-  private async _setThread(): Promise<void> {
-    const code = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.set_thread.title"
-      ),
-      inputLabel: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.set_thread.input_label"
-      ),
-      inputType: "string",
-      confirmText: this.hass.localize(
-        "ui.panel.config.matter.panel.prompts.set_thread.confirm"
-      ),
-    });
-    if (!code) {
-      return;
-    }
-    this._error = undefined;
-    try {
-      await matterSetThread(this.hass, code);
-    } catch (err: any) {
-      this._error = err.message;
-    }
+  private _renderNavigationCard() {
+    return html`
+      <ha-card class="nav-card">
+        <div class="card-content">
+          <ha-md-list>
+            <ha-md-list-item type="link" href="/config/matter/options">
+              <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.panel.options_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.panel.options_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            ${isComponentLoaded(this.hass, "thread")
+              ? html`<ha-md-list-item type="link" href="/config/thread">
+                  <ha-svg-icon slot="start" .path=${THREAD_ICON}></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.panel.thread_panel"
+                    )}
+                  </div>
+                  <div slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.panel.thread_panel_description"
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>`
+              : nothing}
+          </ha-md-list>
+        </div>
+      </ha-card>
+    `;
   }
 
   private async _fetchConfigEntry(): Promise<void> {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "matter",
     });
-    if (configEntries.length) {
-      this._configEntry = configEntries[0];
-    }
+    this._configEntry = configEntries.find(
+      (entry) => entry.disabled_by === null && entry.source !== "ignore"
+    );
   }
 
   static get styles(): CSSResultGroup {
@@ -343,79 +225,95 @@ export class MatterConfigDashboard extends LitElement {
       haStyle,
       css`
         ha-card {
-          margin: auto;
-          margin-top: var(--ha-space-4);
-          max-width: 500px;
+          margin: 0 auto var(--ha-space-4);
+          max-width: 600px;
         }
 
-        ha-card .card-actions {
-          display: flex;
-          justify-content: flex-end;
+        .nav-card {
+          overflow: hidden;
+        }
+
+        .nav-card .card-content {
+          padding: 0;
+        }
+
+        .nav-card .card-header {
+          padding-bottom: var(--ha-space-2);
+        }
+
+        .content {
+          margin-top: var(--ha-space-6);
+        }
+
+        ha-md-list {
+          background: none;
+          padding: 0;
+        }
+
+        ha-md-list-item {
+          --md-item-overflow: visible;
         }
 
         .network-status div.heading {
           display: flex;
           align-items: center;
+          column-gap: var(--ha-space-4);
         }
 
         .network-status div.heading .icon {
-          margin-inline-end: var(--ha-space-4);
+          position: relative;
+          border-radius: var(--ha-border-radius-2xl);
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          flex-shrink: 0;
+          --icon-color: var(--primary-color);
         }
 
-        .network-status div.heading ha-svg-icon {
-          --mdc-icon-size: 48px;
+        .network-status div.heading .icon.success {
+          --icon-color: var(--success-color);
+        }
+
+        .network-status div.heading .icon.error {
+          --icon-color: var(--error-color);
+        }
+
+        .network-status div.heading .icon::before {
+          display: block;
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--icon-color);
+          opacity: 0.2;
+        }
+
+        .network-status div.heading .icon ha-svg-icon {
+          color: var(--icon-color);
+          width: 24px;
+          height: 24px;
         }
 
         .network-status div.heading .details {
           font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--primary-text-color);
         }
 
         .network-status small {
           font-size: var(--ha-font-size-m);
-        }
-
-        .network-status .online {
-          color: var(--state-on-color, var(--success-color));
-        }
-
-        .network-status .offline {
-          color: var(--error-color, var(--error-color));
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          letter-spacing: 0.25px;
+          color: var(--secondary-text-color);
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
-        }
-
-        ha-expansion-panel {
-          margin: auto;
-          margin-top: var(--ha-space-4);
-          max-width: 500px;
-          background: var(--card-background-color);
-          border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          --expansion-panel-summary-padding: var(--ha-space-2) var(--ha-space-4);
-          --expansion-panel-content-padding: 0 var(--ha-space-4);
-        }
-
-        .dev-tools-content {
-          padding: 0 0 var(--ha-space-4);
-        }
-
-        .dev-tools-content p {
-          margin: 0 0 var(--ha-space-4);
-          color: var(--primary-text-color);
-        }
-
-        .dev-tools-actions {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: var(--ha-space-2);
-        }
-
-        a[slot="toolbar-icon"] {
-          text-decoration: none;
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-16) + var(--safe-area-inset-bottom, 0px));
         }
 
         a[slot="fab"] {

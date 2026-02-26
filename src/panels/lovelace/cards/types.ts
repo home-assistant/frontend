@@ -57,13 +57,21 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
   conditions: (Condition | LegacyCondition)[];
 }
 
+export interface EmptyStateButtonConfig {
+  text: string;
+  icon?: string;
+  appearance?: "accent" | "filled" | "outlined" | "plain";
+  variant?: "brand" | "neutral" | "success" | "warning" | "danger";
+  tap_action: ActionConfig;
+}
+
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
   content_only?: boolean;
   icon?: string;
+  icon_color?: string;
   title?: string;
   content?: string;
-  action_button_text?: string;
-  tap_action?: ActionConfig;
+  buttons?: EmptyStateButtonConfig[];
 }
 
 export interface EntityCardConfig extends LovelaceCardConfig {
@@ -86,6 +94,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "last-changed"
     | "last-triggered"
     | "last-updated"
+    | "area"
     | "position"
     | "state"
     | "tilt-position"
@@ -134,6 +143,9 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
   exclude_entities?: string[];
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  image_tap_action?: ActionConfig;
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
@@ -233,6 +245,14 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
 
 export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
   type: "water-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface WaterFlowSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "water-flow-sankey";
   title?: string;
   layout?: "vertical" | "horizontal" | "auto";
   group_by_floor?: boolean;
@@ -653,16 +673,40 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface DistributionEntityConfig extends EntityConfig {}
+export interface ToggleGroupCardConfig extends LovelaceCardConfig {
+  title: string;
+  entities: string[];
+  color?: string;
+  vertical?: boolean;
+}
+
+export interface DistributionEntityConfig extends EntityConfig {
+  color?: string;
+}
 
 export interface DistributionCardConfig extends LovelaceCardConfig {
   type: "distribution";
   title?: string;
   entities: (string | DistributionEntityConfig)[];
-  theme?: string;
 }
 
 export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {
+  hide_empty?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface RepairsCardConfig extends LovelaceCardConfig {
+  hide_empty?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface UpdatesCardConfig extends LovelaceCardConfig {
   hide_empty?: boolean;
   vertical?: boolean;
   tap_action?: ActionConfig;

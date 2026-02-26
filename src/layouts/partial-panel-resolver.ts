@@ -14,15 +14,13 @@ import { removeLaunchScreen } from "../util/launch-screen";
 import type { RouteOptions, RouterOptions } from "./hass-router-page";
 import { HassRouterPage } from "./hass-router-page";
 
-const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
+const CACHE_URL_PATHS = ["lovelace", "home", "config"];
 const COMPONENTS = {
   app: () => import("../panels/app/ha-panel-app"),
   energy: () => import("../panels/energy/ha-panel-energy"),
   calendar: () => import("../panels/calendar/ha-panel-calendar"),
   config: () => import("../panels/config/ha-panel-config"),
   custom: () => import("../panels/custom/ha-panel-custom"),
-  "developer-tools": () =>
-    import("../panels/developer-tools/ha-panel-developer-tools"),
   lovelace: () => import("../panels/lovelace/ha-panel-lovelace"),
   history: () => import("../panels/history/ha-panel-history"),
   iframe: () => import("../panels/iframe/ha-panel-iframe"),
@@ -37,6 +35,7 @@ const COMPONENTS = {
   security: () => import("../panels/security/ha-panel-security"),
   climate: () => import("../panels/climate/ha-panel-climate"),
   home: () => import("../panels/home/ha-panel-home"),
+  notfound: () => import("../panels/notfound/ha-panel-notfound"),
 };
 
 @customElement("partial-panel-resolver")

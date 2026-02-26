@@ -30,7 +30,7 @@ export class HaGauge extends LitElement {
   @property({ attribute: false })
   public formatOptions?: Intl.NumberFormatOptions;
 
-  @property({ attribute: false, type: String }) public valueText?: string;
+  @property({ attribute: false }) public valueText?: string;
 
   @property({ attribute: false }) public locale!: FrontendLocaleData;
 

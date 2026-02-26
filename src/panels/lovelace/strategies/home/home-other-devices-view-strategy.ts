@@ -12,17 +12,22 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import { isHelperDomain } from "../../../config/helpers/const";
-import type { HeadingCardConfig } from "../../cards/types";
+import type {
+  EmptyStateCardConfig,
+  EntitiesCardConfig,
+  HeadingCardConfig,
+} from "../../cards/types";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOtherDevicesViewStrategyConfig {
   type: "home-other-devices";
+  home_panel?: boolean;
 }
 
 @customElement("home-other-devices-view-strategy")
 export class HomeOtherDevicesViewStrategy extends ReactiveElement {
   static async generate(
-    _config: HomeOtherDevicesViewStrategyConfig,
+    config: HomeOtherDevicesViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const allEntities = Object.keys(hass.states);
@@ -74,16 +79,6 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
       return !isHelperDomain(domain);
     });
 
-    const batteryFilter = generateEntityFilter(hass, {
-      domain: "sensor",
-      device_class: "battery",
-    });
-
-    const energyFilter = generateEntityFilter(hass, {
-      domain: "sensor",
-      device_class: ["energy", "power"],
-    });
-
     const primaryFilter = generateEntityFilter(hass, {
       entity_category: "none",
     });
@@ -91,12 +86,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
     for (const deviceEntities of devicesEntities) {
       if (deviceEntities.entities.length === 0) continue;
 
-      const batteryEntities = deviceEntities.entities.filter((e) =>
-        batteryFilter(e)
-      );
-      const entities = deviceEntities.entities.filter(
-        (e) => !batteryFilter(e) && !energyFilter(e) && primaryFilter(e)
-      );
+      const entities = deviceEntities.entities.filter((e) => primaryFilter(e));
 
       if (entities.length === 0) {
         continue;
@@ -108,7 +98,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
       if (device) {
         heading =
           computeDeviceName(device) ||
-          hass.localize("ui.panel.lovelace.strategy.home.unamed_device");
+          hass.localize("ui.panel.lovelace.strategy.home.unnamed_device");
       }
 
       sections.push({
@@ -125,22 +115,33 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
                   }
                 : { action: "none" },
             badges: [
-              ...batteryEntities.slice(0, 1).map((e) => ({
-                entity: e,
-                type: "entity",
-                tap_action: {
-                  action: "more-info",
-                },
-              })),
+              ...(config.home_panel && device && hass.user?.is_admin
+                ? [
+                    {
+                      type: "button",
+                      icon: "mdi:home-plus",
+                      text: hass.localize(
+                        "ui.panel.lovelace.strategy.home-other-devices.assign_area"
+                      ),
+                      tap_action: {
+                        action: "fire-dom-event",
+                        home_panel: {
+                          type: "assign_area",
+                          device_id: device.id,
+                        },
+                      },
+                    },
+                  ]
+                : []),
             ],
           } satisfies HeadingCardConfig,
-          ...entities.map((e) => ({
-            type: "tile",
-            entity: e,
-            name: {
-              type: "entity",
-            },
-          })),
+          {
+            type: "entities",
+            entities: entities.map((e) => ({
+              entity: e,
+              name: { type: "entity" },
+            })),
+          } satisfies EntitiesCardConfig,
         ],
       });
     }
@@ -156,7 +157,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: hass.localize(
-              "ui.panel.lovelace.strategy.other_devices.helpers"
+              "ui.panel.lovelace.strategy.home-other-devices.helpers"
             ),
           } satisfies HeadingCardConfig,
           ...helpersEntities.map((e) => ({
@@ -175,7 +176,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           {
             type: "heading",
             heading: hass.localize(
-              "ui.panel.lovelace.strategy.other_devices.entities"
+              "ui.panel.lovelace.strategy.home-other-devices.entities"
             ),
           } satisfies HeadingCardConfig,
           ...otherEntities.map((e) => ({
@@ -184,6 +185,27 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           })),
         ],
       });
+    }
+
+    // No sections, show empty state
+    if (sections.length === 0) {
+      return {
+        type: "panel",
+        cards: [
+          {
+            type: "empty-state",
+            icon: "mdi:check-all",
+            icon_color: "primary",
+            content_only: true,
+            title: hass.localize(
+              "ui.panel.lovelace.strategy.home-other-devices.all_organized_title"
+            ),
+            content: hass.localize(
+              "ui.panel.lovelace.strategy.home-other-devices.all_organized_content"
+            ),
+          } as EmptyStateCardConfig,
+        ],
+      };
     }
 
     // Take the full width if there is only one section to avoid narrow header on desktop

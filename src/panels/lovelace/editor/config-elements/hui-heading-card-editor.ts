@@ -25,7 +25,10 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
 import type { HeadingCardConfig } from "../../cards/types";
-import type { UiAction } from "../../components/hui-action-editor";
+import {
+  ACTION_RELATED_CONTEXT,
+  type UiAction,
+} from "../../components/hui-action-editor";
 import type {
   EntityHeadingBadgeConfig,
   LovelaceHeadingBadgeConfig,
@@ -102,6 +105,7 @@ export class HuiHeadingCardEditor
                   actions,
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
           ],
         },

@@ -1,5 +1,5 @@
 import { consume } from "@lit/context";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -11,10 +11,8 @@ import {
   sortDeviceAutomations,
 } from "../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-generic-picker";
-import "../ha-md-select";
-import "../ha-md-select-option";
 import type { PickerValueRenderer } from "../ha-picker-field";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
@@ -192,7 +190,7 @@ export abstract class HaDeviceAutomationPicker<
     this._renderEmpty = false;
   }
 
-  private _automationChanged(ev: CustomEvent<{ value: string }>) {
+  private _automationChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const value = ev.detail.value;
     if (!value || NO_AUTOMATION_KEY === value) {
@@ -217,10 +215,4 @@ export abstract class HaDeviceAutomationPicker<
     delete value.metadata;
     fireEvent(this, "value-changed", { value });
   }
-
-  static styles = css`
-    ha-select {
-      display: block;
-    }
-  `;
 }

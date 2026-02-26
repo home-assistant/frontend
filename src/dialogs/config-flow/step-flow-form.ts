@@ -29,6 +29,8 @@ class StepFlowForm extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "autofocus" }) public autoFocus = false;
+
   @property({ attribute: false }) public step!: DataEntryFlowStepForm;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -44,6 +46,11 @@ class StepFlowForm extends LitElement {
   @state() private _errorMsg?: string;
 
   private _errors?: Record<string, string>;
+
+  static shadowRootOptions: ShadowRootInit = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -83,6 +90,7 @@ class StepFlowForm extends LitElement {
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
           : ""}
         <ha-form
+          ?autofocus=${this.autoFocus}
           .hass=${this.hass}
           .narrow=${this.narrow}
           .data=${stepData}
@@ -133,8 +141,11 @@ class StepFlowForm extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
     this.addEventListener("keydown", this._handleKeyDown);
+  }
+
+  public override focus(_options?: FocusOptions): void {
+    this.renderRoot.querySelector("ha-form")?.focus();
   }
 
   protected willUpdate(changedProps: PropertyValues): void {

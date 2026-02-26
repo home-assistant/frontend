@@ -50,16 +50,16 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
-  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
+  @property({ attribute: false }) public paddingYAxis = 0;
 
-  @property({ attribute: false, type: Number }) public chartIndex?;
+  @property({ attribute: false }) public chartIndex?;
 
   @property({ attribute: "logarithmic-scale", type: Boolean })
   public logarithmicScale = false;
 
-  @property({ attribute: false, type: Number }) public minYAxis?: number;
+  @property({ attribute: false }) public minYAxis?: number;
 
-  @property({ attribute: false, type: Number }) public maxYAxis?: number;
+  @property({ attribute: false }) public maxYAxis?: number;
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
@@ -306,7 +306,10 @@ export class StateHistoryChartLine extends LitElement {
         visualMap: this._visualMap,
         tooltip: {
           trigger: "axis",
-          appendTo: document.body,
+          renderMode: "html",
+          position: "bottom",
+          align: "center",
+          confine: true,
           formatter: this._renderTooltip,
         },
       };
@@ -715,6 +718,18 @@ export class StateHistoryChartLine extends LitElement {
 
       // Add an entry for final values
       pushData(endTime, prevValues);
+
+      // For sensors, append current state if viewing recent data
+      const now = new Date();
+      // allow 1s of leeway for "now"
+      const isUpToNow = now.getTime() - endTime.getTime() <= 1000;
+      if (domain === "sensor" && isUpToNow && data.length === 1) {
+        const stateObj = this.hass.states[states.entity_id];
+        const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
+        if (currentValue !== null) {
+          data[0].data!.push([now, currentValue]);
+        }
+      }
 
       // Concat two arrays
       Array.prototype.push.apply(datasets, data);

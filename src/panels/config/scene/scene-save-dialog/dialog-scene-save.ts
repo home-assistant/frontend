@@ -15,7 +15,7 @@ import "../../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../category/ha-category-picker";
@@ -33,9 +33,11 @@ import {
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
+import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
+import type { SceneConfig } from "../../../../data/scene";
 
-const SUGGESTION_CONFIG: MetadataSuggestionInclude = {
-  description: false,
+const SUGGESTION_INCLUDE: MetadataSuggestionInclude = {
+  name: true,
   categories: true,
   labels: true,
 };
@@ -190,7 +192,7 @@ class DialogSceneSave extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title || title}
@@ -244,7 +246,7 @@ class DialogSceneSave extends LitElement {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -281,13 +283,17 @@ class DialogSceneSave extends LitElement {
   }
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> =>
-    generateMetadataSuggestionTask(
+    generateMetadataSuggestionTask<SceneConfig>(
       this.hass.connection,
-      this.hass.states,
       this.hass.language,
       "scene",
       this._params.config,
-      SUGGESTION_CONFIG
+      await buildEntityMetadataInspirations(
+        this.hass.connection,
+        this.hass.states,
+        "scene"
+      ),
+      SUGGESTION_INCLUDE
     );
 
   private async _handleSuggestion(
@@ -298,12 +304,14 @@ class DialogSceneSave extends LitElement {
       this.hass.connection,
       "scene",
       result,
-      SUGGESTION_CONFIG
+      SUGGESTION_INCLUDE
     );
 
-    this._newName = processed.name;
-    if (this._error && this._newName.trim()) {
-      this._error = false;
+    if (processed.name) {
+      this._newName = processed.name;
+      if (this._error && this._newName.trim()) {
+        this._error = false;
+      }
     }
 
     if (processed.category) {

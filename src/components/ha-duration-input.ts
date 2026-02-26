@@ -6,6 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./ha-base-time-input";
 import type { TimeChangedEvent } from "./ha-base-time-input";
 import "./ha-button-toggle-group";
+import type { ValueChangedEvent } from "../types";
 
 export interface HaDurationData {
   days?: number;
@@ -36,6 +37,9 @@ class HaDurationInput extends LitElement {
   @property({ attribute: "allow-negative", type: Boolean })
   public allowNegative = false;
 
+  @property({ attribute: "enable-second", type: Boolean })
+  public enableSecond = true;
+
   @property({ type: Boolean }) public disabled = false;
 
   private _toggleNegative = false;
@@ -64,7 +68,7 @@ class HaDurationInput extends LitElement {
           .autoValidate=${this.required}
           .disabled=${this.disabled}
           errorMessage="Required"
-          enable-second
+          .enableSecond=${this.enableSecond}
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
           format="24"
@@ -152,16 +156,18 @@ class HaDurationInput extends LitElement {
         : NaN;
   }
 
-  private _durationChanged(ev: CustomEvent<{ value?: TimeChangedEvent }>) {
+  private _durationChanged(
+    ev: ValueChangedEvent<TimeChangedEvent | undefined>
+  ) {
     ev.stopPropagation();
     const value = ev.detail.value ? { ...ev.detail.value } : undefined;
 
     if (value) {
       value.hours ||= 0;
       value.minutes ||= 0;
-      value.seconds ||= 0;
 
       if ("days" in value) value.days ||= 0;
+      if ("seconds" in value) value.seconds ||= 0;
       if ("milliseconds" in value) value.milliseconds ||= 0;
 
       if (this.allowNegative) {
@@ -180,8 +186,11 @@ class HaDurationInput extends LitElement {
         value.milliseconds %= 1000;
       }
 
-      if (value.seconds > 59) {
-        value.minutes += Math.floor(value.seconds / 60);
+      if (!this.enableSecond && !value.seconds) {
+        // @ts-ignore
+        delete value.seconds;
+      } else if (this.enableSecond && value.seconds > 59) {
+        value.minutes = (value.minutes ?? 0) + Math.floor(value.seconds / 60);
         value.seconds %= 60;
       }
 

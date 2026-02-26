@@ -5,8 +5,9 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import "../../../../components/ha-button";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-dialog";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type {
   LovelaceDashboard,
@@ -23,6 +24,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
   @state() private _params?: LovelaceDashboardDetailsDialogParams;
 
+  @state() private _open = false;
+
   @state() private _urlPathChanged = false;
 
   @state() private _data?: Partial<LovelaceDashboard>;
@@ -35,6 +38,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._urlPathChanged = false;
+    this._open = true;
     if (this._params.dashboard) {
       this._data = this._params.dashboard;
     } else {
@@ -49,6 +53,10 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -60,89 +68,98 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
 
     const titleInvalid = !this._data.title || !this._data.title.trim();
-    const isLovelaceDashboard = this._params.urlPath === "lovelace";
+
+    const cancelButton = html`
+      <ha-button
+        appearance="plain"
+        slot="secondaryAction"
+        @click=${this.closeDialog}
+      >
+        ${this.hass.localize("ui.common.cancel")}
+      </ha-button>
+    `;
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.urlPath
-            ? this._data.title ||
-                this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
-                )
-            : this.hass.localize(
-                "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
-              )
-        )}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.urlPath
+          ? this._data.title ||
+            this.hass.localize(
+              "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
+            )
+          : this.hass.localize(
+              "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
+            )}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
         <div>
-          ${this._params.dashboard && !this._params.dashboard.id
+          ${this._params.dashboard?.mode === "yaml"
             ? this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
               )
-            : isLovelaceDashboard
-              ? this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.cant_edit_lovelace"
-                )
-              : html`
-                  <ha-form
-                    .schema=${this._schema(this._params)}
-                    .data=${this._data}
-                    .hass=${this.hass}
-                    .error=${this._error}
-                    .computeLabel=${this._computeLabel}
-                    @value-changed=${this._valueChanged}
-                  ></ha-form>
-                `}
+            : html`
+                <ha-form
+                  autofocus
+                  .schema=${this._schema(
+                    this._params,
+                    this._data?.require_admin
+                  )}
+                  .data=${this._data}
+                  .hass=${this.hass}
+                  .error=${this._error}
+                  .computeLabel=${this._computeLabel}
+                  .computeHelper=${this._computeHelper}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `}
         </div>
-        ${this._params.urlPath
-          ? html`
-              ${this._params.dashboard?.id
-                ? html`
-                    <ha-button
-                      slot="secondaryAction"
-                      variant="danger"
-                      appearance="plain"
-                      @click=${this._deleteDashboard}
-                      .disabled=${this._submitting}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.lovelace.dashboards.detail.delete"
-                      )}
-                    </ha-button>
-                  `
-                : nothing}
-            `
-          : nothing}
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateDashboard}
-          .disabled=${(this._error && "url_path" in this._error) ||
-          titleInvalid ||
-          this._submitting}
-          dialogInitialFocus
-        >
+        <ha-dialog-footer slot="footer">
           ${this._params.urlPath
-            ? this._params.dashboard?.id
-              ? this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.detail.update"
-                )
-              : this.hass.localize("ui.common.close")
-            : this.hass.localize(
-                "ui.panel.config.lovelace.dashboards.detail.create"
-              )}
-        </ha-button>
+            ? html`
+                ${this._params.dashboard?.mode === "storage"
+                  ? html`
+                      <ha-button
+                        slot="secondaryAction"
+                        variant="danger"
+                        appearance="plain"
+                        @click=${this._deleteDashboard}
+                        .disabled=${this._submitting}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.lovelace.dashboards.detail.delete"
+                        )}
+                      </ha-button>
+                    `
+                  : cancelButton}
+              `
+            : cancelButton}
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateDashboard}
+            .disabled=${(this._error && "url_path" in this._error) ||
+            titleInvalid ||
+            this._submitting}
+            ?autofocus=${this._params.dashboard?.mode === "yaml"}
+          >
+            ${this._params.urlPath
+              ? this._params.dashboard?.mode === "storage"
+                ? this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.detail.update"
+                  )
+                : this.hass.localize("ui.common.close")
+              : this.hass.localize(
+                  "ui.panel.config.lovelace.dashboards.detail.create"
+                )}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
   private _schema = memoizeOne(
-    (params: LovelaceDashboardDetailsDialogParams) =>
+    (params: LovelaceDashboardDetailsDialogParams, requireAdmin?: boolean) =>
       [
         {
           name: "title",
@@ -170,6 +187,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         {
           name: "require_admin",
           required: true,
+          disabled: params.isDefault && !requireAdmin,
           selector: {
             boolean: {},
           },
@@ -196,6 +214,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             : entry.name
       }`
     );
+
+  private _computeHelper = (
+    entry: SchemaUnion<ReturnType<typeof this._schema>>
+  ): string =>
+    entry.name === "require_admin" && entry.disabled
+      ? this.hass.localize(
+          "ui.panel.config.lovelace.dashboards.panel_detail.require_admin_helper"
+        )
+      : "";
 
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
@@ -237,8 +264,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   private async _updateDashboard() {
-    if (this._params?.urlPath && !this._params.dashboard?.id) {
+    if (this._params?.urlPath && this._params.dashboard?.mode === "yaml") {
       this.closeDialog();
+      return;
     }
     this._submitting = true;
     try {

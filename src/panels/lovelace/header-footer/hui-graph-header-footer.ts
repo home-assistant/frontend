@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-spinner";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
@@ -126,8 +127,15 @@ export class HuiGraphHeaderFooter
     `;
   }
 
+  private _handleClick(): void {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config?.entity ?? null,
+    });
+  }
+
   public connectedCallback() {
     super.connectedCallback();
+    this.addEventListener("click", this._handleClick);
     if (this.hasUpdated && this._config) {
       this._subscribeHistory();
     }
@@ -224,6 +232,7 @@ export class HuiGraphHeaderFooter
   static styles = css`
     :host {
       display: block;
+      cursor: pointer;
     }
     ha-spinner {
       position: absolute;

@@ -40,7 +40,6 @@ const createRspackConfig = ({
   latestBuild,
   isStatsBuild,
   isTestBuild,
-  isHassioBuild,
   isLandingPageBuild,
   dontHash,
 }) => {
@@ -168,13 +167,9 @@ const createRspackConfig = ({
           );
         },
       }),
-      bundle.emptyPackages({ isHassioBuild, isLandingPageBuild }).length
+      bundle.emptyPackages({ isLandingPageBuild }).length
         ? new rspack.NormalModuleReplacementPlugin(
-            new RegExp(
-              bundle
-                .emptyPackages({ isHassioBuild, isLandingPageBuild })
-                .join("|")
-            ),
+            new RegExp(bundle.emptyPackages({ isLandingPageBuild }).join("|")),
             path.resolve(paths.root_dir, "src/util/empty.js")
           )
         : false,
@@ -326,21 +321,6 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
 const createCastConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createHassioConfig = ({
-  isProdBuild,
-  latestBuild,
-  isStatsBuild,
-  isTestBuild,
-}) =>
-  createRspackConfig(
-    bundle.config.hassio({
-      isProdBuild,
-      latestBuild,
-      isStatsBuild,
-      isTestBuild,
-    })
-  );
-
 const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
@@ -351,7 +331,6 @@ module.exports = {
   createAppConfig,
   createDemoConfig,
   createCastConfig,
-  createHassioConfig,
   createGalleryConfig,
   createRspackConfig,
   createLandingPageConfig,

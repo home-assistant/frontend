@@ -57,6 +57,8 @@ export class HassRouterPage extends ReactiveElement {
 
   private _initialLoadDone = false;
 
+  private _showLoadingScreenTimeout?: number;
+
   private _computeTail = memoizeOne(computeRouteTail);
 
   protected createRenderRoot() {
@@ -143,7 +145,11 @@ export class HassRouterPage extends ReactiveElement {
       ? routeOptions.load()
       : Promise.resolve();
 
-    let showLoadingScreenTimeout: undefined | number;
+    // Clear any existing loading screen timeout from previous navigation
+    if (this._showLoadingScreenTimeout) {
+      clearTimeout(this._showLoadingScreenTimeout);
+      this._showLoadingScreenTimeout = undefined;
+    }
 
     // Check when loading the page source failed.
     loadProm.catch((err) => {
@@ -160,8 +166,9 @@ export class HassRouterPage extends ReactiveElement {
         this.removeChild(this.lastChild!);
       }
 
-      if (showLoadingScreenTimeout) {
-        clearTimeout(showLoadingScreenTimeout);
+      if (this._showLoadingScreenTimeout) {
+        clearTimeout(this._showLoadingScreenTimeout);
+        this._showLoadingScreenTimeout = undefined;
       }
 
       // Show error screen
@@ -181,7 +188,7 @@ export class HassRouterPage extends ReactiveElement {
     // That way we won't have a double fast flash on fast connections.
     let created = false;
 
-    showLoadingScreenTimeout = window.setTimeout(() => {
+    this._showLoadingScreenTimeout = window.setTimeout(() => {
       if (created || this._currentPage !== newPage) {
         return;
       }

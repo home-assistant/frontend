@@ -12,10 +12,11 @@ import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-fade-in";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-spinner";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { subscribeConfigEntries } from "../../../data/config_entries";
 import type {
@@ -365,7 +366,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                 })}
               </ha-card>`
             : nothing}
-          ${this._systemStatusData
+          ${isComponentLoaded(this.hass, "hardware")
             ? html`<ha-card outlined>
                   <div class="header">
                     <div class="title">
@@ -374,16 +375,25 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                       )}
                     </div>
                     <div class="value">
-                      ${this._systemStatusData.cpu_percent ||
-                      "-"}${blankBeforePercent(this.hass.locale)}%
+                      ${this._systemStatusData
+                        ? html`${this._systemStatusData
+                            .cpu_percent}${blankBeforePercent(
+                            this.hass.locale
+                          )}%`
+                        : "-"}
                     </div>
                   </div>
-                  <div class="card-content">
+                  <div class="card-content loading-container">
                     <ha-chart-base
                       .hass=${this.hass}
                       .data=${this._getChartData(this._cpuEntries)}
                       .options=${this._chartOptions}
                     ></ha-chart-base>
+                    ${!this._systemStatusData
+                      ? html` <ha-fade-in delay="1000" class="loading-overlay">
+                          <ha-spinner size="large"></ha-spinner>
+                        </ha-fade-in>`
+                      : nothing}
                   </div>
                 </ha-card>
                 <ha-card outlined>
@@ -392,37 +402,38 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                       ${this.hass.localize("ui.panel.config.hardware.memory")}
                     </div>
                     <div class="value">
-                      ${round(this._systemStatusData.memory_used_mb / 1024, 1)}
-                      GB /
-                      ${round(
-                        (this._systemStatusData.memory_used_mb! +
-                          this._systemStatusData.memory_free_mb!) /
-                          1024,
-                        0
-                      )}
-                      GB
+                      ${this._systemStatusData
+                        ? html`${round(
+                            this._systemStatusData.memory_used_mb / 1024,
+                            1
+                          )}
+                          GB /
+                          ${round(
+                            (this._systemStatusData.memory_used_mb +
+                              this._systemStatusData.memory_free_mb) /
+                              1024,
+                            0
+                          )}
+                          GB`
+                        : "-"}
                     </div>
                   </div>
-                  <div class="card-content">
+                  <div class="card-content loading-container">
                     <ha-chart-base
                       .hass=${this.hass}
                       .data=${this._getChartData(this._memoryEntries)}
                       .options=${this._chartOptions}
                     ></ha-chart-base>
+                    ${!this._systemStatusData
+                      ? html`
+                          <ha-fade-in delay="1000" class="loading-overlay">
+                            <ha-spinner size="large"></ha-spinner>
+                          </ha-fade-in>
+                        `
+                      : nothing}
                   </div>
                 </ha-card>`
-            : isComponentLoaded(this.hass, "hardware")
-              ? html`<ha-card outlined>
-                  <div class="card-content">
-                    <ha-alert alert-type="info">
-                      <ha-spinner slot="icon"></ha-spinner>
-                      ${this.hass.localize(
-                        "ui.panel.config.hardware.loading_system_data"
-                      )}
-                    </ha-alert>
-                  </div>
-                </ha-card>`
-              : nothing}
+            : nothing}
         </div>
       </hass-subpage>
     `;
@@ -502,6 +513,22 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         flex-direction: column;
         padding: 16px;
       }
+
+      .loading-container {
+        position: relative;
+      }
+
+      .loading-overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(var(--rgb-card-background-color), 0.75);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
       .card-content img {
         max-width: 300px;
         margin: auto;
@@ -547,10 +574,6 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
       ha-alert {
         --ha-alert-icon-size: 24px;
-      }
-
-      ha-alert ha-spinner {
-        --ha-spinner-size: 24px;
       }
     `,
   ];
