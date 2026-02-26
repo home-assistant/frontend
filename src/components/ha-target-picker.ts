@@ -108,6 +108,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _selectedSection?: TargetTypeFloorless;
 
+  @state() private _replaceTarget?: { type: TargetType; id: string };
+
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   @state()
@@ -398,9 +400,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           )}
           .sectionTitleFunction=${this._sectionTitleFunction}
           .selectedSection=${this._selectedSection}
+          .selectedValue=${this._replaceTarget
+            ? `${this._replaceTarget.type}${SEPARATOR}${this._replaceTarget.id}`
+            : undefined}
           .rowRenderer=${this._renderRow}
           .getItems=${this._getItems}
           @value-changed=${this._targetPicked}
+          @picker-closed=${this._handlePickerClosed}
           .addButtonLabel=${this.hass.localize(
             "ui.components.target-picker.add_target"
           )}
@@ -626,7 +632,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ev: HASSDomEvent<HASSDomEvents["replace-target-item"]>
   ) {
     ev.stopPropagation();
-    const type = ev.detail.type;
+    const type = ev.detail.type as TargetType;
     if (type === "floor") {
       this._selectedSection = "area";
     } else if (
@@ -639,7 +645,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     } else {
       return;
     }
+    this._replaceTarget = { type, id: ev.detail.id };
     this._picker?.open();
+  }
+
+  private _handlePickerClosed() {
+    this._replaceTarget = undefined;
   }
 
   private _addItems(
@@ -732,6 +743,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this.includeDomains,
       this.includeDeviceClasses,
       this.value,
+      this._replaceTarget,
       searchString,
       this._configEntryLookup,
       this._selectedSection
@@ -746,10 +758,48 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       includeDomains: this["includeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
       targetValue: this["value"],
+      replaceTarget: { type: TargetType; id: string } | undefined,
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
       filterType?: TargetTypeFloorless
     ) => {
+      const replacingEntityId =
+        replaceTarget?.type === "entity" ? replaceTarget.id : undefined;
+      const replacingDeviceId =
+        replaceTarget?.type === "device" ? replaceTarget.id : undefined;
+      const replacingAreaId =
+        replaceTarget?.type === "area" ? replaceTarget.id : undefined;
+      const replacingFloorId =
+        replaceTarget?.type === "floor" ? replaceTarget.id : undefined;
+      const replacingLabelId =
+        replaceTarget?.type === "label" ? replaceTarget.id : undefined;
+
+      const excludedEntityIds = targetValue?.entity_id
+        ? ensureArray(targetValue.entity_id).filter(
+            (entityId) => entityId !== replacingEntityId
+          )
+        : undefined;
+      const excludedDeviceIds = targetValue?.device_id
+        ? ensureArray(targetValue.device_id).filter(
+            (deviceId) => deviceId !== replacingDeviceId
+          )
+        : undefined;
+      const excludedAreaIds = targetValue?.area_id
+        ? ensureArray(targetValue.area_id).filter(
+            (areaId) => areaId !== replacingAreaId
+          )
+        : undefined;
+      const excludedFloorIds = targetValue?.floor_id
+        ? ensureArray(targetValue.floor_id).filter(
+            (floorId) => floorId !== replacingFloorId
+          )
+        : undefined;
+      const excludedLabelIds = targetValue?.label_id
+        ? ensureArray(targetValue.label_id).filter(
+            (labelId) => labelId !== replacingLabelId
+          )
+        : undefined;
+
       const items: (
         | string
         | FloorComboBoxItem
@@ -766,10 +816,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           undefined,
           undefined,
-          targetValue?.entity_id
-            ? ensureArray(targetValue.entity_id)
+          excludedEntityIds,
+          replacingEntityId
+            ? `entity${SEPARATOR}${replacingEntityId}`
             : undefined,
-          undefined,
           `entity${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
 
@@ -799,10 +849,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          targetValue?.device_id
-            ? ensureArray(targetValue.device_id)
-            : undefined,
-          undefined,
+          excludedDeviceIds,
+          replacingDeviceId,
           `device${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
 
@@ -838,8 +886,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          targetValue?.area_id ? ensureArray(targetValue.area_id) : undefined,
-          targetValue?.floor_id ? ensureArray(targetValue.floor_id) : undefined
+          excludedAreaIds,
+          excludedFloorIds
         );
 
         if (searchTerm) {
@@ -888,7 +936,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          targetValue?.label_id ? ensureArray(targetValue.label_id) : undefined,
+          excludedLabelIds,
           `label${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
 

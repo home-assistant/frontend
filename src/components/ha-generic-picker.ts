@@ -103,6 +103,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
+  @property({ attribute: false }) public selectedValue?: string;
+
   @property({ type: Boolean, attribute: "use-top-label" })
   public useTopLabel = false;
 
@@ -267,6 +269,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .sections=${this.sections}
         .sectionTitleFunction=${this.sectionTitleFunction}
         .selectedSection=${this.selectedSection}
+        .selectedValue=${this.selectedValue}
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}
       ></ha-picker-combo-box>
@@ -345,6 +348,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     this._opened = false;
     this._pickerWrapperOpen = false;
     this._unsubscribeTinyKeys?.();
+    fireEvent(this, "picker-closed");
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -475,5 +479,9 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-generic-picker": HaGenericPicker;
+  }
+
+  interface HASSDomEvents {
+    "picker-closed": undefined;
   }
 }
