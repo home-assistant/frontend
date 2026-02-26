@@ -573,7 +573,7 @@ export class HaTargetPickerItemRow extends LitElement {
     this._domainName = domainToName(this.hass.localize, domain);
   }
 
-  private _removeItem(ev) {
+  private _removeItem(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "remove-target-item", {
       type: this.type,

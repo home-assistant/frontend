@@ -218,7 +218,7 @@ export class HaTargetPickerValueChip extends LitElement {
     }
   }
 
-  private _removeItem(ev) {
+  private _removeItem(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "remove-target-item", {
       type: this.type,
@@ -226,7 +226,7 @@ export class HaTargetPickerValueChip extends LitElement {
     });
   }
 
-  private _handleExpand(ev) {
+  private _handleExpand(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "expand-target-item", {
       type: this.type,
