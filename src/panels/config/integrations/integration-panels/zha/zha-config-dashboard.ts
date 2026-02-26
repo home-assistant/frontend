@@ -37,10 +37,10 @@ import {
 } from "../../../../../data/zha";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { fileDownload } from "../../../../../util/file_download";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { fileDownload } from "../../../../../util/file_download";
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
@@ -520,7 +520,8 @@ class ZHAConfigDashboard extends LitElement {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
         }
       `,
     ];

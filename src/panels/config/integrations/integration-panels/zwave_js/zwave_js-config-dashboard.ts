@@ -18,6 +18,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { goBack } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
@@ -28,7 +29,6 @@ import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-progress-ring";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import { goBack } from "../../../../../common/navigate";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -968,7 +968,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-space-4)
+            calc(var(--ha-space-16) + var(--safe-area-inset-bottom, 0px));
         }
       `,
     ];
