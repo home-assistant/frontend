@@ -1224,15 +1224,16 @@ class HUIRoot extends LitElement {
   }
 
   private _refreshViewBackgroundObservers() {
-    const viewBackground = this._viewRoot.querySelector("hui-view-background");
+    const viewBackground =
+      this._viewRoot.querySelector<HTMLElementTagNameMap["hui-view-background"]>(
+        "hui-view-background"
+      );
 
-    if (!viewBackground || !("refreshSizeObservers" in viewBackground)) {
+    if (!viewBackground) {
       return;
     }
 
-    (
-      viewBackground as HTMLElement & { refreshSizeObservers: () => void }
-    ).refreshSizeObservers();
+    viewBackground.refreshSizeObservers();
   }
 
   private async _applyUndoRedo(item: UndoStackItem) {
