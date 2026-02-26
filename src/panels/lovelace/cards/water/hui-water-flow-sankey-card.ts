@@ -10,6 +10,7 @@ import {
   formatFlowRateShort,
   getEnergyDataCollection,
   getFlowRateFromState,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -43,6 +44,11 @@ class HuiWaterFlowSankeyCard
   extends SubscribeMixin(MobileAwareMixin(LitElement))
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sankey-card-editor");
+    return document.createElement("hui-energy-sankey-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
@@ -56,6 +62,9 @@ class HuiWaterFlowSankeyCard
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: WaterFlowSankeyCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = { ...DEFAULT_CONFIG, ...config };
   }
 

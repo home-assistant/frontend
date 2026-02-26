@@ -8935,7 +8935,7 @@
             },
             "energy-sankey": {
               "name": "Electrical energy Sankey graph",
-              "description": "This card shows the flow of energy in your home.",
+              "description": "This card shows the distribution of energy in your home on a Sankey graph.",
               "group_by_floor": "Group entities by floor",
               "group_by_area": "Group entities by area",
               "layout": "Graph direction",
@@ -8951,7 +8951,11 @@
             },
             "water-sankey": {
               "name": "Water Sankey graph",
-              "description": "This card shows the flow of water consumption in your home."
+              "description": "This card shows the distribution of water consumption in your home on a Sankey graph."
+            },
+            "water-flow-sankey": {
+              "name": "Water flow Sankey graph",
+              "description": "This card shows the real-time flow of water in your home."
             },
             "energy-solar-consumed-gauge": {
               "name": "Solar consumed gauge",

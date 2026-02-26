@@ -189,6 +189,10 @@ export const energyCards: Card[] = [
     showElement: false,
   },
   {
+    type: "water-flow-sankey",
+    showElement: false,
+  },
+  {
     type: "energy-solar-consumed-gauge",
     showElement: false,
   },
