@@ -840,38 +840,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         replaceTarget?.type === "entity" ? replaceTarget.id : undefined;
       const replacingDeviceId =
         replaceTarget?.type === "device" ? replaceTarget.id : undefined;
-      const replacingAreaId =
-        replaceTarget?.type === "area" ? replaceTarget.id : undefined;
-      const replacingFloorId =
-        replaceTarget?.type === "floor" ? replaceTarget.id : undefined;
-      const replacingLabelId =
-        replaceTarget?.type === "label" ? replaceTarget.id : undefined;
-
-      const excludedEntityIds = targetValue?.entity_id
-        ? ensureArray(targetValue.entity_id).filter(
-            (entityId) => entityId !== replacingEntityId
-          )
-        : undefined;
-      const excludedDeviceIds = targetValue?.device_id
-        ? ensureArray(targetValue.device_id).filter(
-            (deviceId) => deviceId !== replacingDeviceId
-          )
-        : undefined;
-      const excludedAreaIds = targetValue?.area_id
-        ? ensureArray(targetValue.area_id).filter(
-            (areaId) => areaId !== replacingAreaId
-          )
-        : undefined;
-      const excludedFloorIds = targetValue?.floor_id
-        ? ensureArray(targetValue.floor_id).filter(
-            (floorId) => floorId !== replacingFloorId
-          )
-        : undefined;
-      const excludedLabelIds = targetValue?.label_id
-        ? ensureArray(targetValue.label_id).filter(
-            (labelId) => labelId !== replacingLabelId
-          )
-        : undefined;
 
       const items: (
         | string
@@ -889,7 +857,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           undefined,
           undefined,
-          excludedEntityIds,
+          targetValue?.entity_id
+            ? ensureArray(targetValue.entity_id).filter(
+                (entityId) => entityId !== replacingEntityId
+              )
+            : undefined,
           replacingEntityId
             ? `entity${SEPARATOR}${replacingEntityId}`
             : undefined,
@@ -922,7 +894,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          excludedDeviceIds,
+          targetValue?.device_id
+            ? ensureArray(targetValue.device_id).filter(
+                (deviceId) => deviceId !== replacingDeviceId
+              )
+            : undefined,
           replacingDeviceId,
           `device${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
@@ -959,8 +935,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          excludedAreaIds,
-          excludedFloorIds
+          targetValue?.area_id
+            ? ensureArray(targetValue.area_id).filter(
+                (areaId) =>
+                  areaId !==
+                  (replaceTarget?.type === "area"
+                    ? replaceTarget.id
+                    : undefined)
+              )
+            : undefined,
+          targetValue?.floor_id
+            ? ensureArray(targetValue.floor_id).filter(
+                (floorId) =>
+                  floorId !==
+                  (replaceTarget?.type === "floor"
+                    ? replaceTarget.id
+                    : undefined)
+              )
+            : undefined
         );
 
         if (searchTerm) {
@@ -1009,7 +1001,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          excludedLabelIds,
+          targetValue?.label_id
+            ? ensureArray(targetValue.label_id).filter(
+                (labelId) =>
+                  labelId !==
+                  (replaceTarget?.type === "label"
+                    ? replaceTarget.id
+                    : undefined)
+              )
+            : undefined,
           `label${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
 

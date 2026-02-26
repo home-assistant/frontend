@@ -775,16 +775,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     typeof item === "string" ? item : item?.id;
 
   private _getInitialSelectedIndex() {
-    const selectedValue = this._selectedValue;
-
-    if (!this.virtualizerElement || this._search || !selectedValue) {
+    if (!this.virtualizerElement || this._search || !this._selectedValue) {
       return 0;
     }
 
     const index = this.virtualizerElement.items.findIndex(
       (item) =>
         typeof item !== "string" &&
-        (item as PickerComboBoxItem).id === selectedValue
+        (item as PickerComboBoxItem).id === this._selectedValue
     );
 
     if (index === -1) {
