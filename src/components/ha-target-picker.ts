@@ -111,6 +111,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _replaceTarget?: TargetItem;
 
+  @state() private _replaceTargetAnchor?: HTMLElement;
+
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   @state()
@@ -404,6 +406,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .selectedValue=${this._replaceTarget
             ? `${this._replaceTarget.type}${SEPARATOR}${this._replaceTarget.id}`
             : undefined}
+          .popoverAnchor=${this._replaceTargetAnchor}
           .rowRenderer=${this._renderRow}
           .getItems=${this._getItems}
           @value-changed=${this._targetPicked}
@@ -633,6 +636,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ev: HASSDomEvent<HASSDomEvents["replace-target-item"]>
   ) {
     ev.stopPropagation();
+    this._replaceTargetAnchor = ev
+      .composedPath()
+      .find(
+        (node): node is HTMLElement =>
+          node instanceof HTMLElement &&
+          node.tagName === "HA-TARGET-PICKER-ITEM-ROW"
+      );
+
     const type = ev.detail.type;
     if (type === "floor") {
       this._selectedSection = "area";
@@ -652,6 +663,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _handlePickerClosed() {
     this._replaceTarget = undefined;
+    this._replaceTargetAnchor = undefined;
   }
 
   private _addItems(

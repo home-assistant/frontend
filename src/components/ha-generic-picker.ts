@@ -105,6 +105,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @property({ attribute: false }) public selectedValue?: string;
 
+  @property({ attribute: false }) public popoverAnchor?: Element | null;
+
   @property({ type: Boolean, attribute: "use-top-label" })
   public useTopLabel = false;
 
@@ -229,7 +231,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   without-arrow
                   distance="-4"
                   .placement=${this.popoverPlacement}
-                  for="picker"
+                  .for=${this.popoverAnchor ? null : "picker"}
+                  .anchor=${this.popoverAnchor ?? null}
                   auto-size="vertical"
                   auto-size-padding="16"
                   @wa-after-show=${this._dialogOpened}
