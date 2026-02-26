@@ -105,6 +105,9 @@ export const getMyRedirects = (): Redirects => ({
   config_matter: {
     component: "matter",
     redirect: "/config/matter/dashboard",
+  config_thread: {
+    component: "thread",
+    redirect: "/config/thread",
   },
   add_zigbee_device: {
     component: "zha",
