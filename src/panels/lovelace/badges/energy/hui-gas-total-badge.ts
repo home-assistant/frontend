@@ -21,7 +21,7 @@ export class HuiGasTotalBadge
   extends SubscribeMixin(LitElement)
   implements LovelaceBadge
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: GasTotalBadgeConfig;
 
@@ -37,7 +37,7 @@ export class HuiGasTotalBadge
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass!, {
+      getEnergyDataCollection(this.hass, {
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
@@ -68,7 +68,7 @@ export class HuiGasTotalBadge
 
   private _getCurrentFlowRate(entityId: string): number {
     this._entities.add(entityId);
-    return getFlowRateFromState(this.hass!.states[entityId]) ?? 0;
+    return getFlowRateFromState(this.hass.states[entityId]) ?? 0;
   }
 
   private _computeTotalFlowRate(prefs: EnergyPreferences): number {
@@ -87,7 +87,7 @@ export class HuiGasTotalBadge
   }
 
   protected render() {
-    if (!this._config || !this._data || !this.hass) {
+    if (!this._config || !this._data) {
       return nothing;
     }
 
