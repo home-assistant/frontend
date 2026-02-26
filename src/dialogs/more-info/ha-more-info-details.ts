@@ -80,7 +80,7 @@ class HaMoreInfoDetails extends LitElement {
               .hass=${this.hass}
               .value=${{
                 state: {
-                  translasted: translatedState,
+                  translated: translatedState,
                   raw: this._stateObj.state,
                   last_changed: this._stateObj.last_changed,
                   last_updated: this._stateObj.last_updated,
