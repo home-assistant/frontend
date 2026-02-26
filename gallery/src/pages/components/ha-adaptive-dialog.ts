@@ -521,7 +521,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
             </tr>
             <tr>
               <td><code>--dialog-box-shadow</code></td>
-              <td>Dialog/sheet surface box shadow.</td>
+              <td>Dialog surface box shadow (dialog mode only).</td>
             </tr>
             <tr>
               <td><code>--ha-dialog-border-radius</code></td>
@@ -548,20 +548,12 @@ export class DemoHaAdaptiveDialog extends LitElement {
               <td>Dialog/sheet scrim color (legacy compatibility).</td>
             </tr>
             <tr>
-              <td><code>--dialog-z-index</code></td>
-              <td>Z-index for the dialog/sheet.</td>
-            </tr>
-            <tr>
               <td><code>--ha-bottom-sheet-surface-background</code></td>
               <td>Bottom sheet background color (sheet mode only).</td>
             </tr>
             <tr>
               <td><code>--ha-bottom-sheet-surface-backdrop-filter</code></td>
               <td>Bottom sheet surface backdrop filter (sheet mode only).</td>
-            </tr>
-            <tr>
-              <td><code>--ha-bottom-sheet-box-shadow</code></td>
-              <td>Bottom sheet box shadow (sheet mode only).</td>
             </tr>
             <tr>
               <td><code>--ha-bottom-sheet-scrim-backdrop-filter</code></td>

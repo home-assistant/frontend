@@ -32,17 +32,15 @@ type DialogSheetMode = "dialog" | "bottom-sheet";
  *
  * @cssprop --ha-dialog-surface-background - Dialog/sheet background color.
  * @cssprop --ha-dialog-surface-backdrop-filter - Dialog/sheet backdrop filter.
- * @cssprop --dialog-box-shadow - Dialog/sheet box shadow.
+ * @cssprop --dialog-box-shadow - Dialog box shadow (dialog mode only).
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface (dialog mode only).
  * @cssprop --ha-dialog-show-duration - Show animation duration (dialog mode only).
  * @cssprop --ha-dialog-hide-duration - Hide animation duration (dialog mode only).
  * @cssprop --ha-dialog-scrim-backdrop-filter - Dialog/sheet scrim backdrop filter.
  * @cssprop --dialog-backdrop-filter - Dialog/sheet scrim backdrop filter (legacy).
  * @cssprop --mdc-dialog-scrim-color - Dialog/sheet scrim color (legacy).
- * @cssprop --dialog-z-index - Z-index for the dialog/sheet.
  * @cssprop --ha-bottom-sheet-surface-background - Bottom sheet background color (sheet mode only).
  * @cssprop --ha-bottom-sheet-surface-backdrop-filter - Bottom sheet backdrop filter (sheet mode only).
- * @cssprop --ha-bottom-sheet-box-shadow - Bottom sheet box shadow (sheet mode only).
  * @cssprop --ha-bottom-sheet-scrim-backdrop-filter - Bottom sheet scrim backdrop filter (sheet mode only).
  * @cssprop --ha-bottom-sheet-scrim-color - Bottom sheet scrim color (sheet mode only).
  *

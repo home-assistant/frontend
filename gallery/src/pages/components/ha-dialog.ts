@@ -405,10 +405,6 @@ export class DemoHaDialog extends LitElement {
               <td>Dialog scrim color (legacy compatibility).</td>
             </tr>
             <tr>
-              <td><code>--dialog-z-index</code></td>
-              <td>Z-index for the dialog.</td>
-            </tr>
-            <tr>
               <td><code>--dialog-surface-margin-top</code></td>
               <td>Top margin for the dialog surface.</td>
             </tr>
