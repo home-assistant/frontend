@@ -74,17 +74,12 @@ import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
-import type {
-  Entries,
-  ValueChangedEvent,
-} from "../../../types";
+import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
-import {
-  showAutomationSaveDialog,
-} from "./automation-save-dialog/show-dialog-automation-save";
+import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import "./blueprint-automation-editor";
 import { AutomationScriptEditorMixin } from "./ha-automation-script-editor-mixin";
@@ -114,7 +109,7 @@ declare global {
 }
 
 @customElement("ha-automation-editor")
-export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationConfig>(
+export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationConfig>()(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ attribute: false }) public automationId: string | null = null;

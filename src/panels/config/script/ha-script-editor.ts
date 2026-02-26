@@ -21,7 +21,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -78,7 +78,7 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
-  AutomationScriptEditorMixin<ScriptConfig>(
+  AutomationScriptEditorMixin<ScriptConfig>()(
     PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
   )
 ) {
