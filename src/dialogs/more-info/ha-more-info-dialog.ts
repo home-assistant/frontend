@@ -185,6 +185,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._parentEntityIds = [];
     this._entry = undefined;
     this._infoEditMode = false;
+    this._detailsYamlMode = false;
     this._initialView = DEFAULT_VIEW;
     this._currView = DEFAULT_VIEW;
     this._childView = undefined;
@@ -254,6 +255,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   private _goBack() {
     if (this._childView) {
       this._childView = undefined;
+      this._detailsYamlMode = false;
       return;
     }
     if (this._initialView !== this._currView) {
