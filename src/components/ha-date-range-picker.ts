@@ -93,6 +93,8 @@ export class HaDateRangePicker extends LitElement {
     | "center"
     | "inline";
 
+  @state() private _calcedVerticalOpeningDirection?: "up" | "down";
+
   protected willUpdate(changedProps: PropertyValues) {
     if (
       (!this.hasUpdated && this.ranges === undefined) ||
@@ -134,7 +136,9 @@ export class HaDateRangePicker extends LitElement {
         opening-direction=${ifDefined(
           this.openingDirection || this._calcedOpeningDirection
         )}
-        opens-vertical=${ifDefined(this.verticalOpeningDirection)}
+        opens-vertical=${ifDefined(
+          this.verticalOpeningDirection || this._calcedVerticalOpeningDirection
+        )}
         first-day=${firstWeekdayIndex(this.hass.locale)}
         language=${this.hass.locale.language}
         @change=${this._handleChange}
@@ -328,17 +332,24 @@ export class HaDateRangePicker extends LitElement {
 
   private _handleClick() {
     // calculate opening direction if not set
-    if (!this._dateRangePicker.open && !this.openingDirection) {
-      const datePickerPosition = this.getBoundingClientRect().x;
-      let opens: "right" | "left" | "center" | "inline";
-      if (datePickerPosition > (2 * window.innerWidth) / 3) {
-        opens = "left";
-      } else if (datePickerPosition < window.innerWidth / 3) {
-        opens = "right";
-      } else {
-        opens = "center";
+    if (!this._dateRangePicker.open) {
+      if (!this.openingDirection) {
+        const datePickerPosition = this.getBoundingClientRect().x;
+        let opens: "right" | "left" | "center" | "inline";
+        if (datePickerPosition > (2 * window.innerWidth) / 3) {
+          opens = "left";
+        } else if (datePickerPosition < window.innerWidth / 3) {
+          opens = "right";
+        } else {
+          opens = "center";
+        }
+        this._calcedOpeningDirection = opens;
       }
-      this._calcedOpeningDirection = opens;
+      if (!this.verticalOpeningDirection) {
+        const rect = this.getBoundingClientRect();
+        this._calcedVerticalOpeningDirection =
+          rect.top > window.innerHeight / 2 ? "up" : "down";
+      }
     }
   }
 
