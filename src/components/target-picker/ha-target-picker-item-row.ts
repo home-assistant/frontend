@@ -600,7 +600,8 @@ export class HaTargetPickerItemRow extends LitElement {
     }
   }
 
-  private _replaceItem() {
+  private _replaceItem(ev: MouseEvent) {
+    ev.stopPropagation();
     fireEvent(this, "replace-target-item", {
       type: this.type,
       id: this.itemId,
