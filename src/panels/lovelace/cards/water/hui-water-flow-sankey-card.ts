@@ -55,6 +55,18 @@ class HuiWaterFlowSankeyCard
 
   @state() private _config?: WaterFlowSankeyCardConfig;
 
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): WaterFlowSankeyCardConfig {
+    return {
+      type: "water-flow-sankey",
+      layout: "auto",
+      ...DEFAULT_CONFIG,
+    };
+  }
+
   @state() private _data?: EnergyData;
 
   private _entities = new Set<string>();
