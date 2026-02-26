@@ -109,7 +109,7 @@ declare global {
 }
 
 @customElement("ha-automation-editor")
-export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationConfig>()(
+export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationConfig>(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ attribute: false }) public automationId: string | null = null;

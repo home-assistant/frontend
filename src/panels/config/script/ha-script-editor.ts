@@ -78,7 +78,7 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
-  AutomationScriptEditorMixin<ScriptConfig>()(
+  AutomationScriptEditorMixin<ScriptConfig>(
     PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
   )
 ) {
