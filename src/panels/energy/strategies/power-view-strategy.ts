@@ -49,22 +49,15 @@ export class PowerViewStrategy extends ReactiveElement {
       (source) => source.type === "gas" && source.stat_rate
     );
 
-    const tileSection: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [],
-      column_span: 2,
-    };
     const chartsSection: LovelaceSectionConfig = {
       type: "grid",
       cards: [],
-      column_span: 2,
     };
     const tiles: LovelaceCardConfig[] = [];
 
     const view: LovelaceViewConfig = {
       type: "sections",
-      sections: [tileSection, chartsSection],
-      max_columns: 2,
+      sections: [chartsSection],
     };
 
     // No sources configured
@@ -148,21 +141,34 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    tiles.forEach((card) => {
-      tileSection.cards!.push({
-        ...card,
-        grid_options: { columns: 24 / tiles.length },
-      });
-    });
-
-    if (tiles.length > 2) {
-      // On small screens with 3 tiles, show them in 1 column
-      tileSection.visibility = [LARGE_SCREEN_CONDITION];
-      view.sections!.unshift({
-        type: "grid",
-        cards: tiles,
-        visibility: [SMALL_SCREEN_CONDITION],
-      });
+    if (tiles.length) {
+      // If only 1 tile, center it with empty cards on each side
+      const desktopTiles =
+        tiles.length === 1
+          ? [
+              { type: "vertical-stack", cards: [] },
+              tiles[0],
+              { type: "vertical-stack", cards: [] },
+            ]
+          : tiles;
+      view.header = {
+        card: {
+          type: "vertical-stack",
+          cards: [
+            {
+              type: "grid",
+              square: false,
+              columns: desktopTiles.length,
+              cards: desktopTiles,
+              visibility: [LARGE_SCREEN_CONDITION],
+            },
+            ...tiles.map((card) => ({
+              ...card,
+              visibility: [SMALL_SCREEN_CONDITION],
+            })),
+          ],
+        },
+      };
     }
 
     return view;
