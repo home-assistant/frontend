@@ -258,20 +258,17 @@ export const haStyleDialogFixedTop = css`
 `;
 
 export const haStyleScrollbar = css`
-  .ha-scrollbar::-webkit-scrollbar,
-  :host(.ha-scrollbar)::-webkit-scrollbar {
+  .ha-scrollbar::-webkit-scrollbar {
     width: 0.4rem;
     height: 0.4rem;
   }
 
-  .ha-scrollbar::-webkit-scrollbar-thumb,
-  :host(.ha-scrollbar)::-webkit-scrollbar-thumb {
+  .ha-scrollbar::-webkit-scrollbar-thumb {
     border-radius: var(--ha-border-radius-sm);
     background: var(--scrollbar-thumb-color);
   }
 
-  .ha-scrollbar,
-  :host(.ha-scrollbar) {
+  .ha-scrollbar {
     overflow-y: auto;
     scrollbar-color: var(--scrollbar-thumb-color) transparent;
     scrollbar-width: thin;
