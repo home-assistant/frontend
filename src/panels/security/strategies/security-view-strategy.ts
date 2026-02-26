@@ -1,17 +1,24 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   findEntities,
   generateEntityFilter,
   type EntityFilter,
 } from "../../../common/entity/entity_filter";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import type { LogbookCardConfig } from "../../lovelace/cards/types";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import {
+  LARGE_SCREEN_CONDITION,
+} from "../../lovelace/strategies/helpers/screen-conditions";
 
 export interface SecurityViewStrategyConfig {
   type: "security";
@@ -226,10 +233,57 @@ export class SecurityViewStrategy extends ReactiveElement {
       sections.push(section);
     }
 
+    // Build sidebar with activity log
+    const hasLogbook = isComponentLoaded(hass, "logbook");
+
+    // Collect person entity IDs
+    const personEntities = Object.keys(hass.states).filter(
+      (entityId) => computeStateDomain(hass.states[entityId]) === "person"
+    );
+
+    const logbookEntityIds = [...entities, ...personEntities];
+
+    const sidebarSection: LovelaceSectionConfig | undefined =
+      hasLogbook && logbookEntityIds.length > 0
+        ? {
+            type: "grid",
+            cards: [
+              {
+                type: "heading",
+                heading: hass.localize(
+                  "ui.panel.lovelace.strategy.security.activity"
+                ),
+                heading_style: "title",
+                grid_options: { rows: "auto" },
+              } as LovelaceCardConfig,
+              {
+                type: "logbook",
+                target: {
+                  entity_id: logbookEntityIds,
+                },
+                hours_to_show: 24,
+                grid_options: { columns: 12 },
+              } satisfies LogbookCardConfig,
+            ],
+          }
+        : undefined;
+
     return {
       type: "sections",
       max_columns: 2,
       sections: sections,
+      ...(sidebarSection && {
+        sidebar: {
+          sections: [sidebarSection],
+          content_label: hass.localize(
+            "ui.panel.lovelace.strategy.security.devices"
+          ),
+          sidebar_label: hass.localize(
+            "ui.panel.lovelace.strategy.security.activity"
+          ),
+          visibility: [LARGE_SCREEN_CONDITION],
+        },
+      }),
     };
   }
 }

@@ -8092,7 +8092,8 @@
           },
           "security": {
             "devices": "Devices",
-            "other_devices": "Other devices"
+            "other_devices": "Other devices",
+            "activity": "Activity"
           },
           "climate": {
             "devices": "Devices",
