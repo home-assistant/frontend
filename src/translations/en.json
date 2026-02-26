@@ -8352,7 +8352,6 @@
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
             "reload": "Reload",
-            "lovelace_changed": "Your dashboard was updated, do you want to load the updated config in the editor and lose your current changes?",
             "confirm_reset_config_title": "Reset dashboard configuration?",
             "confirm_reset_config_text": "Your dashboard will be reset to an empty state. You can start fresh and build your dashboard from scratch.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
@@ -9675,8 +9674,8 @@
           "entity_unavailable": "Entity is currently unavailable: {entity}",
           "starting": "Home Assistant is starting. Not everything may be available yet."
         },
-        "changed_toast": {
-          "message": "Your dashboard was updated. Refresh to see changes?"
+        "externally_updated_toast": {
+          "message": "Dashboard updated in another session. Refreshing will discard your unsaved changes."
         },
         "components": {
           "timestamp-display": {
