@@ -19,6 +19,21 @@ export class HUIViewBackground extends LitElement {
 
   @state({ attribute: false }) resolvedImage?: string;
 
+  private _resizeObserver?: ResizeObserver;
+
+  private _mutationObserver?: MutationObserver;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._setUpBackgroundSizeObservers();
+    this._updateBackgroundHeight();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._clearBackgroundSizeObservers();
+  }
+
   protected render() {
     return nothing;
   }
@@ -57,6 +72,61 @@ export class HUIViewBackground extends LitElement {
       this.background
     );
     this.style.setProperty("--view-background-opacity", viewBackgroundOpacity);
+
+    this._updateBackgroundHeight();
+  }
+
+  private _setUpBackgroundSizeObservers() {
+    const container = this.parentElement;
+    if (!container) {
+      return;
+    }
+
+    this._resizeObserver = new ResizeObserver(() => {
+      this._updateBackgroundHeight();
+    });
+    this._mutationObserver = new MutationObserver(() => {
+      this._refreshResizeObserverTargets();
+      this._updateBackgroundHeight();
+    });
+
+    this._mutationObserver.observe(container, { childList: true });
+    this._refreshResizeObserverTargets();
+  }
+
+  private _clearBackgroundSizeObservers() {
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = undefined;
+
+    this._mutationObserver?.disconnect();
+    this._mutationObserver = undefined;
+  }
+
+  private _refreshResizeObserverTargets() {
+    if (!this.parentElement || !this._resizeObserver) {
+      return;
+    }
+
+    this._resizeObserver.disconnect();
+    this._resizeObserver.observe(this.parentElement);
+
+    for (const child of Array.from(this.parentElement.children)) {
+      if (child !== this) {
+        this._resizeObserver.observe(child);
+      }
+    }
+  }
+
+  private _updateBackgroundHeight() {
+    if (this.hasAttribute("fixed-background") || !this.parentElement) {
+      this.style.removeProperty("--view-background-height");
+      return;
+    }
+
+    this.style.setProperty(
+      "--view-background-height",
+      `${this.parentElement.scrollHeight}px`
+    );
   }
 
   private _isFixedBackground(
@@ -139,18 +209,21 @@ export class HUIViewBackground extends LitElement {
       display: block;
       z-index: -1;
       position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background-attachment: scroll !important;
     }
     :host(:not([fixed-background])) {
       z-index: -1;
       position: absolute;
-    }
-    :host {
       top: 0;
       left: 0;
       right: 0;
-      bottom: 0;
-      height: 100%;
+      height: var(--view-background-height, 100%);
+    }
+    :host {
       width: 100%;
       background: var(
         --view-background,
