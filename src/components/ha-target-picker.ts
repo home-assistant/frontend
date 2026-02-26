@@ -68,6 +68,12 @@ import "./target-picker/ha-target-picker-value-chip";
 
 const SEPARATOR = "________";
 const CREATE_ID = "___create-new-entity___";
+const isTargetType = (value: string): value is TargetType =>
+  value === "entity" ||
+  value === "device" ||
+  value === "area" ||
+  value === "label" ||
+  value === "floor";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -429,8 +435,59 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return;
     }
 
-    const [type, id] = ev.detail.value.split(SEPARATOR);
-    this._addTarget(id, type as TargetType);
+    const [rawType, id] = value.split(SEPARATOR);
+
+    if (!id || !isTargetType(rawType)) {
+      return;
+    }
+
+    if (this._replaceTarget) {
+      this._replaceTargetItem(this._replaceTarget, { type: rawType, id });
+      return;
+    }
+
+    this._addTarget(id, rawType);
+  }
+
+  private _replaceTargetItem(currentTarget: TargetItem, newTarget: TargetItem) {
+    if (
+      currentTarget.type === newTarget.type &&
+      currentTarget.id === newTarget.id
+    ) {
+      return;
+    }
+
+    const typeId = `${newTarget.type}_id`;
+
+    if (typeId === "entity_id" && !isValidEntityId(newTarget.id)) {
+      return;
+    }
+
+    if (!this.value) {
+      return;
+    }
+
+    let value = this._removeItem(
+      this.value,
+      currentTarget.type,
+      currentTarget.id
+    );
+
+    if (value?.[typeId] && ensureArray(value[typeId]).includes(newTarget.id)) {
+      fireEvent(this, "value-changed", { value });
+      return;
+    }
+
+    value = value
+      ? {
+          ...value,
+          [typeId]: value[typeId]
+            ? [...ensureArray(value[typeId]), newTarget.id]
+            : newTarget.id,
+        }
+      : { [typeId]: newTarget.id };
+
+    fireEvent(this, "value-changed", { value });
   }
 
   private _addTarget(id: string, type: TargetType) {
