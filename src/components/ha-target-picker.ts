@@ -7,10 +7,11 @@ import Fuse from "fuse.js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing, unsafeCSS } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
@@ -111,6 +112,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @state()
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
+
+  @query("ha-generic-picker") private _picker?: {
+    open: () => Promise<void>;
+  };
 
   private _newTarget?: { type: TargetType; id: string };
 
@@ -286,6 +291,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
+                @replace-target-item=${this._handleReplace}
                 type="entity"
                 .hass=${this.hass}
                 .items=${{ entity: entityIds }}
@@ -301,6 +307,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
+                @replace-target-item=${this._handleReplace}
                 type="device"
                 .hass=${this.hass}
                 .items=${{ device: deviceIds }}
@@ -316,6 +323,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
+                @replace-target-item=${this._handleReplace}
                 type="area"
                 .hass=${this.hass}
                 .items=${{
@@ -334,6 +342,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           ? html`
               <ha-target-picker-item-group
                 @remove-target-item=${this._handleRemove}
+                @replace-target-item=${this._handleReplace}
                 type="label"
                 .hass=${this.hass}
                 .items=${{ label: labelIds }}
@@ -612,6 +621,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     value = this._removeItem(value, type, itemId);
     fireEvent(this, "value-changed", { value });
+  }
+
+  private _handleReplace(
+    ev: HASSDomEvent<HASSDomEvents["replace-target-item"]>
+  ) {
+    const type = ev.detail.type;
+    this._selectedSection =
+      type === "floor" ? "area" : (type as TargetTypeFloorless);
+    this._picker?.open();
   }
 
   private _addItems(
@@ -1119,6 +1137,10 @@ declare global {
       id: string;
     };
     "expand-target-item": {
+      type: string;
+      id: string;
+    };
+    "replace-target-item": {
       type: string;
       id: string;
     };

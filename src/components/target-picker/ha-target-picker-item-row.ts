@@ -131,8 +131,14 @@ export class HaTargetPickerItemRow extends LitElement {
       return nothing;
     }
 
+    const replaceable = !this.subEntry && !this.expand;
+
     return html`
-      <ha-md-list-item type="text" class=${notFound ? "error" : ""}>
+      <ha-md-list-item
+        type=${replaceable ? "button" : "text"}
+        class=${`${notFound ? "error " : ""}${replaceable ? "replaceable" : ""}`}
+        @click=${replaceable ? this._replaceItem : undefined}
+      >
         <div class="icon" slot="start">
           ${this.subEntry
             ? html`
@@ -592,7 +598,15 @@ export class HaTargetPickerItemRow extends LitElement {
     }
   }
 
-  private _openDetails() {
+  private _replaceItem() {
+    fireEvent(this, "replace-target-item", {
+      type: this.type,
+      id: this.itemId,
+    });
+  }
+
+  private _openDetails(ev: MouseEvent) {
+    ev.stopPropagation();
     showTargetDetailsDialog(this, {
       title: this._itemData(this.type, this.itemId).name,
       type: this.type,
@@ -627,6 +641,14 @@ export class HaTargetPickerItemRow extends LitElement {
 
       .error [slot="supporting-text"] {
         color: var(--ha-color-on-warning-normal);
+      }
+
+      .replaceable {
+        cursor: pointer;
+      }
+
+      .replaceable:hover {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
       }
 
       state-badge {
