@@ -34,10 +34,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
-import "../../../components/ha-fade-in";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type {
@@ -82,7 +80,10 @@ import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-a
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import "./blueprint-automation-editor";
-import { AutomationScriptEditorMixin } from "./ha-automation-script-editor-mixin";
+import {
+  AutomationScriptEditorMixin,
+  automationScriptEditorStyles,
+} from "./ha-automation-script-editor-mixin";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -159,11 +160,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
-      return html`
-        <ha-fade-in .delay=${500}>
-          <ha-spinner size="large"></ha-spinner>
-        </ha-fade-in>
-      `;
+      return this._renderLoading();
     }
 
     const stateObj = this._entityId
@@ -1162,25 +1159,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      automationScriptEditorStyles,
       css`
-        :host {
-          --ha-automation-editor-max-width: var(
-            --ha-automation-editor-width,
-            1540px
-          );
-        }
-        ha-fade-in {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100%;
-        }
-        .yaml-mode {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          padding-bottom: 0;
-        }
         manual-automation-editor,
         blueprint-automation-editor {
           margin: 0 auto;
@@ -1194,17 +1174,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           padding: 0 12px;
         }
 
-        ha-yaml-editor {
-          flex-grow: 1;
-          --actions-border-radius: var(--ha-border-radius-square);
-          --code-mirror-height: 100%;
-          min-height: 0;
-          display: flex;
-          flex-direction: column;
-        }
-        p {
-          margin-bottom: 0;
-        }
         ha-entity-toggle {
           margin-right: 8px;
           margin-inline-end: 8px;
@@ -1219,24 +1188,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
-        }
-        ha-fab {
-          position: fixed;
-          right: calc(16px + var(--safe-area-inset-right, 0px));
-          bottom: calc(-80px - var(--safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
-        }
-        ha-tooltip ha-svg-icon {
-          width: 12px;
-        }
-        ha-tooltip .shortcut {
-          display: inline-flex;
-          flex-direction: row;
-          align-items: center;
-          gap: 2px;
         }
       `,
     ];

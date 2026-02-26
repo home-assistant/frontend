@@ -1,6 +1,6 @@
 import { consume } from "@lit/context";
-import type { TemplateResult, LitElement } from "lit";
-import { html } from "lit";
+import type { CSSResult, TemplateResult, LitElement } from "lit";
+import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
 import { goBack } from "../../../common/navigate";
@@ -11,11 +11,61 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-spinner"; // used by _renderLoading() provided to both editors
 
 /** Minimum config shape shared by both AutomationConfig and ScriptConfig. */
 interface BaseEditorConfig {
   alias?: string;
 }
+
+/** Shared CSS styles for both automation and script editors. */
+export const automationScriptEditorStyles: CSSResult = css`
+  :host {
+    --ha-automation-editor-max-width: var(--ha-automation-editor-width, 1540px);
+  }
+  ha-fade-in {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  .yaml-mode {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  ha-yaml-editor {
+    flex-grow: 1;
+    --actions-border-radius: var(--ha-border-radius-square);
+    --code-mirror-height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  p {
+    margin-bottom: 0;
+  }
+  ha-fab {
+    position: fixed;
+    right: calc(16px + var(--safe-area-inset-right, 0px));
+    bottom: calc(-80px - var(--safe-area-inset-bottom));
+    transition: bottom 0.3s;
+  }
+  ha-fab.dirty {
+    bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
+  }
+  ha-tooltip ha-svg-icon {
+    width: 12px;
+  }
+  ha-tooltip .shortcut {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+  }
+`;
 
 export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
   superClass: Constructor<LitElement>
@@ -66,6 +116,14 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected _entityRegCreated?: (
       value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
     ) => void;
+
+    protected _renderLoading(): TemplateResult {
+      return html`
+        <ha-fade-in .delay=${500}>
+          <ha-spinner size="large"></ha-spinner>
+        </ha-fade-in>
+      `;
+    }
 
     protected _showSettings() {
       showMoreInfoDialog(this, {

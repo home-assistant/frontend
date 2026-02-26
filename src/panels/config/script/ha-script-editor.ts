@@ -71,7 +71,10 @@ import { showAutomationSaveDialog } from "../automation/automation-save-dialog/s
 import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
-import { AutomationScriptEditorMixin } from "../automation/ha-automation-script-editor-mixin";
+import {
+  AutomationScriptEditorMixin,
+  automationScriptEditorStyles,
+} from "../automation/ha-automation-script-editor-mixin";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -117,7 +120,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
-      return nothing;
+      return this._renderLoading();
     }
 
     const stateObj = this._entityId
@@ -1074,19 +1077,8 @@ export class HaScriptEditor extends SubscribeMixin(
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      automationScriptEditorStyles,
       css`
-        :host {
-          --ha-automation-editor-max-width: var(
-            --ha-automation-editor-width,
-            1540px
-          );
-        }
-        .yaml-mode {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          padding-bottom: 0;
-        }
         manual-script-editor,
         blueprint-script-editor {
           margin: 0 auto;
@@ -1137,28 +1129,8 @@ export class HaScriptEditor extends SubscribeMixin(
           padding: 0 12px;
         }
 
-        ha-yaml-editor {
-          flex-grow: 1;
-          --actions-border-radius: var(--ha-border-radius-square);
-          --code-mirror-height: 100%;
-          min-height: 0;
-          display: flex;
-          flex-direction: column;
-        }
-        p {
-          margin-bottom: 0;
-        }
         span[slot="introduction"] a {
           color: var(--primary-color);
-        }
-        ha-fab {
-          position: fixed;
-          right: 16px;
-          bottom: calc(-80px - var(--safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
         }
         .header {
           display: flex;
@@ -1172,15 +1144,6 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         .header a {
           color: var(--secondary-text-color);
-        }
-        ha-tooltip ha-svg-icon {
-          width: 12px;
-        }
-        ha-tooltip .shortcut {
-          display: inline-flex;
-          flex-direction: row;
-          align-items: center;
-          gap: 2px;
         }
       `,
     ];
