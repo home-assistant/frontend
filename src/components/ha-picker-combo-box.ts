@@ -1,6 +1,6 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import { mdiClose, mdiMagnify, mdiMinusBoxOutline, mdiPlus } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
@@ -23,7 +23,6 @@ import {
 } from "../resources/fuseMultiTerm";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
-import type { HomeAssistant } from "../types";
 import { isTouch } from "../util/is_touch";
 import "./chips/ha-chip-set";
 import "./chips/ha-filter-chip";
@@ -164,11 +163,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @state()
   @consume({ context: localizeContext, subscribe: true })
-  private localize?: HomeAssistant["localize"];
+  private localize!: ContextType<typeof localizeContext>;
 
   @state()
   @consume({ context: localeContext, subscribe: true })
-  private locale?: HomeAssistant["locale"];
+  private locale!: ContextType<typeof localeContext>;
 
   @state() private _items: PickerComboBoxItem[] = [];
 

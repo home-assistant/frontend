@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -6,7 +6,6 @@ import "../../components/ha-alert";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import { localizeContext } from "../../data/context";
-import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
 import { DialogMixin } from "../dialog-mixin";
 
@@ -170,7 +169,7 @@ const _SHORTCUTS: Section[] = [
 class DialogShortcuts extends DialogMixin(LitElement) {
   @state()
   @consume({ context: localizeContext, subscribe: true })
-  private localize!: HomeAssistant["localize"];
+  private localize!: ContextType<typeof localizeContext>;
 
   private _renderShortcut(
     shortcutKeys: ShortcutString[],

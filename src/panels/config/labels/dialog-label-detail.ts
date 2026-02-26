@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -15,7 +15,6 @@ import { localizeContext } from "../../../data/context";
 import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import type { LabelDetailDialogParams } from "./show-dialog-label-detail";
 
 @customElement("dialog-label-detail")
@@ -24,7 +23,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
 ) {
   @state()
   @consume({ context: localizeContext, subscribe: true })
-  private localize!: HomeAssistant["localize"];
+  private localize!: ContextType<typeof localizeContext>;
 
   @state() private _name!: string;
 

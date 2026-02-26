@@ -15,7 +15,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { authContext, localizeContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import { isIosApp } from "../util/is_ios";
 import "./ha-dialog-header";
 import "./ha-icon-button";
@@ -119,7 +118,7 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
   @state()
   @consume({ context: localizeContext, subscribe: true })
-  private localize?: HomeAssistant["localize"];
+  private localize!: ContextType<typeof localizeContext>;
 
   @state()
   @consume({ context: authContext, subscribe: true })

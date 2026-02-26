@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import { mdiInvertColorsOff, mdiPalette } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,7 +8,7 @@ import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
 import { localizeContext } from "../data/context";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import type { PickerValueRenderer } from "./ha-picker-field";
@@ -36,7 +36,7 @@ export class HaColorPicker extends LitElement {
 
   @state()
   @consume({ context: localizeContext, subscribe: true })
-  private localize?: HomeAssistant["localize"];
+  private localize!: ContextType<typeof localizeContext>;
 
   render() {
     const effectiveValue = this.value ?? this.defaultColor ?? "";
