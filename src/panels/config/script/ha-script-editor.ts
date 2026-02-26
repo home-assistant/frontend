@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiCog,
@@ -25,12 +24,10 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
-import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
-import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -40,7 +37,6 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
-import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   type EntityRegistryEntry,
@@ -67,77 +63,33 @@ import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { Entries, HomeAssistant, Route } from "../../../types";
+import type { Entries } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
-import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
+import { AutomationScriptEditorMixin } from "../automation/ha-automation-script-editor-mixin";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
-  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
+  AutomationScriptEditorMixin<ScriptConfig>(
+    PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
+  )
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public scriptId: string | null = null;
 
-  @property({ attribute: false }) public entityId: string | null = null;
-
   @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
-
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
-
-  @property({ type: Boolean }) public narrow = false;
-
-  @property({ attribute: false }) public route!: Route;
-
-  @state() private _config?: ScriptConfig;
-
-  @state() private _dirty = false;
-
-  @state() private _errors?: string;
-
-  @state() private _yamlErrors?: string;
-
-  @state() private _entityId?: string;
-
-  @state() private _mode: "gui" | "yaml" = "gui";
-
-  @state() private _readOnly = false;
-
-  @state()
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
-    transformer: function (this: HaScriptEditor, value) {
-      return value.find(({ entity_id }) => entity_id === this._entityId);
-    },
-    watch: ["_entityId"],
-  })
-  private _registryEntry?: EntityRegistryEntry;
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
 
-  @state() private _validationErrors?: (string | TemplateResult)[];
-
-  @state() private _blueprintConfig?: BlueprintScriptConfig;
-
-  @state() private _saving = false;
-
-  private _entityRegistryUpdate?: EntityRegistryUpdate;
-
   private _newScriptId?: string;
-
-  private _entityRegCreated?: (
-    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
-  ) => void;
 
   private _undoRedoController = new UndoRedoController<ScriptConfig>(this, {
     apply: (config) => this._applyUndoRedo(config),
@@ -672,13 +624,6 @@ export class HaScriptEditor extends SubscribeMixin(
     });
   }
 
-  private _showSettings() {
-    showMoreInfoDialog(this, {
-      entityId: this._entityId!,
-      view: "settings",
-    });
-  }
-
   private _editCategory() {
     if (!this._registryEntry) {
       showAlertDialog(this, {
@@ -766,7 +711,7 @@ export class HaScriptEditor extends SubscribeMixin(
     this._errors = undefined;
   }
 
-  private async _confirmUnsavedChanged(): Promise<boolean> {
+  protected async _confirmUnsavedChanged(): Promise<boolean> {
     if (!this._dirty) {
       return true;
     }
@@ -811,13 +756,6 @@ export class HaScriptEditor extends SubscribeMixin(
     });
   }
 
-  private _backTapped = async () => {
-    const result = await this._confirmUnsavedChanged();
-    if (result) {
-      afterNextRender(() => goBack("/config"));
-    }
-  };
-
   private async _takeControl() {
     const config = this._config as BlueprintScriptConfig;
 
@@ -845,21 +783,6 @@ export class HaScriptEditor extends SubscribeMixin(
     } catch (err: any) {
       this._errors = err.message;
     }
-  }
-
-  private _revertBlueprint() {
-    this._config = this._blueprintConfig;
-    if (this._mode === "yaml") {
-      this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this._config);
-    }
-    this._blueprintConfig = undefined;
-    this._readOnly = false;
-  }
-
-  private _takeControlSave() {
-    this._readOnly = false;
-    this._dirty = true;
-    this._blueprintConfig = undefined;
   }
 
   private async _duplicate() {
@@ -905,28 +828,6 @@ export class HaScriptEditor extends SubscribeMixin(
   private async _delete() {
     await deleteScript(this.hass, this.scriptId!);
     goBack("/config");
-  }
-
-  private async _switchUiMode() {
-    if (this._yamlErrors) {
-      const result = await showConfirmationDialog(this, {
-        text: html`${this.hass.localize(
-            "ui.panel.config.automation.editor.switch_ui_yaml_error"
-          )}<br /><br />${this._yamlErrors}`,
-        confirmText: this.hass!.localize("ui.common.continue"),
-        destructive: true,
-        dismissText: this.hass!.localize("ui.common.cancel"),
-      });
-      if (!result) {
-        return;
-      }
-    }
-    this._yamlErrors = undefined;
-    this._mode = "gui";
-  }
-
-  private _switchYamlMode() {
-    this._mode = "yaml";
   }
 
   private async _promptScriptAlias(): Promise<boolean> {
@@ -1075,14 +976,6 @@ export class HaScriptEditor extends SubscribeMixin(
       Z: () => this._redo(),
       y: () => this._redo(),
     };
-  }
-
-  protected get isDirty() {
-    return this._dirty;
-  }
-
-  protected async promptDiscardChanges() {
-    return this._confirmUnsavedChanged();
   }
 
   // @ts-ignore
