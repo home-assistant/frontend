@@ -43,6 +43,7 @@ import {
   deviceMeetsFilter,
   entityRegMeetsFilter,
   getTargetComboBoxItemType,
+  type TargetItem,
   type TargetType,
   type TargetTypeFloorless,
 } from "../data/target";
@@ -108,7 +109,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _selectedSection?: TargetTypeFloorless;
 
-  @state() private _replaceTarget?: { type: TargetType; id: string };
+  @state() private _replaceTarget?: TargetItem;
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
@@ -118,7 +119,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  private _newTarget?: { type: TargetType; id: string };
+  private _newTarget?: TargetItem;
 
   private _getDevicesMemoized = memoizeOne(getDevices);
 
@@ -475,14 +476,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   };
 
-  private _handleRemove(ev) {
+  private _handleRemove(ev: HASSDomEvent<HASSDomEvents["remove-target-item"]>) {
     const { type, id } = ev.detail;
     fireEvent(this, "value-changed", {
       value: this._removeItem(this.value, type, id),
     });
   }
 
-  private _handleExpand(ev) {
+  private _handleExpand(ev: HASSDomEvent<HASSDomEvents["expand-target-item"]>) {
     const type = ev.detail.type;
     const itemId = ev.detail.id;
     const newAreas: string[] = [];
@@ -758,7 +759,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       includeDomains: this["includeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
       targetValue: this["value"],
-      replaceTarget: { type: TargetType; id: string } | undefined,
+      replaceTarget: TargetItem | undefined,
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
       filterType?: TargetTypeFloorless
@@ -1190,18 +1191,9 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "remove-target-item": {
-      type: string;
-      id: string;
-    };
-    "expand-target-item": {
-      type: string;
-      id: string;
-    };
-    "replace-target-item": {
-      type: TargetType;
-      id: string;
-    };
+    "remove-target-item": TargetItem;
+    "expand-target-item": TargetItem;
+    "replace-target-item": TargetItem;
     "remove-target-group": string;
   }
 }
