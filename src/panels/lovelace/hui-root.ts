@@ -1195,6 +1195,7 @@ class HUIRoot extends LitElement {
         unusedEntities.narrow = this.narrow;
       });
       root.appendChild(unusedEntities);
+      this._refreshViewBackgroundObservers();
       return;
     }
 
@@ -1219,6 +1220,19 @@ class HUIRoot extends LitElement {
     view.narrow = this.narrow;
 
     root.appendChild(view);
+    this._refreshViewBackgroundObservers();
+  }
+
+  private _refreshViewBackgroundObservers() {
+    const viewBackground = this._viewRoot.querySelector("hui-view-background");
+
+    if (!viewBackground || !("refreshSizeObservers" in viewBackground)) {
+      return;
+    }
+
+    (
+      viewBackground as HTMLElement & { refreshSizeObservers: () => void }
+    ).refreshSizeObservers();
   }
 
   private async _applyUndoRedo(item: UndoStackItem) {

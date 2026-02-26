@@ -21,17 +21,17 @@ export class HUIViewBackground extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
-  private _mutationObserver?: MutationObserver;
+  private _observedView?: Element;
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._setUpBackgroundSizeObservers();
-    this._updateBackgroundHeight();
+    this._setUpBackgroundSizeObserver();
+    this.refreshSizeObservers();
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._clearBackgroundSizeObservers();
+    this._clearBackgroundSizeObserver();
   }
 
   protected render() {
@@ -76,45 +76,43 @@ export class HUIViewBackground extends LitElement {
     this._updateBackgroundHeight();
   }
 
-  private _setUpBackgroundSizeObservers() {
-    const container = this.parentElement;
-    if (!container) {
+  private _setUpBackgroundSizeObserver() {
+    if (this._resizeObserver) {
       return;
     }
 
     this._resizeObserver = new ResizeObserver(() => {
       this._updateBackgroundHeight();
     });
-    this._mutationObserver = new MutationObserver(() => {
-      this._refreshResizeObserverTargets();
-      this._updateBackgroundHeight();
-    });
-
-    this._mutationObserver.observe(container, { childList: true });
-    this._refreshResizeObserverTargets();
   }
 
-  private _clearBackgroundSizeObservers() {
+  private _clearBackgroundSizeObserver() {
     this._resizeObserver?.disconnect();
     this._resizeObserver = undefined;
-
-    this._mutationObserver?.disconnect();
-    this._mutationObserver = undefined;
+    this._observedView = undefined;
   }
 
-  private _refreshResizeObserverTargets() {
+  public refreshSizeObservers() {
     if (!this.parentElement || !this._resizeObserver) {
+      return;
+    }
+
+    const view = this.nextElementSibling ?? undefined;
+
+    if (view === this._observedView) {
+      this._updateBackgroundHeight();
       return;
     }
 
     this._resizeObserver.disconnect();
     this._resizeObserver.observe(this.parentElement);
 
-    for (const child of Array.from(this.parentElement.children)) {
-      if (child !== this) {
-        this._resizeObserver.observe(child);
-      }
+    if (view) {
+      this._resizeObserver.observe(view);
     }
+
+    this._observedView = view;
+    this._updateBackgroundHeight();
   }
 
   private _updateBackgroundHeight() {
