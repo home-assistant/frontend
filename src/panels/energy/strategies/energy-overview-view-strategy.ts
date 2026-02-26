@@ -13,15 +13,22 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
+    const collectionKey =
+      _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
+
     const view: LovelaceViewConfig = {
       type: "sections",
       sections: [],
       dense_section_placement: true,
-      max_columns: 2,
+      max_columns: 3,
+      footer: {
+        column_span: 1,
+        card: {
+          type: "energy-date-selection",
+          collection_key: collectionKey,
+        },
+      },
     };
-
-    const collectionKey =
-      _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
 
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
