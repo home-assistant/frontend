@@ -136,7 +136,9 @@ export class HaTargetPickerItemRow extends LitElement {
     return html`
       <ha-md-list-item
         type=${replaceable ? "button" : "text"}
-        class=${`${notFound ? "error " : ""}${replaceable ? "replaceable" : ""}`}
+        class=${[notFound ? "error" : "", replaceable ? "replaceable" : ""]
+          .filter(Boolean)
+          .join(" ")}
         @click=${replaceable ? this._replaceItem : undefined}
       >
         <div class="icon" slot="start">
@@ -647,7 +649,8 @@ export class HaTargetPickerItemRow extends LitElement {
         cursor: pointer;
       }
 
-      .replaceable:hover {
+      .replaceable:hover,
+      .replaceable:focus-visible {
         background-color: var(--ha-color-fill-neutral-quiet-hover);
       }
 

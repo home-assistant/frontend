@@ -58,6 +58,7 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
@@ -113,9 +114,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
-  @query("ha-generic-picker") private _picker?: {
-    open: () => Promise<void>;
-  };
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   private _newTarget?: { type: TargetType; id: string };
 
@@ -626,9 +625,20 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private _handleReplace(
     ev: HASSDomEvent<HASSDomEvents["replace-target-item"]>
   ) {
+    ev.stopPropagation();
     const type = ev.detail.type;
-    this._selectedSection =
-      type === "floor" ? "area" : (type as TargetTypeFloorless);
+    if (type === "floor") {
+      this._selectedSection = "area";
+    } else if (
+      type === "entity" ||
+      type === "device" ||
+      type === "area" ||
+      type === "label"
+    ) {
+      this._selectedSection = type;
+    } else {
+      return;
+    }
     this._picker?.open();
   }
 
