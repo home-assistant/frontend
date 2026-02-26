@@ -679,9 +679,9 @@
           "no_entities": "You don't have any entities",
           "no_match": "No entities found for {term}",
           "show_entities": "Show entities",
-          "new_entity": "Create a new entity",
+          "new_entity": "Creates a new entity",
           "placeholder": "Select an entity",
-          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper.",
+          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n }helper",
           "unknown": "Unknown entity selected"
         },
         "entity-name-picker": {
