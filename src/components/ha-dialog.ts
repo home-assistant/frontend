@@ -52,7 +52,12 @@ type DialogHideEvent = CustomEvent<{ source?: Element }>;
  * @cssprop --ha-dialog-show-duration - Show animation duration.
  * @cssprop --ha-dialog-hide-duration - Hide animation duration.
  * @cssprop --ha-dialog-surface-background - Dialog background color.
+ * @cssprop --ha-dialog-surface-backdrop-filter - Dialog backdrop filter.
+ * @cssprop --dialog-box-shadow - Dialog box shadow.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
+ * @cssprop --ha-dialog-scrim-backdrop-filter - Dialog scrim backdrop filter.
+ * @cssprop --dialog-backdrop-filter - Dialog scrim backdrop filter (legacy).
+ * @cssprop --mdc-dialog-scrim-color - Dialog scrim color (legacy).
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
@@ -271,10 +276,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           --spacing: var(--dialog-content-padding, var(--ha-space-6));
           --show-duration: var(--ha-dialog-show-duration, 200ms);
           --hide-duration: var(--ha-dialog-hide-duration, 200ms);
-          --ha-dialog-surface-background: var(
-            --card-background-color,
-            var(--ha-color-surface-default)
-          );
           --wa-color-surface-raised: var(
             --ha-dialog-surface-background,
             var(--card-background-color, var(--ha-color-surface-default))
@@ -305,6 +306,12 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(dialog) {
+          -webkit-backdrop-filter: var(
+            --ha-dialog-surface-backdrop-filter,
+            none
+          );
+          backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
+          box-shadow: var(--dialog-box-shadow, var(--wa-shadow-l));
           color: var(--primary-text-color);
           min-width: var(--width, var(--full-width));
           max-width: var(--width, var(--full-width));
@@ -332,6 +339,18 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           overflow: hidden;
+        }
+
+        wa-dialog::part(dialog)::backdrop {
+          -webkit-backdrop-filter: var(
+            --ha-dialog-scrim-backdrop-filter,
+            var(--dialog-backdrop-filter, none)
+          );
+          backdrop-filter: var(
+            --ha-dialog-scrim-backdrop-filter,
+            var(--dialog-backdrop-filter, none)
+          );
+          background-color: var(--mdc-dialog-scrim-color, none);
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
