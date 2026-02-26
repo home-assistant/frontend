@@ -8,6 +8,7 @@ import "../../components/ha-card";
 import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
+import "../../components/ha-yaml-editor";
 
 interface DetailsViewParams {
   entityId: string;
@@ -20,6 +21,8 @@ class HaMoreInfoDetails extends LitElement {
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
   @property({ attribute: false }) public params?: DetailsViewParams;
+
+  @property({ attribute: false }) public yamlMode = false;
 
   @state() private _stateObj?: HassEntity;
 
@@ -47,46 +50,83 @@ class HaMoreInfoDetails extends LitElement {
 
     return html`
       <div class="content">
-        <section class="section">
-          <h2 class="section-title">
-            ${this.hass.localize(
-              "ui.components.entity.entity-state-picker.state"
-            )}
-          </h2>
-          <ha-card>
-            <div class="card-content">
-              <div class="attribute-group">
-                <div class="data-entry">
-                  <div class="key">
-                    ${this.hass.localize(
-                      "ui.dialogs.more_info_control.translated"
-                    )}
+        ${this.yamlMode
+          ? html`<ha-yaml-editor
+              .hass=${this.hass}
+              .value=${{
+                state: {
+                  translasted: translatedState,
+                  raw: this._stateObj.state,
+                  last_changed: this._stateObj.last_changed,
+                  last_updated: this._stateObj.last_updated,
+                },
+                attributes: this._stateObj.attributes,
+              }}
+              read-only
+              auto-update
+            ></ha-yaml-editor>`
+          : html`
+              <section class="section">
+                <h2 class="section-title">
+                  ${this.hass.localize(
+                    "ui.components.entity.entity-state-picker.state"
+                  )}
+                </h2>
+                <ha-card>
+                  <div class="card-content">
+                    <div class="attribute-group">
+                      <div class="data-entry">
+                        <div class="key">
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.translated"
+                          )}
+                        </div>
+                        <div class="value">${translatedState}</div>
+                      </div>
+                      <div class="data-entry">
+                        <div class="key">
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.raw"
+                          )}
+                        </div>
+                        <div class="value">${this._stateObj.state}</div>
+                      </div>
+                      <div class="data-entry">
+                        <div class="key">
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.last_changed"
+                          )}
+                        </div>
+                        <div class="value">${this._stateObj.last_changed}</div>
+                      </div>
+                      <div class="data-entry">
+                        <div class="key">
+                          ${this.hass.localize(
+                            "ui.dialogs.more_info_control.last_updated"
+                          )}
+                        </div>
+                        <div class="value">${this._stateObj.last_updated}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="value">${translatedState}</div>
-                </div>
-                <div class="data-entry">
-                  <div class="key">
-                    ${this.hass.localize("ui.dialogs.more_info_control.raw")}
-                  </div>
-                  <div class="value">${this._stateObj.state}</div>
-                </div>
-              </div>
-            </div>
-          </ha-card>
-        </section>
+                </ha-card>
+              </section>
 
-        <section class="section">
-          <h2 class="section-title">
-            ${this.hass.localize("ui.dialogs.more_info_control.attributes")}
-          </h2>
-          <ha-card>
-            <div class="card-content">
-              <div class="attribute-group">
-                ${this._renderAttributes(allAttributes)}
-              </div>
-            </div>
-          </ha-card>
-        </section>
+              <section class="section">
+                <h2 class="section-title">
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.attributes"
+                  )}
+                </h2>
+                <ha-card>
+                  <div class="card-content">
+                    <div class="attribute-group">
+                      ${this._renderAttributes(allAttributes)}
+                    </div>
+                  </div>
+                </ha-card>
+              </section>
+            `}
       </div>
     `;
   }

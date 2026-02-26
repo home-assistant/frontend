@@ -1,6 +1,7 @@
 import {
   mdiChartBoxOutline,
   mdiClose,
+  mdiCodeBraces,
   mdiCogOutline,
   mdiDevices,
   mdiDotsVertical,
@@ -131,6 +132,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   @state() private _entry?: ExtEntityRegistryEntry | null;
 
   @state() private _infoEditMode = false;
+
+  @state() private _detailsYamlMode = false;
 
   @state() private _isEscapeEnabled = true;
 
@@ -312,6 +315,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _toggleInfoEditMode() {
     this._infoEditMode = !this._infoEditMode;
+  }
+
+  private _toggleDetailsYamlMode() {
+    this._detailsYamlMode = !this._detailsYamlMode;
   }
 
   private _handleToggleInfoEditModeEvent(ev) {
@@ -637,7 +644,18 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   </ha-dropdown-item>
                 </ha-dropdown>
               `
-            : nothing}
+            : this._childView?.viewTag === "ha-more-info-details"
+              ? html`
+                  <ha-icon-button
+                    slot="headerActionItems"
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.toggle_yaml_mode"
+                    )}
+                    .path=${mdiCodeBraces}
+                    @click=${this._toggleDetailsYamlMode}
+                  ></ha-icon-button>
+                `
+              : nothing}
         <div
           class=${classMap({
             "content-wrapper": true,
@@ -663,6 +681,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                             hass: this.hass,
                             entry: this._entry,
                             params: this._childView.viewParams,
+                            yamlMode: this._detailsYamlMode,
                           })}
                         </div>
                       `
@@ -731,6 +750,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     if (changedProps.has("_currView")) {
       this._childView = undefined;
       this._infoEditMode = false;
+      this._detailsYamlMode = false;
     }
   }
 
