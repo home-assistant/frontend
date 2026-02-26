@@ -450,76 +450,79 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _replaceTargetItem(currentTarget: TargetItem, newTarget: TargetItem) {
-    if (
-      currentTarget.type === newTarget.type &&
-      currentTarget.id === newTarget.id
-    ) {
-      return;
-    }
-
-    const typeId = `${newTarget.type}_id`;
-
-    if (typeId === "entity_id" && !isValidEntityId(newTarget.id)) {
-      return;
-    }
-
-    if (!this.value) {
-      return;
-    }
-
-    let value = this._removeItem(
+    const value = this._replaceTargetInValue(
       this.value,
-      currentTarget.type,
-      currentTarget.id
+      currentTarget,
+      newTarget
     );
 
-    if (value?.[typeId] && ensureArray(value[typeId]).includes(newTarget.id)) {
-      fireEvent(this, "value-changed", { value });
+    if (value === this.value) {
       return;
     }
-
-    value = value
-      ? {
-          ...value,
-          [typeId]: value[typeId]
-            ? [...ensureArray(value[typeId]), newTarget.id]
-            : newTarget.id,
-        }
-      : { [typeId]: newTarget.id };
 
     fireEvent(this, "value-changed", { value });
   }
 
   private _addTarget(id: string, type: TargetType) {
-    const typeId = `${type}_id`;
+    const value = this._addTargetToValue(this.value, { type, id });
 
-    if (typeId === "entity_id" && !isValidEntityId(id)) {
+    if (value === this.value) {
       return;
     }
 
-    if (
-      this.value &&
-      this.value[typeId] &&
-      ensureArray(this.value[typeId]).includes(id)
-    ) {
-      return;
-    }
-    fireEvent(this, "value-changed", {
-      value: this.value
-        ? {
-            ...this.value,
-            [typeId]: this.value[typeId]
-              ? [...ensureArray(this.value[typeId]), id]
-              : id,
-          }
-        : { [typeId]: id },
-    });
+    fireEvent(this, "value-changed", { value });
 
     this.shadowRoot
       ?.querySelector(
         `ha-target-picker-item-group[type='${this._newTarget?.type}']`
       )
       ?.removeAttribute("collapsed");
+  }
+
+  private _replaceTargetInValue(
+    value: this["value"],
+    currentTarget: TargetItem,
+    newTarget: TargetItem
+  ): this["value"] {
+    if (
+      !value ||
+      (currentTarget.type === newTarget.type &&
+        currentTarget.id === newTarget.id)
+    ) {
+      return value;
+    }
+
+    const valueWithoutCurrent = this._removeItem(
+      value,
+      currentTarget.type,
+      currentTarget.id
+    );
+
+    return this._addTargetToValue(valueWithoutCurrent, newTarget);
+  }
+
+  private _addTargetToValue(
+    value: this["value"],
+    target: TargetItem
+  ): this["value"] {
+    const typeId = `${target.type}_id`;
+
+    if (typeId === "entity_id" && !isValidEntityId(target.id)) {
+      return value;
+    }
+
+    if (value?.[typeId] && ensureArray(value[typeId]).includes(target.id)) {
+      return value;
+    }
+
+    return value
+      ? {
+          ...value,
+          [typeId]: value[typeId]
+            ? [...ensureArray(value[typeId]), target.id]
+            : target.id,
+        }
+      : { [typeId]: target.id };
   }
 
   private _createNewDomainElement = (domain: string) => {
