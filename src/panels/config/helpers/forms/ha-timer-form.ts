@@ -8,7 +8,7 @@ import "../../../../components/ha-duration-input";
 import type { HaDurationData } from "../../../../components/ha-duration-input";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-textfield";
+import "../../../../components/ha-input";
 import type { ForDict } from "../../../../data/automation";
 import type { DurationDict, Timer } from "../../../../data/timer";
 import { haStyle } from "../../../../resources/styles";
@@ -66,21 +66,21 @@ class HaTimerForm extends LitElement {
 
     return html`
       <div class="form">
-        <ha-textfield
+        <ha-input
           .value=${this._name}
           .configValue=${"name"}
           @input=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          autoValidate
+          auto-validate
           required
           .validationMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
           .disabled=${this.disabled}
-        ></ha-textfield>
+        ></ha-input>
         <ha-icon-picker
           .hass=${this.hass}
           .value=${this._icon}

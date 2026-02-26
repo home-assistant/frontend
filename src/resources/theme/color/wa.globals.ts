@@ -64,5 +64,10 @@ export const waColorStyles = css`
 
     --wa-focus-ring-color: var(--ha-color-neutral-60);
     --wa-shadow-l: 4px 8px 12px 0 rgba(0, 0, 0, 0.3);
+
+    --wa-form-control-background-color: var(--wa-color-surface-raised);
+    --wa-form-control-border-color: var(--ha-color-border-neutral-quiet);
+    --wa-form-control-value-color: var(--primary-text-color);
+    --wa-form-control-placeholder-color: var(--ha-color-text-secondary);
   }
 `;
