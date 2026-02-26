@@ -239,6 +239,9 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   private _handleKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Escape") {
       this._escapePressed = true;
+      if (this.preventScrimClose) {
+        ev.preventDefault();
+      }
       ev.stopPropagation();
       (ev.currentTarget as WaDialog).open = false;
     }

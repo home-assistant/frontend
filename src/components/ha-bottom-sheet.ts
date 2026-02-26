@@ -141,6 +141,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   private _handleKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === "Escape") {
       this._escapePressed = true;
+      if (this.preventScrimClose) {
+        ev.preventDefault();
+      }
       ev.stopPropagation();
       (ev.currentTarget as WaDrawer).open = false;
     }
