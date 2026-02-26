@@ -4,11 +4,8 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/number/format_number";
-import "../../../../components/ha-card";
+import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/tile/ha-tile-container";
-import "../../../../components/tile/ha-tile-icon";
-import "../../../../components/tile/ha-tile-info";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
@@ -16,18 +13,17 @@ import {
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard, LovelaceGridOptions } from "../../types";
-import { tileCardStyle } from "../tile/tile-card-style";
-import type { PowerTotalCardConfig } from "../types";
+import type { LovelaceBadge } from "../../types";
+import type { PowerTotalBadgeConfig } from "../types";
 
-@customElement("hui-power-total-card")
-export class HuiPowerTotalCard
+@customElement("hui-power-total-badge")
+export class HuiPowerTotalBadge
   extends SubscribeMixin(LitElement)
-  implements LovelaceCard
+  implements LovelaceBadge
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: PowerTotalCardConfig;
+  @state() private _config?: PowerTotalBadgeConfig;
 
   @state() private _data?: EnergyData;
 
@@ -35,13 +31,13 @@ export class HuiPowerTotalCard
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
-  public setConfig(config: PowerTotalCardConfig): void {
+  public setConfig(config: PowerTotalBadgeConfig): void {
     this._config = config;
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass, {
+      getEnergyDataCollection(this.hass!, {
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
@@ -49,34 +45,19 @@ export class HuiPowerTotalCard
     ];
   }
 
-  public getCardSize(): Promise<number> | number {
-    return 1;
-  }
-
-  getGridOptions(): LovelaceGridOptions {
-    return {
-      columns: 12,
-      min_columns: 6,
-      rows: 1,
-      min_rows: 1,
-    };
-  }
-
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.has("_config") || changedProps.has("_data")) {
       return true;
     }
 
-    // Check if any of the tracked entity states have changed
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || !this._entities.size) {
         return true;
       }
 
-      // Only update if one of our tracked entities changed
       for (const entityId of this._entities) {
-        if (oldHass.states[entityId] !== this.hass.states[entityId]) {
+        if (oldHass.states[entityId] !== this.hass?.states[entityId]) {
           return true;
         }
       }
@@ -87,17 +68,17 @@ export class HuiPowerTotalCard
 
   private _getCurrentPower(entityId: string): number {
     this._entities.add(entityId);
-    return getPowerFromState(this.hass.states[entityId]) ?? 0;
+    return getPowerFromState(this.hass!.states[entityId]) ?? 0;
   }
 
   private _computeTotalPower(prefs: EnergyPreferences): number {
     this._entities.clear();
 
     let solar = 0;
-    let from_grid = 0;
-    let to_grid = 0;
-    let from_battery = 0;
-    let to_battery = 0;
+    let fromGrid = 0;
+    let toGrid = 0;
+    let fromBattery = 0;
+    let toBattery = 0;
 
     prefs.energy_sources.forEach((source) => {
       if (source.type === "solar" && source.stat_rate) {
@@ -105,21 +86,21 @@ export class HuiPowerTotalCard
         if (value > 0) solar += value;
       } else if (source.type === "grid" && source.stat_rate) {
         const value = this._getCurrentPower(source.stat_rate);
-        if (value > 0) from_grid += value;
-        else if (value < 0) to_grid += Math.abs(value);
+        if (value > 0) fromGrid += value;
+        else if (value < 0) toGrid += Math.abs(value);
       } else if (source.type === "battery" && source.stat_rate) {
         const value = this._getCurrentPower(source.stat_rate);
-        if (value > 0) from_battery += value;
-        else if (value < 0) to_battery += Math.abs(value);
+        if (value > 0) fromBattery += value;
+        else if (value < 0) toBattery += Math.abs(value);
       }
     });
 
-    const used_total = from_grid + solar + from_battery - to_grid - to_battery;
-    return Math.max(0, used_total);
+    const usedTotal = fromGrid + solar + fromBattery - toGrid - toBattery;
+    return Math.max(0, usedTotal);
   }
 
   protected render() {
-    if (!this._config || !this._data) {
+    if (!this._config || !this._data || !this.hass) {
       return nothing;
     }
 
@@ -141,35 +122,22 @@ export class HuiPowerTotalCard
       this.hass.localize("ui.panel.lovelace.cards.energy.power_total_title");
 
     return html`
-      <ha-card>
-        <ha-tile-container .interactive=${false}>
-          <ha-tile-icon slot="icon" data-domain="sensor" data-state="active">
-            <ha-svg-icon
-              slot="icon"
-              .path=${mdiHomeLightningBolt}
-            ></ha-svg-icon>
-          </ha-tile-icon>
-          <ha-tile-info slot="info">
-            <span slot="primary" class="primary">${name}</span>
-            <span slot="secondary" class="secondary">${displayValue}</span>
-          </ha-tile-info>
-        </ha-tile-container>
-      </ha-card>
+      <ha-badge .label=${name}>
+        <ha-svg-icon slot="icon" .path=${mdiHomeLightningBolt}></ha-svg-icon>
+        ${displayValue}
+      </ha-badge>
     `;
   }
 
-  static styles = [
-    tileCardStyle,
-    css`
-      :host {
-        --tile-color: var(--primary-color);
-      }
-    `,
-  ];
+  static styles = css`
+    ha-badge {
+      --badge-color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-power-total-card": HuiPowerTotalCard;
+    "hui-power-total-badge": HuiPowerTotalBadge;
   }
 }

@@ -7,11 +7,7 @@ import type { HomeAssistant } from "../../../types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import {
-  LARGE_SCREEN_CONDITION,
-  SMALL_SCREEN_CONDITION,
-} from "../../lovelace/strategies/helpers/screen-conditions";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
@@ -53,7 +49,7 @@ export class PowerViewStrategy extends ReactiveElement {
       type: "grid",
       cards: [],
     };
-    const tiles: LovelaceCardConfig[] = [];
+    const badges: LovelaceBadgeConfig[] = [];
 
     const view: LovelaceViewConfig = {
       type: "sections",
@@ -73,11 +69,10 @@ export class PowerViewStrategy extends ReactiveElement {
     }
 
     if (hasPowerSources) {
-      const card = {
+      badges.push({
         type: "power-total",
         collection_key: collectionKey,
-      };
-      tiles.push(card);
+      });
 
       chartsSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
@@ -90,19 +85,17 @@ export class PowerViewStrategy extends ReactiveElement {
     }
 
     if (hasGasSources) {
-      const card = {
+      badges.push({
         type: "gas-total",
         collection_key: collectionKey,
-      };
-      tiles.push({ ...card });
+      });
     }
 
     if (hasWaterSources) {
-      const card = {
+      badges.push({
         type: "water-total",
         collection_key: collectionKey,
-      };
-      tiles.push({ ...card });
+      });
     }
 
     if (hasPowerDevices) {
@@ -141,34 +134,8 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    if (tiles.length) {
-      // If only 1 tile, center it with empty cards on each side
-      const desktopTiles =
-        tiles.length === 1
-          ? [
-              { type: "vertical-stack", cards: [] },
-              tiles[0],
-              { type: "vertical-stack", cards: [] },
-            ]
-          : tiles;
-      view.header = {
-        card: {
-          type: "vertical-stack",
-          cards: [
-            {
-              type: "grid",
-              square: false,
-              columns: desktopTiles.length,
-              cards: desktopTiles,
-              visibility: [LARGE_SCREEN_CONDITION],
-            },
-            ...tiles.map((card) => ({
-              ...card,
-              visibility: [SMALL_SCREEN_CONDITION],
-            })),
-          ],
-        },
-      };
+    if (badges.length) {
+      view.badges = badges;
     }
 
     return view;
