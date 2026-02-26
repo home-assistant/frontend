@@ -224,7 +224,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   slot="graphic"
                   .src=${brandsUrl({
                     domain: router.brand,
-                    brand: true,
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   })}

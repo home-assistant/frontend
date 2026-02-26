@@ -252,16 +252,8 @@ export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "water-sankey";
 }
 
-export interface PowerTotalCardConfig extends EnergyCardBaseConfig {
-  type: "power-total";
-}
-
-export interface WaterTotalCardConfig extends EnergyCardBaseConfig {
-  type: "water-total";
-}
-
-export interface GasTotalCardConfig extends EnergyCardBaseConfig {
-  type: "gas-total";
+export interface WaterFlowSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "water-flow-sankey";
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {

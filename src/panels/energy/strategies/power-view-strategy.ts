@@ -7,11 +7,7 @@ import type { HomeAssistant } from "../../../types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import {
-  LARGE_SCREEN_CONDITION,
-  SMALL_SCREEN_CONDITION,
-} from "../../lovelace/strategies/helpers/screen-conditions";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
@@ -39,6 +35,9 @@ export class PowerViewStrategy extends ReactiveElement {
     const hasPowerDevices = prefs?.device_consumption.some(
       (device) => device.stat_rate
     );
+    const hasWaterDevices = prefs?.device_consumption_water.some(
+      (device) => device.stat_rate
+    );
     const hasWaterSources = prefs?.energy_sources.some(
       (source) => source.type === "water" && source.stat_rate
     );
@@ -46,29 +45,23 @@ export class PowerViewStrategy extends ReactiveElement {
       (source) => source.type === "gas" && source.stat_rate
     );
 
-    const tileSection: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [],
-      column_span: 2,
-    };
     const chartsSection: LovelaceSectionConfig = {
       type: "grid",
       cards: [],
-      column_span: 2,
     };
-    const tiles: LovelaceCardConfig[] = [];
+    const badges: LovelaceBadgeConfig[] = [];
 
     const view: LovelaceViewConfig = {
       type: "sections",
-      sections: [tileSection, chartsSection],
-      max_columns: 2,
+      sections: [chartsSection],
     };
 
-    // No power sources configured
+    // No sources configured
     if (
       !prefs ||
       (!hasPowerSources &&
         !hasPowerDevices &&
+        !hasWaterDevices &&
         !hasWaterSources &&
         !hasGasSources)
     ) {
@@ -76,11 +69,10 @@ export class PowerViewStrategy extends ReactiveElement {
     }
 
     if (hasPowerSources) {
-      const card = {
+      badges.push({
         type: "power-total",
         collection_key: collectionKey,
-      };
-      tiles.push(card);
+      });
 
       chartsSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
@@ -93,19 +85,17 @@ export class PowerViewStrategy extends ReactiveElement {
     }
 
     if (hasGasSources) {
-      const card = {
+      badges.push({
         type: "gas-total",
         collection_key: collectionKey,
-      };
-      tiles.push({ ...card });
+      });
     }
 
     if (hasWaterSources) {
-      const card = {
+      badges.push({
         type: "water-total",
         collection_key: collectionKey,
-      };
-      tiles.push({ ...card });
+      });
     }
 
     if (hasPowerDevices) {
@@ -126,21 +116,26 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    tiles.forEach((card) => {
-      tileSection.cards!.push({
-        ...card,
-        grid_options: { columns: 24 / tiles.length },
+    if (hasWaterDevices) {
+      const showFloorsAndAreas = shouldShowFloorsAndAreas(
+        prefs.device_consumption_water,
+        hass,
+        (d) => d.stat_rate
+      );
+      chartsSection.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.water_flow_sankey_title"),
+        type: "water-flow-sankey",
+        collection_key: collectionKey,
+        group_by_floor: showFloorsAndAreas,
+        group_by_area: showFloorsAndAreas,
+        grid_options: {
+          columns: 36,
+        },
       });
-    });
+    }
 
-    if (tiles.length > 2) {
-      // On small screens with 3 tiles, show them in 1 column
-      tileSection.visibility = [LARGE_SCREEN_CONDITION];
-      view.sections!.unshift({
-        type: "grid",
-        cards: tiles,
-        visibility: [SMALL_SCREEN_CONDITION],
-      });
+    if (badges.length) {
+      view.badges = badges;
     }
 
     return view;

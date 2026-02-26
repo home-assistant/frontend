@@ -44,7 +44,6 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-related-items";
-import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -344,29 +343,19 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       case "info":
         this._resetInitialView();
         break;
-      case "attributes":
-        this._showAttributes();
+      case "details":
+        this._showDetails();
         break;
     }
   }
 
-  private _showAttributes(): void {
-    import("./ha-more-info-attributes");
+  private _showDetails(): void {
+    import("./ha-more-info-details");
     this._childView = {
-      viewTag: "ha-more-info-attributes",
+      viewTag: "ha-more-info-details",
+      viewTitle: this.hass.localize("ui.dialogs.more_info_control.details"),
       viewParams: { entityId: this._entityId },
     };
-  }
-
-  private _hasDisplayableAttributes(): boolean {
-    if (!this._entityId) {
-      return false;
-    }
-    const stateObj = this.hass.states[this._entityId];
-    if (!stateObj) {
-      return false;
-    }
-    return computeShownAttributes(stateObj).length > 0;
   }
 
   private _goToAddEntityTo(ev) {
@@ -590,19 +579,15 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                           "ui.dialogs.more_info_control.related"
                         )}
                       </ha-dropdown-item>
-                      ${this._hasDisplayableAttributes()
-                        ? html`
-                            <ha-dropdown-item value="attributes">
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiFormatListBulletedSquare}
-                              ></ha-svg-icon>
-                              ${this.hass.localize(
-                                "ui.dialogs.more_info_control.attributes"
-                              )}
-                            </ha-dropdown-item>
-                          `
-                        : nothing}
+                      <ha-dropdown-item value="details">
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiFormatListBulletedSquare}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.dialogs.more_info_control.details"
+                        )}
+                      </ha-dropdown-item>
                       ${this._shouldShowAddEntityTo()
                         ? html`
                             <ha-dropdown-item value="add_to">

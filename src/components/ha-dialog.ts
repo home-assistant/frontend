@@ -334,29 +334,29 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         @media all and (max-width: 450px), all and (max-height: 500px) {
           :host([type="standard"]) {
             --ha-dialog-border-radius: 0;
+          }
 
-            wa-dialog {
-              /* Make the container fill the whole screen width and not the safe width */
-              --full-width: var(--ha-dialog-width-full, 100vw);
-              --width: var(--full-width);
-            }
+          :host([type="standard"]) wa-dialog {
+            /* Make the container fill the whole screen width and not the safe width */
+            --full-width: var(--ha-dialog-width-full, 100vw);
+            --width: var(--full-width);
+          }
 
-            wa-dialog::part(dialog) {
-              /* Make the dialog fill the whole screen height and not the safe height */
-              min-height: var(--ha-dialog-min-height, 100vh);
-              min-height: var(--ha-dialog-min-height, 100dvh);
-              max-height: var(--ha-dialog-max-height, 100vh);
-              max-height: var(--ha-dialog-max-height, 100dvh);
-              margin-top: 0;
-              margin-bottom: 0;
-              /* Use safe area as padding instead of the container size */
-              padding-top: var(--safe-area-inset-top);
-              padding-bottom: var(--safe-area-inset-bottom);
-              padding-left: var(--safe-area-inset-left);
-              padding-right: var(--safe-area-inset-right);
-              /* Reset the transform to center the dialog */
-              transform: none;
-            }
+          :host([type="standard"]) wa-dialog::part(dialog) {
+            /* Make the dialog fill the whole screen height and not the safe height */
+            min-height: var(--ha-dialog-min-height, 100vh);
+            min-height: var(--ha-dialog-min-height, 100dvh);
+            max-height: var(--ha-dialog-max-height, 100vh);
+            max-height: var(--ha-dialog-max-height, 100dvh);
+            margin-top: 0;
+            margin-bottom: 0;
+            /* Use safe area as padding instead of the container size */
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
+            padding-right: var(--safe-area-inset-right);
+            /* Reset the transform to center the dialog */
+            transform: none;
           }
         }
 

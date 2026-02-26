@@ -143,7 +143,8 @@ class HaConfigRepairs extends LitElement {
       }
     } else if (
       issue.domain === "vacuum" &&
-      issue.translation_key === "segments_changed"
+      (issue.translation_key === "segments_changed" ||
+        issue.translation_key === "segments_mapping_not_configured")
     ) {
       const data = await fetchRepairsIssueData(
         this.hass.connection,

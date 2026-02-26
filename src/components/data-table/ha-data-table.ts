@@ -136,9 +136,6 @@ export class HaDataTable extends LitElement {
 
   @property({ attribute: false }) public searchLabel?: string;
 
-  @property({ type: Boolean, attribute: "no-label-float" })
-  public noLabelFloat? = false;
-
   @property({ type: String }) public filter = "";
 
   @property({ attribute: false }) public groupColumn?: string;
@@ -400,7 +397,6 @@ export class HaDataTable extends LitElement {
                     .hass=${this.hass}
                     @value-changed=${this._handleSearchChange}
                     .label=${this.searchLabel}
-                    .noLabelFloat=${this.noLabelFloat}
                   ></search-input>
                 </div>
               `
@@ -434,9 +430,9 @@ export class HaDataTable extends LitElement {
                       <ha-checkbox
                         class="mdc-data-table__row-checkbox"
                         @change=${this._handleHeaderRowCheckboxClick}
-                        .indeterminate=${this._checkedRows.length &&
+                        .indeterminate=${!!this._checkedRows.length &&
                         this._checkedRows.length !== this._checkableRowsCount}
-                        .checked=${this._checkedRows.length &&
+                        .checked=${!!this._checkedRows.length &&
                         this._checkedRows.length === this._checkableRowsCount}
                       >
                       </ha-checkbox>

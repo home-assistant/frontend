@@ -548,7 +548,7 @@
         },
         "template": {
           "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (e.g. '{{ states(sensor.test) > 0 }}' ).",
-          "learn_more": "Learn more about templating."
+          "learn_more": "Learn more about templating"
         },
         "text": {
           "show_password": "Show password",
@@ -679,9 +679,9 @@
           "no_entities": "You don't have any entities",
           "no_match": "No entities found for {term}",
           "show_entities": "Show entities",
-          "new_entity": "Create a new entity",
+          "new_entity": "Creates a new entity",
           "placeholder": "Select an entity",
-          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper.",
+          "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n }helper",
           "unknown": "Unknown entity selected"
         },
         "entity-name-picker": {
@@ -1380,7 +1380,7 @@
         "title": "Map vacuum segments to areas",
         "no_segments": "No segments available",
         "area_label": "Area",
-        "description": "Configure which areas each vacuum segment should clean"
+        "description": "Configure which areas correspond to each vacuum segment"
       },
       "safe_mode": {
         "title": "Safe mode",
@@ -1524,6 +1524,8 @@
         "settings": "Settings",
         "edit": "Edit entity",
         "details": "Details",
+        "translated": "Translated",
+        "raw": "Raw",
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
@@ -3809,7 +3811,7 @@
           "grid": {
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "grid_connections": "Grid connections",
             "add_connection": "Add grid connection",
             "edit_connection": "Edit grid connection",
@@ -3870,7 +3872,7 @@
           "solar": {
             "title": "Solar panels",
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "solar_production": "Solar production",
             "edit_solar_production": "Edit solar production",
             "delete_solar_production": "Remove solar production",
@@ -3893,7 +3895,7 @@
           "battery": {
             "title": "Home battery storage",
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "battery_systems": "Battery systems",
             "edit_battery_system": "Edit battery system",
             "delete_battery_system": "Remove battery system",
@@ -3920,7 +3922,7 @@
           "gas": {
             "title": "Gas consumption",
             "sub": "Let Home Assistant monitor your gas usage.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "gas_consumption": "Gas consumption",
             "edit_gas_source": "Edit gas source",
             "delete_gas_source": "Remove gas source",
@@ -3949,7 +3951,7 @@
           "water": {
             "title": "Water consumption",
             "sub": "Let Home Assistant monitor your water usage.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "water_consumption": "Water consumption",
             "edit_water_source": "Edit water source",
             "delete_water_source": "Remove water source",
@@ -3975,7 +3977,7 @@
           "device_consumption": {
             "title": "Individual electrical devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "add_stat": "Pick entity to track energy of",
             "selected_stat": "Tracking energy for",
             "devices": "Devices",
@@ -3994,7 +3996,7 @@
           "device_consumption_water": {
             "title": "Individual water devices",
             "sub": "Tracking the water usage of individual devices allows Home Assistant to break down your water usage by device.",
-            "learn_more": "More information on how to get started.",
+            "learn_more": "More information on how to get started",
             "devices": "Devices",
             "add_device": "Add device",
             "dialog": {
@@ -5746,7 +5748,7 @@
               "key_not_null": "The field key must not be empty.",
               "key_not_unique": "The field key must not be the same value as another field.",
               "fields": "Fields",
-              "link_help_fields": "Learn more about fields.",
+              "link_help_fields": "Learn more about fields",
               "add_fields": "Add fields",
               "add_field": "Add field",
               "field": "field",
@@ -5774,7 +5776,7 @@
             "delete_confirm_text": "{name} will be permanently deleted.",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
-            "link_available_actions": "Learn more about available actions.",
+            "link_available_actions": "Learn more about available actions",
             "leave": {
               "unsaved_new_title": "Save new script?",
               "unsaved_new_text": "You can save your changes, or delete this script. You can't undo this action.",
@@ -6047,7 +6049,7 @@
               "no_hooks_yet_link_integration": "webhook-based integration",
               "no_hooks_yet2": " or by creating a ",
               "no_hooks_yet_link_automation": "webhook automation",
-              "link_learn_more": "Learn more about creating webhook-powered automations.",
+              "link_learn_more": "Learn more about creating webhook-powered automations",
               "loading": "Loading…",
               "manage": "Manage",
               "disable_hook_error_msg": "Failed to disable webhook:"
@@ -7039,7 +7041,7 @@
             "remove_node": "Remove foreign device",
             "remove_a_node": "Remove a device",
             "rebuild_network_routes": "Discover and assign new routes",
-            "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
+            "in_progress_inclusion_exclusion": "Z-Wave is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
           },
           "dashboard": {
@@ -7514,7 +7516,7 @@
             "caption": "Logs",
             "title": "Z-Wave logs",
             "log_level": "Log level",
-            "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
+            "subscribed_to_logs": "Subscribed to Z-Wave log messages…",
             "log_level_changed": "Log level changed to: {level}",
             "download_logs": "Download logs"
           },
@@ -7626,7 +7628,7 @@
           },
           "picker": {
             "title": "Select Z-Wave network",
-            "no_entries": "No Z-Wave networks configured. Set up the Z-Wave JS integration first."
+            "no_entries": "No Z-Wave networks configured. Set up the Z-Wave integration first."
           }
         },
         "matter": {
@@ -8350,7 +8352,6 @@
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
             "reload": "Reload",
-            "lovelace_changed": "Your dashboard was updated, do you want to load the updated config in the editor and lose your current changes?",
             "confirm_reset_config_title": "Reset dashboard configuration?",
             "confirm_reset_config_text": "Your dashboard will be reset to an empty state. You can start fresh and build your dashboard from scratch.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
@@ -9765,8 +9766,8 @@
           "entity_unavailable": "Entity is currently unavailable: {entity}",
           "starting": "Home Assistant is starting. Not everything may be available yet."
         },
-        "changed_toast": {
-          "message": "Your dashboard was updated. Refresh to see changes?"
+        "externally_updated_toast": {
+          "message": "Dashboard updated in another session. Refreshing will discard your unsaved changes."
         },
         "components": {
           "timestamp-display": {
@@ -10460,6 +10461,7 @@
           "water_sankey_title": "Water flow",
           "energy_top_consumers_title": "Top consumers",
           "power_sankey_title": "Current power flow",
+          "water_flow_sankey_title": "Current water flow",
           "power_sources_graph_title": "Power sources"
         }
       },
