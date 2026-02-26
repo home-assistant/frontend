@@ -632,7 +632,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ev: HASSDomEvent<HASSDomEvents["replace-target-item"]>
   ) {
     ev.stopPropagation();
-    const type = ev.detail.type as TargetType;
+    const type = ev.detail.type;
     if (type === "floor") {
       this._selectedSection = "area";
     } else if (
@@ -1199,7 +1199,7 @@ declare global {
       id: string;
     };
     "replace-target-item": {
-      type: string;
+      type: TargetType;
       id: string;
     };
     "remove-target-group": string;
