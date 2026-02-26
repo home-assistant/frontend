@@ -1195,7 +1195,6 @@ class HUIRoot extends LitElement {
         unusedEntities.narrow = this.narrow;
       });
       root.appendChild(unusedEntities);
-      this._refreshViewBackgroundObservers();
       return;
     }
 
@@ -1220,20 +1219,6 @@ class HUIRoot extends LitElement {
     view.narrow = this.narrow;
 
     root.appendChild(view);
-    this._refreshViewBackgroundObservers();
-  }
-
-  private _refreshViewBackgroundObservers() {
-    const viewBackground =
-      this._viewRoot.querySelector<HTMLElementTagNameMap["hui-view-background"]>(
-        "hui-view-background"
-      );
-
-    if (!viewBackground) {
-      return;
-    }
-
-    viewBackground.refreshSizeObservers();
   }
 
   private async _applyUndoRedo(item: UndoStackItem) {
@@ -1489,7 +1474,7 @@ class HUIRoot extends LitElement {
         }
         hui-view-container {
           position: relative;
-          display: flex;
+          display: grid;
           height: calc(
             100vh - var(--header-height) - var(--safe-area-inset-top) - var(
                 --view-container-padding-top,
@@ -1513,8 +1498,12 @@ class HUIRoot extends LitElement {
           padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view-container > * {
-          flex: 1 1 100%;
+          grid-area: 1 / 1;
+          min-width: 0;
           max-width: 100%;
+        }
+        hui-view-container > :not(hui-view-background) {
+          z-index: 1;
         }
         /**
          * In edit mode we have the tab bar on a new line *

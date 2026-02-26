@@ -19,21 +19,6 @@ export class HUIViewBackground extends LitElement {
 
   @state({ attribute: false }) resolvedImage?: string;
 
-  private _resizeObserver?: ResizeObserver;
-
-  private _observedView?: Element;
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._setUpBackgroundSizeObserver();
-    this.refreshSizeObservers();
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._clearBackgroundSizeObserver();
-  }
-
   protected render() {
     return nothing;
   }
@@ -72,59 +57,6 @@ export class HUIViewBackground extends LitElement {
       this.background
     );
     this.style.setProperty("--view-background-opacity", viewBackgroundOpacity);
-
-    this._updateBackgroundHeight();
-  }
-
-  private _setUpBackgroundSizeObserver() {
-    if (this._resizeObserver) {
-      return;
-    }
-
-    this._resizeObserver = new ResizeObserver(() => {
-      this._updateBackgroundHeight();
-    });
-  }
-
-  private _clearBackgroundSizeObserver() {
-    this._resizeObserver?.disconnect();
-    this._resizeObserver = undefined;
-    this._observedView = undefined;
-  }
-
-  public refreshSizeObservers() {
-    if (!this.parentElement || !this._resizeObserver) {
-      return;
-    }
-
-    const view = this.nextElementSibling ?? undefined;
-
-    if (view === this._observedView) {
-      this._updateBackgroundHeight();
-      return;
-    }
-
-    this._resizeObserver.disconnect();
-    this._resizeObserver.observe(this.parentElement);
-
-    if (view) {
-      this._resizeObserver.observe(view);
-    }
-
-    this._observedView = view;
-    this._updateBackgroundHeight();
-  }
-
-  private _updateBackgroundHeight() {
-    if (this.hasAttribute("fixed-background") || !this.parentElement) {
-      this.style.removeProperty("--view-background-height");
-      return;
-    }
-
-    this.style.setProperty(
-      "--view-background-height",
-      `${this.parentElement.scrollHeight}px`
-    );
   }
 
   private _isFixedBackground(
@@ -214,12 +146,8 @@ export class HUIViewBackground extends LitElement {
       background-attachment: scroll !important;
     }
     :host(:not([fixed-background])) {
-      z-index: -1;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--view-background-height, 100%);
+      z-index: 0;
+      pointer-events: none;
     }
     :host {
       width: 100%;
