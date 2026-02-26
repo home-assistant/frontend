@@ -381,8 +381,28 @@ export class DemoHaDialog extends LitElement {
               <td>Dialog background color.</td>
             </tr>
             <tr>
+              <td><code>--ha-dialog-surface-backdrop-filter</code></td>
+              <td>Backdrop filter applied to the dialog surface.</td>
+            </tr>
+            <tr>
+              <td><code>--dialog-box-shadow</code></td>
+              <td>Dialog surface box shadow.</td>
+            </tr>
+            <tr>
               <td><code>--ha-dialog-border-radius</code></td>
               <td>Border radius of the dialog surface.</td>
+            </tr>
+            <tr>
+              <td><code>--ha-dialog-scrim-backdrop-filter</code></td>
+              <td>Backdrop filter applied to the dialog scrim.</td>
+            </tr>
+            <tr>
+              <td><code>--dialog-backdrop-filter</code></td>
+              <td>Legacy fallback for the dialog scrim backdrop filter.</td>
+            </tr>
+            <tr>
+              <td><code>--mdc-dialog-scrim-color</code></td>
+              <td>Dialog scrim color (legacy compatibility).</td>
             </tr>
             <tr>
               <td><code>--dialog-z-index</code></td>
