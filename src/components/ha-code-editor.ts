@@ -852,13 +852,19 @@ export class HaCodeEditor extends ReactiveElement {
         }
 
         :host(.fullscreen) {
-          position: fixed !important;
-          top: calc(var(--header-height, 56px) + 8px) !important;
-          left: 8px !important;
-          right: 8px !important;
-          bottom: 8px !important;
+          position: var(--code-editor-position, fixed) !important;
+          top: var(
+            --code-editor-top,
+            calc(var(--header-height, 56px) + var(--ha-space-2))
+          ) !important;
+          left: var(--code-editor-left, var(--ha-space-2)) !important;
+          right: var(--code-editor-right, var(--ha-space-2)) !important;
+          bottom: var(--code-editor-bottom, var(--ha-space-2)) !important;
           z-index: 6;
-          border-radius: var(--ha-border-radius-lg) !important;
+          border-radius: var(
+            --code-editor-border-radius,
+            var(--ha-border-radius-lg)
+          ) !important;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
           overflow: hidden !important;
           background-color: var(
@@ -866,10 +872,22 @@ export class HaCodeEditor extends ReactiveElement {
             var(--card-background-color)
           ) !important;
           margin: 0 !important;
-          padding-top: var(--safe-area-inset-top) !important;
-          padding-left: var(--safe-area-inset-left) !important;
-          padding-right: var(--safe-area-inset-right) !important;
-          padding-bottom: var(--safe-area-inset-bottom) !important;
+          padding-top: var(
+            --code-editor-padding-top,
+            var(--safe-area-inset-top)
+          ) !important;
+          padding-left: var(
+            --code-editor-padding-left,
+            var(--safe-area-inset-left)
+          ) !important;
+          padding-right: var(
+            --code-editor-padding-right,
+            var(--safe-area-inset-right)
+          ) !important;
+          padding-bottom: var(
+            --code-editor-padding-bottom,
+            var(--safe-area-inset-bottom)
+          ) !important;
           box-sizing: border-box !important;
           display: block !important;
         }
