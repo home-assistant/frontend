@@ -40,6 +40,22 @@ class MoreInfoFan extends LitElement {
 
   @state() public _presetMode?: string;
 
+  private _renderPresetModeIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="preset_mode"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
+
+  private _renderDirectionIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="direction"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
+
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
     forwardHaptic(this, "light");
@@ -192,15 +208,9 @@ class MoreInfoFan extends LitElement {
                       "preset_mode",
                       mode
                     ),
-                    attributeIcon: this.stateObj
-                      ? {
-                          stateObj: this.stateObj,
-                          attribute: "preset_mode",
-                          attributeValue: mode,
-                        }
-                      : undefined,
                   })
                 )}
+                .renderIcon=${this._renderPresetModeIcon}
               >
                 <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
               </ha-control-select-menu>
@@ -226,14 +236,8 @@ class MoreInfoFan extends LitElement {
                         direction
                       )
                     : direction,
-                  attributeIcon: this.stateObj
-                    ? {
-                        stateObj: this.stateObj,
-                        attribute: "direction",
-                        attributeValue: direction,
-                      }
-                    : undefined,
                 }))}
+                .renderIcon=${this._renderDirectionIcon}
               >
                 <ha-attribute-icon
                   slot="icon"
