@@ -4,6 +4,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import checkValidDate from "../../common/datetime/check_valid_date";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import "../../components/ha-attribute-value";
 import "../../components/ha-card";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -141,11 +143,11 @@ class HaMoreInfoDetails extends LitElement {
           },
           {
             translationKey: "ui.dialogs.more_info_control.last_changed",
-            value: stateObj.last_changed,
+            value: this._formatTimestamp(hass, stateObj.last_changed),
           },
           {
             translationKey: "ui.dialogs.more_info_control.last_updated",
-            value: stateObj.last_updated,
+            value: this._formatTimestamp(hass, stateObj.last_updated),
           },
         ],
         attributes: [...detailsAttributes, ...builtInAttributes],
@@ -161,6 +163,14 @@ class HaMoreInfoDetails extends LitElement {
       };
     }
   );
+
+  private _formatTimestamp(hass: HomeAssistant, value: string): string {
+    const date = new Date(value);
+
+    return checkValidDate(date)
+      ? formatDateTimeWithSeconds(date, hass.locale, hass.config)
+      : value;
+  }
 
   private _renderAttributes(attributes: string[]) {
     if (attributes.length === 0) {
