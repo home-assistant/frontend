@@ -1,6 +1,7 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { HomeAssistant } from "../../../../types";
 import type { LovelaceStrategyEditor } from "../types";
 import type { OriginalStatesViewStrategyConfig } from "./original-states-view-strategy";
 
@@ -9,6 +10,14 @@ export type OriginalStatesDashboardStrategyConfig =
 
 @customElement("original-states-dashboard-strategy")
 export class OriginalStatesDashboardStrategy extends ReactiveElement {
+  static shouldUpdate(
+    _config: OriginalStatesDashboardStrategyConfig,
+    _oldHass: HomeAssistant,
+    _newHass: HomeAssistant
+  ): boolean {
+    return false;
+  }
+
   static async generate(
     config: OriginalStatesDashboardStrategyConfig
   ): Promise<LovelaceConfig> {
