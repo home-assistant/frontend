@@ -47,7 +47,7 @@ class HaMoreInfoDetails extends LitElement {
       return nothing;
     }
 
-    const { stateEntries, allAttributes, yamlData } = this._getDetailData(
+    const { stateEntries, attributes, yamlData } = this._getDetailData(
       this.hass,
       this._stateObj
     );
@@ -94,7 +94,7 @@ class HaMoreInfoDetails extends LitElement {
                 <ha-card>
                   <div class="card-content">
                     <div class="data-group">
-                      ${this._renderAttributes(allAttributes)}
+                      ${this._renderAttributes(attributes)}
                     </div>
                   </div>
                 </ha-card>
@@ -110,7 +110,7 @@ class HaMoreInfoDetails extends LitElement {
       stateObj: HassEntity
     ): {
       stateEntries: DetailEntry[];
-      allAttributes: string[];
+      attributes: string[];
       yamlData: {
         state: {
           translated: string;
@@ -148,7 +148,7 @@ class HaMoreInfoDetails extends LitElement {
             value: stateObj.last_updated,
           },
         ],
-        allAttributes,
+        attributes: allAttributes,
         yamlData: {
           state: {
             translated: translatedState,
