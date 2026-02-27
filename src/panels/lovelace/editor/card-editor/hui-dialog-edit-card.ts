@@ -297,7 +297,9 @@ export class HuiDialogEditCard
   }
 
   private _toggleMode(): void {
-    this._cardEditorEl?.toggleMode();
+    withViewTransition(() => {
+      this._cardEditorEl?.toggleMode();
+    });
   }
 
   private _opened() {

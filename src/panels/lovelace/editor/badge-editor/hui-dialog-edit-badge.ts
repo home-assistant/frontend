@@ -314,7 +314,9 @@ export class HuiDialogEditBadge
   }
 
   private _toggleMode(): void {
-    this._badgeEditorEl?.toggleMode();
+    withViewTransition(() => {
+      this._badgeEditorEl?.toggleMode();
+    });
   }
 
   private _opened() {
