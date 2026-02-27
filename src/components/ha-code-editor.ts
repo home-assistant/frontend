@@ -434,10 +434,17 @@ export class HaCodeEditor extends ReactiveElement {
   private _updateFullscreenState(
     fullscreen: boolean = this._isFullscreen
   ): boolean {
+    const previousFullscreen = this._isFullscreen;
+
     // Update the current fullscreen state based on selected value. If fullscreen
     // is disabled, or we have no toolbar, ensure we are not in fullscreen mode.
     this._isFullscreen =
       fullscreen && !this.disableFullscreen && this.hasToolbar;
+
+    if (previousFullscreen !== this._isFullscreen) {
+      fireEvent(this, "dialog-set-fullscreen", this._isFullscreen);
+    }
+
     // Return whether successfully in requested state
     return this._isFullscreen === fullscreen;
   }
