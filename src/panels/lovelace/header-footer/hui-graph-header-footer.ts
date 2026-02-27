@@ -214,20 +214,19 @@ export class HuiGraphHeaderFooter
     if (entityHistory?.length) {
       const purgeBeforeTimestamp =
         (Date.now() - this._config.hours_to_show * 60 * 60 * 1000) / 1000;
-      const expiredStates = entityHistory.filter(
-        (entry) => entry.lu < purgeBeforeTimestamp
+      let purgedHistory = entityHistory.filter(
+        (entry) => entry.lu >= purgeBeforeTimestamp
       );
-      if (expiredStates.length) {
-        let purgedHistory = entityHistory.filter(
-          (entry) => entry.lu >= purgeBeforeTimestamp
-        );
+      if (purgedHistory.length !== entityHistory.length) {
         if (
           !purgedHistory.length ||
           purgedHistory[0].lu !== purgeBeforeTimestamp
         ) {
           // Preserve the last expired state as the start boundary
           const lastExpiredState = {
-            ...expiredStates[expiredStates.length - 1],
+            ...entityHistory.findLast(
+              (entry) => entry.lu < purgeBeforeTimestamp
+            )!,
           };
           lastExpiredState.lu = purgeBeforeTimestamp;
           delete lastExpiredState.lc;
