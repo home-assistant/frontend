@@ -150,6 +150,7 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   public disconnectedCallback() {
+    fireEvent(this, "dialog-set-fullscreen", false);
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
     this.removeEventListener("keydown", this._handleKeyDown);

@@ -150,6 +150,9 @@ export abstract class HuiElementEditor<
   }
 
   public toggleMode() {
+    if (!this.GUImode) {
+      this._yamlEditor?.disableCodeEditorFullscreen();
+    }
     this.GUImode = !this.GUImode;
   }
 

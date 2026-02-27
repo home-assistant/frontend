@@ -101,6 +101,13 @@ export class HaYamlEditor extends LitElement {
     }
   }
 
+  public disableCodeEditorFullscreen(): void {
+    this.disableFullscreen = true;
+    if (this._codeEditor) {
+      this._codeEditor.disableFullscreen = true;
+    }
+  }
+
   protected render() {
     if (this._yaml === undefined) {
       return nothing;
