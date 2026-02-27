@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { HomeAssistant } from "../types";
 import "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-icon";
@@ -19,8 +18,6 @@ export interface SelectOption {
 
 @customElement("ha-control-select-menu")
 export class HaControlSelectMenu extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, attribute: "show-arrow" })
   public showArrow = false;
 
