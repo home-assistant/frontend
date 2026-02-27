@@ -39,7 +39,6 @@ import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-adaptive-dialog";
-import type { HaAdaptiveDialog } from "../../components/ha-adaptive-dialog";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
@@ -120,7 +119,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @query(".content") private _contentElement?: HTMLDivElement;
 
-  @query("ha-adaptive-dialog") private _dialogElement?: HaAdaptiveDialog;
+  @query("ha-adaptive-dialog") private _dialogElement?: HTMLElement;
 
   @state() private _entityId?: string | null;
 
@@ -180,7 +179,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   public closeDialog() {
-    this._dialogElement?.setDialogFullscreen(false);
+    const dialog = this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+    if (dialog) {
+      fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+    }
     this._open = false;
   }
 
@@ -258,7 +260,11 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _goBack() {
     if (this._childView) {
-      this._dialogElement?.setDialogFullscreen(false);
+      const dialog =
+        this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+      if (dialog) {
+        fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+      }
       this._childView = undefined;
       this._detailsYamlMode = false;
       return;
@@ -325,7 +331,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _toggleDetailsYamlMode() {
-    this._dialogElement?.setDialogFullscreen(false);
+    const dialog = this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+    if (dialog) {
+      fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+    }
     this._detailsYamlMode = !this._detailsYamlMode;
   }
 
