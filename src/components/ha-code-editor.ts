@@ -132,6 +132,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this.classList.toggle("in-dialog", this._isInDialog());
     // Force update on reconnection so editor is recreated
     if (this.hasUpdated) {
       this.requestUpdate();
@@ -437,6 +438,8 @@ export class HaCodeEditor extends ReactiveElement {
   ): boolean {
     const previousFullscreen = this._isFullscreen;
 
+    this.classList.toggle("in-dialog", this._isInDialog());
+
     // Update the current fullscreen state based on selected value. If fullscreen
     // is disabled, or we have no toolbar, ensure we are not in fullscreen mode.
     this._isFullscreen =
@@ -523,6 +526,20 @@ export class HaCodeEditor extends ReactiveElement {
       e.stopPropagation();
     }
   };
+
+  private _isInDialog(element: Element = this): boolean {
+    if (element.closest("ha-dialog")) {
+      return true;
+    }
+
+    const rootNode = element.getRootNode();
+
+    if (!(rootNode instanceof ShadowRoot)) {
+      return false;
+    }
+
+    return this._isInDialog(rootNode.host);
+  }
 
   private _renderInfo = (completion: Completion): CompletionInfo => {
     const key = completion.label;
@@ -853,23 +870,37 @@ export class HaCodeEditor extends ReactiveElement {
         }
 
         :host(.fullscreen) {
-          position: absolute !important;
-          top: 0 !important;
-          left: 0 !important;
-          right: 0 !important;
-          bottom: 0 !important;
+          position: fixed !important;
+          top: calc(var(--header-height, 56px) + var(--ha-space-2)) !important;
+          left: var(--ha-space-2) !important;
+          right: var(--ha-space-2) !important;
+          bottom: var(--ha-space-2) !important;
           z-index: 6;
-          border-radius: 0 !important;
-          box-shadow: none !important;
+          border-radius: var(--ha-border-radius-lg) !important;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
           overflow: hidden !important;
           background-color: var(
             --code-editor-background-color,
             var(--card-background-color)
           ) !important;
           margin: 0 !important;
-          padding: 0 !important;
+          padding-top: var(--safe-area-inset-top) !important;
+          padding-left: var(--safe-area-inset-left) !important;
+          padding-right: var(--safe-area-inset-right) !important;
+          padding-bottom: var(--safe-area-inset-bottom) !important;
           box-sizing: border-box !important;
           display: block !important;
+        }
+
+        :host(.in-dialog.fullscreen) {
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          padding: 0 !important;
         }
 
         :host(.hasToolbar) .cm-editor {
