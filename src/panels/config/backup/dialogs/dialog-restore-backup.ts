@@ -5,13 +5,13 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-input";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-password-field";
 
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-svg-icon";
 import type { RestoreBackupParams } from "../../../../data/backup";
 import {
   fetchBackupConfig,
@@ -23,11 +23,11 @@ import type {
   RestoreBackupState,
 } from "../../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
+import { waitForIntegrationSetup } from "../../../../data/integration";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
-import { waitForIntegrationSetup } from "../../../../data/integration";
 
 interface FormData {
   encryption_key_type: "config" | "custom";
@@ -211,14 +211,16 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     return html`
       ${this._renderEncryptionIntro()}
 
-      <ha-password-field
+      <ha-input
+        type="password"
+        password-toggle
         autofocus
         @input=${this._passwordChanged}
         .label=${this.hass.localize(
           "ui.panel.config.backup.dialogs.restore.encryption.input_label"
         )}
         .value=${this._userPassword || ""}
-      ></ha-password-field>
+      ></ha-input>
     `;
   }
 
@@ -384,10 +386,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
           margin-bottom: 16px;
         }
         ha-alert[alert-type="warning"] {
-          display: block;
-          margin-top: 16px;
-        }
-        ha-password-field {
           display: block;
           margin-top: 16px;
         }

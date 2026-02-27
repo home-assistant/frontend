@@ -11,16 +11,15 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-input";
+import type { HaInput } from "../../../components/ha-input";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-password-field";
 import "../../../components/ha-radio";
 import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-spinner";
 import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   type AccessPoint,
@@ -233,7 +232,9 @@ export class HassioNetwork extends LitElement {
                       ${this._wifiConfiguration.auth === "wpa-psk" ||
                       this._wifiConfiguration.auth === "wep"
                         ? html`
-                            <ha-password-field
+                            <ha-input
+                              type="password"
+                              password-toggle
                               id="psk"
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.wifi_password"
@@ -241,7 +242,7 @@ export class HassioNetwork extends LitElement {
                               .version=${"wifi"}
                               @change=${this._handleInputValueChangedWifi}
                             >
-                            </ha-password-field>
+                            </ha-input>
                           `
                         : nothing}
                     `
@@ -388,7 +389,7 @@ export class HassioNetwork extends LitElement {
                   const { ip, mask, prefix } = parseAddress(address);
                   return html`
                     <div class="address-row">
-                      <ha-textfield
+                      <ha-input
                         id="address"
                         .label=${this.hass.localize(
                           "ui.panel.config.network.supervisor.ip"
@@ -399,10 +400,10 @@ export class HassioNetwork extends LitElement {
                         @change=${this._handleInputValueChanged}
                         .disabled=${disableInputs}
                       >
-                      </ha-textfield>
+                      </ha-input>
                       ${version === "ipv6"
                         ? html`
-                            <ha-textfield
+                            <ha-input
                               id="prefix"
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.prefix"
@@ -413,10 +414,10 @@ export class HassioNetwork extends LitElement {
                               @change=${this._handleInputValueChanged}
                               .disabled=${disableInputs}
                             >
-                            </ha-textfield>
+                            </ha-input>
                           `
                         : html`
-                            <ha-textfield
+                            <ha-input
                               id="netmask"
                               .label=${this.hass.localize(
                                 "ui.panel.config.network.supervisor.netmask"
@@ -427,7 +428,7 @@ export class HassioNetwork extends LitElement {
                               @change=${this._handleInputValueChanged}
                               .disabled=${disableInputs}
                             >
-                            </ha-textfield>
+                            </ha-input>
                           `}
                       ${this._interface![version].address.length > 1 &&
                       !disableInputs
@@ -461,7 +462,7 @@ export class HassioNetwork extends LitElement {
                     </ha-button>
                   `
                 : nothing}
-              <ha-textfield
+              <ha-input
                 id="gateway"
                 .label=${this.hass.localize(
                   "ui.panel.config.network.supervisor.gateway"
@@ -471,12 +472,12 @@ export class HassioNetwork extends LitElement {
                 @change=${this._handleInputValueChanged}
                 .disabled=${disableInputs}
               >
-              </ha-textfield>
+              </ha-input>
               <div class="nameservers">
                 ${nameservers.map(
                   (nameserver: string, index: number) => html`
                     <div class="address-row">
-                      <ha-textfield
+                      <ha-input
                         id="nameserver"
                         .label=${`${this.hass.localize(
                           "ui.panel.config.network.supervisor.dns_server"
@@ -486,18 +487,19 @@ export class HassioNetwork extends LitElement {
                         .index=${index}
                         @change=${this._handleInputValueChanged}
                       >
-                      </ha-textfield>
-                      ${this._interface![version].nameservers?.length > 1
-                        ? html`
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.delete")}
-                              .path=${mdiDeleteOutline}
-                              .version=${version}
-                              .index=${index}
-                              @click=${this._removeNameserver}
-                            ></ha-icon-button>
-                          `
-                        : nothing}
+                        ${this._interface![version].nameservers?.length > 1
+                          ? html`
+                              <ha-icon-button
+                                slot="end"
+                                .label=${this.hass.localize("ui.common.delete")}
+                                .path=${mdiDeleteOutline}
+                                .version=${version}
+                                .index=${index}
+                                @click=${this._removeNameserver}
+                              ></ha-icon-button>
+                            `
+                          : nothing}
+                      </ha-input>
                     </div>
                   `
                 )}
@@ -677,12 +679,13 @@ export class HassioNetwork extends LitElement {
   }
 
   private _handleInputValueChanged(ev: Event): void {
-    const source = ev.target as HaTextField;
+    const source = ev.target as HaInput;
     const value = source.value;
     const version = (ev.target as any).version as "ipv4" | "ipv6";
     const id = source.id;
 
     if (!value || !this._interface?.[version]) {
+      source.reportValidity();
       return;
     }
 
@@ -718,7 +721,7 @@ export class HassioNetwork extends LitElement {
   }
 
   private _handleInputValueChangedWifi(ev: Event): void {
-    const source = ev.target as HaTextField;
+    const source = ev.target as HaInput;
     const value = source.value;
     const id = source.id;
 
@@ -727,6 +730,7 @@ export class HassioNetwork extends LitElement {
       !this._wifiConfiguration ||
       this._wifiConfiguration![id] === value
     ) {
+      source.reportValidity();
       return;
     }
     this._dirty = true;
@@ -819,26 +823,24 @@ export class HassioNetwork extends LitElement {
           --expansion-panel-summary-padding: 0 16px;
           margin: 4px 0;
         }
-        ha-textfield {
-          display: block;
-          margin-top: 16px;
-        }
         .address-row {
           display: flex;
           flex-direction: row;
           gap: var(--ha-space-2);
           align-items: center;
         }
-        .address-row ha-textfield {
+        .address-row ha-input {
           flex: 1;
         }
         .address-row #prefix {
           flex: none;
           width: 95px;
         }
+        ha-icon-button {
+          color: var(--secondary-text-color);
+        }
         .address-row ha-icon-button {
           --ha-icon-button-size: 36px;
-          margin-top: 16px;
         }
         ha-dropdown {
           display: block;

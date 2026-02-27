@@ -4,14 +4,14 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-input";
+import type { HaInput } from "../../../components/ha-input";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
 import { createAuthForUser } from "../../../data/auth";
 import type { User } from "../../../data/user";
 import {
@@ -23,7 +23,6 @@ import {
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import type { AddUserDialogParams } from "./show-dialog-add-user";
-import "../../../components/ha-password-field";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -100,7 +99,7 @@ export class DialogAddUser extends LitElement {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._allowChangeName
-            ? html`<ha-textfield
+            ? html`<ha-input
                 class="name"
                 name="name"
                 .label=${this.hass.localize(
@@ -114,9 +113,9 @@ export class DialogAddUser extends LitElement {
                 @input=${this._handleValueChanged}
                 @blur=${this._maybePopulateUsername}
                 autofocus
-              ></ha-textfield>`
+              ></ha-input>`
             : ""}
-          <ha-textfield
+          <ha-input
             class="username"
             name="username"
             .label=${this.hass.localize(
@@ -127,9 +126,11 @@ export class DialogAddUser extends LitElement {
             @input=${this._handleValueChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
             ?autofocus=${!this._allowChangeName}
-          ></ha-textfield>
+          ></ha-input>
 
-          <ha-password-field
+          <ha-input
+            type="password"
+            password-toggle
             .label=${this.hass.localize(
               "ui.panel.config.users.add_user.password"
             )}
@@ -138,9 +139,11 @@ export class DialogAddUser extends LitElement {
             required
             @input=${this._handleValueChanged}
             .validationMessage=${this.hass.localize("ui.common.error_required")}
-          ></ha-password-field>
+          ></ha-input>
 
-          <ha-password-field
+          <ha-input
+            type="password"
+            password-toggle
             .label=${this.hass.localize(
               "ui.panel.config.users.add_user.password_confirm"
             )}
@@ -154,7 +157,7 @@ export class DialogAddUser extends LitElement {
             .errorMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
-          ></ha-password-field>
+          ></ha-input>
           <ha-md-list-item>
             <span slot="headline"
               >${this.hass.localize(
@@ -245,7 +248,7 @@ export class DialogAddUser extends LitElement {
 
   private _handleValueChanged(ev: ValueChangedEvent<string>): void {
     this._error = undefined;
-    const target = ev.target as HaTextField;
+    const target = ev.target as HaInput;
     this[`_${target.name}`] = target.value;
   }
 
@@ -317,11 +320,6 @@ export class DialogAddUser extends LitElement {
         .row {
           display: flex;
           padding: 8px 0;
-        }
-        ha-textfield,
-        ha-password-field {
-          display: block;
-          margin-bottom: 8px;
         }
         ha-md-list-item {
           --md-list-item-leading-space: 0;

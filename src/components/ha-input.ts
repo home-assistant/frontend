@@ -1,9 +1,9 @@
+import "@home-assistant/webawesome/dist/components/animation/animation";
 import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
 import { mdiClose, mdiEye, mdiEyeOff, mdiInformationOutline } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { withViewTransition } from "../common/util/view-transition";
 import "./ha-svg-icon";
 import "./ha-tooltip";
 
@@ -25,7 +25,7 @@ export class HaInput extends LitElement {
 
   /** The current value of the input. */
   @property()
-  public value: string | null = null;
+  public value?: string;
 
   /** The input's size. */
   @property()
@@ -172,11 +172,14 @@ export class HaInput extends LitElement {
   @property({ type: Boolean, attribute: "auto-validate" })
   public autoValidate = false;
 
+  @property({ type: Boolean })
+  public invalid = false;
+
   @state()
   private _invalid = false;
 
   @query("wa-input")
-  private _input!: WaInput;
+  private _input?: WaInput;
 
   static shadowRootOptions: ShadowRootInit = {
     mode: "open",
@@ -226,14 +229,37 @@ export class HaInput extends LitElement {
     this._input?.stepDown();
   }
 
+  public checkValidity(): boolean {
+    return this._input?.checkValidity() ?? true;
+  }
+
+  public reportValidity(): boolean {
+    const valid = this.checkValidity();
+
+    this._invalid = !valid;
+    return valid;
+  }
+
+  protected override updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+
+    // wa-input doesn't set aria-invalid on its internal <input>, so we do it manually
+    if (changedProperties.has("invalid") || changedProperties.has("_invalid")) {
+      const isInvalid = this.invalid || this._invalid;
+      const nativeInput = this._input?.input;
+      if (nativeInput) {
+        nativeInput.setAttribute("aria-invalid", String(isInvalid));
+      }
+    }
+  }
+
   protected render() {
     return html`
       <wa-input
         .type=${this.type}
-        .value=${this.value}
+        .value=${this.value ?? null}
         .size=${this.size}
         .appearance=${this.appearance}
-        .hint=${this._invalid ? this.validationMessage : ""}
         .withClear=${this.withClear}
         .placeholder=${this.placeholder}
         .readonly=${this.readonly}
@@ -256,10 +282,11 @@ export class HaInput extends LitElement {
         .inputmode=${this.inputmode || undefined}
         .name=${this.name}
         .disabled=${this.disabled}
-        class=${this._invalid ? "invalid" : ""}
+        class=${this.invalid || this._invalid ? "invalid" : ""}
         @input=${this._handleInput}
         @change=${this._handleChange}
         @blur=${this._handleBlur}
+        @wa-invalid=${this._handleInvalid}
       >
         <div class="label" slot="label">
           <span>
@@ -269,6 +296,8 @@ export class HaInput extends LitElement {
             ? html`<ha-svg-icon
                   .path=${mdiInformationOutline}
                   id="hint"
+                  aria-label="Hint"
+                  role="img"
                 ></ha-svg-icon>
                 <ha-tooltip for="hint">${this.hint}</ha-tooltip> `
             : nothing}
@@ -284,33 +313,46 @@ export class HaInput extends LitElement {
         <slot name="hide-password-icon" slot="hide-password-icon">
           <ha-svg-icon .path=${mdiEyeOff}></ha-svg-icon>
         </slot>
+        <div
+          slot="hint"
+          class="hint ${this.invalid || this._invalid ? "visible" : ""}"
+          role="alert"
+          aria-live="assertive"
+        >
+          <span
+            >${this.validationMessage || this._input?.validationMessage}</span
+          >
+        </div>
       </wa-input>
     `;
   }
 
   private _handleInput() {
-    this.value = this._input?.value ?? null;
-    if (this._invalid) {
+    this.value = this._input?.value ?? undefined;
+    if (this._invalid && this._input?.checkValidity()) {
       this._invalid = false;
     }
   }
 
   private _handleChange() {
-    this.value = this._input?.value ?? null;
+    this.value = this._input?.value ?? undefined;
   }
 
   private _handleBlur() {
     if (this.autoValidate) {
-      withViewTransition(() => {
-        this._invalid = !this._input.checkValidity();
-      });
+      this._invalid = !this._input?.checkValidity();
     }
+  }
+
+  private _handleInvalid() {
+    this._invalid = true;
   }
 
   static styles = css`
     :host {
       display: flex;
       align-items: flex-start;
+      padding-bottom: var(--ha-input-padding-bottom, var(--ha-space-4));
     }
     wa-input {
       flex: 1;
@@ -322,7 +364,8 @@ export class HaInput extends LitElement {
       --wa-form-control-border-color: var(--ha-color-border-primary-normal);
     }
 
-    wa-input.invalid {
+    wa-input.invalid,
+    wa-input.invalid::part(base):focus-within {
       --wa-form-control-border-color: var(--ha-color-border-danger-normal);
     }
 
@@ -345,7 +388,8 @@ export class HaInput extends LitElement {
       line-height: 1;
       flex: 1;
       min-width: 0;
-      overflow: hidden;
+      overflow-x: clip;
+      overflow-y: visible;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -355,11 +399,34 @@ export class HaInput extends LitElement {
       --mdc-icon-size: 16px;
     }
 
-    wa-input.invalid::part(hint) {
-      margin-block-start: var(--ha-space-1);
+    wa-input::part(hint) {
+      margin-block-start: 0;
       color: var(--ha-color-on-danger-quiet);
       font-size: var(--ha-font-size-s);
       margin-inline-start: var(--ha-space-3);
+    }
+
+    .hint {
+      padding-top: var(--ha-space-1);
+      transition:
+        opacity 0.3s ease-out,
+        height 0.3s ease-out;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .hint span {
+      transition: transform 0.3s ease-out;
+      display: inline-block;
+      transform: translateY(-16px);
+    }
+
+    .hint.visible {
+      height: 20px;
+    }
+
+    .hint.visible span {
+      transform: translateY(0);
     }
   `;
 }
