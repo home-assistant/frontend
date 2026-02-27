@@ -358,16 +358,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         :host([fullscreen]) .body {
           overflow: hidden;
           padding: 0;
-          --code-editor-position: absolute;
-          --code-editor-top: 0;
-          --code-editor-left: 0;
-          --code-editor-right: 0;
-          --code-editor-bottom: 0;
-          --code-editor-border-radius: 0;
-          --code-editor-padding-top: 0;
-          --code-editor-padding-left: 0;
-          --code-editor-padding-right: 0;
-          --code-editor-padding-bottom: 0;
         }
 
         wa-dialog::part(dialog) {
