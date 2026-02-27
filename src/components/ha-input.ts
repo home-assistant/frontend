@@ -1,9 +1,11 @@
+import { preventDefault } from "@fullcalendar/core/internal";
 import "@home-assistant/webawesome/dist/components/animation/animation";
 import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
 import { mdiClose, mdiEye, mdiEyeOff, mdiInformationOutline } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-tooltip";
 
@@ -243,13 +245,31 @@ export class HaInput extends LitElement {
   protected override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
+    const nativeInput = this._input?.input;
+    if (!nativeInput) return;
+
+    // wa-input hardcodes aria-describedby="hint" pointing to its internal hint slot wrapper.
+    // We remove it and use aria-description instead to properly convey our hint or error text.
+    // TODO: fix upstream in wa-input
+    nativeInput.removeAttribute("aria-describedby");
+
     // wa-input doesn't set aria-invalid on its internal <input>, so we do it manually
+    // TODO: fix upstream in wa-input
     if (changedProperties.has("invalid") || changedProperties.has("_invalid")) {
       const isInvalid = this.invalid || this._invalid;
-      const nativeInput = this._input?.input;
-      if (nativeInput) {
-        nativeInput.setAttribute("aria-invalid", String(isInvalid));
-      }
+      nativeInput.setAttribute("aria-invalid", String(isInvalid));
+    }
+
+    // Expose hint or validation error to screen readers on the input itself
+    const description =
+      this.invalid || this._invalid
+        ? this.validationMessage || this._input?.validationMessage
+        : this.hint;
+
+    if (description) {
+      nativeInput.setAttribute("aria-description", description);
+    } else {
+      nativeInput.removeAttribute("aria-description");
     }
   }
 
@@ -293,12 +313,13 @@ export class HaInput extends LitElement {
             <slot name="label">${this.label}</slot>
           </span>
           ${this.hint
-            ? html`<ha-svg-icon
+            ? html`<ha-icon-button
+                  @click=${preventDefault}
                   .path=${mdiInformationOutline}
+                  .label=${"Hint"}
+                  hide-title
                   id="hint"
-                  aria-label="Hint"
-                  role="img"
-                ></ha-svg-icon>
+                ></ha-icon-button>
                 <ha-tooltip for="hint">${this.hint}</ha-tooltip> `
             : nothing}
         </div>
@@ -315,7 +336,7 @@ export class HaInput extends LitElement {
         </slot>
         <div
           slot="hint"
-          class="hint ${this.invalid || this._invalid ? "visible" : ""}"
+          class="error ${this.invalid || this._invalid ? "visible" : ""}"
           role="alert"
           aria-live="assertive"
         >
@@ -399,6 +420,12 @@ export class HaInput extends LitElement {
       --mdc-icon-size: 16px;
     }
 
+    #hint {
+      --ha-icon-button-size: 16px;
+      --mdc-icon-size: 16px;
+      color: var(--ha-color-on-disabled-normal);
+    }
+
     wa-input::part(hint) {
       margin-block-start: 0;
       color: var(--ha-color-on-danger-quiet);
@@ -406,7 +433,7 @@ export class HaInput extends LitElement {
       margin-inline-start: var(--ha-space-3);
     }
 
-    .hint {
+    .error {
       padding-top: var(--ha-space-1);
       transition:
         opacity 0.3s ease-out,
@@ -415,18 +442,24 @@ export class HaInput extends LitElement {
       overflow: hidden;
     }
 
-    .hint span {
+    .error span {
       transition: transform 0.3s ease-out;
       display: inline-block;
-      transform: translateY(-16px);
+      transform: translateY(
+        calc(-1 * (var(--ha-font-size-s) + var(--ha-space-1)))
+      );
     }
 
-    .hint.visible {
-      height: 20px;
+    .error.visible {
+      height: calc(var(--ha-font-size-s) + var(--ha-space-2));
     }
 
-    .hint.visible span {
+    .error.visible span {
       transform: translateY(0);
+    }
+
+    wa-input::part(end) {
+      color: var(--ha-color-text-secondary);
     }
   `;
 }

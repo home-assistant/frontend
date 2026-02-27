@@ -3,9 +3,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { clamp } from "../../../../../common/number/clamp";
 import "../../../../../components/ha-expansion-panel";
+import "../../../../../components/ha-input";
+import type { HaInput } from "../../../../../components/ha-input";
 import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-md-textfield";
-import type { HaMdTextfield } from "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { BackupConfig, Retention } from "../../../../../data/backup";
@@ -54,7 +54,7 @@ class HaBackupConfigRetention extends LitElement {
 
   @state() private _value = 3;
 
-  @query("#value") private _customValueField?: HaMdTextfield;
+  @query("#value") private _customValueField?: HaInput;
 
   @query("#type") private _customTypeField?: HaSelect;
 
@@ -141,7 +141,7 @@ class HaBackupConfigRetention extends LitElement {
                   "ui.panel.config.backup.schedule.custom_retention_label"
                 )}
               </span>
-              <ha-md-textfield
+              <ha-input
                 slot="end"
                 @change=${this._retentionValueChanged}
                 .value=${this._value.toString()}
@@ -151,7 +151,7 @@ class HaBackupConfigRetention extends LitElement {
                 .max=${MAX_VALUE.toString()}
                 step="1"
               >
-              </ha-md-textfield>
+              </ha-input>
               <ha-select
                 slot="end"
                 @selected=${this._retentionTypeChanged}
@@ -208,8 +208,8 @@ class HaBackupConfigRetention extends LitElement {
 
   private _retentionValueChanged(ev) {
     ev.stopPropagation();
-    const target = ev.currentTarget as HaMdTextfield;
-    const value = parseInt(target.value);
+    const target = ev.currentTarget as HaInput;
+    const value = parseInt(target.value ?? "");
     const clamped = clamp(value, MIN_VALUE, MAX_VALUE);
     target.value = clamped.toString();
 
@@ -258,14 +258,14 @@ class HaBackupConfigRetention extends LitElement {
         width: 160px;
       }
     }
-    ha-md-textfield#value {
+    ha-input#value {
       min-width: 70px;
     }
     ha-select#type {
       min-width: 100px;
     }
     @media all and (max-width: 450px) {
-      ha-md-textfield#value {
+      ha-input#value {
         min-width: 60px;
         margin: 0 -8px;
       }
