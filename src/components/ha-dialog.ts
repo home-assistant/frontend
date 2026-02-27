@@ -12,6 +12,7 @@ import {
 import { ifDefined } from "lit/directives/if-defined";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { withViewTransition } from "../common/util/view-transition";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -254,7 +255,14 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleFullscreenChanged(ev: HASSDomEvent<boolean>): void {
-    this._setFullscreen(ev.detail);
+    if (!this._open) {
+      this._setFullscreen(ev.detail);
+      return;
+    }
+
+    withViewTransition(() => {
+      this._setFullscreen(ev.detail);
+    });
   }
 
   private _setFullscreen(fullscreen: boolean): void {
