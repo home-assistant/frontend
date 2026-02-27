@@ -39,6 +39,7 @@ import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-adaptive-dialog";
+import type { HaAdaptiveDialog } from "../../components/ha-adaptive-dialog";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
@@ -119,6 +120,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @query(".content") private _contentElement?: HTMLDivElement;
 
+  @query("ha-adaptive-dialog") private _dialogElement?: HaAdaptiveDialog;
+
   @state() private _entityId?: string | null;
 
   @state() private _data?: Record<string, any>;
@@ -177,6 +180,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   public closeDialog() {
+    this._dialogElement?.setDialogFullscreen(false);
     this._open = false;
   }
 
@@ -254,6 +258,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _goBack() {
     if (this._childView) {
+      this._dialogElement?.setDialogFullscreen(false);
       this._childView = undefined;
       this._detailsYamlMode = false;
       return;
@@ -320,6 +325,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _toggleDetailsYamlMode() {
+    this._dialogElement?.setDialogFullscreen(false);
     this._detailsYamlMode = !this._detailsYamlMode;
   }
 
