@@ -746,8 +746,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       );
       display: block;
     }
-    /* Last content row shall keep the same padding above fab as fab to 
-       bottom (16px) + the safe-area inset. */
+    /* Last content row should keep the same padding above the fab as the fab
+       has to the bottom (16px standard fab bottom padding) + the safe-area inset. */
     :host([has-fab]) ha-data-table {
       --data-table-empty-row-height: calc(
         48px + 16px * 2 + var(--safe-area-inset-bottom, 0px)
