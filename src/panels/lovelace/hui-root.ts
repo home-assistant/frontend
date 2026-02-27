@@ -1485,6 +1485,8 @@ class HUIRoot extends LitElement {
           padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view-container > * {
+          display: flex;
+          flex-direction: column;
           flex: 1 1 100%;
           max-width: 100%;
         }
