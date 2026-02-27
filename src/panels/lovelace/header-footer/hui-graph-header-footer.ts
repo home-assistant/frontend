@@ -224,9 +224,7 @@ export class HuiGraphHeaderFooter
         ) {
           // Preserve the last expired state as the start boundary
           const lastExpiredState = {
-            ...entityHistory.findLast(
-              (entry) => entry.lu < purgeBeforeTimestamp
-            )!,
+            ...entityHistory[entityHistory.length - purgedHistory.length - 1],
           };
           lastExpiredState.lu = purgeBeforeTimestamp;
           delete lastExpiredState.lc;
