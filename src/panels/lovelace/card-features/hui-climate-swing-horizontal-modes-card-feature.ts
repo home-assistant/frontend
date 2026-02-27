@@ -48,14 +48,6 @@ class HuiClimateSwingHorizontalModesCardFeature
 
   @state() _currentSwingHorizontalMode?: string;
 
-  private _renderSwingHorizontalModeIcon = (value: string) =>
-    html`<ha-attribute-icon
-      .hass=${this.hass}
-      .stateObj=${this._stateObj}
-      attribute="swing_horizontal_mode"
-      .attributeValue=${value}
-    ></ha-attribute-icon>`;
-
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -195,8 +187,14 @@ class HuiClimateSwingHorizontalModesCardFeature
         .value=${this._currentSwingHorizontalMode}
         .disabled=${this._stateObj.state === UNAVAILABLE}
         @wa-select=${this._valueChanged}
-        .options=${options}
-        .renderIcon=${this._renderSwingHorizontalModeIcon}
+        .options=${options.map((option) => ({
+          ...option,
+          attributeIcon: {
+            stateObj: stateObj,
+            attribute: "swing_horizontal_mode",
+            attributeValue: option.value,
+          },
+        }))}
       >
         <ha-svg-icon slot="icon" .path=${mdiArrowOscillating}></ha-svg-icon>
       </ha-control-select-menu>

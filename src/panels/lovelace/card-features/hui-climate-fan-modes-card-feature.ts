@@ -49,14 +49,6 @@ class HuiClimateFanModesCardFeature
 
   @state() _currentFanMode?: string;
 
-  private _renderFanModeIcon = (value: string) =>
-    html`<ha-attribute-icon
-      .hass=${this.hass}
-      .stateObj=${this._stateObj}
-      attribute="fan_mode"
-      .attributeValue=${value}
-    ></ha-attribute-icon>`;
-
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -183,8 +175,14 @@ class HuiClimateFanModesCardFeature
         .value=${this._currentFanMode}
         .disabled=${this._stateObj.state === UNAVAILABLE}
         @wa-select=${this._valueChanged}
-        .options=${options}
-        .renderIcon=${this._renderFanModeIcon}
+        .options=${options.map((option) => ({
+          ...option,
+          attributeIcon: {
+            stateObj: stateObj,
+            attribute: "fan_mode",
+            attributeValue: option.value,
+          },
+        }))}
         ><ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
       </ha-control-select-menu>
     `;

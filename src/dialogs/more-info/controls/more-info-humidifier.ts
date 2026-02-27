@@ -23,14 +23,6 @@ class MoreInfoHumidifier extends LitElement {
 
   @state() public _mode?: string;
 
-  private _renderModeIcon = (value: string) =>
-    html`<ha-attribute-icon
-      .hass=${this.hass}
-      .stateObj=${this.stateObj}
-      attribute="mode"
-      .attributeValue=${value}
-    ></ha-attribute-icon>`;
-
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj")) {
@@ -114,8 +106,14 @@ class MoreInfoHumidifier extends LitElement {
                         mode
                       )
                     : mode,
+                  attributeIcon: stateObj
+                    ? {
+                        stateObj,
+                        attribute: "mode",
+                        attributeValue: mode,
+                      }
+                    : undefined,
                 })) || []}
-                .renderIcon=${this._renderModeIcon}
               >
                 <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
               </ha-control-select-menu>

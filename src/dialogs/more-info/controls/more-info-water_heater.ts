@@ -24,14 +24,6 @@ class MoreInfoWaterHeater extends LitElement {
 
   @property({ attribute: false }) public stateObj?: WaterHeaterEntity;
 
-  private _renderOperationModeIcon = (value: string) =>
-    html`<ha-attribute-icon
-      .hass=${this.hass}
-      .stateObj=${this.stateObj}
-      attribute="operation_mode"
-      .attributeValue=${value}
-    ></ha-attribute-icon>`;
-
   protected render() {
     if (!this.stateObj) {
       return nothing;
@@ -93,8 +85,12 @@ class MoreInfoWaterHeater extends LitElement {
                   .map((mode) => ({
                     value: mode,
                     label: this.hass.formatEntityState(stateObj, mode),
+                    attributeIcon: {
+                      stateObj,
+                      attribute: "operation_mode",
+                      attributeValue: mode,
+                    },
                   }))}
-                .renderIcon=${this._renderOperationModeIcon}
               >
                 <ha-svg-icon slot="icon" .path=${mdiWaterBoiler}></ha-svg-icon>
               </ha-control-select-menu>

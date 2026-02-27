@@ -48,14 +48,6 @@ class HuiHumidifierModesCardFeature
 
   @state() _currentMode?: string;
 
-  private _renderModeIcon = (value: string) =>
-    html`<ha-attribute-icon
-      .hass=${this.hass}
-      .stateObj=${this._stateObj}
-      attribute="mode"
-      .attributeValue=${value}
-    ></ha-attribute-icon>`;
-
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -182,8 +174,14 @@ class HuiHumidifierModesCardFeature
         .value=${this._currentMode}
         .disabled=${this._stateObj.state === UNAVAILABLE}
         @wa-select=${this._valueChanged}
-        .options=${options}
-        .renderIcon=${this._renderModeIcon}
+        .options=${options.map((option) => ({
+          ...option,
+          attributeIcon: {
+            stateObj,
+            attribute: "mode",
+            attributeValue: option.value,
+          },
+        }))}
       >
         <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
       </ha-control-select-menu>
