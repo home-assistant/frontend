@@ -1,242 +1,351 @@
-import { TextFieldBase } from "@material/mwc-textfield/mwc-textfield-base";
-import { styles } from "@material/mwc-textfield/mwc-textfield.css";
-import type { TemplateResult, PropertyValues } from "lit";
-import { html, css } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { mainWindow } from "../common/dom/get_main_window";
+import "./ha-input";
+import type { HaInput } from "./ha-input";
 
+/**
+ * Legacy wrapper around ha-input that preserves the mwc-textfield API.
+ * New code should use ha-input directly.
+ * @deprecated Use ha-input instead.
+ */
 @customElement("ha-textfield")
-export class HaTextField extends TextFieldBase {
-  @property({ type: Boolean }) public invalid?: boolean;
+export class HaTextField extends LitElement {
+  @property({ type: String })
+  public value = "";
 
-  @property({ attribute: "error-message" }) public errorMessage?: string;
+  @property({ type: String })
+  public type:
+    | "text"
+    | "search"
+    | "tel"
+    | "url"
+    | "email"
+    | "password"
+    | "date"
+    | "month"
+    | "week"
+    | "time"
+    | "datetime-local"
+    | "number"
+    | "color" = "text";
 
+  @property({ type: String })
+  public label = "";
+
+  @property({ type: String })
+  public placeholder = "";
+
+  @property({ type: String })
+  public prefix = "";
+
+  @property({ type: String })
+  public suffix = "";
+
+  @property({ type: Boolean })
   // @ts-ignore
-  @property({ type: Boolean }) public icon = false;
+  public icon = false;
 
+  @property({ type: Boolean })
   // @ts-ignore
   // eslint-disable-next-line lit/attribute-names
-  @property({ type: Boolean }) public iconTrailing = false;
+  public iconTrailing = false;
 
-  @property() public autocomplete?: string;
+  @property({ type: Boolean })
+  public disabled = false;
 
-  @property({ type: Boolean }) public autocorrect = true;
+  @property({ type: Boolean })
+  public required = false;
+
+  @property({ type: Number, attribute: "minlength" })
+  public minLength = -1;
+
+  @property({ type: Number, attribute: "maxlength" })
+  public maxLength = -1;
+
+  @property({ type: Boolean, reflect: true })
+  public outlined = false;
+
+  @property({ type: String })
+  public helper = "";
+
+  @property({ type: Boolean, attribute: "validateoninitialrender" })
+  public validateOnInitialRender = false;
+
+  @property({ type: String, attribute: "validationmessage" })
+  public validationMessage = "";
+
+  @property({ type: Boolean, attribute: "autovalidate" })
+  public autoValidate = false;
+
+  @property({ type: String })
+  public pattern = "";
+
+  @property()
+  public min: number | string = "";
+
+  @property()
+  public max: number | string = "";
+
+  @property()
+  public step: number | "any" | null = null;
+
+  @property({ type: Number })
+  public size: number | null = null;
+
+  @property({ type: Boolean, attribute: "helperpersistent" })
+  public helperPersistent = false;
+
+  @property({ attribute: "charcounter" })
+  public charCounter: boolean | "external" | "internal" = false;
+
+  @property({ type: Boolean, attribute: "endaligned" })
+  public endAligned = false;
+
+  @property({ type: String, attribute: "inputmode" })
+  public inputMode = "";
+
+  @property({ type: Boolean, reflect: true, attribute: "readonly" })
+  public readOnly = false;
+
+  @property({ type: String })
+  public name = "";
+
+  @property({ type: String })
+  // eslint-disable-next-line lit/no-native-attributes
+  public autocapitalize = "";
+
+  // --- ha-textfield-specific properties ---
+
+  @property({ type: Boolean })
+  public invalid = false;
+
+  @property({ attribute: "error-message" })
+  public errorMessage?: string;
+
+  @property()
+  public autocomplete?: string;
+
+  @property({ type: Boolean })
+  public autocorrect = true;
 
   @property({ attribute: "input-spellcheck" })
   public inputSpellcheck?: string;
 
-  @query("input") public formElement!: HTMLInputElement;
+  @query("ha-input")
+  private _haInput?: HaInput;
 
-  override updated(changedProperties: PropertyValues) {
+  static shadowRootOptions: ShadowRootInit = {
+    mode: "open",
+    delegatesFocus: true,
+  };
+
+  public get formElement(): HTMLInputElement | undefined {
+    return (this._haInput as any)?._input?.input;
+  }
+
+  public select(): void {
+    this._haInput?.select();
+  }
+
+  public setSelectionRange(
+    selectionStart: number,
+    selectionEnd: number,
+    selectionDirection?: "forward" | "backward" | "none"
+  ): void {
+    this._haInput?.setSelectionRange(
+      selectionStart,
+      selectionEnd,
+      selectionDirection
+    );
+  }
+
+  public setRangeText(
+    replacement: string,
+    start?: number,
+    end?: number,
+    selectMode?: "select" | "start" | "end" | "preserve"
+  ): void {
+    this._haInput?.setRangeText(replacement, start, end, selectMode);
+  }
+
+  public checkValidity(): boolean {
+    return this._haInput?.checkValidity() ?? true;
+  }
+
+  public reportValidity(): boolean {
+    return this._haInput?.reportValidity() ?? true;
+  }
+
+  public setCustomValidity(message: string): void {
+    this.validationMessage = message;
+    this.invalid = !!message;
+  }
+
+  /** No-op. Preserved for backward compatibility. */
+  public layout(): void {
+    // no-op — mwc-textfield needed this for notched outline recalculation
+  }
+
+  protected override firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    if (this.validateOnInitialRender) {
+      this.reportValidity();
+    }
+  }
+
+  protected override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
-    if (
-      changedProperties.has("invalid") ||
-      changedProperties.has("errorMessage")
-    ) {
-      this.setCustomValidity(
-        this.invalid
-          ? this.errorMessage || this.validationMessage || "Invalid"
-          : ""
-      );
+
+    if (changedProperties.has("invalid") && this._haInput) {
       if (
         this.invalid ||
-        this.validateOnInitialRender ||
-        (changedProperties.has("invalid") &&
-          changedProperties.get("invalid") !== undefined)
+        (changedProperties.get("invalid") !== undefined && !this.invalid)
       ) {
-        // Only report validity if the field is invalid or the invalid state has changed from
-        // true to false to prevent setting empty required fields to invalid on first render
         this.reportValidity();
       }
     }
-    if (changedProperties.has("autocomplete")) {
-      if (this.autocomplete) {
-        this.formElement.setAttribute("autocomplete", this.autocomplete);
-      } else {
-        this.formElement.removeAttribute("autocomplete");
-      }
-    }
-    if (changedProperties.has("autocorrect")) {
-      if (this.autocorrect === false) {
-        this.formElement.setAttribute("autocorrect", "off");
-      } else {
-        this.formElement.removeAttribute("autocorrect");
-      }
-    }
-    if (changedProperties.has("inputSpellcheck")) {
-      if (this.inputSpellcheck) {
-        this.formElement.setAttribute("spellcheck", this.inputSpellcheck);
-      } else {
-        this.formElement.removeAttribute("spellcheck");
-      }
+  }
+
+  private _mapType(
+    type: string
+  ):
+    | "text"
+    | "search"
+    | "tel"
+    | "url"
+    | "email"
+    | "password"
+    | "date"
+    | "datetime-local"
+    | "number"
+    | "time" {
+    // mwc-textfield supports "color", "month", "week" which ha-input doesn't
+    switch (type) {
+      case "text":
+      case "search":
+      case "tel":
+      case "url":
+      case "email":
+      case "password":
+      case "date":
+      case "datetime-local":
+      case "number":
+      case "time":
+        return type;
+      default:
+        return "text";
     }
   }
 
-  protected override renderIcon(
-    _icon: string,
-    isTrailingIcon = false
-  ): TemplateResult {
-    const type = isTrailingIcon ? "trailing" : "leading";
-
+  protected override render(): TemplateResult {
+    const errorMsg = this.errorMessage || this.validationMessage;
     return html`
-      <span
-        class="mdc-text-field__icon mdc-text-field__icon--${type}"
-        tabindex=${isTrailingIcon ? 1 : -1}
+      <ha-input
+        .type=${this._mapType(this.type)}
+        .value=${this.value || undefined}
+        .label=${this.label}
+        .placeholder=${this.placeholder}
+        .disabled=${this.disabled}
+        .required=${this.required}
+        .readonly=${this.readOnly}
+        .pattern=${this.pattern || undefined}
+        .minlength=${this.minLength > 0 ? this.minLength : undefined}
+        .maxlength=${this.maxLength > 0 ? this.maxLength : undefined}
+        .min=${this.min !== "" ? this.min : undefined}
+        .max=${this.max !== "" ? this.max : undefined}
+        .step=${this.step ?? undefined}
+        .name=${this.name || undefined}
+        .autocomplete=${this.autocomplete}
+        .autocorrect=${this.autocorrect}
+        .spellcheck=${this.inputSpellcheck === "true"}
+        .inputmode=${this._mapInputMode(this.inputMode)}
+        .autocapitalize=${this.autocapitalize || ""}
+        .invalid=${this.invalid}
+        .validationMessage=${errorMsg || ""}
+        .autoValidate=${this.autoValidate}
+        .hint=${this.helper}
+        .withoutSpinButtons=${this.type === "number"}
+        @input=${this._onInput}
+        @change=${this._onChange}
       >
-        <slot name="${type}Icon"></slot>
-      </span>
+        ${this.icon
+          ? html`<slot name="leadingIcon" slot="start"></slot>`
+          : nothing}
+        ${this.prefix
+          ? html`<span class="prefix" slot="start">${this.prefix}</span>`
+          : nothing}
+        ${this.suffix
+          ? html`<span class="suffix" slot="end">${this.suffix}</span>`
+          : nothing}
+        ${this.iconTrailing
+          ? html`<slot name="trailingIcon" slot="end"></slot>`
+          : nothing}
+      </ha-input>
     `;
   }
 
-  static override styles = [
-    styles,
-    css`
-      .mdc-text-field__input {
-        width: var(--ha-textfield-input-width, 100%);
-      }
-      .mdc-text-field:not(.mdc-text-field--with-leading-icon) {
-        padding: var(--text-field-padding, 0px 16px);
-      }
-      .mdc-text-field__affix--suffix {
-        padding-left: var(--text-field-suffix-padding-left, 12px);
-        padding-right: var(--text-field-suffix-padding-right, 0px);
-        padding-inline-start: var(--text-field-suffix-padding-left, 12px);
-        padding-inline-end: var(--text-field-suffix-padding-right, 0px);
-        direction: ltr;
-      }
-      .mdc-text-field--with-leading-icon {
-        padding-inline-start: var(--text-field-suffix-padding-left, 0px);
-        padding-inline-end: var(--text-field-suffix-padding-right, 16px);
-        direction: var(--direction);
-      }
+  private _mapInputMode(
+    mode: string
+  ):
+    | "none"
+    | "text"
+    | "decimal"
+    | "numeric"
+    | "tel"
+    | "search"
+    | "email"
+    | "url"
+    | "" {
+    switch (mode) {
+      case "none":
+      case "text":
+      case "decimal":
+      case "numeric":
+      case "tel":
+      case "search":
+      case "email":
+      case "url":
+        return mode;
+      default:
+        return "";
+    }
+  }
 
-      .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon {
-        padding-left: var(--text-field-suffix-padding-left, 0px);
-        padding-right: var(--text-field-suffix-padding-right, 0px);
-        padding-inline-start: var(--text-field-suffix-padding-left, 0px);
-        padding-inline-end: var(--text-field-suffix-padding-right, 0px);
-      }
-      .mdc-text-field:not(.mdc-text-field--disabled)
-        .mdc-text-field__affix--suffix {
-        color: var(--secondary-text-color);
-      }
+  private _onInput(): void {
+    this.value = this._haInput?.value ?? "";
+  }
 
-      .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__icon {
-        color: var(--secondary-text-color);
-      }
+  private _onChange(): void {
+    this.value = this._haInput?.value ?? "";
+  }
 
-      .mdc-text-field__icon--leading {
-        margin-inline-start: 16px;
-        margin-inline-end: 8px;
-        direction: var(--direction);
-      }
+  static override styles = css`
+    :host {
+      display: inline-flex;
+      flex-direction: column;
+      outline: none;
+    }
 
-      .mdc-text-field__icon--trailing {
-        padding: var(--textfield-icon-trailing-padding, 12px);
-      }
+    ha-input {
+      --ha-input-padding-bottom: 0;
+      width: 100%;
+    }
 
-      .mdc-floating-label:not(.mdc-floating-label--float-above) {
-        max-width: calc(100% - 16px);
-      }
+    .prefix,
+    .suffix {
+      color: var(--secondary-text-color);
+    }
 
-      .mdc-floating-label--float-above {
-        max-width: calc((100% - 16px) / 0.75);
-        transition: none;
-      }
+    .prefix {
+      margin-inline-end: var(--text-field-prefix-padding-right);
+    }
 
-      input {
-        text-align: var(--text-field-text-align, start);
-      }
-
-      input[type="color"] {
-        height: 20px;
-      }
-
-      /* Edge, hide reveal password icon */
-      ::-ms-reveal {
-        display: none;
-      }
-
-      /* Chrome, Safari, Edge, Opera */
-      :host([no-spinner]) input::-webkit-outer-spin-button,
-      :host([no-spinner]) input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-
-      input[type="color"]::-webkit-color-swatch-wrapper {
-        padding: 0;
-      }
-
-      /* Firefox */
-      :host([no-spinner]) input[type="number"] {
-        -moz-appearance: textfield;
-      }
-
-      .mdc-text-field__ripple {
-        overflow: hidden;
-      }
-
-      .mdc-text-field {
-        overflow: var(--text-field-overflow);
-      }
-
-      .mdc-floating-label {
-        padding-inline-end: 16px;
-        padding-inline-start: initial;
-        inset-inline-start: 16px !important;
-        inset-inline-end: initial !important;
-        transform-origin: var(--float-start);
-        direction: var(--direction);
-        text-align: var(--float-start);
-        box-sizing: border-box;
-        text-overflow: ellipsis;
-      }
-
-      .mdc-text-field--with-leading-icon.mdc-text-field--filled
-        .mdc-floating-label {
-        max-width: calc(
-          100% - 48px - var(--text-field-suffix-padding-left, 0px)
-        );
-        inset-inline-start: calc(
-          48px + var(--text-field-suffix-padding-left, 0px)
-        ) !important;
-        inset-inline-end: initial !important;
-        direction: var(--direction);
-      }
-
-      .mdc-text-field__input[type="number"] {
-        direction: var(--direction);
-      }
-      .mdc-text-field__affix--prefix {
-        padding-right: var(--text-field-prefix-padding-right, 2px);
-        padding-inline-end: var(--text-field-prefix-padding-right, 2px);
-        padding-inline-start: initial;
-      }
-
-      .mdc-text-field:not(.mdc-text-field--disabled)
-        .mdc-text-field__affix--prefix {
-        color: var(--mdc-text-field-label-ink-color);
-      }
-      #helper-text ha-markdown {
-        display: inline-block;
-      }
-    `,
-    // safari workaround - must be explicit
-    mainWindow.document.dir === "rtl"
-      ? css`
-          .mdc-text-field--with-leading-icon,
-          .mdc-text-field__icon--leading,
-          .mdc-floating-label,
-          .mdc-text-field--with-leading-icon.mdc-text-field--filled
-            .mdc-floating-label,
-          .mdc-text-field__input[type="number"] {
-            direction: rtl;
-            --direction: rtl;
-          }
-        `
-      : css``,
-  ];
+    /* Edge, hide reveal password icon */
+    ::-ms-reveal {
+      display: none;
+    }
+  `;
 }
 
 declare global {
