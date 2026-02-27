@@ -118,16 +118,16 @@ class HaMoreInfoDetails extends LitElement {
           last_changed: string;
           last_updated: string;
         };
-        attributes: string[];
+        attributes: Record<string, string>;
       };
     } => {
       const translatedState = hass.formatEntityState(stateObj);
+
       const detailsAttributes = computeShownAttributes(stateObj);
       const detailsAttributeSet = new Set(detailsAttributes);
       const builtInAttributes = Object.keys(stateObj.attributes).filter(
         (attribute) => !detailsAttributeSet.has(attribute)
       );
-      const allAttributes = [...detailsAttributes, ...builtInAttributes];
 
       return {
         stateEntries: [
@@ -148,7 +148,7 @@ class HaMoreInfoDetails extends LitElement {
             value: stateObj.last_updated,
           },
         ],
-        attributes: allAttributes,
+        attributes: [...detailsAttributes, ...builtInAttributes],
         yamlData: {
           state: {
             translated: translatedState,
@@ -156,7 +156,7 @@ class HaMoreInfoDetails extends LitElement {
             last_changed: stateObj.last_changed,
             last_updated: stateObj.last_updated,
           },
-          attributes: allAttributes,
+          attributes: stateObj.attributes,
         },
       };
     }
