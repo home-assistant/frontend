@@ -461,6 +461,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       --column-min-width: var(--ha-view-sections-column-min-width, 320px);
       --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
       display: block;
+      flex: 1;
     }
 
     @media (max-width: 600px) {
@@ -470,7 +471,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .wrapper {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100% - 2 * var(--row-gap));
       padding: var(--row-gap) var(--column-gap);
       box-sizing: content-box;
       margin: 0 auto;
@@ -503,6 +506,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       gap: var(--row-gap) var(--column-gap);
       padding: var(--row-gap) 0;
       align-items: flex-start;
+      flex: 1 0 auto;
     }
 
     .wrapper.has-sidebar .container {
