@@ -47,7 +47,7 @@ export class HaInput extends LitElement {
 
   /** The input's hint. */
   @property()
-  public hint = "";
+  public hint? = "";
 
   /** Adds a clear button when the input is not empty. */
   @property({ type: Boolean, attribute: "with-clear" })
@@ -168,7 +168,7 @@ export class HaInput extends LitElement {
 
   /** Custom validation message to show when the input is invalid. */
   @property({ attribute: "validation-message" })
-  public validationMessage = "";
+  public validationMessage? = "";
 
   /** When true, validates the input on blur instead of on form submit. */
   @property({ type: Boolean, attribute: "auto-validate" })
@@ -375,6 +375,7 @@ export class HaInput extends LitElement {
       align-items: flex-start;
       padding-top: var(--ha-input-padding-top, var(--ha-space-2));
       padding-bottom: var(--ha-input-padding-bottom, var(--ha-space-2));
+      text-align: var(--ha-input-text-align, start);
     }
     wa-input {
       flex: 1;
