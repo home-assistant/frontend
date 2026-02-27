@@ -129,8 +129,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
   private _escapePressed = false;
 
-  private _fullscreen = false;
-
   public connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener(
@@ -266,11 +264,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _setFullscreen(fullscreen: boolean): void {
-    if (this._fullscreen === fullscreen) {
-      return;
-    }
-
-    this._fullscreen = fullscreen;
     this.toggleAttribute("fullscreen", fullscreen);
   }
 
