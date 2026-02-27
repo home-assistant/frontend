@@ -177,18 +177,6 @@ export class QuickBar extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   };
 
-  // fallback in case the closed event is not fired
-  private _dialogCloseStarted = () => {
-    setTimeout(
-      () => {
-        if (this._opened) {
-          this._dialogClosed();
-        }
-      },
-      350 // close animation timeout is 300ms
-    );
-  };
-
   // #endregion lifecycle
 
   // #region render
@@ -246,7 +234,6 @@ export class QuickBar extends LitElement {
         hideActions
         @wa-show=${this._showTriggered}
         @wa-after-show=${this._dialogOpened}
-        @wa-hide=${this._dialogCloseStarted}
         @closed=${this._dialogClosed}
       >
         ${!this._loading && this._opened
@@ -301,7 +288,7 @@ export class QuickBar extends LitElement {
       <ha-combo-box-item
         tabindex="-1"
         type="button"
-        style="--mdc-icon-size: 32px;"
+        style="--mdc-icon-size: 24px;"
       >
         ${"stateObj" in item && item.stateObj
           ? html`
@@ -315,6 +302,7 @@ export class QuickBar extends LitElement {
             ? html`
                 <ha-domain-icon
                   slot="start"
+                  style="margin: var(--ha-space-1);"
                   .hass=${this.hass}
                   .domain=${item.domain}
                   brand-fallback
@@ -332,7 +320,11 @@ export class QuickBar extends LitElement {
                   />
                 `
               : item.icon
-                ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+                ? html`<ha-icon
+                    style="margin: var(--ha-space-1);"
+                    slot="start"
+                    .icon=${item.icon}
+                  ></ha-icon>`
                 : "iconColor" in item && item.iconColor
                   ? html`
                       <div
@@ -346,7 +338,11 @@ export class QuickBar extends LitElement {
                       </div>
                     `
                   : html`
-                      <ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>
+                      <ha-svg-icon
+                        style="margin: var(--ha-space-1);"
+                        slot="start"
+                        .path=${iconPath}
+                      ></ha-svg-icon>
                     `}
         <span slot="headline">${item.primary}</span>
         ${item.secondary

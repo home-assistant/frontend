@@ -5,7 +5,8 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
 import { restoreScroll } from "../common/decorators/restore-scroll";
-import { goBack } from "../common/navigate";
+import { isNavigationClick } from "../common/dom/is-navigation-click";
+import { goBack, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
@@ -13,6 +14,11 @@ import "../components/ha-svg-icon";
 import "../components/ha-tab";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
+
+const normalizePathname = (pathname: string): string =>
+  pathname.endsWith("/") && pathname.length > 1
+    ? pathname.slice(0, -1)
+    : pathname;
 
 export interface PageNavigation {
   path: string;
@@ -88,9 +94,8 @@ class HassTabsSubpage extends LitElement {
 
       return shownTabs.map(
         (page) => html`
-          <a href=${page.path}>
+          <a href=${page.path} @click=${this._tabClicked}>
             <ha-tab
-              .hass=${this.hass}
               .active=${page.path === activeTab?.path}
               .narrow=${this.narrow}
               .name=${page.translationKey
@@ -112,8 +117,9 @@ class HassTabsSubpage extends LitElement {
 
   public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("route")) {
+      const currentPath = `${this.route.prefix}${this.route.path}`;
       this._activeTab = this.tabs.find((tab) =>
-        `${this.route.prefix}${this.route.path}`.includes(tab.path)
+        this._isActiveTabPath(tab.path, currentPath)
       );
     }
     super.willUpdate(changedProperties);
@@ -143,11 +149,10 @@ class HassTabsSubpage extends LitElement {
                 `
               : this.backPath
                 ? html`
-                    <a href=${this.backPath}>
-                      <ha-icon-button-arrow-prev
-                        .hass=${this.hass}
-                      ></ha-icon-button-arrow-prev>
-                    </a>
+                    <ha-icon-button-arrow-prev
+                      .href=${this.backPath}
+                      .hass=${this.hass}
+                    ></ha-icon-button-arrow-prev>
                   `
                 : html`
                     <ha-icon-button-arrow-prev
@@ -208,6 +213,36 @@ class HassTabsSubpage extends LitElement {
       return;
     }
     goBack();
+  }
+
+  private _isActiveTabPath(tabPath: string, currentPath: string): boolean {
+    try {
+      const tabUrl = new URL(tabPath, window.location.origin);
+      const currentUrl = new URL(currentPath, window.location.origin);
+
+      const tabPathname = normalizePathname(tabUrl.pathname);
+      const currentPathname = normalizePathname(currentUrl.pathname);
+
+      if (
+        currentPathname === tabPathname ||
+        currentPathname.startsWith(`${tabPathname}/`)
+      ) {
+        return true;
+      }
+
+      return false;
+    } catch (_err) {
+      return currentPath === tabPath || currentPath.startsWith(`${tabPath}/`);
+    }
+  }
+
+  private async _tabClicked(ev: MouseEvent): Promise<void> {
+    const href = isNavigationClick(ev);
+    if (!href) {
+      return;
+    }
+
+    await navigate(href, { replace: true });
   }
 
   static get styles(): CSSResultGroup {

@@ -6,6 +6,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
@@ -36,7 +37,6 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -837,7 +837,7 @@ export class HassioNetwork extends LitElement {
           width: 95px;
         }
         .address-row ha-icon-button {
-          --mdc-icon-button-size: 36px;
+          --ha-icon-button-size: 36px;
           margin-top: 16px;
         }
         ha-dropdown {
