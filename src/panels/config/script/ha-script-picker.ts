@@ -318,12 +318,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         labels: getLabelsTableColumn(),
         last_triggered: getTriggeredAtTableColumn(localize, this.hass),
         actions: {
+          lastFixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
           showNarrow: true,
-          moveable: false,
-          hideable: false,
           template: (script) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}

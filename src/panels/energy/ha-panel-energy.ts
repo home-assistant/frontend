@@ -321,7 +321,16 @@ class PanelEnergy extends LitElement {
 
   private _navigateConfig(ev?: Event) {
     ev?.stopPropagation();
-    navigate("/config/energy?historyBack=1");
+    const viewPath = this.route?.path?.split("/")[1] || "";
+    const tabMap: Record<string, string> = {
+      overview: "electricity",
+      electricity: "electricity",
+      gas: "gas",
+      water: "water",
+      now: "electricity",
+    };
+    const tab = tabMap[viewPath] || "electricity";
+    navigate(`/config/energy/${tab}?historyBack=1`);
   }
 
   private _reloadConfig() {
