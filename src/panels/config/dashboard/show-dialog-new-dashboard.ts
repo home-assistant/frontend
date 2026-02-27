@@ -3,6 +3,7 @@ import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 
 export interface NewDashboardDialogParams {
   selectConfig: (config: LovelaceConfig | undefined) => any;
+  generateWithAI?: () => void;
 }
 
 export const loadNewDashboardDialog = () => import("./dialog-new-dashboard");

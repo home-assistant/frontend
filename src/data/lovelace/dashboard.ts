@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "../../types";
+import type { LovelaceRawConfig } from "./config/types";
 
 export type LovelaceDashboard =
   | LovelaceYamlDashboard
@@ -34,6 +35,11 @@ export interface LovelaceDashboardCreateParams extends LovelaceDashboardMutableP
   mode: "storage";
 }
 
+export interface LovelaceAIDashboardResult {
+  conversation_id: string;
+  config: LovelaceRawConfig;
+}
+
 export const fetchDashboards = (
   hass: HomeAssistant
 ): Promise<LovelaceDashboard[]> =>
@@ -65,4 +71,10 @@ export const deleteDashboard = (hass: HomeAssistant, id: string) =>
   hass.callWS({
     type: "lovelace/dashboards/delete",
     dashboard_id: id,
+  });
+
+export const generateDashboardWithAI = (hass: HomeAssistant, prompt: string) =>
+  hass.callWS<LovelaceAIDashboardResult>({
+    type: "lovelace/config/generate",
+    prompt,
   });

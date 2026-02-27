@@ -4189,6 +4189,8 @@
               "header": "Add dashboard",
               "create_empty": "New dashboard from scratch",
               "create_empty_description": "Start with an empty dashboard from scratch",
+              "create_ai": "Generate dashboard with AI",
+              "create_ai_description": "Describe your home and let AI build a dashboard",
               "default": "Default dashboard",
               "default_description": "Display your devices grouped by area",
               "strategy": {
@@ -4253,6 +4255,16 @@
               "remove_default": "Remove as default",
               "set_default_confirm_title": "Set as default dashboard?",
               "set_default_confirm_text": "This dashboard will be shown to all users when opening Home Assistant. Each user can change this in their profile."
+            },
+            "generate": {
+              "title": "Generate dashboard with AI",
+              "sidebar_title": "Describe your dashboard",
+              "sidebar_subtitle": "Ask AI to generate or regenerate a complete dashboard configuration.",
+              "prompt": "Prompt",
+              "generate": "Generate",
+              "regenerate": "Regenerate",
+              "empty_title": "No dashboard generated yet",
+              "empty_description": "Describe your ideal dashboard in the sidebar and click Generate."
             }
           },
           "resources": {

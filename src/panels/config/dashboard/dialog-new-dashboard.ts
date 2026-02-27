@@ -171,6 +171,22 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                     @click=${this._selected}
                     .config=${defaultConfig}
                   ></dashboard-card>
+                  <dashboard-card
+                    .name=${this.hass.localize(
+                      `ui.panel.config.lovelace.dashboards.dialog_new.create_ai`
+                    )}
+                    .description=${this.hass.localize(
+                      `ui.panel.config.lovelace.dashboards.dialog_new.create_ai_description`
+                    )}
+                    .img=${this.hass.themes.darkMode
+                      ? "/static/images/dashboard-options/dark/icon-dashboard-new.svg"
+                      : "/static/images/dashboard-options/light/icon-dashboard-new.svg"}
+                    .alt=${this.hass.localize(
+                      `ui.panel.config.lovelace.dashboards.dialog_new.create_ai`
+                    )}
+                    @click=${this._selected}
+                    .generateWithAI=${true}
+                  ></dashboard-card>
                 </div>
                 <div class="cards-container">
                   <div class="cards-container-header">
@@ -240,6 +256,12 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   private async _selected(ev: Event) {
     const target = ev.currentTarget as any;
     let config: any = null;
+
+    if (target.generateWithAI) {
+      this._params?.generateWithAI?.();
+      this.closeDialog();
+      return;
+    }
 
     if (target.config) {
       config = target.config;

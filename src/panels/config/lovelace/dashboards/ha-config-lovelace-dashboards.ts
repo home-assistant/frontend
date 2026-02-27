@@ -59,6 +59,7 @@ import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboar
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
+import "./ha-config-lovelace-generate-dashboard";
 
 export const PANEL_DASHBOARDS = [
   "home",
@@ -365,6 +366,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
+    if (this.route?.path.startsWith("/generate")) {
+      return html`
+        <ha-config-lovelace-generate-dashboard
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .isWide=${this.isWide}
+          @lovelace-dashboard-created=${this._dashboardCreated}
+        ></ha-config-lovelace-generate-dashboard>
+      `;
+    }
+
     const defaultPanel = this.hass.systemData?.default_panel || DEFAULT_PANEL;
 
     return html`
@@ -490,6 +502,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private async _addDashboard() {
     showNewDashboardDialog(this, {
+      generateWithAI: () => navigate("/config/lovelace/dashboards/generate"),
       selectConfig: async (config) => {
         if (config && isStrategyDashboard(config)) {
           const strategyType = config.strategy.type;
@@ -512,6 +525,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
         this._openDetailDialog(undefined, undefined, config);
       },
     });
+  }
+
+  private _dashboardCreated(ev: CustomEvent<{ dashboard: LovelaceDashboard }>) {
+    ev.stopPropagation();
+    const dashboard = ev.detail.dashboard;
+    this._dashboards = this._dashboards!.concat(dashboard).sort((res1, res2) =>
+      stringCompare(res1.url_path, res2.url_path, this.hass.locale.language)
+    );
   }
 
   private async _openDetailDialog(
