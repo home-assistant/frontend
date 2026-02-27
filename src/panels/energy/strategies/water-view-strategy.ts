@@ -22,7 +22,7 @@ export class WaterViewStrategy extends ReactiveElement {
       max_columns: 3,
       sections: [{ type: "grid", cards: [], column_span: 3 }],
       footer: {
-        column_span: 1,
+        column_span: 1.1,
         card: {
           type: "energy-date-selection",
           collection_key: collectionKey,

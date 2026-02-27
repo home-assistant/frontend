@@ -23,7 +23,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       max_columns: 3,
       sections: [],
       footer: {
-        column_span: 1,
+        column_span: 1.1,
         card: {
           type: "energy-date-selection",
           collection_key: collectionKey,
