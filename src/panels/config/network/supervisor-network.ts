@@ -487,19 +487,19 @@ export class HassioNetwork extends LitElement {
                         .index=${index}
                         @change=${this._handleInputValueChanged}
                       >
-                        ${this._interface![version].nameservers?.length > 1
-                          ? html`
-                              <ha-icon-button
-                                slot="end"
-                                .label=${this.hass.localize("ui.common.delete")}
-                                .path=${mdiDeleteOutline}
-                                .version=${version}
-                                .index=${index}
-                                @click=${this._removeNameserver}
-                              ></ha-icon-button>
-                            `
-                          : nothing}
                       </ha-input>
+                      ${this._interface![version].nameservers?.length > 1
+                        ? html`
+                            <ha-icon-button
+                              slot="end"
+                              .label=${this.hass.localize("ui.common.delete")}
+                              .path=${mdiDeleteOutline}
+                              .version=${version}
+                              .index=${index}
+                              @click=${this._removeNameserver}
+                            ></ha-icon-button>
+                          `
+                        : nothing}
                     </div>
                   `
                 )}
@@ -841,6 +841,7 @@ export class HassioNetwork extends LitElement {
         }
         .address-row ha-icon-button {
           --ha-icon-button-size: 36px;
+          margin-top: var(--ha-space-5);
         }
         ha-dropdown {
           display: block;

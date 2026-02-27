@@ -373,7 +373,8 @@ export class HaInput extends LitElement {
     :host {
       display: flex;
       align-items: flex-start;
-      padding-bottom: var(--ha-input-padding-bottom, var(--ha-space-4));
+      padding-top: var(--ha-input-padding-top, var(--ha-space-2));
+      padding-bottom: var(--ha-input-padding-bottom, var(--ha-space-2));
     }
     wa-input {
       flex: 1;
