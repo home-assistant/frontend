@@ -156,12 +156,12 @@ export class HaControlSelectMenu extends LitElement {
         font-size: var(--ha-font-size-m);
         line-height: 1.4;
         width: auto;
-        color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
       }
       .select-anchor {
         border: none;
         text-align: left;
+        color: var(--primary-text-color);
         height: var(--control-select-menu-height);
         padding: var(--control-select-menu-padding);
         overflow: hidden;
