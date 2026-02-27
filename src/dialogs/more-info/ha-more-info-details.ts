@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import "../../components/ha-attribute-value";
 import "../../components/ha-card";
@@ -46,47 +47,17 @@ class HaMoreInfoDetails extends LitElement {
       return nothing;
     }
 
-    const translatedState = this.hass.formatEntityState(this._stateObj);
-    const detailsAttributes = computeShownAttributes(this._stateObj);
-    const detailsAttributeSet = new Set(detailsAttributes);
-    const builtInAttributes = Object.keys(this._stateObj.attributes).filter(
-      (attribute) => !detailsAttributeSet.has(attribute)
+    const { stateEntries, allAttributes, yamlData } = this._getDetailData(
+      this.hass,
+      this._stateObj
     );
-    const allAttributes = [...detailsAttributes, ...builtInAttributes];
-
-    const stateEntries: DetailEntry[] = [
-      {
-        translationKey: "ui.dialogs.more_info_control.translated",
-        value: translatedState,
-      },
-      {
-        translationKey: "ui.dialogs.more_info_control.raw",
-        value: this._stateObj.state,
-      },
-      {
-        translationKey: "ui.dialogs.more_info_control.last_changed",
-        value: this._stateObj.last_changed,
-      },
-      {
-        translationKey: "ui.dialogs.more_info_control.last_updated",
-        value: this._stateObj.last_updated,
-      },
-    ];
 
     return html`
       <div class="content">
         ${this.yamlMode
           ? html`<ha-yaml-editor
               .hass=${this.hass}
-              .value=${{
-                state: {
-                  translated: translatedState,
-                  raw: this._stateObj.state,
-                  last_changed: this._stateObj.last_changed,
-                  last_updated: this._stateObj.last_updated,
-                },
-                attributes: this._stateObj.attributes,
-              }}
+              .value=${yamlData}
               read-only
               auto-update
             ></ha-yaml-editor>`
@@ -132,6 +103,64 @@ class HaMoreInfoDetails extends LitElement {
       </div>
     `;
   }
+
+  private _getDetailData = memoizeOne(
+    (
+      hass: HomeAssistant,
+      stateObj: HassEntity
+    ): {
+      stateEntries: DetailEntry[];
+      allAttributes: string[];
+      yamlData: {
+        state: {
+          translated: string;
+          raw: string;
+          last_changed: string;
+          last_updated: string;
+        };
+        attributes: string[];
+      };
+    } => {
+      const translatedState = hass.formatEntityState(stateObj);
+      const detailsAttributes = computeShownAttributes(stateObj);
+      const detailsAttributeSet = new Set(detailsAttributes);
+      const builtInAttributes = Object.keys(stateObj.attributes).filter(
+        (attribute) => !detailsAttributeSet.has(attribute)
+      );
+      const allAttributes = [...detailsAttributes, ...builtInAttributes];
+
+      return {
+        stateEntries: [
+          {
+            translationKey: "ui.dialogs.more_info_control.translated",
+            value: translatedState,
+          },
+          {
+            translationKey: "ui.dialogs.more_info_control.raw",
+            value: stateObj.state,
+          },
+          {
+            translationKey: "ui.dialogs.more_info_control.last_changed",
+            value: stateObj.last_changed,
+          },
+          {
+            translationKey: "ui.dialogs.more_info_control.last_updated",
+            value: stateObj.last_updated,
+          },
+        ],
+        allAttributes,
+        yamlData: {
+          state: {
+            translated: translatedState,
+            raw: stateObj.state,
+            last_changed: stateObj.last_changed,
+            last_updated: stateObj.last_updated,
+          },
+          attributes: allAttributes,
+        },
+      };
+    }
+  );
 
   private _renderAttributes(attributes: string[]) {
     if (attributes.length === 0) {
