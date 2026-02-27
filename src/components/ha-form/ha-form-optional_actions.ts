@@ -11,6 +11,7 @@ import "../ha-dropdown";
 import "../ha-dropdown-item";
 import "../ha-svg-icon";
 import "./ha-form";
+import type { HaForm } from "./ha-form";
 import type {
   HaFormDataContainer,
   HaFormElement,
@@ -51,6 +52,11 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
   public async focus() {
     await this.updateComplete;
     this.renderRoot.querySelector("ha-form")?.focus();
+  }
+
+  public async reportValidity(): Promise<boolean> {
+    const form = this.renderRoot.querySelector<HaForm>("ha-form");
+    return form ? form.reportValidity() : true;
   }
 
   protected updated(changedProps: PropertyValues): void {

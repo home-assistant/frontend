@@ -2,7 +2,7 @@
 import { genClientId } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, queryAll, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
@@ -23,6 +23,7 @@ import type {
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
 import "./ha-auth-form";
+import type { HaAuthForm } from "./ha-auth-form";
 
 type State = "loading" | "error" | "step";
 
@@ -52,8 +53,7 @@ export class HaAuthFlow extends LitElement {
 
   @state() private _submitting = false;
 
-  @queryAll("ha-auth-form-string, ha-auth-textfield")
-  private _inputs?: NodeListOf<HTMLInputElement>;
+  @query("ha-auth-form") private _form?: HaAuthForm;
 
   createRenderRoot() {
     return this;
@@ -374,22 +374,7 @@ export class HaAuthFlow extends LitElement {
       return;
     }
 
-    // Validate all required fields have values before submitting
-    if (
-      this.step.data_schema.some(
-        (field) => field.required && !this._stepData?.[field.name]
-      )
-    ) {
-      let firstFieldFocused = false;
-      this._inputs?.forEach((inputElement) => {
-        if ("reportValidity" in inputElement) {
-          const valid = inputElement.reportValidity();
-          if (!valid && !firstFieldFocused) {
-            inputElement.focus();
-            firstFieldFocused = true;
-          }
-        }
-      });
+    if (!this._form?.reportValidity()) {
       return;
     }
 
