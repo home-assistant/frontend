@@ -15,7 +15,7 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
 import "../../../../../components/ha-tooltip";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
@@ -104,7 +104,7 @@ class AppsRepositoriesDialog extends LitElement {
       this._addon.addons
     );
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -186,7 +186,7 @@ class AppsRepositoriesDialog extends LitElement {
             ${this.hass.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

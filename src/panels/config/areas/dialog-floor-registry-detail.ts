@@ -17,7 +17,7 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import { updateAreaRegistryEntry } from "../../../data/area/area_registry";
 import type {
   FloorRegistryEntry,
@@ -106,12 +106,13 @@ class DialogFloorDetail extends LitElement {
     const entry = this._params.entry;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${entry
           ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
           : this.hass.localize("ui.panel.config.floors.editor.create_floor")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div>
@@ -253,7 +254,7 @@ class DialogFloorDetail extends LitElement {
               : this.hass.localize("ui.common.create")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

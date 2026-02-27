@@ -55,6 +55,14 @@ class MoreInfoLight extends LitElement {
 
   @state() private _mainControl: MainControl = "brightness";
 
+  private _renderEffectIcon = (value: string) =>
+    html`<ha-attribute-icon
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+      attribute="effect"
+      .attributeValue=${value}
+    ></ha-attribute-icon>`;
+
   protected updated(changedProps: PropertyValues<typeof this>): void {
     if (changedProps.has("stateObj")) {
       this._effect = this.stateObj?.attributes.effect;
@@ -271,15 +279,9 @@ class MoreInfoLight extends LitElement {
                             effect
                           )
                         : effect,
-                      attributeIcon: this.stateObj
-                        ? {
-                            stateObj: this.stateObj,
-                            attribute: "effect",
-                            attributeValue: effect,
-                          }
-                        : undefined,
                     })
                   )}
+                  .renderIcon=${this._renderEffectIcon}
                 >
                   <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
                 </ha-control-select-menu>

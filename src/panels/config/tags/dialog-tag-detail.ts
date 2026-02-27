@@ -9,7 +9,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-qr-code";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import type { Tag, UpdateTagParams } from "../../../data/tag";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -63,7 +63,7 @@ class DialogTagDetail
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.entry
@@ -171,7 +171,7 @@ class DialogTagDetail
               </ha-button>`
             : ""}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

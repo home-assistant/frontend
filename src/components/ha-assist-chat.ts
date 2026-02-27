@@ -672,11 +672,11 @@ export class HaAssistChat extends LitElement {
           --markdown-code-background-color: var(--primary-background-color);
           --markdown-code-text-color: var(--primary-text-color);
           --markdown-list-indent: 1.15em;
-          &:not(:has(ha-markdown-element)) {
-            min-height: 1lh;
-            min-width: 1lh;
-            flex-shrink: 0;
-          }
+        }
+        ha-markdown:not(:has(ha-markdown-element)) {
+          min-height: 1lh;
+          min-width: 1lh;
+          flex-shrink: 0;
         }
         .bouncer {
           width: 48px;

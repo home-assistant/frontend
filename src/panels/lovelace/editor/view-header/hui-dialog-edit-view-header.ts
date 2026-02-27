@@ -7,7 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
@@ -102,11 +102,12 @@ export class HuiDialogEditViewHeader extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
         width="large"
+        prevent-scrim-close
         @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,
@@ -140,7 +141,7 @@ export class HuiDialogEditViewHeader extends LitElement {
             ${this.hass!.localize("ui.common.save")}</ha-button
           >
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -198,7 +199,7 @@ export class HuiDialogEditViewHeader extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-wa-dialog.yaml-mode {
+        ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
       `,

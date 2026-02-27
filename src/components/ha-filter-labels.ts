@@ -155,7 +155,11 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - (49 + 48 + 32)}px`;
+          `${this.clientHeight - (49 + 48 + 32 + 4)}px`;
+        // 49px - height of a header + 1px
+        // 4px - padding-top of the search-input
+        // 32px - height of the search input
+        // 48px - height of ha-list-item
       }, 300);
     }
   }

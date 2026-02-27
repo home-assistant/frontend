@@ -1,11 +1,9 @@
 import { mdiMenuDown } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { HomeAssistant } from "../types";
-import "./ha-attribute-icon";
 import "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-icon";
@@ -16,17 +14,10 @@ export interface SelectOption {
   value: string;
   iconPath?: string;
   icon?: string;
-  attributeIcon?: {
-    stateObj: HassEntity;
-    attribute: string;
-    attributeValue?: string;
-  };
 }
 
 @customElement("ha-control-select-menu")
 export class HaControlSelectMenu extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, attribute: "show-arrow" })
   public showArrow = false;
 
@@ -46,6 +37,9 @@ export class HaControlSelectMenu extends LitElement {
   public value?: string;
 
   @property({ attribute: false }) public options: SelectOption[] = [];
+
+  @property({ attribute: false })
+  public renderIcon?: (value: string) => TemplateResult<1> | typeof nothing;
 
   @query("button") private _triggerButton!: HTMLButtonElement;
 
@@ -94,14 +88,8 @@ export class HaControlSelectMenu extends LitElement {
         ? html`<ha-svg-icon slot="icon" .path=${option.iconPath}></ha-svg-icon>`
         : option.icon
           ? html`<ha-icon slot="icon" .icon=${option.icon}></ha-icon>`
-          : option.attributeIcon
-            ? html`<ha-attribute-icon
-                slot="icon"
-                .hass=${this.hass}
-                .stateObj=${option.attributeIcon.stateObj}
-                .attribute=${option.attributeIcon.attribute}
-                .attributeValue=${option.attributeIcon.attributeValue}
-              ></ha-attribute-icon>`
+          : this.renderIcon
+            ? html`<span slot="icon">${this.renderIcon(option.value)}</span>`
             : nothing}
       ${option.label}</ha-dropdown-item
     >`;
@@ -119,24 +107,20 @@ export class HaControlSelectMenu extends LitElement {
   }
 
   private _renderIcon() {
-    const { iconPath, icon, attributeIcon } =
-      this.getValueObject(this.options, this.value) ?? {};
+    const value = this.getValueObject(this.options, this.value);
     const defaultIcon = this.querySelector("[slot='icon']");
 
     return html`
       <div class="icon">
-        ${iconPath
-          ? html`<ha-svg-icon slot="icon" .path=${iconPath}></ha-svg-icon>`
-          : icon
-            ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
-            : attributeIcon
-              ? html`<ha-attribute-icon
-                  slot="icon"
-                  .hass=${this.hass}
-                  .stateObj=${attributeIcon.stateObj}
-                  .attribute=${attributeIcon.attribute}
-                  .attributeValue=${attributeIcon.attributeValue}
-                ></ha-attribute-icon>`
+        ${value?.iconPath
+          ? html`<ha-svg-icon
+              slot="icon"
+              .path=${value.iconPath}
+            ></ha-svg-icon>`
+          : value?.icon
+            ? html`<ha-icon slot="icon" .icon=${value.icon}></ha-icon>`
+            : this.renderIcon && this.value
+              ? this.renderIcon(this.value)
               : defaultIcon
                 ? html`<slot name="icon"></slot>`
                 : nothing}
@@ -172,12 +156,12 @@ export class HaControlSelectMenu extends LitElement {
         font-size: var(--ha-font-size-m);
         line-height: 1.4;
         width: auto;
-        color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
       }
       .select-anchor {
         border: none;
         text-align: left;
+        color: var(--primary-text-color);
         height: var(--control-select-menu-height);
         padding: var(--control-select-menu-padding);
         overflow: hidden;

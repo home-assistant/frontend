@@ -13,7 +13,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
@@ -46,6 +46,8 @@ import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { getViewType } from "../../views/get-view-type";
+import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -155,9 +157,10 @@ export class HuiDialogEditSection
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
+        prevent-scrim-close
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         class=${classMap({
@@ -233,7 +236,7 @@ export class HuiDialogEditSection
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -289,13 +292,16 @@ export class HuiDialogEditSection
 
     const toView = selectedDashConfig.views[viewIndex];
 
-    if (isStrategyView(toView)) {
+    if (
+      isStrategyView(toView) ||
+      getViewType(toView) !== SECTIONS_VIEW_LAYOUT
+    ) {
       showAlertDialog(this, {
         title: this.hass!.localize(
           "ui.panel.lovelace.editor.move_section.error_title"
         ),
         text: this.hass!.localize(
-          "ui.panel.lovelace.editor.move_section.error_text_strategy"
+          "ui.panel.lovelace.editor.move_section.error_text"
         ),
         warning: true,
       });
@@ -426,10 +432,10 @@ export class HuiDialogEditSection
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: var(--ha-space-6);
         }
-        ha-wa-dialog.yaml-mode {
+        ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
         ha-tab-group-tab {

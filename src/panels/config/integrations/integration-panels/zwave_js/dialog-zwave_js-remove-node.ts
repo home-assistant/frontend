@@ -16,7 +16,7 @@ import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import {
   fetchZwaveNodeStatus,
@@ -101,10 +101,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
+        prevent-scrim-close
         @closed=${this.handleDialogClosed}
       >
         <ha-icon-button
@@ -119,7 +120,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
           : html`<ha-dialog-footer slot="footer">
               ${this._renderAction()}
             </ha-dialog-footer>`}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

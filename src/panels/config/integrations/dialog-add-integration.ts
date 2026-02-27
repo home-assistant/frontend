@@ -18,7 +18,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-list";
 import "../../../components/ha-spinner";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/search-input";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
@@ -387,7 +387,7 @@ class AddIntegrationDialog extends LitElement {
       ? this._getBrandHeading(pickedIntegration, flowsInProgress)
       : this.hass.localize("ui.panel.config.integrations.new");
 
-    return html`<ha-wa-dialog
+    return html`<ha-dialog
       .hass=${this.hass}
       .open=${this._open}
       header-title=${headerTitle}
@@ -406,7 +406,7 @@ class AddIntegrationDialog extends LitElement {
             ${this._renderBrandView(pickedIntegration, flowsInProgress)}
           `
         : this._renderAll(integrations)}
-    </ha-wa-dialog>`;
+    </ha-dialog>`;
   }
 
   private _getFlowsForCurrentView(
@@ -578,7 +578,6 @@ class AddIntegrationDialog extends LitElement {
     }
     return html`
       <ha-integration-list-item
-        brand
         .hass=${this.hass}
         .integration=${integration}
         tabindex="0"
@@ -819,7 +818,7 @@ class AddIntegrationDialog extends LitElement {
     haStyleScrollbar,
     haStyleDialog,
     css`
-      ha-wa-dialog {
+      ha-dialog {
         --dialog-content-padding: 0;
       }
       search-input {

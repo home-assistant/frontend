@@ -6,7 +6,7 @@ import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-dialog-footer";
 import "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-icon-button";
-import "../../../../src/components/ha-wa-dialog";
+import "../../../../src/components/ha-dialog";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 
 const SCHEMA: HaFormSchema[] = [
@@ -22,14 +22,14 @@ type DialogType =
   | "form"
   | "actions";
 
-@customElement("demo-components-ha-wa-dialog")
-export class DemoHaWaDialog extends LitElement {
+@customElement("demo-components-ha-dialog")
+export class DemoHaDialog extends LitElement {
   @state() private _openDialog: DialogType = false;
 
   protected render() {
     return html`
       <div class="content">
-        <h1>Dialog <code>&lt;ha-wa-dialog&gt;</code></h1>
+        <h1>Dialog <code>&lt;ha-dialog&gt;</code></h1>
 
         <p class="subtitle">Dialog component built with WebAwesome.</p>
 
@@ -53,24 +53,24 @@ export class DemoHaWaDialog extends LitElement {
           >
         </div>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "basic"}
           header-title="Basic dialog"
           @closed=${this._handleClosed}
         >
           <div>Dialog content</div>
-        </ha-wa-dialog>
+        </ha-dialog>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "basic-subtitle-below"}
           header-title="Basic dialog with subtitle"
           header-subtitle="This is a basic dialog with a subtitle below"
           @closed=${this._handleClosed}
         >
           <div>Dialog content</div>
-        </ha-wa-dialog>
+        </ha-dialog>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "basic-subtitle-above"}
           header-title="Dialog with subtitle above"
           header-subtitle="This is a basic dialog with a subtitle above"
@@ -78,9 +78,9 @@ export class DemoHaWaDialog extends LitElement {
           @closed=${this._handleClosed}
         >
           <div>Dialog content</div>
-        </ha-wa-dialog>
+        </ha-dialog>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "form"}
           header-title="Dialog with form"
           header-subtitle="This is a dialog with a form and a footer"
@@ -91,17 +91,18 @@ export class DemoHaWaDialog extends LitElement {
           <ha-dialog-footer slot="footer">
             <ha-button
               data-dialog="close"
+              appearance="plain"
               slot="secondaryAction"
-              variant="plain"
-              >Cancel</ha-button
             >
-            <ha-button data-dialog="close" slot="primaryAction" variant="accent"
-              >Submit</ha-button
-            >
+              Cancel
+            </ha-button>
+            <ha-button data-dialog="close" slot="primaryAction">
+              Submit
+            </ha-button>
           </ha-dialog-footer>
-        </ha-wa-dialog>
+        </ha-dialog>
 
-        <ha-wa-dialog
+        <ha-dialog
           .open=${this._openDialog === "actions"}
           header-title="Dialog with actions"
           header-subtitle="This is a dialog with header actions"
@@ -113,7 +114,7 @@ export class DemoHaWaDialog extends LitElement {
           </div>
 
           <div>Dialog content</div>
-        </ha-wa-dialog>
+        </ha-dialog>
 
         <h2>Design</h2>
 
@@ -228,19 +229,19 @@ export class DemoHaWaDialog extends LitElement {
             <tr>
               <th>Slot</th>
               <th>Description</th>
-              <th>Variant to use</th>
+              <th>Appearance to use</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>secondaryAction</code></td>
               <td>The secondary action button(s).</td>
-              <td><code>plain</code></td>
+              <td><code>appearance="plain"</code></td>
             </tr>
             <tr>
               <td><code>primaryAction</code></td>
               <td>The primary action button(s).</td>
-              <td><code>accent</code></td>
+              <td>Default (no appearance attribute)</td>
             </tr>
           </tbody>
         </table>
@@ -249,7 +250,7 @@ export class DemoHaWaDialog extends LitElement {
 
         <h3>Example Usage</h3>
 
-        <pre><code>&lt;ha-wa-dialog
+        <pre><code>&lt;ha-dialog
   open
   header-title="Dialog title"
   header-subtitle="Dialog subtitle"
@@ -261,12 +262,18 @@ export class DemoHaWaDialog extends LitElement {
   &lt;/div&gt;
   &lt;div&gt;Dialog content&lt;/div&gt;
   &lt;ha-dialog-footer slot="footer"&gt;
-    &lt;ha-button data-dialog="close" slot="secondaryAction" variant="plain"
-      &gt;Cancel&lt;/ha-button
+    &lt;ha-button
+      data-dialog="close"
+      appearance="plain"
+      slot="secondaryAction"
     &gt;
-    &lt;ha-button slot="primaryAction" variant="accent"&gt;Submit&lt;/ha-button&gt;
+      Cancel
+    &lt;/ha-button&gt;
+    &lt;ha-button data-dialog="close" slot="primaryAction"&gt;
+      Submit
+    &lt;/ha-button&gt;
   &lt;/ha-dialog-footer&gt;
-&lt;/ha-wa-dialog&gt;</code></pre>
+&lt;/ha-dialog&gt;</code></pre>
 
         <h3>API</h3>
 
@@ -374,12 +381,28 @@ export class DemoHaWaDialog extends LitElement {
               <td>Dialog background color.</td>
             </tr>
             <tr>
+              <td><code>--ha-dialog-surface-backdrop-filter</code></td>
+              <td>Backdrop filter applied to the dialog surface.</td>
+            </tr>
+            <tr>
+              <td><code>--dialog-box-shadow</code></td>
+              <td>Dialog surface box shadow.</td>
+            </tr>
+            <tr>
               <td><code>--ha-dialog-border-radius</code></td>
               <td>Border radius of the dialog surface.</td>
             </tr>
             <tr>
-              <td><code>--dialog-z-index</code></td>
-              <td>Z-index for the dialog.</td>
+              <td><code>--ha-dialog-scrim-backdrop-filter</code></td>
+              <td>Backdrop filter applied to the dialog scrim.</td>
+            </tr>
+            <tr>
+              <td><code>--dialog-backdrop-filter</code></td>
+              <td>Legacy fallback for the dialog scrim backdrop filter.</td>
+            </tr>
+            <tr>
+              <td><code>--mdc-dialog-scrim-color</code></td>
+              <td>Dialog scrim color (legacy compatibility).</td>
             </tr>
             <tr>
               <td><code>--dialog-surface-margin-top</code></td>
@@ -514,6 +537,6 @@ export class DemoHaWaDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-components-ha-wa-dialog": DemoHaWaDialog;
+    "demo-components-ha-dialog": DemoHaDialog;
   }
 }
