@@ -36,7 +36,7 @@ import {
 } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import {
@@ -584,7 +584,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                               })}
                               .items=${children}
                               .renderItem=${this._renderGridItem}
-                              class="children ${classMap({
+                              class="children ha-scrollbar ${classMap({
                                 portrait:
                                   childrenMediaClass.thumbnail_ratio ===
                                   "portrait",
@@ -612,6 +612,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                 style=${styleMap({
                                   height: `${children.length * 72 + 26}px`,
                                 })}
+                                class="ha-scrollbar"
                                 .renderItem=${this._renderListItem}
                               ></lit-virtualizer>
                               ${currentItem.not_shown
@@ -764,6 +765,16 @@ export class HaMediaPlayerBrowse extends LitElement {
       return "";
     }
 
+    if (isBrandUrl(thumbnailUrl)) {
+      // The backend is not aware of the theme used by the users,
+      // so we rewrite the URL to show a proper icon
+      return brandsUrl({
+        domain: extractDomainFromBrandUrl(thumbnailUrl),
+        type: "icon",
+        darkOptimized: this.hass.themes?.darkMode,
+      });
+    }
+
     if (thumbnailUrl.startsWith("/")) {
       // Thumbnails served by local API require authentication
       return new Promise((resolve, reject) => {
@@ -783,16 +794,6 @@ export class HaMediaPlayerBrowse extends LitElement {
             reader.onerror = (e) => reject(e);
             reader.readAsDataURL(blob);
           });
-      });
-    }
-
-    if (isBrandUrl(thumbnailUrl)) {
-      // The backend is not aware of the theme used by the users,
-      // so we rewrite the URL to show a proper icon
-      thumbnailUrl = brandsUrl({
-        domain: extractDomainFromBrandUrl(thumbnailUrl),
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
       });
     }
 
@@ -979,6 +980,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         :host {
           display: flex;

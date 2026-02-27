@@ -221,7 +221,7 @@ export class HaSelectSelector extends LitElement {
           .disabled=${this.disabled}
           .required=${this.required}
           .getItems=${this._getItems(options)}
-          .value=${this.value as string | undefined}
+          .value=${typeof this.value === "string" ? this.value : undefined}
           @value-changed=${this._comboBoxValueChanged}
           allow-custom-value
         ></ha-generic-picker>
@@ -231,7 +231,7 @@ export class HaSelectSelector extends LitElement {
     return html`
       <ha-select
         .label=${this.label ?? ""}
-        .value=${(this.value as string) ?? ""}
+        .value=${typeof this.value === "string" ? this.value : ""}
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}

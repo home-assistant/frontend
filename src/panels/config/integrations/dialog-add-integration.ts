@@ -578,7 +578,6 @@ class AddIntegrationDialog extends LitElement {
     }
     return html`
       <ha-integration-list-item
-        brand
         .hass=${this.hass}
         .integration=${integration}
         tabindex="0"

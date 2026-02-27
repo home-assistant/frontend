@@ -84,6 +84,9 @@ export class HaButton extends Button {
           --button-color-fill-loud-hover: var(
             --ha-color-fill-primary-loud-hover
           );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-primary-quiet-active
+          );
         }
 
         :host([variant="neutral"]) {
@@ -98,6 +101,9 @@ export class HaButton extends Button {
           );
           --button-color-fill-loud-hover: var(
             --ha-color-fill-neutral-loud-hover
+          );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-neutral-normal-active
           );
         }
 
@@ -114,6 +120,9 @@ export class HaButton extends Button {
           --button-color-fill-loud-hover: var(
             --ha-color-fill-success-loud-hover
           );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-success-quiet-active
+          );
         }
 
         :host([variant="warning"]) {
@@ -129,6 +138,9 @@ export class HaButton extends Button {
           --button-color-fill-loud-hover: var(
             --ha-color-fill-warning-loud-hover
           );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-warning-quiet-active
+          );
         }
 
         :host([variant="danger"]) {
@@ -143,6 +155,9 @@ export class HaButton extends Button {
           );
           --button-color-fill-loud-hover: var(
             --ha-color-fill-danger-loud-hover
+          );
+          --button-color-fill-quiet-active: var(
+            --ha-color-fill-danger-quiet-active
           );
         }
 
@@ -187,6 +202,10 @@ export class HaButton extends Button {
           background-color: var(--ha-color-fill-disabled-normal-resting);
           color: var(--ha-color-on-disabled-normal);
         }
+        :host([appearance~="plain"])
+          .button:not(.disabled):not(.loading):active {
+          background-color: var(--button-color-fill-quiet-active);
+        }
 
         :host([appearance~="accent"]) .button {
           background-color: var(
@@ -226,7 +245,7 @@ export class HaButton extends Button {
         }
 
         .label {
-          overflow: hidden;
+          overflow: var(--ha-button-label-overflow, hidden);
           text-overflow: ellipsis;
           padding: var(--ha-space-1) 0;
         }

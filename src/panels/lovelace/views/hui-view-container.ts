@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
 type BackgroundConfig = LovelaceViewConfig["background"];
@@ -23,7 +22,6 @@ class HuiViewContainer extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this.classList.add("ha-scrollbar");
     this._setUpMediaQuery();
     this._applyTheme();
   }
@@ -76,16 +74,11 @@ class HuiViewContainer extends LitElement {
     }
   }
 
-  static styles = [
-    haStyleScrollbar,
-    css`
-      :host {
-        display: block;
-        height: 100%;
-        -webkit-overflow-scrolling: touch;
-      }
-    `,
-  ];
+  static styles = css`
+    :host {
+      display: relative;
+    }
+  `;
 }
 
 declare global {

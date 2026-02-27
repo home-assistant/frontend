@@ -25,6 +25,27 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
 
 const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
 
+/**
+ * Home Assistant bottom sheet component.
+ *
+ * @element ha-bottom-sheet
+ * @extends {LitElement}
+ *
+ * @cssprop --ha-bottom-sheet-height - Preferred height of the bottom sheet.
+ * @cssprop --ha-bottom-sheet-max-height - Maximum height of the bottom sheet.
+ * @cssprop --ha-bottom-sheet-max-width - Maximum width of the bottom sheet.
+ * @cssprop --ha-bottom-sheet-border-radius - Top border radius of the bottom sheet.
+ * @cssprop --ha-bottom-sheet-surface-background - Bottom sheet background color.
+ * @cssprop --ha-bottom-sheet-surface-backdrop-filter - Bottom sheet surface backdrop filter.
+ * @cssprop --ha-bottom-sheet-scrim-backdrop-filter - Bottom sheet scrim backdrop filter.
+ * @cssprop --ha-bottom-sheet-scrim-color - Bottom sheet scrim color.
+ *
+ * @cssprop --ha-dialog-surface-background - Bottom sheet background color fallback.
+ * @cssprop --ha-dialog-surface-backdrop-filter - Bottom sheet surface backdrop filter fallback.
+ * @cssprop --ha-dialog-scrim-backdrop-filter - Bottom sheet scrim backdrop filter fallback.
+ * @cssprop --dialog-backdrop-filter - Bottom sheet scrim backdrop filter legacy fallback.
+ * @cssprop --mdc-dialog-scrim-color - Bottom sheet scrim color legacy fallback.
+ */
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -117,25 +138,35 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   };
 
   private _handleHide = (ev: CustomEvent<{ source: Element }>) => {
+    // Ignore bubbled wa-hide events from nested drawers (e.g., picker bottom sheet)
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
+
+    const sourceIsDrawer = ev.detail.source === (ev.target as WaDrawer).drawer;
+
     if (this._sliderInteractionActive) {
       ev.preventDefault();
       this._drawerOpen = true;
       this.open = true;
+      this._escapePressed = false;
       return;
     }
-    if (
-      this.preventScrimClose &&
-      this._escapePressed &&
-      ev.detail.source === (ev.target as WaDrawer).drawer
-    ) {
+    if (this.preventScrimClose && this._escapePressed && sourceIsDrawer) {
       ev.preventDefault();
     }
+
     this._escapePressed = false;
   };
 
   private _handleKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === "Escape") {
       this._escapePressed = true;
+      if (this.preventScrimClose) {
+        ev.preventDefault();
+      }
+      ev.stopPropagation();
+      (ev.currentTarget as WaDrawer).open = false;
     }
   };
 
@@ -197,6 +228,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         without-header
         @touchstart=${this._handleTouchStart}
       >
+        <div class="handle-wrapper" aria-hidden="true">
+          <div class="handle"></div>
+        </div>
         <slot name="header"></slot>
         <div class="content-wrapper">
           <div id="body" class="body ha-scrollbar">
@@ -238,6 +272,9 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       }
     }
 
+    // Stop propagation so parent bottom sheets don't also start tracking
+    // this gesture (same pattern as _handleKeyDown for Escape)
+    ev.stopPropagation();
     this._startResizing(ev.touches[0].clientY);
   };
 
@@ -369,9 +406,30 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           transform: var(--dialog-transform);
           transition: var(--dialog-transition);
         }
+        wa-drawer::part(dialog)::backdrop {
+          -webkit-backdrop-filter: var(
+            --ha-bottom-sheet-scrim-backdrop-filter,
+            var(
+              --ha-dialog-scrim-backdrop-filter,
+              var(--dialog-backdrop-filter, none)
+            )
+          );
+          backdrop-filter: var(
+            --ha-bottom-sheet-scrim-backdrop-filter,
+            var(
+              --ha-dialog-scrim-backdrop-filter,
+              var(--dialog-backdrop-filter, none)
+            )
+          );
+          background-color: var(
+            --ha-bottom-sheet-scrim-color,
+            var(--mdc-dialog-scrim-color, none)
+          );
+        }
         wa-drawer::part(body) {
           max-width: var(--ha-bottom-sheet-max-width);
           width: 100%;
+          position: relative;
           border-top-left-radius: var(
             --ha-bottom-sheet-border-radius,
             var(--ha-dialog-border-radius, var(--ha-border-radius-2xl))
@@ -382,7 +440,18 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           );
           background-color: var(
             --ha-bottom-sheet-surface-background,
-            var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
+            var(
+              --ha-dialog-surface-background,
+              var(--card-background-color, var(--ha-color-surface-default))
+            )
+          );
+          -webkit-backdrop-filter: var(
+            --ha-bottom-sheet-surface-backdrop-filter,
+            var(--ha-dialog-surface-backdrop-filter, none)
+          );
+          backdrop-filter: var(
+            --ha-bottom-sheet-surface-backdrop-filter,
+            var(--ha-dialog-surface-backdrop-filter, none)
           );
           padding: var(
             --ha-bottom-sheet-padding,
@@ -393,6 +462,35 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         :host([flexcontent]) wa-drawer::part(body) {
           display: flex;
           flex-direction: column;
+        }
+        :host([prevent-scrim-close]) .handle-wrapper {
+          display: none;
+        }
+        .handle-wrapper {
+          position: absolute;
+          top: 0;
+          inset-inline-start: 0;
+          width: 100%;
+          padding-bottom: 2px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          pointer-events: none;
+          z-index: 1;
+        }
+        .handle-wrapper .handle {
+          height: 16px;
+          width: 200px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .handle-wrapper .handle::after {
+          content: "";
+          border-radius: var(--ha-border-radius-md);
+          height: 4px;
+          background: var(--ha-bottom-sheet-handle-color, var(--divider-color));
+          width: 40px;
         }
         .content-wrapper {
           position: relative;
