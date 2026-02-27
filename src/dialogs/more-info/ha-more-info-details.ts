@@ -50,7 +50,6 @@ class HaMoreInfoDetails extends LitElement {
     }
 
     const { stateEntries, attributes, yamlData } = this._getDetailData(
-      this.hass,
       this._stateObj
     );
 
@@ -108,7 +107,6 @@ class HaMoreInfoDetails extends LitElement {
 
   private _getDetailData = memoizeOne(
     (
-      hass: HomeAssistant,
       stateObj: HassEntity
     ): {
       stateEntries: DetailEntry[];
@@ -123,7 +121,7 @@ class HaMoreInfoDetails extends LitElement {
         attributes: Record<string, string>;
       };
     } => {
-      const translatedState = hass.formatEntityState(stateObj);
+      const translatedState = this.hass.formatEntityState(stateObj);
 
       const detailsAttributes = computeShownAttributes(stateObj);
       const detailsAttributeSet = new Set(detailsAttributes);
@@ -143,11 +141,11 @@ class HaMoreInfoDetails extends LitElement {
           },
           {
             translationKey: "ui.dialogs.more_info_control.last_changed",
-            value: this._formatTimestamp(hass, stateObj.last_changed),
+            value: this._formatTimestamp(stateObj.last_changed),
           },
           {
             translationKey: "ui.dialogs.more_info_control.last_updated",
-            value: this._formatTimestamp(hass, stateObj.last_updated),
+            value: this._formatTimestamp(stateObj.last_updated),
           },
         ],
         attributes: [...detailsAttributes, ...builtInAttributes],
@@ -164,11 +162,11 @@ class HaMoreInfoDetails extends LitElement {
     }
   );
 
-  private _formatTimestamp(hass: HomeAssistant, value: string): string {
+  private _formatTimestamp(value: string): string {
     const date = new Date(value);
 
     return checkValidDate(date)
-      ? formatDateTimeWithSeconds(date, hass.locale, hass.config)
+      ? formatDateTimeWithSeconds(date, this.hass.locale, this.hass.config)
       : value;
   }
 
