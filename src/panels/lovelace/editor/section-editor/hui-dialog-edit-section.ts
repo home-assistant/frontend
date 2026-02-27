@@ -127,6 +127,7 @@ export class HuiDialogEditSection
         <ha-yaml-editor
           .hass=${this.hass}
           autofocus
+          .inDialog=${true}
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;

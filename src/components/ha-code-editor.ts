@@ -84,6 +84,9 @@ export class HaCodeEditor extends ReactiveElement {
   @property({ type: Boolean, attribute: "disable-fullscreen" })
   public disableFullscreen = false;
 
+  @property({ type: Boolean, attribute: "in-dialog" })
+  public inDialog = false;
+
   @property({ type: Boolean, attribute: "has-toolbar" })
   public hasToolbar = true;
 
@@ -132,7 +135,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    this.classList.toggle("in-dialog", this._isInDialog());
+    this.classList.toggle("in-dialog", this.inDialog);
     // Force update on reconnection so editor is recreated
     if (this.hasUpdated) {
       this.requestUpdate();
@@ -217,6 +220,9 @@ export class HaCodeEditor extends ReactiveElement {
     }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
+    }
+    if (changedProps.has("inDialog")) {
+      this.classList.toggle("in-dialog", this.inDialog);
     }
     if (changedProps.has("_isFullscreen")) {
       this.classList.toggle("fullscreen", this._isFullscreen);
@@ -438,7 +444,7 @@ export class HaCodeEditor extends ReactiveElement {
   ): boolean {
     const previousFullscreen = this._isFullscreen;
 
-    this.classList.toggle("in-dialog", this._isInDialog());
+    this.classList.toggle("in-dialog", this.inDialog);
 
     // Update the current fullscreen state based on selected value. If fullscreen
     // is disabled, or we have no toolbar, ensure we are not in fullscreen mode.
@@ -526,20 +532,6 @@ export class HaCodeEditor extends ReactiveElement {
       e.stopPropagation();
     }
   };
-
-  private _isInDialog(element: Element = this): boolean {
-    if (element.closest("ha-dialog")) {
-      return true;
-    }
-
-    const rootNode = element.getRootNode();
-
-    if (!(rootNode instanceof ShadowRoot)) {
-      return false;
-    }
-
-    return this._isInDialog(rootNode.host);
-  }
 
   private _renderInfo = (completion: Completion): CompletionInfo => {
     const key = completion.label;

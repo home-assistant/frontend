@@ -57,6 +57,9 @@ export abstract class HuiElementEditor<
 
   @property({ attribute: false }) public context?: C;
 
+  @property({ type: Boolean, attribute: "in-dialog" })
+  public inDialog = false;
+
   @state() private _config?: T;
 
   @state() private _configElement?: LovelaceGenericElementEditor;
@@ -246,6 +249,7 @@ export abstract class HuiElementEditor<
                   .defaultValue=${this._config}
                   autofocus
                   .hass=${this.hass}
+                  .inDialog=${this.inDialog}
                   @value-changed=${this._handleYAMLChanged}
                   @blur=${this._onBlurYaml}
                   @keydown=${this._ignoreKeydown}

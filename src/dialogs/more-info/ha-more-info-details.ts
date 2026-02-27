@@ -61,6 +61,7 @@ class HaMoreInfoDetails extends LitElement {
               .value=${yamlData}
               read-only
               auto-update
+              .inDialog=${true}
             ></ha-yaml-editor>`
           : html`
               <section class="section">

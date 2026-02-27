@@ -133,6 +133,7 @@ export class HuiDialogSuggestCard extends LitElement {
                   <ha-yaml-editor
                     .hass=${this.hass}
                     .defaultValue=${this._cardConfig}
+                    .inDialog=${true}
                   ></ha-yaml-editor>
                 </div>
               `
