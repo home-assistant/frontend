@@ -64,20 +64,6 @@ export class EnergyViewStrategy extends ReactiveElement {
     const mainCards: LovelaceCardConfig[] = [];
     const gaugeCards: LovelaceCardConfig[] = [];
 
-    // Only include if we have a grid or battery.
-    if (hasGrid || hasBattery) {
-      const card = {
-        title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
-        type: "energy-distribution",
-        collection_key: collectionKey,
-      };
-      view.sections!.push({
-        type: "grid",
-        column_span: 1,
-        cards: [card],
-      });
-    }
-
     // Only include if we have a grid source & return.
     if (hasReturn) {
       const card = {
@@ -117,7 +103,7 @@ export class EnergyViewStrategy extends ReactiveElement {
     if (gaugeCards.length) {
       view.sections!.push({
         type: "grid",
-        column_span: 1,
+        column_span: 3,
         cards:
           gaugeCards.length === 1
             ? [gaugeCards[0]]
