@@ -8,7 +8,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-select";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type {
   HaSelectOption,
   HaSelectSelectEvent,
@@ -137,12 +137,13 @@ export class DialogEnergyDeviceSettings
         ];
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.device_consumption.dialog.header"
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -228,7 +229,7 @@ export class DialogEnergyDeviceSettings
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

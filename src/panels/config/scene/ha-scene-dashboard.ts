@@ -6,7 +6,7 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiInformationOutline,
   mdiMenuDown,
   mdiOpenInNew,
@@ -325,12 +325,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           localize("ui.panel.config.scene.picker.only_editable")
         ),
         actions: {
+          lastFixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "overflow-menu",
           showNarrow: true,
-          moveable: false,
-          hideable: false,
           template: (scene) => html`
             <ha-icon-overflow-menu
               .hass=${this.hass}
@@ -496,7 +495,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
 
         <ha-filter-floor-areas

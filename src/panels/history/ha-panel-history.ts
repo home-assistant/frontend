@@ -46,7 +46,7 @@ import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
@@ -166,7 +166,7 @@ class HaPanelHistory extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
 
-        <div class="flex content">
+        <div class="flex content ha-scrollbar">
           <div class="filters">
             <ha-date-range-picker
               .hass=${this.hass}
@@ -620,6 +620,7 @@ class HaPanelHistory extends LitElement {
   static get styles() {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ha-top-app-bar-fixed {
           height: 100vh;
@@ -628,6 +629,14 @@ class HaPanelHistory extends LitElement {
         }
 
         .content {
+          height: calc(
+            100vh - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
+                0px
+              ) - var(--safe-area-inset-bottom, 0px)
+          );
+          box-sizing: border-box;
+          overflow-x: hidden;
           padding: 0 16px 16px;
         }
 

@@ -539,7 +539,7 @@ class HaPanelDevState extends LitElement {
           margin-top: var(--ha-space-1);
           font-size: var(--ha-font-size-s);
           --mdc-icon-size: 14px;
-          --mdc-icon-button-size: 24px;
+          --ha-icon-button-size: 24px;
           display: flex;
           align-items: center;
           gap: var(--ha-space-2);

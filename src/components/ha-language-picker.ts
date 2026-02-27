@@ -191,7 +191,6 @@ export class HaLanguagePicker extends LitElement {
   static styles = css`
     ha-generic-picker {
       width: 100%;
-      min-width: 200px;
       display: block;
     }
   `;

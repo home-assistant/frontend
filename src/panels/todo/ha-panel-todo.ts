@@ -22,6 +22,7 @@ import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createSearchParam,
   extractSearchParam,
+  removeSearchParam,
 } from "../../common/url/search-params";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
@@ -67,6 +68,8 @@ class PanelTodo extends LitElement {
   })
   private _entityId?: string;
 
+  private _openAddItemFromUrl = false;
+
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
@@ -103,6 +106,7 @@ class PanelTodo extends LitElement {
       this.hass.loadFragmentTranslation("lovelace");
 
       const urlEntityId = extractSearchParam("entity_id");
+      this._openAddItemFromUrl = extractSearchParam("add_item") === "true";
       if (urlEntityId) {
         this._entityId = urlEntityId;
       } else {
@@ -117,6 +121,23 @@ class PanelTodo extends LitElement {
 
     if (changedProperties.has("_entityId") || !this.hasUpdated) {
       this._setupTodoElement();
+    }
+
+    if (!this._openAddItemFromUrl || !this._entityId) {
+      return;
+    }
+
+    this._openAddItemFromUrl = false;
+    navigate(constructUrlCurrentPath(removeSearchParam("add_item")), {
+      replace: true,
+    });
+    if (
+      supportsFeature(
+        this.hass.states[this._entityId],
+        TodoListEntityFeature.CREATE_TODO_ITEM
+      )
+    ) {
+      this._addItem();
     }
   }
 

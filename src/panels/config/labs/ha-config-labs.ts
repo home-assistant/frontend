@@ -1,4 +1,4 @@
-import { mdiFlask, mdiHelpCircle, mdiOpenInNew } from "@mdi/js";
+import { mdiFlask, mdiHelpCircleOutline, mdiOpenInNew } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -109,18 +109,15 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       >
         ${sortedFeatures.length
           ? html`
-              <a
+              <ha-icon-button
                 slot="toolbar-icon"
-                href=${documentationUrl(this.hass, "/integrations/labs/")}
+                .href=${documentationUrl(this.hass, "/integrations/labs/")}
                 target="_blank"
                 rel="noopener noreferrer"
                 .title=${this.hass.localize("ui.common.help")}
-              >
-                <ha-icon-button
-                  .label=${this.hass.localize("ui.common.help")}
-                  .path=${mdiHelpCircle}
-                ></ha-icon-button>
-              </a>
+                .label=${this.hass.localize("ui.common.help")}
+                .path=${mdiHelpCircleOutline}
+              ></ha-icon-button>
             `
           : nothing}
         <div class="content">
@@ -396,7 +393,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         height: 100%;
       }
 
-      a[slot="toolbar-icon"] {
+      ha-icon-button[slot="toolbar-icon"] {
         color: var(--sidebar-icon-color);
       }
 

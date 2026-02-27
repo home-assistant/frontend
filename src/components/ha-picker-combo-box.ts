@@ -796,7 +796,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         :host {
           display: flex;
           flex-direction: column;
-          padding-top: var(--ha-space-3);
+          padding-top: var(--ha-space-4);
           flex: 1;
         }
 

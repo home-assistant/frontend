@@ -152,15 +152,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       const noOtherAreas = home.areas.length === 0;
       const noFloor = home.floors.length === 0;
 
-      // Other areas / Areas / Others / nothing
-      const heading =
-        noFloor && noOtherAreas
-          ? undefined
-          : noFloor
-            ? hass.localize("ui.panel.lovelace.strategy.home.areas")
-            : noOtherAreas
-              ? hass.localize("ui.panel.lovelace.strategy.home.devices")
-              : hass.localize("ui.panel.lovelace.strategy.home.other_areas");
+      // Determine heading based on floor/area configuration
+      let heading: string | undefined;
+      if (noFloor && noOtherAreas) {
+        heading = undefined;
+      } else if (noFloor) {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.areas");
+      } else if (noOtherAreas) {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.devices");
+      } else {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.other_areas");
+      }
 
       floorsSections.push({
         type: "grid",
@@ -220,11 +222,16 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const hasLights = findEntities(allEntities, lightsFilters).length > 0;
+    const hasLights =
+      hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
     const hasMediaPlayers =
       findEntities(allEntities, mediaPlayerFilter).length > 0;
-    const hasClimate = findEntities(allEntities, climateFilters).length > 0;
-    const hasSecurity = findEntities(allEntities, securityFilters).length > 0;
+    const hasClimate =
+      hass.panels.climate &&
+      findEntities(allEntities, climateFilters).length > 0;
+    const hasSecurity =
+      hass.panels.security &&
+      findEntities(allEntities, securityFilters).length > 0;
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -241,9 +248,11 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       : undefined;
 
     const hasEnergy =
-      energyPrefs?.energy_sources.some(
-        (source) => source.type === "grid" && source.flow_from.length > 0
-      ) ?? false;
+      hass.panels.energy &&
+      (energyPrefs?.energy_sources.some(
+        (source) => source.type === "grid" && !!source.stat_energy_from
+      ) ??
+        false);
 
     // Build summary cards (used in both mobile section and sidebar)
     const summaryCards: LovelaceCardConfig[] = [

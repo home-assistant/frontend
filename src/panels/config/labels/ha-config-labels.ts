@@ -3,7 +3,7 @@ import {
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiLabelOutline,
   mdiPlus,
   mdiRobot,
@@ -147,15 +147,14 @@ export class HaConfigLabels extends LitElement {
       created_at: getCreatedAtTableColumn(localize, this.hass),
       modified_at: getModifiedAtTableColumn(localize, this.hass),
       actions: {
+        lastFixed: true,
         title: "",
         label: localize("ui.panel.config.generic.headers.actions"),
         showNarrow: true,
-        moveable: false,
-        hideable: false,
         type: "overflow-menu",
         template: (label) => html`
           <ha-icon-button
-            .selected=${label}
+            .selectedLabel=${label}
             .label=${this.hass.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
             @click=${this._toggleOverflowMenu}
@@ -184,7 +183,7 @@ export class HaConfigLabels extends LitElement {
     }
     this._openingOverflow = true;
     this._overflowMenu.anchorElement = ev.target;
-    this._overflowLabel = ev.target.selected;
+    this._overflowLabel = ev.target.selectedLabel;
     this._overflowMenu.open = true;
   };
 
@@ -233,7 +232,7 @@ export class HaConfigLabels extends LitElement {
           slot="toolbar-icon"
           @click=${this._showHelp}
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
         <ha-fab
           slot="fab"

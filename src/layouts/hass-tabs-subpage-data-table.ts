@@ -29,7 +29,7 @@ import type {
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 import "../components/ha-button";
 import "../components/ha-dialog-footer";
-import "../components/ha-wa-dialog";
+import "../components/ha-dialog";
 import "../components/ha-dropdown";
 import "../components/ha-icon-button";
 import "../components/ha-svg-icon";
@@ -50,8 +50,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
-
-  @property({ type: Boolean }) public supervisor = false;
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
@@ -322,7 +320,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 ? html`
                     <ha-dropdown-item
                       .value=${id}
-                      .clickAction=${this._handleGroupBy}
                       .selected=${id === this._groupColumn}
                       class=${classMap({ selected: id === this._groupColumn })}
                     >
@@ -383,7 +380,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         .route=${this.route}
         .tabs=${this.tabs}
         .mainPage=${this.mainPage}
-        .supervisor=${this.supervisor}
         .pane=${showPane && this.showFilters}
         @sorting-changed=${this._sortingChanged}
       >
@@ -489,7 +485,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 : ""}
               <ha-data-table
                 .hass=${this.hass}
-                .localize=${localize}
                 .narrow=${this.narrow}
                 .columns=${this.columns}
                 .data=${this.data}
@@ -538,7 +533,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
       ${this.showFilters && !showPane
-        ? html`<ha-wa-dialog
+        ? html`<ha-dialog
             .hass=${this.hass}
             .open=${true}
             width="full"
@@ -573,7 +568,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 })}
               </ha-button>
             </ha-dialog-footer>
-          </ha-wa-dialog>`
+          </ha-dialog>`
         : nothing}
     `;
   }
@@ -898,7 +893,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       --md-assist-chip-trailing-space: 8px;
     }
 
-    ha-wa-dialog {
+    ha-dialog {
       --dialog-content-padding: 0;
     }
 
