@@ -10,9 +10,16 @@ import type { HomeAssistant } from "../../src/types";
 
 const ENTITY_ID = "lock.front_door";
 
+// Entity services wrap responses in a dict keyed by entity_id
 const mockHass = (response?: unknown) =>
   ({
-    callService: vi.fn().mockResolvedValue({ response }),
+    callService: vi
+      .fn()
+      .mockResolvedValue(
+        response !== undefined
+          ? { response: { [ENTITY_ID]: response } }
+          : { response: undefined }
+      ),
   }) as unknown as HomeAssistant;
 
 describe("matter-lock", () => {
@@ -51,7 +58,9 @@ describe("matter-lock", () => {
 
     it("propagates errors from callService", async () => {
       const hass = {
-        callService: vi.fn().mockRejectedValue(new Error("Service unavailable")),
+        callService: vi
+          .fn()
+          .mockRejectedValue(new Error("Service unavailable")),
       } as unknown as HomeAssistant;
 
       await expect(getMatterLockInfo(hass, ENTITY_ID)).rejects.toThrow(
@@ -164,7 +173,6 @@ describe("matter-lock", () => {
       const result = await setMatterLockCredential(hass, ENTITY_ID, {
         credential_type: "pin",
         credential_data: "1234",
-        user_name: "Dave",
         user_type: "unrestricted_user",
       });
 
@@ -174,7 +182,6 @@ describe("matter-lock", () => {
         {
           credential_type: "pin",
           credential_data: "1234",
-          user_name: "Dave",
           user_type: "unrestricted_user",
         },
         { entity_id: ENTITY_ID },

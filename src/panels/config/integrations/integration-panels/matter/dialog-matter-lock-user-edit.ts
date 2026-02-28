@@ -227,12 +227,22 @@ class DialogMatterLockUserEdit extends LitElement {
 
     try {
       if (isNew) {
-        await setMatterLockCredential(this.hass, this._params.entity_id, {
-          credential_type: "pin",
-          credential_data: this._pinCode,
-          user_name: this._userName.trim(),
-          user_type: this._userType,
-        });
+        // Create credential (auto-creates a user), then set the user name
+        const result = await setMatterLockCredential(
+          this.hass,
+          this._params.entity_id,
+          {
+            credential_type: "pin",
+            credential_data: this._pinCode,
+            user_type: this._userType,
+          }
+        );
+        if (result.user_index !== null && this._userName.trim()) {
+          await setMatterLockUser(this.hass, this._params.entity_id, {
+            user_index: result.user_index,
+            user_name: this._userName.trim(),
+          });
+        }
       } else {
         await setMatterLockUser(this.hass, this._params.entity_id, {
           user_index: this._params.user!.user_index as number,

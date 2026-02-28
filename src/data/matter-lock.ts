@@ -92,7 +92,7 @@ export const getMatterLockInfo = async (
   hass: HomeAssistant,
   entity_id: string
 ): Promise<MatterLockInfo> => {
-  const result = await hass.callService<MatterLockInfo>(
+  const result = await hass.callService<Record<string, MatterLockInfo>>(
     "matter",
     "get_lock_info",
     {},
@@ -100,22 +100,17 @@ export const getMatterLockInfo = async (
     true,
     true
   );
-  return result.response!;
+  return result.response![entity_id];
 };
 
 export const getMatterLockUsers = async (
   hass: HomeAssistant,
   entity_id: string
 ): Promise<MatterLockUsersResponse> => {
-  const result = await hass.callService<MatterLockUsersResponse>(
-    "matter",
-    "get_lock_users",
-    {},
-    { entity_id },
-    true,
-    true
-  );
-  return result.response!;
+  const result = await hass.callService<
+    Record<string, MatterLockUsersResponse>
+  >("matter", "get_lock_users", {}, { entity_id }, true, true);
+  return result.response![entity_id];
 };
 
 export const setMatterLockUser = (
@@ -136,13 +131,8 @@ export const setMatterLockCredential = async (
   entity_id: string,
   params: SetMatterLockCredentialParams
 ): Promise<SetMatterLockCredentialResult> => {
-  const result = await hass.callService<SetMatterLockCredentialResult>(
-    "matter",
-    "set_lock_credential",
-    params,
-    { entity_id },
-    true,
-    true
-  );
-  return result.response!;
+  const result = await hass.callService<
+    Record<string, SetMatterLockCredentialResult>
+  >("matter", "set_lock_credential", params, { entity_id }, true, true);
+  return result.response![entity_id];
 };
