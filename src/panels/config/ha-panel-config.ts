@@ -10,7 +10,6 @@ import {
   mdiDevices,
   mdiFlask,
   mdiHammer,
-  mdiInformation,
   mdiInformationOutline,
   mdiLabel,
   mdiLightningBolt,
@@ -297,6 +296,15 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#3263C3",
     },
   ],
+  developer_tools: [
+    {
+      path: "/config/developer-tools",
+      translationKey: "ui.panel.config.dashboard.developer_tools.main",
+      iconPath: mdiHammer,
+      iconColor: "#7A5AA6",
+      core: true,
+    },
+  ],
   // Not used as a tab, but this way it will stay in the quick bar
   energy: [
     {
@@ -305,6 +313,49 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "ui.panel.config.energy.caption",
       iconPath: mdiLightningBolt,
       iconColor: "#F1C447",
+    },
+  ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  network_discovery: [
+    {
+      component: "dhcp",
+      path: "/config/dhcp",
+      translationKey: "ui.panel.config.network.discovery.dhcp",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+    {
+      component: "ssdp",
+      path: "/config/ssdp",
+      translationKey: "ui.panel.config.network.discovery.ssdp",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+    {
+      component: "zeroconf",
+      path: "/config/zeroconf",
+      translationKey: "ui.panel.config.network.discovery.zeroconf",
+      iconPath: mdiNetwork,
+      iconColor: "#B1345C",
+    },
+  ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  integration_credentials: [
+    {
+      path: "/config/application_credentials",
+      translationKey: "ui.panel.config.application_credentials.caption",
+      iconPath: mdiPuzzle,
+      iconColor: "#2D338F",
+    },
+  ],
+  // Not used as a tab, but this way it will stay in the quick bar
+  integration_mqtt: [
+    {
+      component: "mqtt",
+      path: "/config/mqtt",
+      translationKey: "ui.panel.config.mqtt.title",
+      iconPath: mdiPuzzle,
+      iconColor: "#2D338F",
     },
   ],
   lovelace: [
@@ -440,7 +491,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "info",
       path: "/config/info",
       translationKey: "ui.panel.config.info.caption",
-      iconPath: mdiInformation,
+      iconPath: mdiInformationOutline,
       iconColor: "#4A5963",
       core: true,
     },

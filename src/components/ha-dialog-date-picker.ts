@@ -9,7 +9,7 @@ import type { HomeAssistant } from "../types";
 import type { DatePickerDialogParams } from "./ha-date-input";
 import "./ha-button";
 import "./ha-dialog-footer";
-import "./ha-wa-dialog";
+import "./ha-dialog";
 
 @customElement("ha-dialog-date-picker")
 export class HaDialogDatePicker extends LitElement {
@@ -49,7 +49,7 @@ export class HaDialogDatePicker extends LitElement {
     if (!this._params) {
       return nothing;
     }
-    return html`<ha-wa-dialog
+    return html`<ha-dialog
       .hass=${this.hass}
       .open=${this._open}
       width="small"
@@ -97,7 +97,7 @@ export class HaDialogDatePicker extends LitElement {
           ${this.hass.localize("ui.common.ok")}
         </ha-button>
       </ha-dialog-footer>
-    </ha-wa-dialog>`;
+    </ha-dialog>`;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -127,7 +127,7 @@ export class HaDialogDatePicker extends LitElement {
   static styles = [
     haStyleDialog,
     css`
-      ha-wa-dialog {
+      ha-dialog {
         --dialog-content-padding: 0;
       }
       .bottom-actions {

@@ -17,7 +17,7 @@ import type { SuggestWithAIGenerateTask } from "../../../../components/ha-sugges
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../category/ha-category-picker";
 
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
@@ -222,12 +222,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             )
           : nothing}
         ${this._renderOptionalChip(
-          "area",
-          this.hass.localize(
-            "ui.panel.config.automation.editor.dialog.add_area"
-          )
-        )}
-        ${this._renderOptionalChip(
           "category",
           this.hass.localize(
             "ui.panel.config.automation.editor.dialog.add_category"
@@ -237,6 +231,12 @@ class DialogAutomationSave extends LitElement implements HassDialog {
           "labels",
           this.hass.localize(
             "ui.panel.config.automation.editor.dialog.add_labels"
+          )
+        )}
+        ${this._renderOptionalChip(
+          "area",
+          this.hass.localize(
+            "ui.panel.config.automation.editor.dialog.add_area"
           )
         )}
       </ha-chip-set>
@@ -255,7 +255,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
@@ -297,7 +297,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -436,7 +436,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0 var(--ha-space-6) var(--ha-space-6)
             var(--ha-space-6);
         }

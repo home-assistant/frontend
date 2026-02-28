@@ -251,6 +251,14 @@ export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
   group_by_area?: boolean;
 }
 
+export interface WaterFlowSankeyCardConfig extends EnergyCardBaseConfig {
+  type: "water-flow-sankey";
+  title?: string;
+  layout?: "vertical" | "horizontal" | "auto";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
 export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
   type: "power-sources-graph";
   title?: string;
@@ -665,6 +673,13 @@ export interface HomeSummaryCard extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface ToggleGroupCardConfig extends LovelaceCardConfig {
+  title: string;
+  entities: string[];
+  color?: string;
+  vertical?: boolean;
+}
+
 export interface DistributionEntityConfig extends EntityConfig {
   color?: string;
 }
@@ -676,6 +691,22 @@ export interface DistributionCardConfig extends LovelaceCardConfig {
 }
 
 export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {
+  hide_empty?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface RepairsCardConfig extends LovelaceCardConfig {
+  hide_empty?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface UpdatesCardConfig extends LovelaceCardConfig {
   hide_empty?: boolean;
   vertical?: boolean;
   tap_action?: ActionConfig;

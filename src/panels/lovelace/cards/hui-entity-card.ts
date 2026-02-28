@@ -142,6 +142,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const indexUnit = stateParts.findIndex((part) => part.type === "unit");
+    const indexValue = stateParts.findIndex((part) => part.type === "value");
+    const reversedOrder = indexUnit !== -1 && indexUnit < indexValue;
+
     const name = computeLovelaceEntityName(
       this.hass,
       stateObj,
@@ -190,7 +194,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="info">
-          <span class="value"
+          <span
+            class=${classMap({
+              value: true,
+              "first-part": !reversedOrder,
+            })}
             >${"attribute" in this._config
               ? stateObj.attributes[this._config.attribute!] !== undefined
                 ? html`<ha-attribute-value
@@ -202,8 +210,15 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   </ha-attribute-value>`
                 : this.hass.localize("state.default.unknown")
               : stateParts.find((part) => part.type === "value")?.value}</span
-          >
-          ${unit ? html`<span class="measurement">${unit}</span>` : nothing}
+          >${unit
+            ? html`<span
+                class=${classMap({
+                  measurement: true,
+                  "first-part": reversedOrder,
+                })}
+                >${unit}</span
+              >`
+            : nothing}
         </div>
         <div
           class="footer"
@@ -322,24 +337,33 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .info {
+          display: flex;
+          align-items: baseline;
           padding: 0px 16px 16px;
           margin-top: -4px;
+          line-height: var(--ha-line-height-condensed);
+        }
+
+        .info > * {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: var(--ha-line-height-condensed);
         }
 
         .value {
           font-size: var(--ha-font-size-3xl);
-          margin-right: 4px;
-          margin-inline-end: 4px;
-          margin-inline-start: initial;
         }
 
         .measurement {
           font-size: var(--ha-font-size-l);
           color: var(--secondary-text-color);
+        }
+
+        .first-part {
+          order: -1; /* ? */
+          margin-right: 4px;
+          margin-inline-end: 4px;
+          margin-inline-start: initial;
         }
 
         .with-fixed-footer {

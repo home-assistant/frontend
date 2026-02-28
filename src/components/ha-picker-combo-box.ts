@@ -362,6 +362,18 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const additionalItems = this._getAdditionalItems();
     items.push(...additionalItems);
 
+    if (this.allowCustomValue && this._search) {
+      items.push({
+        id: this._search,
+        primary:
+          this.customValueLabel ??
+          this.hass?.localize("ui.components.combo-box.add_custom_item") ??
+          "Add custom item",
+        secondary: `"${this._search}"`,
+        icon_path: mdiPlus,
+      });
+    }
+
     if (this.mode === "dialog") {
       items.push({ id: PADDING_ID, primary: "" }); // padding for safe area inset
     }
@@ -784,7 +796,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         :host {
           display: flex;
           flex-direction: column;
-          padding-top: var(--ha-space-3);
+          padding-top: var(--ha-space-4);
           flex: 1;
         }
 

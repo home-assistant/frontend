@@ -1,12 +1,12 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import "../../components/ha-divider";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
-import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
@@ -57,7 +57,7 @@ class HaPickDashboardRow extends LitElement {
                 >
                   ${this.hass.localize("ui.panel.profile.dashboard.system")}
                 </ha-dropdown-item>
-                <ha-divider></ha-divider>
+                <wa-divider></wa-divider>
                 ${PANEL_DASHBOARDS.map((panel) => {
                   const panelInfo = this.hass.panels[panel] as
                     | PanelInfo
@@ -80,7 +80,7 @@ class HaPickDashboardRow extends LitElement {
                 })}
                 ${this._dashboards.length
                   ? html`
-                      <ha-divider></ha-divider>
+                      <wa-divider></wa-divider>
                       ${this._dashboards.map((dashboard) => {
                         if (
                           !this.hass.user!.is_admin &&

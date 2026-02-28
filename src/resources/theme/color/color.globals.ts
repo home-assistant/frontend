@@ -388,6 +388,8 @@ export const darkColorStyles = css`
     --outline-hover-color: rgba(225, 225, 225, 0.24);
     --shadow-color: rgba(0, 0, 0, 0.48);
 
+    --scrollbar-thumb-color: rgb(110, 110, 110);
+
     --mdc-ripple-color: #aaaaaa;
     --mdc-linear-progress-buffer-color: rgba(255, 255, 255, 0.1);
 
