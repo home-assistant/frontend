@@ -24,11 +24,12 @@ const LOAD_ELEMENTS = {
 };
 
 const getValue = (obj, item) =>
-  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : null;
+  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : undefined;
 
-const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
+const getError = (obj, item) => (obj && item.name ? obj[item.name] : undefined);
 
-const getWarning = (obj, item) => (obj && item.name ? obj[item.name] : null);
+const getWarning = (obj, item) =>
+  obj && item.name ? obj[item.name] : undefined;
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
