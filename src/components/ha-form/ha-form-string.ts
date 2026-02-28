@@ -3,6 +3,10 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
 import "../ha-icon-button";
 import "../ha-textfield";
 import type { HaTextField } from "../ha-textfield";
@@ -11,10 +15,6 @@ import type {
   HaFormStringData,
   HaFormStringSchema,
 } from "./types";
-import type {
-  LocalizeFunc,
-  LocalizeKeys,
-} from "../../common/translations/localize";
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
@@ -148,7 +148,7 @@ export class HaFormString extends LitElement implements HaFormElement {
       right: 8px;
       inset-inline-start: initial;
       inset-inline-end: 8px;
-      --mdc-icon-button-size: 40px;
+      --ha-icon-button-size: 40px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);

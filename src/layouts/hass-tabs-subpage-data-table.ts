@@ -51,8 +51,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ type: Boolean }) public supervisor = false;
-
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
   @property({ attribute: false }) public initialCollapsedGroups: string[] = [];
@@ -322,7 +320,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 ? html`
                     <ha-dropdown-item
                       .value=${id}
-                      .clickAction=${this._handleGroupBy}
                       .selected=${id === this._groupColumn}
                       class=${classMap({ selected: id === this._groupColumn })}
                     >
@@ -383,7 +380,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         .route=${this.route}
         .tabs=${this.tabs}
         .mainPage=${this.mainPage}
-        .supervisor=${this.supervisor}
         .pane=${showPane && this.showFilters}
         @sorting-changed=${this._sortingChanged}
       >
@@ -489,7 +485,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 : ""}
               <ha-data-table
                 .hass=${this.hass}
-                .localize=${localize}
                 .narrow=${this.narrow}
                 .columns=${this.columns}
                 .data=${this.data}

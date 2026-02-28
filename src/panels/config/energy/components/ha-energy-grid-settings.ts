@@ -3,8 +3,8 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
 import "../../../../components/ha-button";
+import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
@@ -193,11 +193,11 @@ export class EnergyGridSettings extends LitElement {
                       })}
                     />
                     <span class="content">${this._co2ConfigEntry.title}</span>
-                    <a
+                    <ha-icon-button
+                      .path=${mdiPencil}
                       href=${`/config/integrations/integration/${this._co2ConfigEntry?.domain}`}
                     >
-                      <ha-icon-button .path=${mdiPencil}></ha-icon-button>
-                    </a>
+                    </ha-icon-button>
                     <ha-icon-button
                       .label=${this.hass.localize(
                         "ui.panel.config.energy.grid.remove_co2_signal"

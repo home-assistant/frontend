@@ -194,7 +194,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   .image=${this.image}
                   .label=${label}
                   .placeholder=${this.placeholder}
-                  .helper=${this.helper}
                   .value=${this.value}
                   .valueRenderer=${this.valueRenderer}
                   .required=${this.required}
