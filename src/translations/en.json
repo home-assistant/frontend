@@ -6903,15 +6903,15 @@
               },
               "user_type": {
                 "unrestricted_user": "Unrestricted",
-                "year_day_schedule_user": "Year day schedule",
-                "week_day_schedule_user": "Week day schedule",
+                "year_day_schedule_user": "Day-of-the-year schedule",
+                "week_day_schedule_user": "Day-of-the-week schedule",
                 "programming_user": "Programming",
                 "non_access_user": "Non-access",
                 "forced_user": "Forced",
                 "disposable_user": "Disposable",
                 "expiring_user": "Expiring",
-                "schedule_restricted_user": "Schedule restricted",
-                "remote_only_user": "Remote only"
+                "schedule_restricted_user": "Schedule-restricted",
+                "remote_only_user": "Remote-only"
               },
               "credential_rules": {
                 "single": "Single credential",
@@ -6972,7 +6972,8 @@
               "name_required": "Please enter a name for this user.",
               "pin_required": "Please enter a PIN code.",
               "pin_length": "PIN code must be {min}-{max} digits.",
-              "pin_digits_only": "PIN code must contain only numbers."
+              "pin_digits_only": "PIN code must contain only numbers.",
+              "pin_placeholder": "{min}-{max} digits"
             },
             "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
             "confirm_delete_credential": "Are you sure you want to delete this credential?"

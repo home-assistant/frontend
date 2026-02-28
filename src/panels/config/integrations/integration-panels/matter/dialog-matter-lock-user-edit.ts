@@ -101,7 +101,10 @@ class DialogMatterLockUserEdit extends LitElement {
                   type="password"
                   inputmode="numeric"
                   pattern="[0-9]*"
-                  placeholder="${minPin}-${maxPin} digits"
+                  placeholder=${this.hass.localize(
+                    "ui.panel.config.matter.lock.errors.pin_placeholder",
+                    { min: minPin, max: maxPin }
+                  )}
                   minlength=${minPin}
                   maxlength=${maxPin}
                   required
