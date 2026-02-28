@@ -8,6 +8,7 @@ import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-wa-dialog";
+import type { MatterLockUserType } from "../../../../../data/matter-lock";
 import {
   setMatterLockCredential,
   setMatterLockUser,
@@ -16,23 +17,9 @@ import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { MatterLockUserEditDialogParams } from "./show-dialog-matter-lock-user-edit";
 
-interface SimpleUserType {
-  value: string;
-  label: string;
-  description: string;
-}
-
-const SIMPLE_USER_TYPES: SimpleUserType[] = [
-  {
-    value: "unrestricted_user",
-    label: "Full access",
-    description: "Can lock/unlock anytime, 24/7",
-  },
-  {
-    value: "disposable_user",
-    label: "One-time access",
-    description: "Code works once, then is deleted",
-  },
+const SIMPLE_USER_TYPES: MatterLockUserType[] = [
+  "unrestricted_user",
+  "disposable_user",
 ];
 
 @customElement("dialog-matter-lock-user-edit")
@@ -43,7 +30,7 @@ class DialogMatterLockUserEdit extends LitElement {
 
   @state() private _userName = "";
 
-  @state() private _userType = "unrestricted_user";
+  @state() private _userType: MatterLockUserType = "unrestricted_user";
 
   @state() private _pinCode = "";
 
@@ -131,14 +118,22 @@ class DialogMatterLockUserEdit extends LitElement {
             ${SIMPLE_USER_TYPES.map(
               (type) => html`
                 <div
-                  class="user-type-option ${this._userType === type.value
+                  class="user-type-option ${this._userType === type
                     ? "selected"
                     : ""}"
-                  .userType=${type.value}
+                  .userType=${type}
                   @click=${this._handleUserTypeClick}
                 >
-                  <div class="user-type-label">${type.label}</div>
-                  <div class="user-type-description">${type.description}</div>
+                  <div class="user-type-label">
+                    ${this.hass.localize(
+                      `ui.panel.config.matter.lock.users.user_types.${type}.label`
+                    )}
+                  </div>
+                  <div class="user-type-description">
+                    ${this.hass.localize(
+                      `ui.panel.config.matter.lock.users.user_types.${type}.description`
+                    )}
+                  </div>
                 </div>
               `
             )}
@@ -180,7 +175,11 @@ class DialogMatterLockUserEdit extends LitElement {
   }
 
   private _handleUserTypeClick(ev: Event): void {
-    this._userType = (ev.currentTarget as any).userType as string;
+    this._userType = (
+      ev.currentTarget as HTMLElement & {
+        userType: MatterLockUserType;
+      }
+    ).userType;
   }
 
   private async _save(): Promise<void> {
@@ -232,13 +231,13 @@ class DialogMatterLockUserEdit extends LitElement {
           credential_type: "pin",
           credential_data: this._pinCode,
           user_name: this._userName.trim(),
-          user_type: this._userType as any,
+          user_type: this._userType,
         });
       } else {
         await setMatterLockUser(this.hass, this._params.entity_id, {
           user_index: this._params.user!.user_index as number,
           user_name: this._userName.trim(),
-          user_type: this._userType as any,
+          user_type: this._userType,
         });
       }
 

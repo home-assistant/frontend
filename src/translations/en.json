@@ -6917,6 +6917,16 @@
                 "single": "Single credential",
                 "dual": "Dual credentials",
                 "tri": "Triple credentials"
+              },
+              "user_types": {
+                "unrestricted_user": {
+                  "label": "Full access",
+                  "description": "Can lock/unlock anytime, 24/7"
+                },
+                "disposable_user": {
+                  "label": "One-time access",
+                  "description": "Code works once, then is deleted"
+                }
               }
             },
             "credentials": {

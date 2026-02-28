@@ -95,18 +95,18 @@ class DialogMatterLockManage extends LitElement {
           ? html`<div class="center">
               <ha-spinner></ha-spinner>
             </div>`
-          : html`<div class="content">${this._renderUsersTab()}</div>`}
+          : html`<div class="content">${this._renderUsers()}</div>`}
       </ha-wa-dialog>
     `;
   }
 
-  private _renderUsersTab() {
+  private _renderUsers() {
     const occupiedUsers = this._users.filter(
       (u) => u.user_status !== "available"
     );
 
     return html`
-      <div class="tab-content">
+      <div class="users-content">
         ${occupiedUsers.length === 0
           ? html`<p class="empty">
               ${this.hass.localize(
@@ -246,7 +246,7 @@ class DialogMatterLockManage extends LitElement {
         .content {
           min-height: 300px;
         }
-        .tab-content {
+        .users-content {
           padding: var(--ha-space-4) 0;
         }
         .empty {
