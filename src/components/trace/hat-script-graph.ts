@@ -8,8 +8,6 @@ import {
   mdiCallSplit,
   mdiCheckboxBlankOutline,
   mdiCheckboxMarkedOutline,
-  mdiChevronDown,
-  mdiChevronUp,
   mdiClose,
   mdiCodeBraces,
   mdiCodeBrackets,
@@ -45,7 +43,6 @@ import type {
   TraceExtended,
 } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
-import "../ha-icon-button";
 import "../ha-service-icon";
 import "./hat-graph-branch";
 import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
@@ -588,7 +585,6 @@ export class HatScriptGraph extends LitElement {
       "conditions" in this.trace.config ? "conditions" : "condition";
     const actionKey = "actions" in this.trace.config ? "actions" : "action";
 
-    const paths = Object.keys(this.trackedNodes);
     const triggerNodes =
       triggerKey in this.trace.config
         ? flattenTriggers(ensureArray(this.trace.config[triggerKey])).map(
@@ -619,19 +615,6 @@ export class HatScriptGraph extends LitElement {
                   this._renderActionNode(action, `sequence/${i}`, i === 0)
               )}`
             : ""}
-        </div>
-        <div class="actions">
-          <ha-icon-button
-            .disabled=${paths.length === 0 || paths[0] === this.selected}
-            @click=${this._previousTrackedNode}
-            .path=${mdiChevronUp}
-          ></ha-icon-button>
-          <ha-icon-button
-            .disabled=${paths.length === 0 ||
-            paths[paths.length - 1] === this.selected}
-            @click=${this._nextTrackedNode}
-            .path=${mdiChevronDown}
-          ></ha-icon-button>
         </div>
       `;
     } catch (err: any) {
@@ -689,7 +672,7 @@ export class HatScriptGraph extends LitElement {
     }
   }
 
-  private _previousTrackedNode() {
+  public previousTrackedNode() {
     const nodes = Object.keys(this.trackedNodes);
     const prevIndex = nodes.indexOf(this.selected!) - 1;
     if (prevIndex >= 0) {
@@ -701,7 +684,7 @@ export class HatScriptGraph extends LitElement {
     }
   }
 
-  private _nextTrackedNode() {
+  public nextTrackedNode() {
     const nodes = Object.keys(this.trackedNodes);
     const nextIndex = nodes.indexOf(this.selected!) + 1;
     if (nextIndex < nodes.length) {
@@ -738,10 +721,6 @@ export class HatScriptGraph extends LitElement {
         display: flex;
         flex-direction: column;
         align-items: center;
-      }
-      .actions {
-        display: flex;
-        flex-direction: column;
       }
       .parent {
         margin-left: 8px;
