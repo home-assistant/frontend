@@ -2001,33 +2001,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@html-eslint/eslint-plugin@npm:0.57.0":
-  version: 0.57.0
-  resolution: "@html-eslint/eslint-plugin@npm:0.57.0"
+"@html-eslint/eslint-plugin@npm:0.57.1":
+  version: 0.57.1
+  resolution: "@html-eslint/eslint-plugin@npm:0.57.1"
   dependencies:
     "@eslint/plugin-kit": "npm:^0.4.1"
     "@html-eslint/core": "npm:^0.57.0"
-    "@html-eslint/parser": "npm:^0.57.0"
+    "@html-eslint/parser": "npm:^0.57.1"
     "@html-eslint/template-parser": "npm:^0.57.0"
     "@html-eslint/template-syntax-parser": "npm:^0.57.0"
     "@html-eslint/types": "npm:^0.57.0"
     "@rviscomi/capo.js": "npm:^2.1.0"
+    html-standard: "npm:^0.0.13"
   peerDependencies:
     eslint: ">=8.0.0 || ^10.0.0-0"
-  checksum: 10/34cf11eaab3c07436c9c8b2896ed331c3ba5d591db5d8a8ff79d19b174e6e090323eb71e1368ad93d2afa945d4740749c599436a03be1195d4e4a4b0d3d9e9b6
+  checksum: 10/21a923a1ee8efb02f01c015345a23b38cd0a9e98c4f3fa07d79afe1f8e9f26651e0a9d6983b2f9cfae76be71c14f3224fd64433612535c1e04e3c9b440e46245
   languageName: node
   linkType: hard
 
-"@html-eslint/parser@npm:^0.57.0":
-  version: 0.57.0
-  resolution: "@html-eslint/parser@npm:0.57.0"
+"@html-eslint/parser@npm:^0.57.1":
+  version: 0.57.1
+  resolution: "@html-eslint/parser@npm:0.57.1"
   dependencies:
     "@eslint/css-tree": "npm:^3.6.9"
     "@html-eslint/template-syntax-parser": "npm:^0.57.0"
     "@html-eslint/types": "npm:^0.57.0"
     css-tree: "npm:^3.1.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/d742a26ef8122eab82e35ab27de6fe40cd45d2ac59ade9bed9d16df0da3cd18425c7892fedd245b9d60da2a4fbfb8c6afe05b1b6415033ab8fad996b94be020e
+  checksum: 10/3e148f0bf83600e5b931938dc02d01e805c275b0534fad0adc8ac68ceb37220896c007b1d33ebc4347cb59ab35d1cc3c57207ff798f08d2327d92abf1c88e72b
   languageName: node
   linkType: hard
 
@@ -9200,7 +9201,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
     "@home-assistant/webawesome": "npm:3.2.1-ha.3"
-    "@html-eslint/eslint-plugin": "npm:0.57.0"
+    "@html-eslint/eslint-plugin": "npm:0.57.1"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
     "@lit-labs/observers": "npm:2.1.0"
