@@ -6,8 +6,8 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
@@ -786,7 +786,7 @@ export class HassioNetwork extends LitElement {
     this.requestUpdate("_interface");
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (action === "add_predefined") {
@@ -837,7 +837,7 @@ export class HassioNetwork extends LitElement {
           width: 95px;
         }
         .address-row ha-icon-button {
-          --mdc-icon-button-size: 36px;
+          --ha-icon-button-size: 36px;
           margin-top: 16px;
         }
         ha-dropdown {

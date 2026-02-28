@@ -11,8 +11,8 @@ import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
@@ -434,7 +434,7 @@ export class HuiCardFeaturesEditor extends LitElement {
     `;
   }
 
-  private async _addFeature(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _addFeature(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value as FeatureType;
     if (!value) {
       return;
@@ -532,7 +532,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: var(--ha-space-9);
+      --ha-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 

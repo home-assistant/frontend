@@ -413,7 +413,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                   `
             }
             <ha-dropdown-item
-              class=${isBrowser ? "selected" : ""}
+              .selected=${isBrowser}
               .value=${BROWSER_PLAYER}
             >
               ${this.hass.localize("ui.components.media-browser.web-browser")}
@@ -421,7 +421,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
             ${this._mediaPlayerEntities.map(
               (source) => html`
                 <ha-dropdown-item
-                  class=${source.entity_id === this.entityId ? "selected" : ""}
+                  .selected=${source.entity_id === this.entityId}
                   .disabled=${source.state === UNAVAILABLE}
                   .value=${source.entity_id}
                 >
@@ -669,9 +669,18 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       );
       border-top: 1px solid var(--divider-color);
       margin-right: var(--safe-area-inset-right);
+      transition:
+        width var(--ha-animation-duration-normal) ease,
+        margin-left var(--ha-animation-duration-normal) ease,
+        margin-right var(--ha-animation-duration-normal) ease;
     }
     :host([narrow]) {
       margin-left: var(--safe-area-inset-left);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :host {
+        transition: none;
+      }
     }
 
     ha-slider {
@@ -830,10 +839,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       top: -6px;
       left: 0;
       right: 0;
-    }
-
-    ha-dropdown-item.selected {
-      font-weight: var(--ha-font-weight-bold);
     }
   `;
 }

@@ -21,10 +21,10 @@ import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog-header";
 import "../ha-dropdown";
+import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
-import type { HaDropdownItem } from "../ha-dropdown-item";
 import "../ha-icon-button-arrow-prev";
-import "../ha-wa-dialog";
+import "../ha-dialog";
 import "./ha-media-manage-button";
 import "./ha-media-player-browse";
 import type {
@@ -76,7 +76,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         flexcontent
@@ -169,7 +169,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}
         ></ha-media-player-browse>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -177,7 +177,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     this.classList.add("opened");
   }
 
-  private async _handleMenuAction(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     switch (action) {
       case "auto":
@@ -222,7 +222,7 @@ class DialogMediaPlayerBrowse extends LitElement {
       haStyleDialog,
       haStyleDialogFixedTop,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
 
@@ -237,7 +237,7 @@ class DialogMediaPlayerBrowse extends LitElement {
         }
 
         @media (min-width: 800px) {
-          ha-wa-dialog {
+          ha-dialog {
             --ha-dialog-max-width: 800px;
             --ha-dialog-max-height: calc(
               100vh - var(--ha-space-18) - var(--safe-area-inset-y)

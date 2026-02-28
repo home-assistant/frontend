@@ -3,8 +3,10 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-spinner";
+import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -64,6 +66,8 @@ export class HuiGraphHeaderFooter
   @state() private _coordinates?: [number, number][];
 
   private _error?: string;
+
+  private _history?: HistoryStates;
 
   private _interval?: number;
 
@@ -126,8 +130,15 @@ export class HuiGraphHeaderFooter
     `;
   }
 
+  private _handleClick(): void {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config?.entity ?? null,
+    });
+  }
+
   public connectedCallback() {
     super.connectedCallback();
+    this.addEventListener("click", this._handleClick);
     if (this.hasUpdated && this._config) {
       this._subscribeHistory();
     }
@@ -153,24 +164,8 @@ export class HuiGraphHeaderFooter
           // Message came in before we had a chance to unload
           return;
         }
-        const width = this.clientWidth || this.offsetWidth;
-        // sample to 1 point per hour or 1 point per 5 pixels
-        const maxDetails = Math.max(
-          10,
-          this._config.detail! > 1
-            ? Math.max(width / 5, this._config.hours_to_show!)
-            : this._config.hours_to_show!
-        );
-        const useMean = this._config.detail !== 2;
-        const { points } = coordinatesMinimalResponseCompressedState(
-          combinedHistory[this._config.entity],
-          width,
-          width / 5,
-          maxDetails,
-          { minY: this._config.limits?.min, maxY: this._config.limits?.max },
-          useMean
-        );
-        this._coordinates = points;
+        this._history = combinedHistory;
+        this._computeCoordinates();
       },
       this._config.hours_to_show!,
       [this._config.entity]
@@ -182,10 +177,63 @@ export class HuiGraphHeaderFooter
     this._setRedrawTimer();
   }
 
-  private _redrawGraph() {
-    if (this._coordinates) {
-      this._coordinates = [...this._coordinates];
+  private _computeCoordinates() {
+    if (!this._history || !this._config) {
+      return;
     }
+    const entityHistory = this._history[this._config.entity];
+    if (!entityHistory?.length) {
+      return;
+    }
+    const width = this.clientWidth || this.offsetWidth;
+    // sample to 1 point per hour or 1 point per 5 pixels
+    const maxDetails = Math.max(
+      10,
+      this._config.detail! > 1
+        ? Math.max(width / 5, this._config.hours_to_show!)
+        : this._config.hours_to_show!
+    );
+    const useMean = this._config.detail !== 2;
+    const { points } = coordinatesMinimalResponseCompressedState(
+      entityHistory,
+      width,
+      width / 5,
+      maxDetails,
+      { minY: this._config.limits?.min, maxY: this._config.limits?.max },
+      useMean
+    );
+    this._coordinates = points;
+  }
+
+  private _redrawGraph() {
+    if (!this._history || !this._config?.hours_to_show) {
+      return;
+    }
+    const entityId = this._config.entity;
+    const entityHistory = this._history[entityId];
+    if (entityHistory?.length) {
+      const purgeBeforeTimestamp =
+        (Date.now() - this._config.hours_to_show * 60 * 60 * 1000) / 1000;
+      let purgedHistory = entityHistory.filter(
+        (entry) => entry.lu >= purgeBeforeTimestamp
+      );
+      if (purgedHistory.length !== entityHistory.length) {
+        if (
+          !purgedHistory.length ||
+          purgedHistory[0].lu !== purgeBeforeTimestamp
+        ) {
+          // Preserve the last expired state as the start boundary
+          const lastExpiredState = {
+            ...entityHistory[entityHistory.length - purgedHistory.length - 1],
+          };
+          lastExpiredState.lu = purgeBeforeTimestamp;
+          delete lastExpiredState.lc;
+          purgedHistory = [lastExpiredState, ...purgedHistory];
+        }
+        this._history = { ...this._history, [entityId]: purgedHistory };
+      }
+    }
+    this._computeCoordinates();
   }
 
   private _setRedrawTimer() {
@@ -203,6 +251,7 @@ export class HuiGraphHeaderFooter
       this._subscribed.then((unsub) => unsub?.());
       this._subscribed = undefined;
     }
+    this._history = undefined;
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -224,6 +273,7 @@ export class HuiGraphHeaderFooter
   static styles = css`
     :host {
       display: block;
+      cursor: pointer;
     }
     ha-spinner {
       position: absolute;

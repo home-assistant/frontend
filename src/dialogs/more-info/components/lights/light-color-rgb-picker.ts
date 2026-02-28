@@ -468,13 +468,13 @@ class LightRgbColorPicker extends LitElement {
           border: none;
           outline: none;
           display: block;
-          width: var(--mdc-icon-button-size, 48px);
-          height: var(--mdc-icon-button-size, 48px);
+          width: var(--ha-icon-button-size, 48px);
+          height: var(--ha-icon-button-size, 48px);
           padding: calc(
-            (var(--mdc-icon-button-size, 48px) - var(--mdc-icon-size, 24px)) / 2
+            (var(--ha-icon-button-size, 48px) - var(--mdc-icon-size, 24px)) / 2
           );
           background-color: transparent;
-          border-radius: calc(var(--mdc-icon-button-size, 48px) / 2);
+          border-radius: calc(var(--ha-icon-button-size, 48px) / 2);
           overflow: hidden;
           cursor: pointer;
           transition: background-color 180ms ease-in-out;

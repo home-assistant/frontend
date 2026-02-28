@@ -6,7 +6,7 @@ import {
   mdiDotsVertical,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiMagnify,
   mdiPencil,
   mdiPlus,
@@ -39,8 +39,8 @@ import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-next";
@@ -51,7 +51,6 @@ import "../../components/ha-tab-group";
 import "../../components/ha-tab-group-tab";
 import "../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../data/area/area_registry";
-import type { LovelacePanelConfig } from "../../data/lovelace";
 import type {
   LovelaceConfig,
   LovelaceRawConfig,
@@ -63,6 +62,7 @@ import {
   fetchDashboards,
   updateDashboard,
 } from "../../data/lovelace/dashboard";
+import { fetchLovelaceInfo } from "../../data/lovelace/resource";
 import { getPanelTitle } from "../../data/panel";
 import { createPerson } from "../../data/person";
 import { showListItemsDialog } from "../../dialogs/dialog-list-items/show-list-items-dialog";
@@ -151,6 +151,8 @@ class HUIRoot extends LitElement {
 
   @state() private _curView?: number | "hass-unused-entities";
 
+  @state() private _resourceMode: "yaml" | "storage" = "storage";
+
   private _configChangedByUndo = false;
 
   private _viewCache?: Record<string, HUIView>;
@@ -186,6 +188,7 @@ class HUIRoot extends LitElement {
 
   private _renderActionItems(): TemplateResult {
     const result: TemplateResult[] = [];
+
     if (this._editMode) {
       result.push(
         html`<ha-icon-button
@@ -218,19 +221,17 @@ class HUIRoot extends LitElement {
           >
             ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
           </ha-button>
-          <a
+          <ha-icon-button
+            .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/dashboards/")}
             rel="noreferrer"
-            class="menu-link"
             target="_blank"
-          >
-            <ha-icon-button
-              .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-              .path=${mdiHelpCircle}
-            ></ha-icon-button>
-          </a>`
+          ></ha-icon-button>`
       );
     }
+
+    const isLovelaceDashboard = this.panel?.component_name === "lovelace";
 
     const items: ActionItem[] = [
       {
@@ -336,8 +337,8 @@ class HUIRoot extends LitElement {
         overflowAction: this._handleReloadResources,
         visible:
           !this._editMode &&
-          (this.hass.panels.lovelace?.config as LovelacePanelConfig)?.mode ===
-            "yaml",
+          this._resourceMode === "yaml" &&
+          isLovelaceDashboard,
         overflow: true,
       },
       {
@@ -666,6 +667,9 @@ class HUIRoot extends LitElement {
       passive: true,
     });
     this._handleUrlChanged();
+    fetchLovelaceInfo(this.hass).then((info) => {
+      this._resourceMode = info.resource_mode;
+    });
   }
 
   public connectedCallback(): void {
@@ -862,7 +866,7 @@ class HUIRoot extends LitElement {
   };
 
   private _showQuickBar = () => {
-    showQuickBar(this, { showHint: true });
+    showQuickBar(this, { showHint: this.hass.enableShortcuts });
   };
 
   private _goBack(): void {
@@ -1239,7 +1243,7 @@ class HUIRoot extends LitElement {
     this._undoRedoController.redo();
   }
 
-  private _handleSubItemSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleSubItemSelect(ev: HaDropdownSelectEvent) {
     const subItem = (ev.detail?.item as any)?.data as SubActionItem;
     if (subItem?.action) {
       subItem.action();
@@ -1248,7 +1252,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _handleOverflowItemSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleOverflowItemSelect(ev: HaDropdownSelectEvent) {
     const item = (ev.detail?.item as any)?.data as ActionItem;
     if (item?.subItems) {
       const title = [this.hass!.localize(item.key), item.suffix].join(" ");
@@ -1291,7 +1295,6 @@ class HUIRoot extends LitElement {
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
           z-index: 4;
-          transition: box-shadow 200ms linear;
         }
         .narrow .header {
           width: calc(
@@ -1363,6 +1366,7 @@ class HUIRoot extends LitElement {
           padding: 0;
         }
         ha-tab-group::part(scroll-button) {
+          inset-block-end: var(--safe-track-width);
           background-color: var(--app-header-background-color);
           background: linear-gradient(
             90deg,
@@ -1386,7 +1390,7 @@ class HUIRoot extends LitElement {
             transparent
           );
         }
-        .edit-mode ha-tab-group::part(scroll-button--end) {
+        .edit-mode ha-tab-group::part(scroll-button-end) {
           background: linear-gradient(
             270deg,
             var(--app-header-edit-background-color, #455a64),
@@ -1407,6 +1411,7 @@ class HUIRoot extends LitElement {
         }
         ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--header-height, 56px);
+          height: var(--ha-tab-group-tab-height);
         }
         .tab-bar ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--tab-bar-height, 56px);
@@ -1480,6 +1485,8 @@ class HUIRoot extends LitElement {
           padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view-container > * {
+          display: flex;
+          flex-direction: column;
           flex: 1 1 100%;
           max-width: 100%;
         }
@@ -1495,9 +1502,6 @@ class HUIRoot extends LitElement {
         }
         .hide-tab {
           display: none;
-        }
-        .menu-link {
-          text-decoration: none;
         }
         .exit-edit-mode {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);

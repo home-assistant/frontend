@@ -58,7 +58,8 @@ class PanelLight extends LitElement {
         oldHass.entities !== this.hass.entities ||
         oldHass.devices !== this.hass.devices ||
         oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors
+        oldHass.floors !== this.hass.floors ||
+        oldHass.panels !== this.hass.panels
       ) {
         if (this.hass.config.state === "RUNNING") {
           this._debounceRegistriesChanged();
@@ -186,7 +187,6 @@ class PanelLight extends LitElement {
           );
           padding-top: var(--safe-area-inset-top);
           z-index: 4;
-          transition: box-shadow 200ms linear;
           display: flex;
           flex-direction: row;
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);

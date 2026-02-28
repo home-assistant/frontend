@@ -135,7 +135,7 @@ class HaAlert extends LitElement {
     }
     .action ha-icon-button {
       --mdc-theme-primary: var(--primary-text-color);
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
     }
     .issue-type.info > .icon {
       color: var(--info-color);

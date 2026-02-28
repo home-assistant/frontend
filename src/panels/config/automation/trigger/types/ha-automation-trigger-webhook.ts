@@ -8,8 +8,8 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { slugify } from "../../../../../common/string/slugify";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
@@ -208,7 +208,7 @@ export class HaWebhookTrigger extends LitElement {
     });
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     ev.preventDefault(); // don't close the dropdown to select multiple options
     const action = ev.detail?.item?.value;
 
@@ -234,7 +234,7 @@ export class HaWebhookTrigger extends LitElement {
     }
 
     ha-textfield > ha-icon-button {
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
       --mdc-icon-size: 18px;
       color: var(--secondary-text-color);
     }

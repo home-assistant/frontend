@@ -4,7 +4,10 @@ import {
   mdiAlertCircleCheck,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
+  mdiArrowRightThin,
   mdiArrowUp,
+  mdiCheckboxBlankOutline,
+  mdiCheckboxOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiDelete,
@@ -20,7 +23,7 @@ import deepClone from "deep-clone-simple";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../common/array/ensure-array";
@@ -35,8 +38,8 @@ import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
@@ -184,8 +187,6 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state() private _warnings?: string[];
 
-  @state() private _uiSupported = false;
-
   @query("ha-automation-action-editor")
   private _actionEditor?: HaAutomationActionEditor;
 
@@ -216,25 +217,6 @@ export default class HaAutomationActionRow extends LitElement {
       type !== undefined && !YAML_ONLY_ACTION_TYPES.has(type as any);
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
-    }
-
-    if (changedProperties.has("action") || !this.hasUpdated) {
-      const uiSupported = this._checkUiSupport(type);
-      if (uiSupported !== this._uiSupported || !this.hasUpdated) {
-        this._uiSupported = uiSupported;
-      }
-    }
-  }
-
-  protected override updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-    if (
-      changedProps.has("_uiSupported") &&
-      this._selected &&
-      this.optionsInSidebar
-    ) {
-      // update sidebar if uiSupported changed
-      this.openSidebar();
     }
   }
 
@@ -284,23 +266,25 @@ export default class HaAutomationActionRow extends LitElement {
           describeAction(this.hass, this._entityReg, this.action)
         )}
         ${target ? this._renderTargets(target) : nothing}
+        ${type !== "condition" &&
+        (this.action as NonConditionAction).continue_on_error === true
+          ? html`<ha-svg-icon
+                class="arrow-right"
+                .path=${mdiArrowRightThin}
+              ></ha-svg-icon
+              ><ha-svg-icon
+                id="svg-icon"
+                .path=${mdiAlertCircleCheck}
+              ></ha-svg-icon>
+              <ha-tooltip for="svg-icon">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.continue_on_error"
+                )}
+              </ha-tooltip>`
+          : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
-
-      ${type !== "condition" &&
-      (this.action as NonConditionAction).continue_on_error === true
-        ? html`<ha-svg-icon
-              id="svg-icon"
-              slot="icons"
-              .path=${mdiAlertCircleCheck}
-            ></ha-svg-icon>
-            <ha-tooltip for="svg-icon">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.continue_on_error"
-              )}
-            </ha-tooltip>`
-        : nothing}
 
       <ha-dropdown
         slot="icons"
@@ -438,6 +422,27 @@ export default class HaAutomationActionRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
+
+        ${type !== "condition"
+          ? html`<ha-dropdown-item
+                value="continue_on_error"
+                .disabled=${this.disabled}
+              >
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${(this.action as NonConditionAction).continue_on_error
+                    ? mdiCheckboxOutline
+                    : mdiCheckboxBlankOutline}
+                ></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    `ui.panel.config.automation.editor.actions.continue_on_error`
+                  )
+                )}
+              </ha-dropdown-item>
+              <wa-divider></wa-divider>`
+          : nothing}
+
         <ha-dropdown-item
           value="delete"
           variant="danger"
@@ -488,7 +493,7 @@ export default class HaAutomationActionRow extends LitElement {
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
               .narrow=${this.narrow}
-              .uiSupported=${this._uiSupported}
+              .uiSupported=${this._uiSupported(type!)}
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-action-editor>`
         : nothing}
@@ -560,7 +565,7 @@ export default class HaAutomationActionRow extends LitElement {
             .action=${this.action}
             .narrow=${this.narrow}
             .disabled=${this.disabled}
-            .uiSupported=${this._uiSupported}
+            .uiSupported=${this._uiSupported(type!)}
             indent
             .selected=${this._selected}
             @value-changed=${this._onValueChange}
@@ -605,6 +610,25 @@ export default class HaAutomationActionRow extends LitElement {
       this.openSidebar(value); // refresh sidebar
     }
 
+    if (this._yamlMode && !this.optionsInSidebar) {
+      this._actionEditor?.yamlEditor?.setValue(value);
+    }
+  };
+
+  private _continueOnError = () => {
+    const value = { ...this.action };
+
+    if ((value as NonConditionAction).continue_on_error) {
+      delete (value as NonConditionAction).continue_on_error;
+    } else {
+      (value as NonConditionAction).continue_on_error = true;
+    }
+
+    fireEvent(this, "value-changed", { value });
+
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(value); // refresh sidebar
+    }
     if (this._yamlMode && !this.optionsInSidebar) {
       this._actionEditor?.yamlEditor?.setValue(value);
     }
@@ -790,6 +814,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   public openSidebar(action?: Action): void {
     const sidebarAction = action ?? this.action;
+    const actionType = getAutomationActionType(sidebarAction);
 
     fireEvent(this, "open-sidebar", {
       save: (value) => {
@@ -810,6 +835,7 @@ export default class HaAutomationActionRow extends LitElement {
         this.openSidebar();
       },
       disable: this._onDisable,
+      continueOnError: this._continueOnError,
       delete: this._onDelete,
       copy: this._copyAction,
       cut: this._cutAction,
@@ -819,7 +845,7 @@ export default class HaAutomationActionRow extends LitElement {
       config: {
         action: sidebarAction,
       },
-      uiSupported: this._uiSupported,
+      uiSupported: actionType ? this._uiSupported(actionType) : false,
       yamlMode: this._yamlMode,
     } satisfies ActionSidebarConfig);
     this._selected = true;
@@ -869,10 +895,9 @@ export default class HaAutomationActionRow extends LitElement {
     this._actionEditor?.collapseAll();
   }
 
-  private _checkUiSupport = memoizeOne((type?: string) =>
-    type
-      ? customElements.get(`ha-automation-action-${type}`) !== undefined
-      : false
+  private _uiSupported = memoizeOne(
+    (type: string) =>
+      customElements.get(`ha-automation-action-${type}`) !== undefined
   );
 
   private _toggleCollapse() {
@@ -883,7 +908,7 @@ export default class HaAutomationActionRow extends LitElement {
     this._automationRowElement?.focus();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     ev.stopPropagation();
     const action = ev.detail?.item?.value;
 
@@ -919,13 +944,30 @@ export default class HaAutomationActionRow extends LitElement {
       case "disable":
         this._onDisable();
         break;
+      case "continue_on_error":
+        this._continueOnError();
+        break;
       case "delete":
         this._onDelete();
         break;
     }
   }
 
-  static styles = [rowStyles, overflowStyles];
+  static styles = [
+    rowStyles,
+    overflowStyles,
+    css`
+      ha-svg-icon.arrow-right {
+        --icon-primary-color: var(--ha-color-fill-neutral-normal-resting);
+      }
+      ha-svg-icon#svg-icon {
+        --icon-primary-color: var(--ha-color-fill-neutral-loud-active);
+      }
+      ha-svg-icon#svg-icon:hover {
+        --icon-primary-color: var(--ha-color-fill-neutral-loud-hover);
+      }
+    `,
+  ];
 }
 
 declare global {

@@ -1,12 +1,11 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import { forwardHaptic } from "../../../../../data/haptics";
 import type {
@@ -22,7 +21,7 @@ import {
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
-import type { ItemSelectedEvent, SetAttributeServiceData } from "./types";
+import type { SetAttributeServiceData } from "./types";
 
 @customElement("zha-cluster-attributes")
 export class ZHAClusterAttributes extends LitElement {
@@ -30,7 +29,7 @@ export class ZHAClusterAttributes extends LitElement {
 
   @property({ attribute: false }) public device?: ZHADevice;
 
-  @property({ attribute: false, type: Object })
+  @property({ attribute: false })
   public selectedCluster?: Cluster;
 
   @state() private _attributes: Attribute[] | undefined;
@@ -68,24 +67,18 @@ export class ZHAClusterAttributes extends LitElement {
               "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
             )}
             class="menu"
-            .value=${String(this._selectedAttributeId)}
+            .value=${this._selectedAttributeId}
             @selected=${this._selectedAttributeChanged}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-            naturalMenuWidth
+            .options=${this._attributes.map((entry) => ({
+              value: entry.id,
+              label: `${entry.name} (id: ${formatAsPaddedHex(entry.id)})`,
+            }))}
           >
-            ${this._attributes.map(
-              (entry) => html`
-                <ha-list-item .value=${String(entry.id)}>
-                  ${`${entry.name} (id: ${formatAsPaddedHex(entry.id)})`}
-                </ha-list-item>
-              `
-            )}
           </ha-select>
         </div>
         ${this._selectedAttributeId !== undefined
           ? this._renderAttributeInteractions()
-          : ""}
+          : nothing}
       </ha-card>
     `;
   }
@@ -221,8 +214,8 @@ export class ZHAClusterAttributes extends LitElement {
     }
   }
 
-  private _selectedAttributeChanged(event: ItemSelectedEvent): void {
-    this._selectedAttributeId = Number(event.target!.value);
+  private _selectedAttributeChanged(event: HaSelectSelectEvent): void {
+    this._selectedAttributeId = Number(event.detail.value);
     this._attributeValue = "";
   }
 
@@ -270,8 +263,9 @@ export class ZHAClusterAttributes extends LitElement {
 
         .card-actions {
           display: flex;
+          margin-top: var(--ha-space-2);
           justify-content: flex-end;
-          gap: var(--ha-space-1);
+          gap: var(--ha-space-3);
         }
       `,
     ];

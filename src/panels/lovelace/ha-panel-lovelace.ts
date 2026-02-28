@@ -239,28 +239,15 @@ export class LovelacePanel extends LitElement {
 
     const newConfig = checkLovelaceConfig(generatedConfig) as LovelaceConfig;
 
-    // Ask to regenerate if the config changed
+    // Regenerate if the config changed
     if (!deepEqual(newConfig, oldConfig)) {
-      this._askRegenerateStrategyConfig();
+      this._regenerateStrategyConfig();
     }
   };
 
   private _strategyConfigChanged = (ev: CustomEvent) => {
     ev.stopPropagation();
-    this._askRegenerateStrategyConfig();
-  };
-
-  private _askRegenerateStrategyConfig = () => {
-    showToast(this, {
-      message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
-      action: {
-        action: () => this._regenerateStrategyConfig(),
-        text: this.hass!.localize("ui.common.refresh"),
-      },
-      duration: -1,
-      id: "regenerate-strategy-config",
-      dismissable: false,
-    });
+    this._regenerateStrategyConfig();
   };
 
   private async _regenerateStrategyConfig() {
@@ -313,8 +300,14 @@ export class LovelacePanel extends LitElement {
       this._fetchConfigOnConnect = true;
       return;
     }
+    if (!this.lovelace?.editMode && this._panelState !== "yaml-editor") {
+      this._fetchConfig(false);
+      return;
+    }
     showToast(this, {
-      message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
+      message: this.hass!.localize(
+        "ui.panel.lovelace.externally_updated_toast.message"
+      ),
       action: {
         action: () => this._fetchConfig(false),
         text: this.hass!.localize("ui.common.refresh"),
@@ -359,7 +352,6 @@ export class LovelacePanel extends LitElement {
         (resources) => loadLovelaceResources(resources, this.hass!)
       );
     }
-
     if (this.urlPath !== null || !confProm) {
       // Refreshing a YAML config can trigger an update event. We will ignore
       // all update events while fetching the config and for 2 seconds after the config is back.

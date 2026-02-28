@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -44,52 +44,83 @@ export class DialogNewOverview
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
-        header-title="Welcome to your new overview"
+        .headerTitle=${this.hass.localize(
+          "ui.panel.home.new_overview_dialog.title"
+        )}
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div class="content">
           <p>
-            The overview dashboard has been redesigned to give you a better
-            experience managing your smart home.
+            ${this.hass.localize(
+              "ui.panel.home.new_overview_dialog.description"
+            )}
           </p>
-          <h3>What's new</h3>
+          <h3>
+            ${this.hass.localize("ui.panel.home.new_overview_dialog.whats_new")}
+          </h3>
           <ul>
             <li>
-              <strong>Automatic organization</strong> - Your devices are now
-              automatically organized by area and floor.
+              <strong>
+                ${this.hass.localize(
+                  "ui.panel.home.new_overview_dialog.automatic_organization"
+                )}
+              </strong>
+              -
+              ${this.hass.localize(
+                "ui.panel.home.new_overview_dialog.automatic_organization_description"
+              )}
             </li>
             <li>
-              <strong>Favorites</strong> - Pin your most used entities to the
-              top for quick access.
+              <strong>
+                ${this.hass.localize(
+                  "ui.panel.home.new_overview_dialog.favorites"
+                )}
+              </strong>
+              -
+              ${this.hass.localize(
+                "ui.panel.home.new_overview_dialog.favorites_description"
+              )}
             </li>
           </ul>
-          <h3>Your existing dashboards</h3>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.home.new_overview_dialog.existing_dashboards"
+            )}
+          </h3>
           <p>
-            Your manual dashboards are still available in the sidebar. This new
-            overview works alongside them. You can also create a new dashboard
-            using the "Overview (legacy)" template in
-            <a href="/config/lovelace/dashboards" @click=${this.closeDialog}
-              >dashboard settings</a
-            >.
+            ${this.hass.localize(
+              "ui.panel.home.new_overview_dialog.existing_dashboards_description",
+              {
+                dashboard_settings: html`<a
+                  href="/config/lovelace/dashboards"
+                  @click=${this.closeDialog}
+                  >${this.hass.localize(
+                    "ui.panel.home.new_overview_dialog.dashboard_settings"
+                  )}</a
+                >`,
+              }
+            )}
           </p>
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button slot="primaryAction" @click=${this.closeDialog}>
-            OK, understood
+            ${this.hass.localize(
+              "ui.panel.home.new_overview_dialog.ok_understood"
+            )}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
   static styles = [
     haStyleDialog,
     css`
-      ha-wa-dialog {
+      ha-dialog {
         --dialog-content-padding: var(--ha-space-6);
       }
 

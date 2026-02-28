@@ -7,7 +7,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
@@ -15,6 +15,7 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
 import "../../../../../components/ha-tooltip";
+import "../../../../../components/ha-dialog";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
@@ -42,7 +43,7 @@ class AppsRepositoriesDialog extends LitElement {
 
   @state() private _addon?: HassioAddonsInfo;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _processing = false;
 
@@ -51,16 +52,22 @@ class AppsRepositoriesDialog extends LitElement {
   public async showDialog(dialogParams: RepositoryDialogParams): Promise<void> {
     this._dialogParams = dialogParams;
     this._addon = dialogParams.addon;
-    this._opened = true;
+    this._open = true;
     await this._loadData();
     await this.updateComplete;
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._dialogParams?.closeCallback?.();
     this._dialogParams = undefined;
-    this._opened = false;
+    this._addon = undefined;
+    this._open = false;
     this._error = "";
+    fireEvent(this, "dialog-closed");
   }
 
   private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
@@ -98,13 +105,11 @@ class AppsRepositoriesDialog extends LitElement {
     );
     return html`
       <ha-dialog
-        .open=${this._opened}
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.apps.dialog.repositories.title")
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+        header-title=${this.hass.localize(
+          "ui.panel.config.apps.dialog.repositories.title"
         )}
       >
         ${this._error
@@ -161,7 +166,7 @@ class AppsRepositoriesDialog extends LitElement {
                 "ui.panel.config.apps.dialog.repositories.add"
               )}
               @keydown=${this._handleKeyAdd}
-              dialogInitialFocus
+              autofocus
             ></ha-textfield>
             <ha-button
               .loading=${this._processing}
@@ -176,9 +181,11 @@ class AppsRepositoriesDialog extends LitElement {
             </ha-button>
           </div>
         </div>
-        <ha-button slot="primaryAction" @click=${this.closeDialog}>
-          ${this.hass.localize("ui.common.close")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+            ${this.hass.localize("ui.common.close")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -188,9 +195,6 @@ class AppsRepositoriesDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog.button-left {
-          --justify-action-buttons: flex-start;
-        }
         .form {
           color: var(--primary-text-color);
         }
@@ -213,14 +217,6 @@ class AppsRepositoriesDialog extends LitElement {
         }
       `,
     ];
-  }
-
-  public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
-    );
   }
 
   private _handleKeyAdd(ev: KeyboardEvent) {

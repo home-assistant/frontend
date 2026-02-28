@@ -1,4 +1,4 @@
-import { mdiClose, mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,10 +6,11 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-header";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import type {
   AssistPipeline,
   AssistPipelineMutableParams,
@@ -24,12 +25,15 @@ import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./assist-pipeline-detail/assist-pipeline-detail-wakeword";
 import "./debug/assist-render-pipeline-events";
 import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
 export class DialogVoiceAssistantPipelineDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: VoiceAssistantPipelineDetailsDialogParams;
+
+  @state() private _open = false;
 
   @state() private _data?: Partial<AssistPipeline>;
 
@@ -45,6 +49,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
   public showDialog(params: VoiceAssistantPipelineDetailsDialogParams): void {
     this._params = params;
+    this._open = true;
     this._error = undefined;
     this._cloudActive = this._params.cloudActiveSubscription;
 
@@ -96,6 +101,10 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     this._hideWakeWord = false;
@@ -134,40 +143,31 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${title}
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${title}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header slot="heading">
-          <ha-icon-button
-            slot="navigationIcon"
-            dialogAction="cancel"
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title" .title=${title}>${title}</span>
-          ${!this._hideWakeWord ||
-          this._params.hideWakeWord ||
-          !this._hasWakeWorkEntities(this.hass.states)
-            ? nothing
-            : html`<ha-dropdown
-                slot="actionItems"
-                @wa-select=${this._handleDropdownSelect}
-                placement="bottom-end"
-              >
-                <ha-icon-button
-                  .path=${mdiDotsVertical}
-                  slot="trigger"
-                ></ha-icon-button>
-                <ha-dropdown-item value="show_wake_word">
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_streaming_wake_word"
-                  )}
-                </ha-dropdown-item></ha-dropdown
-              >`}
-        </ha-dialog-header>
+        ${!this._hideWakeWord ||
+        this._params.hideWakeWord ||
+        !this._hasWakeWorkEntities(this.hass.states)
+          ? nothing
+          : html`<ha-dropdown
+              slot="headerActionItems"
+              @wa-select=${this._handleDropdownSelect}
+              placement="bottom-end"
+            >
+              <ha-icon-button
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
+              <ha-dropdown-item value="show_wake_word">
+                ${this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_streaming_wake_word"
+                )}
+              </ha-dropdown-item></ha-dropdown
+            >`}
         <div class="content">
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -178,7 +178,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .supportedLanguages=${this._supportedLanguages}
             keys="name,language"
             @value-changed=${this._valueChanged}
-            ?dialogInitialFocus=${!isExistingPipeline}
+            ?autofocus=${!isExistingPipeline}
           ></assist-pipeline-detail-config>
           <assist-pipeline-detail-conversation
             .hass=${this.hass}
@@ -223,25 +223,33 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                 @value-changed=${this._valueChanged}
               ></assist-pipeline-detail-wakeword>`}
         </div>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updatePipeline}
-          .loading=${this._submitting}
-          dialogInitialFocus
-        >
-          ${isExistingPipeline
-            ? this.hass.localize(
-                "ui.panel.config.voice_assistants.assistants.pipeline.detail.update_assistant_action"
-              )
-            : this.hass.localize(
-                "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_assistant_action"
-              )}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updatePipeline}
+            .loading=${this._submitting}
+          >
+            ${isExistingPipeline
+              ? this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.pipeline.detail.update_assistant_action"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_assistant_action"
+                )}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (action === "show_wake_word") {

@@ -99,7 +99,10 @@ export class HaFilterIntegrations extends LitElement {
       setTimeout(() => {
         if (!this.expanded) return;
         this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
+          `${this.clientHeight - 49 - 4 - 32}px`;
+        // 49px - height of a header + 1px
+        // 4px - padding-top of the search-input
+        // 32px - height of the search input
       }, 300);
     }
   }
@@ -198,6 +201,9 @@ export class HaFilterIntegrations extends LitElement {
         .header ha-icon-button {
           margin-inline-start: auto;
           margin-inline-end: 8px;
+        }
+        ha-check-list-item {
+          --mdc-list-item-graphic-margin: var(--ha-space-4);
         }
         .badge {
           display: inline-block;

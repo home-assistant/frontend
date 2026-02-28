@@ -26,6 +26,9 @@ import memoizeOne from "memoize-one";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -60,9 +63,6 @@ import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entr
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -216,17 +216,16 @@ class HaConfigEntryRow extends LitElement {
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
           : configPanel && !stateText
-            ? html`<a
+            ? html`<ha-icon-button
+                .path=${mdiCogOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.configure"
+                )}
                 slot="end"
+                class="link"
                 href=${`/${configPanel}?config_entry=${item.entry_id}`}
-                ><ha-icon-button
-                  .path=${mdiCogOutline}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.configure"
-                  )}
-                >
-                </ha-icon-button
-              ></a>`
+              >
+              </ha-icon-button>`
             : item.supports_options
               ? html`
                   <ha-icon-button
@@ -541,7 +540,7 @@ class HaConfigEntryRow extends LitElement {
     this._devicesExpanded = !this._devicesExpanded;
   }
 
-  private _handleMenuAction = (ev: CustomEvent<{ item: HaDropdownItem }>) => {
+  private _handleMenuAction = (ev: HaDropdownSelectEvent) => {
     ev.stopPropagation();
     const value = ev.detail.item.value;
     if (value === "reload") {
@@ -842,7 +841,7 @@ class HaConfigEntryRow extends LitElement {
         margin: 16px;
         margin-top: 0;
       }
-      a ha-icon-button {
+      ha-icon-button.link {
         color: var(
           --md-list-item-trailing-icon-color,
           var(--md-sys-color-on-surface-variant, #49454f)

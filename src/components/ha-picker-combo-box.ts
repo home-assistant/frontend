@@ -22,6 +22,7 @@ import {
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
+import { isTouch } from "../util/is_touch";
 import "./chips/ha-chip-set";
 import "./chips/ha-filter-chip";
 import "./ha-combo-box-item";
@@ -54,6 +55,7 @@ export interface PickerComboBoxItem {
   sorting_label?: string;
   icon_path?: string;
   icon?: string;
+  isRelated?: boolean;
 }
 
 export interface PickerComboBoxIndexSelectedDetail {
@@ -118,7 +120,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     section?: string
   ) => PickerComboBoxItem[] | undefined;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
 
   @property({ attribute: false })
@@ -284,6 +286,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           section === "separator"
             ? html`<div class="separator"></div>`
             : html`<ha-filter-chip
+                @mousedown=${isTouch ? undefined : this._preventBlur}
                 @click=${this._toggleSection}
                 .section-id=${section.id}
                 .selected=${this._selectedSection === section.id}
@@ -358,6 +361,18 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
     const additionalItems = this._getAdditionalItems();
     items.push(...additionalItems);
+
+    if (this.allowCustomValue && this._search) {
+      items.push({
+        id: this._search,
+        primary:
+          this.customValueLabel ??
+          this.hass?.localize("ui.components.combo-box.add_custom_item") ??
+          "Add custom item",
+        secondary: `"${this._search}"`,
+        icon_path: mdiPlus,
+      });
+    }
 
     if (this.mode === "dialog") {
       items.push({ id: PADDING_ID, primary: "" }); // padding for safe area inset
@@ -505,6 +520,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._selectedItemIndex = -1;
     this._valuePinned = true;
   };
+
+  private _preventBlur(ev: Event) {
+    ev.preventDefault();
+  }
 
   private _toggleSection(ev: Event) {
     ev.stopPropagation();
@@ -777,7 +796,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         :host {
           display: flex;
           flex-direction: column;
-          padding-top: var(--ha-space-3);
+          padding-top: var(--ha-space-4);
           flex: 1;
         }
 

@@ -128,9 +128,7 @@ class HuiWaterSankeyCard
     // Create home/consumption node
     const homeNode: Node = {
       id: "home",
-      label: this.hass.localize(
-        "ui.panel.lovelace.cards.energy.energy_distribution.home"
-      ),
+      label: this.hass.config.location_name,
       value: Math.max(0, totalWaterConsumption),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -157,7 +155,7 @@ class HuiWaterSankeyCard
       }
 
       nodes.push({
-        id: source.stat_energy_from,
+        id: `source-${source.stat_energy_from}`,
         label: getStatisticLabel(
           this.hass,
           source.stat_energy_from,
@@ -169,7 +167,7 @@ class HuiWaterSankeyCard
       });
 
       links.push({
-        source: source.stat_energy_from,
+        source: `source-${source.stat_energy_from}`,
         target: "home",
         value,
       });

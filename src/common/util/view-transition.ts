@@ -1,3 +1,15 @@
+let isViewTransitionDisabled = false;
+try {
+  isViewTransitionDisabled =
+    window.localStorage.getItem("disableViewTransition") === "true";
+} catch {
+  // ignore
+}
+
+export const setViewTransitionDisabled = (disabled: boolean): void => {
+  isViewTransitionDisabled = disabled;
+};
+
 /**
  * Executes a synchronous callback within a View Transition if supported, otherwise runs it directly.
  *
@@ -14,7 +26,7 @@
 export const withViewTransition = (
   callback: (viewTransitionAvailable: boolean) => void
 ): Promise<void> => {
-  if (!document.startViewTransition) {
+  if (!document.startViewTransition || isViewTransitionDisabled) {
     callback(false);
     return Promise.resolve();
   }

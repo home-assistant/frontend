@@ -14,8 +14,8 @@ import { computeRTL } from "../../../../common/util/compute_rtl";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
@@ -219,7 +219,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     `;
   }
 
-  private async _addBadge(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private async _addBadge(ev: HaDropdownSelectEvent) {
     const type = ev.detail.item.value;
     if (!type) {
       return;
@@ -321,7 +321,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: var(--ha-space-9);
+      --ha-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 
