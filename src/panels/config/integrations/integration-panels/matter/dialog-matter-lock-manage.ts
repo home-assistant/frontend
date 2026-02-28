@@ -158,11 +158,17 @@ class DialogMatterLockManage extends LitElement {
   }
 
   private _handleUserClick(ev: Event): void {
+    // Ignore clicks that originated from the delete button
+    const path = ev.composedPath();
+    if (path.some((el) => (el as HTMLElement).tagName === "HA-ICON-BUTTON")) {
+      return;
+    }
     const user = (ev.currentTarget as any).user as MatterLockUser;
     this._editUser(user);
   }
 
   private _handleDeleteUserClick(ev: Event): void {
+    ev.preventDefault();
     ev.stopPropagation();
     const user = (ev.currentTarget as any).user as MatterLockUser;
     this._deleteUser(user);
@@ -207,15 +213,12 @@ class DialogMatterLockManage extends LitElement {
         this._entityId!,
         user.user_index as number
       );
-      await this._fetchData();
-    } catch (err: unknown) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.matter.lock.errors.save_failed"
-        ),
-        text: (err as Error).message,
-      });
+    } catch {
+      // Some locks auto-remove the user when the last credential is cleared,
+      // which may cause the subsequent clear_user call to fail.
+      // Refresh data regardless to reflect the actual lock state.
     }
+    await this._fetchData();
   }
 
   public closeDialog(): void {
