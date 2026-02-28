@@ -31,7 +31,7 @@ export class HaAuthFormString extends HaFormString {
           right: 8px;
           inset-inline-start: initial;
           inset-inline-end: 8px;
-          --mdc-icon-button-size: 40px;
+          --ha-icon-button-size: 40px;
           --mdc-icon-size: 20px;
           color: var(--secondary-text-color);
           direction: var(--direction);

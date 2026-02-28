@@ -247,7 +247,7 @@ export class HaTargetPickerValueChip extends LitElement {
       cursor: default;
     }
     .mdc-chip ha-icon-button {
-      --mdc-icon-button-size: 24px;
+      --ha-icon-button-size: 24px;
       display: flex;
       align-items: center;
       outline: none;

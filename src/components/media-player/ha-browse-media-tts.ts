@@ -264,7 +264,7 @@ class BrowseMediaTTS extends LitElement {
       }
       .footer {
         --mdc-icon-size: 14px;
-        --mdc-icon-button-size: 24px;
+        --ha-icon-button-size: 24px;
         display: flex;
         justify-content: center;
         align-items: center;

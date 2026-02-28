@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-alert";
 import "../../components/ha-button";
@@ -109,6 +110,10 @@ class DialogTodoItemEditor extends LitElement {
       return nothing;
     }
     const isCreate = this._params.item === undefined;
+    const listName =
+      this._params.entity in this.hass.states
+        ? computeStateName(this.hass.states[this._params.entity])
+        : this._params.entity;
 
     const { dueDate, dueTime } = this._getLocaleStrings(this._due);
 
@@ -123,6 +128,8 @@ class DialogTodoItemEditor extends LitElement {
         header-title=${this.hass.localize(
           `ui.components.todo.item.${isCreate ? "add" : "edit"}`
         )}
+        header-subtitle=${listName}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div class="content">

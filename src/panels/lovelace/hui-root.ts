@@ -39,6 +39,7 @@ import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -93,7 +94,6 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
 interface ActionItem {
   icon: string;
@@ -221,17 +221,13 @@ class HUIRoot extends LitElement {
           >
             ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
           </ha-button>
-          <a
+          <ha-icon-button
+            .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+            .path=${mdiHelpCircleOutline}
             href=${documentationUrl(this.hass, "/dashboards/")}
             rel="noreferrer"
-            class="menu-link"
             target="_blank"
-          >
-            <ha-icon-button
-              .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-              .path=${mdiHelpCircleOutline}
-            ></ha-icon-button>
-          </a>`
+          ></ha-icon-button>`
       );
     }
 
@@ -1415,6 +1411,7 @@ class HUIRoot extends LitElement {
         }
         ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--header-height, 56px);
+          height: var(--ha-tab-group-tab-height);
         }
         .tab-bar ha-tab-group-tab {
           --ha-tab-group-tab-height: var(--tab-bar-height, 56px);
@@ -1488,6 +1485,8 @@ class HUIRoot extends LitElement {
           padding-inline-start: var(--safe-area-inset-left);
         }
         hui-view-container > * {
+          display: flex;
+          flex-direction: column;
           flex: 1 1 100%;
           max-width: 100%;
         }
@@ -1503,9 +1502,6 @@ class HUIRoot extends LitElement {
         }
         .hide-tab {
           display: none;
-        }
-        .menu-link {
-          text-decoration: none;
         }
         .exit-edit-mode {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);
