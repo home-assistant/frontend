@@ -49,26 +49,12 @@ export const getMatterDeviceActions = async (
   hass: HomeAssistant,
   device: DeviceRegistryEntry
 ): Promise<DeviceAction[]> => {
-  // eslint-disable-next-line no-console
-  console.log(
-    "[Matter Debug] getMatterDeviceActions called for device:",
-    device.id,
-    device.name
-  );
-
   if (device.via_device_id !== null) {
     // only show device actions for top level nodes (so not bridged)
-    // eslint-disable-next-line no-console
-    console.log(
-      "[Matter Debug] Skipping - device has via_device_id:",
-      device.via_device_id
-    );
     return [];
   }
 
   const nodeDiagnostics = await getMatterNodeDiagnostics(hass, device.id);
-  // eslint-disable-next-line no-console
-  console.log("[Matter Debug] Node diagnostics:", nodeDiagnostics);
 
   const actions: DeviceAction[] = [];
 
@@ -116,31 +102,30 @@ export const getMatterDeviceActions = async (
     });
   }
 
-  // Check if device is a lock and add lock management action
-  try {
-    // eslint-disable-next-line no-console
-    console.log(
-      "[Matter Lock Debug] Checking lock info for device:",
-      device.id
-    );
-    const lockInfo = await getMatterLockInfo(hass, device.id);
-    // eslint-disable-next-line no-console
-    console.log("[Matter Lock Debug] Lock info result:", lockInfo);
-    if (lockInfo.supports_user_management) {
-      actions.push({
-        label: hass.localize(
-          "ui.panel.config.matter.device_actions.manage_lock"
-        ),
-        icon: mdiAccountLock,
-        action: () =>
-          showMatterLockManageDialog(el, {
-            device_id: device.id,
-          }),
-      });
+  // Check if this device has a lock entity and supports user management
+  const lockEntity = Object.values(hass.entities).find(
+    (entity) =>
+      entity.device_id === device.id && entity.entity_id.startsWith("lock.")
+  );
+
+  if (lockEntity) {
+    try {
+      const lockInfo = await getMatterLockInfo(hass, lockEntity.entity_id);
+      if (lockInfo.supports_user_management) {
+        actions.push({
+          label: hass.localize(
+            "ui.panel.config.matter.device_actions.manage_lock"
+          ),
+          icon: mdiAccountLock,
+          action: () =>
+            showMatterLockManageDialog(el, {
+              entity_id: lockEntity.entity_id,
+            }),
+        });
+      }
+    } catch {
+      // Lock info not available, skip lock management action
     }
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("[Matter Lock Debug] Error getting lock info:", err);
   }
 
   return actions;

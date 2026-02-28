@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface MatterLockManageDialogParams {
-  device_id: string;
+  entity_id: string;
 }
 
 export const loadMatterLockManageDialog = () =>

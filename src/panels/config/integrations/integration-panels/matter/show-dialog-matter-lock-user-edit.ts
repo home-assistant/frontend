@@ -5,7 +5,7 @@ import type {
 } from "../../../../../data/matter-lock";
 
 export interface MatterLockUserEditDialogParams {
-  device_id: string;
+  entity_id: string;
   lockInfo: MatterLockInfo;
   user?: MatterLockUser;
   onSaved: () => void;

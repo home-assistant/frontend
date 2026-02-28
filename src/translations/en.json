@@ -6883,10 +6883,7 @@
             "manage": "Manage lock",
             "dialog_title": "Manage lock",
             "tabs": {
-              "users": "Users",
-              "week_day_schedules": "Week day",
-              "year_day_schedules": "Year day",
-              "holiday_schedules": "Holiday"
+              "users": "Users"
             },
             "users": {
               "title": "Users",
@@ -6905,14 +6902,16 @@
                 "occupied_disabled": "Disabled"
               },
               "user_type": {
-                "unrestricted": "Unrestricted",
-                "year_day": "Year day schedule",
-                "week_day": "Week day schedule",
-                "programming": "Programming",
-                "non_access": "Non-access",
-                "forced": "Forced",
-                "disposable": "Disposable",
-                "expiring": "Expiring"
+                "unrestricted_user": "Unrestricted",
+                "year_day_schedule_user": "Year day schedule",
+                "week_day_schedule_user": "Week day schedule",
+                "programming_user": "Programming",
+                "non_access_user": "Non-access",
+                "forced_user": "Forced",
+                "disposable_user": "Disposable",
+                "expiring_user": "Expiring",
+                "schedule_restricted_user": "Schedule restricted",
+                "remote_only_user": "Remote only"
               },
               "credential_rules": {
                 "single": "Single credential",
@@ -6938,55 +6937,6 @@
                 "aliro_non_evictable": "Aliro non-evictable"
               }
             },
-            "schedules": {
-              "week_day": {
-                "title": "Week day schedules",
-                "add": "Add schedule",
-                "edit": "Edit schedule",
-                "delete": "Delete schedule",
-                "days": "Days",
-                "start_time": "Start time",
-                "end_time": "End time",
-                "user": "User",
-                "no_schedules": "No week day schedules",
-                "day_names": {
-                  "sunday": "Sunday",
-                  "monday": "Monday",
-                  "tuesday": "Tuesday",
-                  "wednesday": "Wednesday",
-                  "thursday": "Thursday",
-                  "friday": "Friday",
-                  "saturday": "Saturday"
-                }
-              },
-              "year_day": {
-                "title": "Year day schedules",
-                "add": "Add schedule",
-                "edit": "Edit schedule",
-                "delete": "Delete schedule",
-                "start": "Start date/time",
-                "end": "End date/time",
-                "user": "User",
-                "no_schedules": "No year day schedules"
-              },
-              "holiday": {
-                "title": "Holiday schedules",
-                "add": "Add schedule",
-                "edit": "Edit schedule",
-                "delete": "Delete schedule",
-                "start": "Start date/time",
-                "end": "End date/time",
-                "operating_mode": "Operating mode",
-                "modes": {
-                  "normal": "Normal",
-                  "vacation": "Vacation",
-                  "privacy": "Privacy",
-                  "no_remote_lock_unlock": "No remote lock/unlock",
-                  "passage": "Passage"
-                },
-                "no_schedules": "No holiday schedules"
-              }
-            },
             "events": {
               "title": "Recent lock events",
               "types": {
@@ -7009,11 +6959,13 @@
               "save_failed": "Failed to save changes",
               "not_supported": "This feature is not supported by your lock",
               "user_not_found": "User not found",
-              "schedule_not_found": "Schedule not found"
+              "name_required": "Please enter a name for this user.",
+              "pin_required": "Please enter a PIN code.",
+              "pin_length": "PIN code must be {min}-{max} digits.",
+              "pin_digits_only": "PIN code must contain only numbers."
             },
-            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials and schedules for this user will also be deleted.",
-            "confirm_delete_credential": "Are you sure you want to delete this credential?",
-            "confirm_delete_schedule": "Are you sure you want to delete this schedule?"
+            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
+            "confirm_delete_credential": "Are you sure you want to delete this credential?"
           }
         },
         "tips": {
