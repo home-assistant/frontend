@@ -218,7 +218,9 @@ function formatTooltip(
   }
   // when comparing the first value is offset to match the main period
   // and the real date is in the third value
-  const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
+  // find the first param with the real date to handle gap-filled entries
+  const origDate = params.find((p) => p.value?.[2] != null)?.value?.[2];
+  const date = new Date(origDate ?? params[0].value?.[0]);
   let period: string;
 
   if (suggestedPeriod === "month") {

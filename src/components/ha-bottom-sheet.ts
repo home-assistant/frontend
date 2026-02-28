@@ -25,6 +25,27 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
 
 const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
 
+/**
+ * Home Assistant bottom sheet component.
+ *
+ * @element ha-bottom-sheet
+ * @extends {LitElement}
+ *
+ * @cssprop --ha-bottom-sheet-height - Preferred height of the bottom sheet.
+ * @cssprop --ha-bottom-sheet-max-height - Maximum height of the bottom sheet.
+ * @cssprop --ha-bottom-sheet-max-width - Maximum width of the bottom sheet.
+ * @cssprop --ha-bottom-sheet-border-radius - Top border radius of the bottom sheet.
+ * @cssprop --ha-bottom-sheet-surface-background - Bottom sheet background color.
+ * @cssprop --ha-bottom-sheet-surface-backdrop-filter - Bottom sheet surface backdrop filter.
+ * @cssprop --ha-bottom-sheet-scrim-backdrop-filter - Bottom sheet scrim backdrop filter.
+ * @cssprop --ha-bottom-sheet-scrim-color - Bottom sheet scrim color.
+ *
+ * @cssprop --ha-dialog-surface-background - Bottom sheet background color fallback.
+ * @cssprop --ha-dialog-surface-backdrop-filter - Bottom sheet surface backdrop filter fallback.
+ * @cssprop --ha-dialog-scrim-backdrop-filter - Bottom sheet scrim backdrop filter fallback.
+ * @cssprop --dialog-backdrop-filter - Bottom sheet scrim backdrop filter legacy fallback.
+ * @cssprop --mdc-dialog-scrim-color - Bottom sheet scrim color legacy fallback.
+ */
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -385,6 +406,26 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           transform: var(--dialog-transform);
           transition: var(--dialog-transition);
         }
+        wa-drawer::part(dialog)::backdrop {
+          -webkit-backdrop-filter: var(
+            --ha-bottom-sheet-scrim-backdrop-filter,
+            var(
+              --ha-dialog-scrim-backdrop-filter,
+              var(--dialog-backdrop-filter, none)
+            )
+          );
+          backdrop-filter: var(
+            --ha-bottom-sheet-scrim-backdrop-filter,
+            var(
+              --ha-dialog-scrim-backdrop-filter,
+              var(--dialog-backdrop-filter, none)
+            )
+          );
+          background-color: var(
+            --ha-bottom-sheet-scrim-color,
+            var(--mdc-dialog-scrim-color, none)
+          );
+        }
         wa-drawer::part(body) {
           max-width: var(--ha-bottom-sheet-max-width);
           width: 100%;
@@ -399,7 +440,18 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           );
           background-color: var(
             --ha-bottom-sheet-surface-background,
-            var(--ha-dialog-surface-background, var(--mdc-theme-surface, #fff)),
+            var(
+              --ha-dialog-surface-background,
+              var(--card-background-color, var(--ha-color-surface-default))
+            )
+          );
+          -webkit-backdrop-filter: var(
+            --ha-bottom-sheet-surface-backdrop-filter,
+            var(--ha-dialog-surface-backdrop-filter, none)
+          );
+          backdrop-filter: var(
+            --ha-bottom-sheet-surface-backdrop-filter,
+            var(--ha-dialog-surface-backdrop-filter, none)
           );
           padding: var(
             --ha-bottom-sheet-padding,
