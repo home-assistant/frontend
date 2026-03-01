@@ -208,24 +208,14 @@ export class HaAssistChat extends LitElement {
                                               </div>
                                               <div class="tool-data">
                                                 <pre>
-                                                  ${JSON.stringify(
-                                                    toolCall.tool_args,
-                                                    null,
-                                                    2
-                                                  )}
-                                                </pre
+${JSON.stringify(toolCall.tool_args, null, 2)}</pre
                                                 >
                                               </div>
                                               ${toolCall.result
                                                 ? html`
                                                     <div class="tool-data">
                                                       <pre>
-                                                        ${JSON.stringify(
-                                                          toolCall.result,
-                                                          null,
-                                                          2
-                                                        )}
-                                                      </pre
+${JSON.stringify(toolCall.result, null, 2)}</pre
                                                       >
                                                     </div>
                                                   `
