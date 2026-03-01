@@ -96,6 +96,7 @@ class StepFlowForm extends LitElement {
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
+          @keydown=${this._ignoreKeydown}
           .schema=${autocompleteLoginFields(
             this.handleReadOnlyFields(step.data_schema)
           )}
@@ -133,6 +134,10 @@ class StepFlowForm extends LitElement {
         </ha-button>
       </div>
     `;
+  }
+
+  private _ignoreKeydown(ev: KeyboardEvent) {
+    ev.stopPropagation();
   }
 
   private _setError(ev: CustomEvent) {

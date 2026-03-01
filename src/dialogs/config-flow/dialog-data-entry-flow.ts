@@ -309,6 +309,7 @@ class DataEntryFlowDialog extends LitElement {
         prevent-scrim-close
         @after-show=${this._focusFormStep}
         @closed=${this._dialogClosed}
+        @keydown=${this._ignoreKeydown}
       >
         <ha-icon-button
           slot="headerNavigationIcon"
@@ -431,6 +432,10 @@ class DataEntryFlowDialog extends LitElement {
         </div>
       </ha-dialog>
     `;
+  }
+
+  private _ignoreKeydown(ev: KeyboardEvent) {
+    ev.stopPropagation();
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
