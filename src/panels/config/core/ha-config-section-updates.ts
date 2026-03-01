@@ -1,4 +1,5 @@
 import {
+  mdiCheckboxMultipleOutline,
   mdiDotsVertical,
   mdiLocationEnter,
   mdiLocationExit,
@@ -45,6 +46,10 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _showSkipped = false;
 
+  @state() private _multiSelectMode = false;
+
+  @state() private _selectedEntities = new Set<string>();
+
   @state() private _supervisorInfo?: HassioSupervisorInfo;
 
   protected firstUpdated(changedProps) {
@@ -75,6 +80,14 @@ class HaConfigSectionUpdates extends LitElement {
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
       >
         <div slot="toolbar-icon">
+          <ha-icon-button
+            .label=${this.hass.localize(
+              "ui.panel.config.updates.select_multiple"
+            )}
+            .path=${mdiCheckboxMultipleOutline}
+            class=${this._multiSelectMode ? "active" : ""}
+            @click=${this._toggleMultiSelectMode}
+          ></ha-icon-button>
           <ha-icon-button
             .label=${this.hass.localize(
               "ui.panel.config.updates.check_updates"
@@ -127,6 +140,9 @@ class HaConfigSectionUpdates extends LitElement {
                       .narrow=${this.narrow}
                       .updateEntities=${canInstallUpdates}
                       .isInstallable=${true}
+                      .multiSelectMode=${this._multiSelectMode}
+                      .selectedEntities=${this._selectedEntities}
+                      @update-entity-selected=${this._handleSelectionChanged}
                       showAll
                     ></ha-config-updates>
                   </div>
@@ -142,6 +158,9 @@ class HaConfigSectionUpdates extends LitElement {
                       .narrow=${this.narrow}
                       .updateEntities=${notInstallableUpdates}
                       .isInstallable=${false}
+                      .multiSelectMode=${this._multiSelectMode}
+                      .selectedEntities=${this._selectedEntities}
+                      @update-entity-selected=${this._handleSelectionChanged}
                       showAll
                     ></ha-config-updates>
                   </div>
@@ -200,6 +219,24 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
+  private _toggleMultiSelectMode(): void {
+    this._multiSelectMode = !this._multiSelectMode;
+    if (!this._multiSelectMode) {
+      this._selectedEntities = new Set();
+    }
+  }
+
+  private _handleSelectionChanged(ev: CustomEvent<{ entityId: string }>): void {
+    const { entityId } = ev.detail;
+    const updated = new Set(this._selectedEntities);
+    if (updated.has(entityId)) {
+      updated.delete(entityId);
+    } else {
+      updated.add(entityId);
+    }
+    this._selectedEntities = updated;
+  }
+
   private _filterInstallableUpdateEntities = memoizeOne(
     (entities: HassEntities, showSkipped: boolean) =>
       filterUpdateEntitiesParameterized(entities, showSkipped, false)
@@ -241,6 +278,9 @@ class HaConfigSectionUpdates extends LitElement {
     }
     li[divider] {
       border-bottom-color: var(--divider-color);
+    }
+    ha-icon-button.active {
+      color: var(--primary-color);
     }
   `;
 }
