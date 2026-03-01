@@ -87,6 +87,8 @@ export class HaAssistChat extends LitElement {
         {
           who: "hass",
           text: this.hass.localize("ui.dialogs.voice_command.how_can_i_help"),
+          thinking: "",
+          tool_calls: {},
         },
       ];
     }
@@ -418,7 +420,9 @@ export class HaAssistChat extends LitElement {
                   "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
                 )}</a>`,
           }
-        )}`,
+          )}`,
+      thinking: "",
+      tool_calls: {},
     });
   }
 
@@ -439,6 +443,8 @@ export class HaAssistChat extends LitElement {
     const userMessage: AssistMessage = {
       who: "user",
       text: "…",
+      thinking: "",
+      tool_calls: {},
     };
     await this._audioRecorder.start();
 
@@ -570,7 +576,7 @@ export class HaAssistChat extends LitElement {
   private async _processText(text: string) {
     this._unloadAudio();
     this._processing = true;
-    this._addMessage({ who: "user", text });
+    this._addMessage({ who: "user", text, thinking: "", tool_calls: {} });
     const hassMessageProcesser = this._createAddHassMessageProcessor();
     hassMessageProcesser.addMessage();
     try {
