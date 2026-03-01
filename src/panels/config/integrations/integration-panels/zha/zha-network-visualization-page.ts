@@ -10,7 +10,6 @@ import { getDeviceContext } from "../../../../../common/entity/context/get_devic
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type { NetworkData } from "../../../../../components/chart/ha-network-graph";
-import "../../../../../components/search-input-outlined";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
@@ -39,12 +38,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @state()
   private _devices: ZHADevice[] = [];
 
-  @state()
-  private _searchFilter = "";
-
-  @state()
-  private _highlightedNodes?: Set<string>;
-
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
 
@@ -65,16 +58,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
         <ha-network-graph
           .hass=${this.hass}
           .data=${this._networkData}
-          .highlightedNodes=${this._highlightedNodes}
+          .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
-          <search-input-outlined
-            slot="search"
-            .hass=${this.hass}
-            .filter=${this._searchFilter}
-            @value-changed=${this._handleSearchChange}
-          ></search-input-outlined>
           <ha-icon-button
             slot="button"
             class="refresh-button"
@@ -98,70 +85,29 @@ export class ZHANetworkVisualizationPage extends LitElement {
     );
   }
 
-  private _handleSearchChange(ev: CustomEvent): void {
-    const filter = ev.detail.value;
-    this._searchFilter = filter;
-    if (!filter) {
-      this._highlightedNodes = undefined;
-      return;
+  private _getSearchableAttributes = (nodeId: string): string[] => {
+    const device = this._devices.find((d) => d.ieee === nodeId);
+    if (!device) {
+      return [];
     }
-    const lowerFilter = filter.toLowerCase();
-    const matchingIds = new Set<string>();
-    for (const device of this._devices) {
-      if (this._deviceMatchesFilter(device, lowerFilter)) {
-        matchingIds.add(device.ieee);
-      }
+    const attributes: string[] = [];
+    if (device.user_given_name) {
+      attributes.push(device.user_given_name);
     }
-    this._highlightedNodes = matchingIds;
-  }
-
-  private _deviceMatchesFilter(
-    device: ZHADevice,
-    lowerFilter: string
-  ): boolean {
-    // Match against device name
-    if (device.name?.toLowerCase().includes(lowerFilter)) {
-      return true;
+    if (device.manufacturer) {
+      attributes.push(device.manufacturer);
     }
-    // Match against user given name
-    if (device.user_given_name?.toLowerCase().includes(lowerFilter)) {
-      return true;
+    if (device.model) {
+      attributes.push(device.model);
     }
-    // Match against IEEE address
-    if (device.ieee?.toLowerCase().includes(lowerFilter)) {
-      return true;
+    if (device.device_type) {
+      attributes.push(device.device_type);
     }
-    // Match against manufacturer
-    if (device.manufacturer?.toLowerCase().includes(lowerFilter)) {
-      return true;
+    if (device.nwk != null) {
+      attributes.push(formatAsPaddedHex(device.nwk));
     }
-    // Match against model
-    if (device.model?.toLowerCase().includes(lowerFilter)) {
-      return true;
-    }
-    // Match against device type
-    if (device.device_type?.toLowerCase().includes(lowerFilter)) {
-      return true;
-    }
-    // Match against NWK address (hex format)
-    if (
-      device.nwk != null &&
-      formatAsPaddedHex(device.nwk).toLowerCase().includes(lowerFilter)
-    ) {
-      return true;
-    }
-    // Match against area name
-    const haDevice = this.hass.devices[device.device_reg_id] as
-      | DeviceRegistryEntry
-      | undefined;
-    if (haDevice) {
-      const area = getDeviceContext(haDevice, this.hass).area;
-      if (area?.name?.toLowerCase().includes(lowerFilter)) {
-        return true;
-      }
-    }
-    return false;
-  }
+    return attributes;
+  };
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
     const { dataType, data, name } = params as CallbackDataParams;

@@ -13,6 +13,7 @@ import { listenMediaQuery } from "../../common/dom/media_query";
 import type { ECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
+import "../search-input-outlined";
 import type { HomeAssistant } from "../../types";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -77,9 +78,19 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     params: TopLevelFormatterParams
   ) => string;
 
-  @property({ attribute: false }) public highlightedNodes?: Set<string>;
+  /**
+   * Optional callback that returns additional searchable strings for a node.
+   * These are matched against the search filter in addition to the node's name and context.
+   */
+  @property({ attribute: false }) public searchableAttributes?: (
+    nodeId: string
+  ) => string[];
 
   public hass!: HomeAssistant;
+
+  @state() private _searchFilter = "";
+
+  @state() private _highlightedNodes?: Set<string>;
 
   @state() private _reducedMotion = false;
 
@@ -113,7 +124,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (changedProps.has("highlightedNodes")) {
+    if (changedProps.has("_highlightedNodes")) {
       this._applyHighlighting();
       this._updateMouseoverHandler();
     }
@@ -129,7 +140,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     ).matches;
 
     const hasHighlightedNodes =
-      this.highlightedNodes && this.highlightedNodes.size > 0;
+      this._highlightedNodes && this._highlightedNodes.size > 0;
 
     return html`<ha-chart-base
       .hass=${this.hass}
@@ -145,7 +156,12 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       height="100%"
       .extraComponents=${[GraphChart]}
     >
-      <slot name="search" slot="search"></slot>
+      <search-input-outlined
+        slot="search"
+        .hass=${this.hass}
+        .filter=${this._searchFilter}
+        @value-changed=${this._handleSearchChange}
+      ></search-input-outlined>
       <slot name="button" slot="button"></slot>
       <ha-icon-button
         slot="button"
@@ -190,6 +206,44 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     }),
     deepEqual
   );
+
+  private _handleSearchChange(ev: CustomEvent): void {
+    const filter = ev.detail.value;
+    this._searchFilter = filter;
+    if (!filter) {
+      this._highlightedNodes = undefined;
+      return;
+    }
+    const lowerFilter = filter.toLowerCase();
+    const matchingIds = new Set<string>();
+    for (const node of this.data.nodes) {
+      if (this._nodeMatchesFilter(node, lowerFilter)) {
+        matchingIds.add(node.id);
+      }
+    }
+    this._highlightedNodes = matchingIds;
+  }
+
+  private _nodeMatchesFilter(node: NetworkNode, lowerFilter: string): boolean {
+    if (node.name?.toLowerCase().includes(lowerFilter)) {
+      return true;
+    }
+    if (node.context?.toLowerCase().includes(lowerFilter)) {
+      return true;
+    }
+    if (node.id?.toLowerCase().includes(lowerFilter)) {
+      return true;
+    }
+    if (this.searchableAttributes) {
+      const extraValues = this.searchableAttributes(node.id);
+      for (const value of extraValues) {
+        if (value?.toLowerCase().includes(lowerFilter)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   private _getSeries = memoizeOne(
     (
@@ -384,7 +438,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     if (!chart) {
       return;
     }
-    const highlighted = this.highlightedNodes;
+    const highlighted = this._highlightedNodes;
     if (!highlighted || highlighted.size === 0) {
       // Reset all nodes to normal opacity
       chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
@@ -422,7 +476,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     }
     // When there are highlighted nodes, re-apply highlighting on hover
     // and mouseout to prevent emphasis from overriding the search state
-    if (this.highlightedNodes && this.highlightedNodes.size > 0) {
+    if (this._highlightedNodes && this._highlightedNodes.size > 0) {
       this._emphasisGuardHandler = () => {
         this._applyHighlighting();
       };

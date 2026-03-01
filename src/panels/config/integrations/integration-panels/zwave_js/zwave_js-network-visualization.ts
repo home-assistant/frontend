@@ -86,6 +86,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
             this._nodeStatuses,
             this._nodeStatistics
           )}
+          .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         ></ha-network-graph>
@@ -104,6 +105,27 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
     this._nodeStatuses = nodeStatuses;
   }
+
+  private _getSearchableAttributes = (nodeId: string): string[] => {
+    const device = this._devices[Number(nodeId)];
+    const nodeStatus = this._nodeStatuses[Number(nodeId)];
+    const attributes: string[] = [];
+    if (device?.manufacturer) {
+      attributes.push(device.manufacturer);
+    }
+    if (device?.model) {
+      attributes.push(device.model);
+    }
+    if (nodeStatus) {
+      const statusText = this.hass.localize(
+        `ui.panel.config.zwave_js.node_status.${nodeStatus.status}` as any
+      );
+      if (statusText) {
+        attributes.push(statusText);
+      }
+    }
+    return attributes;
+  };
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
     const { dataType, data } = params as CallbackDataParams;

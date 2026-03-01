@@ -129,12 +129,29 @@ export class BluetoothNetworkVisualization extends LitElement {
         <ha-network-graph
           .hass=${this.hass}
           .data=${this._formatNetworkData(this._data, this._scanners)}
+          .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         ></ha-network-graph>
       </hass-subpage>
     `;
   }
+
+  private _getSearchableAttributes = (nodeId: string): string[] => {
+    const attributes: string[] = [];
+    const device = this._sourceDevices[nodeId];
+    if (device?.manufacturer) {
+      attributes.push(device.manufacturer);
+    }
+    if (device?.model) {
+      attributes.push(device.model);
+    }
+    const scanner = this._scanners[nodeId];
+    if (scanner?.name) {
+      attributes.push(scanner.name);
+    }
+    return attributes;
+  };
 
   private _getRssiColorVar = memoizeOne((rssi: number): string => {
     for (const [threshold, colorVar] of RSSI_COLOR_THRESHOLDS) {
