@@ -31,10 +31,10 @@ import type { HaTextField } from "./ha-textfield";
 
 interface AssistMessage {
   who: string;
-  text?: string | TemplateResult;
-  thinking?: string;
+  text: string | TemplateResult;
+  thinking: string;
   thinking_expanded?: boolean;
-  tool_calls?: Record<
+  tool_calls: Record<
     string,
     {
       tool_name: string;
@@ -670,7 +670,7 @@ export class HaAssistChat extends LitElement {
 
           if (isAssistantDelta(delta)) {
             if (delta.content) {
-              if (progress.hassMessage.text?.endsWith("…")) {
+              if (progress.hassMessage.text.endsWith("…")) {
                 progress.hassMessage.text =
                   progress.hassMessage.text.substring(
                     0,
@@ -679,35 +679,22 @@ export class HaAssistChat extends LitElement {
                   delta.content +
                   "…";
               } else {
-                progress.hassMessage.text =
-                  (progress.hassMessage.text || "") + delta.content + "…";
+                progress.hassMessage.text += delta.content + "…";
               }
             }
             if (delta.thinking_content) {
-              progress.hassMessage.thinking =
-                (progress.hassMessage.thinking || "") + delta.thinking_content;
+              progress.hassMessage.thinking += delta.thinking_content;
             }
             if (delta.tool_calls) {
-              progress.hassMessage.tool_calls = {
-                ...progress.hassMessage.tool_calls,
-              };
               for (const toolCall of delta.tool_calls) {
-                progress.hassMessage.tool_calls[toolCall.id] = {
-                  tool_name: toolCall.tool_name,
-                  tool_args: toolCall.tool_args,
-                };
+                progress.hassMessage.tool_calls[toolCall.id] = toolCall;
               }
             }
             this.requestUpdate("_conversation");
           } else if (isToolResult(delta)) {
-            if (progress.hassMessage.tool_calls?.[delta.tool_call_id]) {
-              progress.hassMessage.tool_calls = {
-                ...progress.hassMessage.tool_calls,
-                [delta.tool_call_id]: {
-                  ...progress.hassMessage.tool_calls[delta.tool_call_id],
-                  result: delta.tool_result,
-                },
-              };
+            if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
+              progress.hassMessage.tool_calls[delta.tool_call_id].result =
+                delta.tool_result;
               this.requestUpdate("_conversation");
             }
           }
@@ -851,9 +838,9 @@ export class HaAssistChat extends LitElement {
         }
         .thinking-label {
           font-size: var(--ha-font-size-m);
-  display: flex;
-  align - items: center;
-  gap: var(--ha - space - 2);
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
         }
         .thinking-header ha-svg-icon {
           --mdc-icon-size: 16px;
