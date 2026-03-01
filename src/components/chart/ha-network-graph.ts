@@ -2,6 +2,7 @@ import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
+import type { PropertyValues } from "lit";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
@@ -76,6 +77,8 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     params: TopLevelFormatterParams
   ) => string;
 
+  @property({ attribute: false }) public highlightedNodes?: Set<string>;
+
   public hass!: HomeAssistant;
 
   @state() private _reducedMotion = false;
@@ -108,6 +111,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     ];
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("highlightedNodes")) {
+      this._applyHighlighting();
+      this._updateMouseoverHandler();
+    }
+  }
+
   protected render() {
     if (!GraphChart || !this.data.nodes?.length) {
       return nothing;
@@ -117,6 +128,9 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
 
+    const hasHighlightedNodes =
+      this.highlightedNodes && this.highlightedNodes.size > 0;
+
     return html`<ha-chart-base
       .hass=${this.hass}
       .data=${this._getSeries(
@@ -124,12 +138,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         this._physicsEnabled,
         this._reducedMotion,
         this._showLabels,
-        isMobile
+        isMobile,
+        hasHighlightedNodes
       )}
       .options=${this._createOptions(this.data?.categories)}
       height="100%"
       .extraComponents=${[GraphChart]}
     >
+      <slot name="search" slot="search"></slot>
       <slot name="button" slot="button"></slot>
       <ha-icon-button
         slot="button"
@@ -181,7 +197,8 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       physicsEnabled: boolean,
       reducedMotion: boolean,
       showLabels: boolean,
-      isMobile: boolean
+      isMobile: boolean,
+      hasHighlightedNodes?: boolean
     ) => ({
       id: "network",
       type: "graph",
@@ -214,7 +231,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         },
       },
       emphasis: {
-        focus: isMobile ? "none" : "adjacency",
+        focus: isMobile ? "none" : hasHighlightedNodes ? "self" : "adjacency",
       },
       force: {
         repulsion: [400, 600],
@@ -360,6 +377,67 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         neighborAngle + Math.PI / 2
       );
     });
+  }
+
+  private _applyHighlighting() {
+    const chart = this._baseChart?.chart;
+    if (!chart) {
+      return;
+    }
+    const highlighted = this.highlightedNodes;
+    if (!highlighted || highlighted.size === 0) {
+      // Reset all nodes to normal opacity
+      chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
+      return;
+    }
+    // Downplay all nodes first, then highlight matching ones
+    chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
+    const dataIndices: number[] = [];
+    this.data.nodes.forEach((node, index) => {
+      if (highlighted.has(node.id)) {
+        dataIndices.push(index);
+      }
+    });
+    if (dataIndices.length > 0) {
+      chart.dispatchAction({
+        type: "highlight",
+        seriesIndex: 0,
+        dataIndex: dataIndices,
+      });
+    }
+  }
+
+  private _emphasisGuardHandler?: () => void;
+
+  private _updateMouseoverHandler() {
+    const chart = this._baseChart?.chart;
+    if (!chart) {
+      return;
+    }
+    // Remove previous handlers
+    if (this._emphasisGuardHandler) {
+      chart.off("mouseover", this._emphasisGuardHandler);
+      chart.off("mouseout", this._emphasisGuardHandler);
+      this._emphasisGuardHandler = undefined;
+    }
+    // When there are highlighted nodes, re-apply highlighting on hover
+    // and mouseout to prevent emphasis from overriding the search state
+    if (this.highlightedNodes && this.highlightedNodes.size > 0) {
+      this._emphasisGuardHandler = () => {
+        this._applyHighlighting();
+      };
+      chart.on("mouseover", this._emphasisGuardHandler);
+      chart.on("mouseout", this._emphasisGuardHandler);
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._emphasisGuardHandler) {
+      this._baseChart?.chart?.off("mouseover", this._emphasisGuardHandler);
+      this._baseChart?.chart?.off("mouseout", this._emphasisGuardHandler);
+      this._emphasisGuardHandler = undefined;
+    }
   }
 
   private _togglePhysics() {

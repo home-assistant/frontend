@@ -279,6 +279,7 @@ export class HaChartBase extends LitElement {
           <div class="chart"></div>
         </div>
         ${this._renderLegend()}
+        <slot name="search"></slot>
         <div class="chart-controls ${classMap({ small: this.smallControls })}">
           ${this._isZoomed && !this.hideResetButton
             ? html`<ha-icon-button
@@ -1098,6 +1099,13 @@ export class HaChartBase extends LitElement {
     .chart {
       height: 100%;
       width: 100%;
+    }
+    ::slotted([slot="search"]) {
+      position: absolute;
+      top: var(--ha-space-4);
+      inset-inline-start: var(--ha-space-4);
+      z-index: 1;
+      width: 250px;
     }
     .chart-controls {
       position: absolute;
