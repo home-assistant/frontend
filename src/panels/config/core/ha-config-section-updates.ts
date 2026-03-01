@@ -12,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
   HassioSupervisorInfo,
@@ -69,6 +70,12 @@ class HaConfigSectionUpdates extends LitElement {
       this.hass.states,
       this._showSkipped
     );
+
+    const selectedInstallableIds = canInstallUpdates
+      .filter((e) => this._selectedEntities.has(e.entity_id))
+      .map((e) => e.entity_id);
+    const selectedCount = this._selectedEntities.size;
+    const showFabs = this._multiSelectMode && selectedCount > 0;
 
     return html`
       <hass-subpage
@@ -177,6 +184,27 @@ class HaConfigSectionUpdates extends LitElement {
                 </ha-card>
               `}
         </div>
+        <div class="fab-container ${showFabs ? "visible" : ""}">
+          ${selectedInstallableIds.length
+            ? html`
+                <ha-fab
+                  extended
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.update.update"
+                  ) + ` (${selectedInstallableIds.length})`}
+                  @click=${this._installSelected}
+                ></ha-fab>
+              `
+            : nothing}
+          <ha-fab
+            extended
+            .label=${this.hass.localize(
+              "ui.dialogs.more_info_control.update.skip"
+            ) + ` (${selectedCount})`}
+            class="skip-fab"
+            @click=${this._skipSelected}
+          ></ha-fab>
+        </div>
       </hass-subpage>
     `;
   }
@@ -237,6 +265,29 @@ class HaConfigSectionUpdates extends LitElement {
     this._selectedEntities = updated;
   }
 
+  private _installSelected(): void {
+    const installableIds = this._filterInstallableUpdateEntities(
+      this.hass.states,
+      this._showSkipped
+    )
+      .filter((e) => this._selectedEntities.has(e.entity_id))
+      .map((e) => e.entity_id);
+
+    for (const entityId of installableIds) {
+      this.hass.callService("update", "install", { entity_id: entityId });
+    }
+    this._selectedEntities = new Set();
+    this._multiSelectMode = false;
+  }
+
+  private _skipSelected(): void {
+    for (const entityId of this._selectedEntities) {
+      this.hass.callService("update", "skip", { entity_id: entityId });
+    }
+    this._selectedEntities = new Set();
+    this._multiSelectMode = false;
+  }
+
   private _filterInstallableUpdateEntities = memoizeOne(
     (entities: HassEntities, showSkipped: boolean) =>
       filterUpdateEntitiesParameterized(entities, showSkipped, false)
@@ -281,6 +332,31 @@ class HaConfigSectionUpdates extends LitElement {
     }
     ha-icon-button.active {
       color: var(--primary-color);
+    }
+    .fab-container ha-fab {
+      --ha-fab-icon-display: none;
+    }
+    .fab-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--ha-space-2);
+      position: fixed;
+      bottom: calc(-160px - var(--safe-area-inset-bottom, 0px));
+      right: calc(var(--ha-space-4) + var(--safe-area-inset-right, 0px));
+      inset-inline-end: calc(
+        var(--ha-space-4) + var(--safe-area-inset-right, 0px)
+      );
+      inset-inline-start: initial;
+      transition: bottom 0.3s;
+    }
+    .fab-container.visible {
+      bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom, 0px));
+    }
+    .skip-fab {
+      /* ha-fab sets --mdc-theme-secondary inline in firstUpdated; !important overrides it */
+      --mdc-theme-secondary: var(--card-background-color) !important;
+      --mdc-theme-on-secondary: var(--secondary-text-color);
     }
   `;
 }
