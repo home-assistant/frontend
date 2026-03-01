@@ -70,7 +70,12 @@ export class HuiDistributionCard
     const powerFilter = (stateObj: HassEntity): boolean => {
       const unit = stateObj.attributes.unit_of_measurement;
       const stateValue = Number(stateObj.state);
-      return (unit === "W" || unit === "kW") && !isNaN(stateValue);
+      const deviceClass = stateObj.attributes.device_class;
+      return (
+        (unit === "W" || unit === "kW") &&
+        deviceClass === "power" &&
+        !isNaN(stateValue)
+      );
     };
 
     let foundEntities = findEntities(
