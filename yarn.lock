@@ -7153,7 +7153,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"defaults@npm:^1.0.3, defaults@npm:^1.0.4":
+"defaults@npm:^1.0.3":
   version: 1.0.4
   resolution: "defaults@npm:1.0.4"
   dependencies:
@@ -8307,7 +8307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fancy-log@npm:2.0.0, fancy-log@npm:^2.0.0":
+"fancy-log@npm:2.0.0":
   version: 2.0.0
   resolution: "fancy-log@npm:2.0.0"
   dependencies:
@@ -9040,18 +9040,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gulp-zopfli-green@npm:6.0.2":
-  version: 6.0.2
-  resolution: "gulp-zopfli-green@npm:6.0.2"
+"gulp-zopfli-green@npm:7.0.0":
+  version: 7.0.0
+  resolution: "gulp-zopfli-green@npm:7.0.0"
   dependencies:
     "@gfx/zopfli": "npm:^1.0.15"
     bytes: "npm:^3.1.2"
-    defaults: "npm:^1.0.4"
-    fancy-log: "npm:^2.0.0"
     plugin-error: "npm:^2.0.1"
     stream-to-array: "npm:^2.3.0"
     through2: "npm:^4.0.2"
-  checksum: 10/52e899dfb86777ff8f97a23af99c59e203ea485fbf04d0a8f4f1cfbd4d4c496808a3593ae8dac16584fc4b4d81cf127b2eda5355a61bcc213875c95cc86d41da
+  checksum: 10/25db42b9a8f6395847e3cc06c548c3f3d51c84606166f18de71d91d505e7293176b45b4b78b7e0b1566c26263fe0dc212e56d2b367461c3d712bee9d22d5224f
   languageName: node
   linkType: hard
 
@@ -9301,7 +9299,7 @@ __metadata:
     gulp-brotli: "npm:3.0.0"
     gulp-json-transform: "npm:0.5.0"
     gulp-rename: "npm:2.1.0"
-    gulp-zopfli-green: "npm:6.0.2"
+    gulp-zopfli-green: "npm:7.0.0"
     hls.js: "npm:1.6.15"
     home-assistant-js-websocket: "npm:9.6.0"
     html-minifier-terser: "npm:7.2.0"
