@@ -450,17 +450,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           `ui.panel.lovelace.editor.card.map.${schema.name}`
         );
       case "auto_fit":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.map.${schema.name}`
-        );
       case "fit_zones":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.map.${schema.name}`
-        );
       case "cluster":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.map.${schema.name}`
-        );
       case "show_all":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.map.${schema.name}`
