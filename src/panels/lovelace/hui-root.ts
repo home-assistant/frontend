@@ -76,6 +76,8 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { isMac } from "../../util/is_mac";
+import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
@@ -302,6 +304,12 @@ class HUIRoot extends LitElement {
         key: "ui.panel.lovelace.menu.search_home_assistant",
         buttonAction: this._showQuickBar,
         overflowAction: this._showQuickBar,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient
+            ? isMac
+              ? "(⌘ + K)"
+              : "(Ctrl + K)"
+            : undefined,
         visible: !this._editMode && !this.hass.kioskMode,
         overflow: this.narrow,
       },
@@ -310,6 +318,8 @@ class HUIRoot extends LitElement {
         key: "ui.panel.lovelace.menu.assist_tooltip",
         buttonAction: this._showVoiceCommandDialog,
         overflowAction: this._showVoiceCommandDialog,
+        suffix:
+          this.hass.enableShortcuts && !isMobileClient ? "(A)" : undefined,
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
