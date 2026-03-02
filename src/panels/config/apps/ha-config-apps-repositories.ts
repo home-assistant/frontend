@@ -208,18 +208,24 @@ export class HaConfigAppsRepositories extends LitElement {
   }
 
   private async _showAddRepositoryDialog() {
-    const url = await showPromptDialog(this, {
+    showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.apps.repositories.add_title"),
       inputLabel: this.hass.localize("ui.panel.config.apps.repositories.url"),
       inputType: "url",
       confirmText: this.hass.localize("ui.panel.config.apps.repositories.add"),
+      action: async (url) => {
+        try {
+          await addStoreRepository(this.hass, url!);
+          await this._loadData();
+          fireEvent(this, "apps-collection-refresh", { collection: "store" });
+        } catch (err: any) {
+          showAlertDialog(this, {
+            text: extractApiErrorMessage(err),
+          });
+          throw err;
+        }
+      },
     });
-
-    if (!url) {
-      return;
-    }
-
-    await this._addRepository(url);
   }
 
   private async _addRepository(url: string) {
@@ -238,7 +244,7 @@ export class HaConfigAppsRepositories extends LitElement {
     const slug = (ev.currentTarget as any).slug;
     const repo = this._repositories?.find((r) => r.slug === slug);
 
-    const confirmed = await showConfirmationDialog(this, {
+    showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.config.apps.repositories.remove"),
       text: this.hass.localize(
         "ui.panel.config.apps.repositories.confirm_remove",
@@ -248,21 +254,19 @@ export class HaConfigAppsRepositories extends LitElement {
       confirmText: this.hass.localize(
         "ui.panel.config.apps.repositories.remove"
       ),
+      action: async () => {
+        try {
+          await removeStoreRepository(this.hass, slug);
+          await this._loadData();
+          fireEvent(this, "apps-collection-refresh", { collection: "store" });
+        } catch (err: any) {
+          showAlertDialog(this, {
+            text: extractApiErrorMessage(err),
+          });
+          throw err;
+        }
+      },
     });
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      await removeStoreRepository(this.hass, slug);
-      await this._loadData();
-      fireEvent(this, "apps-collection-refresh", { collection: "store" });
-    } catch (err: any) {
-      showAlertDialog(this, {
-        text: extractApiErrorMessage(err),
-      });
-    }
   };
 
   private async _loadData(): Promise<void> {
