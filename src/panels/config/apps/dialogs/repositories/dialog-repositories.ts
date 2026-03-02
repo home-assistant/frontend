@@ -5,17 +5,17 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
+import "../../../../../components/data-table/ha-data-table";
+import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
 import "../../../../../components/ha-tooltip";
-import "../../../../../components/ha-dialog";
 import type {
   HassioAddonInfo,
   HassioAddonsInfo,
@@ -30,6 +30,13 @@ import {
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { RepositoryDialogParams } from "./show-dialog-repositories";
+
+interface RepositoryRowData {
+  slug: string;
+  name: string;
+  maintainer: string;
+  url: string;
+}
 
 @customElement("dialog-apps-repositories")
 class AppsRepositoriesDialog extends LitElement {
@@ -70,6 +77,53 @@ class AppsRepositoriesDialog extends LitElement {
     fireEvent(this, "dialog-closed");
   }
 
+  private _columns = memoizeOne(
+    (
+      usedRepositories: string[]
+    ): DataTableColumnContainer<RepositoryRowData> => ({
+      name: {
+        title: this.hass.localize("ui.panel.config.apps.store.repositories"),
+        main: true,
+        sortable: true,
+        filterable: true,
+        flex: 2,
+        template: (row) => html`
+          <div>${row.name}</div>
+          <div class="secondary">${row.maintainer} &middot; ${row.url}</div>
+        `,
+      },
+      actions: {
+        title: "",
+        label: this.hass.localize(
+          "ui.panel.config.apps.dialog.repositories.remove"
+        ),
+        type: "icon-button",
+        showNarrow: true,
+        lastFixed: true,
+        template: (row) => {
+          const used = usedRepositories.includes(row.slug);
+          return html`
+            <ha-tooltip .for="delete-btn-${row.slug}">
+              ${this.hass.localize(
+                used
+                  ? "ui.panel.config.apps.dialog.repositories.used"
+                  : "ui.panel.config.apps.dialog.repositories.remove"
+              )}
+            </ha-tooltip>
+            <ha-icon-button
+              .id="delete-btn-${row.slug}"
+              .disabled=${used}
+              .slug=${row.slug}
+              .path=${used ? mdiDeleteOff : mdiDelete}
+              @click=${this._removeRepository}
+              class="delete"
+            ></ha-icon-button>
+          `;
+        },
+      },
+    })
+  );
+
   private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
     repos
       .filter(
@@ -94,6 +148,16 @@ class AppsRepositoriesDialog extends LitElement {
         .map((repo) => repo.slug)
   );
 
+  private _data = memoizeOne(
+    (repos: HassioAddonRepository[]): RepositoryRowData[] =>
+      repos.map((repo) => ({
+        slug: repo.slug,
+        name: repo.name,
+        maintainer: repo.maintainer,
+        url: repo.url,
+      }))
+  );
+
   protected render() {
     if (!this._addon || this._repositories === undefined) {
       return nothing;
@@ -116,48 +180,17 @@ class AppsRepositoriesDialog extends LitElement {
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : ""}
         <div class="form">
-          <ha-md-list>
-            ${repositories.length
-              ? repositories.map(
-                  (repo) => html`
-                    <ha-md-list-item class="option">
-                      ${repo.name}
-                      <div slot="supporting-text">
-                        <div>${repo.maintainer}</div>
-                        <div>${repo.url}</div>
-                      </div>
-                      <ha-tooltip
-                        .for="icon-button-${repo.slug}"
-                        class="delete"
-                        slot="end"
-                      >
-                        ${this.hass.localize(
-                          usedRepositories.includes(repo.slug)
-                            ? "ui.panel.config.apps.dialog.repositories.used"
-                            : "ui.panel.config.apps.dialog.repositories.remove"
-                        )}
-                      </ha-tooltip>
-                      <div .id="icon-button-${repo.slug}">
-                        <ha-icon-button
-                          .disabled=${usedRepositories.includes(repo.slug)}
-                          .slug=${repo.slug}
-                          .path=${usedRepositories.includes(repo.slug)
-                            ? mdiDeleteOff
-                            : mdiDelete}
-                          @click=${this._removeRepository}
-                        >
-                        </ha-icon-button>
-                      </div>
-                    </ha-md-list-item>
-                  `
-                )
-              : html`<ha-md-list-item
-                  >${this.hass.localize(
-                    "ui.panel.config.apps.dialog.repositories.no_repositories"
-                  )}</ha-md-list-item
-                >`}
-          </ha-md-list>
-          <div class="layout horizontal bottom">
+          <ha-data-table
+            .hass=${this.hass}
+            .columns=${this._columns(usedRepositories)}
+            .data=${this._data(repositories)}
+            .noDataText=${this.hass.localize(
+              "ui.panel.config.apps.dialog.repositories.no_repositories"
+            )}
+            id="slug"
+            auto-height
+          ></ha-data-table>
+          <div class="layout horizontal center">
             <ha-textfield
               class="flex-auto"
               id="repository_input"
@@ -171,8 +204,7 @@ class AppsRepositoriesDialog extends LitElement {
             <ha-button
               .loading=${this._processing}
               @click=${this._addRepository}
-              appearance="filled"
-              size="small"
+              appearance="text"
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass.localize(
@@ -195,25 +227,22 @@ class AppsRepositoriesDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
+        ha-dialog {
+          --dialog-content-padding: 0;
+        }
         .form {
           color: var(--primary-text-color);
         }
-        .option {
-          border: 1px solid var(--divider-color);
-          border-radius: var(--ha-border-radius-sm);
-          margin-top: 4px;
+        ha-data-table {
+          --data-table-border-width: 0;
+        }
+        ha-icon-button.delete {
+          color: var(--error-color);
         }
         ha-button {
           margin-left: var(--ha-space-2);
           margin-inline-start: var(--ha-space-2);
           margin-inline-end: initial;
-        }
-        div.delete ha-icon-button {
-          color: var(--error-color);
-        }
-        ha-md-list-item {
-          position: relative;
-          --md-item-overflow: visible;
         }
       `,
     ];
