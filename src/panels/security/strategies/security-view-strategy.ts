@@ -281,7 +281,6 @@ export class SecurityViewStrategy extends ReactiveElement {
           sidebar_label: hass.localize(
             "ui.panel.lovelace.strategy.security.activity"
           ),
-          visibility: [LARGE_SCREEN_CONDITION],
         },
       }),
     };
