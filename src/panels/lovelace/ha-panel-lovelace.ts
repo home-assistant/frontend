@@ -36,7 +36,7 @@ import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import {
-  checkDashboardStrategyShouldRegenerate,
+  checkStrategyShouldRegenerate,
   generateLovelaceDashboardStrategy,
 } from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
@@ -51,12 +51,6 @@ interface LovelacePanelConfig {
 
 let editorLoaded = false;
 let resourcesLoaded = false;
-
-declare global {
-  interface HASSDomEvents {
-    "strategy-config-changed": undefined;
-  }
-}
 
 @customElement("ha-panel-lovelace")
 export class LovelacePanel extends LitElement {
@@ -131,7 +125,6 @@ export class LovelacePanel extends LitElement {
           .route=${this.route}
           .narrow=${this.narrow}
           @config-refresh=${this._forceFetchConfig}
-          @strategy-config-changed=${this._strategyConfigChanged}
         ></hui-root>
       `;
     }
@@ -199,7 +192,8 @@ export class LovelacePanel extends LitElement {
     ) {
       if (
         this.hass.config.state === "RUNNING" &&
-        checkDashboardStrategyShouldRegenerate(
+        checkStrategyShouldRegenerate(
+          "dashboard",
           this.lovelace.rawConfig.strategy,
           oldHass,
           this.hass
@@ -214,11 +208,6 @@ export class LovelacePanel extends LitElement {
     () => this._regenerateStrategyConfig(),
     200
   );
-
-  private _strategyConfigChanged = (ev: CustomEvent) => {
-    ev.stopPropagation();
-    this._regenerateStrategyConfig();
-  };
 
   private async _regenerateStrategyConfig() {
     if (!this.hass || !this.lovelace) {

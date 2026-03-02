@@ -3,9 +3,9 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
-import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
-import { deepEqual } from "../../../common/util/deep-equal";
+
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
@@ -42,7 +42,10 @@ import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { createErrorSectionConfig } from "../sections/hui-error-section";
 import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
-import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
+import {
+  checkStrategyShouldRegenerate,
+  generateLovelaceViewStrategy,
+} from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { getViewType } from "./get-view-type";
 
@@ -89,10 +92,6 @@ export class HUIView extends ReactiveElement {
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceViewElement;
-
-  private _layoutElementConfig?: LovelaceViewConfig;
-
-  private _rendered = false;
 
   @storage({
     key: "dashboardCardClipboard",
@@ -154,18 +153,6 @@ export class HUIView extends ReactiveElement {
     return this;
   }
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this.updateComplete.then(() => {
-      this._rendered = true;
-    });
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._rendered = false;
-  }
-
   public willUpdate(changedProperties: PropertyValues<typeof this>): void {
     super.willUpdate(changedProperties);
 
@@ -201,50 +188,23 @@ export class HUIView extends ReactiveElement {
     const viewConfig = this.lovelace.config.views[this.index];
     if (oldHass && this.hass && this.lovelace && isStrategyView(viewConfig)) {
       if (
-        oldHass.entities !== this.hass.entities ||
-        oldHass.devices !== this.hass.devices ||
-        oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors
+        this.hass.config.state === "RUNNING" &&
+        checkStrategyShouldRegenerate(
+          "view",
+          viewConfig.strategy,
+          oldHass,
+          this.hass
+        )
       ) {
-        if (this.hass.config.state === "RUNNING") {
-          // If the page is not rendered yet, we can force the refresh
-          if (this._rendered) {
-            this._debounceRefreshConfig(false);
-          } else {
-            this._refreshConfig(true);
-          }
-        }
+        this._debounceRefreshConfig();
       }
     }
   }
 
   private _debounceRefreshConfig = debounce(
-    (force: boolean) => this._refreshConfig(force),
+    () => this._initializeConfig(),
     200
   );
-
-  private _refreshConfig = async (force: boolean) => {
-    if (!this.hass || !this.lovelace) {
-      return;
-    }
-    const viewConfig = this.lovelace.config.views[this.index];
-
-    if (!isStrategyView(viewConfig)) {
-      return;
-    }
-
-    const oldConfig = this._layoutElementConfig;
-    const newConfig = await this._generateConfig(viewConfig);
-
-    // Don't ask if the config is the same
-    if (!deepEqual(newConfig, oldConfig)) {
-      if (force) {
-        this._setConfig(newConfig, true);
-      } else {
-        fireEvent(this, "strategy-config-changed");
-      }
-    }
-  };
 
   protected update(changedProperties: PropertyValues) {
     super.update(changedProperties);
@@ -332,7 +292,6 @@ export class HUIView extends ReactiveElement {
       addLayoutElement = true;
       this._createLayoutElement(viewConfig);
     }
-    this._layoutElementConfig = viewConfig;
     this._createBadges(viewConfig);
     this._createCards(viewConfig);
     this._createSections(viewConfig);

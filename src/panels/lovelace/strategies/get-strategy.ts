@@ -236,10 +236,11 @@ export const generateLovelaceSectionStrategy = async (
 };
 
 /**
- * Synchronously checks whether a dashboard strategy needs regeneration.
+ * Synchronously checks whether a strategy needs regeneration.
  * Falls back to checking common registries if the strategy doesn't implement shouldRegenerate.
  */
-export const checkDashboardStrategyShouldRegenerate = (
+export const checkStrategyShouldRegenerate = (
+  configType: LovelaceStrategyConfigType,
   strategyConfig: LovelaceStrategyConfig,
   oldHass: HomeAssistant,
   newHass: HomeAssistant
@@ -251,14 +252,14 @@ export const checkDashboardStrategyShouldRegenerate = (
 
   let strategy: LovelaceStrategy | undefined;
 
-  if (strategyType in STRATEGIES.dashboard) {
-    const tag = `${strategyType}-dashboard-strategy`;
+  if (strategyType in STRATEGIES[configType]) {
+    const tag = `${strategyType}-${configType}-strategy`;
     strategy = customElements.get(tag) as unknown as
       | LovelaceStrategy
       | undefined;
   } else if (strategyType.startsWith(CUSTOM_PREFIX)) {
     const name = strategyType.slice(CUSTOM_PREFIX.length);
-    const tag = `ll-strategy-dashboard-${name}`;
+    const tag = `ll-strategy-${configType}-${name}`;
     const legacyTag = `ll-strategy-${name}`;
     strategy = (customElements.get(tag) ??
       customElements.get(legacyTag)) as unknown as LovelaceStrategy | undefined;
