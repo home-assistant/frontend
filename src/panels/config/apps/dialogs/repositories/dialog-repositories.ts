@@ -204,7 +204,6 @@ class AppsRepositoriesDialog extends LitElement {
             <ha-button
               .loading=${this._processing}
               @click=${this._addRepository}
-              appearance="text"
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass.localize(
