@@ -309,9 +309,15 @@ export class HaInput extends LitElement {
         @wa-invalid=${this._handleInvalid}
       >
         <div class="label" slot="label">
-          <span>
-            <slot name="label">${this.label}</slot>
-          </span>
+          ${this.label
+            ? html`<div class="text">
+                <div class="label-content">
+                  <span>
+                    <slot name="label">${this.label}</slot>
+                  </span>
+                </div>
+              </div>`
+            : nothing}
           ${this.hint
             ? html`<ha-icon-button
                   @click=${preventDefault}
@@ -380,6 +386,12 @@ export class HaInput extends LitElement {
     wa-input {
       flex: 1;
       min-width: 0;
+      --wa-transition-fast: 0.15s;
+    }
+
+    wa-input:not([disabled])::part(base):hover {
+      --wa-form-control-border-color: var(--ha-color-border-neutral-normal);
+      background-color: var(--ha-color-fill-neutral-quiet-resting);
     }
 
     wa-input::part(base):focus-within {
@@ -393,7 +405,7 @@ export class HaInput extends LitElement {
     }
 
     wa-input::part(label) {
-      margin-block-end: 2px;
+      margin-block-end: 0;
     }
 
     .label {
@@ -407,14 +419,80 @@ export class HaInput extends LitElement {
       gap: var(--ha-space-1);
     }
 
-    .label span {
-      line-height: 1;
+    .label .text {
+      height: 100%;
+      display: flex;
       flex: 1;
+      padding-right: calc(var(--ha-border-radius-xl) / 2);
+      max-width: calc(100% - var(--ha-border-radius-xl));
+    }
+
+    .label .label-content {
+      height: 100%;
+      display: flex;
+      max-width: 100%;
+      align-items: center;
+      position: relative;
+      --input-label-background: var(--ha-color-fill-neutral-quiet-resting);
+      background-color: var(--input-label-background);
+      border-top-left-radius: var(--ha-border-radius-xl);
+      border-top-right-radius: var(--ha-border-radius-xl);
+      transition: background-color 0.15s ease-in-out;
+    }
+
+    .label .label-content span {
+      padding: 0 var(--ha-space-2);
       min-width: 0;
       overflow-x: clip;
       overflow-y: visible;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .label .label-content::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 100%;
+      height: var(--ha-space-3);
+      background-color: var(--input-label-background);
+      transition: background-color 0.15s ease-in-out;
+
+      height: calc(var(--ha-border-radius-xl) / 2);
+      width: calc(var(--ha-border-radius-xl) / 2);
+      mask: radial-gradient(
+        calc(var(--ha-border-radius-lg) / 2) at 100% 100%,
+        transparent 98%,
+        black 100%
+      );
+    }
+
+    .label .label-content::after {
+      content: "";
+      position: absolute;
+      right: calc(-1 * var(--ha-border-radius-xl) / 2);
+      top: var(--ha-border-radius-xl);
+      height: calc(var(--ha-border-radius-xl) / 2);
+      width: calc(var(--ha-border-radius-xl) / 2);
+      background-color: var(--input-label-background);
+      transition: background-color 0.15s ease-in-out;
+      mask: radial-gradient(
+        calc(var(--ha-border-radius-xl) / 2) at 100% 0,
+        transparent 98%,
+        black 100%
+      );
+    }
+
+    :host(:focus-within) .label .label-content {
+      --input-label-background: var(--ha-color-fill-primary-quiet-hover);
+    }
+
+    wa-input.invalid .label .label-content {
+      --input-label-background: var(--ha-color-fill-danger-quiet-resting);
+    }
+
+    :host(:focus-within) wa-input.invalid .label .label-content {
+      --input-label-background: var(--ha-color-fill-danger-quiet-hover);
     }
 
     .label ha-svg-icon {
