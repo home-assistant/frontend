@@ -10,15 +10,14 @@ import {
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type {
+  LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { LogbookCardConfig } from "../../lovelace/cards/types";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
-import {
-  LARGE_SCREEN_CONDITION,
-} from "../../lovelace/strategies/helpers/screen-conditions";
 
 export interface SecurityViewStrategyConfig {
   type: "security";
