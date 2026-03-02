@@ -3,9 +3,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-input";
-import type { HaInput } from "../../../components/ha-input";
 import "../../../components/ha-svg-icon";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import {
   cloudLogin,
   cloudRegister,

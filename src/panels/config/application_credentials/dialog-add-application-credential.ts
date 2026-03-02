@@ -9,10 +9,10 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-generic-picker";
-import "../../../components/ha-input";
 import "../../../components/ha-markdown";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
+import "../../../components/input/ha-input";
 import type {
   ApplicationCredential,
   ApplicationCredentialsConfig,

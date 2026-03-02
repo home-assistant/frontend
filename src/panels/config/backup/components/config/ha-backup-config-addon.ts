@@ -1,11 +1,11 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-input";
-import type { HaInput } from "../../../../../components/ha-input";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type { SupervisorUpdateConfig } from "../../../../../data/supervisor/update";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 

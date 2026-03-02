@@ -6,7 +6,7 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-input";
+import "../../../../components/input/ha-input";
 import {
   canDecryptBackupOnDownload,
   getPreferredAgentForDownload,

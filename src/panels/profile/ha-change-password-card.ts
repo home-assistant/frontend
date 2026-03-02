@@ -4,8 +4,8 @@ import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-card";
-import "../../components/ha-input";
 import "../../components/ha-spinner";
+import "../../components/input/ha-input";
 import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
 import type { RefreshToken } from "../../data/refresh_token";
 import {

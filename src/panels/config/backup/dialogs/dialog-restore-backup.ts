@@ -5,8 +5,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-input";
 import "../../../../components/ha-spinner";
+import "../../../../components/input/ha-input";
 
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-alert";

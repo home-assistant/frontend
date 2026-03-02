@@ -11,8 +11,6 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-input";
-import type { HaInput } from "../../../components/ha-input";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-radio";
@@ -20,6 +18,8 @@ import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-spinner";
 import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   type AccessPoint,

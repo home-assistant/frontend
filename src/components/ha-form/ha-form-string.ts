@@ -4,8 +4,8 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-icon-button";
-import "../ha-input";
-import type { HaInput } from "../ha-input";
+import "../input/ha-input";
+import type { HaInput } from "../input/ha-input";
 import type {
   HaFormElement,
   HaFormStringData,
