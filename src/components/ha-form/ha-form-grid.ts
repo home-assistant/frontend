@@ -41,7 +41,7 @@ export class HaFormGrid extends LitElement implements HaFormElement {
     delegatesFocus: true,
   };
 
-  public async reportValidity(): Promise<boolean> {
+  public reportValidity(): boolean {
     const forms = this._forms ?? [];
     let valid = true;
     for (const form of forms) {

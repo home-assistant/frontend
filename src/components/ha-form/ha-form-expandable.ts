@@ -38,7 +38,7 @@ export class HaFormExpandable extends LitElement implements HaFormElement {
 
   @query("ha-form", true) private _form?: HaForm;
 
-  public async reportValidity(): Promise<boolean> {
+  public reportValidity(): boolean {
     return this._form?.reportValidity() ?? true;
   }
 
