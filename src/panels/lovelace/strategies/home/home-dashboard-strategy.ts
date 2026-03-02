@@ -21,7 +21,7 @@ export interface HomeDashboardStrategyConfig {
 
 @customElement("home-dashboard-strategy")
 export class HomeDashboardStrategy extends ReactiveElement {
-  static shouldUpdate(
+  static shouldRegenerate(
     _config: HomeDashboardStrategyConfig,
     oldHass: HomeAssistant,
     newHass: HomeAssistant

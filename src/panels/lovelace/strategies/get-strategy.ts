@@ -237,9 +237,9 @@ export const generateLovelaceSectionStrategy = async (
 
 /**
  * Synchronously checks whether a dashboard strategy needs regeneration.
- * Falls back to checking common registries if the strategy doesn't implement shouldUpdate.
+ * Falls back to checking common registries if the strategy doesn't implement shouldRegenerate.
  */
-export const checkDashboardStrategyShouldUpdate = (
+export const checkDashboardStrategyShouldRegenerate = (
   strategyConfig: LovelaceStrategyConfig,
   oldHass: HomeAssistant,
   newHass: HomeAssistant
@@ -264,11 +264,11 @@ export const checkDashboardStrategyShouldUpdate = (
       customElements.get(legacyTag)) as unknown as LovelaceStrategy | undefined;
   }
 
-  if (strategy?.shouldUpdate) {
-    return strategy.shouldUpdate(strategyConfig, oldHass, newHass);
+  if (strategy?.shouldRegenerate) {
+    return strategy.shouldRegenerate(strategyConfig, oldHass, newHass);
   }
 
-  // Default: check common registries for strategies without shouldUpdate
+  // Default: check common registries for strategies without shouldRegenerate
   return (
     oldHass.entities !== newHass.entities ||
     oldHass.devices !== newHass.devices ||

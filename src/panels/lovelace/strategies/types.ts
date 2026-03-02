@@ -7,7 +7,7 @@ import type { LovelaceGenericElementEditor } from "../types";
 
 export interface LovelaceStrategy<T = any> {
   generate(config: LovelaceStrategyConfig, hass: HomeAssistant): Promise<T>;
-  shouldUpdate?(
+  shouldRegenerate?(
     config: LovelaceStrategyConfig,
     oldHass: HomeAssistant,
     newHass: HomeAssistant

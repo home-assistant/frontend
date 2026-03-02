@@ -36,7 +36,7 @@ import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import {
-  checkDashboardStrategyShouldUpdate,
+  checkDashboardStrategyShouldRegenerate,
   generateLovelaceDashboardStrategy,
 } from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
@@ -199,7 +199,7 @@ export class LovelacePanel extends LitElement {
     ) {
       if (
         this.hass.config.state === "RUNNING" &&
-        checkDashboardStrategyShouldUpdate(
+        checkDashboardStrategyShouldRegenerate(
           this.lovelace.rawConfig.strategy,
           oldHass,
           this.hass

@@ -8,7 +8,7 @@ export type MapDashboardStrategyConfig = MapViewStrategyConfig;
 
 @customElement("map-dashboard-strategy")
 export class MapDashboardStrategy extends ReactiveElement {
-  static shouldUpdate(
+  static shouldRegenerate(
     _config: MapDashboardStrategyConfig,
     _oldHass: HomeAssistant,
     _newHass: HomeAssistant

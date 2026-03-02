@@ -9,7 +9,7 @@ export type IframeDashboardStrategyConfig = IframeViewStrategyConfig;
 
 @customElement("iframe-dashboard-strategy")
 export class IframeDashboardStrategy extends ReactiveElement {
-  static shouldUpdate(
+  static shouldRegenerate(
     _config: IframeDashboardStrategyConfig,
     _oldHass: HomeAssistant,
     _newHass: HomeAssistant

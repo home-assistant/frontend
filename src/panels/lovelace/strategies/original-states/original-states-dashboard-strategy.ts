@@ -10,7 +10,7 @@ export type OriginalStatesDashboardStrategyConfig =
 
 @customElement("original-states-dashboard-strategy")
 export class OriginalStatesDashboardStrategy extends ReactiveElement {
-  static shouldUpdate(
+  static shouldRegenerate(
     _config: OriginalStatesDashboardStrategyConfig,
     _oldHass: HomeAssistant,
     _newHass: HomeAssistant

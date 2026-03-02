@@ -31,14 +31,13 @@ export interface AreasDashboardStrategyConfig {
 
 @customElement("areas-dashboard-strategy")
 export class AreasDashboardStrategy extends ReactiveElement {
-  static shouldUpdate(
+  static shouldRegenerate(
     _config: AreasDashboardStrategyConfig,
     oldHass: HomeAssistant,
     newHass: HomeAssistant
   ): boolean {
     return (
       oldHass.areas !== newHass.areas ||
-      oldHass.floors !== newHass.floors ||
       oldHass.config.state !== newHass.config.state
     );
   }
