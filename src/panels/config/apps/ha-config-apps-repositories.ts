@@ -212,9 +212,8 @@ export class HaConfigAppsRepositories extends LitElement {
   private async _showAddRepositoryDialog() {
     const url = await showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.apps.repositories.add_title"),
-      inputLabel: this.hass.localize(
-        "ui.panel.config.apps.dialog.repositories.add"
-      ),
+      inputLabel: this.hass.localize("ui.panel.config.apps.repositories.url"),
+      inputType: "url",
       confirmText: this.hass.localize(
         "ui.panel.config.apps.dialog.repositories.add"
       ),
