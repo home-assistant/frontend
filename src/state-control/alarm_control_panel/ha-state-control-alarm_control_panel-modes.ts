@@ -25,6 +25,8 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
 
   @property({ attribute: false }) public stateObj!: AlarmControlPanelEntity;
 
+  @property({ type: Boolean, attribute: "force-arm" }) public forceArm = false;
+
   @state() _currentMode?: AlarmMode;
 
   private _modes = memoizeOne((stateObj: AlarmControlPanelEntity) => {
@@ -51,7 +53,8 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
       this,
       this.hass!,
       this.stateObj!,
-      mode
+      mode,
+      this.forceArm
     );
   }
 

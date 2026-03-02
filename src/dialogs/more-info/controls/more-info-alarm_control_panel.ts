@@ -1,12 +1,16 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../common/entity/state_color";
+import "../../../components/ha-alert";
+import "../../../components/ha-checkbox";
 import "../../../components/ha-control-button";
+import "../../../components/ha-formfield";
 import "../../../components/ha-state-icon";
 import type { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
 import { setProtectedAlarmControlPanelMode } from "../../../data/alarm_control_panel";
+import { getExtendedEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import "../../../state-control/alarm_control_panel/ha-state-control-alarm_control_panel-modes";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-state-header";
@@ -17,6 +21,41 @@ class MoreInfoAlarmControlPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: AlarmControlPanelEntity;
+
+  @state() private _forceArm = false;
+
+  @state() private _codeRequired?: boolean;
+
+  private async _updateCodeRequired() {
+    if (!this.stateObj || !this.hass) {
+      this._codeRequired = undefined;
+      return;
+    }
+    if (
+      !this.stateObj.attributes.code_arm_required ||
+      !this.stateObj.attributes.code_format
+    ) {
+      this._codeRequired = false;
+      return;
+    }
+    const entry = await getExtendedEntityRegistryEntry(
+      this.hass,
+      this.stateObj.entity_id
+    ).catch(() => undefined);
+    const defaultCode = entry?.options?.alarm_control_panel?.default_code;
+    this._codeRequired = !defaultCode;
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (changedProps.has("stateObj")) {
+      this._forceArm = false;
+      this._updateCodeRequired();
+    }
+  }
+
+  private _forceArmChanged(ev: Event): void {
+    this._forceArm = (ev.target as any).checked;
+  }
 
   private async _disarm() {
     setProtectedAlarmControlPanelMode(
@@ -41,6 +80,28 @@ class MoreInfoAlarmControlPanel extends LitElement {
         .hass=${this.hass}
         .stateObj=${this.stateObj}
       ></ha-more-info-state-header>
+      ${this.stateObj.attributes.status_message
+        ? html`
+            <ha-alert alert-type="warning">
+              ${this.stateObj.attributes.status_message}
+            </ha-alert>
+          `
+        : nothing}
+      ${this.stateObj.attributes.force_arm_available &&
+      this._codeRequired === false
+        ? html`
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.card.alarm_control_panel.force_arm"
+              )}
+            >
+              <ha-checkbox
+                .checked=${this._forceArm}
+                @change=${this._forceArmChanged}
+              ></ha-checkbox>
+            </ha-formfield>
+          `
+        : nothing}
       <div class="controls" style=${styleMap(style)}>
         ${["triggered", "arming", "pending"].includes(this.stateObj.state)
           ? html`
@@ -55,6 +116,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
               <ha-state-control-alarm_control_panel-modes
                 .stateObj=${this.stateObj}
                 .hass=${this.hass}
+                .forceArm=${this._forceArm}
               >
               </ha-state-control-alarm_control_panel-modes>
             `}
@@ -117,6 +179,15 @@ class MoreInfoAlarmControlPanel extends LitElement {
           background-color: var(--icon-color);
           transition: background-color 180ms ease-in-out;
           opacity: 0.2;
+        }
+        ha-alert {
+          display: block;
+          margin: 0 16px;
+        }
+        ha-formfield {
+          display: block;
+          text-align: center;
+          margin: 8px 0;
         }
         ha-control-button.disarm {
           height: 60px;

@@ -98,6 +98,7 @@
         "arm_night": "Arm night",
         "arm_vacation": "Arm vacation",
         "arm_custom_bypass": "Custom bypass",
+        "force_arm": "Force arm (bypass open sensors)",
         "modes_label": "Modes",
         "modes": {
           "armed_away": "Away",

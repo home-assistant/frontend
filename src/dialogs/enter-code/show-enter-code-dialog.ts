@@ -6,6 +6,8 @@ export interface EnterCodeDialogParams {
   submitText?: string;
   cancelText?: string;
   title?: string;
+  showForceArm?: boolean;
+  forceArm?: boolean;
   submit?: (code?: string) => void;
   cancel?: () => void;
 }

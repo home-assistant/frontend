@@ -4,8 +4,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
+import "../../components/ha-checkbox";
 import "../../components/ha-control-button";
 import "../../components/ha-dialog-footer";
+import "../../components/ha-formfield";
 import "../../components/ha-textfield";
 import "../../components/ha-dialog";
 import type { HaTextField } from "../../components/ha-textfield";
@@ -45,12 +47,15 @@ export class DialogEnterCode
 
   @state() private _narrow = false;
 
+  @state() private _forceArm = false;
+
   private _closeAction?: "submit" | "cancel";
 
   public async showDialog(dialogParams: EnterCodeDialogParams): Promise<void> {
     this._dialogParams = dialogParams;
     this._open = true;
     this._showClearButton = false;
+    this._forceArm = false;
     this._closeAction = undefined;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -74,6 +79,9 @@ export class DialogEnterCode
   }
 
   private _submit(): void {
+    if (this._dialogParams?.showForceArm) {
+      this._dialogParams.forceArm = this._forceArm;
+    }
     this._dialogParams?.submit?.(this._input?.value ?? "");
     this._closeAction = "submit";
     this.closeDialog();
@@ -100,6 +108,26 @@ export class DialogEnterCode
     const field = e.currentTarget as HaTextField;
     const val = field.value;
     this._showClearButton = !!val;
+  }
+
+  private _forceArmChanged(ev: Event): void {
+    this._forceArm = (ev.target as any).checked;
+  }
+
+  private _renderForceArm() {
+    if (!this._dialogParams?.showForceArm) {
+      return nothing;
+    }
+    return html`
+      <ha-formfield
+        .label=${this.hass!.localize("ui.card.alarm_control_panel.force_arm")}
+      >
+        <ha-checkbox
+          .checked=${this._forceArm}
+          @change=${this._forceArmChanged}
+        ></ha-checkbox>
+      </ha-formfield>
+    `;
   }
 
   protected render() {
@@ -130,6 +158,7 @@ export class DialogEnterCode
             pattern=${ifDefined(this._dialogParams.codePattern)}
             inputmode="text"
           ></ha-textfield>
+          ${this._renderForceArm()}
           <ha-dialog-footer slot="footer">
             <ha-button
               slot="secondaryAction"
@@ -165,6 +194,7 @@ export class DialogEnterCode
             inputmode="numeric"
             ?autofocus=${!this._narrow}
           ></ha-textfield>
+          ${this._renderForceArm()}
           <div class="keypad">
             ${BUTTONS.map((value) =>
               value === ""
@@ -215,6 +245,10 @@ export class DialogEnterCode
     ha-textfield {
       width: 100%;
       margin: auto;
+    }
+    ha-formfield {
+      display: block;
+      margin-top: 8px;
     }
     .container {
       display: flex;

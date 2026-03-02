@@ -12,6 +12,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
+import type { EnterCodeDialogParams } from "../dialogs/enter-code/show-enter-code-dialog";
 import type { HomeAssistant } from "../types";
 import { getExtendedEntityRegistryEntry } from "./entity/entity_registry";
 
@@ -31,6 +32,8 @@ interface AlarmControlPanelEntityAttributes extends HassEntityAttributeBase {
   code_format?: "text" | "number";
   changed_by?: string | null;
   code_arm_required?: boolean;
+  force_arm_available?: boolean;
+  status_message?: string | null;
 }
 
 export interface AlarmControlPanelEntity extends HassEntityBase {
@@ -47,11 +50,13 @@ export const callAlarmAction = (
     | "arm_vacation"
     | "arm_custom_bypass"
     | "disarm",
-  code?: string
+  code?: string,
+  forceArm?: boolean
 ) => {
   hass!.callService("alarm_control_panel", `alarm_${action}`, {
     entity_id: entity,
     code,
+    ...(forceArm ? { force_arm: true } : {}),
   });
 };
 
@@ -110,11 +115,13 @@ export const setProtectedAlarmControlPanelMode = async (
   element: HTMLElement,
   hass: HomeAssistant,
   stateObj: AlarmControlPanelEntity,
-  mode: AlarmMode
+  mode: AlarmMode,
+  forceArm?: boolean
 ) => {
   const { service } = ALARM_MODES[mode];
 
   let code: string | undefined;
+  let actualForceArm = forceArm;
 
   if (
     (mode !== "disarmed" &&
@@ -130,8 +137,9 @@ export const setProtectedAlarmControlPanelMode = async (
 
     if (!defaultCode) {
       const disarm = mode === "disarmed";
+      const showForceArm = !disarm && !!stateObj.attributes.force_arm_available;
 
-      const response = await showEnterCodeDialog(element, {
+      const dialogParams: EnterCodeDialogParams = {
         codeFormat: stateObj.attributes.code_format,
         title: hass.localize(
           `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
@@ -139,16 +147,23 @@ export const setProtectedAlarmControlPanelMode = async (
         submitText: hass.localize(
           `ui.card.alarm_control_panel.${disarm ? "disarm" : "arm"}`
         ),
-      });
+        showForceArm,
+      };
+
+      const response = await showEnterCodeDialog(element, dialogParams);
       if (response == null) {
         throw new Error("Code dialog closed");
       }
       code = response;
+      if (showForceArm) {
+        actualForceArm = dialogParams.forceArm;
+      }
     }
   }
 
   await hass.callService("alarm_control_panel", service, {
     entity_id: stateObj.entity_id,
     code,
+    ...(actualForceArm ? { force_arm: true } : {}),
   });
 };
