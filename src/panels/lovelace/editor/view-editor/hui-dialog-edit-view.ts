@@ -162,6 +162,7 @@ export class HuiDialogEditView extends LitElement {
         <ha-yaml-editor
           .hass=${this.hass}
           autofocus
+          in-dialog
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;
