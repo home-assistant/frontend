@@ -76,7 +76,6 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
@@ -314,8 +313,6 @@ class HUIRoot extends LitElement {
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
-        suffix:
-          this.hass.enableShortcuts && !isMobileClient ? "(A)" : undefined,
       },
       {
         icon: mdiRefresh,
@@ -406,6 +403,9 @@ class HUIRoot extends LitElement {
                   `
                 )}
             </ha-dropdown>
+            <ha-tooltip placement="bottom" .for="button-${index}">
+              ${label}
+            </ha-tooltip>
           `
         : html`
             <ha-icon-button
