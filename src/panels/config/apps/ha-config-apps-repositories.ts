@@ -211,9 +211,7 @@ export class HaConfigAppsRepositories extends LitElement {
 
   private async _showAddRepositoryDialog() {
     const url = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.apps.dialog.repositories.title"
-      ),
+      title: this.hass.localize("ui.panel.config.apps.repositories.add_title"),
       inputLabel: this.hass.localize(
         "ui.panel.config.apps.dialog.repositories.add"
       ),
@@ -241,8 +239,28 @@ export class HaConfigAppsRepositories extends LitElement {
     }
   }
 
-  private async _removeRepository(ev: Event) {
+  private _removeRepository = async (ev: Event) => {
     const slug = (ev.currentTarget as any).slug;
+    const repo = this._repositories?.find((r) => r.slug === slug);
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.apps.dialog.repositories.remove"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.apps.repositories.confirm_remove",
+        { name: repo?.name || slug }
+      ),
+      destructive: true,
+      confirmText: this.hass.localize(
+        "ui.panel.config.apps.dialog.repositories.remove"
+      ),
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     try {
       await removeStoreRepository(this.hass, slug);
       await this._loadData();
@@ -252,7 +270,7 @@ export class HaConfigAppsRepositories extends LitElement {
         text: extractApiErrorMessage(err),
       });
     }
-  }
+  };
 
   private async _loadData(): Promise<void> {
     try {

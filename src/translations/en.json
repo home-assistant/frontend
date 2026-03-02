@@ -2598,7 +2598,9 @@
           },
           "repositories": {
             "maintainer": "Maintainer",
-            "url": "URL"
+            "url": "URL",
+            "confirm_remove": "Are you sure you want to remove {name}?",
+            "add_title": "Add repository"
           },
           "dialog": {
             "repositories": {
