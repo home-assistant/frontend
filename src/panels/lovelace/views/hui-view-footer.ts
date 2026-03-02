@@ -241,8 +241,9 @@ export class HuiViewFooter extends LitElement {
       box-sizing: content-box;
       margin: 0 auto;
       max-width: calc(
-        var(--footer-column-span, 1) * var(--column-max-width, 500px) +
-          (var(--footer-column-span, 1) - 1) * var(--column-gap, 32px)
+        var(--footer-column-span, 1) / var(--column-count, 1) * 100% +
+          (var(--footer-column-span, 1) - var(--column-count, 1)) /
+          var(--column-count, 1) * var(--column-gap, 32px)
       );
     }
 
