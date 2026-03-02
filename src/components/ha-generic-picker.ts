@@ -159,13 +159,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   }
 
   protected render() {
-    // Only show label if it's not a top label and there is a value.
-    const label = this.useTopLabel && this.value ? undefined : this.label;
-
     return html`<div class="container">
-        ${this.useTopLabel && this.label
-          ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
-          : nothing}
         <div id="picker">
           <slot name="field">
             ${this.addButtonLabel && !this.value
@@ -183,7 +177,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                 </ha-button>`
               : html`<ha-picker-field
                   type="button"
-                  class=${this._opened ? "opened" : ""}
+                  .open=${this._opened}
                   compact
                   .unknown=${this._unknownValue}
                   .unknownItemText=${this.unknownItemText}
@@ -192,7 +186,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   @clear=${this._clear}
                   .icon=${this.icon}
                   .image=${this.image}
-                  .label=${label}
+                  .label=${this.label}
                   .placeholder=${this.placeholder}
                   .value=${this.value}
                   .valueRenderer=${this.valueRenderer}
@@ -462,10 +456,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           --ha-bottom-sheet-padding: 0;
           --ha-bottom-sheet-surface-background: var(--card-background-color);
           --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
-        }
-
-        ha-picker-field.opened {
-          --mdc-text-field-idle-line-color: var(--primary-color);
         }
       `,
     ];

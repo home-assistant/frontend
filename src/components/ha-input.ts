@@ -1,14 +1,14 @@
-import { preventDefault } from "@fullcalendar/core/internal";
 import "@home-assistant/webawesome/dist/components/animation/animation";
 import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
-import { mdiClose, mdiEye, mdiEyeOff, mdiInformationOutline } from "@mdi/js";
+import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-tooltip";
+import "./input/ha-input-label";
 
 @customElement("ha-input")
 export class HaInput extends LitElement {
@@ -313,27 +313,15 @@ export class HaInput extends LitElement {
       >
         ${this.label || this.hint
           ? html`
-              <div class="label" slot="label">
+              <ha-input-label
+                slot="label"
+                .label=${this.label}
+                .hint=${this.hint}
+              >
                 ${this.label
-                  ? html`<div class="text">
-                      <div class="label-content">
-                        <span>
-                          <slot name="label">${this.label}</slot>
-                        </span>
-                      </div>
-                    </div>`
-                  : nothing}
-                ${this.hint
-                  ? html`<ha-icon-button
-                        @click=${preventDefault}
-                        .path=${mdiInformationOutline}
-                        .label=${"Hint"}
-                        hide-title
-                        id="hint"
-                      ></ha-icon-button>
-                      <ha-tooltip for="hint">${this.hint}</ha-tooltip> `
-                  : nothing}
-              </div>
+                  ? nothing
+                  : html`<slot name="label" slot="label"></slot>`}
+              </ha-input-label>
             `
           : nothing}
         <slot name="start" slot="start"></slot>
@@ -441,123 +429,6 @@ export class HaInput extends LitElement {
       margin-block-end: 0;
     }
 
-    .label {
-      height: 24px;
-      display: flex;
-      width: 100%;
-      align-items: center;
-      color: var(--ha-color-text-secondary);
-      font-size: var(--ha-font-size-s);
-      font-weight: var(--ha-font-weight-medium);
-      gap: var(--ha-space-1);
-    }
-
-    .label .text {
-      height: 100%;
-      display: flex;
-      flex: 1;
-      padding-inline-end: calc(var(--ha-border-radius-xl) / 2);
-      max-width: calc(100% - var(--ha-border-radius-xl));
-    }
-
-    .label .label-content {
-      height: 100%;
-      display: flex;
-      max-width: 100%;
-      align-items: center;
-      position: relative;
-      --input-label-background: var(--ha-color-fill-neutral-quiet-resting);
-      background-color: var(--input-label-background);
-      border-top-left-radius: var(--ha-border-radius-xl);
-      border-top-right-radius: var(--ha-border-radius-xl);
-      transition: background-color 0.15s ease-in-out;
-    }
-
-    .label .label-content span {
-      padding: 0 var(--ha-space-2);
-      min-width: 0;
-      overflow-x: clip;
-      overflow-y: visible;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    :host([required]) .label .label-content span::after {
-      margin-inline-start: 1px;
-      content: var(--ha-input-required-marker, "*");
-    }
-
-    .label .label-content::before {
-      content: "";
-      position: absolute;
-      inset-inline-start: 0;
-      top: 100%;
-      background-color: var(--input-label-background);
-      transition: background-color 0.15s ease-in-out;
-      height: calc(var(--ha-border-radius-xl) / 2 + 4px);
-      width: calc(var(--ha-border-radius-xl) / 2 + 4px);
-      mask: radial-gradient(
-        calc(var(--ha-border-radius-lg) / 2) at 100% 100%,
-        transparent 98%,
-        black 100%
-      );
-    }
-
-    :dir(rtl) .label .label-content::before {
-      mask: radial-gradient(
-        calc(var(--ha-border-radius-lg) / 2) at 0 100%,
-        transparent 98%,
-        black 100%
-      );
-    }
-
-    .label .label-content::after {
-      content: "";
-      position: absolute;
-      inset-inline-end: calc(-1 * var(--ha-border-radius-xl) / 2);
-      top: var(--ha-border-radius-xl);
-      height: calc(var(--ha-border-radius-xl) / 2);
-      width: calc(var(--ha-border-radius-xl) / 2);
-      background-color: var(--input-label-background);
-      transition: background-color 0.15s ease-in-out;
-      mask: radial-gradient(
-        calc(var(--ha-border-radius-xl) / 2) at 100% 0,
-        transparent 98%,
-        black 100%
-      );
-    }
-
-    :dir(rtl) .label .label-content::after {
-      mask: radial-gradient(
-        calc(var(--ha-border-radius-xl) / 2) at 0 0,
-        transparent 98%,
-        black 100%
-      );
-    }
-
-    :host(:focus-within) .label .label-content {
-      --input-label-background: var(--ha-color-fill-primary-quiet-hover);
-    }
-
-    wa-input.invalid .label .label-content {
-      --input-label-background: var(--ha-color-fill-danger-quiet-resting);
-    }
-
-    :host(:focus-within) wa-input.invalid .label .label-content {
-      --input-label-background: var(--ha-color-fill-danger-quiet-hover);
-    }
-
-    .label ha-svg-icon {
-      color: var(--ha-color-on-disabled-normal);
-      --mdc-icon-size: 16px;
-    }
-
-    #hint {
-      --ha-icon-button-size: 16px;
-      --mdc-icon-size: 16px;
-      color: var(--ha-color-on-disabled-normal);
-    }
-
     wa-input::part(hint) {
       margin-block-start: 0;
       color: var(--ha-color-on-danger-quiet);
@@ -566,7 +437,6 @@ export class HaInput extends LitElement {
     }
 
     .error {
-      padding-top: var(--ha-space-1);
       transition:
         opacity 0.3s ease-out,
         height 0.3s ease-out;
@@ -583,6 +453,7 @@ export class HaInput extends LitElement {
     }
 
     .error.visible {
+      padding-top: var(--ha-space-1);
       height: calc(var(--ha-font-size-s) + var(--ha-space-2));
     }
 
@@ -592,6 +463,18 @@ export class HaInput extends LitElement {
 
     wa-input::part(end) {
       color: var(--ha-color-text-secondary);
+    }
+
+    :host(:focus-within) {
+      --ha-input-label-background: var(--ha-color-fill-primary-quiet-hover);
+    }
+
+    wa-input.invalid {
+      --ha-input-label-background: var(--ha-color-fill-danger-quiet-resting);
+    }
+
+    :host(:focus-within) wa-input.invalid {
+      --ha-input-label-background: var(--ha-color-fill-danger-quiet-hover);
     }
   `;
 }
