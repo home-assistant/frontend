@@ -38,6 +38,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
   ): boolean {
     return (
       oldHass.areas !== newHass.areas ||
+      oldHass.floors !== newHass.floors ||
       oldHass.config.state !== newHass.config.state
     );
   }
