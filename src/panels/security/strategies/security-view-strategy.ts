@@ -253,7 +253,6 @@ export class SecurityViewStrategy extends ReactiveElement {
                   "ui.panel.lovelace.strategy.security.activity"
                 ),
                 heading_style: "title",
-                grid_options: { rows: "auto" },
               } as LovelaceCardConfig,
               {
                 type: "logbook",
@@ -269,7 +268,7 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     return {
       type: "sections",
-      max_columns: 2,
+      max_columns: 3,
       sections: sections,
       ...(sidebarSection && {
         sidebar: {
