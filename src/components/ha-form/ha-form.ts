@@ -24,7 +24,7 @@ const LOAD_ELEMENTS = {
 };
 
 const getValue = (obj, item) =>
-  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : null;
+  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : undefined;
 
 const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
