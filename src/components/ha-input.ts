@@ -432,9 +432,9 @@ export class HaInput extends LitElement {
       background-color: var(--ha-color-fill-neutral-quiet-resting);
     }
 
-    wa-input:disabled {
+    wa-input:disabled::part(base) {
       --wa-form-control-border-color: var(--ha-color-border-disabled);
-      background-color: var(--ha-color-fill-disabled);
+      background-color: var(--ha-color-fill-disabled-loud-resting);
     }
 
     wa-input::part(label) {
