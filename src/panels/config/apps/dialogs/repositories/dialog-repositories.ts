@@ -35,7 +35,7 @@ import type { RepositoryDialogParams } from "./show-dialog-repositories";
 class AppsRepositoriesDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @query("#repository_input", true) private _optionInput?: HaTextField;
+  @query("#repository_input") private _optionInput?: HaTextField;
 
   @state() private _repositories?: HassioAddonRepository[];
 
