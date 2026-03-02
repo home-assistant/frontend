@@ -226,11 +226,12 @@ export class HaLabelsPicker extends LitElement {
 
   static styles = css`
     ha-chip-set {
-      background-color: var(--mdc-text-field-fill-color);
-      border-bottom: 1px solid var(--ha-color-border-neutral-normal);
-      border-top-right-radius: var(--ha-border-radius-sm);
-      border-top-left-radius: var(--ha-border-radius-sm);
+      background-color: var(--wa-form-control-background-color);
+      border-radius: var(--ha-border-radius-lg);
       padding: var(--ha-space-3);
+      border-width: 1px;
+      border-style: solid;
+      border-color: var(--wa-form-control-border-color);
     }
     .placeholder {
       color: var(--mdc-text-field-label-ink-color);
