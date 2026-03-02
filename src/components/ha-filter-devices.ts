@@ -144,7 +144,7 @@ export class HaFilterDevices extends LitElement {
       listItem.selected = false;
     } else {
       // select
-      this.value = [...[FILTER_NONE_OF_LISTED]];
+      this.value = [FILTER_NONE_OF_LISTED];
       listItem.selected = true;
     }
   }
