@@ -1,8 +1,8 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import "./ha-input";
-import type { HaInput } from "./ha-input";
+import "./input/ha-input";
+import type { HaInput } from "./input/ha-input";
 
 /**
  * Legacy wrapper around ha-input that preserves the mwc-textfield API.

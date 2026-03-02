@@ -8,7 +8,7 @@ import "../../../../components/ha-duration-input";
 import type { HaDurationData } from "../../../../components/ha-duration-input";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-input";
+import "../../../../components/input/ha-input";
 import type { ForDict } from "../../../../data/automation";
 import type { DurationDict, Timer } from "../../../../data/timer";
 import { haStyle } from "../../../../resources/styles";

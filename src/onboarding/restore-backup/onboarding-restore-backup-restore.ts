@@ -8,9 +8,9 @@ import type { HaProgressButton } from "../../components/buttons/ha-progress-butt
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-input";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
+import "../../components/input/ha-input";
 import {
   getPreferredAgentForDownload,
   type BackupContentExtended,

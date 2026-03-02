@@ -3,11 +3,11 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { clamp } from "../../../../../common/number/clamp";
 import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-input";
-import type { HaInput } from "../../../../../components/ha-input";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type { BackupConfig, Retention } from "../../../../../data/backup";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 

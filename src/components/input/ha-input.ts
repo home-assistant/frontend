@@ -5,10 +5,10 @@ import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import "./ha-icon-button";
-import "./ha-svg-icon";
-import "./ha-tooltip";
-import "./input/ha-input-label";
+import "../ha-icon-button";
+import "../ha-svg-icon";
+import "../ha-tooltip";
+import "./ha-input-label";
 
 @customElement("ha-input")
 export class HaInput extends LitElement {
