@@ -450,7 +450,7 @@ export class HaInput extends LitElement {
       height: 100%;
       display: flex;
       flex: 1;
-      padding-right: calc(var(--ha-border-radius-xl) / 2);
+      padding-inline-end: calc(var(--ha-border-radius-xl) / 2);
       max-width: calc(100% - var(--ha-border-radius-xl));
     }
 
@@ -477,15 +477,14 @@ export class HaInput extends LitElement {
     }
 
     :host([required]) .label .label-content span::after {
-      margin-left: 1px;
-      margin-right: 0;
+      margin-inline-start: 1px;
       content: var(--ha-input-required-marker, "*");
     }
 
     .label .label-content::before {
       content: "";
       position: absolute;
-      left: 0;
+      inset-inline-start: 0;
       top: 100%;
       height: var(--ha-space-3);
       background-color: var(--input-label-background);
@@ -500,10 +499,18 @@ export class HaInput extends LitElement {
       );
     }
 
+    :dir(rtl) .label .label-content::before {
+      mask: radial-gradient(
+        calc(var(--ha-border-radius-lg) / 2) at 0 100%,
+        transparent 98%,
+        black 100%
+      );
+    }
+
     .label .label-content::after {
       content: "";
       position: absolute;
-      right: calc(-1 * var(--ha-border-radius-xl) / 2);
+      inset-inline-end: calc(-1 * var(--ha-border-radius-xl) / 2);
       top: var(--ha-border-radius-xl);
       height: calc(var(--ha-border-radius-xl) / 2);
       width: calc(var(--ha-border-radius-xl) / 2);
@@ -511,6 +518,14 @@ export class HaInput extends LitElement {
       transition: background-color 0.15s ease-in-out;
       mask: radial-gradient(
         calc(var(--ha-border-radius-xl) / 2) at 100% 0,
+        transparent 98%,
+        black 100%
+      );
+    }
+
+    :dir(rtl) .label .label-content::after {
+      mask: radial-gradient(
+        calc(var(--ha-border-radius-xl) / 2) at 0 0,
         transparent 98%,
         black 100%
       );
