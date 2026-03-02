@@ -12,10 +12,11 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { canShowPage } from "../common/config/can_show_page";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
@@ -83,7 +84,15 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    * Do we need to add padding for a fab.
    * @type {Boolean}
    */
-  @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
+  @property({ attribute: "has-fab", type: Boolean, reflect: true })
+  public hasFab = false;
+
+  /**
+   * Show tabs on top or at bottom (narrow) of the page.
+   * @type {Boolean}
+   */
+  @property({ attribute: "show-tabs", type: Boolean, reflect: true })
+  public showTabs = false;
 
   /**
    * Add an extra row at the bottom of the data table
@@ -200,7 +209,19 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  protected willUpdate() {
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (
+      changedProperties.has("tabs") ||
+      (changedProperties.has("hass") &&
+        (this.hass?.config.components !==
+          changedProperties.get("hass")?.config.components ||
+          this.hass?.userData?.showAdvanced !==
+            changedProperties.get("hass")?.userData?.showAdvanced))
+    ) {
+      this.showTabs =
+        this.tabs.filter((page) => canShowPage(this.hass, page)).length > 1;
+    }
+
     if (this.hasUpdated) {
       return;
     }
@@ -491,7 +512,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 .noDataText=${this.noDataText}
                 .filter=${this.filter}
                 .selectable=${this._selectMode}
-                .hasFab=${this.hasFab}
                 .id=${this.id}
                 .clickable=${this.clickable}
                 .appendRow=${this.appendRow}
@@ -713,6 +733,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       width: 100%;
       height: 100%;
       --data-table-border-width: 0;
+      --data-table-empty-row-height: var(--safe-area-inset-bottom, 0px);
     }
     :host(:not([narrow])) ha-data-table,
     .pane {
@@ -724,6 +745,23 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
           ) - var(--safe-area-inset-bottom, 0px)
       );
       display: block;
+    }
+    /* Last content row should keep the same padding above the fab as the fab
+       has to the bottom (16px standard fab bottom padding) + the safe-area inset. */
+    :host([has-fab]) ha-data-table {
+      --data-table-empty-row-height: calc(
+        48px + 16px * 2 + var(--safe-area-inset-bottom, 0px)
+      );
+    }
+    /* In narrow view with tabs shown at the bottom, the tab bar already
+       accounts for safe-area-inset-bottom. No extra empty-row height is needed. */
+    :host([narrow][show-tabs]:not([has-fab])) ha-data-table {
+      --data-table-empty-row-height: 0px;
+    }
+    /* Reserve space for fab + doubled narrow-mode bottom padding (28px * 2)
+       when using narrow layout with bottom tabs. */
+    :host([narrow][show-tabs][has-fab]) ha-data-table {
+      --data-table-empty-row-height: calc(48px + 28px * 2);
     }
 
     .pane-content {
