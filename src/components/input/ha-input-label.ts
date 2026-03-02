@@ -11,6 +11,8 @@ export class HaInputLabel extends LitElement {
 
   @property() hint?: string;
 
+  @property({ type: Boolean, reflect: true }) inline = false;
+
   render() {
     return html`
       ${this.label
