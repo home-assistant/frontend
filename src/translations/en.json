@@ -10336,6 +10336,7 @@
         }
       },
       "energy": {
+        "error_loading_preferences": "An error occurred loading energy preferences: {error}",
         "title": {
           "overview": "Summary",
           "electricity": "Electricity",

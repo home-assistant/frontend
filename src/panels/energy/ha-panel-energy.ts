@@ -189,7 +189,9 @@ class PanelEnergy extends LitElement {
       return html`
         <div class="centered">
           <ha-alert alert-type="error">
-            An error occurred loading energy preferences: ${this._error}
+            ${this.hass.localize("ui.panel.energy.error_loading_preferences", {
+              error: this._error,
+            })}
           </ha-alert>
         </div>
       `;
