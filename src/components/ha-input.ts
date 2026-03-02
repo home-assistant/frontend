@@ -421,14 +421,20 @@ export class HaInput extends LitElement {
       background-color: var(--ha-color-fill-neutral-quiet-resting);
     }
 
-    wa-input::part(base):focus-within {
+    wa-input:not([disabled])::part(base):focus-within {
       outline: none;
       --wa-form-control-border-color: var(--ha-color-border-primary-normal);
+      background-color: var(--ha-color-fill-neutral-quiet-resting);
     }
 
-    wa-input.invalid,
-    wa-input.invalid::part(base):focus-within {
+    wa-input.invalid:not([disabled])::part(base):focus-within {
       --wa-form-control-border-color: var(--ha-color-border-danger-normal);
+      background-color: var(--ha-color-fill-neutral-quiet-resting);
+    }
+
+    wa-input:disabled {
+      --wa-form-control-border-color: var(--ha-color-border-disabled);
+      background-color: var(--ha-color-fill-disabled);
     }
 
     wa-input::part(label) {
@@ -486,12 +492,10 @@ export class HaInput extends LitElement {
       position: absolute;
       inset-inline-start: 0;
       top: 100%;
-      height: var(--ha-space-3);
       background-color: var(--input-label-background);
       transition: background-color 0.15s ease-in-out;
-
-      height: calc(var(--ha-border-radius-xl) / 2);
-      width: calc(var(--ha-border-radius-xl) / 2);
+      height: calc(var(--ha-border-radius-xl) / 2 + 4px);
+      width: calc(var(--ha-border-radius-xl) / 2 + 4px);
       mask: radial-gradient(
         calc(var(--ha-border-radius-lg) / 2) at 100% 100%,
         transparent 98%,
