@@ -29,7 +29,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import { showRegistriesDialog } from "./dialogs/registries/show-dialog-registries";
+
 import "./supervisor-apps-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
@@ -236,7 +236,7 @@ export class HaConfigAppsAvailable extends LitElement {
   }
 
   private _manageRegistries() {
-    showRegistriesDialog(this);
+    navigate("/config/apps/registries");
   }
 
   private async _loadData(): Promise<void> {
