@@ -227,7 +227,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         : (this.localize?.("ui.common.search") ?? "Search"));
 
     return html`<ha-textfield
-        .label=${searchLabel}
+        .placeholder=${searchLabel}
         @blur=${this._resetSelectedItem}
         @input=${this._filterChanged}
         .iconTrailing=${this.clearable && !!this._search}
@@ -801,6 +801,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           flex-direction: column;
           padding-top: var(--ha-space-4);
           flex: 1;
+          --ha-input-padding-top: 0;
         }
 
         :host([clearable]) {

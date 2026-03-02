@@ -5,6 +5,7 @@ import type WaInput from "@home-assistant/webawesome/dist/components/input/input
 import { mdiClose, mdiEye, mdiEyeOff, mdiInformationOutline } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-tooltip";
@@ -74,7 +75,7 @@ export class HaInput extends LitElement {
   public withoutSpinButtons = false;
 
   /** Makes the input a required field. */
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   public required = false;
 
   /** A regular expression pattern to validate input against. */
@@ -281,7 +282,9 @@ export class HaInput extends LitElement {
         .size=${this.size}
         .appearance=${this.appearance}
         .withClear=${this.withClear}
-        .placeholder=${this.placeholder}
+        .placeholder=${!this.placeholder || this.label || !this.required
+          ? this.placeholder
+          : this._placeholderWithRequiredMarker(this.placeholder)}
         .readonly=${this.readonly}
         .passwordToggle=${this.passwordToggle}
         .passwordVisible=${this.passwordVisible}
@@ -308,27 +311,31 @@ export class HaInput extends LitElement {
         @blur=${this._handleBlur}
         @wa-invalid=${this._handleInvalid}
       >
-        <div class="label" slot="label">
-          ${this.label
-            ? html`<div class="text">
-                <div class="label-content">
-                  <span>
-                    <slot name="label">${this.label}</slot>
-                  </span>
-                </div>
-              </div>`
-            : nothing}
-          ${this.hint
-            ? html`<ha-icon-button
-                  @click=${preventDefault}
-                  .path=${mdiInformationOutline}
-                  .label=${"Hint"}
-                  hide-title
-                  id="hint"
-                ></ha-icon-button>
-                <ha-tooltip for="hint">${this.hint}</ha-tooltip> `
-            : nothing}
-        </div>
+        ${this.label || this.hint
+          ? html`
+              <div class="label" slot="label">
+                ${this.label
+                  ? html`<div class="text">
+                      <div class="label-content">
+                        <span>
+                          <slot name="label">${this.label}</slot>
+                        </span>
+                      </div>
+                    </div>`
+                  : nothing}
+                ${this.hint
+                  ? html`<ha-icon-button
+                        @click=${preventDefault}
+                        .path=${mdiInformationOutline}
+                        .label=${"Hint"}
+                        hide-title
+                        id="hint"
+                      ></ha-icon-button>
+                      <ha-tooltip for="hint">${this.hint}</ha-tooltip> `
+                  : nothing}
+              </div>
+            `
+          : nothing}
         <slot name="start" slot="start"></slot>
         <slot name="end" slot="end"></slot>
         <slot name="clear-icon" slot="clear-icon">
@@ -374,6 +381,26 @@ export class HaInput extends LitElement {
   private _handleInvalid() {
     this._invalid = true;
   }
+
+  private _placeholderWithRequiredMarker = memoizeOne((placeholder: string) => {
+    let marker = getComputedStyle(this).getPropertyValue(
+      "--ha-input-required-marker"
+    );
+
+    if (!marker) {
+      marker = "*";
+    }
+
+    if (marker.startsWith('"') && marker.endsWith('"')) {
+      marker = marker.slice(1, -1);
+    }
+
+    if (!marker) {
+      return placeholder;
+    }
+
+    return `${placeholder}${marker}`;
+  });
 
   static styles = css`
     :host {
@@ -447,6 +474,12 @@ export class HaInput extends LitElement {
       overflow-y: visible;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    :host([required]) .label .label-content span::after {
+      margin-left: 1px;
+      margin-right: 0;
+      content: var(--ha-input-required-marker, "*");
     }
 
     .label .label-content::before {
