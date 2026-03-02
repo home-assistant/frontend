@@ -2600,16 +2600,13 @@
             "maintainer": "Maintainer",
             "url": "URL",
             "confirm_remove": "Are you sure you want to remove {name}?",
-            "add_title": "Add repository"
+            "add_title": "Add repository",
+            "add": "Add",
+            "remove": "Remove",
+            "used": "In use by installed apps",
+            "no_repositories": "You don't have any app repositories configured"
           },
           "dialog": {
-            "repositories": {
-              "title": "Manage app repositories",
-              "add": "Add",
-              "remove": "Remove",
-              "used": "In use by installed apps",
-              "no_repositories": "You don't have any app repositories configured"
-            },
             "registries": {
               "title_add": "Add registry",
               "title_manage": "Manage registries",

@@ -91,7 +91,7 @@ export class HaConfigAppsRepositories extends LitElement {
       },
       actions: {
         title: "",
-        label: localize("ui.panel.config.apps.dialog.repositories.remove"),
+        label: localize("ui.panel.config.apps.repositories.remove"),
         type: "icon-button",
         showNarrow: true,
         lastFixed: true,
@@ -101,8 +101,8 @@ export class HaConfigAppsRepositories extends LitElement {
             <ha-tooltip .for="delete-btn-${row.slug}">
               ${localize(
                 used
-                  ? "ui.panel.config.apps.dialog.repositories.used"
-                  : "ui.panel.config.apps.dialog.repositories.remove"
+                  ? "ui.panel.config.apps.repositories.used"
+                  : "ui.panel.config.apps.repositories.remove"
               )}
             </ha-tooltip>
             <ha-icon-button
@@ -191,15 +191,13 @@ export class HaConfigAppsRepositories extends LitElement {
           .columns=${this._columns(this.hass.localize, usedRepositories)}
           .data=${this._data(repositories)}
           .noDataText=${this.hass.localize(
-            "ui.panel.config.apps.dialog.repositories.no_repositories"
+            "ui.panel.config.apps.repositories.no_repositories"
           )}
           id="slug"
           has-fab
         ></ha-data-table>
         <ha-fab
-          .label=${this.hass.localize(
-            "ui.panel.config.apps.dialog.repositories.add"
-          )}
+          .label=${this.hass.localize("ui.panel.config.apps.repositories.add")}
           extended
           @click=${this._showAddRepositoryDialog}
         >
@@ -214,9 +212,7 @@ export class HaConfigAppsRepositories extends LitElement {
       title: this.hass.localize("ui.panel.config.apps.repositories.add_title"),
       inputLabel: this.hass.localize("ui.panel.config.apps.repositories.url"),
       inputType: "url",
-      confirmText: this.hass.localize(
-        "ui.panel.config.apps.dialog.repositories.add"
-      ),
+      confirmText: this.hass.localize("ui.panel.config.apps.repositories.add"),
     });
 
     if (!url) {
@@ -243,16 +239,14 @@ export class HaConfigAppsRepositories extends LitElement {
     const repo = this._repositories?.find((r) => r.slug === slug);
 
     const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.apps.dialog.repositories.remove"
-      ),
+      title: this.hass.localize("ui.panel.config.apps.repositories.remove"),
       text: this.hass.localize(
         "ui.panel.config.apps.repositories.confirm_remove",
         { name: repo?.name || slug }
       ),
       destructive: true,
       confirmText: this.hass.localize(
-        "ui.panel.config.apps.dialog.repositories.remove"
+        "ui.panel.config.apps.repositories.remove"
       ),
     });
 
