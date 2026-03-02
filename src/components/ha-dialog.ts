@@ -204,7 +204,10 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     `;
   }
 
-  private _handleShow = async () => {
+  private _handleShow = async (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     this._open = true;
     fireEvent(this, "opened");
 
@@ -230,7 +233,10 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     });
   };
 
-  private _handleAfterShow = () => {
+  private _handleAfterShow = (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     fireEvent(this, "after-show");
   };
 
