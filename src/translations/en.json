@@ -2596,6 +2596,10 @@
             "missing_apps": "Looking for apps? Enable advanced mode.",
             "no_results_found": "No results found in {repository}"
           },
+          "repositories": {
+            "maintainer": "Maintainer",
+            "url": "URL"
+          },
           "dialog": {
             "repositories": {
               "title": "Manage app repositories",
