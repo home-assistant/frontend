@@ -159,7 +159,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     if (!entityPicture) return undefined;
 
-    let imageUrl = this.hass!.hassUrl(addBrandsAuth(entityPicture));
+    let imageUrl = addBrandsAuth(
+      this.hass!.hassUrl(entityPicture),
+      this.hass?.auth.data.hassUrl
+    );
     if (computeDomain(entity.entity_id) === "camera") {
       imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
     }
