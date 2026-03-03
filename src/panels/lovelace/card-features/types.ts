@@ -31,11 +31,6 @@ export interface CoverPositionPresetCardFeatureConfig {
   positions?: number[];
 }
 
-export interface CoverTiltPresetCardFeatureConfig {
-  type: "cover-tilt-preset";
-  positions?: number[];
-}
-
 export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
 }
@@ -258,7 +253,6 @@ export type LovelaceCardFeatureConfig =
   | CoverPositionCardFeatureConfig
   | CoverPositionPresetCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
-  | CoverTiltPresetCardFeatureConfig
   | CoverTiltCardFeatureConfig
   | DateSetCardFeatureConfig
   | FanDirectionCardFeatureConfig
