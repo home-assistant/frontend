@@ -1,10 +1,4 @@
-import {
-  mdiCheckCircle,
-  mdiClose,
-  mdiCloseCircle,
-  mdiRobotDead,
-  mdiVectorSquareRemove,
-} from "@mdi/js";
+import { mdiClose } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -127,7 +121,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
   private _renderStepContent(): TemplateResult {
     if (this._step === "start") {
       return html`
-        <ha-svg-icon .path=${mdiVectorSquareRemove}></ha-svg-icon>
         <p>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.remove_node.introduction"
@@ -156,7 +149,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_removal") {
       return html`
-        <ha-svg-icon .path=${mdiRobotDead}></ha-svg-icon>
         <p>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.remove_node.failed_node_intro",
@@ -168,7 +160,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_exclusion") {
       return html`
-        <ha-svg-icon .path=${mdiVectorSquareRemove}></ha-svg-icon>
         <p>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.remove_node.exclusion_intro"
@@ -191,21 +182,16 @@ class DialogZWaveJSRemoveNode extends LitElement {
     }
 
     if (this._step === "finished") {
-      return html` <ha-svg-icon
-          .path=${mdiCheckCircle}
-          class="success"
-        ></ha-svg-icon>
-        <p>
-          ${this.hass.localize(
-            "ui.panel.config.zwave_js.remove_node.exclusion_finished",
-            { id: html`<b>${this._node!.node_id}</b>` }
-          )}
-        </p>`;
+      return html`<p>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.remove_node.exclusion_finished",
+          { id: html`<b>${this._node!.node_id}</b>` }
+        )}
+      </p>`;
     }
 
     // failed
     return html`
-      <ha-svg-icon .path=${mdiCloseCircle} class="failed"></ha-svg-icon>
       <p>
         ${this.hass.localize(
           "ui.panel.config.zwave_js.remove_node.exclusion_failed"
@@ -369,10 +355,10 @@ class DialogZWaveJSRemoveNode extends LitElement {
       css`
         .content {
           display: flex;
-          align-items: center;
+          align-items: stretch;
           flex-direction: column;
           gap: var(--ha-space-4);
-          text-align: center;
+          text-align: start;
         }
 
         .content ha-spinner {
@@ -383,18 +369,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-svg-icon {
-          padding: 32px 0;
-          width: 48px;
-          height: 48px;
-        }
-        ha-svg-icon.success {
-          color: var(--success-color);
-        }
-
-        ha-svg-icon.failed {
-          color: var(--error-color);
-        }
         ha-alert {
           width: 100%;
         }
@@ -404,7 +378,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
         }
 
         ha-list-item {
-          --mdc-list-side-padding: 24px;
+          --mdc-list-side-padding: var(--ha-space-2);
         }
       `,
     ];
