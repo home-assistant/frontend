@@ -110,6 +110,17 @@ class DialogSystemLogDetail extends LitElement {
             ${item.name}<br />
             ${this.hass.localize("ui.panel.config.logs.detail.source")}:
             ${item.source.join(":")}
+            ${item.error_type
+              ? html`
+                  <br />
+                  ${this.hass.localize(
+                    "ui.panel.config.logs.detail.error_type"
+                  )}:
+                  ${this.hass.localize(
+                    `ui.panel.config.logs.error_type.${item.error_type}`
+                  )}
+                `
+              : ""}
             ${integration
               ? html`
                   <br />

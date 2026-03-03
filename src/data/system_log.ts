@@ -7,10 +7,18 @@ export type SystemLogLevel =
   | "info"
   | "debug";
 
+export type SystemLogErrorType =
+  | "auth"
+  | "connection"
+  | "timeout"
+  | "ssl"
+  | "dns";
+
 export interface LoggedError {
   name: string;
   message: [string];
   level: SystemLogLevel;
+  error_type?: SystemLogErrorType;
   source: [string, number];
   exception: string;
   count: number;

@@ -4195,6 +4195,13 @@
             "info": "INFO",
             "debug": "DEBUG"
           },
+          "error_type": {
+            "auth": "Authentication",
+            "connection": "Connection",
+            "timeout": "Timeout",
+            "ssl": "TLS/SSL",
+            "dns": "DNS"
+          },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
           "show_full_logs": "Show raw logs",
@@ -4219,6 +4226,7 @@
             "integration": "[%key:ui::panel::config::integrations::integration%]",
             "documentation": "documentation",
             "issues": "issues",
+            "error_type": "Error type",
             "first_occurred": "First occurred",
             "number_of_occurrences": "{count} {count, plural,\n one {occurrence}\n other {occurrences}\n}",
             "last_logged": "Last logged"
