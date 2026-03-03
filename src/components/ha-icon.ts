@@ -128,14 +128,7 @@ export class HaIcon extends LitElement {
       return;
     }
 
-    let databaseIcon: string | undefined;
-    try {
-      databaseIcon = await getIcon(iconName);
-    } catch (_err) {
-      // Firefox in private mode doesn't support IDB
-      // iOS Safari sometimes doesn't open the DB
-      databaseIcon = undefined;
-    }
+    const databaseIcon = await getIcon(iconName);
 
     if (databaseIcon) {
       if (this.icon === requestedIcon) {

@@ -1,6 +1,5 @@
-import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
-import memoizeOne from "memoize-one";
-import { promiseTimeout } from "../common/util/promise-timeout";
+import type { UseStore } from "idb-keyval";
+import { clear, get, set, createStore } from "idb-keyval";
 import { iconMetadata } from "../resources/icon-metadata";
 import type { IconMeta } from "../types";
 
@@ -8,7 +7,19 @@ export type Icons = Record<string, string>;
 
 export type Chunks = Record<string, Promise<Icons>>;
 
-const getStore = memoizeOne(async () => {
+let iconStorePromise: Promise<UseStore> | undefined;
+
+const getStore = (): Promise<UseStore> => {
+  if (!iconStorePromise) {
+    iconStorePromise = initIconStore().catch((e) => {
+      iconStorePromise = undefined;
+      throw e;
+    });
+  }
+  return iconStorePromise;
+};
+
+const initIconStore = async (): Promise<UseStore> => {
   const iconStore = createStore("hass-icon-db", "mdi-icon-store");
 
   // Supervisor doesn't use icons, and should not update/downgrade the icon DB.
@@ -22,48 +33,21 @@ const getStore = memoizeOne(async () => {
   }
 
   return iconStore;
-});
+};
 
 export const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
-let toRead: [
-  string,
-  (iconPath: string | undefined) => void,
-  (e: any) => void,
-][] = [];
-
-// Queue up as many icon fetches in 1 transaction
-export const getIcon = (iconName: string) =>
-  new Promise<string | undefined>((resolve, reject) => {
-    toRead.push([iconName, resolve, reject]);
-
-    if (toRead.length > 1) {
-      return;
-    }
-
-    // Start initializing the store, so it's ready when we need it
-    const iconStoreProm = getStore();
-    const readIcons = async () => {
-      const iconStore = await iconStoreProm;
-      iconStore("readonly", (store) => {
-        for (const [iconName_, resolve_, reject_] of toRead) {
-          promisifyRequest<string | undefined>(store.get(iconName_))
-            .then((icon) => resolve_(icon))
-            .catch((e) => reject_(e));
-        }
-        toRead = [];
-      });
-    };
-
-    promiseTimeout(1000, readIcons()).catch((e) => {
-      // Firefox in private mode doesn't support IDB
-      // Safari sometime doesn't open the DB so we time out
-      for (const [, , reject_] of toRead) {
-        reject_(e);
-      }
-      toRead = [];
-    });
-  });
+export const getIcon = async (
+  iconName: string
+): Promise<string | undefined> => {
+  try {
+    const iconStore = await getStore();
+    return await get<string | undefined>(iconName, iconStore);
+  } catch (_err) {
+    // IDB unavailable (Firefox private mode, Safari issues)
+    return undefined;
+  }
+};
 
 export const findIconChunk = (icon: string): string => {
   let lastChunk: IconMeta;
