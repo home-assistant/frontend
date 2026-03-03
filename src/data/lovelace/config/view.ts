@@ -37,7 +37,7 @@ export interface LovelaceViewHeaderConfig {
   badges_wrap?: "wrap" | "scroll";
 }
 
-export const DEFAULT_FOOTER_MAX_WIDTH = 600;
+export const DEFAULT_FOOTER_MAX_WIDTH_PX = 600;
 
 export interface LovelaceViewFooterConfig {
   card?: LovelaceCardConfig;

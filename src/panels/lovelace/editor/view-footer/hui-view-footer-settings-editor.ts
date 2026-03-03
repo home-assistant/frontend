@@ -7,7 +7,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import {
-  DEFAULT_FOOTER_MAX_WIDTH,
+  DEFAULT_FOOTER_MAX_WIDTH_PX,
   type LovelaceViewFooterConfig,
 } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -34,7 +34,7 @@ export class HuiViewFooterSettingsEditor extends LitElement {
 
   protected render() {
     const data = {
-      max_width: this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH,
+      max_width: this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH_PX,
     };
 
     return html`

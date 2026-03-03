@@ -8,7 +8,7 @@ import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import {
-  DEFAULT_FOOTER_MAX_WIDTH,
+  DEFAULT_FOOTER_MAX_WIDTH_PX,
   type LovelaceViewConfig,
   type LovelaceViewFooterConfig,
 } from "../../../data/lovelace/config/view";
@@ -179,7 +179,7 @@ export class HuiViewFooter extends LitElement {
       <div
         class=${classMap({ wrapper: true, "edit-mode": editMode })}
         style=${styleMap({
-          "--footer-max-width": `${this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH}px`,
+          "--footer-max-width": `${this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH_PX}px`,
         })}
       >
         ${editMode
