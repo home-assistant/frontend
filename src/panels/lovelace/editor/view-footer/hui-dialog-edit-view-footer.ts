@@ -91,7 +91,6 @@ export class HuiDialogEditViewFooter extends LitElement {
         <hui-view-footer-settings-editor
           .hass=${this.hass}
           .config=${this._config}
-          .maxColumns=${this._params.maxColumns}
           @config-changed=${this._configChanged}
         ></hui-view-footer-settings-editor>
       `;

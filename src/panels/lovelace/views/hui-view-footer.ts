@@ -19,7 +19,6 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { replaceView } from "../editor/config-util";
 import { showEditViewFooterDialog } from "../editor/view-footer/show-edit-view-footer-dialog";
 import type { Lovelace } from "../types";
-import { DEFAULT_MAX_COLUMNS } from "./hui-sections-view";
 
 @customElement("hui-view-footer")
 export class HuiViewFooter extends LitElement {
@@ -97,13 +96,8 @@ export class HuiViewFooter extends LitElement {
   }
 
   private _configure() {
-    const viewConfig = this.lovelace.config.views[
-      this.viewIndex
-    ] as LovelaceViewConfig;
-
     showEditViewFooterDialog(this, {
       config: this.config || {},
-      maxColumns: viewConfig.max_columns || DEFAULT_MAX_COLUMNS,
       saveConfig: (newConfig: LovelaceViewFooterConfig) => {
         this._saveFooterConfig(newConfig);
       },
@@ -180,13 +174,13 @@ export class HuiViewFooter extends LitElement {
 
     if (!card && !editMode) return nothing;
 
-    const columnSpan = this.config?.column_span || 1;
-
     return html`
       <div
         class=${classMap({ wrapper: true, "edit-mode": editMode })}
         style=${styleMap({
-          "--footer-column-span": String(columnSpan),
+          "--footer-max-width": this.config?.max_width
+            ? `${this.config.max_width}px`
+            : undefined,
         })}
       >
         ${editMode
@@ -228,23 +222,18 @@ export class HuiViewFooter extends LitElement {
 
     :host([sticky]) {
       position: sticky;
-      bottom: 0;
+      bottom: var(--row-gap);
       z-index: 4;
     }
 
     .wrapper {
-      padding: var(--ha-space-4) 0;
-      padding-bottom: max(
-        var(--ha-space-4),
-        var(--safe-area-inset-bottom, 0px)
+      padding: var(--ha-space-2) 0;
+      padding-bottom: calc(
+        max(var(--ha-space-2), var(--safe-area-inset-bottom, 0px))
       );
       box-sizing: content-box;
       margin: 0 auto;
-      max-width: calc(
-        var(--footer-column-span, 1) / var(--column-count, 1) * 100% +
-          (var(--footer-column-span, 1) - var(--column-count, 1)) /
-          var(--column-count, 1) * var(--column-gap, 32px)
-      );
+      max-width: var(--footer-max-width, 600px);
     }
 
     .wrapper:not(.edit-mode) {
@@ -315,7 +304,7 @@ export class HuiViewFooter extends LitElement {
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
       background: var(--secondary-background-color);
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--primary-text-color);
     }

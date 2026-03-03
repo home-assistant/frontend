@@ -39,7 +39,7 @@ export interface LovelaceViewHeaderConfig {
 
 export interface LovelaceViewFooterConfig {
   card?: LovelaceCardConfig;
-  column_span?: number;
+  max_width?: number;
 }
 
 export interface LovelaceViewSidebarConfig {
