@@ -123,6 +123,8 @@ export class HaPickerField extends PickerMixin(LitElement) {
           border-width: 1px;
           border-style: solid;
           border-color: var(--wa-form-control-border-color);
+          --ha-ripple-hover-color: var(--wa-form-control-border-color);
+          --ha-ripple-hover-opacity: 0;
           --md-list-item-one-line-container-height: 48px;
           --md-list-item-two-line-container-height: 48px;
           --md-list-item-top-space: 0px;
@@ -136,16 +138,15 @@ export class HaPickerField extends PickerMixin(LitElement) {
         }
 
         ha-combo-box-item[disabled] {
-          background-color: var(--ha-color-fill-disabled-loud-resting);
+          background-color: var(--ha-color-fill-disabled-quiet-resting);
         }
 
-        ha-combo-box-item:focus,
+        ha-combo-box-item:not([disabled]):hover {
+          border-color: var(--ha-color-border-neutral-normal);
+        }
+
         :host([open]) ha-combo-box-item {
           border-color: var(--ha-color-border-primary-normal);
-        }
-
-        :host([open]) ha-combo-box-item {
-          background-color: var(--ha-color-fill-neutral-quiet-resting);
         }
 
         :host([unknown]) ha-combo-box-item {
