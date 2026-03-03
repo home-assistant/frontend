@@ -40,7 +40,6 @@ export class HuiViewFooterSettingsEditor extends LitElement {
         .data=${data}
         .schema=${SCHEMA}
         .computeLabel=${this._computeLabel}
-        .computeHelper=${this._computeHelper}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -62,11 +61,6 @@ export class HuiViewFooterSettingsEditor extends LitElement {
     this.hass.localize(
       `ui.panel.lovelace.editor.edit_view_footer.settings.${schema.name}`
     );
-
-  private _computeHelper = (schema: SchemaUnion<typeof SCHEMA>) =>
-    this.hass.localize(
-      `ui.panel.lovelace.editor.edit_view_footer.settings.${schema.name}_helper`
-    ) || "";
 }
 
 declare global {
