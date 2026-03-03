@@ -22,7 +22,6 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       dense_section_placement: true,
       max_columns: 3,
       footer: {
-        column_span: 1.1,
         card: {
           type: "energy-date-selection",
           collection_key: collectionKey,
