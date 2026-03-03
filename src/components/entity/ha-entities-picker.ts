@@ -92,66 +92,72 @@ class HaEntitiesPicker extends LitElement {
       ${this.label
         ? html`<ha-input-label .label=${this.label}></ha-input-label>`
         : nothing}
-      <div class="wrapper">
-        <ha-sortable
-          .disabled=${!this.reorder || this.disabled}
-          handle-selector=".entity-handle"
-          @item-moved=${this._entityMoved}
-        >
-          <div class="list">
-            ${currentEntities.map(
-              (entityId) => html`
-                <div class="entity">
-                  <ha-entity-picker
-                    .curValue=${entityId}
-                    .hass=${this.hass}
-                    .includeDomains=${this.includeDomains}
-                    .excludeDomains=${this.excludeDomains}
-                    .includeEntities=${this.includeEntities}
-                    .excludeEntities=${this.excludeEntities}
-                    .includeDeviceClasses=${this.includeDeviceClasses}
-                    .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
-                    .entityFilter=${this.entityFilter}
-                    .value=${entityId}
-                    .disabled=${this.disabled}
-                    .createDomains=${this.createDomains}
-                    @value-changed=${this._entityChanged}
-                  ></ha-entity-picker>
-                  ${this.reorder
-                    ? html`
-                        <ha-svg-icon
-                          class="entity-handle"
-                          .path=${mdiDragHorizontalVariant}
-                        ></ha-svg-icon>
-                      `
-                    : nothing}
-                </div>
-              `
-            )}
-          </div>
-        </ha-sortable>
-        <div class="add">
-          <ha-entity-picker
-            .hass=${this.hass}
-            .includeDomains=${this.includeDomains}
-            .excludeDomains=${this.excludeDomains}
-            .includeEntities=${this.includeEntities}
-            .excludeEntities=${this._excludeEntities(
-              this.value,
-              this.excludeEntities
-            )}
-            .includeDeviceClasses=${this.includeDeviceClasses}
-            .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
-            .entityFilter=${this.entityFilter}
-            .placeholder=${this.placeholder}
-            .helper=${this.helper}
-            .disabled=${this.disabled}
-            .createDomains=${this.createDomains}
-            .required=${this.required && !currentEntities.length}
-            @value-changed=${this._addEntity}
-            add-button
-          ></ha-entity-picker>
-        </div>
+      ${currentEntities.length === 0
+        ? html`
+            <div class="empty">
+              ${this.hass.localize(
+                "ui.components.entity.entities-picker.no_entities"
+              )}
+            </div>
+          `
+        : html`
+            <ha-sortable
+              .disabled=${!this.reorder || this.disabled}
+              handle-selector=".entity-handle"
+              @item-moved=${this._entityMoved}
+            >
+              ${currentEntities.map(
+                (entityId) => html`
+                  <div class="entity">
+                    <ha-entity-picker
+                      .curValue=${entityId}
+                      .hass=${this.hass}
+                      .includeDomains=${this.includeDomains}
+                      .excludeDomains=${this.excludeDomains}
+                      .includeEntities=${this.includeEntities}
+                      .excludeEntities=${this.excludeEntities}
+                      .includeDeviceClasses=${this.includeDeviceClasses}
+                      .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
+                      .entityFilter=${this.entityFilter}
+                      .value=${entityId}
+                      .disabled=${this.disabled}
+                      .createDomains=${this.createDomains}
+                      @value-changed=${this._entityChanged}
+                    ></ha-entity-picker>
+                    ${this.reorder
+                      ? html`
+                          <ha-svg-icon
+                            class="entity-handle"
+                            .path=${mdiDragHorizontalVariant}
+                          ></ha-svg-icon>
+                        `
+                      : nothing}
+                  </div>
+                `
+              )}
+            </ha-sortable>
+          `}
+      <div class="add">
+        <ha-entity-picker
+          .hass=${this.hass}
+          .includeDomains=${this.includeDomains}
+          .excludeDomains=${this.excludeDomains}
+          .includeEntities=${this.includeEntities}
+          .excludeEntities=${this._excludeEntities(
+            this.value,
+            this.excludeEntities
+          )}
+          .includeDeviceClasses=${this.includeDeviceClasses}
+          .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
+          .entityFilter=${this.entityFilter}
+          .placeholder=${this.placeholder}
+          .helper=${this.helper}
+          .disabled=${this.disabled}
+          .createDomains=${this.createDomains}
+          .required=${this.required && !currentEntities.length}
+          @value-changed=${this._addEntity}
+          add-button
+        ></ha-entity-picker>
       </div>
     `;
   }
@@ -230,20 +236,26 @@ class HaEntitiesPicker extends LitElement {
   }
 
   static override styles = css`
-    ha-sortable {
-      display: block;
-    }
-    div.wrapper {
-      padding: 0 var(--ha-space-3) var(--ha-space-2);
+    ha-sortable,
+    .empty {
+      display: flex;
+      flex-direction: column;
+      padding: var(--ha-space-2) var(--ha-space-3);
+      gap: var(--ha-space-2);
+      margin-bottom: var(--ha-space-2);
       border-width: 1px;
       border-style: solid;
       border-color: var(--wa-form-control-border-color);
       border-radius: var(--ha-border-radius-lg);
       background-color: var(--wa-form-control-background-color);
       position: relative;
+      min-height: 48px;
     }
-    div.wrapper div {
-      margin-top: 8px;
+    .empty {
+      color: var(--ha-color-text-disabled);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     label {
       display: block;
