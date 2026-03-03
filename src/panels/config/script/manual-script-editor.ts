@@ -1,6 +1,6 @@
 import { mdiHelpCircleOutline } from "@mdi/js";
 import { load } from "js-yaml";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, query, queryAll } from "lit/decorators";
 import {
@@ -81,7 +81,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
     });
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (this._openFields && changedProps.has("config")) {
       this._openFields = false;
