@@ -4,6 +4,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
 import "../../../../../components/ha-md-list";
@@ -96,13 +97,6 @@ export class HaBackupOverviewProgress extends LitElement {
           `ui.panel.config.backup.overview.progress.description.restore_backup.${this.manager.stage}`
         );
 
-      case "receive_backup":
-        if (!this.manager.stage) {
-          return "";
-        }
-        return this.hass.localize(
-          `ui.panel.config.backup.overview.progress.description.receive_backup.${this.manager.stage}`
-        );
       default:
         return "";
     }
@@ -140,8 +134,7 @@ export class HaBackupOverviewProgress extends LitElement {
         : null;
 
     const currentGroupIndex = stage ? this._getStageGroupIndex(stage) : -1;
-    // TODO: For testing only, remove when we have more stages implemented
-    const isHassio = true; // isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass, "hassio");
 
     if (isHassio) {
       // Split creation into 3 sub-segments + Upload
@@ -179,20 +172,20 @@ export class HaBackupOverviewProgress extends LitElement {
       ];
     }
 
-    // Non-HAOS: single "Creating backup" + "Uploading backup"
-    const creatingState: SegmentState =
-      currentGroupIndex >= 0 && currentGroupIndex < 3
-        ? "active"
-        : currentGroupIndex >= 3
-          ? "completed"
-          : "pending";
-
+    // Non-HAOS: Media → Home Assistant → Upload
     return [
       {
         label: this.hass.localize(
-          "ui.panel.config.backup.overview.progress.segments.creating"
+          "ui.panel.config.backup.overview.progress.segments.media"
         ),
-        state: creatingState,
+        state: this._getSegmentState(1, currentGroupIndex),
+        flex: 1,
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.config.backup.overview.progress.segments.home_assistant"
+        ),
+        state: this._getSegmentState(2, currentGroupIndex),
         flex: 1,
       },
       {
@@ -200,34 +193,7 @@ export class HaBackupOverviewProgress extends LitElement {
           "ui.panel.config.backup.overview.progress.segments.upload"
         ),
         state: this._getSegmentState(3, currentGroupIndex),
-        flex: 1,
-      },
-    ];
-  }
-
-  private _computeReceiveBackupSegments(): ProgressSegment[] {
-    const stage =
-      this.manager.manager_state === "receive_backup"
-        ? this.manager.stage
-        : null;
-
-    const isUpload = stage === "upload_to_agents";
-    const isReceive = stage === "receive_file";
-
-    return [
-      {
-        label: this.hass.localize(
-          "ui.panel.config.backup.overview.progress.segments.receiving"
-        ),
-        state: isUpload ? "completed" : isReceive ? "active" : "pending",
-        flex: 1,
-      },
-      {
-        label: this.hass.localize(
-          "ui.panel.config.backup.overview.progress.segments.upload"
-        ),
-        state: isUpload ? "active" : "pending",
-        flex: 1,
+        flex: 3,
       },
     ];
   }
@@ -265,10 +231,7 @@ export class HaBackupOverviewProgress extends LitElement {
 
     if (managerState === "create_backup") {
       segments = this._computeCreateBackupSegments();
-    } else if (managerState === "receive_backup") {
-      segments = this._computeReceiveBackupSegments();
     } else {
-      // restore_backup doesn't have segmented progress
       return nothing;
     }
 

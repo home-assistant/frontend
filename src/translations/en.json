@@ -3293,9 +3293,7 @@
                 "home_assistant": "Home Assistant",
                 "apps": "Apps",
                 "media": "Media",
-                "upload": "Uploading backup",
-                "creating": "Creating backup",
-                "receiving": "Receiving backup"
+                "upload": "Uploading backup"
               }
             },
             "summary": {
