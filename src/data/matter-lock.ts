@@ -82,12 +82,6 @@ export interface SetMatterLockCredentialResult {
   next_credential_index: number | null;
 }
 
-export interface GetMatterLockCredentialStatusResult {
-  credential_exists: boolean;
-  user_index: number | null;
-  next_credential_index: number | null;
-}
-
 export const getMatterLockInfo = async (
   hass: HomeAssistant,
   entity_id: string
