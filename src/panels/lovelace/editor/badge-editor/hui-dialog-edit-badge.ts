@@ -226,6 +226,7 @@ export class HuiDialogEditBadge
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._badgeConfig}
+              in-dialog
               @config-changed=${this._handleConfigChanged}
               @GUImode-changed=${this._handleGUIModeChanged}
               @editor-save=${this._save}
@@ -314,7 +315,9 @@ export class HuiDialogEditBadge
   }
 
   private _toggleMode(): void {
-    this._badgeEditorEl?.toggleMode();
+    withViewTransition(() => {
+      this._badgeEditorEl?.toggleMode();
+    });
   }
 
   private _opened() {

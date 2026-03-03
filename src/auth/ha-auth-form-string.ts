@@ -13,6 +13,10 @@ export class HaAuthFormString extends HaFormString {
     super.connectedCallback();
     this.style.position = "relative";
   }
+
+  public reportValidity(): boolean {
+    return this.querySelector("ha-input")?.reportValidity() ?? true;
+  }
 }
 
 declare global {

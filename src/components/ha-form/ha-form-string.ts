@@ -33,12 +33,15 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @state() protected unmaskedPassword = false;
 
-  @query("ha-input") private _input?: HaInput;
+  @query("ha-input", true) private _input?: HaInput;
 
-  public focus(): void {
-    if (this._input) {
-      this._input.focus();
-    }
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    return this._input?.reportValidity() ?? true;
   }
 
   protected render(): TemplateResult {

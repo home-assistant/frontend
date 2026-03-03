@@ -245,7 +245,7 @@ export class HaButton extends Button {
         }
 
         .label {
-          overflow: hidden;
+          overflow: var(--ha-button-label-overflow, hidden);
           text-overflow: ellipsis;
           padding: var(--ha-space-1) 0;
         }

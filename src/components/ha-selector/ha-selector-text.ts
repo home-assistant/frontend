@@ -1,6 +1,6 @@
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
@@ -32,11 +32,18 @@ export class HaTextSelector extends LitElement {
 
   @state() private _unmaskedPassword = false;
 
+  @query("ha-textfield, ha-textarea") private _input?: HTMLInputElement;
+
   public async focus() {
     await this.updateComplete;
-    (
-      this.renderRoot.querySelector("ha-textarea, ha-textfield") as HTMLElement
-    )?.focus();
+    this._input?.focus();
+  }
+
+  public reportValidity(): boolean {
+    if (this.selector.text?.multiple) {
+      return true;
+    }
+    return this._input?.reportValidity() ?? true;
   }
 
   protected render() {

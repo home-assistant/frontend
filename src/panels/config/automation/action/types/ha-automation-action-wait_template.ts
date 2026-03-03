@@ -1,30 +1,17 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { isTemplate } from "../../../../../common/string/has-template";
 import type { WaitAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../../components/ha-form/types";
 
-const SCHEMA = [
-  {
-    name: "wait_template",
-    selector: {
-      template: {},
-    },
-  },
-  {
-    name: "timeout",
-    required: false,
-    selector: {
-      text: {},
-    },
-  },
-  {
-    name: "continue_on_timeout",
-    selector: { boolean: {} },
-  },
-] as const;
+type TimeoutType = "string_template" | "object_template" | "duration";
 
 @customElement("ha-automation-action-wait_template")
 export class HaWaitAction extends LitElement implements ActionElement {
@@ -38,12 +25,47 @@ export class HaWaitAction extends LitElement implements ActionElement {
     return { wait_template: "", continue_on_timeout: true };
   }
 
+  private _schema = memoizeOne(
+    (timeoutType: TimeoutType) =>
+      [
+        {
+          name: "wait_template",
+          selector: { template: {} },
+        },
+        {
+          name: "timeout",
+          required: false,
+          selector:
+            timeoutType === "string_template"
+              ? { template: {} }
+              : timeoutType === "object_template"
+                ? { object: {} }
+                : { duration: { enable_millisecond: true } },
+        },
+        {
+          name: "continue_on_timeout",
+          selector: { boolean: {} },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
   protected render() {
+    const timeout = this.action.timeout;
+    const timeoutType: TimeoutType =
+      typeof timeout === "string" && isTemplate(timeout)
+        ? "string_template"
+        : typeof timeout === "object" &&
+            timeout !== null &&
+            Object.values(timeout).some(
+              (v) => typeof v === "string" && isTemplate(v)
+            )
+          ? "object_template"
+          : "duration";
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this.action}
-        .schema=${SCHEMA}
+        .schema=${this._schema(timeoutType)}
         .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
       ></ha-form>
@@ -51,7 +73,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<typeof SCHEMA>
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string =>
     this.hass.localize(
       `ui.panel.config.automation.editor.actions.type.wait_template.${

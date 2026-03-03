@@ -37,8 +37,8 @@ import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import type { UpdateEntity } from "../data/update";
 import { updateCanInstall } from "../data/update";
 import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
@@ -981,7 +981,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           ha-md-list-item,
           ha-md-list-item .item-text,
           .title {
-            transition: none;
+            transition: 1ms;
           }
         }
       `,

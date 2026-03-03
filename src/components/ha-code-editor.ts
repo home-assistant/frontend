@@ -84,6 +84,9 @@ export class HaCodeEditor extends ReactiveElement {
   @property({ type: Boolean, attribute: "disable-fullscreen" })
   public disableFullscreen = false;
 
+  @property({ type: Boolean, attribute: "in-dialog" })
+  public inDialog = false;
+
   @property({ type: Boolean, attribute: "has-toolbar" })
   public hasToolbar = true;
 
@@ -132,6 +135,7 @@ export class HaCodeEditor extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this.classList.toggle("in-dialog", this.inDialog);
     // Force update on reconnection so editor is recreated
     if (this.hasUpdated) {
       this.requestUpdate();
@@ -150,6 +154,7 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   public disconnectedCallback() {
+    fireEvent(this, "dialog-set-fullscreen", false);
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
     this.removeEventListener("keydown", this._handleKeyDown);
@@ -215,6 +220,9 @@ export class HaCodeEditor extends ReactiveElement {
     }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
+    }
+    if (changedProps.has("inDialog")) {
+      this.classList.toggle("in-dialog", this.inDialog);
     }
     if (changedProps.has("_isFullscreen")) {
       this.classList.toggle("fullscreen", this._isFullscreen);
@@ -434,10 +442,19 @@ export class HaCodeEditor extends ReactiveElement {
   private _updateFullscreenState(
     fullscreen: boolean = this._isFullscreen
   ): boolean {
+    const previousFullscreen = this._isFullscreen;
+
+    this.classList.toggle("in-dialog", this.inDialog);
+
     // Update the current fullscreen state based on selected value. If fullscreen
     // is disabled, or we have no toolbar, ensure we are not in fullscreen mode.
     this._isFullscreen =
       fullscreen && !this.disableFullscreen && this.hasToolbar;
+
+    if (previousFullscreen !== this._isFullscreen) {
+      fireEvent(this, "dialog-set-fullscreen", this._isFullscreen);
+    }
+
     // Return whether successfully in requested state
     return this._isFullscreen === fullscreen;
   }
@@ -846,10 +863,10 @@ export class HaCodeEditor extends ReactiveElement {
 
         :host(.fullscreen) {
           position: fixed !important;
-          top: calc(var(--header-height, 56px) + 8px) !important;
-          left: 8px !important;
-          right: 8px !important;
-          bottom: 8px !important;
+          top: calc(var(--header-height, 56px) + var(--ha-space-2)) !important;
+          left: var(--ha-space-2) !important;
+          right: var(--ha-space-2) !important;
+          bottom: var(--ha-space-2) !important;
           z-index: 6;
           border-radius: var(--ha-border-radius-lg) !important;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
@@ -865,6 +882,17 @@ export class HaCodeEditor extends ReactiveElement {
           padding-bottom: var(--safe-area-inset-bottom) !important;
           box-sizing: border-box !important;
           display: block !important;
+        }
+
+        :host(.in-dialog.fullscreen) {
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          padding: 0 !important;
         }
 
         :host(.hasToolbar) .cm-editor {
