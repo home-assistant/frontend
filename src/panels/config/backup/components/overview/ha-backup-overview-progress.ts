@@ -138,8 +138,6 @@ export class HaBackupOverviewProgress extends LitElement {
 
     if (isHassio) {
       // Split creation into 3 sub-segments + Upload
-      // Segments ordered to match backend execution: Apps → Media → HA → Upload
-      // Creation segments take 50% total, upload takes 50%
       return [
         {
           label: this.hass.localize(
@@ -172,7 +170,7 @@ export class HaBackupOverviewProgress extends LitElement {
       ];
     }
 
-    // Non-HAOS: Media → Home Assistant → Upload
+    // Non-HAOS: No app segment, just Media, HA and Upload
     return [
       {
         label: this.hass.localize(
