@@ -11,10 +11,9 @@ import type {
 import type { WaitForTriggerAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
+import type { TimeoutType } from "../../types";
 import type { ActionElement } from "../ha-automation-action-row";
 import { handleChangeEvent } from "../ha-automation-action-row";
-
-type TimeoutType = "string_template" | "object_template" | "duration";
 
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
