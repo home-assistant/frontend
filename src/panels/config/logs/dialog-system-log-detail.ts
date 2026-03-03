@@ -116,7 +116,7 @@ class DialogSystemLogDetail extends LitElement {
               ? this.hass.localize(
                   `ui.panel.config.logs.error_type.${item.error_type}`
                 )
-              : this.hass.localize("state.default.unknown")}
+              : this.hass.localize("ui.panel.config.logs.other")}
             ${integration
               ? html`
                   <br />

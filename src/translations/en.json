@@ -4198,11 +4198,18 @@
           "error_type": {
             "auth": "Authentication",
             "connection": "Connection",
+            "invalid_response": "Invalid response",
+            "rate_limit": "Rate limit",
+            "server": "Server",
+            "slow_setup": "Slow setup",
             "timeout": "Timeout",
             "ssl": "TLS/SSL",
+            "statistics": "Statistics",
             "dns": "DNS"
           },
+          "level_filter": "Level",
           "classification": "Classification",
+          "other": "Other",
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This error originated from a custom integration.",
           "show_full_logs": "Show raw logs",
