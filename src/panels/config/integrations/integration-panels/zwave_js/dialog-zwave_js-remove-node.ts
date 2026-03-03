@@ -91,7 +91,9 @@ class DialogZWaveJSRemoveNode extends LitElement {
     }
 
     const dialogTitle = this.hass.localize(
-      "ui.panel.config.zwave_js.remove_node.title"
+      this._deviceId
+        ? "ui.panel.config.zwave_js.remove_node.title"
+        : "ui.panel.config.zwave_js.common.remove_node"
     );
 
     return html`
