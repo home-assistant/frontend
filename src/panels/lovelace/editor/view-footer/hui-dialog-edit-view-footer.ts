@@ -105,7 +105,7 @@ export class HuiDialogEditViewFooter extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
-        .width=${this._yamlMode ? "full" : "large"}
+        .width=${"medium"}
         @closed=${this._dialogClosed}
         class=${this._yamlMode ? "yaml-mode" : ""}
       >
