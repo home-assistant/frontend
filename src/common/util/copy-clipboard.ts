@@ -1,13 +1,15 @@
+import { deepActiveElement } from "../dom/deep-active-element";
+
 const getClipboardFallbackRoot = (rootEl?: HTMLElement): HTMLElement => {
   if (rootEl) {
     return rootEl;
   }
 
-  const activeElement = document.activeElement;
+  const activeElement = deepActiveElement();
   if (activeElement instanceof HTMLElement) {
     const root = activeElement.getRootNode();
-    if (root instanceof ShadowRoot) {
-      return root.host as HTMLElement;
+    if (root instanceof ShadowRoot && root.host instanceof HTMLElement) {
+      return root.host;
     }
   }
 
