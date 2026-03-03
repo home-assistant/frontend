@@ -62,9 +62,9 @@ export const coreStyles = css`
 
   @media (prefers-reduced-motion: reduce) {
     html {
-      --ha-animation-duration-fast: 0ms;
-      --ha-animation-duration-normal: 0ms;
-      --ha-animation-duration-slow: 0ms;
+      --ha-animation-duration-fast: 1ms;
+      --ha-animation-duration-normal: 1ms;
+      --ha-animation-duration-slow: 1ms;
     }
   }
 `;
