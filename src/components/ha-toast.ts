@@ -2,6 +2,16 @@ import "@home-assistant/webawesome/dist/components/popover/popover";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 
+export type ToastCloseReason =
+  | "dismiss"
+  | "action"
+  | "timeout"
+  | "programmatic";
+
+export interface ToastClosedEventDetail {
+  reason: ToastCloseReason;
+}
+
 @customElement("ha-toast")
 export class HaToast extends LitElement {
   @property({ attribute: "label-text" }) public labelText = "";
@@ -12,6 +22,8 @@ export class HaToast extends LitElement {
   private _popover?: HTMLElementTagNameMap["wa-popover"];
 
   private _dismissTimer?: ReturnType<typeof setTimeout>;
+
+  private _closeReason: ToastCloseReason = "programmatic";
 
   public disconnectedCallback(): void {
     clearTimeout(this._dismissTimer);
@@ -25,24 +37,30 @@ export class HaToast extends LitElement {
     clearTimeout(this._dismissTimer);
     if (this.timeoutMs > 0) {
       this._dismissTimer = setTimeout(() => {
-        this.hide();
+        this.hide("timeout");
       }, this.timeoutMs);
     }
   }
 
-  public async hide(): Promise<void> {
+  public async hide(reason: ToastCloseReason = "programmatic"): Promise<void> {
     clearTimeout(this._dismissTimer);
+    this._closeReason = reason;
     await this._popover?.hide();
   }
 
-  public close(_reason?: string): void {
-    this.hide();
+  public close(reason: ToastCloseReason = "programmatic"): void {
+    this.hide(reason);
   }
 
   private _handleAfterHide() {
     this.dispatchEvent(
-      new Event("MDCSnackbar:closed", { bubbles: true, composed: true })
+      new CustomEvent<ToastClosedEventDetail>("toast-closed", {
+        detail: { reason: this._closeReason },
+        bubbles: true,
+        composed: true,
+      })
     );
+    this._closeReason = "programmatic";
   }
 
   protected render() {
@@ -141,6 +159,10 @@ export class HaToast extends LitElement {
 }
 
 declare global {
+  interface HTMLElementEventMap {
+    "toast-closed": CustomEvent<ToastClosedEventDetail>;
+  }
+
   interface HTMLElementTagNameMap {
     "ha-toast": HaToast;
   }
