@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/animation/animation";
 import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
+import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
 import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -184,6 +185,12 @@ export class HaInput extends LitElement {
   @query("wa-input")
   private _input?: WaInput;
 
+  private readonly _hasSlotController = new HasSlotController(
+    this,
+    "label",
+    "label-end"
+  );
+
   static shadowRootOptions: ShadowRootInit = {
     mode: "open",
     delegatesFocus: true,
@@ -275,6 +282,9 @@ export class HaInput extends LitElement {
   }
 
   protected render() {
+    const hasLabelSlot = this.label
+      ? false
+      : this._hasSlotController.test("label");
     return html`
       <wa-input
         .type=${this.type}
@@ -311,16 +321,19 @@ export class HaInput extends LitElement {
         @blur=${this._handleBlur}
         @wa-invalid=${this._handleInvalid}
       >
-        ${this.label || this.hint
+        ${this.label || this.hint || hasLabelSlot
           ? html`
               <ha-input-label
                 slot="label"
                 .label=${this.label}
                 .hint=${this.hint}
               >
-                ${this.label
-                  ? nothing
-                  : html`<slot name="label" slot="label"></slot>`}
+                ${hasLabelSlot
+                  ? html`<slot name="label" slot="label"></slot>`
+                  : nothing}
+                ${!this.hint && this._hasSlotController.test("label-end")
+                  ? html`<slot name="label-end" slot="label"></slot>`
+                  : nothing}
               </ha-input-label>
             `
           : nothing}
