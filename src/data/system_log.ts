@@ -10,8 +10,13 @@ export type SystemLogLevel =
 export type SystemLogErrorType =
   | "auth"
   | "connection"
+  | "invalid_response"
+  | "rate_limit"
+  | "server"
+  | "slow_setup"
   | "timeout"
   | "ssl"
+  | "statistics"
   | "dns";
 
 export interface LoggedError {

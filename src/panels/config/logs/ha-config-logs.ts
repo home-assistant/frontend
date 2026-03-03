@@ -1,10 +1,15 @@
 import {
+  mdiDotsVertical,
   mdiChevronDown,
   mdiChip,
   mdiDns,
+  mdiDownload,
+  mdiFilterVariant,
   mdiPackageVariant,
   mdiPuzzle,
   mdiRadar,
+  mdiRefresh,
+  mdiText,
   mdiVolumeHigh,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -17,10 +22,14 @@ import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-generic-picker";
+import "../../../components/ha-icon-button";
 import type { HaGenericPicker } from "../../../components/ha-generic-picker";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
-import "../../../components/search-input";
+import "../../../components/search-input-outlined";
 import type { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -28,6 +37,7 @@ import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route, ValueChangedEvent } from "../../../types";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
@@ -81,13 +91,9 @@ export class HaConfigLogs extends LitElement {
 
   @state() private _logProviders = logProviders;
 
-  public connectedCallback() {
-    super.connectedCallback();
-    const systemLog = this.systemLog;
-    if (systemLog && systemLog.loaded) {
-      systemLog.fetchData();
-    }
-  }
+  @state() private _showSystemLogFilters = false;
+
+  @state() private _systemLogFiltersCount = 0;
 
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
@@ -98,37 +104,97 @@ export class HaConfigLogs extends LitElement {
     this._filter = ev.detail.value;
   }
 
-  protected render(): TemplateResult {
-    const search = this.narrow
-      ? html`
-          <div slot="header">
-            <search-input
-              class="header"
-              @value-changed=${this._filterChanged}
-              .hass=${this.hass}
-              .filter=${this._filter}
-              .label=${this.hass.localize("ui.panel.config.logs.search")}
-            ></search-input>
-          </div>
-        `
-      : html`
-          <div class="search">
-            <search-input
-              @value-changed=${this._filterChanged}
-              .hass=${this.hass}
-              .filter=${this._filter}
-              .label=${this.hass.localize("ui.panel.config.logs.search")}
-            ></search-input>
-          </div>
-        `;
+  private _toggleSystemLogFilters = () => {
+    this._showSystemLogFilters = !this._showSystemLogFilters;
+  };
 
+  private _handleSystemLogFiltersChanged(ev: CustomEvent) {
+    this._showSystemLogFilters = ev.detail.open;
+    this._systemLogFiltersCount = ev.detail.count;
+  }
+
+  private _downloadSystemLog = () => {
+    this.systemLog?.downloadLogs();
+  };
+
+  private _refreshSystemLog = () => {
+    this.systemLog?.fetchData();
+  };
+
+  private _clearSystemLog = () => {
+    this.systemLog?.clearLogs();
+  };
+
+  private _handleSystemLogOverflowAction(ev: HaDropdownSelectEvent): void {
+    if (ev.detail.item.value === "show-full-logs") {
+      this._showDetail();
+    }
+  }
+
+  protected render(): TemplateResult {
+    const showSystemLog = this._selectedLogProvider === "core" && !this._detail;
     const selectedProvider = this._getActiveProvider(this._selectedLogProvider);
+    const header =
+      selectedProvider?.primary ||
+      this.hass.localize("ui.panel.config.logs.caption");
+
+    const searchRow = html`
+      <div class="search-row ${showSystemLog ? "with-filters" : ""}">
+        ${showSystemLog
+          ? html`
+              <div class="relative">
+                <ha-assist-chip
+                  .label=${this.hass.localize(
+                    "ui.components.subpage-data-table.filters"
+                  )}
+                  .active=${this._showSystemLogFilters ||
+                  Boolean(this._systemLogFiltersCount)}
+                  @click=${this._toggleSystemLogFilters}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiFilterVariant}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+                ${this._systemLogFiltersCount
+                  ? html`<div class="badge">
+                      ${this._systemLogFiltersCount}
+                    </div>`
+                  : nothing}
+              </div>
+            `
+          : nothing}
+
+        <search-input-outlined
+          .hass=${this.hass}
+          .filter=${this._filter}
+          .label=${this.hass.localize("ui.panel.config.logs.search")}
+          .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
+          @value-changed=${this._filterChanged}
+        ></search-input-outlined>
+
+        ${showSystemLog
+          ? html`
+              <ha-assist-chip
+                class="clear-chip"
+                .label=${this.hass.localize("ui.panel.config.logs.clear")}
+                .disabled=${!this.systemLog?.hasItems}
+                @click=${this._clearSystemLog}
+              ></ha-assist-chip>
+            `
+          : nothing}
+      </div>
+    `;
+
+    const search = this.narrow
+      ? html`<div slot="header">${searchRow}</div>`
+      : searchRow;
 
     return html`
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.config.logs.caption")}
+        .header=${header}
         back-path="/config/system"
       >
         ${isComponentLoaded(this.hass, "hassio") && this._logProviders
@@ -164,17 +230,48 @@ export class HaConfigLogs extends LitElement {
               </ha-generic-picker>
             `
           : nothing}
+        ${showSystemLog
+          ? html`
+              <ha-icon-button
+                slot="toolbar-icon"
+                .path=${mdiDownload}
+                @click=${this._downloadSystemLog}
+                .label=${this.hass.localize(
+                  "ui.panel.config.logs.download_logs"
+                )}
+              ></ha-icon-button>
+              <ha-icon-button
+                slot="toolbar-icon"
+                .path=${mdiRefresh}
+                @click=${this._refreshSystemLog}
+                .label=${this.hass.localize("ui.common.refresh")}
+              ></ha-icon-button>
+              <ha-dropdown
+                slot="toolbar-icon"
+                @wa-select=${this._handleSystemLogOverflowAction}
+              >
+                <ha-icon-button
+                  slot="trigger"
+                  .path=${mdiDotsVertical}
+                  .label=${this.hass.localize("ui.common.menu")}
+                ></ha-icon-button>
+                <ha-dropdown-item value="show-full-logs">
+                  <ha-svg-icon slot="icon" .path=${mdiText}></ha-svg-icon>
+                  ${this.hass.localize("ui.panel.config.logs.show_full_logs")}
+                </ha-dropdown-item>
+              </ha-dropdown>
+            `
+          : nothing}
         ${search}
         <div class="content">
-          ${this._selectedLogProvider === "core" && !this._detail
+          ${showSystemLog
             ? html`
                 <system-log-card
                   .hass=${this.hass}
-                  .header=${this._logProviders.find(
-                    (p) => p.key === this._selectedLogProvider
-                  )!.name}
                   .filter=${this._filter}
-                  @switch-log-view=${this._showDetail}
+                  .showFilters=${this._showSystemLogFilters}
+                  @system-log-filters-changed=${this
+                    ._handleSystemLogFiltersChanged}
                 ></system-log-card>
               `
             : html`<error-log-card
@@ -194,6 +291,7 @@ export class HaConfigLogs extends LitElement {
 
   private _showDetail() {
     this._detail = !this._detail;
+    this._showSystemLogFilters = false;
   }
 
   private _openPicker(ev: Event) {
@@ -208,6 +306,8 @@ export class HaConfigLogs extends LitElement {
     }
     this._selectedLogProvider = provider;
     this._filter = "";
+    this._showSystemLogFilters = false;
+    this._systemLogFiltersCount = 0;
     navigate(`/config/logs?provider=${this._selectedLogProvider}`);
   }
 
@@ -342,24 +442,67 @@ export class HaConfigLogs extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
         }
-        .search {
+        .search-row {
           position: sticky;
           top: 0;
           z-index: 2;
+          display: flex;
+          align-items: center;
+          height: 56px;
+          width: 100%;
+          gap: var(--ha-space-4);
+          padding: 0 var(--ha-space-4);
+          background: var(--primary-background-color);
+          border-bottom: 1px solid var(--divider-color);
+          box-sizing: border-box;
         }
-        search-input {
+
+        search-input-outlined {
           display: block;
-          --mdc-text-field-fill-color: var(--sidebar-background-color);
-          --mdc-text-field-idle-line-color: var(--divider-color);
+          flex: 1;
         }
-        search-input.header {
-          --mdc-ripple-color: transparant;
-          margin-left: -16px;
-          margin-inline-start: -16px;
-          margin-inline-end: initial;
+
+        .relative {
+          position: relative;
+        }
+
+        .badge {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          inset-inline-end: -4px;
+          inset-inline-start: initial;
+          min-width: 16px;
+          box-sizing: border-box;
+          border-radius: var(--ha-border-radius-circle);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
+          background-color: var(--primary-color);
+          line-height: var(--ha-line-height-normal);
+          text-align: center;
+          padding: 0 2px;
+          color: var(--text-primary-color);
         }
         .content {
           direction: ltr;
+          height: calc(
+            100vh -
+              1px - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
+                0px
+              ) - var(--safe-area-inset-bottom, 0px) -
+              56px
+          );
+          overflow: hidden;
+        }
+
+        ha-assist-chip {
+          --ha-assist-chip-container-shape: 10px;
+          --ha-assist-chip-container-color: var(--card-background-color);
+        }
+
+        .clear-chip {
+          white-space: nowrap;
         }
         ha-generic-picker {
           --md-list-item-leading-icon-color: var(--ha-color-primary-50);
