@@ -36,7 +36,7 @@ import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { haStyle, haStyleScrollbar } from "../../../resources/styles";
+import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { isMac } from "../../../util/is_mac";
@@ -255,90 +255,88 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           </ha-dropdown-item>
         </ha-dropdown>
 
-        <div class="content ha-scrollbar">
-          <ha-config-section
-            .narrow=${this.narrow}
-            .isWide=${this.isWide}
-            full-width
-          >
-            ${repairsIssues.length || canInstallUpdates.length
-              ? html`<ha-card outlined>
-                  ${repairsIssues.length
-                    ? html`
-                        <ha-config-repairs
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .total=${totalRepairIssues}
-                          .repairsIssues=${repairsIssues}
-                        ></ha-config-repairs>
-                        ${totalRepairIssues > repairsIssues.length
-                          ? html`
-                              <ha-assist-chip
-                                href="/config/repairs"
-                                .label=${this.hass.localize(
-                                  "ui.panel.config.repairs.more_repairs",
-                                  {
-                                    count:
-                                      totalRepairIssues - repairsIssues.length,
-                                  }
-                                )}
-                              >
-                              </ha-assist-chip>
-                            `
-                          : ""}
-                      `
-                    : ""}
-                  ${repairsIssues.length && canInstallUpdates.length
-                    ? html`<hr />`
-                    : ""}
-                  ${canInstallUpdates.length
-                    ? html`
-                        <ha-config-updates
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .total=${totalUpdates}
-                          .updateEntities=${canInstallUpdates}
-                          .isInstallable=${true}
-                        ></ha-config-updates>
-                        ${totalUpdates > canInstallUpdates.length
-                          ? html`
-                              <ha-assist-chip
-                                href="/config/updates"
-                                label=${this.hass.localize(
-                                  "ui.panel.config.updates.more_updates",
-                                  {
-                                    count:
-                                      totalUpdates - canInstallUpdates.length,
-                                  }
-                                )}
-                              >
-                              </ha-assist-chip>
-                            `
-                          : ""}
-                      `
-                    : ""}
-                </ha-card>`
-              : ""}
-            ${this._pages(
-              this.cloudStatus,
-              isComponentLoaded(this.hass, "cloud"),
-              this.hass.auth.external?.config.hasSettingsScreen
-            ).map((categoryPages) =>
-              categoryPages.length === 0
-                ? nothing
-                : html`
-                    <ha-card outlined>
-                      <ha-config-navigation
+        <ha-config-section
+          .narrow=${this.narrow}
+          .isWide=${this.isWide}
+          full-width
+        >
+          ${repairsIssues.length || canInstallUpdates.length
+            ? html`<ha-card outlined>
+                ${repairsIssues.length
+                  ? html`
+                      <ha-config-repairs
                         .hass=${this.hass}
                         .narrow=${this.narrow}
-                        .pages=${categoryPages}
-                      ></ha-config-navigation>
-                    </ha-card>
-                  `
-            )}
-            <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
-          </ha-config-section>
-        </div>
+                        .total=${totalRepairIssues}
+                        .repairsIssues=${repairsIssues}
+                      ></ha-config-repairs>
+                      ${totalRepairIssues > repairsIssues.length
+                        ? html`
+                            <ha-assist-chip
+                              href="/config/repairs"
+                              .label=${this.hass.localize(
+                                "ui.panel.config.repairs.more_repairs",
+                                {
+                                  count:
+                                    totalRepairIssues - repairsIssues.length,
+                                }
+                              )}
+                            >
+                            </ha-assist-chip>
+                          `
+                        : ""}
+                    `
+                  : ""}
+                ${repairsIssues.length && canInstallUpdates.length
+                  ? html`<hr />`
+                  : ""}
+                ${canInstallUpdates.length
+                  ? html`
+                      <ha-config-updates
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .total=${totalUpdates}
+                        .updateEntities=${canInstallUpdates}
+                        .isInstallable=${true}
+                      ></ha-config-updates>
+                      ${totalUpdates > canInstallUpdates.length
+                        ? html`
+                            <ha-assist-chip
+                              href="/config/updates"
+                              label=${this.hass.localize(
+                                "ui.panel.config.updates.more_updates",
+                                {
+                                  count:
+                                    totalUpdates - canInstallUpdates.length,
+                                }
+                              )}
+                            >
+                            </ha-assist-chip>
+                          `
+                        : ""}
+                    `
+                  : ""}
+              </ha-card>`
+            : ""}
+          ${this._pages(
+            this.cloudStatus,
+            isComponentLoaded(this.hass, "cloud"),
+            this.hass.auth.external?.config.hasSettingsScreen
+          ).map((categoryPages) =>
+            categoryPages.length === 0
+              ? nothing
+              : html`
+                  <ha-card outlined>
+                    <ha-config-navigation
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .pages=${categoryPages}
+                    ></ha-config-navigation>
+                  </ha-card>
+                `
+          )}
+          <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
+        </ha-config-section>
       </ha-top-app-bar-fixed>
     `;
   }
@@ -394,36 +392,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      haStyleScrollbar,
       css`
-        :host {
-          display: block;
-          height: 100%;
-        }
-
-        ha-top-app-bar-fixed {
-          height: 100%;
-          overflow: hidden;
-        }
-
-        .content {
-          height: calc(
-            100vh - var(--header-height, 0px) - var(
-                --safe-area-inset-top,
-                0px
-              ) - var(--safe-area-inset-bottom, 0px)
-          );
-          height: calc(
-            100dvh - var(--header-height, 0px) - var(
-                --safe-area-inset-top,
-                0px
-              ) - var(--safe-area-inset-bottom, 0px)
-          );
-          padding-bottom: var(--ha-space-5);
-          box-sizing: border-box;
-          overflow-x: hidden;
-        }
-
         :host(:not([narrow])) ha-card:last-child {
           margin-bottom: 24px;
         }

@@ -1,6 +1,7 @@
 import {
   mdiChartBoxOutline,
   mdiClose,
+  mdiCodeBraces,
   mdiCogOutline,
   mdiDevices,
   mdiDotsVertical,
@@ -118,6 +119,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   @query(".content") private _contentElement?: HTMLDivElement;
 
+  @query("ha-adaptive-dialog") private _dialogElement?: HTMLElement;
+
   @state() private _entityId?: string | null;
 
   @state() private _data?: Record<string, any>;
@@ -131,6 +134,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   @state() private _entry?: ExtEntityRegistryEntry | null;
 
   @state() private _infoEditMode = false;
+
+  @state() private _detailsYamlMode = false;
 
   @state() private _isEscapeEnabled = true;
 
@@ -174,6 +179,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   public closeDialog() {
+    const dialog = this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+    if (dialog) {
+      fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+    }
     this._open = false;
   }
 
@@ -182,6 +191,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._parentEntityIds = [];
     this._entry = undefined;
     this._infoEditMode = false;
+    this._detailsYamlMode = false;
     this._initialView = DEFAULT_VIEW;
     this._currView = DEFAULT_VIEW;
     this._childView = undefined;
@@ -250,7 +260,13 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _goBack() {
     if (this._childView) {
+      const dialog =
+        this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+      if (dialog) {
+        fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+      }
       this._childView = undefined;
+      this._detailsYamlMode = false;
       return;
     }
     if (this._initialView !== this._currView) {
@@ -312,6 +328,14 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   private _toggleInfoEditMode() {
     this._infoEditMode = !this._infoEditMode;
+  }
+
+  private _toggleDetailsYamlMode() {
+    const dialog = this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+    if (dialog) {
+      fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+    }
+    this._detailsYamlMode = !this._detailsYamlMode;
   }
 
   private _handleToggleInfoEditModeEvent(ev) {
@@ -637,7 +661,18 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                   </ha-dropdown-item>
                 </ha-dropdown>
               `
-            : nothing}
+            : this._childView?.viewTag === "ha-more-info-details"
+              ? html`
+                  <ha-icon-button
+                    slot="headerActionItems"
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.toggle_yaml_mode"
+                    )}
+                    .path=${mdiCodeBraces}
+                    @click=${this._toggleDetailsYamlMode}
+                  ></ha-icon-button>
+                `
+              : nothing}
         <div
           class=${classMap({
             "content-wrapper": true,
@@ -663,6 +698,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                             hass: this.hass,
                             entry: this._entry,
                             params: this._childView.viewParams,
+                            yamlMode: this._detailsYamlMode,
                           })}
                         </div>
                       `
@@ -728,9 +764,25 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    const previousChildView = changedProps.get("_childView") as
+      | ChildView
+      | undefined;
+
+    if (
+      previousChildView?.viewTag === "ha-more-info-details" &&
+      this._childView?.viewTag !== "ha-more-info-details"
+    ) {
+      const dialog =
+        this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
+      if (dialog) {
+        fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+      }
+    }
+
     if (changedProps.has("_currView")) {
       this._childView = undefined;
       this._infoEditMode = false;
+      this._detailsYamlMode = false;
     }
   }
 
