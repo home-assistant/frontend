@@ -1,8 +1,9 @@
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import type { TimeSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-time-input";
+import type { HaTimeInput } from "../ha-time-input";
 
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
@@ -19,6 +20,12 @@ export class HaTimeSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
+
+  @query("ha-time-input") private _input?: HaTimeInput;
+
+  public reportValidity(): boolean {
+    return this._input?.reportValidity() ?? true;
+  }
 
   protected render() {
     return html`

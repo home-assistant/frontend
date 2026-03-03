@@ -1,7 +1,7 @@
 import { mdiClose } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
@@ -132,6 +132,17 @@ export class HaBaseTimeInput extends LitElement {
   @property({ attribute: false }) amPm: "AM" | "PM" = "AM";
 
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
+
+  @queryAll("ha-textfield") private _inputs?: HaTextField[];
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    return this._inputs?.every((input) => input.reportValidity()) ?? true;
+  }
 
   protected render(): TemplateResult {
     return html`
