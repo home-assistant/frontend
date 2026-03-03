@@ -1,15 +1,18 @@
 import { deepActiveElement } from "../dom/deep-active-element";
 
-const getClipboardFallbackRoot = (rootEl?: HTMLElement): HTMLElement => {
-  if (rootEl) {
-    return rootEl;
-  }
-
+const getClipboardFallbackRoot = (): HTMLElement => {
   const activeElement = deepActiveElement();
   if (activeElement instanceof HTMLElement) {
-    const root = activeElement.getRootNode();
-    if (root instanceof ShadowRoot && root.host instanceof HTMLElement) {
-      return root.host;
+    let root: Node = activeElement.getRootNode();
+    let host: HTMLElement | null = null;
+
+    while (root instanceof ShadowRoot && root.host instanceof HTMLElement) {
+      host = root.host;
+      root = root.host.getRootNode();
+    }
+
+    if (host) {
+      return host;
     }
   }
 
@@ -26,7 +29,7 @@ export const copyToClipboard = async (str, rootEl?: HTMLElement) => {
     }
   }
 
-  const root = getClipboardFallbackRoot(rootEl);
+  const root = rootEl || getClipboardFallbackRoot();
 
   const el = document.createElement("textarea");
   el.value = str;
