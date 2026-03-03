@@ -7,9 +7,10 @@ import { styleMap } from "lit/directives/style-map";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type {
-  LovelaceViewConfig,
-  LovelaceViewFooterConfig,
+import {
+  DEFAULT_FOOTER_MAX_WIDTH,
+  type LovelaceViewConfig,
+  type LovelaceViewFooterConfig,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
@@ -178,9 +179,7 @@ export class HuiViewFooter extends LitElement {
       <div
         class=${classMap({ wrapper: true, "edit-mode": editMode })}
         style=${styleMap({
-          "--footer-max-width": this.config?.max_width
-            ? `${this.config.max_width}px`
-            : undefined,
+          "--footer-max-width": `${this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH}px`,
         })}
       >
         ${editMode

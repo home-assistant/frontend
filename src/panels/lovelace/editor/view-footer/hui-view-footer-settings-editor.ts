@@ -6,7 +6,10 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import type { LovelaceViewFooterConfig } from "../../../../data/lovelace/config/view";
+import {
+  DEFAULT_FOOTER_MAX_WIDTH,
+  type LovelaceViewFooterConfig,
+} from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
 const SCHEMA = [
@@ -31,7 +34,7 @@ export class HuiViewFooterSettingsEditor extends LitElement {
 
   protected render() {
     const data = {
-      max_width: this.config?.max_width || 600,
+      max_width: this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH,
     };
 
     return html`
