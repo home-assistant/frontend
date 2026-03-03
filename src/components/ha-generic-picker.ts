@@ -20,6 +20,7 @@ import type { HomeAssistant } from "../types";
 import { isIosApp } from "../util/is_ios";
 import "./ha-bottom-sheet";
 import "./ha-button";
+import type { HaButton } from "./ha-button";
 import "./ha-combo-box-item";
 import "./ha-input-helper-text";
 import "./ha-picker-combo-box";
@@ -29,6 +30,7 @@ import type {
   PickerComboBoxSearchFn,
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
+import type { HaPickerField } from "./ha-picker-field";
 import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
@@ -112,6 +114,12 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
+
+  @query("ha-picker-field, ha-button")
+  private _pickerField?: HaPickerField;
+
+  @query("ha-button")
+  private _pickerButton?: HaButton;
 
   @state() private _opened = false;
 
@@ -221,7 +229,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   without-arrow
                   distance="-4"
                   .placement=${this.popoverPlacement}
-                  for="picker"
+                  .anchor=${this._pickerField?.item || this._pickerButton}
                   auto-size="vertical"
                   auto-size-padding="16"
                   @wa-after-show=${this._dialogOpened}
