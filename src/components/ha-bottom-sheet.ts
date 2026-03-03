@@ -406,6 +406,18 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           transform: var(--dialog-transform);
           transition: var(--dialog-transition);
         }
+        @media (prefers-reduced-motion: reduce) {
+          wa-drawer {
+            --wa-color-surface-raised: transparent;
+            --spacing: 0;
+            --size: var(--ha-bottom-sheet-height, auto);
+            --show-duration: 1ms;
+            --hide-duration: 1ms;
+          }
+          wa-drawer::part(dialog) {
+            transition: 1ms;
+          }
+        }
         wa-drawer::part(dialog)::backdrop {
           -webkit-backdrop-filter: var(
             --ha-bottom-sheet-scrim-backdrop-filter,
