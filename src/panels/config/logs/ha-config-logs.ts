@@ -5,6 +5,7 @@ import {
   mdiDns,
   mdiDownload,
   mdiFilterVariant,
+  mdiFilterVariantRemove,
   mdiPackageVariant,
   mdiPuzzle,
   mdiRadar,
@@ -125,6 +126,10 @@ export class HaConfigLogs extends LitElement {
     this.systemLog?.clearLogs();
   };
 
+  private _clearSystemLogFilters = () => {
+    this.systemLog?.clearFilters();
+  };
+
   private _handleSystemLogOverflowAction(ev: HaDropdownSelectEvent): void {
     if (ev.detail.item.value === "show-full-logs") {
       this._showDetail();
@@ -139,33 +144,72 @@ export class HaConfigLogs extends LitElement {
       this.hass.localize("ui.panel.config.logs.caption");
 
     const searchRow = html`
-      <div class="search-row ${showSystemLog ? "with-filters" : ""}">
+      <div
+        class="search-row ${showSystemLog
+          ? "with-filters"
+          : ""} ${showSystemLog && this._showSystemLogFilters && !this.narrow
+          ? "with-pane"
+          : ""}"
+      >
         ${showSystemLog
-          ? html`
-              <div class="relative">
-                <ha-assist-chip
-                  .label=${this.hass.localize(
-                    "ui.components.subpage-data-table.filters"
-                  )}
-                  .active=${this._showSystemLogFilters ||
-                  Boolean(this._systemLogFiltersCount)}
-                  @click=${this._toggleSystemLogFilters}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiFilterVariant}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-                ${this._systemLogFiltersCount
-                  ? html`<div class="badge">
-                      ${this._systemLogFiltersCount}
-                    </div>`
-                  : nothing}
-              </div>
-            `
+          ? this._showSystemLogFilters && !this.narrow
+            ? html`
+                <div class="filter-controls">
+                  <div class="relative filter-button">
+                    <ha-assist-chip
+                      .label=${this.hass.localize(
+                        "ui.components.subpage-data-table.filters"
+                      )}
+                      active
+                      @click=${this._toggleSystemLogFilters}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiFilterVariant}
+                      ></ha-svg-icon>
+                    </ha-assist-chip>
+                    ${this._systemLogFiltersCount
+                      ? html`<div class="badge">
+                          ${this._systemLogFiltersCount}
+                        </div>`
+                      : nothing}
+                  </div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    .label=${this.hass.localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
+                    .disabled=${!this._systemLogFiltersCount}
+                    @click=${this._clearSystemLogFilters}
+                  ></ha-icon-button>
+                </div>
+              `
+            : html`
+                <div class="relative filter-button">
+                  <ha-assist-chip
+                    .label=${this.hass.localize(
+                      "ui.components.subpage-data-table.filters"
+                    )}
+                    .active=${this._showSystemLogFilters ||
+                    Boolean(this._systemLogFiltersCount)}
+                    @click=${this._toggleSystemLogFilters}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiFilterVariant}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                  ${this._systemLogFiltersCount
+                    ? html`<div class="badge">
+                        ${this._systemLogFiltersCount}
+                      </div>`
+                    : nothing}
+                </div>
+              `
           : nothing}
 
         <search-input-outlined
+          class="search-input"
           .hass=${this.hass}
           .filter=${this._filter}
           .label=${this.hass.localize("ui.panel.config.logs.search")}
@@ -455,6 +499,36 @@ export class HaConfigLogs extends LitElement {
           background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           box-sizing: border-box;
+        }
+
+        .search-row.with-pane {
+          display: grid;
+          grid-template-columns:
+            var(--sidepane-width, 250px) minmax(0, 1fr)
+            auto;
+          align-items: center;
+          gap: var(--ha-space-4);
+        }
+
+        .search-row.with-pane .filter-controls {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          min-width: 0;
+          width: 100%;
+          height: 100%;
+          padding-inline-end: var(--ha-space-2);
+          border-inline-end: 1px solid var(--divider-color);
+          box-sizing: border-box;
+        }
+
+        .search-row.with-pane .search-input {
+          width: 100%;
+          min-width: 0;
+        }
+
+        .search-row.with-pane .clear-chip {
+          justify-self: end;
         }
 
         search-input-outlined {

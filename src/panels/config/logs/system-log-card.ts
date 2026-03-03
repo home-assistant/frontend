@@ -1,10 +1,8 @@
-import { mdiFilterVariantRemove } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-filter-states";
-import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
@@ -61,6 +59,12 @@ export class SystemLogCard extends LitElement {
 
   public get hasItems(): boolean {
     return (this._items?.length || 0) > 0;
+  }
+
+  public clearFilters(): void {
+    this._levelFilter = [];
+    this._errorTypeFilter = [];
+    this._notifyFiltersState();
   }
 
   private _timestamp(item: LoggedError): string {
@@ -240,17 +244,6 @@ export class SystemLogCard extends LitElement {
       ? html`
           <div class="content-layout">
             <div class="pane">
-              <div class="pane-header">
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  .label=${this.hass.localize(
-                    "ui.components.subpage-data-table.clear_filter"
-                  )}
-                  .disabled=${!hasActiveFilters}
-                  @click=${this._clearFilters}
-                ></ha-icon-button>
-              </div>
-
               <div class="pane-content">
                 <ha-filter-states
                   .hass=${this.hass}
@@ -311,13 +304,6 @@ export class SystemLogCard extends LitElement {
     this._notifyFiltersState();
   }
 
-  private _clearFilters(ev: Event): void {
-    ev.stopPropagation();
-    this._levelFilter = [];
-    this._errorTypeFilter = [];
-    this._notifyFiltersState();
-  }
-
   private _notifyFiltersState(): void {
     this.dispatchEvent(
       new CustomEvent("system-log-filters-changed", {
@@ -374,21 +360,12 @@ export class SystemLogCard extends LitElement {
     }
 
     .pane {
-      width: min(320px, 45%);
+      flex: 0 0 var(--sidepane-width, 250px);
+      width: var(--sidepane-width, 250px);
       border-inline-end: 1px solid var(--divider-color);
       display: flex;
       flex-direction: column;
       min-height: 0;
-      border-top: 1px solid var(--divider-color);
-      background: var(--primary-background-color);
-    }
-
-    .pane-header {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 8px;
-      border-bottom: 1px solid var(--divider-color);
       background: var(--primary-background-color);
     }
 
