@@ -67,7 +67,6 @@ class NotificationManager extends LitElement {
     }
     return html`
       <ha-toast
-        leading
         .labelText=${typeof this._parameters.message !== "string"
           ? this.hass.localize(
               this._parameters.message.translationKey,
@@ -99,8 +98,8 @@ class NotificationManager extends LitElement {
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.close")}
                 .path=${mdiClose}
-                dialogAction="close"
                 slot="dismiss"
+                @click=${this._dismissClicked}
               ></ha-icon-button>
             `
           : nothing}
@@ -113,6 +112,10 @@ class NotificationManager extends LitElement {
     if (this._parameters?.action) {
       this._parameters?.action.action();
     }
+  }
+
+  private _dismissClicked() {
+    this._toast?.close("dismiss");
   }
 }
 
