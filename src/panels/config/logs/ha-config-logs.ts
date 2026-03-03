@@ -507,7 +507,8 @@ export class HaConfigLogs extends LitElement {
             var(--sidepane-width, 250px) minmax(0, 1fr)
             auto;
           align-items: center;
-          gap: var(--ha-space-4);
+          gap: 0;
+          padding: 0;
         }
 
         .search-row.with-pane .filter-controls {
@@ -517,7 +518,7 @@ export class HaConfigLogs extends LitElement {
           min-width: 0;
           width: 100%;
           height: 100%;
-          padding-inline-end: var(--ha-space-2);
+          padding: 0 var(--ha-space-4);
           border-inline-end: 1px solid var(--divider-color);
           box-sizing: border-box;
         }
@@ -525,10 +526,13 @@ export class HaConfigLogs extends LitElement {
         .search-row.with-pane .search-input {
           width: 100%;
           min-width: 0;
+          margin-inline-start: var(--ha-space-4);
         }
 
         .search-row.with-pane .clear-chip {
           justify-self: end;
+          margin-inline-start: var(--ha-space-4);
+          margin-inline-end: var(--ha-space-4);
         }
 
         search-input-outlined {
