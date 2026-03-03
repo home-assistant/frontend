@@ -1,4 +1,5 @@
 import { preventDefault } from "@fullcalendar/core/internal";
+import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
 import { mdiInformationOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -13,27 +14,33 @@ export class HaInputLabel extends LitElement {
 
   @property({ type: Boolean, reflect: true }) inline = false;
 
+  private readonly _hasSlotController = new HasSlotController(this, "label");
+
   render() {
+    const hasLabel = this.label || this._hasSlotController.test("label");
+
     return html`
-      ${this.label
-        ? html`<div class="text">
-            <div class="label-content">
+      <div class="text">
+        ${hasLabel
+          ? html`<div class="label-content">
               <span>
                 <slot name="label">${this.label}</slot>
               </span>
-            </div>
-          </div>`
-        : nothing}
-      ${this.hint
-        ? html`<ha-icon-button
-              @click=${preventDefault}
-              .path=${mdiInformationOutline}
-              .label=${"Hint"}
-              hide-title
-              id="hint"
-            ></ha-icon-button>
-            <ha-tooltip for="hint">${this.hint}</ha-tooltip> `
-        : nothing}
+            </div>`
+          : nothing}
+      </div>
+      <slot name="end">
+        ${this.hint
+          ? html`<ha-icon-button
+                @click=${preventDefault}
+                .path=${mdiInformationOutline}
+                .label=${"Hint"}
+                hide-title
+                id="hint"
+              ></ha-icon-button>
+              <ha-tooltip for="hint">${this.hint}</ha-tooltip> `
+          : nothing}
+      </slot>
     `;
   }
 
@@ -133,11 +140,6 @@ export class HaInputLabel extends LitElement {
         transparent 98%,
         black 100%
       );
-    }
-
-    ha-svg-icon {
-      color: var(--ha-color-on-disabled-normal);
-      --mdc-icon-size: 16px;
     }
 
     #hint {
