@@ -6,6 +6,8 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import type { BackupAgent } from "../../../../../data/backup";
@@ -233,20 +235,17 @@ export class HaBackupOverviewProgress extends LitElement {
   private _renderAgentIcon(agentId: string) {
     if (isLocalAgent(agentId)) {
       return html`<ha-svg-icon
-        class="agent-icon"
+        slot="start"
         .path=${mdiHarddisk}
       ></ha-svg-icon>`;
     }
     if (isNetworkMountAgent(agentId)) {
-      return html`<ha-svg-icon
-        class="agent-icon"
-        .path=${mdiNas}
-      ></ha-svg-icon>`;
+      return html`<ha-svg-icon slot="start" .path=${mdiNas}></ha-svg-icon>`;
     }
     const domain = computeDomain(agentId);
     return html`
       <img
-        class="agent-icon"
+        slot="start"
         .src=${brandsUrl({
           domain,
           type: "icon",
@@ -305,7 +304,7 @@ export class HaBackupOverviewProgress extends LitElement {
     }
 
     return html`
-      <div class="agent-list">
+      <ha-md-list class="agent-list">
         ${this.agents.map((agent) => {
           const name = computeBackupAgentName(
             this.hass.localize,
@@ -316,33 +315,33 @@ export class HaBackupOverviewProgress extends LitElement {
 
           if (agentPercent !== undefined) {
             return html`
-              <div class="agent-item">
+              <ha-md-list-item>
                 ${this._renderAgentIcon(agent.agent_id)}
-                <div class="agent-detail">
-                  <div class="agent-row">
-                    <span class="agent-name">${name}</span>
-                    <span class="progress-percentage">
-                      ${agentPercent}${blankBeforePercent(this.hass.locale)}%
-                    </span>
-                  </div>
+                <div slot="headline" class="agent-headline">
+                  <span>${name}</span>
+                  <span class="progress-percentage">
+                    ${agentPercent}${blankBeforePercent(this.hass.locale)}%
+                  </span>
+                </div>
+                <div slot="supporting-text">
                   <mwc-linear-progress
                     .progress=${agentPercent / 100}
                     buffer=""
                   ></mwc-linear-progress>
                 </div>
-              </div>
+              </ha-md-list-item>
             `;
           }
 
           return html`
-            <div class="agent-item agent-item-waiting">
+            <ha-md-list-item>
               ${this._renderAgentIcon(agent.agent_id)}
-              <span class="agent-name">${name}</span>
-              <ha-spinner size="tiny"></ha-spinner>
-            </div>
+              <div slot="headline">${name}</div>
+              <ha-spinner slot="end" size="tiny"></ha-spinner>
+            </ha-md-list-item>
           `;
         })}
-      </div>
+      </ha-md-list>
     `;
   }
 
@@ -408,53 +407,42 @@ export class HaBackupOverviewProgress extends LitElement {
             opacity: 0.5;
           }
         }
-        .progress-percentage {
-          font-size: var(--ha-font-size-s);
-          color: var(--secondary-text-color);
-          text-align: end;
-        }
         mwc-linear-progress {
           width: 100%;
         }
         .agent-list {
-          display: flex;
-          flex-direction: column;
-          gap: var(--ha-space-3);
+          background: none;
+          padding: 0;
           margin-top: var(--ha-space-4);
         }
-        .agent-item {
-          display: flex;
-          align-items: flex-start;
-          gap: var(--ha-space-3);
+        ha-md-list-item {
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+          --md-list-item-two-line-container-height: 64px;
         }
-        .agent-item-waiting {
-          align-items: center;
+        ha-md-list-item img {
+          width: 48px;
         }
-        .agent-icon {
-          width: 40px;
-          height: 40px;
-          flex-shrink: 0;
-        }
-        ha-svg-icon.agent-icon {
-          --mdc-icon-size: 40px;
+        ha-md-list-item ha-svg-icon[slot="start"] {
+          --mdc-icon-size: 48px;
           color: var(--primary-text-color);
         }
-        .agent-detail {
-          flex: 1;
-          min-width: 0;
+        ha-md-list-item [slot="headline"] {
+          margin-bottom: var(--ha-space-1);
         }
-        .agent-name {
-          font-size: var(--ha-font-size-m);
-          flex: 1;
-        }
-        .agent-row {
+        .agent-headline {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: var(--ha-space-1);
         }
-        .agent-row .progress-percentage {
+        .progress-percentage {
+          font-size: var(--ha-font-size-s);
+          color: var(--secondary-text-color);
           flex-shrink: 0;
+        }
+        ha-md-list-item [slot="supporting-text"] {
+          display: flex;
+          align-items: center;
         }
       `,
     ];
