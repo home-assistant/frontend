@@ -95,7 +95,7 @@ const processAreasForLight = (
           {
             type: "button",
             icon: "mdi:power",
-            color: "amber",
+            color: "orange",
             text: hass.localize("ui.panel.lovelace.strategy.light.on"),
             tap_action: {
               action: "perform-action",
