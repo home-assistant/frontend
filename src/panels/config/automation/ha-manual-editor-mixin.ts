@@ -1,8 +1,13 @@
 import { ContextProvider } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { LitElement, PropertyValues, TemplateResult } from "lit";
-import { html, nothing } from "lit";
+import {
+  html,
+  type nothing,
+  type LitElement,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../common/decorators/storage";
@@ -99,7 +104,7 @@ export const ManualEditorMixin = <TConfig>(
     }
 
     protected renderContent(): TemplateResult | typeof nothing {
-      return nothing;
+      throw new Error("Not implemented");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
