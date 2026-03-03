@@ -1,4 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues } from "lit";
 import { css, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -53,7 +53,6 @@ export class HaGauge extends LitElement {
       this._updated = true;
       this._angle = getAngle(this.value, this.min, this.max);
       this._segment_label = this._getSegmentLabel();
-      this._rescaleSvg();
     });
   }
 
@@ -70,96 +69,83 @@ export class HaGauge extends LitElement {
     }
     this._angle = getAngle(this.value, this.min, this.max);
     this._segment_label = this._getSegmentLabel();
-    this._rescaleSvg();
   }
 
   protected render() {
-    return svg`
-      <svg viewBox="-50 -50 100 50" class="gauge">
-        ${
-          !this.needle || !this.levels
-            ? svg`<path
-          class="dial"
-          d="M -40 0 A 40 40 0 0 1 40 0"
-        ></path>`
-            : ""
-        }
+    const arcRadius = 40;
+    const arcLength = Math.PI * arcRadius;
+    const valueAngle = getAngle(this.value, this.min, this.max);
+    const strokeOffset = arcLength * (1 - (valueAngle + 90) / 180);
 
-        ${
-          this.levels
-            ? this.levels
-                .sort((a, b) => a.level - b.level)
-                .map((level, idx) => {
-                  let firstPath: TemplateResult | undefined;
-                  if (idx === 0 && level.level !== this.min) {
-                    const angle = getAngle(this.min, this.min, this.max);
-                    firstPath = svg`<path
-                        stroke="var(--info-color)"
-                        class="level"
-                        d="M
-                          ${0 - 40 * Math.cos((angle * Math.PI) / 180)}
-                          ${0 - 40 * Math.sin((angle * Math.PI) / 180)}
-                         A 40 40 0 0 1 40 0
-                        "
-                      ></path>`;
-                  }
-                  const angle = getAngle(level.level, this.min, this.max);
-                  return svg`${firstPath}<path
-                      stroke="${level.stroke}"
-                      class="level"
-                      d="M
-                        ${0 - 40 * Math.cos((angle * Math.PI) / 180)}
-                        ${0 - 40 * Math.sin((angle * Math.PI) / 180)}
-                       A 40 40 0 0 1 40 0
-                      "
-                    ></path>`;
-                })
-            : ""
-        }
-        ${
-          this.needle
-            ? svg`<path
+    return svg`
+    <svg viewBox="-50 -50 100 60" class="gauge">
+      <path
+        class="dial"
+        d="M -40 0 A 40 40 0 0 1 40 0"
+      />
+
+      ${
+        this.levels
+          ? this.levels
+              .sort((a, b) => a.level - b.level)
+              .map((level) => {
+                const levelAngle = getAngle(level.level, this.min, this.max);
+                return svg`
+                  <path
+                    class="level"
+                    stroke="${level.stroke}"
+                    d="M
+                      ${-arcRadius * Math.cos((levelAngle * Math.PI) / 180)}
+                      ${-arcRadius * Math.sin((levelAngle * Math.PI) / 180)}
+                      A ${arcRadius} ${arcRadius} 0 0 1 40 0
+                    "
+                  />
+                `;
+              })
+          : ""
+      }
+
+      ${
+        this.needle
+          ? svg`
+              <path
                 class="needle"
                 d="M -25 -2.5 L -47.5 0 L -25 2.5 z"
                 style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
-              >
-              `
-            : svg`<path
+              />
+            `
+          : svg`
+              <path
                 class="value"
-                d="M -40 0 A 40 40 0 1 0 40 0"
-                style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
-              >`
-        }
-        </path>
-      </svg>
-      <svg class="text">
-        <text class="value-text">
-          ${
-            this._segment_label
-              ? this._segment_label
-              : this.valueText ||
-                formatNumber(this.value, this.locale, this.formatOptions)
-          }${
-            this._segment_label
-              ? ""
-              : this.label === "%"
-                ? blankBeforePercent(this.locale) + "%"
-                : ` ${this.label}`
-          }
-        </text>
-      </svg>`;
-  }
+                d="M -40 0 A 40 40 0 0 1 40 0"
+                stroke-dasharray="${arcLength}"
+                stroke-dashoffset="${strokeOffset}"
+              />
+            `
+      }
 
-  private _rescaleSvg() {
-    // Set the viewbox of the SVG containing the value to perfectly
-    // fit the text
-    // That way it will auto-scale correctly
-    const svgRoot = this.shadowRoot!.querySelector(".text")!;
-    const box = svgRoot.querySelector("text")!.getBBox()!;
-    svgRoot.setAttribute(
-      "viewBox",
-      `${box.x} ${box!.y} ${box.width} ${box.height}`
-    );
+      <text
+        class="value-text"
+        x="0"
+        y="-10"
+        dominant-baseline="middle"
+        text-anchor="middle"
+      >
+        ${
+          this._segment_label
+            ? this._segment_label
+            : this.valueText ||
+              formatNumber(this.value, this.locale, this.formatOptions)
+        }${
+          this._segment_label
+            ? ""
+            : this.label === "%"
+              ? blankBeforePercent(this.locale) + "%"
+              : ` ${this.label}`
+        }
+      </text>
+    </svg>
+  `;
   }
 
   private _getSegmentLabel() {
@@ -178,41 +164,34 @@ export class HaGauge extends LitElement {
     :host {
       position: relative;
     }
+
     .dial {
       fill: none;
       stroke: var(--primary-background-color);
-      stroke-width: 15;
+      stroke-width: 10;
+      stroke-linecap: round;
     }
+
     .value {
       fill: none;
-      stroke-width: 15;
+      stroke-width: 10;
       stroke: var(--gauge-color);
-      transition: all 1s ease 0s;
+      stroke-linecap: round;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
     .needle {
       fill: var(--primary-text-color);
-      transition: all 1s ease 0s;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
     .level {
       fill: none;
-      stroke-width: 15;
-    }
-    .gauge {
-      display: block;
-    }
-    .text {
-      position: absolute;
-      max-height: 40%;
-      max-width: 55%;
-      left: 50%;
-      bottom: -6%;
-      transform: translate(-50%, 0%);
+      stroke-width: 10;
+      stroke-linecap: round;
     }
     .value-text {
-      font-size: 50px;
       fill: var(--primary-text-color);
-      text-anchor: middle;
-      direction: ltr;
     }
   `;
 }
