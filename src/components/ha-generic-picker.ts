@@ -14,7 +14,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
-import { authContext } from "../data/context";
+import { authContext, localizeContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import { isIosApp } from "../util/is_ios";
@@ -30,6 +30,8 @@ import type {
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
 import "./ha-svg-icon";
+import "./input/ha-input-label";
+import { inputWrapperStyles } from "./input/styles";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends PickerMixin(LitElement) {
@@ -114,6 +116,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
   @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private localize?: ContextType<typeof localizeContext>;
+
+  @state()
   @consume({ context: authContext, subscribe: true })
   private auth?: ContextType<typeof authContext>;
 
@@ -160,23 +166,41 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     this._initialFieldValue = value;
   }
 
+  private _renderAddButton() {
+    const button = html`
+      <ha-button
+        id="add-button"
+        size="small"
+        appearance="filled"
+        @click=${this.open}
+        .disabled=${this.disabled}
+      >
+        <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
+        ${this.addButtonLabel ||
+        this.placeholder ||
+        this.localize?.("ui.common.add") ||
+        "Add"}
+      </ha-button>
+    `;
+
+    if (this.addButtonLabel) {
+      return button;
+    }
+
+    return html`
+      ${this.label
+        ? html`<ha-input-label .label=${this.label}></ha-input-label>`
+        : nothing}
+      <div class="input-wrapper">${button}</div>
+    `;
+  }
+
   protected render() {
     return html`<div class="container">
         <div id="picker">
           <slot name="field">
-            ${this.addButtonLabel && !this.value
-              ? html`<ha-button
-                  size="small"
-                  appearance="filled"
-                  @click=${this.open}
-                  .disabled=${this.disabled}
-                >
-                  <ha-svg-icon
-                    .path=${mdiPlaylistPlus}
-                    slot="start"
-                  ></ha-svg-icon>
-                  ${this.addButtonLabel}
-                </ha-button>`
+            ${(this.addButtonLabel || !this.icon) && !this.value
+              ? this._renderAddButton()
               : html`<ha-picker-field
                   type="button"
                   .open=${this._opened}
@@ -405,6 +429,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return [
+      inputWrapperStyles,
       css`
         .container {
           position: relative;
