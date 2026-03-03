@@ -6,8 +6,8 @@ import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../ha-icon-button";
-import "../ha-svg-icon";
 import "../ha-tooltip";
 import "./ha-input-label";
 
@@ -340,13 +340,19 @@ export class HaInput extends LitElement {
         <slot name="start" slot="start"></slot>
         <slot name="end" slot="end"></slot>
         <slot name="clear-icon" slot="clear-icon">
-          <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+          <ha-icon-button .path=${mdiClose}></ha-icon-button>
         </slot>
         <slot name="show-password-icon" slot="show-password-icon">
-          <ha-svg-icon .path=${mdiEye}></ha-svg-icon>
+          <ha-icon-button
+            @keydown=${stopPropagation}
+            .path=${mdiEye}
+          ></ha-icon-button>
         </slot>
         <slot name="hide-password-icon" slot="hide-password-icon">
-          <ha-svg-icon .path=${mdiEyeOff}></ha-svg-icon>
+          <ha-icon-button
+            @keydown=${stopPropagation}
+            .path=${mdiEyeOff}
+          ></ha-icon-button>
         </slot>
         <div
           slot="hint"
