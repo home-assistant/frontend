@@ -3,11 +3,9 @@ import { mdiHarddisk, mdiNas } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
-import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import type { BackupAgent } from "../../../../../data/backup";
@@ -16,10 +14,43 @@ import {
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../../../data/backup";
-import type { ManagerStateEvent } from "../../../../../data/backup_manager";
+import type {
+  CreateBackupStage,
+  ManagerStateEvent,
+} from "../../../../../data/backup_manager";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import "../ha-backup-summary-card";
+
+type SegmentState = "pending" | "active" | "completed";
+
+interface ProgressSegment {
+  label: string;
+  state: SegmentState;
+  flex: number;
+}
+
+const HA_STAGES: CreateBackupStage[] = ["home_assistant"];
+
+const ADDON_STAGES: CreateBackupStage[] = [
+  "addons",
+  "apps",
+  "addon_repositories",
+  "app_repositories",
+  "docker_config",
+  "await_addon_restarts",
+  "await_app_restarts",
+];
+
+const MEDIA_STAGES: CreateBackupStage[] = ["folders", "finishing_file"];
+
+// Ordered groups matching actual backend execution order
+const STAGE_ORDER: CreateBackupStage[][] = [
+  ADDON_STAGES,
+  MEDIA_STAGES,
+  HA_STAGES,
+  ["upload_to_agents"],
+];
 
 @customElement("ha-backup-overview-progress")
 export class HaBackupOverviewProgress extends LitElement {
@@ -54,12 +85,7 @@ export class HaBackupOverviewProgress extends LitElement {
   private get _description() {
     switch (this.manager.manager_state) {
       case "create_backup":
-        if (!this.manager.stage) {
-          return "";
-        }
-        return this.hass.localize(
-          `ui.panel.config.backup.overview.progress.description.create_backup.${this.manager.stage}`
-        );
+        return "";
       case "restore_backup":
         if (!this.manager.stage) {
           return "";
@@ -88,37 +114,139 @@ export class HaBackupOverviewProgress extends LitElement {
     return Math.round((progress.uploaded_bytes / progress.total_bytes) * 100);
   }
 
-  private _computeOverallProgress(): number | undefined {
-    const progressValues = Object.values(this.uploadProgress);
-    if (progressValues.length === 0) {
-      return undefined;
+  private _getStageGroupIndex(stage: CreateBackupStage): number {
+    return STAGE_ORDER.findIndex((group) => group.includes(stage));
+  }
+
+  private _getSegmentState(
+    segmentGroupIndex: number,
+    currentGroupIndex: number
+  ): SegmentState {
+    if (currentGroupIndex > segmentGroupIndex) {
+      return "completed";
     }
-    let totalBytes = 0;
-    let uploadedBytes = 0;
-    for (const val of progressValues) {
-      totalBytes += val.total_bytes;
-      uploadedBytes += val.uploaded_bytes;
+    if (currentGroupIndex === segmentGroupIndex) {
+      return "active";
     }
-    if (totalBytes === 0) {
-      return undefined;
+    return "pending";
+  }
+
+  private _computeCreateBackupSegments(): ProgressSegment[] {
+    const stage =
+      this.manager.manager_state === "create_backup"
+        ? this.manager.stage
+        : null;
+
+    const currentGroupIndex = stage ? this._getStageGroupIndex(stage) : -1;
+    // TODO: For testing only, remove when we have more stages implemented
+    const isHassio = true; // isComponentLoaded(this.hass, "hassio");
+
+    if (isHassio) {
+      // Split creation into 3 sub-segments + Upload
+      // Segments ordered to match backend execution: Apps → Media → HA → Upload
+      // Creation segments take 50% total, upload takes 50%
+      return [
+        {
+          label: this.hass.localize(
+            "ui.panel.config.backup.overview.progress.segments.apps"
+          ),
+          state: this._getSegmentState(0, currentGroupIndex),
+          flex: 1,
+        },
+        {
+          label: this.hass.localize(
+            "ui.panel.config.backup.overview.progress.segments.media"
+          ),
+          state: this._getSegmentState(1, currentGroupIndex),
+          flex: 1,
+        },
+        {
+          label: this.hass.localize(
+            "ui.panel.config.backup.overview.progress.segments.home_assistant"
+          ),
+          state: this._getSegmentState(2, currentGroupIndex),
+          flex: 1,
+        },
+        {
+          label: this.hass.localize(
+            "ui.panel.config.backup.overview.progress.segments.upload"
+          ),
+          state: this._getSegmentState(3, currentGroupIndex),
+          flex: 3,
+        },
+      ];
     }
-    return Math.round((uploadedBytes / totalBytes) * 100);
+
+    // Non-HAOS: single "Creating backup" + "Uploading backup"
+    const creatingState: SegmentState =
+      currentGroupIndex >= 0 && currentGroupIndex < 3
+        ? "active"
+        : currentGroupIndex >= 3
+          ? "completed"
+          : "pending";
+
+    return [
+      {
+        label: this.hass.localize(
+          "ui.panel.config.backup.overview.progress.segments.creating"
+        ),
+        state: creatingState,
+        flex: 1,
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.config.backup.overview.progress.segments.upload"
+        ),
+        state: this._getSegmentState(3, currentGroupIndex),
+        flex: 1,
+      },
+    ];
+  }
+
+  private _computeReceiveBackupSegments(): ProgressSegment[] {
+    const stage =
+      this.manager.manager_state === "receive_backup"
+        ? this.manager.stage
+        : null;
+
+    const isUpload = stage === "upload_to_agents";
+    const isReceive = stage === "receive_file";
+
+    return [
+      {
+        label: this.hass.localize(
+          "ui.panel.config.backup.overview.progress.segments.receiving"
+        ),
+        state: isUpload ? "completed" : isReceive ? "active" : "pending",
+        flex: 1,
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.config.backup.overview.progress.segments.upload"
+        ),
+        state: isUpload ? "active" : "pending",
+        flex: 1,
+      },
+    ];
   }
 
   private _renderAgentIcon(agentId: string) {
     if (isLocalAgent(agentId)) {
       return html`<ha-svg-icon
-        slot="start"
+        class="agent-icon"
         .path=${mdiHarddisk}
       ></ha-svg-icon>`;
     }
     if (isNetworkMountAgent(agentId)) {
-      return html`<ha-svg-icon slot="start" .path=${mdiNas}></ha-svg-icon>`;
+      return html`<ha-svg-icon
+        class="agent-icon"
+        .path=${mdiNas}
+      ></ha-svg-icon>`;
     }
     const domain = computeDomain(agentId);
     return html`
       <img
-        slot="start"
+        class="agent-icon"
         .src=${brandsUrl({
           domain,
           type: "icon",
@@ -131,6 +259,40 @@ export class HaBackupOverviewProgress extends LitElement {
     `;
   }
 
+  private _renderSegmentedProgress() {
+    const managerState = this.manager.manager_state;
+
+    let segments: ProgressSegment[];
+
+    if (managerState === "create_backup") {
+      segments = this._computeCreateBackupSegments();
+    } else if (managerState === "receive_backup") {
+      segments = this._computeReceiveBackupSegments();
+    } else {
+      // restore_backup doesn't have segmented progress
+      return nothing;
+    }
+
+    return html`
+      <div class="segmented-progress">
+        ${segments.map(
+          (segment) => html`
+            <div class="segment" style="flex: ${segment.flex}">
+              <div
+                class="segment-bar ${classMap({
+                  active: segment.state === "active",
+                  completed: segment.state === "completed",
+                  pending: segment.state === "pending",
+                })}"
+              ></div>
+              <span class="segment-label">${segment.label}</span>
+            </div>
+          `
+        )}
+      </div>
+    `;
+  }
+
   private _renderAgentProgress() {
     if (!this._isUploadStage || this.agents.length === 0) {
       return nothing;
@@ -138,83 +300,48 @@ export class HaBackupOverviewProgress extends LitElement {
 
     const hasProgress = Object.keys(this.uploadProgress).length > 0;
 
-    // If no upload progress events received yet, don't show agent details
     if (!hasProgress) {
       return nothing;
     }
 
-    const overallProgress = this._computeOverallProgress();
-
     return html`
-      <div class="upload-progress">
-        <div class="overall-progress">
-          <mwc-linear-progress
-            .indeterminate=${overallProgress === undefined}
-            .progress=${overallProgress !== undefined
-              ? overallProgress / 100
-              : undefined}
-            buffer=""
-          ></mwc-linear-progress>
-          ${overallProgress !== undefined
-            ? html`<span class="progress-percentage">
-                ${overallProgress}${blankBeforePercent(this.hass.locale)}%
-              </span>`
-            : nothing}
-        </div>
+      <div class="agent-list">
+        ${this.agents.map((agent) => {
+          const name = computeBackupAgentName(
+            this.hass.localize,
+            agent.agent_id,
+            this.agents
+          );
+          const agentPercent = this._computeAgentPercent(agent.agent_id);
 
-        ${this.agents.length > 1
-          ? html`
-              <ha-expansion-panel
-                .header=${this.hass.localize(
-                  "ui.panel.config.backup.overview.progress.agent_progress.title"
-                )}
-                left-chevron
-              >
-                <ha-md-list>
-                  ${this.agents.map((agent) => {
-                    const name = computeBackupAgentName(
-                      this.hass.localize,
-                      agent.agent_id,
-                      this.agents
-                    );
-                    const agentPercent = this._computeAgentPercent(
-                      agent.agent_id
-                    );
+          if (agentPercent !== undefined) {
+            return html`
+              <div class="agent-item">
+                ${this._renderAgentIcon(agent.agent_id)}
+                <div class="agent-detail">
+                  <div class="agent-row">
+                    <span class="agent-name">${name}</span>
+                    <span class="progress-percentage">
+                      ${agentPercent}${blankBeforePercent(this.hass.locale)}%
+                    </span>
+                  </div>
+                  <mwc-linear-progress
+                    .progress=${agentPercent / 100}
+                    buffer=""
+                  ></mwc-linear-progress>
+                </div>
+              </div>
+            `;
+          }
 
-                    if (agentPercent !== undefined) {
-                      return html`
-                        <ha-md-list-item>
-                          ${this._renderAgentIcon(agent.agent_id)}
-                          <div slot="headline">${name}</div>
-                          <div slot="supporting-text">
-                            <div class="agent-progress">
-                              <mwc-linear-progress
-                                .progress=${agentPercent / 100}
-                                buffer=""
-                              ></mwc-linear-progress>
-                              <span class="progress-percentage">
-                                ${agentPercent}${blankBeforePercent(
-                                  this.hass.locale
-                                )}%
-                              </span>
-                            </div>
-                          </div>
-                        </ha-md-list-item>
-                      `;
-                    }
-
-                    return html`
-                      <ha-md-list-item>
-                        ${this._renderAgentIcon(agent.agent_id)}
-                        <div slot="headline">${name}</div>
-                        <ha-spinner slot="end" size="tiny"></ha-spinner>
-                      </ha-md-list-item>
-                    `;
-                  })}
-                </ha-md-list>
-              </ha-expansion-panel>
-            `
-          : nothing}
+          return html`
+            <div class="agent-item agent-item-waiting">
+              ${this._renderAgentIcon(agent.agent_id)}
+              <span class="agent-name">${name}</span>
+              <ha-spinner size="tiny"></ha-spinner>
+            </div>
+          `;
+        })}
       </div>
     `;
   }
@@ -227,7 +354,9 @@ export class HaBackupOverviewProgress extends LitElement {
         .description=${this._description}
         status="loading"
       >
-        ${this._renderAgentProgress()}
+        <div class="progress-content">
+          ${this._renderSegmentedProgress()} ${this._renderAgentProgress()}
+        </div>
       </ha-backup-summary-card>
     `;
   }
@@ -235,13 +364,49 @@ export class HaBackupOverviewProgress extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        .upload-progress {
-          padding: 0 var(--ha-space-4) var(--ha-space-4);
+        .progress-content {
+          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
         }
-        .overall-progress {
+        .segmented-progress {
+          display: flex;
+          gap: var(--ha-space-2);
+        }
+        .segment {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-1);
+          min-width: 0;
+        }
+        .segment-bar {
+          height: 8px;
+          border-radius: var(--ha-border-radius-pill);
+          transition: background-color 0.3s ease;
+        }
+        .segment-bar.pending {
+          background-color: var(--divider-color);
+        }
+        .segment-bar.active {
+          background-color: var(--primary-color);
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+        .segment-bar.completed {
+          background-color: var(--primary-color);
+        }
+        .segment-label {
+          font-size: var(--ha-font-size-xs);
+          color: var(--secondary-text-color);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
         }
         .progress-percentage {
           font-size: var(--ha-font-size-s);
@@ -251,39 +416,45 @@ export class HaBackupOverviewProgress extends LitElement {
         mwc-linear-progress {
           width: 100%;
         }
-        ha-expansion-panel {
-          margin-top: var(--ha-space-3);
-          --expansion-panel-summary-padding: 0;
-          --expansion-panel-content-padding: 0;
-        }
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-list-item-two-line-container-height: 64px;
-        }
-        ha-md-list-item img {
-          width: 48px;
-        }
-        ha-md-list-item ha-svg-icon[slot="start"] {
-          --mdc-icon-size: 48px;
-          color: var(--primary-text-color);
-        }
-        ha-md-list-item [slot="supporting-text"] {
-          display: flex;
-          align-items: center;
-        }
-        .agent-progress {
+        .agent-list {
           display: flex;
           flex-direction: column;
-          gap: var(--ha-space-1);
-          width: 100%;
+          gap: var(--ha-space-3);
+          margin-top: var(--ha-space-4);
         }
-        .agent-progress .progress-percentage {
-          text-align: end;
+        .agent-item {
+          display: flex;
+          align-items: flex-start;
+          gap: var(--ha-space-3);
+        }
+        .agent-item-waiting {
+          align-items: center;
+        }
+        .agent-icon {
+          width: 40px;
+          height: 40px;
+          flex-shrink: 0;
+        }
+        ha-svg-icon.agent-icon {
+          --mdc-icon-size: 40px;
+          color: var(--primary-text-color);
+        }
+        .agent-detail {
+          flex: 1;
+          min-width: 0;
+        }
+        .agent-name {
+          font-size: var(--ha-font-size-m);
+          flex: 1;
+        }
+        .agent-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--ha-space-1);
+        }
+        .agent-row .progress-percentage {
+          flex-shrink: 0;
         }
       `,
     ];

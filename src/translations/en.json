@@ -3289,8 +3289,13 @@
                   "upload_to_agents": "Uploading to locations"
                 }
               },
-              "agent_progress": {
-                "title": "Location details"
+              "segments": {
+                "home_assistant": "Home Assistant",
+                "apps": "Apps",
+                "media": "Media",
+                "upload": "Uploading backup",
+                "creating": "Creating backup",
+                "receiving": "Receiving backup"
               }
             },
             "summary": {
