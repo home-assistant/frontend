@@ -8089,7 +8089,9 @@
           },
           "light": {
             "lights": "Lights",
-            "other_lights": "Other lights"
+            "other_lights": "Other lights",
+            "on": "On",
+            "off": "Off"
           },
           "security": {
             "devices": "Devices",
