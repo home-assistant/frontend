@@ -67,11 +67,14 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     alt=${domainToName(this.hass.localize, "matter")}
-                    src=${brandsUrl({
-                      domain: "matter",
-                      type: "logo",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    src=${brandsUrl(
+                      {
+                        domain: "matter",
+                        type: "logo",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                   />
                   <ha-qr-code
                     .data=${this._commissionParams.setup_qr_code}

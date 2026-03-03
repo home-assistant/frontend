@@ -203,11 +203,14 @@ export class HaTargetPickerValueChip extends LitElement {
     try {
       const data = await getConfigEntry(this.hass, configEntryId);
       const domain = data.config_entry.domain;
-      this._iconImg = brandsUrl({
-        domain: domain,
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      });
+      this._iconImg = brandsUrl(
+        {
+          domain: domain,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
 
       this._setDomainName(domain);
     } catch {
