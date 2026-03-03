@@ -419,23 +419,23 @@ export class HaInput extends LitElement {
 
     wa-input:not([disabled])::part(base):hover {
       --wa-form-control-border-color: var(--ha-color-border-neutral-normal);
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
     }
 
     wa-input:not([disabled])::part(base):focus-within {
       outline: none;
       --wa-form-control-border-color: var(--ha-color-border-primary-normal);
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
     }
 
+    wa-input.invalid:not([disabled])::part(base) {
+      --wa-form-control-border-color: var(--ha-color-border-danger-quiet);
+    }
+    wa-input.invalid:not([disabled])::part(base):hover,
     wa-input.invalid:not([disabled])::part(base):focus-within {
       --wa-form-control-border-color: var(--ha-color-border-danger-normal);
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
     }
 
     wa-input:disabled::part(base) {
-      --wa-form-control-border-color: var(--ha-color-border-disabled);
-      background-color: var(--ha-color-fill-disabled-loud-resting);
+      background-color: var(--ha-color-fill-disabled-quiet-resting);
     }
 
     wa-input::part(label) {
@@ -483,11 +483,7 @@ export class HaInput extends LitElement {
     }
 
     wa-input.invalid {
-      --ha-input-label-background: var(--ha-color-fill-danger-quiet-resting);
-    }
-
-    :host(:focus-within) wa-input.invalid {
-      --ha-input-label-background: var(--ha-color-fill-danger-quiet-hover);
+      --ha-input-label-background: var(--ha-color-fill-danger-quiet-active);
     }
   `;
 }

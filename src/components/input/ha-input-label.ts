@@ -50,7 +50,7 @@ export class HaInputLabel extends LitElement {
       display: flex;
       width: 100%;
       align-items: center;
-      color: var(--ha-color-text-secondary);
+      color: var(--ha-input-label-text-color, var(--ha-color-text-secondary));
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
       gap: var(--ha-space-1);
