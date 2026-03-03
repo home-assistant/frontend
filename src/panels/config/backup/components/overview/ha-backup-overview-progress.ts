@@ -346,6 +346,11 @@ export class HaBackupOverviewProgress extends LitElement {
   }
 
   protected render() {
+    const segmentedProgress = this._renderSegmentedProgress();
+    const agentProgress = this._renderAgentProgress();
+    const hasProgressContent =
+      segmentedProgress !== nothing || agentProgress !== nothing;
+
     return html`
       <ha-backup-summary-card
         .hass=${this.hass}
@@ -353,9 +358,13 @@ export class HaBackupOverviewProgress extends LitElement {
         .description=${this._description}
         status="loading"
       >
-        <div class="progress-content">
-          ${this._renderSegmentedProgress()} ${this._renderAgentProgress()}
-        </div>
+        ${hasProgressContent
+          ? html`
+              <div class="progress-content">
+                ${segmentedProgress} ${agentProgress}
+              </div>
+            `
+          : nothing}
       </ha-backup-summary-card>
     `;
   }
