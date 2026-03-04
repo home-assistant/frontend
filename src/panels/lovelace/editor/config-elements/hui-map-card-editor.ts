@@ -248,7 +248,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
           .schema=${this._subSchema(this.hass.localize, entityId)}
-          .computeLabel=${this._computeSubLabelCallback}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
         >
@@ -476,51 +475,19 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     }
   };
 
-  private _computeSubLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._subSchema>>
-  ) => {
-    switch (schema.name) {
-      case "label_mode":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.map.${schema.name}`
-        );
-      case "attribute":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.map.${schema.name}`
-        );
-      case "unit":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.map.${schema.name}`
-        );
-      case "focus":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.map.${schema.name}`
-        );
-      default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
-    }
-  };
-
   // remove "label_mode", "attribute" & "unit" options when needed
-  private _deleteLabelModeOptions(config) {
-    if (typeof config !== "string") {
-      // remove unused options from "dictionary" config
-      const cfg = { ...config };
-      if (cfg.label_mode) {
-        delete cfg.label_mode;
-      }
-      if (cfg.attribute) {
-        delete cfg.attribute;
-      }
-      if (cfg.unit) {
-        delete cfg.unit;
-      }
-      return cfg;
+  private _deleteLabelModeOptions(config: MapEntityConfig): MapEntityConfig {
+    const cfg = { ...config };
+    if (cfg.label_mode) {
+      delete cfg.label_mode;
     }
-    // return a "string" config as is
-    return config;
+    if (cfg.attribute) {
+      delete cfg.attribute;
+    }
+    if (cfg.unit) {
+      delete cfg.unit;
+    }
+    return cfg;
   }
 
   // normalize a generated yaml code by placing lines in a consistent order
