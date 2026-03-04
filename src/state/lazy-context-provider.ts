@@ -56,7 +56,7 @@ export class LazyContextProvider<
 
   constructor(
     private _host: ReactiveElement,
-    options: { context: C; subscribeFn: SubscribeFn<T> }
+    options: { context: C; initialValue?: T; subscribeFn: SubscribeFn<T> }
   ) {
     this._context = options.context;
     this._subscribeFn = options.subscribeFn;
@@ -73,6 +73,7 @@ export class LazyContextProvider<
     // The provider's internal value will be undefined until data loads.
     this._provider = new ContextProvider(this._host, {
       context: options.context,
+      initialValue: options.initialValue,
     });
   }
 
@@ -134,7 +135,7 @@ export class LazyContextProvider<
     if (!this._loaded) {
       // Data not loaded yet — intercept so the inner provider doesn't
       // call back with undefined.
-      ev.stopPropagation();
+      ev.stopImmediatePropagation();
 
       // Wrap the callback for subscribing consumers to track count.
       const callback = contextEvent.subscribe
