@@ -840,6 +840,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         replaceTarget?.type === "entity" ? replaceTarget.id : undefined;
       const replacingDeviceId =
         replaceTarget?.type === "device" ? replaceTarget.id : undefined;
+      const replacingAreaId =
+        replaceTarget?.type === "area" ? replaceTarget.id : undefined;
+      const replacingFloorId =
+        replaceTarget?.type === "floor" ? replaceTarget.id : undefined;
+      const replacingLabelId =
+        replaceTarget?.type === "label" ? replaceTarget.id : undefined;
 
       const items: (
         | string
@@ -858,9 +864,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           undefined,
           undefined,
           targetValue?.entity_id
-            ? ensureArray(targetValue.entity_id).filter(
-                (entityId) => entityId !== replacingEntityId
-              )
+            ? replacingEntityId
+              ? ensureArray(targetValue.entity_id).filter(
+                  (entityId) => entityId !== replacingEntityId
+                )
+              : ensureArray(targetValue.entity_id)
             : undefined,
           replacingEntityId
             ? `entity${SEPARATOR}${replacingEntityId}`
@@ -895,9 +903,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           deviceFilter,
           entityFilter,
           targetValue?.device_id
-            ? ensureArray(targetValue.device_id).filter(
-                (deviceId) => deviceId !== replacingDeviceId
-              )
+            ? replacingDeviceId
+              ? ensureArray(targetValue.device_id).filter(
+                  (deviceId) => deviceId !== replacingDeviceId
+                )
+              : ensureArray(targetValue.device_id)
             : undefined,
           replacingDeviceId,
           `device${SEPARATOR}`
@@ -936,22 +946,18 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           deviceFilter,
           entityFilter,
           targetValue?.area_id
-            ? ensureArray(targetValue.area_id).filter(
-                (areaId) =>
-                  areaId !==
-                  (replaceTarget?.type === "area"
-                    ? replaceTarget.id
-                    : undefined)
-              )
+            ? replacingAreaId
+              ? ensureArray(targetValue.area_id).filter(
+                  (areaId) => areaId !== replacingAreaId
+                )
+              : ensureArray(targetValue.area_id)
             : undefined,
           targetValue?.floor_id
-            ? ensureArray(targetValue.floor_id).filter(
-                (floorId) =>
-                  floorId !==
-                  (replaceTarget?.type === "floor"
-                    ? replaceTarget.id
-                    : undefined)
-              )
+            ? replacingFloorId
+              ? ensureArray(targetValue.floor_id).filter(
+                  (floorId) => floorId !== replacingFloorId
+                )
+              : ensureArray(targetValue.floor_id)
             : undefined
         );
 
@@ -1002,13 +1008,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           deviceFilter,
           entityFilter,
           targetValue?.label_id
-            ? ensureArray(targetValue.label_id).filter(
-                (labelId) =>
-                  labelId !==
-                  (replaceTarget?.type === "label"
-                    ? replaceTarget.id
-                    : undefined)
-              )
+            ? replacingLabelId
+              ? ensureArray(targetValue.label_id).filter(
+                  (labelId) => labelId !== replacingLabelId
+                )
+              : ensureArray(targetValue.label_id)
             : undefined,
           `label${SEPARATOR}`
         ).sort(this._sortBySortingLabel);
