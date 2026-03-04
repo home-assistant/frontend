@@ -642,6 +642,20 @@ export class HatScriptGraph extends LitElement {
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
+    if (!changedProps.has("trace") && !changedProps.has("selected")) {
+      return;
+    }
+
+    // Scroll to active node when selection changes
+    if (changedProps.has("selected")) {
+      const activeNode = this.renderRoot.querySelector(
+        "hat-graph-node[active], hat-graph-branch[active]"
+      ) as HTMLElement;
+      if (activeNode) {
+        activeNode.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
     if (!changedProps.has("trace")) {
       return;
     }

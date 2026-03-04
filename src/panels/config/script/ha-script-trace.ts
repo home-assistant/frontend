@@ -1,5 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
+  mdiChevronDown,
+  mdiChevronUp,
   mdiDotsVertical,
   mdiDownload,
   mdiInformationOutline,
@@ -103,7 +105,12 @@ export class HaScriptTrace extends LitElement {
 
     return html`
       ${devButtons}
-      <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${title}
+        .scrollable=${this.narrow}
+      >
         ${!this.narrow && this.scriptId
           ? html`
               <ha-button
@@ -218,6 +225,24 @@ export class HaScriptTrace extends LitElement {
                         .selected=${this._selected?.path}
                         @graph-node-selected=${this._pickNode}
                       ></hat-script-graph>
+                      <div class="graph-nav-overlay">
+                        <ha-icon-button
+                          .disabled=${!trackedNodes ||
+                          Object.keys(trackedNodes).length === 0 ||
+                          Object.keys(trackedNodes)[0] === this._selected?.path}
+                          @click=${this._selectPrevNode}
+                          .path=${mdiChevronUp}
+                        ></ha-icon-button>
+                        <ha-icon-button
+                          .disabled=${!trackedNodes ||
+                          Object.keys(trackedNodes).length === 0 ||
+                          Object.keys(trackedNodes)[
+                            Object.keys(trackedNodes).length - 1
+                          ] === this._selected?.path}
+                          @click=${this._selectNextNode}
+                          .path=${mdiChevronDown}
+                        ></ha-icon-button>
+                      </div>
                     </div>
 
                     <div class="info">
@@ -390,6 +415,14 @@ export class HaScriptTrace extends LitElement {
 
   private _pickNode(ev) {
     this._selected = ev.detail;
+  }
+
+  private _selectPrevNode() {
+    this._graph?.previousTrackedNode();
+  }
+
+  private _selectNextNode() {
+    this._graph?.nextTrackedNode();
   }
 
   private _refreshTraces() {
@@ -565,14 +598,18 @@ export class HaScriptTrace extends LitElement {
         }
 
         .main {
-          min-height: calc(100% - var(--header-height));
+          flex: 1;
+          min-height: 0;
           display: flex;
+          overflow: hidden;
           background-color: var(--card-background-color);
         }
 
         :host([narrow]) .main {
+          flex: none;
           height: auto;
           flex-direction: column;
+          overflow: visible;
         }
 
         .container {
@@ -581,15 +618,39 @@ export class HaScriptTrace extends LitElement {
 
         .graph {
           border-right: 1px solid var(--divider-color);
-          overflow-x: auto;
           max-width: 50%;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: row;
+          overflow: hidden;
+        }
+        hat-script-graph {
+          flex: 1;
+          overflow: auto;
+          min-width: 0;
         }
         :host([narrow]) .graph {
           max-width: 100%;
+          overflow: visible;
+          height: auto;
+          flex-direction: column;
+        }
+        :host([narrow]) hat-script-graph {
+          overflow: visible;
+          flex: none;
+        }
+        .graph-nav-overlay {
+          display: flex;
+          flex-direction: column;
+          flex-shrink: 0;
         }
         .info {
           flex: 1;
+          overflow-y: auto;
           background-color: var(--card-background-color);
+        }
+        :host([narrow]) .info {
+          overflow: visible;
         }
         .trace-link {
           text-decoration: none;
