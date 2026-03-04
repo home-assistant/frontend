@@ -21,32 +21,55 @@ import {
   showDialog,
   type ShowDialogParams,
 } from "../../../../src/dialogs/make-dialog-manager";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
 
 const ENTITIES = [
-  getEntity("alarm_control_panel", "alarm", "disarmed", {
-    friendly_name: "Alarm",
-  }),
-  getEntity("media_player", "livingroom", "playing", {
-    friendly_name: "Livingroom",
-  }),
-  getEntity("media_player", "lounge", "idle", {
-    friendly_name: "Lounge",
-    supported_features: 444983,
-  }),
-  getEntity("light", "bedroom", "on", {
-    friendly_name: "Bedroom",
-  }),
-  getEntity("switch", "coffee", "off", {
-    friendly_name: "Coffee",
-  }),
-  getEntity("number", "number", 5, {
-    friendly_name: "Number",
-  }),
+  {
+    entity_id: "alarm_control_panel.alarm",
+    state: "disarmed",
+    attributes: {
+      friendly_name: "Alarm",
+    },
+  },
+  {
+    entity_id: "media_player.livingroom",
+    state: "playing",
+    attributes: {
+      friendly_name: "Livingroom",
+    },
+  },
+  {
+    entity_id: "media_player.lounge",
+    state: "idle",
+    attributes: {
+      friendly_name: "Lounge",
+      supported_features: 444983,
+    },
+  },
+  {
+    entity_id: "light.bedroom",
+    state: "on",
+    attributes: {
+      friendly_name: "Bedroom",
+    },
+  },
+  {
+    entity_id: "switch.coffee",
+    state: "off",
+    attributes: {
+      friendly_name: "Coffee",
+    },
+  },
+  {
+    entity_id: "number.number",
+    state: "5",
+    attributes: {
+      friendly_name: "Number",
+    },
+  },
 ];
 
 const DEVICES: DeviceRegistryEntry[] = [

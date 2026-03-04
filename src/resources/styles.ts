@@ -186,24 +186,10 @@ export const haStyleDialog = css`
         var(--safe-area-inset-right, 0) var(--safe-area-inset-bottom, 0)
         var(--safe-area-inset-left, 0);
       --vertical-align-dialog: flex-end;
+    }
+    ha-dialog {
       --ha-dialog-border-radius: var(--ha-border-radius-square);
-    ha-dialog,
-    ha-adaptive-dialog {
-     --mdc-dialog-min-width: 100vw;
-     --mdc-dialog-max-width: 100vw;
-     --mdc-dialog-min-height: 100vh;
-     --mdc-dialog-min-height: 100svh;
-     --mdc-dialog-max-height: 100vh;
-     --mdc-dialog-max-height: 100svh;
-     --dialog-container-padding: 0px;
-     --dialog-surface-padding: var(--safe-area-inset-top, 0)
-       var(--safe-area-inset-right, 0) var(--safe-area-inset-bottom, 0)
-       var(--safe-area-inset-left, 0);
-     --vertical-align-dialog: flex-end;
-   }
-   ha-dialog {
-      --ha-dialog-border-radius: var(--ha-border-radius-square);
-   }
+    }
   }
   .error {
     color: var(--error-color);
@@ -258,20 +244,17 @@ export const haStyleDialogFixedTop = css`
 `;
 
 export const haStyleScrollbar = css`
-  .ha-scrollbar::-webkit-scrollbar,
-  :host(.ha-scrollbar)::-webkit-scrollbar {
+  .ha-scrollbar::-webkit-scrollbar {
     width: 0.4rem;
     height: 0.4rem;
   }
 
-  .ha-scrollbar::-webkit-scrollbar-thumb,
-  :host(.ha-scrollbar)::-webkit-scrollbar-thumb {
+  .ha-scrollbar::-webkit-scrollbar-thumb {
     border-radius: var(--ha-border-radius-sm);
     background: var(--scrollbar-thumb-color);
   }
 
-  .ha-scrollbar,
-  :host(.ha-scrollbar) {
+  .ha-scrollbar {
     overflow-y: auto;
     scrollbar-color: var(--scrollbar-thumb-color) transparent;
     scrollbar-width: thin;

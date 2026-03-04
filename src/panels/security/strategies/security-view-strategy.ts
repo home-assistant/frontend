@@ -32,7 +32,7 @@ export const securityEntityFilters: EntityFilter[] = [
   },
   {
     domain: "cover",
-    device_class: ["door", "garage", "gate"],
+    device_class: ["door", "garage", "gate", "window"],
     entity_category: "none",
   },
   {

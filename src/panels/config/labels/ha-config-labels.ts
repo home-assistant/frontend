@@ -147,11 +147,10 @@ export class HaConfigLabels extends LitElement {
       created_at: getCreatedAtTableColumn(localize, this.hass),
       modified_at: getModifiedAtTableColumn(localize, this.hass),
       actions: {
+        lastFixed: true,
         title: "",
         label: localize("ui.panel.config.generic.headers.actions"),
         showNarrow: true,
-        moveable: false,
-        hideable: false,
         type: "overflow-menu",
         template: (label) => html`
           <ha-icon-button

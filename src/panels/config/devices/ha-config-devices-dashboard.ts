@@ -535,11 +535,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                 alt=""
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"
-                src=${brandsUrl({
-                  domain: device.domains[0],
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
+                src=${brandsUrl(
+                  {
+                    domain: device.domains[0],
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
               />`
             : "",
       },

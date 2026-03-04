@@ -227,11 +227,14 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                 return html`
                   <img
                     title=${name}
-                    .src=${brandsUrl({
-                      domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    .src=${brandsUrl(
+                      {
+                        domain,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     height="24"
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
@@ -255,11 +258,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         },
       },
       actions: {
+        lastFixed: true,
         title: "",
         label: localize("ui.panel.config.generic.headers.actions"),
         showNarrow: true,
-        moveable: false,
-        hideable: false,
         type: "overflow-menu",
         template: (backup) => html`
           <ha-icon-button
