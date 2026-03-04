@@ -12,7 +12,6 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
 import "../../../../../../components/ha-svg-icon";
 import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
-import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
 
@@ -31,7 +30,7 @@ const EVENT_ICONS: Record<string, string> = {
 };
 
 @customElement("ha-device-info-matter-lock")
-export class HaDeviceInfoMatterLock extends SubscribeMixin(LitElement) {
+export class HaDeviceInfoMatterLock extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
@@ -42,13 +41,21 @@ export class HaDeviceInfoMatterLock extends SubscribeMixin(LitElement) {
 
   @state() private _isLock = false;
 
+  private _prevLockState?: HassEntity;
+
+  private _eventEntityIds?: string[];
+
   public willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
-    if (changedProperties.has("device") || changedProperties.has("hass")) {
+    if (changedProperties.has("device")) {
       this._findLockEntity();
     }
     if (changedProperties.has("hass") && this._lockEntityId) {
-      this._updateEvents();
+      const currentState = this.hass.states[this._lockEntityId];
+      if (currentState !== this._prevLockState) {
+        this._prevLockState = currentState;
+        this._updateEvents();
+      }
     }
   }
 
@@ -57,7 +64,6 @@ export class HaDeviceInfoMatterLock extends SubscribeMixin(LitElement) {
       return;
     }
 
-    // Find the lock entity for this device using hass.entities
     const entities = Object.values(this.hass.entities || {});
     const lockEntity = entities.find(
       (entity) =>
@@ -67,6 +73,15 @@ export class HaDeviceInfoMatterLock extends SubscribeMixin(LitElement) {
 
     this._lockEntityId = lockEntity?.entity_id;
     this._isLock = !!this._lockEntityId;
+
+    // Cache event entity IDs for this device so we don't search on every update
+    this._eventEntityIds = entities
+      .filter(
+        (entity) =>
+          entity.device_id === this.device.id &&
+          entity.entity_id.startsWith("event.")
+      )
+      .map((entity) => entity.entity_id);
   }
 
   private _updateEvents(): void {
@@ -74,10 +89,7 @@ export class HaDeviceInfoMatterLock extends SubscribeMixin(LitElement) {
       return;
     }
 
-    // Get the lock entity state
     const lockState: HassEntity = this.hass.states[this._lockEntityId];
-
-    // Check for recent state changes
     const events: LockEvent[] = [];
 
     // Add current state as most recent event
@@ -107,16 +119,9 @@ export class HaDeviceInfoMatterLock extends SubscribeMixin(LitElement) {
       });
     }
 
-    // Look for event entities related to this lock using hass.entities
-    const allEntities = Object.values(this.hass.entities || {});
-    const eventEntities = allEntities.filter(
-      (entity) =>
-        entity.device_id === this.device.id &&
-        entity.entity_id.startsWith("event.")
-    );
-
-    for (const eventEntity of eventEntities) {
-      const eventState = this.hass.states[eventEntity.entity_id];
+    // Use cached event entity IDs instead of searching all entities
+    for (const entityId of this._eventEntityIds || []) {
+      const eventState = this.hass.states[entityId];
       if (eventState && eventState.attributes.event_type) {
         const eventType = eventState.attributes.event_type as string;
         if (EVENT_ICONS[eventType]) {

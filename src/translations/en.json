@@ -6882,9 +6882,6 @@
           "lock": {
             "manage": "Manage lock",
             "dialog_title": "Manage lock",
-            "tabs": {
-              "users": "Users"
-            },
             "users": {
               "title": "Users",
               "add": "Add user",
