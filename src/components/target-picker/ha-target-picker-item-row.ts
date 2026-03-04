@@ -9,6 +9,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -136,9 +137,10 @@ export class HaTargetPickerItemRow extends LitElement {
     return html`
       <ha-md-list-item
         type=${replaceable ? "button" : "text"}
-        class=${[notFound ? "error" : "", replaceable ? "replaceable" : ""]
-          .filter(Boolean)
-          .join(" ")}
+        class=${classMap({
+          error: notFound,
+          replaceable,
+        })}
         @click=${replaceable ? this._replaceItem : undefined}
       >
         <div class="icon" slot="start">
@@ -650,8 +652,7 @@ export class HaTargetPickerItemRow extends LitElement {
         cursor: pointer;
       }
 
-      .replaceable:hover,
-      .replaceable:focus-visible {
+      .replaceable:hover {
         background-color: var(--ha-color-fill-neutral-quiet-hover);
       }
 
