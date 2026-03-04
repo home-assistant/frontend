@@ -64,8 +64,8 @@ export const coreStyles = css`
 
   @media (prefers-reduced-motion: reduce) {
     html {
-      --ha-animation-duration-none: 0ms;
-      --ha-animation-duration-instant: 0ms;
+      --ha-animation-duration-none: 1ms;
+      --ha-animation-duration-instant: 1ms;
       --ha-animation-duration-fast: 1ms;
       --ha-animation-duration-normal: 1ms;
       --ha-animation-duration-slow: 1ms;
