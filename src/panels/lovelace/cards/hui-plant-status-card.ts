@@ -241,25 +241,17 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
   `;
 
   private _formatSensorValue(stateObj: HassEntity, attribute: string): string {
-    const value = stateObj.attributes[attribute];
-    if (value == null) {
-      return "";
-    }
     const sensorEntityId = stateObj.attributes.sensors?.[attribute];
-    if (sensorEntityId) {
-      const sensorStateObj = this.hass!.states[sensorEntityId];
-      if (sensorStateObj) {
-        const parts = this.hass!.formatEntityStateToParts(
-          sensorStateObj,
-          String(value)
-        );
-        return parts
-          .filter((part) => part.type !== "unit")
-          .map((part) => part.value)
-          .join("");
-      }
+    const sensorStateObj = sensorEntityId
+      ? this.hass!.states[sensorEntityId]
+      : undefined;
+    if (sensorStateObj) {
+      return this.hass!.formatEntityStateToParts(sensorStateObj)
+        .filter((part) => part.type !== "unit")
+        .map((part) => part.value)
+        .join("");
     }
-    return value;
+    return stateObj.attributes[attribute] ?? "";
   }
 
   private _computeAttributes(stateObj: HassEntity): string[] {
