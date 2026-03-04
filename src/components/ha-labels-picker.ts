@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
@@ -9,6 +10,7 @@ import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
+import { labelsContext } from "../data/context";
 import {
   subscribeLabelRegistry,
   updateLabelRegistryEntry,
@@ -80,7 +82,9 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _labels?: Record<string, LabelRegistryEntry>;
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: Record<string, LabelRegistryEntry>;
 
   @query("ha-label-picker", true) public labelPicker!: HaLabelPicker;
 

@@ -1,5 +1,6 @@
+import { consume } from "@lit/context";
 import { mdiPlus } from "@mdi/js";
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import {
@@ -19,13 +20,12 @@ import {
   labelComboBoxKeys,
   type LabelComboBoxItem,
 } from "../data/label/label_picker";
+import { labelsContext } from "../data/context";
 import {
   createLabelRegistryEntry,
-  subscribeLabelRegistry,
   type LabelRegistryEntry,
 } from "../data/label/label_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
@@ -52,7 +52,7 @@ export const renderLabelColorBadge = (color: string | undefined) =>
   ></div>`;
 
 @customElement("ha-label-picker")
-export class HaLabelPicker extends SubscribeMixin(LitElement) {
+export class HaLabelPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public label?: string;
@@ -108,7 +108,9 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _labels?: LabelRegistryEntry[];
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: LabelRegistryEntry[];
 
   @queryAssignedElements({ flatten: true })
   private _slotNodes?: NodeListOf<HTMLElement>;
@@ -118,14 +120,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
   public async open() {
     await this.updateComplete;
     await this._picker?.open();
-  }
-
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
-    ];
   }
 
   private _rowRenderer: RenderItemFunction<LabelComboBoxItem> = (item) =>

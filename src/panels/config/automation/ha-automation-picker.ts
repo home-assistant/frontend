@@ -80,7 +80,7 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import type { CloudStatus } from "../../../data/cloud";
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
@@ -96,10 +96,7 @@ import type {
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import {
-  createLabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
 import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
@@ -186,12 +183,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @state()
   _categories!: CategoryRegistryEntry[];
 
+  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels!: LabelRegistryEntry[];
+  _labels?: LabelRegistryEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg?: EntityRegistryEntry[];
 
   @state() private _overflowAutomation?: AutomationItem;
 
@@ -237,10 +235,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private _automations = memoizeOne(
     (
       automations: AutomationEntity[],
-      entityReg: EntityRegistryEntry[],
+      entityReg: EntityRegistryEntry[] | undefined,
       areas: HomeAssistant["areas"],
       categoryReg?: CategoryRegistryEntry[],
-      labelReg?: LabelRegistryEntry[],
+      labelReg?: LabelRegistryEntry[] | undefined,
       filteredAutomations?: string[] | null
     ): AutomationItem[] => {
       if (filteredAutomations === null) {
@@ -253,13 +251,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )
           : automations
       ).map((automation) => {
-        const entityRegEntry = entityReg.find(
+        const entityRegEntry = (entityReg || []).find(
           (reg) => reg.entity_id === automation.entity_id
         );
         const category = entityRegEntry?.categories.automation;
         const labels = labelReg && entityRegEntry?.labels;
         const assistants = getEntityVoiceAssistantsIds(
-          entityReg,
+          entityReg || [],
           automation.entity_id
         );
         return {
@@ -403,9 +401,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           this._categories = categories;
         }
       ),
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
     ];
   }
 
@@ -836,19 +831,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         filteredEntityIds = filteredEntityIds.filter(
           (entityId) =>
             filter.value![0] ===
-            this._entityReg.find((reg) => reg.entity_id === entityId)
+            (this._entityReg || []).find((reg) => reg.entity_id === entityId)
               ?.categories.automation
         );
       } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          this._entityReg
+          (this._entityReg || [])
             .find((reg) => reg.entity_id === entityId)
             ?.labels.some((lbl) => (filter.value as string[]).includes(lbl))
         );
       } else if (isFilterUsed(key, filter, "ha-filter-voice-assistants")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
-          getEntityVoiceAssistantsIds(this._entityReg, entityId).some((va) =>
-            (filter.value as string[]).includes(va)
+          getEntityVoiceAssistantsIds(this._entityReg || [], entityId).some(
+            (va) => (filter.value as string[]).includes(va)
           )
         );
       }
@@ -949,7 +944,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   };
 
   private _editCategory = (automation: AutomationItem) => {
-    const entityReg = this._entityReg.find(
+    const entityReg = (this._entityReg || []).find(
       (reg) => reg.entity_id === automation.entity_id
     );
     if (!entityReg) {
