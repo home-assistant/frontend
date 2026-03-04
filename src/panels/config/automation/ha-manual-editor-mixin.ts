@@ -82,7 +82,7 @@ export const ManualEditorMixin = <TConfig>(
 
     private _prevSidebarWidthPx?: number;
 
-    protected handlePaste = async (_ev: ClipboardEvent) => {
+    protected handlePaste = async (_ev: ClipboardEvent): Promise<void> => {
       throw new Error("Not implemented");
     };
 
