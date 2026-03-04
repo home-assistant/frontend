@@ -67,6 +67,8 @@ export class HuiCoverPositionPresetCardFeatureEditor
       positions,
     };
 
+    this._config = config;
+
     fireEvent(this, "config-changed", { config });
   }
 }
