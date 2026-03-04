@@ -107,7 +107,6 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
     private __lazyContextProviders = {
       labels: new LazyContextProvider(this, {
         context: labelsContext,
-        initialValue: [] as any,
         subscribeFn: (connection, setValue) =>
           subscribeLabelRegistry(connection, setValue),
       }),
@@ -118,7 +117,6 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       }),
       configEntries: new LazyContextProvider(this, {
         context: configEntriesContext,
-        initialValue: [] as any,
         subscribeFn: (connection, setValue) => {
           const stream = new ConfigEntryStream();
           return connection.subscribeMessage<ConfigEntryUpdate[]>(
