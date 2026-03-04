@@ -2596,27 +2596,27 @@
             "missing_apps": "Looking for apps? Enable advanced mode.",
             "no_results_found": "No results found in {repository}"
           },
-          "dialog": {
-            "repositories": {
-              "title": "Manage app repositories",
-              "add": "Add",
-              "remove": "Remove",
-              "used": "In use by installed apps",
-              "no_repositories": "You don't have any app repositories configured"
-            },
-            "registries": {
-              "title_add": "Add registry",
-              "title_manage": "Manage registries",
-              "add_registry": "Add",
-              "add_new_registry": "Add new registry",
-              "username": "Username",
-              "remove": "Remove registry",
-              "no_registries": "You don't have any registries configured",
-              "failed_to_add": "Failed to add registry",
-              "failed_to_remove": "Failed to remove registry",
-              "registry": "Registry",
-              "password": "Password"
-            }
+          "repositories": {
+            "maintainer": "Maintainer",
+            "url": "URL",
+            "confirm_remove": "Are you sure you want to remove {name}?",
+            "add_title": "Add repository",
+            "add": "Add",
+            "remove": "Remove",
+            "used": "In use by installed apps",
+            "no_repositories": "You don't have any app repositories configured"
+          },
+          "registries": {
+            "add_title": "Add registry",
+            "add": "Add",
+            "username": "Username",
+            "remove": "Remove",
+            "confirm_remove": "Are you sure you want to remove {name}?",
+            "no_registries": "You don't have any registries configured",
+            "failed_to_add": "Failed to add registry",
+            "failed_to_remove": "Failed to remove registry",
+            "registry": "Registry",
+            "password": "Password"
           },
           "my": {
             "add_repository_title": "Add app repository?",
