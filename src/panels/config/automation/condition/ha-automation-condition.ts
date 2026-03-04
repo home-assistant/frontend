@@ -8,18 +8,14 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { ensureArray } from "../../../../common/array/ensure-array";
-import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   getValueFromDynamic,
   isDynamic,
-  type AutomationClipboard,
   type Condition,
 } from "../../../../data/automation";
 import type { ConditionDescriptions } from "../../../../data/condition";
@@ -29,58 +25,46 @@ import {
 } from "../../../../data/condition";
 import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import { AutomationRowsMixin } from "../ha-automation-rows-mixin";
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition")
-export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export default class HaAutomationCondition extends AutomationRowsMixin<Condition>(
+  SubscribeMixin(LitElement)
+) {
   @property({ attribute: false }) public conditions!: Condition[];
 
   @property({ attribute: false }) public highlightedConditions?: Condition[];
 
-  @property({ type: Boolean }) public disabled = false;
-
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ type: Boolean }) public root = false;
 
-  @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
-    false;
-
-  @state() private _rowSortSelected?: number;
-
   @state() private _conditionDescriptions: ConditionDescriptions = {};
-
-  @state()
-  @storage({
-    key: "automationClipboard",
-    state: true,
-    subscribe: true,
-    storage: "sessionStorage",
-  })
-  public _clipboard?: AutomationClipboard;
 
   @queryAll("ha-automation-condition-row")
   private _conditionRowElements?: HaAutomationConditionRow[];
 
-  private _focusLastConditionOnChange = false;
-
-  private _focusConditionIndexOnChange?: number;
-
-  private _conditionKeys = new WeakMap<Condition, string>();
+  // @ts-ignore
+  @state() private _newTriggersAndConditions = false;
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
-  // @ts-ignore
-  @state() private _newTriggersAndConditions = false;
+  protected get items(): Condition[] {
+    return this.conditions;
+  }
+
+  protected set items(items: Condition[]) {
+    this.conditions = items;
+  }
+
+  protected _setHighlightedItems(items: Condition[]) {
+    this.highlightedConditions = items;
+  }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -155,17 +139,17 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
         value: updatedConditions,
       });
     } else if (
-      this._focusLastConditionOnChange ||
-      this._focusConditionIndexOnChange !== undefined
+      this._focusLastItemOnChange ||
+      this._focusItemIndexOnChange !== undefined
     ) {
-      const mode = this._focusLastConditionOnChange ? "new" : "moved";
+      const mode = this._focusLastItemOnChange ? "new" : "moved";
 
       const row = this.shadowRoot!.querySelector<HaAutomationConditionRow>(
-        `ha-automation-condition-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusConditionIndexOnChange! + 1})`}`
+        `ha-automation-condition-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusItemIndexOnChange! + 1})`}`
       )!;
 
-      this._focusLastConditionOnChange = false;
-      this._focusConditionIndexOnChange = undefined;
+      this._focusLastItemOnChange = false;
+      this._focusItemIndexOnChange = undefined;
 
       row.updateComplete.then(() => {
         // on new condition open the settings in the sidebar, except for building blocks
@@ -217,9 +201,9 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
         .disabled=${this.disabled}
         group="conditions"
         invert-swap
-        @item-moved=${this._conditionMoved}
-        @item-added=${this._conditionAdded}
-        @item-removed=${this._conditionRemoved}
+        @item-moved=${this._itemMoved}
+        @item-added=${this._itemAdded}
+        @item-removed=${this._itemRemoved}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
@@ -237,11 +221,11 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
                 .conditionDescriptions=${this._conditionDescriptions}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
-                @duplicate=${this._duplicateCondition}
+                @duplicate=${this._duplicateItem}
                 @insert-after=${this._insertAfter}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
-                @value-changed=${this._conditionChanged}
+                @value-changed=${this._itemChanged}
                 .hass=${this.hass}
                 .highlight=${this.highlightedConditions?.includes(cond)}
                 .optionsInSidebar=${this.optionsInSidebar}
@@ -320,158 +304,9 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
         ...elClass.defaultConfig,
       });
     }
-    this._focusLastConditionOnChange = true;
+    this._focusLastItemOnChange = true;
     fireEvent(this, "value-changed", { value: conditions });
   };
-
-  private _getKey(condition: Condition) {
-    if (!this._conditionKeys.has(condition)) {
-      this._conditionKeys.set(condition, Math.random().toString());
-    }
-
-    return this._conditionKeys.get(condition)!;
-  }
-
-  private _moveUp(ev) {
-    ev.stopPropagation();
-    const index = (ev.target as any).index;
-    if (!(ev.target as HaAutomationConditionRow).first) {
-      const newIndex = index - 1;
-      this._move(index, newIndex);
-      if (this._rowSortSelected === index) {
-        this._rowSortSelected = newIndex;
-      }
-      ev.target.focus();
-    }
-  }
-
-  private _moveDown(ev) {
-    ev.stopPropagation();
-    const index = (ev.target as any).index;
-    if (!(ev.target as HaAutomationConditionRow).last) {
-      const newIndex = index + 1;
-      this._move(index, newIndex);
-      if (this._rowSortSelected === index) {
-        this._rowSortSelected = newIndex;
-      }
-      ev.target.focus();
-    }
-  }
-
-  private _move(oldIndex: number, newIndex: number) {
-    const conditions = this.conditions.concat();
-    const item = conditions.splice(oldIndex, 1)[0];
-    conditions.splice(newIndex, 0, item);
-    this.conditions = conditions;
-    fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private _conditionMoved(ev: CustomEvent): void {
-    ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
-    this._move(oldIndex, newIndex);
-  }
-
-  private async _conditionAdded(ev: CustomEvent): Promise<void> {
-    ev.stopPropagation();
-    const { index, data } = ev.detail;
-    const item = ev.detail.item as HaAutomationConditionRow;
-    const selected = item.selected;
-    let conditions = [
-      ...this.conditions.slice(0, index),
-      data,
-      ...this.conditions.slice(index),
-    ];
-    // Add condition locally to avoid UI jump
-    this.conditions = conditions;
-    if (selected) {
-      this._focusConditionIndexOnChange = conditions.length === 1 ? 0 : index;
-    }
-    await nextRender();
-    if (this.conditions !== conditions) {
-      // Ensure condition is added even after update
-      conditions = [
-        ...this.conditions.slice(0, index),
-        data,
-        ...this.conditions.slice(index),
-      ];
-      if (selected) {
-        this._focusConditionIndexOnChange = conditions.length === 1 ? 0 : index;
-      }
-    }
-    fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private async _conditionRemoved(ev: CustomEvent): Promise<void> {
-    ev.stopPropagation();
-    const { index } = ev.detail;
-    const condition = this.conditions[index];
-    // Remove condition locally to avoid UI jump
-    this.conditions = this.conditions.filter((c) => c !== condition);
-    await nextRender();
-    // Ensure condition is removed even after update
-    const conditions = this.conditions.filter((c) => c !== condition);
-    fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private _conditionChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const conditions = [...this.conditions];
-    const newValue = ev.detail.value;
-    const index = (ev.target as any).index;
-
-    if (newValue === null) {
-      conditions.splice(index, 1);
-    } else {
-      // Store key on new value.
-      const key = this._getKey(conditions[index]);
-      this._conditionKeys.set(newValue, key);
-
-      conditions[index] = newValue;
-    }
-
-    this.conditions = conditions;
-
-    fireEvent(this, "value-changed", { value: conditions });
-  }
-
-  private _duplicateCondition(ev: CustomEvent) {
-    ev.stopPropagation();
-    const index = (ev.target as any).index;
-    fireEvent(this, "value-changed", {
-      // @ts-expect-error Requires library bump to ES2023
-      value: this.conditions.toSpliced(
-        index + 1,
-        0,
-        deepClone(this.conditions[index])
-      ),
-    });
-  }
-
-  private _insertAfter(ev: CustomEvent) {
-    ev.stopPropagation();
-    const index = (ev.target as any).index;
-    const inserted = ensureArray(ev.detail.value);
-    this.highlightedConditions = inserted;
-    fireEvent(this, "value-changed", {
-      // @ts-expect-error Requires library bump to ES2023
-      value: this.conditions.toSpliced(index + 1, 0, ...inserted),
-    });
-  }
-
-  private _handleDragKeydown(ev: KeyboardEvent) {
-    if (ev.key === "Enter" || ev.key === " ") {
-      ev.stopPropagation();
-      this._rowSortSelected =
-        this._rowSortSelected === undefined
-          ? (ev.target as any).index
-          : undefined;
-    }
-  }
-
-  private _stopSortSelection() {
-    this._rowSortSelected = undefined;
-  }
 
   static styles = automationRowsStyles;
 }
