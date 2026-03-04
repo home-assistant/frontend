@@ -46,7 +46,7 @@ export class HaTooltip extends Tooltip {
             var(--ha-border-radius-sm)
           );
           --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
-          --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
+          --wa-z-index-tooltip: 1000;
         }
       `,
     ];

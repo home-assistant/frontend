@@ -37,4 +37,3 @@ In your theme settings use this without the prefixed `--`.
 - `--ha-tooltip-padding` (Default: 8px)
 - `--ha-tooltip-border-radius` (Default: `var(--ha-border-radius-sm)`)
 - `--ha-tooltip-arrow-size` (Default: 8px)
-- `--ha-tooltip-z-index` (Default: 1000)

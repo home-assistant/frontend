@@ -54,7 +54,7 @@ export class HaSlider extends Slider {
             var(--ha-border-radius-sm)
           );
           --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
-          --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
+          --wa-z-index-tooltip: 1000;
           min-width: 100px;
           min-inline-size: 100px;
           width: 200px;
