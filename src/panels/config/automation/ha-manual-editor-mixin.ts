@@ -82,8 +82,9 @@ export const ManualEditorMixin = <TConfig>(
 
     private _prevSidebarWidthPx?: number;
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    protected handlePaste = async (_ev: ClipboardEvent) => {};
+    protected handlePaste = async (_ev: ClipboardEvent) => {
+      throw new Error("Not implemented");
+    };
 
     public connectedCallback() {
       super.connectedCallback();
@@ -107,8 +108,9 @@ export const ManualEditorMixin = <TConfig>(
       throw new Error("Not implemented");
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    protected saveConfig() {}
+    protected saveConfig() {
+      throw new Error("Not implemented");
+    }
 
     protected render() {
       return html`
