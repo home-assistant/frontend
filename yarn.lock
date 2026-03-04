@@ -3046,18 +3046,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-snackbar@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-snackbar@npm:0.27.0"
-  dependencies:
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/snackbar": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/bd1e4b9fa449dde5318693d9b5486ea7cb5181338fc14e8f4ccd071ee5a4a6c957c3398fdbe7f626100b0f7c6c1049c02f1a9a5ada4a647d1a9c4f25f724358f
-  languageName: node
-  linkType: hard
-
 "@material/mwc-switch@npm:0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-switch@npm:0.27.0"
@@ -3227,27 +3215,6 @@ __metadata:
     "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
     tslib: "npm:^2.1.0"
   checksum: 10/d8bca18cde6b8d479396e695afff9aaf911be1f85160e0c8a923ca39ef0950e7042786f3ec787d4df551fe479e1f2b1b97db217129e2e80d7602d07676ae4695
-  languageName: node
-  linkType: hard
-
-"@material/snackbar@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/snackbar@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/button": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/icon-button": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/e538c46447f0c0d7c2fca020d5fc3bc3202df3402ad0de07b94580d84b17eb253415ced64a5842819d615efe8c86e7141321a6b38a965aac8eb8f2810a7058d0
   languageName: node
   linkType: hard
 
@@ -9220,7 +9187,6 @@ __metadata:
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/mwc-radio": "npm:0.27.0"
     "@material/mwc-select": "npm:0.27.0"
-    "@material/mwc-snackbar": "npm:0.27.0"
     "@material/mwc-switch": "npm:0.27.0"
     "@material/mwc-textarea": "npm:0.27.0"
     "@material/mwc-textfield": "npm:0.27.0"
