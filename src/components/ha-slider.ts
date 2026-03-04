@@ -24,8 +24,14 @@ export class HaSlider extends Slider {
           --marker-width: calc(var(--ha-slider-track-size, 4px) / 2);
           --wa-color-surface-default: var(--card-background-color);
           --wa-color-neutral-fill-normal: var(--disabled-color);
-          --wa-tooltip-background-color: var(--secondary-background-color);
-          --wa-tooltip-color: var(--primary-text-color);
+          --wa-tooltip-background-color: var(
+            --ha-tooltip-background-color,
+            var(--secondary-background-color)
+          );
+          --wa-tooltip-content-color: var(
+            --ha-tooltip-text-color,
+            var(--primary-text-color)
+          );
           --wa-tooltip-font-family: var(
             --ha-tooltip-font-family,
             var(--ha-font-family-body)
@@ -42,7 +48,7 @@ export class HaSlider extends Slider {
             --ha-tooltip-line-height,
             var(--ha-line-height-condensed)
           );
-          --wa-tooltip-padding: 8px;
+          --wa-tooltip-padding: var(--ha-tooltip-padding, 8px);
           --wa-tooltip-border-radius: var(
             --ha-tooltip-border-radius,
             var(--ha-border-radius-sm)
