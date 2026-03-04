@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
-import WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
+import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 
