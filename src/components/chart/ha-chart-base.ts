@@ -1102,7 +1102,7 @@ export class HaChartBase extends LitElement {
     }
     ::slotted([slot="search"]) {
       position: absolute;
-      top: var(--ha-space-4);
+      bottom: var(--ha-space-4);
       inset-inline-start: var(--ha-space-4);
       z-index: 1;
       width: 250px;
