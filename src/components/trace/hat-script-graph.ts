@@ -8,6 +8,8 @@ import {
   mdiCallSplit,
   mdiCheckboxBlankOutline,
   mdiCheckboxMarkedOutline,
+  mdiChevronDown,
+  mdiChevronUp,
   mdiClose,
   mdiCodeBraces,
   mdiCodeBrackets,
@@ -43,6 +45,7 @@ import type {
   TraceExtended,
 } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "../ha-service-icon";
 import "./hat-graph-branch";
 import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
@@ -585,6 +588,7 @@ export class HatScriptGraph extends LitElement {
       "conditions" in this.trace.config ? "conditions" : "condition";
     const actionKey = "actions" in this.trace.config ? "actions" : "action";
 
+    const paths = Object.keys(this.trackedNodes);
     const triggerNodes =
       triggerKey in this.trace.config
         ? flattenTriggers(ensureArray(this.trace.config[triggerKey])).map(
@@ -593,28 +597,43 @@ export class HatScriptGraph extends LitElement {
         : undefined;
     try {
       return html`
-        <div class="parent graph-container">
-          ${triggerNodes
-            ? html`<hat-graph-branch start .short=${triggerNodes.length < 2}>
-                ${triggerNodes}
-              </hat-graph-branch>`
-            : ""}
-          ${conditionKey in this.trace.config
-            ? html`${ensureArray(this.trace.config[conditionKey])?.map(
-                (condition, i) => this._renderCondition(condition, i)
-              )}`
-            : ""}
-          ${actionKey in this.trace.config
-            ? html`${ensureArray(this.trace.config[actionKey]).map(
-                (action, i) => this._renderActionNode(action, `action/${i}`)
-              )}`
-            : ""}
-          ${"sequence" in this.trace.config
-            ? html`${ensureArray<Action>(this.trace.config.sequence).map(
-                (action, i) =>
-                  this._renderActionNode(action, `sequence/${i}`, i === 0)
-              )}`
-            : ""}
+        <div class="graph-scroll ha-scrollbar">
+          <div class="parent graph-container">
+            ${triggerNodes
+              ? html`<hat-graph-branch start .short=${triggerNodes.length < 2}>
+                  ${triggerNodes}
+                </hat-graph-branch>`
+              : ""}
+            ${conditionKey in this.trace.config
+              ? html`${ensureArray(this.trace.config[conditionKey])?.map(
+                  (condition, i) => this._renderCondition(condition, i)
+                )}`
+              : ""}
+            ${actionKey in this.trace.config
+              ? html`${ensureArray(this.trace.config[actionKey]).map(
+                  (action, i) => this._renderActionNode(action, `action/${i}`)
+                )}`
+              : ""}
+            ${"sequence" in this.trace.config
+              ? html`${ensureArray<Action>(this.trace.config.sequence).map(
+                  (action, i) =>
+                    this._renderActionNode(action, `sequence/${i}`, i === 0)
+                )}`
+              : ""}
+          </div>
+        </div>
+        <div class="actions">
+          <ha-icon-button
+            .disabled=${paths.length === 0 || paths[0] === this.selected}
+            @click=${this._previousTrackedNode}
+            .path=${mdiChevronUp}
+          ></ha-icon-button>
+          <ha-icon-button
+            .disabled=${paths.length === 0 ||
+            paths[paths.length - 1] === this.selected}
+            @click=${this._nextTrackedNode}
+            .path=${mdiChevronDown}
+          ></ha-icon-button>
         </div>
       `;
     } catch (err: any) {
@@ -686,7 +705,7 @@ export class HatScriptGraph extends LitElement {
     }
   }
 
-  public previousTrackedNode() {
+  private _previousTrackedNode() {
     const nodes = Object.keys(this.trackedNodes);
     const prevIndex = nodes.indexOf(this.selected!) - 1;
     if (prevIndex >= 0) {
@@ -698,7 +717,7 @@ export class HatScriptGraph extends LitElement {
     }
   }
 
-  public nextTrackedNode() {
+  private _nextTrackedNode() {
     const nodes = Object.keys(this.trackedNodes);
     const nextIndex = nodes.indexOf(this.selected!) + 1;
     if (nextIndex < nodes.length) {
@@ -714,6 +733,8 @@ export class HatScriptGraph extends LitElement {
     return css`
       :host {
         display: flex;
+        flex-direction: row;
+        overflow: hidden;
         --stroke-clr: var(--stroke-color, var(--secondary-text-color));
         --active-clr: var(--active-color, var(--primary-color));
         --track-clr: var(--track-color, var(--accent-color));
@@ -731,10 +752,19 @@ export class HatScriptGraph extends LitElement {
         --hat-graph-node-size: ${NODE_SIZE}px;
         --hat-graph-branch-height: ${BRANCH_HEIGHT}px;
       }
+      .graph-scroll {
+        flex: 1;
+        overflow: auto;
+        min-width: 0;
+      }
       .graph-container {
         display: flex;
         flex-direction: column;
         align-items: center;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
       }
       .parent {
         margin-left: 8px;

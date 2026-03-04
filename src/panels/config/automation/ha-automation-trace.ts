@@ -1,7 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiChevronDown,
-  mdiChevronUp,
   mdiDotsVertical,
   mdiDownload,
   mdiInformationOutline,
@@ -231,24 +229,6 @@ export class HaAutomationTrace extends LitElement {
                         .selected=${this._selected?.path}
                         @graph-node-selected=${this._pickNode}
                       ></hat-script-graph>
-                      <div class="graph-nav-overlay">
-                        <ha-icon-button
-                          .disabled=${!trackedNodes ||
-                          Object.keys(trackedNodes).length === 0 ||
-                          Object.keys(trackedNodes)[0] === this._selected?.path}
-                          @click=${this._selectPrevNode}
-                          .path=${mdiChevronUp}
-                        ></ha-icon-button>
-                        <ha-icon-button
-                          .disabled=${!trackedNodes ||
-                          Object.keys(trackedNodes).length === 0 ||
-                          Object.keys(trackedNodes)[
-                            Object.keys(trackedNodes).length - 1
-                          ] === this._selected?.path}
-                          @click=${this._selectNextNode}
-                          .path=${mdiChevronDown}
-                        ></ha-icon-button>
-                      </div>
                     </div>
 
                     <div class="info">
@@ -513,14 +493,6 @@ export class HaAutomationTrace extends LitElement {
     this._logbookEntries = traceInfo.logbookEntries;
   }
 
-  private _selectPrevNode() {
-    this._graph?.previousTrackedNode();
-  }
-
-  private _selectNextNode() {
-    this._graph?.nextTrackedNode();
-  }
-
   private _showTab(ev: Event) {
     this._view = (ev.target as any).view;
   }
@@ -615,28 +587,22 @@ export class HaAutomationTrace extends LitElement {
           max-width: 50%;
           box-sizing: border-box;
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
           overflow: hidden;
         }
         hat-script-graph {
           flex: 1;
-          overflow: auto;
           min-width: 0;
+          min-height: 0;
         }
         :host([narrow]) .graph {
           max-width: 100%;
           overflow: visible;
           height: auto;
-          flex-direction: column;
         }
         :host([narrow]) hat-script-graph {
           overflow: visible;
           flex: none;
-        }
-        .graph-nav-overlay {
-          display: flex;
-          flex-direction: column;
-          flex-shrink: 0;
         }
         .info {
           flex: 1;
