@@ -57,10 +57,10 @@ export class HuiCoverPositionPresetCardFeatureEditor
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const stringValues = ev.detail.value as string[];
-    const positions = stringValues.map((v) =>
-      v === "" ? 50 : Math.min(100, Math.max(0, Number(v)))
-    );
+    const stringValues = ev.detail.value as (string | null | undefined)[];
+    const positions = stringValues
+      .filter((v): v is string => !!v && v !== "")
+      .map((v) => Math.min(100, Math.max(0, Number(v))));
 
     const config: CoverPositionPresetCardFeatureConfig = {
       ...this._config!,
