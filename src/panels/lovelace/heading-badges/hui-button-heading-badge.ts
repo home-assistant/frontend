@@ -112,7 +112,8 @@ export class HuiButtonHeadingBadge
       width: auto;
       height: var(--ha-heading-badge-size, 26px);
       min-width: var(--ha-heading-badge-size, 26px);
-      font-size: var(--ha-font-size-s);
+      font-size: var(--ha-heading-badge-font-size, var(--ha-font-size-m));
+      font-weight: var(--ha-font-weight-medium);
     }
     ha-control-button.with-text {
       --control-button-padding: 0 var(--ha-space-2);
@@ -122,7 +123,6 @@ export class HuiButtonHeadingBadge
       --control-button-background-color: var(--color);
       --control-button-focus-color: var(--color);
       --control-button-background-opacity: 0.2;
-      --control-button-font-weight: var(--ha-font-weight-bold);
       --ha-ripple-color: var(--color);
     }
     .content {
