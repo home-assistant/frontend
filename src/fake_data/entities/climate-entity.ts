@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { supportsFeatureFromAttributes } from "../../common/entity/supports-feature";
 import {
   CLIMATE_HVAC_ACTION_TO_MODE,
@@ -109,7 +108,7 @@ export class MockClimateEntity extends MockBaseEntity {
     super.handleService(domain, service, data);
   }
 
-  private _getCapabilityAttributes(): EntityAttributes {
+  protected _getCapabilityAttributes(): EntityAttributes {
     const attrs = this.attributes;
     const capabilityAttrs: EntityAttributes = {};
 
@@ -157,7 +156,7 @@ export class MockClimateEntity extends MockBaseEntity {
     return capabilityAttrs;
   }
 
-  private _getStateAttributes(): EntityAttributes {
+  protected _getStateAttributes(): EntityAttributes {
     const attrs = this.attributes;
     const isOff = this.state === "off";
 
@@ -289,37 +288,5 @@ export class MockClimateEntity extends MockBaseEntity {
     }
 
     return "idle";
-  }
-
-  public toState(): HassEntity {
-    const attrs = this.attributes;
-
-    // Base attributes (friendly_name, icon, etc.)
-    const baseAttrs: EntityAttributes = {};
-    for (const key of [
-      "friendly_name",
-      "icon",
-      "entity_picture",
-      "assumed_state",
-      "device_class",
-      "supported_features",
-    ]) {
-      if (key in attrs) {
-        baseAttrs[key] = attrs[key];
-      }
-    }
-
-    return {
-      entity_id: this.entityId,
-      state: this.state,
-      attributes: {
-        ...baseAttrs,
-        ...this._getCapabilityAttributes(),
-        ...this._getStateAttributes(),
-      },
-      last_changed: this.lastChanged,
-      last_updated: this.lastUpdated,
-      context: { id: this.entityId, user_id: null, parent_id: null },
-    };
   }
 }

@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { rgb2hsv, hsv2rgb } from "../../common/color/convert-color";
 import {
   kelvin2mired,
@@ -134,7 +133,7 @@ export class MockLightEntity extends MockBaseEntity {
     super.handleService(domain, service, data);
   }
 
-  private _getCapabilityAttributes(): EntityAttributes {
+  protected _getCapabilityAttributes(): EntityAttributes {
     const attrs = this.attributes;
     const supportedColorModes: LightColorMode[] =
       attrs.supported_color_modes || [];
@@ -155,7 +154,7 @@ export class MockLightEntity extends MockBaseEntity {
     return capabilityAttrs;
   }
 
-  private _getStateAttributes(): EntityAttributes {
+  protected _getStateAttributes(): EntityAttributes {
     const attrs = this.attributes;
     const isOn = this.state === "on";
     const colorMode = isOn ? attrs.color_mode || null : null;
@@ -182,37 +181,5 @@ export class MockLightEntity extends MockBaseEntity {
     }
 
     return stateAttrs;
-  }
-
-  public toState(): HassEntity {
-    const attrs = this.attributes;
-
-    // Base attributes (friendly_name, icon, etc.)
-    const baseAttrs: EntityAttributes = {};
-    for (const key of [
-      "friendly_name",
-      "icon",
-      "entity_picture",
-      "assumed_state",
-      "device_class",
-      "supported_features",
-    ]) {
-      if (key in attrs) {
-        baseAttrs[key] = attrs[key];
-      }
-    }
-
-    return {
-      entity_id: this.entityId,
-      state: this.state,
-      attributes: {
-        ...baseAttrs,
-        ...this._getCapabilityAttributes(),
-        ...this._getStateAttributes(),
-      },
-      last_changed: this.lastChanged,
-      last_updated: this.lastUpdated,
-      context: { id: this.entityId, user_id: null, parent_id: null },
-    };
   }
 }
