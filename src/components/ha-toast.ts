@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
+import WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 
@@ -19,7 +20,7 @@ export class HaToast extends LitElement {
   @property({ type: Number, attribute: "timeout-ms" }) public timeoutMs = 4000;
 
   @query("wa-popover")
-  private _popover?: HTMLElementTagNameMap["wa-popover"];
+  private _popover?: WaPopover;
 
   private _dismissTimer?: ReturnType<typeof setTimeout>;
 
