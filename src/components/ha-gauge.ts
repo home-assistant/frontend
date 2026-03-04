@@ -75,7 +75,7 @@ export class HaGauge extends LitElement {
     const arcRadius = 40;
     const arcLength = Math.PI * arcRadius;
     const valueAngle = getAngle(this.value, this.min, this.max);
-    const strokeOffset = arcLength * (1 - (valueAngle + 90) / 180);
+    const strokeOffset = arcLength * (1 - valueAngle / 180);
 
     return svg`
     <svg viewBox="-50 -50 100 60" class="gauge">
