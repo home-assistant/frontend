@@ -47,18 +47,12 @@ export class AssistCurrentDevicePref extends LitElement {
     .card-header {
       display: flex;
       align-items: center;
-      padding-bottom: 0;
     }
     .header-icon {
       height: 28px;
-      width: 28px;
       margin-right: 16px;
       margin-inline-end: 16px;
       margin-inline-start: initial;
-      color: var(--secondary-text-color);
-    }
-    .card-content p {
-      margin: 0;
     }
     .card-actions {
       display: flex;
