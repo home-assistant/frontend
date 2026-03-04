@@ -144,7 +144,10 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
 
     if (!entityPicture) return undefined;
 
-    let imageUrl = this.hass!.hassUrl(addBrandsAuth(entityPicture));
+    let imageUrl = addBrandsAuth(
+      this.hass!.hassUrl(entityPicture),
+      this.hass?.auth.data.hassUrl
+    );
     if (computeStateDomain(stateObj) === "camera") {
       imageUrl = cameraUrlWithWidthHeight(imageUrl, 32, 32);
     }

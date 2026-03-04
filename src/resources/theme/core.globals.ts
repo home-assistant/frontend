@@ -66,9 +66,9 @@ export const coreStyles = css`
     html {
       --ha-animation-duration-none: 0ms;
       --ha-animation-duration-instant: 0ms;
-      --ha-animation-duration-fast: 0ms;
-      --ha-animation-duration-normal: 0ms;
-      --ha-animation-duration-slow: 0ms;
+      --ha-animation-duration-fast: 1ms;
+      --ha-animation-duration-normal: 1ms;
+      --ha-animation-duration-slow: 1ms;
     }
   }
 `;
