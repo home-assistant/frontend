@@ -2,7 +2,7 @@ import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import type { PropertyValues } from "lit";
+
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
@@ -122,14 +122,6 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-    if (changedProps.has("_highlightedNodes")) {
-      this._applyHighlighting();
-      this._updateMouseoverHandler();
-    }
-  }
-
   protected render() {
     if (!GraphChart || !this.data.nodes?.length) {
       return nothing;
@@ -212,16 +204,18 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     this._searchFilter = filter;
     if (!filter) {
       this._highlightedNodes = undefined;
-      return;
-    }
-    const lowerFilter = filter.toLowerCase();
-    const matchingIds = new Set<string>();
-    for (const node of this.data.nodes) {
-      if (this._nodeMatchesFilter(node, lowerFilter)) {
-        matchingIds.add(node.id);
+    } else {
+      const lowerFilter = filter.toLowerCase();
+      const matchingIds = new Set<string>();
+      for (const node of this.data.nodes) {
+        if (this._nodeMatchesFilter(node, lowerFilter)) {
+          matchingIds.add(node.id);
+        }
       }
+      this._highlightedNodes = matchingIds;
     }
-    this._highlightedNodes = matchingIds;
+    this._applyHighlighting();
+    this._updateMouseoverHandler();
   }
 
   private _nodeMatchesFilter(node: NetworkNode, lowerFilter: string): boolean {
