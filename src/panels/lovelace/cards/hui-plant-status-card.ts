@@ -146,7 +146,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                     ? ""
                     : "problem"}
                 >
-                  ${stateObj.attributes[item]}
+                  ${this._formatSensorValue(stateObj, item)}
                 </div>
                 <div class="uom">
                   ${stateObj.attributes.unit_of_measurement_dict[item] || ""}
@@ -239,6 +239,28 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       color: var(--secondary-text-color);
     }
   `;
+
+  private _formatSensorValue(stateObj: HassEntity, attribute: string): string {
+    const value = stateObj.attributes[attribute];
+    if (value == null) {
+      return "";
+    }
+    const sensorEntityId = stateObj.attributes.sensors?.[attribute];
+    if (sensorEntityId) {
+      const sensorStateObj = this.hass!.states[sensorEntityId];
+      if (sensorStateObj) {
+        const parts = this.hass!.formatEntityStateToParts(
+          sensorStateObj,
+          String(value)
+        );
+        return parts
+          .filter((part) => part.type !== "unit")
+          .map((part) => part.value)
+          .join("");
+      }
+    }
+    return value;
+  }
 
   private _computeAttributes(stateObj: HassEntity): string[] {
     return Object.keys(SENSOR_ICONS).filter(
