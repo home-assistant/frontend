@@ -285,7 +285,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         },
       },
       emphasis: {
-        focus: isMobile ? "none" : hasHighlightedNodes ? "self" : "adjacency",
+        focus: hasHighlightedNodes ? "self" : isMobile ? "none" : "adjacency",
       },
       force: {
         repulsion: [400, 600],
@@ -438,14 +438,13 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     if (!chart) {
       return;
     }
+    // Reset all nodes to normal opacity first
+    chart.dispatchAction({ type: "downplay" });
+
     const highlighted = this._highlightedNodes;
     if (!highlighted || highlighted.size === 0) {
-      // Reset all nodes to normal opacity
-      chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
       return;
     }
-    // Downplay all nodes first, then highlight matching ones
-    chart.dispatchAction({ type: "downplay", seriesIndex: 0 });
     const dataIndices: number[] = [];
     this.data.nodes.forEach((node, index) => {
       if (highlighted.has(node.id)) {
@@ -453,11 +452,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       }
     });
     if (dataIndices.length > 0) {
-      chart.dispatchAction({
-        type: "highlight",
-        seriesIndex: 0,
-        dataIndex: dataIndices,
-      });
+      chart.dispatchAction({ type: "highlight", dataIndex: dataIndices });
     }
   }
 
@@ -468,20 +463,26 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     if (!chart) {
       return;
     }
-    // Remove previous handlers
-    if (this._emphasisGuardHandler) {
-      chart.off("mouseover", this._emphasisGuardHandler);
-      chart.off("mouseout", this._emphasisGuardHandler);
-      this._emphasisGuardHandler = undefined;
-    }
+
     // When there are highlighted nodes, re-apply highlighting on hover
-    // and mouseout to prevent emphasis from overriding the search state
+    // and mouseout to prevent hover from overriding the search state
     if (this._highlightedNodes && this._highlightedNodes.size > 0) {
+      if (this._emphasisGuardHandler) {
+        // Guard already set
+        return;
+      }
       this._emphasisGuardHandler = () => {
         this._applyHighlighting();
       };
       chart.on("mouseover", this._emphasisGuardHandler);
       chart.on("mouseout", this._emphasisGuardHandler);
+    } else {
+      if (!this._emphasisGuardHandler) {
+        return;
+      }
+      chart.off("mouseover", this._emphasisGuardHandler);
+      chart.off("mouseout", this._emphasisGuardHandler);
+      this._emphasisGuardHandler = undefined;
     }
   }
 
