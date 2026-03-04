@@ -1,8 +1,7 @@
-import { convertEntities } from "../../../../src/fake_data/entity";
 import type { DemoConfig } from "../types";
 
 export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
-  convertEntities({
+  Object.values({
     "cover.living_room_garden_shutter": {
       entity_id: "cover.living_room_garden_shutter",
       state: "open",

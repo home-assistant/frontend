@@ -58,7 +58,8 @@ export class HaButton extends Button {
           font-size: var(--ha-font-size-m);
           line-height: 1;
 
-          transition: background-color 0.15s ease-in-out;
+          transition: background-color var(--ha-animation-duration-fast)
+            ease-out;
           text-wrap: wrap;
         }
 

@@ -44,6 +44,13 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     this._dropdown?.focus();
   }
 
+  public reportValidity(): boolean {
+    if (!this.schema.required || (this.data && this.data.length > 0)) {
+      return true;
+    }
+    return false;
+  }
+
   protected render(): TemplateResult {
     const options = Array.isArray(this.schema.options)
       ? this.schema.options

@@ -4,7 +4,6 @@ import type { LovelaceViewFooterConfig } from "../../../../data/lovelace/config/
 export interface EditViewFooterDialogParams {
   saveConfig: (config: LovelaceViewFooterConfig) => void;
   config: LovelaceViewFooterConfig;
-  maxColumns: number;
 }
 
 export const showEditViewFooterDialog = (
