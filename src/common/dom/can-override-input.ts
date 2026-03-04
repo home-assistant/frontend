@@ -19,6 +19,10 @@ export const canOverrideAlphanumericInput = (composedPath: EventTarget[]) => {
     return false;
   }
 
+  if (el.parentElement?.tagName === "HA-DROPDOWN") {
+    return false;
+  }
+
   if (el.tagName !== "INPUT") {
     return true;
   }
