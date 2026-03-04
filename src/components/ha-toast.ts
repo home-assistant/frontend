@@ -66,7 +66,7 @@ export class HaToast extends LitElement {
 
   protected render() {
     return html`
-      <button id="toast-anchor" aria-hidden="true" tabindex="-1"></button>
+      <div id="toast-anchor" aria-hidden="true"></div>
       <wa-popover
         for="toast-anchor"
         placement="top"
@@ -94,7 +94,6 @@ export class HaToast extends LitElement {
       transform: translateX(-50%);
       width: 1px;
       height: 1px;
-      border: 0;
       opacity: 0;
       pointer-events: none;
     }
