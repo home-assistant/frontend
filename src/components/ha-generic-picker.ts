@@ -103,8 +103,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
-  @property({ attribute: false }) public selectedValue?: string;
-
   @property({ attribute: false }) public popoverAnchor?: Element | null;
 
   @property({ type: Boolean, attribute: "use-top-label" })
@@ -126,6 +124,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @state() private _openedNarrow = false;
 
   @state() private _unknownValue = false;
+
+  @state() private _selectedValue?: string;
 
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -272,7 +272,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .sections=${this.sections}
         .sectionTitleFunction=${this.sectionTitleFunction}
         .selectedSection=${this.selectedSection}
-        .selectedValue=${this.selectedValue}
+        .selectedValue=${this._selectedValue}
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}
       ></ha-picker-combo-box>
@@ -350,6 +350,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
     this._opened = false;
     this._pickerWrapperOpen = false;
+    this._selectedValue = undefined;
     this._unsubscribeTinyKeys?.();
     fireEvent(this, "picker-closed");
   }
@@ -374,11 +375,17 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     fireEvent(this, "value-changed", { value });
   }
 
-  public async open(ev?: Event) {
+  public async open(
+    ev?: Event,
+    options?: {
+      selectedValue?: string;
+    }
+  ) {
     ev?.stopPropagation();
     if (this.disabled) {
       return;
     }
+    this._selectedValue = options?.selectedValue;
     this._openedNarrow = this._narrow;
     this._popoverWidth = this._containerElement?.offsetWidth || 250;
     this._pickerWrapperOpen = true;

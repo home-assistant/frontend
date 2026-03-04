@@ -409,9 +409,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           )}
           .sectionTitleFunction=${this._sectionTitleFunction}
           .selectedSection=${this._selectedSection}
-          .selectedValue=${this._replaceTarget
-            ? `${this._replaceTarget.type}${SEPARATOR}${this._replaceTarget.id}`
-            : undefined}
           .popoverAnchor=${this._replaceTargetAnchor}
           .rowRenderer=${this._renderRow}
           .getItems=${this._getItems}
@@ -718,7 +715,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return;
     }
     this._replaceTarget = { type, id: ev.detail.id };
-    this._picker?.open();
+    this._picker?.open(undefined, {
+      selectedValue: `${type}${SEPARATOR}${ev.detail.id}`,
+    });
   }
 
   private _handlePickerClosed() {
