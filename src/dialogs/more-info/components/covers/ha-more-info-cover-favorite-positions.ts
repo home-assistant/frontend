@@ -40,6 +40,9 @@ type FavoriteLocalizeKey =
   | "edit_title"
   | "add_title";
 
+const favoriteKindFromEvent = (ev: Event): FavoriteKind =>
+  (ev.currentTarget as HTMLElement).dataset.kind as FavoriteKind;
+
 @customElement("ha-more-info-cover-favorite-positions")
 export class HaMoreInfoCoverFavoritePositions extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -295,15 +298,11 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
         number: index + 1,
       });
 
-  private _eventKind(ev: Event): FavoriteKind {
-    return (ev.currentTarget as HTMLElement).dataset.kind as FavoriteKind;
-  }
-
   private _handleFavoriteAction = (
     ev: CustomEvent<{ action: string; index: number }>
   ): void => {
     ev.stopPropagation();
-    const kind = this._eventKind(ev);
+    const kind = favoriteKindFromEvent(ev);
 
     const { action, index } = ev.detail;
 
@@ -324,7 +323,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     ev: CustomEvent<{ oldIndex: number; newIndex: number }>
   ): void => {
     ev.stopPropagation();
-    const kind = this._eventKind(ev);
+    const kind = favoriteKindFromEvent(ev);
     this._move(kind, ev.detail.oldIndex, ev.detail.newIndex);
   };
 
@@ -332,13 +331,13 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     ev: CustomEvent<{ index: number }>
   ): void => {
     ev.stopPropagation();
-    const kind = this._eventKind(ev);
+    const kind = favoriteKindFromEvent(ev);
     this._deleteFavorite(kind, ev.detail.index);
   };
 
   private _handleFavoriteAdd = (ev: CustomEvent): void => {
     ev.stopPropagation();
-    const kind = this._eventKind(ev);
+    const kind = favoriteKindFromEvent(ev);
     this._addFavorite(kind);
   };
 
