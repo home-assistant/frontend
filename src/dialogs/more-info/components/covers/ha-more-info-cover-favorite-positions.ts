@@ -8,7 +8,7 @@ import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-control-button";
 import type { CoverEntity } from "../../../../data/cover";
 import {
-  computeDefaultFavoriteCoverPositions,
+  DEFAULT_COVER_FAVORITE_POSITIONS,
   coverSupportsPosition,
   coverSupportsTiltPosition,
   normalizeCoverFavoritePositions,
@@ -54,15 +54,13 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
       this._favoritePositions = coverSupportsPosition(this.stateObj)
         ? normalizeCoverFavoritePositions(
-            options?.favorite_positions ??
-              computeDefaultFavoriteCoverPositions()
+            options?.favorite_positions ?? DEFAULT_COVER_FAVORITE_POSITIONS
           )
         : [];
 
       this._favoriteTiltPositions = coverSupportsTiltPosition(this.stateObj)
         ? normalizeCoverFavoritePositions(
-            options?.favorite_tilt_positions ??
-              computeDefaultFavoriteCoverPositions()
+            options?.favorite_tilt_positions ?? DEFAULT_COVER_FAVORITE_POSITIONS
           )
         : [];
     }

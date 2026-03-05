@@ -29,10 +29,6 @@ export const coverSupportsTiltPosition = (stateObj: CoverEntity) =>
 export const coverSupportsAnyPosition = (stateObj: CoverEntity) =>
   coverSupportsPosition(stateObj) || coverSupportsTiltPosition(stateObj);
 
-export const computeDefaultFavoriteCoverPositions = () => [
-  ...DEFAULT_COVER_FAVORITE_POSITIONS,
-];
-
 export const normalizeCoverFavoritePositions = (
   positions?: number[]
 ): number[] => {
