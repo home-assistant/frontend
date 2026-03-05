@@ -826,7 +826,7 @@ export const filterSelectorEntities = (
   entity: HassEntity,
   entitySources?: EntitySources,
   entityRegistry?: HomeAssistant["entities"],
-  devices?: HomeAssistant["devices"] | DeviceRegistryEntry[]
+  devices?: HomeAssistant["devices"]
 ): boolean => {
   const {
     domain: filterDomain,
@@ -879,9 +879,7 @@ export const filterSelectorEntities = (
     if (!deviceId) {
       return false;
     }
-    const device = Array.isArray(devices)
-      ? devices.find((entry) => entry.id === deviceId)
-      : devices[deviceId];
+    const device = devices[deviceId];
     if (!device) {
       return false;
     }
