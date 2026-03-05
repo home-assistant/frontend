@@ -246,9 +246,9 @@ export class HaMoreInfoFavorites extends LitElement {
     }
 
     ha-control-button.active {
-      --control-button-icon-color: white;
-      --control-button-background-color: var(--color);
-      --control-button-background-opacity: 1;
+      --control-button-background-color: var(
+        --favorite-item-active-background-color
+      );
     }
   `;
 }

@@ -438,6 +438,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
     .group ha-more-info-favorites {
       --favorite-items-max-width: 384px;
+      --favorite-item-active-background-color: var(--state-cover-active-color);
     }
 
     h4 {
