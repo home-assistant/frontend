@@ -1,4 +1,5 @@
 import {
+  mdiBackupRestore,
   mdiChartBoxOutline,
   mdiClose,
   mdiCodeBraces,
@@ -49,7 +50,10 @@ import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import { getExtendedEntityRegistryEntry } from "../../data/entity/entity_registry";
+import {
+  getExtendedEntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../data/entity/entity_registry";
 import { lightSupportsFavoriteColors } from "../../data/light";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
@@ -75,6 +79,7 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -358,6 +363,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       case "toggle_edit":
         this._toggleInfoEditMode();
         break;
+      case "reset_favorites":
+        this._resetFavorites();
+        break;
       case "related":
         this._goToRelated();
         break;
@@ -371,6 +379,36 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         this._showDetails();
         break;
     }
+  }
+
+  private async _resetFavorites() {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass!.localize(
+          "ui.dialogs.more_info_control.light.reset_favorites"
+        ),
+        text: this.hass!.localize(
+          "ui.dialogs.more_info_control.light.reset_favorites_text"
+        ),
+        dismissText: this.hass!.localize("ui.common.cancel"),
+        confirmText: this.hass!.localize("ui.common.reset"),
+        destructive: true,
+      }))
+    ) {
+      return;
+    }
+
+    const result = await updateEntityRegistryEntry(
+      this.hass,
+      this._entry!.entity_id,
+      {
+        options_domain: "light",
+        options: {
+          favorite_colors: undefined,
+        },
+      }
+    );
+    this._entry = result.entity_entry;
   }
 
   private _showDetails(): void {
@@ -591,6 +629,19 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 : this.hass.localize(
                                     `ui.dialogs.more_info_control.${domain}.edit_mode`
                                   )}
+                            </ha-dropdown-item>
+                            <ha-dropdown-item
+                              value="reset_favorites"
+                              .disabled=${!this._entry.options?.light
+                                ?.favorite_colors}
+                            >
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiBackupRestore}
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                `ui.dialogs.more_info_control.light.reset_favorites`
+                              )}
                             </ha-dropdown-item>
                           `
                         : nothing}

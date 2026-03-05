@@ -1612,6 +1612,8 @@
         },
         "light": {
           "edit_mode": "Edit favorite colors",
+          "reset_favorites": "Reset favorite colors",
+          "reset_favorites_text": "Do you want to reset all favorite colors for this light back to default?",
           "toggle": "Toggle",
           "color": "Color",
           "color_temp": "Temperature",
