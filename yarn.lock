@@ -1250,9 +1250,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/language@npm:6.12.1, @codemirror/language@npm:^6.0.0":
-  version: 6.12.1
-  resolution: "@codemirror/language@npm:6.12.1"
+"@codemirror/language@npm:6.12.2, @codemirror/language@npm:^6.0.0":
+  version: 6.12.2
+  resolution: "@codemirror/language@npm:6.12.2"
   dependencies:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.23.0"
@@ -1260,7 +1260,7 @@ __metadata:
     "@lezer/highlight": "npm:^1.0.0"
     "@lezer/lr": "npm:^1.0.0"
     style-mod: "npm:^4.0.0"
-  checksum: 10/a24c3512d38cbb2a20cc3128da0eea074b4a6102b6a5a041b3dfd5e67638fb61dcdf4743ed87708db882df5d72a84d9f891aac6fa68447830989c8e2d9ffa2ba
+  checksum: 10/9afc704e17cad4782b68ad02869503a27103c4c3ac6927d2ffa3c6decfad627ade40b0ed78d1d6e941b2e879a7a79bda0d573e58604f3923f9e1f3311108ec36
   languageName: node
   linkType: hard
 
@@ -2001,33 +2001,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@html-eslint/eslint-plugin@npm:0.57.0":
-  version: 0.57.0
-  resolution: "@html-eslint/eslint-plugin@npm:0.57.0"
+"@html-eslint/eslint-plugin@npm:0.57.1":
+  version: 0.57.1
+  resolution: "@html-eslint/eslint-plugin@npm:0.57.1"
   dependencies:
     "@eslint/plugin-kit": "npm:^0.4.1"
     "@html-eslint/core": "npm:^0.57.0"
-    "@html-eslint/parser": "npm:^0.57.0"
+    "@html-eslint/parser": "npm:^0.57.1"
     "@html-eslint/template-parser": "npm:^0.57.0"
     "@html-eslint/template-syntax-parser": "npm:^0.57.0"
     "@html-eslint/types": "npm:^0.57.0"
     "@rviscomi/capo.js": "npm:^2.1.0"
+    html-standard: "npm:^0.0.13"
   peerDependencies:
     eslint: ">=8.0.0 || ^10.0.0-0"
-  checksum: 10/34cf11eaab3c07436c9c8b2896ed331c3ba5d591db5d8a8ff79d19b174e6e090323eb71e1368ad93d2afa945d4740749c599436a03be1195d4e4a4b0d3d9e9b6
+  checksum: 10/21a923a1ee8efb02f01c015345a23b38cd0a9e98c4f3fa07d79afe1f8e9f26651e0a9d6983b2f9cfae76be71c14f3224fd64433612535c1e04e3c9b440e46245
   languageName: node
   linkType: hard
 
-"@html-eslint/parser@npm:^0.57.0":
-  version: 0.57.0
-  resolution: "@html-eslint/parser@npm:0.57.0"
+"@html-eslint/parser@npm:^0.57.1":
+  version: 0.57.1
+  resolution: "@html-eslint/parser@npm:0.57.1"
   dependencies:
     "@eslint/css-tree": "npm:^3.6.9"
     "@html-eslint/template-syntax-parser": "npm:^0.57.0"
     "@html-eslint/types": "npm:^0.57.0"
     css-tree: "npm:^3.1.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/d742a26ef8122eab82e35ab27de6fe40cd45d2ac59ade9bed9d16df0da3cd18425c7892fedd245b9d60da2a4fbfb8c6afe05b1b6415033ab8fad996b94be020e
+  checksum: 10/3e148f0bf83600e5b931938dc02d01e805c275b0534fad0adc8ac68ceb37220896c007b1d33ebc4347cb59ab35d1cc3c57207ff798f08d2327d92abf1c88e72b
   languageName: node
   linkType: hard
 
@@ -3045,18 +3046,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-snackbar@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-snackbar@npm:0.27.0"
-  dependencies:
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/snackbar": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/bd1e4b9fa449dde5318693d9b5486ea7cb5181338fc14e8f4ccd071ee5a4a6c957c3398fdbe7f626100b0f7c6c1049c02f1a9a5ada4a647d1a9c4f25f724358f
-  languageName: node
-  linkType: hard
-
 "@material/mwc-switch@npm:0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-switch@npm:0.27.0"
@@ -3226,27 +3215,6 @@ __metadata:
     "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
     tslib: "npm:^2.1.0"
   checksum: 10/d8bca18cde6b8d479396e695afff9aaf911be1f85160e0c8a923ca39ef0950e7042786f3ec787d4df551fe479e1f2b1b97db217129e2e80d7602d07676ae4695
-  languageName: node
-  linkType: hard
-
-"@material/snackbar@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/snackbar@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/button": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/dom": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/icon-button": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/e538c46447f0c0d7c2fca020d5fc3bc3202df3402ad0de07b94580d84b17eb253415ced64a5842819d615efe8c86e7141321a6b38a965aac8eb8f2810a7058d0
   languageName: node
   linkType: hard
 
@@ -6734,10 +6702,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^14.0.2":
-  version: 14.0.2
-  resolution: "commander@npm:14.0.2"
-  checksum: 10/2d202db5e5f9bb770112a3c1579b893d17ac6f6d932183077308bdd96d0f87f0bbe6a68b5b9ed2cf3b2514be6bb7de637480703c0e2db9741ee1b383237deb26
+"commander@npm:^14.0.3":
+  version: 14.0.3
+  resolution: "commander@npm:14.0.3"
+  checksum: 10/dfa9ebe2a433d277de5cb0252d23b10a543d245d892db858d23b516336a835c50fd4f52bee4cd13c705cc8acb6f03dc632c73dd806f7d06d3353eb09953dd17a
   languageName: node
   linkType: hard
 
@@ -7152,7 +7120,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"defaults@npm:^1.0.3, defaults@npm:^1.0.4":
+"defaults@npm:^1.0.3":
   version: 1.0.4
   resolution: "defaults@npm:1.0.4"
   dependencies:
@@ -8306,7 +8274,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fancy-log@npm:2.0.0, fancy-log@npm:^2.0.0":
+"fancy-log@npm:2.0.0":
   version: 2.0.0
   resolution: "fancy-log@npm:2.0.0"
   dependencies:
@@ -8919,10 +8887,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globals@npm:17.3.0":
-  version: 17.3.0
-  resolution: "globals@npm:17.3.0"
-  checksum: 10/44ba2b7db93eb6a2531dfba09219845e21f2e724a4f400eb59518b180b7d5bcf7f65580530e3d3023d7dc2bdbacf5d265fd87c393f567deb9a2b0472b51c9d5e
+"globals@npm:17.4.0":
+  version: 17.4.0
+  resolution: "globals@npm:17.4.0"
+  checksum: 10/ffad244617e94efcb3da72b7beefc941167c21316148ce378f322db7af72db06468f370e23224b3c7b17b5173a7c75b134e5e7b0949f2828519054a76892508d
   languageName: node
   linkType: hard
 
@@ -9039,18 +9007,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gulp-zopfli-green@npm:6.0.2":
-  version: 6.0.2
-  resolution: "gulp-zopfli-green@npm:6.0.2"
+"gulp-zopfli-green@npm:7.0.0":
+  version: 7.0.0
+  resolution: "gulp-zopfli-green@npm:7.0.0"
   dependencies:
     "@gfx/zopfli": "npm:^1.0.15"
     bytes: "npm:^3.1.2"
-    defaults: "npm:^1.0.4"
-    fancy-log: "npm:^2.0.0"
     plugin-error: "npm:^2.0.1"
     stream-to-array: "npm:^2.3.0"
     through2: "npm:^4.0.2"
-  checksum: 10/52e899dfb86777ff8f97a23af99c59e203ea485fbf04d0a8f4f1cfbd4d4c496808a3593ae8dac16584fc4b4d81cf127b2eda5355a61bcc213875c95cc86d41da
+  checksum: 10/25db42b9a8f6395847e3cc06c548c3f3d51c84606166f18de71d91d505e7293176b45b4b78b7e0b1566c26263fe0dc212e56d2b367461c3d712bee9d22d5224f
   languageName: node
   linkType: hard
 
@@ -9177,7 +9143,7 @@ __metadata:
     "@bundle-stats/plugin-webpack-filter": "npm:4.21.10"
     "@codemirror/autocomplete": "npm:6.20.0"
     "@codemirror/commands": "npm:6.10.2"
-    "@codemirror/language": "npm:6.12.1"
+    "@codemirror/language": "npm:6.12.2"
     "@codemirror/legacy-modes": "npm:6.5.2"
     "@codemirror/search": "npm:6.6.0"
     "@codemirror/state": "npm:6.5.4"
@@ -9200,7 +9166,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
     "@home-assistant/webawesome": "npm:3.2.1-ha.3"
-    "@html-eslint/eslint-plugin": "npm:0.57.0"
+    "@html-eslint/eslint-plugin": "npm:0.57.1"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
     "@lit-labs/observers": "npm:2.1.0"
@@ -9221,7 +9187,6 @@ __metadata:
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/mwc-radio": "npm:0.27.0"
     "@material/mwc-select": "npm:0.27.0"
-    "@material/mwc-snackbar": "npm:0.27.0"
     "@material/mwc-switch": "npm:0.27.0"
     "@material/mwc-textarea": "npm:0.27.0"
     "@material/mwc-textfield": "npm:0.27.0"
@@ -9300,7 +9265,7 @@ __metadata:
     gulp-brotli: "npm:3.0.0"
     gulp-json-transform: "npm:0.5.0"
     gulp-rename: "npm:2.1.0"
-    gulp-zopfli-green: "npm:6.0.2"
+    gulp-zopfli-green: "npm:7.0.0"
     hls.js: "npm:1.6.15"
     home-assistant-js-websocket: "npm:9.6.0"
     html-minifier-terser: "npm:7.2.0"
@@ -9313,7 +9278,7 @@ __metadata:
     leaflet: "npm:1.9.4"
     leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
     leaflet.markercluster: "npm:1.5.3"
-    lint-staged: "npm:16.2.7"
+    lint-staged: "npm:16.3.1"
     lit: "npm:3.3.2"
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.2"
@@ -10630,20 +10595,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:16.2.7":
-  version: 16.2.7
-  resolution: "lint-staged@npm:16.2.7"
+"lint-staged@npm:16.3.1":
+  version: 16.3.1
+  resolution: "lint-staged@npm:16.3.1"
   dependencies:
-    commander: "npm:^14.0.2"
+    commander: "npm:^14.0.3"
     listr2: "npm:^9.0.5"
     micromatch: "npm:^4.0.8"
-    nano-spawn: "npm:^2.0.0"
-    pidtree: "npm:^0.6.0"
     string-argv: "npm:^0.3.2"
-    yaml: "npm:^2.8.1"
+    tinyexec: "npm:^1.0.2"
+    yaml: "npm:^2.8.2"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/c1fd7685300800ea6d3f073cb450f9e3d2a83966e7c6785ea9608a08e77e1e8e5f1958f77b98ccd7d423daa53bb36016d6fd96a98d22234d0f7f56d7b3f360f2
+  checksum: 10/4eaebcfcf7cc37c163e3b365da4b35c3403b6e6184039ff0256e2d1765e01aea28a5ffd8726ee4964b10ea6aecd4cbb1790e08964597bafe608bd8126ed4700d
   languageName: node
   linkType: hard
 
@@ -11238,13 +11202,6 @@ __metadata:
   version: 2.0.0
   resolution: "mute-stdout@npm:2.0.0"
   checksum: 10/5324d58cc6b0df0173cb671f40c8bc3a843ab3804db925fdf561b734ca509d3ad8546744e211ac933d384e7e699092f43fc5712b38d5ddf29ecf9c963358d67c
-  languageName: node
-  linkType: hard
-
-"nano-spawn@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "nano-spawn@npm:2.0.0"
-  checksum: 10/117d35d7bd85b146908de5d3d1177d2b2ee3174e5d884d6bc9555583bf6e50a265f4038b5c134b7cdd768a10d53598ccde5c00d6f55e25e7eed31b86b8d29646
   languageName: node
   linkType: hard
 
@@ -11934,15 +11891,6 @@ __metadata:
   version: 4.0.3
   resolution: "picomatch@npm:4.0.3"
   checksum: 10/57b99055f40b16798f2802916d9c17e9744e620a0db136554af01d19598b96e45e2f00014c91d1b8b13874b80caa8c295b3d589a3f72373ec4aaf54baa5962d5
-  languageName: node
-  linkType: hard
-
-"pidtree@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "pidtree@npm:0.6.0"
-  bin:
-    pidtree: bin/pidtree.js
-  checksum: 10/ea67fb3159e170fd069020e0108ba7712df9f0fd13c8db9b2286762856ddce414fb33932e08df4bfe36e91fe860b51852aee49a6f56eb4714b69634343add5df
   languageName: node
   linkType: hard
 
@@ -15605,7 +15553,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.8.1":
+"yaml@npm:^2.8.2":
   version: 2.8.2
   resolution: "yaml@npm:2.8.2"
   bin:

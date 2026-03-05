@@ -74,11 +74,14 @@ class HaConfigRepairs extends LitElement {
                 slot="start"
                 alt=${domainName}
                 loading="lazy"
-                src=${brandsUrl({
-                  domain: issue.issue_domain || issue.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
+                src=${brandsUrl(
+                  {
+                    domain: issue.issue_domain || issue.domain,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
                 .title=${domainName}
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"

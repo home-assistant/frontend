@@ -10,7 +10,9 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { withViewTransition } from "../common/util/view-transition";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -127,6 +129,14 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
   private _escapePressed = false;
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener(
+      "dialog-set-fullscreen",
+      this._handleFullscreenChanged as EventListener
+    );
+  }
+
   protected get scrollableElement(): HTMLElement | null {
     return this.bodyContainer;
   }
@@ -194,7 +204,10 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     `;
   }
 
-  private _handleShow = async () => {
+  private _handleShow = async (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     this._open = true;
     fireEvent(this, "opened");
 
@@ -220,20 +233,44 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     });
   };
 
-  private _handleAfterShow = () => {
+  private _handleAfterShow = (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     fireEvent(this, "after-show");
   };
 
   private _handleAfterHide = (ev: DialogHideEvent) => {
     if (ev.eventPhase === Event.AT_TARGET) {
       this._open = false;
+      this._setFullscreen(false);
       fireEvent(this, "closed");
     }
   };
 
   public disconnectedCallback(): void {
+    this.removeEventListener(
+      "dialog-set-fullscreen",
+      this._handleFullscreenChanged as EventListener
+    );
+    this._setFullscreen(false);
     super.disconnectedCallback();
     this._open = false;
+  }
+
+  private _handleFullscreenChanged(ev: HASSDomEvent<boolean>): void {
+    if (!this._open) {
+      this._setFullscreen(ev.detail);
+      return;
+    }
+
+    withViewTransition(() => {
+      this._setFullscreen(ev.detail);
+    });
+  }
+
+  private _setFullscreen(fullscreen: boolean): void {
+    this.toggleAttribute("fullscreen", fullscreen);
   }
 
   @eventOptions({ passive: true })
@@ -301,8 +338,25 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           --width: min(var(--ha-dialog-width-lg, 1024px), var(--full-width));
         }
 
-        :host([width="full"]) wa-dialog {
+        :host([width="full"]) wa-dialog,
+        :host([fullscreen]) wa-dialog {
           --width: var(--full-width);
+        }
+
+        :host([fullscreen]) wa-dialog::part(dialog) {
+          min-height: var(--safe-height);
+          max-height: var(--safe-height);
+          margin-top: 0;
+          transform: none;
+        }
+
+        :host([fullscreen]) .content-wrapper {
+          overflow: hidden;
+        }
+
+        :host([fullscreen]) .body {
+          overflow: hidden;
+          padding: 0;
         }
 
         wa-dialog::part(dialog) {
@@ -465,6 +519,7 @@ declare global {
   }
 
   interface HASSDomEvents {
+    "dialog-set-fullscreen": boolean;
     opened: undefined;
     "after-show": undefined;
     closed: undefined;

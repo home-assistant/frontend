@@ -55,44 +55,62 @@ export const clearBrandsTokenRefresh = (): void => {
   }
 };
 
-export const brandsUrl = (options: BrandsOptions): string => {
+export const brandsUrl = (options: BrandsOptions, hassUrl?: string): string => {
+  hassUrl = hassUrl ?? location.origin;
   const base = `/api/brands/integration/${options.domain}/${
     options.darkOptimized ? "dark_" : ""
   }${options.type}.png`;
+
+  const url = new URL(base, hassUrl);
   if (_brandsAccessToken) {
-    return `${base}?token=${_brandsAccessToken}`;
+    url.searchParams.set("token", _brandsAccessToken);
   }
-  return base;
+  return url.toString();
 };
 
-export const hardwareBrandsUrl = (options: HardwareBrandsOptions): string => {
+export const hardwareBrandsUrl = (
+  options: HardwareBrandsOptions,
+  hassUrl?: string
+): string => {
+  hassUrl = hassUrl ?? location.origin;
   const base = `/api/brands/hardware/${options.category}/${
     options.darkOptimized ? "dark_" : ""
   }${options.manufacturer}${options.model ? `_${options.model}` : ""}.png`;
+
+  const url = new URL(base, hassUrl);
   if (_brandsAccessToken) {
-    return `${base}?token=${_brandsAccessToken}`;
+    url.searchParams.set("token", _brandsAccessToken);
   }
-  return base;
+  return url.toString();
 };
 
-export const addBrandsAuth = (url: string): string => {
-  if (!_brandsAccessToken || !url.startsWith("/api/brands/")) {
+export const addBrandsAuth = (url: string, hassUrl?: string): string => {
+  hassUrl = hassUrl ?? location.origin;
+  if (!_brandsAccessToken) {
     return url;
   }
-  const fullUrl = new URL(url, location.origin);
-  fullUrl.searchParams.set("token", _brandsAccessToken);
-  return `${fullUrl.pathname}${fullUrl.search}`;
+
+  try {
+    const parsedUrl = new URL(url, hassUrl);
+    if (!parsedUrl.pathname.startsWith("/api/brands/")) {
+      return url;
+    }
+    parsedUrl.searchParams.set("token", _brandsAccessToken);
+    return parsedUrl.toString();
+  } catch {
+    return url;
+  }
 };
 
 export const extractDomainFromBrandUrl = (url: string): string => {
   // Handle both new local API paths (/api/brands/integration/{domain}/...)
   // and legacy CDN URLs (https://brands.home-assistant.io/_/{domain}/...)
-  if (url.startsWith("/api/brands/")) {
+  const parsed = new URL(url, location.origin);
+  if (parsed.pathname.startsWith("/api/brands/")) {
     // /api/brands/integration/{domain}/... -> ["" ,"api", "brands", "integration", "{domain}", ...]
-    return url.split("/")[4];
+    return parsed.pathname.split("/")[4];
   }
   // https://brands.home-assistant.io/_/{domain}/... -> ["", "_", "{domain}", ...]
-  const parsed = new URL(url);
   const segments = parsed.pathname.split("/").filter((s) => s.length > 0);
   const underscoreIdx = segments.indexOf("_");
   if (underscoreIdx !== -1 && underscoreIdx + 1 < segments.length) {
@@ -101,6 +119,14 @@ export const extractDomainFromBrandUrl = (url: string): string => {
   return segments[1] ?? "";
 };
 
-export const isBrandUrl = (thumbnail: string | ""): boolean =>
-  thumbnail.startsWith("/api/brands/") ||
-  thumbnail.startsWith("https://brands.home-assistant.io/");
+export const isBrandUrl = (thumbnail: string | ""): boolean => {
+  try {
+    const url = new URL(thumbnail, location.origin);
+    return (
+      url.pathname.startsWith("/api/brands/") ||
+      thumbnail.startsWith("https://brands.home-assistant.io/")
+    );
+  } catch {
+    return false;
+  }
+};

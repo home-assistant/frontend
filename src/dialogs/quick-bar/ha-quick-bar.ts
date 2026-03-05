@@ -855,6 +855,7 @@ export class QuickBar extends LitElement {
           );
           --dialog-content-padding: 0;
           --safe-area-inset-bottom: 0px;
+          --ha-dialog-show-duration: var(--ha-animation-duration-instant);
         }
 
         ha-tip {

@@ -138,10 +138,10 @@ export class StateBadge extends LitElement {
           let imageUrl =
             stateObj.attributes.entity_picture_local ||
             stateObj.attributes.entity_picture;
-          imageUrl = addBrandsAuth(imageUrl);
           if (this.hass) {
             imageUrl = this.hass.hassUrl(imageUrl);
           }
+          imageUrl = addBrandsAuth(imageUrl, this.hass?.auth.data.hassUrl);
           if (domain === "camera") {
             imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
           }
