@@ -260,7 +260,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
-        .value=${this.value}
+        .value=${this._selectedValue ?? this.value}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
         .notFoundLabel=${this.notFoundLabel}
@@ -272,7 +272,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .sections=${this.sections}
         .sectionTitleFunction=${this.sectionTitleFunction}
         .selectedSection=${this.selectedSection}
-        .selectedValue=${this._selectedValue}
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}
       ></ha-picker-combo-box>
