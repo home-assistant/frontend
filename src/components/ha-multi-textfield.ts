@@ -38,6 +38,8 @@ class HaMultiTextField extends LitElement {
   @property({ attribute: "item-index", type: Boolean })
   public itemIndex = false;
 
+  @property({ type: Number }) public max?: number;
+
   protected render() {
     return html`
       ${this._items.map((item, index) => {
@@ -77,7 +79,8 @@ class HaMultiTextField extends LitElement {
           size="small"
           appearance="filled"
           @click=${this._addItem}
-          .disabled=${this.disabled}
+          .disabled=${this.disabled ||
+          (this.max != null && this._items.length >= this.max)}
         >
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.addLabel ??
@@ -102,6 +105,9 @@ class HaMultiTextField extends LitElement {
   }
 
   private async _addItem() {
+    if (this.max != null && this._items.length >= this.max) {
+      return;
+    }
     const items = [...this._items, ""];
     this._fireChanged(items);
     await this.updateComplete;

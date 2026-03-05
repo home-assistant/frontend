@@ -9352,8 +9352,20 @@
               "cover-position": {
                 "label": "Cover position"
               },
+              "cover-position-preset": {
+                "label": "Cover position preset",
+                "position": "Position",
+                "add_position": "Add position",
+                "remove_position": "Remove position"
+              },
               "cover-tilt": {
                 "label": "Cover tilt"
+              },
+              "cover-tilt-preset": {
+                "label": "Cover tilt preset",
+                "position": "Position",
+                "add_position": "Add position",
+                "remove_position": "Remove position"
               },
               "cover-tilt-position": {
                 "label": "Cover tilt position"
