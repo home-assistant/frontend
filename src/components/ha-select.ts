@@ -127,7 +127,6 @@ export class HaSelect extends LitElement {
     return html`
       <ha-picker-field
         slot="trigger"
-        .open=${this._opened}
         type="button"
         class=${this._opened ? "opened" : ""}
         compact

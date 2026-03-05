@@ -30,8 +30,6 @@ import type {
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
 import "./ha-svg-icon";
-import "./input/ha-input-label";
-import { inputWrapperStyles } from "./input/styles";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends PickerMixin(LitElement) {
@@ -166,44 +164,32 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     this._initialFieldValue = value;
   }
 
-  private _renderAddButton() {
-    const button = html`
-      <ha-button
-        id="add-button"
-        size="small"
-        appearance="filled"
-        @click=${this.open}
-        .disabled=${this.disabled}
-      >
-        <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
-        ${this.addButtonLabel ||
-        this.placeholder ||
-        this.localize?.("ui.common.add") ||
-        "Add"}
-      </ha-button>
-    `;
-
-    if (this.addButtonLabel) {
-      return button;
-    }
-
-    return html`
-      ${this.label
-        ? html`<ha-input-label .label=${this.label}></ha-input-label>`
-        : nothing}
-      <div class="input-wrapper">${button}</div>
-    `;
-  }
-
   protected render() {
+    // Only show label if it's not a top label and there is a value.
+    const label = this.useTopLabel && this.value ? undefined : this.label;
+
     return html`<div class="container">
+        ${this.useTopLabel && this.label
+          ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
+          : nothing}
         <div id="picker">
           <slot name="field">
-            ${(this.addButtonLabel || !this.icon) && !this.value
-              ? this._renderAddButton()
+            ${this.addButtonLabel && !this.value
+              ? html`<ha-button
+                  size="small"
+                  appearance="filled"
+                  @click=${this.open}
+                  .disabled=${this.disabled}
+                >
+                  <ha-svg-icon
+                    .path=${mdiPlaylistPlus}
+                    slot="start"
+                  ></ha-svg-icon>
+                  ${this.addButtonLabel}
+                </ha-button>`
               : html`<ha-picker-field
                   type="button"
-                  .open=${this._opened}
+                  class=${this._opened ? "opened" : ""}
                   compact
                   .unknown=${this._unknownValue}
                   .unknownItemText=${this.unknownItemText}
@@ -212,7 +198,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   @clear=${this._clear}
                   .icon=${this.icon}
                   .image=${this.image}
-                  .label=${this.label}
+                  .label=${label}
                   .placeholder=${this.placeholder}
                   .value=${this.value}
                   .valueRenderer=${this.valueRenderer}
@@ -429,7 +415,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return [
-      inputWrapperStyles,
       css`
         .container {
           position: relative;
@@ -484,6 +469,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           --ha-bottom-sheet-padding: 0;
           --ha-bottom-sheet-surface-background: var(--card-background-color);
           --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
+        }
+
+        ha-picker-field.opened {
+          --mdc-text-field-idle-line-color: var(--primary-color);
         }
       `,
     ];

@@ -18,7 +18,6 @@ import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
 import "./ha-icon";
 import "./ha-icon-button";
-import "./input/ha-input-label";
 
 declare global {
   interface HASSDomEvents {
@@ -32,8 +31,6 @@ export type PickerValueRenderer = (value: string) => TemplateResult<1>;
 export class HaPickerField extends PickerMixin(LitElement) {
   @property({ type: Boolean, reflect: true }) public invalid = false;
 
-  @property({ type: Boolean, reflect: true }) public open = false;
-
   @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
 
   @state()
@@ -46,25 +43,31 @@ export class HaPickerField extends PickerMixin(LitElement) {
   }
 
   protected render() {
+    const hasValue = !!this.value;
+
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
 
-    const placeholder = this.placeholder || this.label;
+    const placeholderText = this.placeholder ?? this.label;
 
-    const headlineContent = this.value
+    const overlineLabel =
+      this.label && hasValue
+        ? html`<span slot="overline"
+            >${this.label}${this.required ? " *" : ""}</span
+          >`
+        : nothing;
+
+    const headlineContent = hasValue
       ? this.valueRenderer
         ? this.valueRenderer(this.value ?? "")
         : html`<span slot="headline">${this.value}</span>`
-      : placeholder
+      : placeholderText
         ? html`<span slot="headline" class="placeholder">
-            ${placeholder}${this.required ? " *" : ""}
+            ${placeholderText}${this.required ? " *" : ""}
           </span>`
         : nothing;
 
     return html`
-      ${this.label
-        ? html` <ha-input-label .label=${this.label}></ha-input-label> `
-        : nothing}
       <ha-combo-box-item
         aria-label=${ifDefined(this.label || this.placeholder)}
         .disabled=${this.disabled}
@@ -82,7 +85,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
           : this.icon
             ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
             : html`<slot name="start"></slot>`}
-        ${headlineContent}
+        ${overlineLabel}${headlineContent}
         ${this.unknown
           ? html`<div slot="supporting-text" class="unknown">
               ${this.unknownItemText ||
@@ -116,17 +119,20 @@ export class HaPickerField extends PickerMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       css`
+        ha-combo-box-item[disabled] {
+          background-color: var(
+            --mdc-text-field-disabled-fill-color,
+            whitesmoke
+          );
+        }
         ha-combo-box-item {
           position: relative;
-          background-color: var(--wa-form-control-background-color);
-          border-radius: var(--ha-border-radius-lg);
-          border-width: 1px;
-          border-style: solid;
-          border-color: var(--wa-form-control-border-color);
-          --ha-ripple-hover-color: var(--wa-form-control-border-color);
-          --ha-ripple-hover-opacity: 0;
-          --md-list-item-one-line-container-height: 48px;
-          --md-list-item-two-line-container-height: 48px;
+          background-color: var(--mdc-text-field-fill-color, whitesmoke);
+          border-radius: var(--ha-border-radius-sm);
+          border-end-end-radius: 0;
+          border-end-start-radius: 0;
+          --md-list-item-one-line-container-height: 56px;
+          --md-list-item-two-line-container-height: 56px;
           --md-list-item-top-space: 0px;
           --md-list-item-bottom-space: 0px;
           --md-list-item-leading-space: var(--ha-space-4);
@@ -137,26 +143,44 @@ export class HaPickerField extends PickerMixin(LitElement) {
           --md-focus-ring-duration: 0s;
         }
 
-        ha-combo-box-item[disabled] {
-          background-color: var(--ha-color-fill-disabled-quiet-resting);
+        /* Add Similar focus style as the text field */
+        ha-combo-box-item[disabled]:after {
+          background-color: var(
+            --mdc-text-field-disabled-line-color,
+            rgba(0, 0, 0, 0.42)
+          );
+        }
+        ha-combo-box-item:after {
+          display: block;
+          content: "";
+          position: absolute;
+          pointer-events: none;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          width: 100%;
+          background-color: var(
+            --mdc-text-field-idle-line-color,
+            rgba(0, 0, 0, 0.42)
+          );
+          transform:
+            height 180ms ease-in-out,
+            background-color 180ms ease-in-out;
         }
 
-        ha-combo-box-item:not([disabled]):hover {
-          border-color: var(--ha-color-border-neutral-normal);
-        }
-
-        :host([open]) ha-combo-box-item {
-          border-color: var(--ha-color-border-primary-normal);
+        ha-combo-box-item:focus:after {
+          height: 2px;
+          background-color: var(--mdc-theme-primary);
         }
 
         :host([unknown]) ha-combo-box-item {
-          border-color: var(--ha-color-border-warning-normal);
           background-color: var(--ha-color-fill-warning-quiet-resting);
         }
 
-        :host([invalid]) ha-combo-box-item {
-          border-color: var(--ha-color-border-danger-normal);
-          background-color: var(--ha-color-fill-danger-quiet-resting);
+        :host([invalid]) ha-combo-box-item:after {
+          height: 2px;
+          background-color: var(--mdc-theme-error, var(--error-color, #b00020));
         }
 
         .clear {
@@ -173,18 +197,12 @@ export class HaPickerField extends PickerMixin(LitElement) {
           color: var(--secondary-text-color);
         }
 
-        :host([open]) {
-          --ha-input-label-background: var(--ha-color-fill-primary-quiet-hover);
+        :host([invalid]) .placeholder {
+          color: var(--mdc-theme-error, var(--error-color, #b00020));
         }
 
-        :host([invalid]) {
-          --ha-input-label-background: var(
-            --ha-color-fill-danger-quiet-resting
-          );
-        }
-
-        :host([open][invalid]) {
-          --ha-input-label-background: var(--ha-color-fill-danger-quiet-hover);
+        .unknown {
+          color: var(--ha-color-on-warning-normal);
         }
       `,
     ];

@@ -709,9 +709,6 @@
         "entity-state-content-picker": {
           "add": "Add",
           "custom_attribute": "Custom attribute"
-        },
-        "entities-picker": {
-          "no_entities": "No entities"
         }
       },
       "target-picker": {

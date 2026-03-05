@@ -227,7 +227,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         : (this.localize?.("ui.common.search") ?? "Search"));
 
     return html`<ha-textfield
-        .placeholder=${searchLabel}
+        .label=${searchLabel}
         @blur=${this._resetSelectedItem}
         @input=${this._filterChanged}
         .iconTrailing=${this.clearable && !!this._search}

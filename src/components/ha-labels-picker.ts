@@ -20,7 +20,6 @@ import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
 import "./ha-tooltip";
-import { inputWrapperStyles } from "./input/styles";
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends LitElement {
@@ -129,7 +128,7 @@ export class HaLabelsPicker extends LitElement {
         .excludeLabels=${this.value}
         @value-changed=${this._labelChanged}
       >
-        <ha-chip-set class="input-wrapper">
+        <ha-chip-set>
           ${labels?.length
             ? repeat(
                 labels,
@@ -225,29 +224,30 @@ export class HaLabelsPicker extends LitElement {
     this.labelPicker.open();
   }
 
-  static styles = [
-    inputWrapperStyles,
-    css`
-      .placeholder {
-        color: var(--mdc-text-field-label-ink-color);
-        display: flex;
-        align-items: center;
-        height: var(--ha-space-8);
-      }
-      ha-input-chip {
-        --md-input-chip-selected-container-color: var(
-          --color,
-          var(--grey-color)
-        );
-        --ha-input-chip-selected-container-opacity: 0.5;
-        --md-input-chip-selected-outline-width: 1px;
-      }
-      label {
-        display: block;
-        margin: 0 0 8px;
-      }
-    `,
-  ];
+  static styles = css`
+    ha-chip-set {
+      background-color: var(--mdc-text-field-fill-color);
+      border-bottom: 1px solid var(--ha-color-border-neutral-normal);
+      border-top-right-radius: var(--ha-border-radius-sm);
+      border-top-left-radius: var(--ha-border-radius-sm);
+      padding: var(--ha-space-3);
+    }
+    .placeholder {
+      color: var(--mdc-text-field-label-ink-color);
+      display: flex;
+      align-items: center;
+      height: var(--ha-space-8);
+    }
+    ha-input-chip {
+      --md-input-chip-selected-container-color: var(--color, var(--grey-color));
+      --ha-input-chip-selected-container-opacity: 0.5;
+      --md-input-chip-selected-outline-width: 1px;
+    }
+    label {
+      display: block;
+      margin: 0 0 8px;
+    }
+  `;
 }
 
 declare global {

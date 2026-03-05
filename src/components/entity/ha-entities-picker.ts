@@ -7,7 +7,6 @@ import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-sortable";
-import "../input/ha-input-label";
 import "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
@@ -89,55 +88,45 @@ class HaEntitiesPicker extends LitElement {
 
     const currentEntities = this._currentEntities;
     return html`
-      ${this.label
-        ? html`<ha-input-label .label=${this.label}></ha-input-label>`
-        : nothing}
-      ${currentEntities.length === 0
-        ? html`
-            <div class="empty">
-              ${this.hass.localize(
-                "ui.components.entity.entities-picker.no_entities"
-              )}
-            </div>
-          `
-        : html`
-            <ha-sortable
-              .disabled=${!this.reorder || this.disabled}
-              handle-selector=".entity-handle"
-              @item-moved=${this._entityMoved}
-            >
-              ${currentEntities.map(
-                (entityId) => html`
-                  <div class="entity">
-                    <ha-entity-picker
-                      .curValue=${entityId}
-                      .hass=${this.hass}
-                      .includeDomains=${this.includeDomains}
-                      .excludeDomains=${this.excludeDomains}
-                      .includeEntities=${this.includeEntities}
-                      .excludeEntities=${this.excludeEntities}
-                      .includeDeviceClasses=${this.includeDeviceClasses}
-                      .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
-                      .entityFilter=${this.entityFilter}
-                      .value=${entityId}
-                      .disabled=${this.disabled}
-                      .createDomains=${this.createDomains}
-                      @value-changed=${this._entityChanged}
-                    ></ha-entity-picker>
-                    ${this.reorder
-                      ? html`
-                          <ha-svg-icon
-                            class="entity-handle"
-                            .path=${mdiDragHorizontalVariant}
-                          ></ha-svg-icon>
-                        `
-                      : nothing}
-                  </div>
-                `
-              )}
-            </ha-sortable>
-          `}
-      <div class="add">
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
+      <ha-sortable
+        .disabled=${!this.reorder || this.disabled}
+        handle-selector=".entity-handle"
+        @item-moved=${this._entityMoved}
+      >
+        <div class="list">
+          ${currentEntities.map(
+            (entityId) => html`
+              <div class="entity">
+                <ha-entity-picker
+                  .curValue=${entityId}
+                  .hass=${this.hass}
+                  .includeDomains=${this.includeDomains}
+                  .excludeDomains=${this.excludeDomains}
+                  .includeEntities=${this.includeEntities}
+                  .excludeEntities=${this.excludeEntities}
+                  .includeDeviceClasses=${this.includeDeviceClasses}
+                  .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
+                  .entityFilter=${this.entityFilter}
+                  .value=${entityId}
+                  .disabled=${this.disabled}
+                  .createDomains=${this.createDomains}
+                  @value-changed=${this._entityChanged}
+                ></ha-entity-picker>
+                ${this.reorder
+                  ? html`
+                      <ha-svg-icon
+                        class="entity-handle"
+                        .path=${mdiDragHorizontalVariant}
+                      ></ha-svg-icon>
+                    `
+                  : nothing}
+              </div>
+            `
+          )}
+        </div>
+      </ha-sortable>
+      <div>
         <ha-entity-picker
           .hass=${this.hass}
           .includeDomains=${this.includeDomains}
@@ -156,7 +145,7 @@ class HaEntitiesPicker extends LitElement {
           .createDomains=${this.createDomains}
           .required=${this.required && !currentEntities.length}
           @value-changed=${this._addEntity}
-          add-button
+          .addButton=${currentEntities.length > 0}
         ></ha-entity-picker>
       </div>
     `;
@@ -236,26 +225,8 @@ class HaEntitiesPicker extends LitElement {
   }
 
   static override styles = css`
-    ha-sortable,
-    .empty {
-      display: flex;
-      flex-direction: column;
-      padding: var(--ha-space-2) var(--ha-space-3);
-      gap: var(--ha-space-2);
-      margin-bottom: var(--ha-space-2);
-      border-width: 1px;
-      border-style: solid;
-      border-color: var(--wa-form-control-border-color);
-      border-radius: var(--ha-border-radius-lg);
-      background-color: var(--wa-form-control-background-color);
-      position: relative;
-      min-height: 48px;
-    }
-    .empty {
-      color: var(--ha-color-text-disabled);
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    div {
+      margin-top: 8px;
     }
     label {
       display: block;
@@ -268,7 +239,6 @@ class HaEntitiesPicker extends LitElement {
     }
     .entity ha-entity-picker {
       flex: 1;
-      max-width: 100%;
     }
     .entity-handle {
       padding: 8px;
