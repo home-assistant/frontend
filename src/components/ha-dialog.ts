@@ -10,7 +10,9 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { withViewTransition } from "../common/util/view-transition";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -19,6 +21,8 @@ import "./ha-dialog-header";
 import "./ha-icon-button";
 
 export type DialogWidth = "small" | "medium" | "large" | "full";
+
+type DialogHideEvent = CustomEvent<{ source?: Element }>;
 
 /**
  * Home Assistant dialog component
@@ -50,7 +54,12 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
  * @cssprop --ha-dialog-show-duration - Show animation duration.
  * @cssprop --ha-dialog-hide-duration - Hide animation duration.
  * @cssprop --ha-dialog-surface-background - Dialog background color.
+ * @cssprop --ha-dialog-surface-backdrop-filter - Dialog backdrop filter.
+ * @cssprop --dialog-box-shadow - Dialog box shadow.
  * @cssprop --ha-dialog-border-radius - Border radius of the dialog surface.
+ * @cssprop --ha-dialog-scrim-backdrop-filter - Dialog scrim backdrop filter.
+ * @cssprop --dialog-backdrop-filter - Dialog scrim backdrop filter (legacy).
+ * @cssprop --mdc-dialog-scrim-color - Dialog scrim color (legacy).
  * @cssprop --dialog-surface-margin-top - Top margin for the dialog surface.
  *
  * @attr {boolean} open - Controls the dialog open state.
@@ -120,6 +129,14 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
   private _escapePressed = false;
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener(
+      "dialog-set-fullscreen",
+      this._handleFullscreenChanged as EventListener
+    );
+  }
+
   protected get scrollableElement(): HTMLElement | null {
     return this.bodyContainer;
   }
@@ -187,7 +204,10 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     `;
   }
 
-  private _handleShow = async () => {
+  private _handleShow = async (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     this._open = true;
     fireEvent(this, "opened");
 
@@ -213,20 +233,44 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
     });
   };
 
-  private _handleAfterShow = () => {
+  private _handleAfterShow = (ev: Event) => {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
     fireEvent(this, "after-show");
   };
 
-  private _handleAfterHide = (ev: CustomEvent<{ source: Element }>) => {
+  private _handleAfterHide = (ev: DialogHideEvent) => {
     if (ev.eventPhase === Event.AT_TARGET) {
       this._open = false;
+      this._setFullscreen(false);
       fireEvent(this, "closed");
     }
   };
 
   public disconnectedCallback(): void {
+    this.removeEventListener(
+      "dialog-set-fullscreen",
+      this._handleFullscreenChanged as EventListener
+    );
+    this._setFullscreen(false);
     super.disconnectedCallback();
     this._open = false;
+  }
+
+  private _handleFullscreenChanged(ev: HASSDomEvent<boolean>): void {
+    if (!this._open) {
+      this._setFullscreen(ev.detail);
+      return;
+    }
+
+    withViewTransition(() => {
+      this._setFullscreen(ev.detail);
+    });
+  }
+
+  private _setFullscreen(fullscreen: boolean): void {
+    this.toggleAttribute("fullscreen", fullscreen);
   }
 
   @eventOptions({ passive: true })
@@ -237,17 +281,21 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   private _handleKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Escape") {
       this._escapePressed = true;
+      if (this.preventScrimClose) {
+        ev.preventDefault();
+      }
+      ev.stopPropagation();
+      (ev.currentTarget as WaDialog).open = false;
     }
   }
 
-  private _handleHide(ev: CustomEvent<{ source: Element }>) {
-    if (
-      this.preventScrimClose &&
-      this._escapePressed &&
-      ev.detail.source === (ev.target as WaDialog).dialog
-    ) {
+  private _handleHide(ev: DialogHideEvent) {
+    const sourceIsDialog = ev.detail?.source === (ev.target as WaDialog).dialog;
+
+    if (this.preventScrimClose && this._escapePressed && sourceIsDialog) {
       ev.preventDefault();
     }
+
     this._escapePressed = false;
   }
 
@@ -265,10 +313,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           --spacing: var(--dialog-content-padding, var(--ha-space-6));
           --show-duration: var(--ha-dialog-show-duration, 200ms);
           --hide-duration: var(--ha-dialog-hide-duration, 200ms);
-          --ha-dialog-surface-background: var(
-            --card-background-color,
-            var(--ha-color-surface-default)
-          );
           --wa-color-surface-raised: var(
             --ha-dialog-surface-background,
             var(--card-background-color, var(--ha-color-surface-default))
@@ -294,11 +338,34 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           --width: min(var(--ha-dialog-width-lg, 1024px), var(--full-width));
         }
 
-        :host([width="full"]) wa-dialog {
+        :host([width="full"]) wa-dialog,
+        :host([fullscreen]) wa-dialog {
           --width: var(--full-width);
         }
 
+        :host([fullscreen]) wa-dialog::part(dialog) {
+          min-height: var(--safe-height);
+          max-height: var(--safe-height);
+          margin-top: 0;
+          transform: none;
+        }
+
+        :host([fullscreen]) .content-wrapper {
+          overflow: hidden;
+        }
+
+        :host([fullscreen]) .body {
+          overflow: hidden;
+          padding: 0;
+        }
+
         wa-dialog::part(dialog) {
+          -webkit-backdrop-filter: var(
+            --ha-dialog-surface-backdrop-filter,
+            none
+          );
+          backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
+          box-shadow: var(--dialog-box-shadow, var(--wa-shadow-l));
           color: var(--primary-text-color);
           min-width: var(--width, var(--full-width));
           max-width: var(--width, var(--full-width));
@@ -328,32 +395,44 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
           overflow: hidden;
         }
 
+        wa-dialog::part(dialog)::backdrop {
+          -webkit-backdrop-filter: var(
+            --ha-dialog-scrim-backdrop-filter,
+            var(--dialog-backdrop-filter, none)
+          );
+          backdrop-filter: var(
+            --ha-dialog-scrim-backdrop-filter,
+            var(--dialog-backdrop-filter, none)
+          );
+          background-color: var(--mdc-dialog-scrim-color, none);
+        }
+
         @media all and (max-width: 450px), all and (max-height: 500px) {
           :host([type="standard"]) {
             --ha-dialog-border-radius: 0;
+          }
 
-            wa-dialog {
-              /* Make the container fill the whole screen width and not the safe width */
-              --full-width: var(--ha-dialog-width-full, 100vw);
-              --width: var(--full-width);
-            }
+          :host([type="standard"]) wa-dialog {
+            /* Make the container fill the whole screen width and not the safe width */
+            --full-width: var(--ha-dialog-width-full, 100vw);
+            --width: var(--full-width);
+          }
 
-            wa-dialog::part(dialog) {
-              /* Make the dialog fill the whole screen height and not the safe height */
-              min-height: var(--ha-dialog-min-height, 100vh);
-              min-height: var(--ha-dialog-min-height, 100dvh);
-              max-height: var(--ha-dialog-max-height, 100vh);
-              max-height: var(--ha-dialog-max-height, 100dvh);
-              margin-top: 0;
-              margin-bottom: 0;
-              /* Use safe area as padding instead of the container size */
-              padding-top: var(--safe-area-inset-top);
-              padding-bottom: var(--safe-area-inset-bottom);
-              padding-left: var(--safe-area-inset-left);
-              padding-right: var(--safe-area-inset-right);
-              /* Reset the transform to center the dialog */
-              transform: none;
-            }
+          :host([type="standard"]) wa-dialog::part(dialog) {
+            /* Make the dialog fill the whole screen height and not the safe height */
+            min-height: var(--ha-dialog-min-height, 100vh);
+            min-height: var(--ha-dialog-min-height, 100dvh);
+            max-height: var(--ha-dialog-max-height, 100vh);
+            max-height: var(--ha-dialog-max-height, 100dvh);
+            margin-top: 0;
+            margin-bottom: 0;
+            /* Use safe area as padding instead of the container size */
+            padding-top: var(--safe-area-inset-top);
+            padding-bottom: var(--safe-area-inset-bottom);
+            padding-left: var(--safe-area-inset-left);
+            padding-right: var(--safe-area-inset-right);
+            /* Reset the transform to center the dialog */
+            transform: none;
           }
         }
 
@@ -440,6 +519,7 @@ declare global {
   }
 
   interface HASSDomEvents {
+    "dialog-set-fullscreen": boolean;
     opened: undefined;
     "after-show": undefined;
     closed: undefined;

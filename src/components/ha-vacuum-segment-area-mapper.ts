@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiArrowRightThin } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import type { Segment } from "../data/vacuum";
 import { getVacuumSegments } from "../data/vacuum";
@@ -8,8 +9,7 @@ import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-area-picker";
-import "./ha-md-list";
-import "./ha-md-list-item";
+import "./ha-svg-icon";
 
 type AreaSegmentMapping = Record<string, string[]>; // area ID -> segment IDs
 
@@ -80,9 +80,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
       ${Object.entries(groupedSegments).map(
         ([groupName, segments]) => html`
           ${groupName ? html`<h2>${groupName}</h2>` : nothing}
-          <ha-md-list>
-            ${segments.map((segment) => this._renderSegment(segment))}
-          </ha-md-list>
+          ${segments.map((segment) => this._renderSegment(segment))}
         `
       )}
     `;
@@ -106,10 +104,10 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     const mappedAreas = this._getSegmentAreas(segment.id);
 
     return html`
-      <ha-md-list-item>
-        <span slot="headline">${segment.name}</span>
+      <div class="segment-row">
+        <span class="segment-name">${segment.name}</span>
+        <ha-svg-icon class="arrow" .path=${mdiArrowRightThin}></ha-svg-icon>
         <ha-area-picker
-          slot="end"
           .hass=${this.hass}
           .value=${mappedAreas}
           .label=${this.hass.localize(
@@ -118,7 +116,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
           @value-changed=${this._handleAreaChanged}
           data-segment-id=${segment.id}
         ></ha-area-picker>
-      </ha-md-list-item>
+      </div>
     `;
   }
 
@@ -179,8 +177,36 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
         display: block;
       }
 
-      ha-area-picker {
+      .segment-row {
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-4);
+        padding: var(--ha-space-2) var(--ha-space-4);
+      }
+
+      .segment-name {
         flex: 1;
+        font: var(--ha-font-body-l);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .arrow {
+        flex-shrink: 0;
+        color: var(--secondary-text-color);
+      }
+
+      @media (max-width: 600px) {
+        .arrow {
+          display: none;
+        }
+      }
+
+      ha-area-picker {
+        flex: 2;
+        min-width: 0;
+        max-width: 300px;
       }
 
       h2 {

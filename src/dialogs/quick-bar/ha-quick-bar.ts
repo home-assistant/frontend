@@ -288,7 +288,7 @@ export class QuickBar extends LitElement {
       <ha-combo-box-item
         tabindex="-1"
         type="button"
-        style="--mdc-icon-size: 32px;"
+        style="--mdc-icon-size: 24px;"
       >
         ${"stateObj" in item && item.stateObj
           ? html`
@@ -302,6 +302,7 @@ export class QuickBar extends LitElement {
             ? html`
                 <ha-domain-icon
                   slot="start"
+                  style="margin: var(--ha-space-1);"
                   .hass=${this.hass}
                   .domain=${item.domain}
                   brand-fallback
@@ -319,7 +320,11 @@ export class QuickBar extends LitElement {
                   />
                 `
               : item.icon
-                ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+                ? html`<ha-icon
+                    style="margin: var(--ha-space-1);"
+                    slot="start"
+                    .icon=${item.icon}
+                  ></ha-icon>`
                 : "iconColor" in item && item.iconColor
                   ? html`
                       <div
@@ -333,7 +338,11 @@ export class QuickBar extends LitElement {
                       </div>
                     `
                   : html`
-                      <ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>
+                      <ha-svg-icon
+                        style="margin: var(--ha-space-1);"
+                        slot="start"
+                        .path=${iconPath}
+                      ></ha-svg-icon>
                     `}
         <span slot="headline">${item.primary}</span>
         ${item.secondary
@@ -846,6 +855,7 @@ export class QuickBar extends LitElement {
           );
           --dialog-content-padding: 0;
           --safe-area-inset-bottom: 0px;
+          --ha-dialog-show-duration: var(--ha-animation-duration-instant);
         }
 
         ha-tip {

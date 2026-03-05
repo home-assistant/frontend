@@ -159,6 +159,9 @@ export interface GasSourceTypeEnergyPreference {
   // kWh/volume meter
   stat_energy_from: string;
 
+  // Flow rate (m³/h, L/min, etc.)
+  stat_rate?: string;
+
   // $ meter
   stat_cost: string | null;
 
@@ -173,6 +176,9 @@ export interface WaterSourceTypeEnergyPreference {
 
   // volume meter
   stat_energy_from: string;
+
+  // Flow rate (L/min, gal/min, m³/h, etc.)
+  stat_rate?: string;
 
   // $ meter
   stat_cost: string | null;
@@ -368,6 +374,9 @@ export const getReferencedStatisticIdsPower = (
 
   for (const source of prefs.energy_sources) {
     if (source.type === "gas" || source.type === "water") {
+      if (source.stat_rate) {
+        statIDs.push(source.stat_rate);
+      }
       continue;
     }
 
@@ -389,6 +398,7 @@ export const getReferencedStatisticIdsPower = (
     }
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
+  statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
@@ -1389,6 +1399,80 @@ export const calculateSolarConsumedGauge = (
     return (solarConsumed / totalProduction) * 100;
   }
   return undefined;
+};
+
+/**
+ * Conversion factors from each flow rate unit to L/min.
+ * All HA-supported UnitOfVolumeFlowRate values are covered.
+ *
+ *   m³/h   → 1000/60 = 16.6667 L/min
+ *   m³/min → 1000     L/min
+ *   m³/s   → 60000    L/min
+ *   ft³/min→ 28.3168  L/min
+ *   L/h    → 1/60     L/min
+ *   L/min  → 1        L/min
+ *   L/s    → 60       L/min
+ *   gal/h  → 3.78541/60 L/min
+ *   gal/min→ 3.78541  L/min
+ *   gal/d  → 3.78541/1440 L/min
+ *   mL/s   → 0.06     L/min
+ */
+
+/** Exact number of liters in one US gallon */
+const LITERS_PER_GALLON = 3.785411784;
+
+const FLOW_RATE_TO_LMIN: Record<string, number> = {
+  "m³/h": 1000 / 60,
+  "m³/min": 1000,
+  "m³/s": 60000,
+  "ft³/min": 28.316846592,
+  "L/h": 1 / 60,
+  "L/min": 1,
+  "L/s": 60,
+  "gal/h": LITERS_PER_GALLON / 60,
+  "gal/min": LITERS_PER_GALLON,
+  "gal/d": LITERS_PER_GALLON / 1440,
+  "mL/s": 60 / 1000,
+};
+
+/**
+ * Get current flow rate from an entity state, converted to L/min.
+ * @returns Flow rate in L/min, or undefined if unavailable/invalid.
+ */
+export const getFlowRateFromState = (
+  stateObj?: HassEntity
+): number | undefined => {
+  if (!stateObj) {
+    return undefined;
+  }
+  const value = parseFloat(stateObj.state);
+  if (isNaN(value)) {
+    return undefined;
+  }
+  const unit = stateObj.attributes.unit_of_measurement;
+  const factor = unit ? FLOW_RATE_TO_LMIN[unit] : undefined;
+  if (factor === undefined) {
+    // Unknown unit – return raw value as-is (best effort)
+    return value;
+  }
+  return value * factor;
+};
+
+/**
+ * Format a flow rate value (in L/min) to a human-readable string using
+ * the preferred unit system: metric → L/min, imperial → gal/min.
+ */
+export const formatFlowRateShort = (
+  hassLocale: HomeAssistant["locale"],
+  lengthUnitSystem: string,
+  litersPerMin: number
+): string => {
+  const isMetric = lengthUnitSystem === "km";
+  if (isMetric) {
+    return `${formatNumber(litersPerMin, hassLocale, { maximumFractionDigits: 1 })} L/min`;
+  }
+  const galPerMin = litersPerMin / LITERS_PER_GALLON;
+  return `${formatNumber(galPerMin, hassLocale, { maximumFractionDigits: 1 })} gal/min`;
 };
 
 /**
