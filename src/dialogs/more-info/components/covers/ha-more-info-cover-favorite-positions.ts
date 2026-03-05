@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-control-button";
 import type { CoverEntity } from "../../../../data/cover";
 import {
@@ -29,6 +28,17 @@ import "../ha-more-info-favorites";
 import type { HaMoreInfoFavorites } from "../ha-more-info-favorites";
 
 type FavoriteKind = "position" | "tilt";
+
+type FavoriteKey =
+  | "set"
+  | "edit"
+  | "delete"
+  | "delete_confirm_title"
+  | "delete_confirm_text"
+  | "delete_confirm_action"
+  | "add"
+  | "edit_title"
+  | "add_title";
 
 const favoriteKey = (
   kind: FavoriteKind
@@ -73,11 +83,11 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
   private _localizeFavorite(
     kind: FavoriteKind,
-    key: string,
+    key: FavoriteKey,
     values?: Record<string, string | number>
   ): string {
     return this.hass.localize(
-      `ui.dialogs.more_info_control.cover.${favoriteKey(kind)}.${key}` as LocalizeKeys,
+      `ui.dialogs.more_info_control.cover.${favoriteKey(kind)}.${key}`,
       values
     );
   }
