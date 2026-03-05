@@ -172,7 +172,7 @@ class HassSubpage extends LitElement {
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
-        .not-scrollable {
+        .content.not-scrollable {
           overflow: hidden;
           display: flex;
           flex-direction: column;
