@@ -721,6 +721,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _handlePickerClosed() {
+    if (this._replaceTarget) {
+      this._selectedSection = undefined;
+    }
     this._replaceTarget = undefined;
     this._replaceTargetAnchor = undefined;
   }
