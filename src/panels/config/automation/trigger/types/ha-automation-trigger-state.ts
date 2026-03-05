@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
@@ -60,6 +60,10 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public trigger!: StateTrigger;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @state() private _fromMatchOverride?: "is" | "is_not";
+
+  @state() private _toMatchOverride?: "is" | "is_not";
 
   public static get defaultConfig(): StateTrigger {
     return { trigger: "state", entity_id: [] };
@@ -272,11 +276,17 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
     const hasNotFrom = this.trigger.not_from !== undefined;
     const hasNotTo = this.trigger.not_to !== undefined;
-    data.from_match = hasNotFrom ? "is_not" : "is";
-    data.to_match = hasNotTo ? "is_not" : "is";
 
-    const fromSource = hasNotFrom ? this.trigger.not_from : this.trigger.from;
-    const toSource = hasNotTo ? this.trigger.not_to : this.trigger.to;
+    const fromMatch = this._fromMatchOverride ?? (hasNotFrom ? "is_not" : "is");
+    const toMatch = this._toMatchOverride ?? (hasNotTo ? "is_not" : "is");
+
+    data.from_match = fromMatch;
+    data.to_match = toMatch;
+
+    const fromSource =
+      fromMatch === "is_not" ? this.trigger.not_from : this.trigger.from;
+    const toSource =
+      toMatch === "is_not" ? this.trigger.not_to : this.trigger.to;
 
     data.from = this._normalizeStates(fromSource, data.attribute);
     data.to = this._normalizeStates(toSource, data.attribute);
@@ -305,6 +315,10 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     const fromMatch = newTrigger.from_match === "is_not" ? "is_not" : "is";
     const toMatch = newTrigger.to_match === "is_not" ? "is_not" : "is";
 
+    // Keep the selected mode in the UI even if no values are selected yet.
+    this._fromMatchOverride = fromMatch;
+    this._toMatchOverride = toMatch;
+
     // Sanitize values based on match mode
     const sanitizedFrom = this._sanitizeForMatch(
       newTrigger.from,
@@ -323,6 +337,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
     this._applyMatchAssignment(newTrigger, "from", fromMatch, sanitizedFrom);
     this._applyMatchAssignment(newTrigger, "to", toMatch, sanitizedTo);
+
+    // Once a persisted key exists, infer mode from it and clear UI override.
+    if (newTrigger.from !== undefined || newTrigger.not_from !== undefined) {
+      this._fromMatchOverride = undefined;
+    }
+    if (newTrigger.to !== undefined || newTrigger.not_to !== undefined) {
+      this._toMatchOverride = undefined;
+    }
 
     Object.keys(newTrigger).forEach((key) => {
       const val = newTrigger[key];
