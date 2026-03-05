@@ -1,25 +1,18 @@
-import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-icon-button-prev";
-import "../../../../../components/ha-settings-row";
-import "../../../../../components/ha-wa-dialog";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
-import {
-  addHassioDockerRegistry,
-  fetchHassioDockerRegistries,
-  removeHassioDockerRegistry,
-} from "../../../../../data/hassio/docker";
+import { addHassioDockerRegistry } from "../../../../../data/hassio/docker";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { RegistryDialogParams } from "./show-dialog-registries";
 
 const SCHEMA = [
   {
@@ -43,10 +36,7 @@ const SCHEMA = [
 class AppsRegistriesDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _registries?: {
-    registry: string;
-    username: string;
-  }[];
+  @state() private _dialogParams?: RegistryDialogParams;
 
   @state() private _input: {
     registry?: string;
@@ -56,115 +46,12 @@ class AppsRegistriesDialog extends LitElement {
 
   @state() private _open = false;
 
-  @state() private _addingRegistry = false;
+  @state() private _submitting = false;
 
-  protected render(): TemplateResult {
-    return html`
-      <ha-wa-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        @closed=${this._dialogClosed}
-        header-title=${this._addingRegistry
-          ? this.hass.localize(
-              "ui.panel.config.apps.dialog.registries.title_add"
-            )
-          : this.hass.localize(
-              "ui.panel.config.apps.dialog.registries.title_manage"
-            )}
-      >
-        ${this._addingRegistry
-          ? html`
-              <ha-icon-button-prev
-                slot="headerNavigationIcon"
-                @click=${this._stopAddingRegistry}
-              ></ha-icon-button-prev>
-            `
-          : ""}
-        ${this._addingRegistry
-          ? html`
-              <ha-form
-                autofocus
-                .data=${this._input}
-                .schema=${SCHEMA}
-                @value-changed=${this._valueChanged}
-                .computeLabel=${this._computeLabel}
-              ></ha-form>
-            `
-          : html`${this._registries?.length
-              ? this._registries.map(
-                  (entry) => html`
-                    <ha-settings-row class="registry">
-                      <span slot="heading"> ${entry.registry} </span>
-                      <span slot="description">
-                        ${this.hass.localize(
-                          "ui.panel.config.apps.dialog.registries.username"
-                        )}:
-                        ${entry.username}
-                      </span>
-                      <ha-icon-button
-                        .entry=${entry}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.apps.dialog.registries.remove"
-                        )}
-                        .path=${mdiDelete}
-                        @click=${this._removeRegistry}
-                      ></ha-icon-button>
-                    </ha-settings-row>
-                  `
-                )
-              : html`
-                  <ha-alert>
-                    ${this.hass.localize(
-                      "ui.panel.config.apps.dialog.registries.no_registries"
-                    )}
-                  </ha-alert>
-                `}`}
-        <ha-dialog-footer slot="footer">
-          ${this._addingRegistry
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  ?disabled=${Boolean(
-                    !this._input.registry ||
-                    !this._input.username ||
-                    !this._input.password
-                  )}
-                  @click=${this._addNewRegistry}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.apps.dialog.registries.add_registry"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._addRegistry}
-                  autofocus
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.apps.dialog.registries.add_new_registry"
-                  )}
-                </ha-button>
-              `}
-        </ha-dialog-footer>
-      </ha-wa-dialog>
-    `;
-  }
-
-  private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
-    this.hass.localize(
-      `ui.panel.config.apps.dialog.registries.${schema.name}` as any
-    );
-
-  private _valueChanged(ev: CustomEvent) {
-    this._input = ev.detail.value;
-  }
-
-  public async showDialog(): Promise<void> {
+  public async showDialog(dialogParams: RegistryDialogParams): Promise<void> {
+    this._dialogParams = dialogParams;
     this._open = true;
     this._input = {};
-    await this._loadRegistries();
     await this.updateComplete;
   }
 
@@ -173,83 +60,87 @@ class AppsRegistriesDialog extends LitElement {
   }
 
   private _dialogClosed(): void {
+    this._dialogParams = undefined;
     this._open = false;
-    this._stopAddingRegistry();
+    this._input = {};
+    this._submitting = false;
     fireEvent(this, "dialog-closed");
   }
 
-  private async _loadRegistries(): Promise<void> {
-    const registries = await fetchHassioDockerRegistries(this.hass);
-    this._registries = Object.keys(registries!.registries).map((key) => ({
-      registry: key,
-      username: registries.registries[key].username,
-    }));
+  protected render(): TemplateResult {
+    return html`
+      <ha-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
+        header-title=${this.hass.localize(
+          "ui.panel.config.apps.registries.add_title"
+        )}
+      >
+        <ha-form
+          autofocus
+          .data=${this._input}
+          .schema=${SCHEMA}
+          .disabled=${this._submitting}
+          @value-changed=${this._valueChanged}
+          .computeLabel=${this._computeLabel}
+        ></ha-form>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            @click=${this.closeDialog}
+            appearance="plain"
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            ?disabled=${!this._input.registry ||
+            !this._input.username ||
+            !this._input.password}
+            .loading=${this._submitting}
+            @click=${this._addRegistry}
+          >
+            ${this.hass.localize("ui.panel.config.apps.registries.add")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-dialog>
+    `;
   }
 
-  private _addRegistry(): void {
-    this._addingRegistry = true;
+  private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
+    this.hass.localize(`ui.panel.config.apps.registries.${schema.name}` as any);
+
+  private _valueChanged(ev: CustomEvent) {
+    this._input = ev.detail.value;
   }
 
-  private _stopAddingRegistry(): void {
-    this._addingRegistry = false;
-    this._input = {};
-  }
-
-  private async _addNewRegistry(): Promise<void> {
+  private async _addRegistry(): Promise<void> {
     const data = {};
     data[this._input.registry!] = {
       username: this._input.username,
       password: this._input.password,
     };
 
+    this._submitting = true;
     try {
       await addHassioDockerRegistry(this.hass, data);
-      await this._loadRegistries();
-      this._stopAddingRegistry();
+      this._dialogParams?.registryAdded?.();
+      this.closeDialog();
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.apps.dialog.registries.failed_to_add"
+          "ui.panel.config.apps.registries.failed_to_add"
         ),
         text: extractApiErrorMessage(err),
       });
-    }
-  }
-
-  private async _removeRegistry(ev: Event): Promise<void> {
-    const entry = (ev.currentTarget as any).entry;
-
-    try {
-      await removeHassioDockerRegistry(this.hass, entry.registry);
-      await this._loadRegistries();
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.apps.dialog.registries.failed_to_remove"
-        ),
-        text: extractApiErrorMessage(err),
-      });
+    } finally {
+      this._submitting = false;
     }
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      haStyleDialog,
-      css`
-        .registry {
-          border: 1px solid var(--divider-color);
-          border-radius: var(--ha-border-radius-sm);
-          margin-top: 4px;
-        }
-        ha-icon-button {
-          color: var(--error-color);
-          margin-right: -10px;
-          margin-inline-end: -10px;
-          margin-inline-start: initial;
-        }
-      `,
-    ];
+    return [haStyle, haStyleDialog];
   }
 }
 

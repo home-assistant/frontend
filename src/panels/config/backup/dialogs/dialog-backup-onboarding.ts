@@ -10,7 +10,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
@@ -209,11 +209,10 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     const isFirstStep = this._step === this._firstStep;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._stepTitle}
-        width="medium"
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
@@ -260,7 +259,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               </ha-dialog-footer>
             `
           : nothing}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -544,7 +543,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
           --ha-dialog-max-height: min(605px, 100% - 48px);
         }

@@ -1,12 +1,12 @@
 import { mdiMinusThick, mdiPlusThick } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-base-time-input";
-import type { TimeChangedEvent } from "./ha-base-time-input";
-import "./ha-button-toggle-group";
 import type { ValueChangedEvent } from "../types";
+import "./ha-base-time-input";
+import type { HaBaseTimeInput, TimeChangedEvent } from "./ha-base-time-input";
+import "./ha-button-toggle-group";
 
 export interface HaDurationData {
   days?: number;
@@ -19,7 +19,7 @@ export interface HaDurationData {
 const FIELDS = ["milliseconds", "seconds", "minutes", "hours", "days"];
 
 @customElement("ha-duration-input")
-class HaDurationInput extends LitElement {
+export class HaDurationInput extends LitElement {
   @property({ attribute: false }) public data?: HaDurationData;
 
   @property() public label?: string;
@@ -37,9 +37,23 @@ class HaDurationInput extends LitElement {
   @property({ attribute: "allow-negative", type: Boolean })
   public allowNegative = false;
 
+  @property({ attribute: "enable-second", type: Boolean })
+  public enableSecond = true;
+
   @property({ type: Boolean }) public disabled = false;
 
+  @query("ha-base-time-input", true) private _input?: HaBaseTimeInput;
+
   private _toggleNegative = false;
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    return this._input?.reportValidity() ?? true;
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -65,7 +79,7 @@ class HaDurationInput extends LitElement {
           .autoValidate=${this.required}
           .disabled=${this.disabled}
           errorMessage="Required"
-          enable-second
+          .enableSecond=${this.enableSecond}
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
           format="24"
@@ -162,9 +176,9 @@ class HaDurationInput extends LitElement {
     if (value) {
       value.hours ||= 0;
       value.minutes ||= 0;
-      value.seconds ||= 0;
 
       if ("days" in value) value.days ||= 0;
+      if ("seconds" in value) value.seconds ||= 0;
       if ("milliseconds" in value) value.milliseconds ||= 0;
 
       if (this.allowNegative) {
@@ -183,8 +197,11 @@ class HaDurationInput extends LitElement {
         value.milliseconds %= 1000;
       }
 
-      if (value.seconds > 59) {
-        value.minutes += Math.floor(value.seconds / 60);
+      if (!this.enableSecond && !value.seconds) {
+        // @ts-ignore
+        delete value.seconds;
+      } else if (this.enableSecond && value.seconds > 59) {
+        value.minutes = (value.minutes ?? 0) + Math.floor(value.seconds / 60);
         value.seconds %= 60;
       }
 

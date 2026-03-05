@@ -15,7 +15,7 @@ import "../ha-list";
 import "../ha-list-item";
 import "../ha-sortable";
 import "../ha-svg-icon";
-import "../ha-wa-dialog";
+import "../ha-dialog";
 import type {
   DataTableColumnContainer,
   DataTableColumnData,
@@ -32,11 +32,13 @@ export class DialogDataTableSettings extends LitElement {
 
   @state() private _hiddenColumns?: string[];
 
+  private _lastFixedKeys: string[] = [];
+
   @state() private _open = false;
 
   public showDialog(params: DataTableSettingsDialogParams) {
     this._params = params;
-    this._columnOrder = params.columnOrder;
+    this._columnOrder = this._preserveLastFixed(params.columnOrder);
     this._hiddenColumns = params.hiddenColumns;
     this._open = true;
   }
@@ -50,6 +52,29 @@ export class DialogDataTableSettings extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _lastFixedCount(): number {
+    const lastFixedKeys = Object.keys(this._params!.columns).filter(
+      (col) => this._params!.columns[col].lastFixed
+    );
+    if (lastFixedKeys.length) {
+      this._lastFixedKeys = lastFixedKeys;
+    }
+    return lastFixedKeys.length;
+  }
+
+  private _preserveLastFixed(columnOrder) {
+    let strippedColumnOrder;
+    const lastFixedCount = this._lastFixedCount();
+    if (lastFixedCount && columnOrder) {
+      strippedColumnOrder = [...columnOrder];
+      strippedColumnOrder.splice(
+        columnOrder.length - lastFixedCount,
+        lastFixedCount
+      );
+    }
+    return strippedColumnOrder;
+  }
+
   private _sortedColumns = memoizeOne(
     (
       columns: DataTableColumnContainer,
@@ -57,7 +82,7 @@ export class DialogDataTableSettings extends LitElement {
       hiddenColumns: string[] | undefined
     ) =>
       Object.keys(columns)
-        .filter((col) => !columns[col].hidden)
+        .filter((col) => !columns[col].hidden && !columns[col].lastFixed)
         .sort((a, b) => {
           const orderA = columnOrder?.indexOf(a) ?? -1;
           const orderB = columnOrder?.indexOf(b) ?? -1;
@@ -101,7 +126,7 @@ export class DialogDataTableSettings extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${localize("ui.components.data-table.settings.header")}
@@ -171,7 +196,7 @@ export class DialogDataTableSettings extends LitElement {
             ${localize("ui.components.data-table.settings.done")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -195,7 +220,8 @@ export class DialogDataTableSettings extends LitElement {
 
     this._columnOrder = columnOrder;
 
-    this._params!.onUpdate(this._columnOrder, this._hiddenColumns);
+    const reportedOrder = columnOrder.concat(this._lastFixedKeys);
+    this._params!.onUpdate(reportedOrder, this._hiddenColumns);
   }
 
   private _toggle(ev) {
@@ -276,7 +302,8 @@ export class DialogDataTableSettings extends LitElement {
 
     this._hiddenColumns = hidden;
 
-    this._params!.onUpdate(this._columnOrder, this._hiddenColumns);
+    const reportedOrder = this._columnOrder.concat(this._lastFixedKeys);
+    this._params!.onUpdate(reportedOrder, this._hiddenColumns);
   }
 
   private _reset() {
@@ -291,7 +318,7 @@ export class DialogDataTableSettings extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-z-index: 10;
           --dialog-content-padding: 0 8px;
         }

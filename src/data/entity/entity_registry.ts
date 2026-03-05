@@ -9,6 +9,7 @@ import { debounce } from "../../common/util/debounce";
 import type { HomeAssistant } from "../../types";
 import type { LightColor } from "../light";
 import type { RegistryEntry } from "../registry";
+import type { Segment } from "../vacuum";
 
 type EntityCategory = "config" | "diagnostic";
 
@@ -120,6 +121,11 @@ export interface SwitchAsXEntityOptions {
   invert: boolean;
 }
 
+export interface VacuumEntityOptions {
+  area_mapping?: Record<string, string[]>;
+  last_seen_segments?: Segment[];
+}
+
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
@@ -128,6 +134,7 @@ export interface EntityRegistryOptions {
   lock?: LockEntityOptions;
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
+  vacuum?: VacuumEntityOptions;
   switch_as_x?: SwitchAsXEntityOptions;
   conversation?: Record<string, unknown>;
   "cloud.alexa"?: Record<string, unknown>;
@@ -150,7 +157,8 @@ export interface EntityRegistryEntryUpdateParams {
     | AlarmControlPanelEntityOptions
     | CalendarEntityOptions
     | WeatherEntityOptions
-    | LightEntityOptions;
+    | LightEntityOptions
+    | VacuumEntityOptions;
   aliases?: string[];
   labels?: string[];
   categories?: Record<string, string | null>;

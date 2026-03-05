@@ -6,7 +6,7 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiHelpCircle,
+  mdiHelpCircleOutline,
   mdiInformationOutline,
   mdiMenuDown,
   mdiOpenInNew,
@@ -345,12 +345,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           `,
         },
         actions: {
+          lastFixed: true,
           title: "",
           label: this.hass.localize("ui.panel.config.generic.headers.actions"),
           type: "icon-button",
           showNarrow: true,
-          moveable: false,
-          hideable: false,
           template: (automation) => html`
             <ha-icon-button
               .automation=${automation}
@@ -479,7 +478,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         <ha-icon-button
           slot="toolbar-icon"
           .label=${this.hass.localize("ui.common.help")}
-          .path=${mdiHelpCircle}
+          .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-filter-floor-areas

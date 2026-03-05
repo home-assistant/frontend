@@ -10,7 +10,7 @@ import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
 import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
@@ -23,6 +23,8 @@ class DialogBox extends LitElement {
   @state() private _open = false;
 
   @state() private _closeState?: "canceled" | "confirmed";
+
+  @state() private _loading = false;
 
   @query("ha-textfield") private _textField?: HaTextField;
 
@@ -66,7 +68,7 @@ class DialogBox extends LitElement {
         this.hass.localize("ui.dialogs.generic.default_confirmation_title"));
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
@@ -115,6 +117,7 @@ class DialogBox extends LitElement {
                     : "text"}
                   .min=${this._params.inputMin}
                   .max=${this._params.inputMax}
+                  .disabled=${this._loading}
                 ></ha-textfield>
               `
             : ""}
@@ -126,6 +129,7 @@ class DialogBox extends LitElement {
                   slot="secondaryAction"
                   @click=${this._dismiss}
                   ?autofocus=${!this._params.prompt && this._params.destructive}
+                  ?disabled=${this._loading}
                   appearance="plain"
                 >
                   ${this._params.dismissText
@@ -138,6 +142,7 @@ class DialogBox extends LitElement {
             slot="primaryAction"
             @click=${this._confirm}
             ?autofocus=${!this._params.prompt && !this._params.destructive}
+            .loading=${this._loading}
             variant=${this._params.destructive ? "danger" : "brand"}
           >
             ${this._params.confirmText
@@ -145,7 +150,7 @@ class DialogBox extends LitElement {
               : this.hass.localize("ui.common.ok")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -161,7 +166,17 @@ class DialogBox extends LitElement {
     this._closeDialog();
   }
 
-  private _confirm(): void {
+  private async _confirm(): Promise<void> {
+    if (this._params!.action) {
+      this._loading = true;
+      try {
+        await this._params!.action(this._textField?.value);
+      } catch (_err) {
+        this._loading = false;
+        return;
+      }
+      this._loading = false;
+    }
     this._closeState = "confirmed";
     if (this._params!.confirm) {
       this._params!.confirm(this._textField?.value);
@@ -184,6 +199,7 @@ class DialogBox extends LitElement {
     this._closeState = undefined;
     this._params = undefined;
     this._open = false;
+    this._loading = false;
     this._closeResolve?.();
     this._closeResolve = undefined;
   }

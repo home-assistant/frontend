@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
+  any,
   array,
   assert,
   assign,
@@ -76,6 +77,7 @@ const cardConfigStruct = assign(
     auto_fit: optional(boolean()),
     fit_zones: optional(boolean()),
     theme_mode: optional(string()),
+    conditions: optional(any()),
   })
 );
 

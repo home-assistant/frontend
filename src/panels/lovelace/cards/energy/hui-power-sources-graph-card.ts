@@ -189,8 +189,10 @@ export class HuiPowerSourcesGraphCard
         continue;
       }
 
-      if (source.type === "grid" && source.power) {
-        statIds.grid.stats.push(...source.power.map((p) => p.stat_rate));
+      if (source.type === "grid") {
+        if (source.stat_rate) {
+          statIds.grid.stats.push(source.stat_rate);
+        }
       }
     }
     const commonSeriesOptions: LineSeriesOption = {

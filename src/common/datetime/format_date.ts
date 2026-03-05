@@ -210,3 +210,39 @@ const formatDateWeekdayShortMem = memoizeOne(
       timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
+
+// Mon, Aug 10
+export const formatDateWeekdayVeryShortDate = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) =>
+  formatDateWeekdayVeryShortDateMem(locale, config.time_zone).format(dateObj);
+
+const formatDateWeekdayVeryShortDateMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
+// Mon, Aug 10, 2021
+export const formatDateWeekdayShortDate = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatDateWeekdayShortDateMem(locale, config.time_zone).format(dateObj);
+
+const formatDateWeekdayShortDateMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);

@@ -103,6 +103,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
+  @property({ attribute: false }) public popoverAnchor?: Element | null;
+
   @property({ type: Boolean, attribute: "use-top-label" })
   public useTopLabel = false;
 
@@ -122,6 +124,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @state() private _openedNarrow = false;
 
   @state() private _unknownValue = false;
+
+  @state() private _selectedValue?: string;
 
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -194,7 +198,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   .image=${this.image}
                   .label=${label}
                   .placeholder=${this.placeholder}
-                  .helper=${this.helper}
                   .value=${this.value}
                   .valueRenderer=${this.valueRenderer}
                   .required=${this.required}
@@ -228,7 +231,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   without-arrow
                   distance="-4"
                   .placement=${this.popoverPlacement}
-                  for="picker"
+                  .for=${this.popoverAnchor ? null : "picker"}
+                  .anchor=${this.popoverAnchor ?? null}
                   auto-size="vertical"
                   auto-size-padding="16"
                   @wa-after-show=${this._dialogOpened}
@@ -256,7 +260,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
-        .value=${this.value}
+        .value=${this._selectedValue ?? this.value}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
         .notFoundLabel=${this.notFoundLabel}
@@ -345,7 +349,9 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
     this._opened = false;
     this._pickerWrapperOpen = false;
+    this._selectedValue = undefined;
     this._unsubscribeTinyKeys?.();
+    fireEvent(this, "picker-closed");
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -368,11 +374,17 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     fireEvent(this, "value-changed", { value });
   }
 
-  public async open(ev?: Event) {
+  public async open(
+    ev?: Event,
+    options?: {
+      selectedValue?: string;
+    }
+  ) {
     ev?.stopPropagation();
     if (this.disabled) {
       return;
     }
+    this._selectedValue = options?.selectedValue;
     this._openedNarrow = this._narrow;
     this._popoverWidth = this._containerElement?.offsetWidth || 250;
     this._pickerWrapperOpen = true;
@@ -434,6 +446,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           --wa-space-l: 0;
         }
 
+        wa-popover::part(dialog)::backdrop {
+          background: none;
+        }
+
         wa-popover::part(body) {
           width: max(var(--body-width), 250px);
           max-width: var(
@@ -472,5 +488,9 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-generic-picker": HaGenericPicker;
+  }
+
+  interface HASSDomEvents {
+    "picker-closed": undefined;
   }
 }

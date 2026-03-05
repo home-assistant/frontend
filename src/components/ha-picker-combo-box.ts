@@ -418,7 +418,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const renderer = this.rowRenderer || DEFAULT_ROW_RENDERER;
     return html`<div
       id=${`list-item-${index}`}
-      class="combo-box-row ${this._value === item.id ? "current-value" : ""}"
+      class="combo-box-row ${this.value === item.id ? "current-value" : ""}"
       .value=${item.id}
       .index=${index}
       @click=${this._valueSelected}
@@ -431,10 +431,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _onScrollList(ev) {
     const top = ev.target.scrollTop ?? 0;
     this._listScrolled = top > 0;
-  }
-
-  private get _value() {
-    return this.value || "";
   }
 
   private _valueSelected = (ev: MouseEvent) => {
@@ -796,7 +792,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         :host {
           display: flex;
           flex-direction: column;
-          padding-top: var(--ha-space-3);
+          padding-top: var(--ha-space-4);
           flex: 1;
         }
 

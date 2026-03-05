@@ -17,6 +17,7 @@ import {
   SMALL_SCREEN_CONDITION,
 } from "../../lovelace/strategies/helpers/screen-conditions";
 import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
+import type { ButtonHeadingBadgeConfig } from "../../lovelace/heading-badges/types";
 
 export interface LightViewStrategyConfig {
   type: "light";
@@ -64,15 +65,18 @@ const processAreasForLight = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        tap_action: {
-          action: "navigate",
-          navigation_path: `/home/areas-${area.area_id}`,
-        },
+        tap_action: hass.panels.home
+          ? {
+              action: "navigate",
+              navigation_path: `/home/areas-${area.area_id}`,
+            }
+          : undefined,
         badges: [
           // Toggle buttons for mobile
           {
             type: "button",
             icon: "mdi:power",
+            text: hass.localize("ui.panel.lovelace.strategy.light.off"),
             tap_action: {
               action: "perform-action",
               perform_action: "light.turn_on",
@@ -87,11 +91,12 @@ const processAreasForLight = (
                 conditions: [anyOnCondition],
               },
             ],
-          },
+          } satisfies ButtonHeadingBadgeConfig,
           {
             type: "button",
             icon: "mdi:power",
-            color: "amber",
+            color: "orange",
+            text: hass.localize("ui.panel.lovelace.strategy.light.on"),
             tap_action: {
               action: "perform-action",
               perform_action: "light.turn_off",
@@ -100,25 +105,42 @@ const processAreasForLight = (
               },
             },
             visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
-          },
+          } satisfies ButtonHeadingBadgeConfig,
         ] satisfies LovelaceCardConfig[],
       });
 
       // Toggle group card for desktop
       cards.push({
         type: "toggle-group",
-        title: hass.localize("ui.panel.lovelace.strategy.light.all_lights"),
         color: "amber",
         entities: areaLights,
         visibility: [LARGE_SCREEN_CONDITION],
         grid_options: {
           columns: 6,
           rows: 1,
-          min_columns: 6,
         },
       } as ToggleGroupCardConfig);
 
-      cards.push(...areaCards);
+      areaCards.forEach((card) => {
+        // Insert a blank card before every 3rd card to align the individual
+        // cards with the toggle group card on desktop
+        if (
+          areaCards.indexOf(card) % 3 === 0 &&
+          areaCards.indexOf(card) !== 0
+        ) {
+          cards.push({
+            type: "vertical-stack",
+            cards: [],
+            visibility: [LARGE_SCREEN_CONDITION],
+            grid_options: {
+              columns: 6,
+              rows: 1,
+            },
+          });
+        }
+
+        cards.push(card);
+      });
     }
   }
 

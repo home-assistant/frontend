@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
 import { domainToName } from "../../../../../data/integration";
@@ -42,7 +42,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -67,11 +67,14 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     alt=${domainToName(this.hass.localize, "matter")}
-                    src=${brandsUrl({
-                      domain: "matter",
-                      type: "logo",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    src=${brandsUrl(
+                      {
+                        domain: "matter",
+                        type: "logo",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                   />
                   <ha-qr-code
                     .data=${this._commissionParams.setup_qr_code}
@@ -166,7 +169,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                   </ha-button>
                 `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
