@@ -109,8 +109,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @property() public value?: string;
 
-  @property({ attribute: false }) public selectedValue?: string;
-
   @property({ attribute: false })
   public searchKeys?: FuseWeightedKey[];
 
@@ -258,7 +256,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           .renderItem=${this._renderItem}
           style="min-height: 36px;"
           class=${this._listScrolled ? "scrolled" : ""}
-          .layout=${this._selectedValue && this._valuePinned
+          .layout=${this.value && this._valuePinned
             ? {
                 pin: {
                   index: this._getInitialSelectedIndex(),
@@ -420,9 +418,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const renderer = this.rowRenderer || DEFAULT_ROW_RENDERER;
     return html`<div
       id=${`list-item-${index}`}
-      class="combo-box-row ${this._selectedValue === item.id
-        ? "current-value"
-        : ""}"
+      class="combo-box-row ${this.value === item.id ? "current-value" : ""}"
       .value=${item.id}
       .index=${index}
       @click=${this._valueSelected}
@@ -435,10 +431,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _onScrollList(ev) {
     const top = ev.target.scrollTop ?? 0;
     this._listScrolled = top > 0;
-  }
-
-  private get _selectedValue() {
-    return this.selectedValue || this.value || "";
   }
 
   private _valueSelected = (ev: MouseEvent) => {
@@ -775,14 +767,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     typeof item === "string" ? item : item?.id;
 
   private _getInitialSelectedIndex() {
-    if (!this.virtualizerElement || this._search || !this._selectedValue) {
+    if (!this.virtualizerElement || this._search || !this.value) {
       return 0;
     }
 
     const index = this.virtualizerElement.items.findIndex(
       (item) =>
         typeof item !== "string" &&
-        (item as PickerComboBoxItem).id === this._selectedValue
+        (item as PickerComboBoxItem).id === this.value
     );
 
     if (index === -1) {
