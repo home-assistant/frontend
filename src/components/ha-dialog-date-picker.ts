@@ -195,13 +195,6 @@ export class HaDialogDatePicker extends LitElement {
       }
       calendar-date {
         width: 100%;
-
-        --app-datepicker-disabled-day-color: var(--disabled-text-color);
-        --app-datepicker-focused-day-color: var(--text-primary-color);
-        --app-datepicker-focused-year-bg-color: var(--primary-color);
-        --app-datepicker-selector-color: var(--secondary-text-color);
-        --app-datepicker-separator-color: var(--divider-color);
-        --app-datepicker-weekday-color: var(--secondary-text-color);
       }
       calendar-date::part(button) {
         border: none;
@@ -269,18 +262,6 @@ export class HaDialogDatePicker extends LitElement {
         flex: 1;
         text-align: center;
         margin-left: 48px;
-      }
-
-      app-datepicker::part(calendar-day):focus {
-        outline: none;
-      }
-      app-datepicker::part(body) {
-        direction: ltr;
-      }
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        app-datepicker {
-          width: 100%;
-        }
       }
     `,
   ];
