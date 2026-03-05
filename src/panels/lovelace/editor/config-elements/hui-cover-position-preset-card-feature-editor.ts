@@ -2,8 +2,8 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-multi-textfield";
+import { DEFAULT_COVER_FAVORITE_POSITIONS } from "../../../../data/cover";
 import type { HomeAssistant } from "../../../../types";
-import { DEFAULT_COVER_POSITION_PRESETS } from "../../card-features/hui-cover-position-preset-card-feature";
 import type {
   CoverPositionPresetCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -30,7 +30,8 @@ export class HuiCoverPositionPresetCardFeatureEditor
       return nothing;
     }
 
-    const positions = this._config.positions ?? DEFAULT_COVER_POSITION_PRESETS;
+    const positions =
+      this._config.positions ?? DEFAULT_COVER_FAVORITE_POSITIONS;
 
     const stringValues = positions.map((p) => String(p));
 

@@ -20,8 +20,6 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
-export const DEFAULT_COVER_POSITION_PRESETS = DEFAULT_COVER_FAVORITE_POSITIONS;
-
 export const supportsCoverPositionPresetCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -59,7 +57,7 @@ class HuiCoverPositionPresetCardFeature
   static getStubConfig(): CoverPositionPresetCardFeatureConfig {
     return {
       type: "cover-position-preset",
-      positions: DEFAULT_COVER_POSITION_PRESETS,
+      positions: DEFAULT_COVER_FAVORITE_POSITIONS,
     };
   }
 
@@ -126,7 +124,8 @@ class HuiCoverPositionPresetCardFeature
       return null;
     }
 
-    const positions = this._config.positions ?? DEFAULT_COVER_POSITION_PRESETS;
+    const positions =
+      this._config.positions ?? DEFAULT_COVER_FAVORITE_POSITIONS;
 
     const options = positions.map((position) => ({
       value: String(position),

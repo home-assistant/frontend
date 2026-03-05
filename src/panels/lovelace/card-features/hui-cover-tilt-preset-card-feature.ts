@@ -20,8 +20,6 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
-export const DEFAULT_COVER_TILT_PRESETS = DEFAULT_COVER_FAVORITE_POSITIONS;
-
 export const supportsCoverTiltPresetCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -59,7 +57,7 @@ class HuiCoverTiltPresetCardFeature
   static getStubConfig(): CoverTiltPresetCardFeatureConfig {
     return {
       type: "cover-tilt-preset",
-      positions: DEFAULT_COVER_TILT_PRESETS,
+      positions: DEFAULT_COVER_FAVORITE_POSITIONS,
     };
   }
 
@@ -124,7 +122,8 @@ class HuiCoverTiltPresetCardFeature
       return null;
     }
 
-    const positions = this._config.positions ?? DEFAULT_COVER_TILT_PRESETS;
+    const positions =
+      this._config.positions ?? DEFAULT_COVER_FAVORITE_POSITIONS;
 
     const options = positions.map((position) => ({
       value: String(position),
