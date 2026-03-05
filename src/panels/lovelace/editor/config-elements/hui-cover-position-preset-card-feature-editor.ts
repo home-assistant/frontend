@@ -59,7 +59,7 @@ export class HuiCoverPositionPresetCardFeatureEditor
     ev.stopPropagation();
     const stringValues = ev.detail.value as (string | null | undefined)[];
     const positions = stringValues
-      .filter((v): v is string => !!v && v !== "")
+      .filter((v): v is string => !!v && !isNaN(Number(v)))
       .map((v) => Math.min(100, Math.max(0, Number(v))));
 
     const config: CoverPositionPresetCardFeatureConfig = {
