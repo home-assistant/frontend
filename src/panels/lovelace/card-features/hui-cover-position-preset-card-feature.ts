@@ -31,7 +31,7 @@ export const supportsCoverPositionPresetCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return domain === "cover" && coverSupportsPosition(stateObj as CoverEntity);
+  return domain === "cover" && coverSupportsPosition(stateObj);
 };
 
 @customElement("hui-cover-position-preset-card-feature")
@@ -49,11 +49,11 @@ class HuiCoverPositionPresetCardFeature
 
   @state() private _currentPosition?: number;
 
-  private get _stateObj() {
+  private get _stateObj(): CoverEntity | undefined {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
     }
-    return this.hass.states[this.context.entity_id!] as CoverEntity | undefined;
+    return this.hass.states[this.context.entity_id!];
   }
 
   static getStubConfig(): CoverPositionPresetCardFeatureConfig {
