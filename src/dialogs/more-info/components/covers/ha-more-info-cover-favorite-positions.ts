@@ -29,7 +29,7 @@ import type { HaMoreInfoFavorites } from "../ha-more-info-favorites";
 
 type FavoriteKind = "position" | "tilt";
 
-type FavoriteKey =
+type FavoriteLocalizeKey =
   | "set"
   | "edit"
   | "delete"
@@ -39,11 +39,6 @@ type FavoriteKey =
   | "add"
   | "edit_title"
   | "add_title";
-
-const favoriteKey = (
-  kind: FavoriteKind
-): "favorite_position" | "favorite_tilt_position" =>
-  kind === "position" ? "favorite_position" : "favorite_tilt_position";
 
 @customElement("ha-more-info-cover-favorite-positions")
 export class HaMoreInfoCoverFavoritePositions extends LitElement {
@@ -83,11 +78,11 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
   private _localizeFavorite(
     kind: FavoriteKind,
-    key: FavoriteKey,
+    key: FavoriteLocalizeKey,
     values?: Record<string, string | number>
   ): string {
     return this.hass.localize(
-      `ui.dialogs.more_info_control.cover.${favoriteKey(kind)}.${key}`,
+      `ui.dialogs.more_info_control.cover.${kind === "position" ? "favorite_position" : "favorite_tilt_position"}.${key}`,
       values
     );
   }
