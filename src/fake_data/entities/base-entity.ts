@@ -94,11 +94,41 @@ export class MockBaseEntity {
     });
   }
 
+  protected _getBaseAttributes(): EntityAttributes {
+    const attrs = this.attributes;
+    const baseAttrs: EntityAttributes = {};
+    for (const key of [
+      "friendly_name",
+      "icon",
+      "entity_picture",
+      "assumed_state",
+      "device_class",
+      "supported_features",
+    ]) {
+      if (key in attrs) {
+        baseAttrs[key] = attrs[key];
+      }
+    }
+    return baseAttrs;
+  }
+
+  protected _getCapabilityAttributes(): EntityAttributes {
+    return {};
+  }
+
+  protected _getStateAttributes(): EntityAttributes {
+    return {};
+  }
+
   public toState(): HassEntity {
     return {
       entity_id: this.entityId,
       state: this.state,
-      attributes: this.state === "off" ? this.baseAttributes : this.attributes,
+      attributes: {
+        ...this._getBaseAttributes(),
+        ...this._getCapabilityAttributes(),
+        ...this._getStateAttributes(),
+      },
       last_changed: this.lastChanged,
       last_updated: this.lastUpdated,
       context: { id: this.entityId, user_id: null, parent_id: null },
