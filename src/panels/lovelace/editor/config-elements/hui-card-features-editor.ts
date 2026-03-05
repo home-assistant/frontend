@@ -36,6 +36,7 @@ import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-cl
 import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
+import { supportsCoverPositionPresetCardFeature } from "../../card-features/hui-cover-position-preset-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
@@ -90,6 +91,7 @@ const UI_FEATURE_TYPES = [
   "counter-actions",
   "cover-open-close",
   "cover-position",
+  "cover-position-preset",
   "cover-tilt-position",
   "cover-tilt",
   "date-set",
@@ -133,6 +135,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
   "counter-actions",
+  "cover-position-preset",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
@@ -162,6 +165,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "counter-actions": supportsCounterActionsCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
   "cover-position": supportsCoverPositionCardFeature,
+  "cover-position-preset": supportsCoverPositionPresetCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
   "date-set": supportsDateSetCardFeature,
