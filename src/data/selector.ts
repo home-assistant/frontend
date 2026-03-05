@@ -146,6 +146,7 @@ export interface ButtonToggleSelector {
     options: readonly string[] | readonly SelectOption[];
     translation_key?: string;
     sort?: boolean;
+    size?: "small" | "medium";
   } | null;
 }
 
