@@ -24,6 +24,7 @@ import {
 } from "../../../data/entity/entity_registry";
 import "../../../dialogs/more-info/components/lights/ha-favorite-color-button";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { debounce } from "../../../common/util/debounce";
 
 export const supportsLightColorFavoritesCardFeature = (
   hass: HomeAssistant,
@@ -56,16 +57,20 @@ class HuiLightColorFavoritesCardFeature
 
   @query(".container") private _container!: HTMLDivElement;
 
+  private _resizeObserver?: ResizeObserver;
+
   private _unsubEntityRegistry?: UnsubscribeFunc;
 
   public connectedCallback() {
     super.connectedCallback();
     this._subscribeEntityEntry();
+    this.updateComplete.then(() => this._attachObserver());
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeEntityRegistry();
+    this._resizeObserver?.disconnect();
   }
 
   private async _unsubscribeEntityRegistry() {
@@ -94,6 +99,21 @@ class HuiLightColorFavoritesCardFeature
     }
   }
 
+  private _measure() {
+    const w = this._container.clientWidth;
+    const pillMin = 32 + 8;
+    this._maxVisible = Math.floor(w / pillMin);
+  }
+
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measure(), 250, false)
+      );
+    }
+    this._resizeObserver.observe(this._container);
+  }
+
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -101,15 +121,8 @@ class HuiLightColorFavoritesCardFeature
     return this.hass.states[this.context.entity_id] as LightEntity | undefined;
   }
 
-  firstUpdated() {
-    const resize = () => {
-      const w = this._container.clientWidth;
-      const pillMin = 32 + 8;
-      this._maxVisible = Math.floor(w / pillMin);
-      this.requestUpdate();
-    };
-    resize();
-    new ResizeObserver(resize).observe(this._container);
+  protected firstUpdated(): void {
+    this._attachObserver();
   }
 
   protected updated(changedProps: PropertyValues): void {
