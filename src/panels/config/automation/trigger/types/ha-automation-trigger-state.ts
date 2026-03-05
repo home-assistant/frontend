@@ -143,94 +143,112 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           },
         },
         {
-          name: "from_match",
-          selector: {
-            button_toggle: {
-              size: "small",
-              options: [
-                {
-                  value: "is",
-                  label: localize(
-                    "ui.panel.config.automation.editor.triggers.type.state.is"
-                  ),
-                },
-                {
-                  value: "is_not",
-                  label: localize(
-                    "ui.panel.config.automation.editor.triggers.type.state.is_not"
-                  ),
-                },
-              ],
-            },
-          },
-        },
-        {
-          name: "from",
-          context: {
-            filter_entity: "entity_id",
-          },
-          selector: {
-            state: {
-              multiple: true,
-              extra_options: (attribute
-                ? []
-                : [
+          name: "",
+          type: "grid",
+          flatten: true,
+          column_min_width: "100%",
+          row_gap: "8px",
+          schema: [
+            {
+              name: "from_match",
+              selector: {
+                button_toggle: {
+                  size: "small",
+                  options: [
                     {
+                      value: "is",
                       label: localize(
-                        "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                        "ui.panel.config.automation.editor.triggers.type.state.is"
                       ),
-                      value: ANY_STATE_VALUE,
                     },
-                  ]) as any,
-              attribute: attribute,
-              hide_states: hideInFrom,
-            },
-          },
-        },
-        {
-          name: "to_match",
-          selector: {
-            button_toggle: {
-              size: "small",
-              options: [
-                {
-                  value: "is",
-                  label: localize(
-                    "ui.panel.config.automation.editor.triggers.type.state.is"
-                  ),
-                },
-                {
-                  value: "is_not",
-                  label: localize(
-                    "ui.panel.config.automation.editor.triggers.type.state.is_not"
-                  ),
-                },
-              ],
-            },
-          },
-        },
-        {
-          name: "to",
-          context: {
-            filter_entity: "entity_id",
-          },
-          selector: {
-            state: {
-              multiple: true,
-              extra_options: (attribute
-                ? []
-                : [
                     {
+                      value: "is_not",
                       label: localize(
-                        "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                        "ui.panel.config.automation.editor.triggers.type.state.is_not"
                       ),
-                      value: ANY_STATE_VALUE,
                     },
-                  ]) as any,
-              attribute: attribute,
-              hide_states: hideInTo,
+                  ],
+                },
+              },
             },
-          },
+            {
+              name: "from",
+              context: {
+                filter_entity: "entity_id",
+              },
+              selector: {
+                state: {
+                  multiple: true,
+                  extra_options: (attribute
+                    ? []
+                    : [
+                        {
+                          label: localize(
+                            "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                          ),
+                          value: ANY_STATE_VALUE,
+                        },
+                      ]) as any,
+                  attribute: attribute,
+                  hide_states: hideInFrom,
+                },
+              },
+            },
+          ],
+        },
+        {
+          name: "",
+          type: "grid",
+          flatten: true,
+          column_min_width: "100%",
+          row_gap: "8px",
+          schema: [
+            {
+              name: "to_match",
+              selector: {
+                button_toggle: {
+                  size: "small",
+                  options: [
+                    {
+                      value: "is",
+                      label: localize(
+                        "ui.panel.config.automation.editor.triggers.type.state.is"
+                      ),
+                    },
+                    {
+                      value: "is_not",
+                      label: localize(
+                        "ui.panel.config.automation.editor.triggers.type.state.is_not"
+                      ),
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: "to",
+              context: {
+                filter_entity: "entity_id",
+              },
+              selector: {
+                state: {
+                  multiple: true,
+                  extra_options: (attribute
+                    ? []
+                    : [
+                        {
+                          label: localize(
+                            "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                          ),
+                          value: ANY_STATE_VALUE,
+                        },
+                      ]) as any,
+                  attribute: attribute,
+                  hide_states: hideInTo,
+                },
+              },
+            },
+          ],
         },
         { name: "for", selector: { duration: {} } },
       ] as const satisfies HaFormSchema[]
@@ -434,12 +452,17 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
+  ): string => {
+    // Skip label for the Grid schema. It doesn't represent a real field and having a label for it looks odd.
+    if (!schema.name) {
+      return "";
+    }
+    return this.hass.localize(
       schema.name === "entity_id"
         ? "ui.components.entity.entity-picker.entity"
         : `ui.panel.config.automation.editor.triggers.type.state.${schema.name}`
     );
+  };
 }
 
 declare global {

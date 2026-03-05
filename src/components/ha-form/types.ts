@@ -34,6 +34,7 @@ export interface HaFormGridSchema extends HaFormBaseSchema {
   type: "grid";
   flatten?: boolean;
   column_min_width?: string;
+  row_gap?: string;
   schema: readonly HaFormSchema[];
 }
 
