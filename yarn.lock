@@ -3615,13 +3615,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reallyland/esm@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "@reallyland/esm@npm:0.0.1"
-  checksum: 10/c06c4d38663e128466485d65dc006ee5bcacde46ae6acf3a846ca8047f9ebef107a3f78b82cb2f6ba65aaea9d4b1dad52642626b6fff2e024ee855e3b01af726
-  languageName: node
-  linkType: hard
-
 "@replit/codemirror-indentation-markers@npm:6.5.3":
   version: 6.5.3
   resolution: "@replit/codemirror-indentation-markers@npm:6.5.3"
@@ -4766,15 +4759,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash-es@npm:^4.17.4":
-  version: 4.17.12
-  resolution: "@types/lodash-es@npm:4.17.12"
-  dependencies:
-    "@types/lodash": "npm:*"
-  checksum: 10/56b9a433348b11c31051c6fa9028540a033a08fb80b400c589d740446c19444d73b217cf1471d4036448ef686a83e8cf2a35d1fadcb3f2105f26701f94aebb07
-  languageName: node
-  linkType: hard
-
 "@types/lodash.merge@npm:4.6.9":
   version: 4.6.9
   resolution: "@types/lodash.merge@npm:4.6.9"
@@ -4859,20 +4843,6 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/598fb40ce38cdaee7c6be86927fdd56147ed8f29298de8bd196085cc8e5add9f508442b5d82feddeda10b0fe1adde13224a0e5c36dcee2dd8e471d70b260283c
-  languageName: node
-  linkType: hard
-
-"@types/parse5@npm:^6.0.0":
-  version: 6.0.3
-  resolution: "@types/parse5@npm:6.0.3"
-  checksum: 10/834d40c9b1a8a99a9574b0b3f6629cf48adcff2eda01a35d701f1de5dcf46ce24223684647890aba9f985d6c801b233f878168683de0ae425940403c383fba8f
-  languageName: node
-  linkType: hard
-
-"@types/prismjs@npm:^1.16.5":
-  version: 1.26.5
-  resolution: "@types/prismjs@npm:1.26.5"
-  checksum: 10/617099479db9550119d0f84272dc79d64b2cf3e0d7a17167fe740d55fdf0f155697d935409464392d164e62080c2c88d649cf4bc4fdd30a87127337536657277
   languageName: node
   linkType: hard
 
@@ -5670,18 +5640,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app-datepicker@npm:5.1.1":
-  version: 5.1.1
-  resolution: "app-datepicker@npm:5.1.1"
-  dependencies:
-    "@material/mwc-button": "npm:^0.25.3"
-    lit: "npm:^2.2.1"
-    nodemod: "npm:2.8.4"
-    tslib: "npm:^2.3.1"
-  checksum: 10/0c16a597e18ce0f3ce20b4cd0aab9f29f09324ac79642e5e62e12f2fb7993e649352f9544d74a640029619a29b135bf0b105ed7336e097b5ad6e6b6c78b23e6a
-  languageName: node
-  linkType: hard
-
 "arch@npm:^2.2.0":
   version: 2.2.0
   resolution: "arch@npm:2.2.0"
@@ -5902,6 +5860,13 @@ __metadata:
   version: 1.0.0
   resolution: "at-least-node@npm:1.0.0"
   checksum: 10/463e2f8e43384f1afb54bc68485c436d7622acec08b6fad269b421cb1d29cebb5af751426793d0961ed243146fe4dc983402f6d5a51b720b277818dbf6f2e49e
+  languageName: node
+  linkType: hard
+
+"atomico@npm:^1.79.2":
+  version: 1.79.2
+  resolution: "atomico@npm:1.79.2"
+  checksum: 10/89cdb46cccab4e156d05464b1b1d4ba755868b75d69973c94c251798ffced6a2ed1cba80dfeb128693bd36ab836c0105d99801ef8ecdc162d131b0be029ba9a2
   languageName: node
   linkType: hard
 
@@ -6385,6 +6350,15 @@ __metadata:
   version: 3.1.0
   resolution: "callsites@npm:3.1.0"
   checksum: 10/072d17b6abb459c2ba96598918b55868af677154bec7e73d222ef95a8fdb9bbf7dae96a8421085cdad8cd190d86653b5b6dc55a4484f2e5b2e27d5e0c3fc15b3
+  languageName: node
+  linkType: hard
+
+"cally@npm:0.9.2":
+  version: 0.9.2
+  resolution: "cally@npm:0.9.2"
+  dependencies:
+    atomico: "npm:^1.79.2"
+  checksum: 10/eeaff4d6f86a41247b51e432b1117ffbf967bd51c2e849d64ccfb7c477dde72ede88187c4497acd5e2cf1837f069832323411bc9505f7b6e3cd5f5b75cf7988e
   languageName: node
   linkType: hard
 
@@ -9211,11 +9185,11 @@ __metadata:
     "@vue/web-component-wrapper": "npm:1.3.0"
     "@webcomponents/scoped-custom-element-registry": "npm:0.0.10"
     "@webcomponents/webcomponentsjs": "npm:2.8.0"
-    app-datepicker: "npm:5.1.1"
     babel-loader: "npm:10.1.0"
     babel-plugin-template-html-minifier: "npm:4.1.0"
     barcode-detector: "npm:3.1.0"
     browserslist-useragent-regexp: "npm:4.1.3"
+    cally: "npm:0.9.2"
     color-name: "npm:2.1.0"
     comlink: "npm:4.4.2"
     core-js: "npm:3.48.0"
@@ -10645,17 +10619,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lit-ntml@npm:^2.18.2":
-  version: 2.20.0
-  resolution: "lit-ntml@npm:2.20.0"
-  dependencies:
-    "@reallyland/esm": "npm:^0.0.1"
-    parse5: "npm:^6.0.1"
-    tslib: "npm:^2.0.2"
-  checksum: 10/db24a9a3914896d24bc7a51502445cbf508a53968729faf3dfb86909b6bc32ebf7348fac873ec3e3fc6fbf158a12d655684c9ed78599b425d8a1349d42fa2bef
-  languageName: node
-  linkType: hard
-
 "lit@npm:3.3.2":
   version: 3.3.2
   resolution: "lit@npm:3.3.2"
@@ -11297,20 +11260,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemod@npm:2.8.4":
-  version: 2.8.4
-  resolution: "nodemod@npm:2.8.4"
-  dependencies:
-    "@types/lodash-es": "npm:^4.17.4"
-    "@types/parse5": "npm:^6.0.0"
-    "@types/prismjs": "npm:^1.16.5"
-    lit-ntml: "npm:^2.18.2"
-    normalize-diacritics: "npm:^2.13.2"
-    tslib: "npm:^2.1.0"
-  checksum: 10/3cccce96dea824791f30648a7d5064a4d4791448ce20b1ffdcae394b1009bca7c939efebe3ee00d3b2ba6311760318a364d4cc01f0f6663ada3eeb4a747d0777
-  languageName: node
-  linkType: hard
-
 "nopt@npm:^9.0.0":
   version: 9.0.0
   resolution: "nopt@npm:9.0.0"
@@ -11319,15 +11268,6 @@ __metadata:
   bin:
     nopt: bin/nopt.js
   checksum: 10/56a1ccd2ad711fb5115918e2c96828703cddbe12ba2c3bd00591758f6fa30e6f47dd905c59dbfcf9b773f3a293b45996609fb6789ae29d6bfcc3cf3a6f7d9fda
-  languageName: node
-  linkType: hard
-
-"normalize-diacritics@npm:^2.13.2":
-  version: 2.14.0
-  resolution: "normalize-diacritics@npm:2.14.0"
-  dependencies:
-    tslib: "npm:^2.1.0"
-  checksum: 10/1c2297eb1821e728793e935f744ce12a5969b05db90300e84f06a418e998ce06184d172c608c532d290ae6af2ea2f71ad561e4340ea7473f6329b417deca90bd
   languageName: node
   linkType: hard
 

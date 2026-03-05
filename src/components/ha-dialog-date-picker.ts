@@ -1,15 +1,21 @@
-import "app-datepicker";
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { mdiBackspace, mdiCalendarToday } from "@mdi/js";
+import "cally";
 import { format } from "date-fns";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { nextRender } from "../common/util/render-status";
 import { haStyleDialog } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import type { DatePickerDialogParams } from "./ha-date-input";
 import "./ha-button";
-import "./ha-dialog-footer";
+import type { DatePickerDialogParams } from "./ha-date-input";
 import "./ha-dialog";
+import "./ha-dialog-footer";
+import "./ha-icon-button";
+import "./ha-icon-button-next";
+import "./ha-icon-button-prev";
+
+type CalendarDate = HTMLElementTagNameMap["calendar-date"];
 
 @customElement("ha-dialog-date-picker")
 export class HaDialogDatePicker extends LitElement {
@@ -25,14 +31,30 @@ export class HaDialogDatePicker extends LitElement {
 
   @state() private _open = false;
 
-  @state() private _value?: string;
+  @state() private _value?: {
+    year: string;
+    title: string;
+    dateString: string;
+  };
+
+  @state() private _pickerMonth?: string;
+
+  @state() private _pickerYear?: string;
+
+  @state() private _focusDate?: string;
 
   public async showDialog(params: DatePickerDialogParams): Promise<void> {
-    // app-datepicker has a bug, that it removes its handlers when disconnected, but doesn't add them back when reconnected.
-    // So we need to wait for the next render to make sure the element is removed and re-created so the handlers are added.
-    await nextRender();
     this._params = params;
-    this._value = params.value;
+    const date = params.value ? new Date(params.value) : new Date();
+    this._value = params.value
+      ? {
+          year: format(date, "yyyy"),
+          title: format(date, "EE, dd MMMM"),
+          dateString: format(date, "yyyy-MM-dd"),
+        }
+      : undefined;
+    this._pickerMonth = format(date, "MMMM");
+    this._pickerYear = format(date, "yyyy");
     this._open = true;
   }
 
@@ -53,38 +75,50 @@ export class HaDialogDatePicker extends LitElement {
       .hass=${this.hass}
       .open=${this._open}
       width="small"
-      without-header
       @closed=${this._dialogClosed}
+      .headerTitle=${this._value?.title ||
+      this.hass.localize("ui.dialogs.date-picker.title")}
+      .headerSubtitle=${this._value?.year}
+      header-subtitle-position="above"
     >
-      <app-datepicker
-        .value=${this._value}
+      ${this._params.canClear
+        ? html`
+            <ha-icon-button
+              .path=${mdiBackspace}
+              .label=${this.hass.localize("ui.dialogs.date-picker.clear")}
+              slot="headerActionItems"
+              @click=${this._clear}
+            ></ha-icon-button>
+          `
+        : nothing}
+      <wa-divider></wa-divider>
+      <calendar-date
+        .value=${this._value?.dateString}
         .min=${this._params.min}
         .max=${this._params.max}
         .locale=${this._params.locale}
-        @datepicker-value-updated=${this._valueChanged}
         .firstDayOfWeek=${this._params.firstWeekday}
-      ></app-datepicker>
-
-      <div class="bottom-actions">
-        ${this._params.canClear
-          ? html`<ha-button
-              slot="secondaryAction"
-              @click=${this._clear}
-              variant="danger"
-              appearance="plain"
-            >
-              ${this.hass.localize("ui.dialogs.date-picker.clear")}
-            </ha-button>`
-          : nothing}
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this._setToday}
-        >
-          ${this.hass.localize("ui.dialogs.date-picker.today")}
-        </ha-button>
-      </div>
-
+        .focusedDate=${this._focusDate}
+        @change=${this._valueChanged}
+        @focusday=${this._focusChanged}
+      >
+        <ha-icon-button-prev
+          tabindex="-1"
+          slot="previous"
+        ></ha-icon-button-prev>
+        <div class="heading" slot="heading">
+          <span class="month-year"
+            >${this._pickerMonth} ${this._pickerYear}</span
+          >
+          <ha-icon-button
+            @click=${this._setToday}
+            .path=${mdiCalendarToday}
+            .label=${this.hass.localize("ui.dialogs.date-picker.today")}
+          ></ha-icon-button>
+        </div>
+        <ha-icon-button-next tabindex="-1" slot="next"></ha-icon-button-next>
+        <calendar-month></calendar-month>
+      </calendar-date>
       <ha-dialog-footer slot="footer">
         <ha-button
           appearance="plain"
@@ -100,8 +134,30 @@ export class HaDialogDatePicker extends LitElement {
     </ha-dialog>`;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    this._value = ev.detail.value;
+  private _valueChanged(ev: Event) {
+    const dateElement = ev.target as CalendarDate;
+    if (dateElement.value) {
+      this._updateValue(new Date(dateElement.value));
+    }
+  }
+
+  private _updateValue(date: Date, setFocusDay = false) {
+    this._value = {
+      year: format(date, "yyyy"),
+      title: format(date, "EE, dd MMMM"),
+      dateString: format(date, "yyyy-MM-dd"),
+    };
+
+    if (setFocusDay) {
+      this._focusDate = this._value.dateString;
+    }
+  }
+
+  private _focusChanged(ev: CustomEvent<Date>) {
+    const date = ev.detail;
+    this._pickerMonth = format(date, "MMMM");
+    this._pickerYear = format(date, "yyyy");
+    this._focusDate = undefined;
   }
 
   private _clear() {
@@ -110,8 +166,7 @@ export class HaDialogDatePicker extends LitElement {
   }
 
   private _setToday() {
-    const today = new Date();
-    this._value = format(today, "yyyy-MM-dd");
+    this._updateValue(new Date(), true);
   }
 
   private _setValue() {
@@ -120,7 +175,7 @@ export class HaDialogDatePicker extends LitElement {
       // without changing the date, should return todays date, not undefined.
       this._setToday();
     }
-    this._params?.onChange(this._value!);
+    this._params?.onChange(this._value?.dateString);
     this.closeDialog();
   }
 
@@ -138,12 +193,9 @@ export class HaDialogDatePicker extends LitElement {
         width: 100%;
         margin-bottom: var(--ha-space-1);
       }
-      app-datepicker {
-        display: block;
-        margin-inline: auto;
-        --app-datepicker-accent-color: var(--primary-color);
-        --app-datepicker-bg-color: transparent;
-        --app-datepicker-color: var(--primary-text-color);
+      calendar-date {
+        width: 100%;
+
         --app-datepicker-disabled-day-color: var(--disabled-text-color);
         --app-datepicker-focused-day-color: var(--text-primary-color);
         --app-datepicker-focused-year-bg-color: var(--primary-color);
@@ -151,6 +203,74 @@ export class HaDialogDatePicker extends LitElement {
         --app-datepicker-separator-color: var(--divider-color);
         --app-datepicker-weekday-color: var(--secondary-text-color);
       }
+      calendar-date::part(button) {
+        border: none;
+        background-color: unset;
+        border-radius: var(--ha-border-radius-circle);
+        outline-offset: -2px;
+        outline-color: var(--ha-color-neutral-60);
+      }
+
+      calendar-month {
+        width: 100%;
+        margin: 0 auto;
+        min-height: calc(42px * 7);
+      }
+
+      calendar-month::part(heading) {
+        display: none;
+      }
+      calendar-month::part(day) {
+        color: var(--disabled-text-color);
+        font-size: var(--ha-font-size-m);
+        font-family: var(--ha-font-body);
+      }
+      calendar-month::part(button),
+      calendar-month::part(selected):focus-visible {
+        color: var(--primary-text-color);
+        height: 32px;
+        width: 32px;
+        margin: var(--ha-space-1);
+        border-radius: var(--ha-border-radius-circle);
+      }
+      calendar-month::part(button):focus-visible {
+        background-color: inherit;
+        outline: 1px solid var(--ha-color-neutral-60);
+        outline-offset: 2px;
+      }
+      calendar-month::part(button):hover {
+        background-color: var(--ha-color-fill-primary-quiet-hover);
+      }
+      calendar-month::part(today) {
+        color: var(--primary-color);
+      }
+      calendar-month::part(selected),
+      calendar-month::part(selected):hover {
+        color: var(--text-primary-color);
+        background-color: var(--primary-color);
+        height: 40px;
+        width: 40px;
+        margin: 0;
+      }
+      calendar-month::part(selected):focus-visible {
+        background-color: var(--primary-color);
+        color: var(--text-primary-color);
+      }
+
+      .heading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-medium);
+      }
+      .month-year {
+        flex: 1;
+        text-align: center;
+        margin-left: 48px;
+      }
+
       app-datepicker::part(calendar-day):focus {
         outline: none;
       }
