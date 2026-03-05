@@ -5,10 +5,12 @@ import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select";
 import type { CoverEntity } from "../../../data/cover";
-import { CoverEntityFeature } from "../../../data/cover";
+import {
+  DEFAULT_COVER_FAVORITE_POSITIONS,
+  coverSupportsTiltPosition,
+} from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -18,7 +20,7 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
-export const DEFAULT_COVER_TILT_PRESETS = [0, 25, 75, 100];
+export const DEFAULT_COVER_TILT_PRESETS = DEFAULT_COVER_FAVORITE_POSITIONS;
 
 export const supportsCoverTiltPresetCardFeature = (
   hass: HomeAssistant,
@@ -29,10 +31,7 @@ export const supportsCoverTiltPresetCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "cover" &&
-    supportsFeature(stateObj, CoverEntityFeature.SET_TILT_POSITION)
-  );
+  return domain === "cover" && coverSupportsTiltPosition(stateObj);
 };
 
 @customElement("hui-cover-tilt-preset-card-feature")
@@ -50,11 +49,11 @@ class HuiCoverTiltPresetCardFeature
 
   @state() private _currentTiltPosition?: number;
 
-  private get _stateObj() {
+  private get _stateObj(): CoverEntity | undefined {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
     }
-    return this.hass.states[this.context.entity_id!] as CoverEntity | undefined;
+    return this.hass.states[this.context.entity_id!];
   }
 
   static getStubConfig(): CoverTiltPresetCardFeatureConfig {
