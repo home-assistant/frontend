@@ -37,6 +37,8 @@ export class MockBaseEntity {
 
   public hass?: MockHassLike;
 
+  private _transitionTimer?: ReturnType<typeof setTimeout>;
+
   static CAPABILITY_ATTRIBUTES: Set<string> = BASE_CAPABILITY_ATTRIBUTES;
 
   constructor(input: EntityInput) {
@@ -74,6 +76,28 @@ export class MockBaseEntity {
       `Unmocked service for ${this.entityId}: ${domain}/${service}`,
       data
     );
+  }
+
+  protected _transition(
+    transitioning: string,
+    final: string,
+    duration: number,
+    onComplete?: () => void
+  ): void {
+    this._clearTransition();
+    this.update({ state: transitioning });
+    this._transitionTimer = setTimeout(() => {
+      this._transitionTimer = undefined;
+      this.update({ state: final });
+      onComplete?.();
+    }, duration);
+  }
+
+  protected _clearTransition(): void {
+    if (this._transitionTimer) {
+      clearTimeout(this._transitionTimer);
+      this._transitionTimer = undefined;
+    }
   }
 
   public update(changes: {
