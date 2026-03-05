@@ -9,13 +9,13 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { Option } from "../../../../data/script";
-import { AutomationRowsMixin } from "../ha-automation-rows-mixin";
+import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-option-row";
 import type HaAutomationOptionRow from "./ha-automation-option-row";
 
 @customElement("ha-automation-option")
-export default class HaAutomationOption extends AutomationRowsMixin<Option>(
+export default class HaAutomationOption extends AutomationSortableListMixin<Option>(
   LitElement
 ) {
   @property({ attribute: false }) public options!: Option[];
@@ -42,14 +42,14 @@ export default class HaAutomationOption extends AutomationRowsMixin<Option>(
         .disabled=${this.disabled}
         group="options"
         invert-swap
-        @item-moved=${this._itemMoved}
-        @item-added=${this._itemAdded}
-        @item-removed=${this._itemRemoved}
+        @item-moved=${this.itemMoved}
+        @item-added=${this.itemAdded}
+        @item-removed=${this.itemRemoved}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.options,
-            (option) => this._getKey(option),
+            (option) => this.getKey(option),
             (option, idx) => html`
               <ha-automation-option-row
                 .sortableData=${option}
@@ -59,24 +59,24 @@ export default class HaAutomationOption extends AutomationRowsMixin<Option>(
                 .option=${option}
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
-                @duplicate=${this._duplicateItem}
-                @move-down=${this._moveDown}
-                @move-up=${this._moveUp}
-                @value-changed=${this._itemChanged}
+                @duplicate=${this.duplicateItem}
+                @move-down=${this.moveDown}
+                @move-up=${this.moveUp}
+                @value-changed=${this.itemChanged}
                 .hass=${this.hass}
                 .optionsInSidebar=${this.optionsInSidebar}
-                .sortSelected=${this._rowSortSelected === idx}
-                @stop-sort-selection=${this._stopSortSelection}
+                .sortSelected=${this.rowSortSelected === idx}
+                @stop-sort-selection=${this.stopSortSelection}
               >
                 ${!this.disabled
                   ? html`
                       <div
                         tabindex="0"
-                        class="handle ${this._rowSortSelected === idx
+                        class="handle ${this.rowSortSelected === idx
                           ? "active"
                           : ""}"
                         slot="icons"
-                        @keydown=${this._handleDragKeydown}
+                        @keydown=${this.handleDragKeydown}
                         @click=${stopPropagation}
                         .index=${idx}
                       >
@@ -125,17 +125,16 @@ export default class HaAutomationOption extends AutomationRowsMixin<Option>(
 
     if (
       changedProps.has("options") &&
-      (this._focusLastItemOnChange ||
-        this._focusItemIndexOnChange !== undefined)
+      (this.focusLastItemOnChange || this.focusItemIndexOnChange !== undefined)
     ) {
-      const mode = this._focusLastItemOnChange ? "new" : "moved";
+      const mode = this.focusLastItemOnChange ? "new" : "moved";
 
       const row = this.shadowRoot!.querySelector<HaAutomationOptionRow>(
-        `ha-automation-option-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusItemIndexOnChange! + 1})`}`
+        `ha-automation-option-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this.focusItemIndexOnChange! + 1})`}`
       )!;
 
-      this._focusLastItemOnChange = false;
-      this._focusItemIndexOnChange = undefined;
+      this.focusLastItemOnChange = false;
+      this.focusItemIndexOnChange = undefined;
 
       row.updateComplete.then(() => {
         if (this.narrow) {
@@ -168,7 +167,7 @@ export default class HaAutomationOption extends AutomationRowsMixin<Option>(
 
   private _addOption = () => {
     const options = this.options.concat({ conditions: [], sequence: [] });
-    this._focusLastItemOnChange = true;
+    this.focusLastItemOnChange = true;
     fireEvent(this, "value-changed", { value: options });
   };
 

@@ -29,13 +29,13 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import { AutomationRowsMixin } from "../ha-automation-rows-mixin";
+import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition")
-export default class HaAutomationCondition extends AutomationRowsMixin<Condition>(
+export default class HaAutomationCondition extends AutomationSortableListMixin<Condition>(
   SubscribeMixin(LitElement)
 ) {
   @property({ attribute: false }) public conditions!: Condition[];
@@ -62,7 +62,7 @@ export default class HaAutomationCondition extends AutomationRowsMixin<Condition
     this.conditions = items;
   }
 
-  protected _setHighlightedItems(items: Condition[]) {
+  protected setHighlightedItems(items: Condition[]) {
     this.highlightedConditions = items;
   }
 
@@ -139,17 +139,17 @@ export default class HaAutomationCondition extends AutomationRowsMixin<Condition
         value: updatedConditions,
       });
     } else if (
-      this._focusLastItemOnChange ||
-      this._focusItemIndexOnChange !== undefined
+      this.focusLastItemOnChange ||
+      this.focusItemIndexOnChange !== undefined
     ) {
-      const mode = this._focusLastItemOnChange ? "new" : "moved";
+      const mode = this.focusLastItemOnChange ? "new" : "moved";
 
       const row = this.shadowRoot!.querySelector<HaAutomationConditionRow>(
-        `ha-automation-condition-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusItemIndexOnChange! + 1})`}`
+        `ha-automation-condition-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this.focusItemIndexOnChange! + 1})`}`
       )!;
 
-      this._focusLastItemOnChange = false;
-      this._focusItemIndexOnChange = undefined;
+      this.focusLastItemOnChange = false;
+      this.focusItemIndexOnChange = undefined;
 
       row.updateComplete.then(() => {
         // on new condition open the settings in the sidebar, except for building blocks
@@ -201,14 +201,14 @@ export default class HaAutomationCondition extends AutomationRowsMixin<Condition
         .disabled=${this.disabled}
         group="conditions"
         invert-swap
-        @item-moved=${this._itemMoved}
-        @item-added=${this._itemAdded}
-        @item-removed=${this._itemRemoved}
+        @item-moved=${this.itemMoved}
+        @item-added=${this.itemAdded}
+        @item-removed=${this.itemRemoved}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.conditions.filter((c) => typeof c === "object"),
-            (condition) => this._getKey(condition),
+            (condition) => this.getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
                 .root=${this.root}
@@ -221,26 +221,26 @@ export default class HaAutomationCondition extends AutomationRowsMixin<Condition
                 .conditionDescriptions=${this._conditionDescriptions}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
-                @duplicate=${this._duplicateItem}
-                @insert-after=${this._insertAfter}
-                @move-down=${this._moveDown}
-                @move-up=${this._moveUp}
-                @value-changed=${this._itemChanged}
+                @duplicate=${this.duplicateItem}
+                @insert-after=${this.insertAfter}
+                @move-down=${this.moveDown}
+                @move-up=${this.moveUp}
+                @value-changed=${this.itemChanged}
                 .hass=${this.hass}
                 .highlight=${this.highlightedConditions?.includes(cond)}
                 .optionsInSidebar=${this.optionsInSidebar}
-                .sortSelected=${this._rowSortSelected === idx}
-                @stop-sort-selection=${this._stopSortSelection}
+                .sortSelected=${this.rowSortSelected === idx}
+                @stop-sort-selection=${this.stopSortSelection}
               >
                 ${!this.disabled
                   ? html`
                       <div
                         tabindex="0"
-                        class="handle ${this._rowSortSelected === idx
+                        class="handle ${this.rowSortSelected === idx
                           ? "active"
                           : ""}"
                         slot="icons"
-                        @keydown=${this._handleDragKeydown}
+                        @keydown=${this.handleDragKeydown}
                         @click=${stopPropagation}
                         .index=${idx}
                       >
@@ -304,7 +304,7 @@ export default class HaAutomationCondition extends AutomationRowsMixin<Condition
         ...elClass.defaultConfig,
       });
     }
-    this._focusLastItemOnChange = true;
+    this.focusLastItemOnChange = true;
     fireEvent(this, "value-changed", { value: conditions });
   };
 

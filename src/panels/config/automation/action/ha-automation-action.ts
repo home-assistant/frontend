@@ -20,13 +20,13 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import { AutomationRowsMixin } from "../ha-automation-rows-mixin";
+import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action")
-export default class HaAutomationAction extends AutomationRowsMixin<Action>(
+export default class HaAutomationAction extends AutomationSortableListMixin<Action>(
   LitElement
 ) {
   @property({ type: Boolean }) public root = false;
@@ -46,7 +46,7 @@ export default class HaAutomationAction extends AutomationRowsMixin<Action>(
     this.actions = items;
   }
 
-  protected _setHighlightedItems(items: Action[]) {
+  protected setHighlightedItems(items: Action[]) {
     this.highlightedActions = items;
   }
 
@@ -58,14 +58,14 @@ export default class HaAutomationAction extends AutomationRowsMixin<Action>(
         .disabled=${this.disabled}
         group="actions"
         invert-swap
-        @item-moved=${this._itemMoved}
-        @item-added=${this._itemAdded}
-        @item-removed=${this._itemRemoved}
+        @item-moved=${this.itemMoved}
+        @item-added=${this.itemAdded}
+        @item-removed=${this.itemRemoved}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.actions,
-            (action) => this._getKey(action),
+            (action) => this.getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
                 .root=${this.root}
@@ -76,26 +76,26 @@ export default class HaAutomationAction extends AutomationRowsMixin<Action>(
                 .action=${action}
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
-                @duplicate=${this._duplicateItem}
-                @insert-after=${this._insertAfter}
-                @move-down=${this._moveDown}
-                @move-up=${this._moveUp}
-                @value-changed=${this._itemChanged}
+                @duplicate=${this.duplicateItem}
+                @insert-after=${this.insertAfter}
+                @move-down=${this.moveDown}
+                @move-up=${this.moveUp}
+                @value-changed=${this.itemChanged}
                 .hass=${this.hass}
                 .highlight=${this.highlightedActions?.includes(action)}
                 .optionsInSidebar=${this.optionsInSidebar}
-                .sortSelected=${this._rowSortSelected === idx}
-                @stop-sort-selection=${this._stopSortSelection}
+                .sortSelected=${this.rowSortSelected === idx}
+                @stop-sort-selection=${this.stopSortSelection}
               >
                 ${!this.disabled
                   ? html`
                       <div
                         tabindex="0"
-                        class="handle ${this._rowSortSelected === idx
+                        class="handle ${this.rowSortSelected === idx
                           ? "active"
                           : ""}"
                         slot="icons"
-                        @keydown=${this._handleDragKeydown}
+                        @keydown=${this.handleDragKeydown}
                         @click=${stopPropagation}
                         .index=${idx}
                       >
@@ -131,17 +131,16 @@ export default class HaAutomationAction extends AutomationRowsMixin<Action>(
 
     if (
       changedProps.has("actions") &&
-      (this._focusLastItemOnChange ||
-        this._focusItemIndexOnChange !== undefined)
+      (this.focusLastItemOnChange || this.focusItemIndexOnChange !== undefined)
     ) {
-      const mode = this._focusLastItemOnChange ? "new" : "moved";
+      const mode = this.focusLastItemOnChange ? "new" : "moved";
 
       const row = this.shadowRoot!.querySelector<HaAutomationActionRow>(
-        `ha-automation-action-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this._focusItemIndexOnChange! + 1})`}`
+        `ha-automation-action-row:${mode === "new" ? "last-of-type" : `nth-of-type(${this.focusItemIndexOnChange! + 1})`}`
       )!;
 
-      this._focusLastItemOnChange = false;
-      this._focusItemIndexOnChange = undefined;
+      this.focusLastItemOnChange = false;
+      this.focusItemIndexOnChange = undefined;
 
       row.updateComplete.then(() => {
         // on new condition open the settings in the sidebar, except for building blocks
@@ -215,7 +214,7 @@ export default class HaAutomationAction extends AutomationRowsMixin<Action>(
         elClass ? { ...elClass.defaultConfig } : { [action]: {} }
       );
     }
-    this._focusLastItemOnChange = true;
+    this.focusLastItemOnChange = true;
     fireEvent(this, "value-changed", { value: actions });
   };
 

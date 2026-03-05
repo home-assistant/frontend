@@ -27,13 +27,13 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import { AutomationRowsMixin } from "../ha-automation-rows-mixin";
+import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger")
-export default class HaAutomationTrigger extends AutomationRowsMixin<Trigger>(
+export default class HaAutomationTrigger extends AutomationSortableListMixin<Trigger>(
   SubscribeMixin(LitElement)
 ) {
   @property({ attribute: false }) public triggers!: Trigger[];
@@ -57,7 +57,7 @@ export default class HaAutomationTrigger extends AutomationRowsMixin<Trigger>(
     this.triggers = items;
   }
 
-  protected _setHighlightedItems(items: Trigger[]) {
+  protected setHighlightedItems(items: Trigger[]) {
     this.highlightedTriggers = items;
   }
 
@@ -117,14 +117,14 @@ export default class HaAutomationTrigger extends AutomationRowsMixin<Trigger>(
         .disabled=${this.disabled}
         group="triggers"
         invert-swap
-        @item-moved=${this._itemMoved}
-        @item-added=${this._itemAdded}
-        @item-removed=${this._itemRemoved}
+        @item-moved=${this.itemMoved}
+        @item-added=${this.itemAdded}
+        @item-removed=${this.itemRemoved}
       >
         <div class="rows ${!this.optionsInSidebar ? "no-sidebar" : ""}">
           ${repeat(
             this.triggers,
-            (trigger) => this._getKey(trigger),
+            (trigger) => this.getKey(trigger),
             (trg, idx) => html`
               <ha-automation-trigger-row
                 .sortableData=${trg}
@@ -133,28 +133,28 @@ export default class HaAutomationTrigger extends AutomationRowsMixin<Trigger>(
                 .last=${idx === this.triggers.length - 1}
                 .trigger=${trg}
                 .triggerDescriptions=${this._triggerDescriptions}
-                @duplicate=${this._duplicateItem}
-                @insert-after=${this._insertAfter}
-                @move-down=${this._moveDown}
-                @move-up=${this._moveUp}
-                @value-changed=${this._itemChanged}
+                @duplicate=${this.duplicateItem}
+                @insert-after=${this.insertAfter}
+                @move-down=${this.moveDown}
+                @move-up=${this.moveUp}
+                @value-changed=${this.itemChanged}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 .highlight=${this.highlightedTriggers?.includes(trg)}
                 .optionsInSidebar=${this.optionsInSidebar}
-                .sortSelected=${this._rowSortSelected === idx}
-                @stop-sort-selection=${this._stopSortSelection}
+                .sortSelected=${this.rowSortSelected === idx}
+                @stop-sort-selection=${this.stopSortSelection}
               >
                 ${!this.disabled
                   ? html`
                       <div
                         tabindex="0"
-                        class="handle ${this._rowSortSelected === idx
+                        class="handle ${this.rowSortSelected === idx
                           ? "active"
                           : ""}"
                         slot="icons"
-                        @keydown=${this._handleDragKeydown}
+                        @keydown=${this.handleDragKeydown}
                         @click=${stopPropagation}
                         .index=${idx}
                       >
@@ -220,7 +220,7 @@ export default class HaAutomationTrigger extends AutomationRowsMixin<Trigger>(
         ...elClass.defaultConfig,
       });
     }
-    this._focusLastItemOnChange = true;
+    this.focusLastItemOnChange = true;
     fireEvent(this, "value-changed", { value: triggers });
   };
 
@@ -229,15 +229,14 @@ export default class HaAutomationTrigger extends AutomationRowsMixin<Trigger>(
 
     if (
       changedProps.has("triggers") &&
-      (this._focusLastItemOnChange ||
-        this._focusItemIndexOnChange !== undefined)
+      (this.focusLastItemOnChange || this.focusItemIndexOnChange !== undefined)
     ) {
       const row = this.shadowRoot!.querySelector<HaAutomationTriggerRow>(
-        `ha-automation-trigger-row:${this._focusLastItemOnChange ? "last-of-type" : `nth-of-type(${this._focusItemIndexOnChange! + 1})`}`
+        `ha-automation-trigger-row:${this.focusLastItemOnChange ? "last-of-type" : `nth-of-type(${this.focusItemIndexOnChange! + 1})`}`
       )!;
 
-      this._focusLastItemOnChange = false;
-      this._focusItemIndexOnChange = undefined;
+      this.focusLastItemOnChange = false;
+      this.focusItemIndexOnChange = undefined;
 
       row.updateComplete.then(() => {
         if (this.optionsInSidebar) {
