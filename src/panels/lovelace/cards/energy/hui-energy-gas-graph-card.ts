@@ -88,16 +88,18 @@ export class HuiEnergyGasGraphCard
 
     return html`
       <ha-card>
-        <div class="card-header">
-          <span>${this._config.title ? this._config.title : nothing}</span>
-          ${this._total
-            ? html`<hui-energy-graph-chip
-                .tooltip=${this._formatTotal(this._total)}
-              >
-                ${formatNumber(this._total, this.hass.locale)} ${this._unit}
-              </hui-energy-graph-chip>`
-            : nothing}
-        </div>
+        ${this._config.title
+          ? html` <div class="card-header">
+              <span>${this._config.title}</span>
+              ${this._total
+                ? html`<hui-energy-graph-chip
+                    .tooltip=${this._formatTotal(this._total)}
+                  >
+                    ${formatNumber(this._total, this.hass.locale)} ${this._unit}
+                  </hui-energy-graph-chip>`
+                : nothing}
+            </div>`
+          : nothing}
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,

@@ -1,4 +1,6 @@
+import { ContextProvider } from "@lit/context";
 import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -35,6 +37,8 @@ import type {
   ActionSidebarConfig,
   SidebarConfig,
 } from "../../../data/automation";
+import { subscribeAndProcessConfigEntries } from "../../../data/config_entries";
+import { configEntriesContext } from "../../../data/context";
 import type {
   Action,
   Fields,
@@ -46,7 +50,8 @@ import {
   MODES,
   normalizeScriptConfig,
 } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "../automation/action/ha-automation-action";
@@ -70,7 +75,7 @@ const scriptConfigStruct = object({
 });
 
 @customElement("manual-script-editor")
-export class HaManualScriptEditor extends LitElement {
+export class HaManualScriptEditor extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -108,6 +113,11 @@ export class HaManualScriptEditor extends LitElement {
     HaAutomationAction | HaScriptFields
   >;
 
+  private _configEntries = new ContextProvider(this, {
+    context: configEntriesContext,
+    initialValue: [],
+  });
+
   private _openFields = false;
 
   private _prevSidebarWidthPx?: number;
@@ -127,6 +137,14 @@ export class HaManualScriptEditor extends LitElement {
         },
       },
     });
+  }
+
+  public hassSubscribe(): Promise<UnsubscribeFunc>[] {
+    return [
+      subscribeAndProcessConfigEntries(this.hass, (configEntries) => {
+        this._configEntries.setValue(configEntries);
+      }),
+    ];
   }
 
   protected updated(changedProps) {
@@ -270,6 +288,7 @@ export class HaManualScriptEditor extends LitElement {
             @value-changed=${this._sidebarConfigChanged}
             @sidebar-resized=${this._resizeSidebar}
             @sidebar-resizing-stopped=${this._stopResizeSidebar}
+            @sidebar-reset-size=${this._resetSidebarWidth}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -371,7 +390,11 @@ export class HaManualScriptEditor extends LitElement {
       }
     }
 
-    if (!["sequence", "unknown"].includes(getActionType(config))) {
+    const actionType = getActionType(config);
+    if (
+      !["sequence", "unknown"].includes(actionType) ||
+      (actionType === "sequence" && "metadata" in config)
+    ) {
       config = { sequence: [config] };
     }
 
@@ -520,7 +543,7 @@ export class HaManualScriptEditor extends LitElement {
     this._sidebarElement?.focus();
   }
 
-  private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
+  private _sidebarConfigChanged(ev: ValueChangedEvent<SidebarConfig>) {
     ev.stopPropagation();
     if (!this._sidebarConfig) {
       return;
@@ -548,7 +571,6 @@ export class HaManualScriptEditor extends LitElement {
   }
 
   private _saveScript() {
-    this.triggerCloseSidebar();
     fireEvent(this, "save-script");
   }
 
@@ -612,6 +634,16 @@ export class HaManualScriptEditor extends LitElement {
   private _stopResizeSidebar(ev) {
     ev.stopPropagation();
     this._prevSidebarWidthPx = undefined;
+  }
+
+  private _resetSidebarWidth(ev: Event) {
+    ev.stopPropagation();
+    this._prevSidebarWidthPx = undefined;
+    this._sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
   }
 
   static get styles(): CSSResultGroup {

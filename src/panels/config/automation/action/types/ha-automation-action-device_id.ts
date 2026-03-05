@@ -11,14 +11,14 @@ import { fullEntitiesContext } from "../../../../../data/context";
 import type {
   DeviceAction,
   DeviceCapabilities,
-} from "../../../../../data/device_automation";
+} from "../../../../../data/device/device_automation";
 import {
   deviceAutomationsEqual,
   fetchDeviceActionCapabilities,
-  localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
-} from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+  localizeExtraFieldsComputeLabelCallback,
+} from "../../../../../data/device/device_automation";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")

@@ -9,6 +9,7 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { LightCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
@@ -69,6 +70,7 @@ const SCHEMA = [
             default_action: "toggle",
           },
         },
+        context: ACTION_RELATED_CONTEXT,
       },
       {
         name: "hold_action",
@@ -77,6 +79,7 @@ const SCHEMA = [
             default_action: "more-info",
           },
         },
+        context: ACTION_RELATED_CONTEXT,
       },
       {
         name: "",
@@ -90,6 +93,7 @@ const SCHEMA = [
                 default_action: "none",
               },
             },
+            context: ACTION_RELATED_CONTEXT,
           },
         ],
       },

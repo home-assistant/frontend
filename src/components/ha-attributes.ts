@@ -3,15 +3,15 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
 import {
   STATE_ATTRIBUTES,
   STATE_ATTRIBUTES_DOMAIN_CLASS,
-} from "../data/entity_attributes";
+} from "../data/entity/entity_attributes";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-attribute-value";
 import "./ha-expansion-panel";
-import { computeStateDomain } from "../common/entity/compute_state_domain";
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {

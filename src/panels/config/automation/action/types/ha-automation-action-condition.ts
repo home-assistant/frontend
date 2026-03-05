@@ -1,19 +1,28 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import "../../../../../components/ha-list-item";
+import { CONDITION_ICONS } from "../../../../../components/ha-condition-icon";
+import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-select";
-import type { HaSelect } from "../../../../../components/ha-select";
-import type { Condition } from "../../../../../data/automation";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
+import {
+  DYNAMIC_PREFIX,
+  getValueFromDynamic,
+  isDynamic,
+  type Condition,
+} from "../../../../../data/automation";
+import type { ConditionDescriptions } from "../../../../../data/condition";
 import {
   CONDITION_BUILDING_BLOCKS,
-  CONDITION_ICONS,
+  getConditionDomain,
+  getConditionObjectId,
+  subscribeConditions,
 } from "../../../../../data/condition";
-import type { Entries, HomeAssistant } from "../../../../../types";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import type { HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
 import "../../condition/types/ha-automation-condition-and";
@@ -30,7 +39,10 @@ import "../../condition/types/ha-automation-condition-zone";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-condition")
-export class HaConditionAction extends LitElement implements ActionElement {
+export class HaConditionAction
+  extends SubscribeMixin(LitElement)
+  implements ActionElement
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
@@ -43,6 +55,8 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
+  @state() private _conditionDescriptions: ConditionDescriptions = {};
+
   @query("ha-automation-condition-editor")
   private _conditionEditor?: HaAutomationConditionEditor;
 
@@ -50,35 +64,67 @@ export class HaConditionAction extends LitElement implements ActionElement {
     return { condition: "state" };
   }
 
+  protected hassSubscribe() {
+    return [
+      subscribeConditions(this.hass, (conditions) =>
+        this._addConditions(conditions)
+      ),
+    ];
+  }
+
+  private _addConditions(conditions: ConditionDescriptions) {
+    this._conditionDescriptions = {
+      ...this._conditionDescriptions,
+      ...conditions,
+    };
+  }
+
   protected render() {
     const buildingBlock = CONDITION_BUILDING_BLOCKS.includes(
       this.action.condition
     );
 
+    const value =
+      this.action.condition in this._conditionDescriptions
+        ? `${DYNAMIC_PREFIX}${this.action.condition}`
+        : this.action.condition;
+
+    let valueLabel = value;
+
+    const items = html`${this._processedTypes(
+      this._conditionDescriptions,
+      this.hass.localize
+    ).map(([opt, label, condition]) => {
+      const selected = value === opt;
+
+      if (selected) {
+        valueLabel = label;
+      }
+
+      return html`
+        <ha-dropdown-item .value=${opt} .selected=${selected}>
+          <ha-condition-icon
+            .hass=${this.hass}
+            slot="icon"
+            .condition=${condition}
+          ></ha-condition-icon>
+          ${label}
+        </ha-dropdown-item>
+      `;
+    })}`;
+
     return html`
       ${this.inSidebar || (!this.inSidebar && !this.indent)
         ? html`
             <ha-select
-              fixedMenuPosition
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.type_select"
               )}
               .disabled=${this.disabled}
-              .value=${this.action.condition}
-              naturalMenuWidth
+              .value=${valueLabel}
               @selected=${this._typeChanged}
-              @closed=${stopPropagation}
             >
-              ${this._processedTypes(this.hass.localize).map(
-                ([opt, label, icon]) => html`
-                  <ha-list-item .value=${opt} graphic="icon">
-                    ${label}<ha-svg-icon
-                      slot="graphic"
-                      .path=${icon}
-                    ></ha-svg-icon
-                  ></ha-list-item>
-                `
-              )}
+              ${items}
             </ha-select>
           `
         : nothing}
@@ -88,11 +134,14 @@ export class HaConditionAction extends LitElement implements ActionElement {
         ? html`
             <ha-automation-condition-editor
               .condition=${this.action}
+              .description=${this._conditionDescriptions[this.action.condition]}
               .disabled=${this.disabled}
               .hass=${this.hass}
               @value-changed=${this._conditionChanged}
               .narrow=${this.narrow}
-              .uiSupported=${this._uiSupported(this.action.condition)}
+              .uiSupported=${this._uiSupported(
+                this._getType(this.action, this._conditionDescriptions)
+              )}
               .indent=${this.indent}
               action
             ></ha-automation-condition-editor>
@@ -102,19 +151,46 @@ export class HaConditionAction extends LitElement implements ActionElement {
   }
 
   private _processedTypes = memoizeOne(
-    (localize: LocalizeFunc): [string, string, string][] =>
-      (Object.entries(CONDITION_ICONS) as Entries<typeof CONDITION_ICONS>)
-        .map(
-          ([condition, icon]) =>
-            [
-              condition,
-              localize(
-                `ui.panel.config.automation.editor.conditions.type.${condition}.label`
-              ),
-              icon,
-            ] as [string, string, string]
-        )
-        .sort((a, b) => stringCompare(a[1], b[1], this.hass.locale.language))
+    (
+      conditionDescriptions: ConditionDescriptions,
+      localize: LocalizeFunc
+    ): [string, string, string][] => {
+      const legacy = (
+        Object.keys(CONDITION_ICONS) as (keyof typeof CONDITION_ICONS)[]
+      ).map(
+        (condition) =>
+          [
+            condition,
+            localize(
+              `ui.panel.config.automation.editor.conditions.type.${condition}.label`
+            ),
+            condition,
+          ] as [string, string, string]
+      );
+      const platform = Object.keys(conditionDescriptions).map((condition) => {
+        const domain = getConditionDomain(condition);
+        const conditionObjId = getConditionObjectId(condition);
+        return [
+          `${DYNAMIC_PREFIX}${condition}`,
+          localize(`component.${domain}.conditions.${conditionObjId}.name`) ||
+            condition,
+          condition,
+        ] as [string, string, string];
+      });
+      return [...legacy, ...platform].sort((a, b) =>
+        stringCompare(a[1], b[1], this.hass.locale.language)
+      );
+    }
+  );
+
+  private _getType = memoizeOne(
+    (condition: Condition, conditionDescriptions: ConditionDescriptions) => {
+      if (condition.condition in conditionDescriptions) {
+        return "platform";
+      }
+
+      return condition.condition;
+    }
   );
 
   private _conditionChanged(ev: CustomEvent) {
@@ -125,10 +201,22 @@ export class HaConditionAction extends LitElement implements ActionElement {
     });
   }
 
-  private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as HaSelect).value;
+  private _typeChanged(ev: HaSelectSelectEvent) {
+    const type = ev.detail.value;
 
     if (!type) {
+      return;
+    }
+
+    if (isDynamic(type)) {
+      const value = getValueFromDynamic(type);
+      if (value !== this.action.condition) {
+        fireEvent(this, "value-changed", {
+          value: {
+            condition: value,
+          },
+        });
+      }
       return;
     }
 
@@ -163,6 +251,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
   static styles = css`
     ha-select {
       margin-bottom: 24px;
+      display: block;
     }
   `;
 }

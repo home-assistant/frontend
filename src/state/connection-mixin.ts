@@ -8,13 +8,16 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { promiseTimeout } from "../common/util/promise-timeout";
-import { subscribeAreaRegistry } from "../data/area_registry";
+import { subscribeAreaRegistry } from "../data/area/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
-import { subscribeDeviceRegistry } from "../data/device_registry";
-import { subscribeFrontendUserData } from "../data/frontend";
+import { subscribeDeviceRegistry } from "../data/device/device_registry";
+import {
+  subscribeFrontendSystemData,
+  subscribeFrontendUserData,
+} from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
-import { DEFAULT_PANEL } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
 import {
   DateFormat,
@@ -33,7 +36,6 @@ import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
 import type { HassBaseEl } from "./hass-base-mixin";
-import { computeStateName } from "../common/entity/compute_state_name";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -59,8 +61,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         panels: null as any,
         services: null as any,
         user: null as any,
+        userData: undefined,
+        systemData: undefined,
         panelUrl: (this as any)._panelUrl,
-        defaultPanel: DEFAULT_PANEL,
         language,
         selectedLanguage: null,
         locale: {
@@ -73,8 +76,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         },
         resources: null as any,
         localize: () => "",
-
         translationMetadata,
+        kioskMode: false,
         dockedSidebar: "docked",
         vibrate: true,
         debugConnection: __DEV__,
@@ -206,12 +209,25 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           this._loadFragmentTranslations(this.hass?.language, fragment),
         formatEntityState: (stateObj, state) =>
           (state != null ? state : stateObj.state) ?? "",
+        formatEntityStateToParts: (stateObj, state) => [
+          {
+            type: "value",
+            value: (state != null ? state : stateObj.state) ?? "",
+          },
+        ],
         formatEntityAttributeName: (_stateObj, attribute) => attribute,
         formatEntityAttributeValue: (stateObj, attribute, value) =>
           value != null ? value : (stateObj.attributes[attribute] ?? ""),
+        formatEntityAttributeValueToParts: (stateObj, attribute, value) => [
+          {
+            type: "value",
+            value:
+              value != null ? value : (stateObj.attributes[attribute] ?? ""),
+          },
+        ],
+        formatEntityName: (stateObj) => computeStateName(stateObj),
         ...getState(),
         ...this._pendingHass,
-        formatEntityName: (stateObj) => computeStateName(stateObj),
       };
 
       this.hassConnected();
@@ -282,10 +298,26 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
-      subscribeFrontendUserData(conn, "core", ({ value: userData }) => {
-        this._updateHass({ userData });
+      // Catch errors to userData and systemData subscription (e.g. if the
+      // backend isn't up to date) and set to null so frontend can continue
+      subscribeFrontendUserData(conn, "core", ({ value: userData }) =>
+        this._updateHass({ userData: userData || {} })
+      ).catch(() => {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Failed to subscribe to user data, setting to empty object"
+        );
+        this._updateHass({ userData: {} });
       });
-
+      subscribeFrontendSystemData(conn, "core", ({ value: systemData }) =>
+        this._updateHass({ systemData: systemData || {} })
+      ).catch(() => {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Failed to subscribe to system data, setting to empty object"
+        );
+        this._updateHass({ systemData: {} });
+      });
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {

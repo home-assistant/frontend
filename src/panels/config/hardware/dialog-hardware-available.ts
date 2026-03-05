@@ -1,4 +1,3 @@
-import { mdiClose } from "@mdi/js";
 import { dump } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,16 +5,16 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stringCompare } from "../../../common/string/compare";
-import "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHardwareInfo } from "../../../data/hassio/hardware";
 import { fetchHassioHardwareInfo } from "../../../data/hassio/hardware";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
+import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
 const _filterDevices = memoizeOne(
@@ -48,9 +47,12 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
 
   @state() private _filter?: string;
 
+  @state() private _open = false;
+
   public async showDialog(): Promise<Promise<void>> {
     try {
       this._hardware = await fetchHassioHardwareInfo(this.hass);
+      this._open = true;
     } catch (err: any) {
       await showAlertDialog(this, {
         title: this.hass.localize(
@@ -61,10 +63,15 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     }
   }
 
-  public closeDialog() {
+  public closeDialog(): boolean {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed() {
+    this._open = false;
     this._hardware = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -80,26 +87,18 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     );
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        flexcontent
+        header-title=${this.hass.localize(
           "ui.panel.config.hardware.available_hardware.title"
         )}
+        @closed=${this._dialogClosed}
       >
-        <div class="header" slot="heading">
-          <h2>
-            ${this.hass.localize(
-              "ui.panel.config.hardware.available_hardware.title"
-            )}
-          </h2>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-            dialogAction="close"
-          ></ha-icon-button>
+        <div class="content-container">
           <search-input
+            autofocus
             .hass=${this.hass}
             .filter=${this._filter}
             @value-changed=${this._handleSearchChange}
@@ -108,54 +107,56 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
             )}
           >
           </search-input>
+          <div class="devices-container ha-scrollbar">
+            ${devices.map(
+              (device) => html`
+                <ha-expansion-panel
+                  .header=${device.name}
+                  .secondary=${device.by_id || undefined}
+                  outlined
+                >
+                  <div class="device-property">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.hardware.available_hardware.subsystem"
+                      )}:
+                    </span>
+                    <span>${device.subsystem}</span>
+                  </div>
+                  <div class="device-property">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.hardware.available_hardware.device_path"
+                      )}:
+                    </span>
+                    <code>${device.dev_path}</code>
+                  </div>
+                  ${device.by_id
+                    ? html`
+                        <div class="device-property">
+                          <span>
+                            ${this.hass.localize(
+                              "ui.panel.config.hardware.available_hardware.id"
+                            )}:
+                          </span>
+                          <code>${device.by_id}</code>
+                        </div>
+                      `
+                    : nothing}
+                  <div class="attributes">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.panel.config.hardware.available_hardware.attributes"
+                      )}:
+                    </span>
+                    <pre>${dump(device.attributes, { indent: 2 })}</pre>
+                  </div>
+                </ha-expansion-panel>
+              `
+            )}
+          </div>
         </div>
-        ${devices.map(
-          (device) => html`
-            <ha-expansion-panel
-              .header=${device.name}
-              .secondary=${device.by_id || undefined}
-              outlined
-            >
-              <div class="device-property">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.config.hardware.available_hardware.subsystem"
-                  )}:
-                </span>
-                <span>${device.subsystem}</span>
-              </div>
-              <div class="device-property">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.config.hardware.available_hardware.device_path"
-                  )}:
-                </span>
-                <code>${device.dev_path}</code>
-              </div>
-              ${device.by_id
-                ? html`
-                    <div class="device-property">
-                      <span>
-                        ${this.hass.localize(
-                          "ui.panel.config.hardware.available_hardware.id"
-                        )}:
-                      </span>
-                      <code>${device.by_id}</code>
-                    </div>
-                  `
-                : ""}
-              <div class="attributes">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.config.hardware.available_hardware.attributes"
-                  )}:
-                </span>
-                <pre>${dump(device.attributes, { indent: 2 })}</pre>
-              </div>
-            </ha-expansion-panel>
-          `
-        )}
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -165,27 +166,26 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
-      haStyleDialog,
+      haStyleScrollbar,
       css`
-        ha-icon-button {
-          position: absolute;
-          right: 16px;
-          inset-inline-end: 16px;
-          inset-inline-start: initial;
-          top: 10px;
-          inset-inline-end: 16px;
-          inset-inline-start: initial;
-          text-decoration: none;
-          color: var(--primary-text-color);
+        ha-wa-dialog {
+          --dialog-content-padding: 0;
         }
-        h2 {
-          margin: 18px 42px 0 18px;
-          margin-inline-start: 18px;
-          margin-inline-end: 42px;
-          color: var(--primary-text-color);
+        .content-container {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+        .devices-container {
+          padding: var(--ha-space-6);
+          overflow-y: auto;
+          flex: 1;
+          min-height: 0;
         }
         ha-expansion-panel {
+          flex: 1;
           margin: 4px 0;
         }
         pre,

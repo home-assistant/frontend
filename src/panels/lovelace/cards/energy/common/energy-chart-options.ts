@@ -1,8 +1,9 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import {
-  differenceInMonths,
   subHours,
   differenceInDays,
+  differenceInMonths,
+  differenceInCalendarMonths,
   differenceInYears,
   startOfYear,
   addMilliseconds,
@@ -12,12 +13,15 @@ import {
   addHours,
   startOfDay,
   addDays,
+  subDays,
 } from "date-fns";
 import type {
   BarSeriesOption,
   CallbackDataParams,
+  LineSeriesOption,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import type { LineDataItemOption } from "echarts/types/src/chart/line/LineSeries";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
 import {
@@ -28,30 +32,56 @@ import {
 import { formatTime } from "../../../../../common/datetime/format_time";
 import type { ECOption } from "../../../../../resources/echarts/echarts";
 import { filterXSS } from "../../../../../common/util/xss";
+import type { StatisticPeriod } from "../../../../../data/recorder";
+import { getSuggestedPeriod } from "../../../../../data/energy";
 
-export function getSuggestedMax(dayDifference: number, end: Date): number {
+// Number of days of padding when showing time axis in months
+const MONTH_TIME_AXIS_PADDING = 5;
+
+export function getSuggestedMax(
+  period: StatisticPeriod,
+  end: Date,
+  noRounding: boolean
+): Date {
+  // Maximum period depends on whether plotting a line chart or discrete bars.
+  //  - For line charts we must be plotting all the way to end of a given period,
+  //    otherwise we cut off the last period of data.
+  //  - For bar charts we need to round down to the start of the final bars period
+  //    to avoid unnecessary padding of the chart.
   let suggestedMax = new Date(end);
 
+  if (noRounding || period === "5minute") {
+    return suggestedMax;
+  }
+  suggestedMax.setMinutes(0, 0, 0);
+  if (period === "hour") {
+    return suggestedMax;
+  }
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
   // Correct for this when showing days/months so we don't get an extra day.
-  if (dayDifference > 2 && suggestedMax.getHours() === 0) {
+  if (suggestedMax.getHours() === 0) {
     suggestedMax = subHours(suggestedMax, 1);
   }
-
-  suggestedMax.setMinutes(0, 0, 0);
-  if (dayDifference > 35) {
-    suggestedMax.setDate(1);
+  suggestedMax.setHours(0);
+  if (period === "day" || period === "week") {
+    return suggestedMax;
   }
-  if (dayDifference > 2) {
-    suggestedMax.setHours(0);
-  }
-  return suggestedMax.getTime();
+  // period === month
+  suggestedMax.setDate(1);
+  return suggestedMax;
 }
 
-export function getSuggestedPeriod(
-  dayDifference: number
-): "month" | "day" | "hour" {
-  return dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour";
+function createYAxisLabelFormatter(locale: FrontendLocaleData) {
+  let previousValue: number | undefined;
+
+  return (value: number): string => {
+    const maximumFractionDigits = Math.max(
+      1,
+      -Math.floor(Math.log10(Math.abs(value - (previousValue ?? value) || 1)))
+    );
+    previousValue = value;
+    return formatNumber(value, locale, { maximumFractionDigits });
+  };
 }
 
 export function getCommonOptions(
@@ -62,20 +92,48 @@ export function getCommonOptions(
   unit?: string,
   compareStart?: Date,
   compareEnd?: Date,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  detailedDailyData = false
 ): ECOption {
-  const dayDifference = differenceInDays(end, start);
+  const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
+  const suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
 
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
 
-  const options: ECOption = {
+  const monthTimeAxis: ECOption = {
+    xAxis: {
+      type: "time",
+      min: subDays(start, MONTH_TIME_AXIS_PADDING),
+      max: addDays(suggestedMax, MONTH_TIME_AXIS_PADDING),
+      axisLabel: {
+        formatter: {
+          year: "{yearStyle|{MMMM} {yyyy}}",
+          month: "{MMMM}",
+        },
+        rich: {
+          yearStyle: {
+            fontWeight: "bold",
+          },
+        },
+      },
+      // For shorter month ranges, force splitting to ensure time axis renders
+      // as whole month intervals. Limit the number of forced ticks to 6 months
+      // (so a max calendar difference of 5) to reduce clutter.
+      splitNumber: Math.min(differenceInCalendarMonths(end, start), 5),
+    },
+  };
+  const normalTimeAxis: ECOption = {
     xAxis: {
       type: "time",
       min: start,
-      max: getSuggestedMax(dayDifference, end),
+      max: suggestedMax,
     },
+  };
+
+  const options: ECOption = {
+    ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
     yAxis: {
       type: "value",
       name: unit,
@@ -84,7 +142,7 @@ export function getCommonOptions(
         align: "left",
       },
       axisLabel: {
-        formatter: (value: number) => formatNumber(Math.abs(value), locale),
+        formatter: createYAxisLabelFormatter(locale),
       },
       splitLine: {
         show: true,
@@ -117,7 +175,7 @@ export function getCommonOptions(
                 items,
                 locale,
                 config,
-                dayDifference,
+                suggestedPeriod,
                 compare,
                 showCompareYear,
                 unit,
@@ -131,7 +189,7 @@ export function getCommonOptions(
           [params],
           locale,
           config,
-          dayDifference,
+          suggestedPeriod,
           compare,
           showCompareYear,
           unit,
@@ -147,7 +205,7 @@ function formatTooltip(
   params: CallbackDataParams[],
   locale: FrontendLocaleData,
   config: HassConfig,
-  dayDifference: number,
+  suggestedPeriod: string,
   compare: boolean | null,
   showCompareYear: boolean,
   unit?: string,
@@ -161,20 +219,19 @@ function formatTooltip(
   const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
   let period: string;
 
-  if (dayDifference >= 89) {
+  if (suggestedPeriod === "month") {
     period = `${formatDateMonthYear(date, locale, config)}`;
-  } else if (dayDifference > 0) {
+  } else if (suggestedPeriod === "day") {
     period = `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}`;
   } else {
     period = `${
       compare
         ? `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}: `
         : ""
-    }${formatTime(date, locale, config)} – ${formatTime(
-      addHours(date, 1),
-      locale,
-      config
-    )}`;
+    }${formatTime(date, locale, config)}`;
+    if (params[0].componentSubType === "bar") {
+      period += ` – ${formatTime(addHours(date, 1), locale, config)}`;
+    }
   }
   const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
 
@@ -202,7 +259,7 @@ function formatTooltip(
           countNegative++;
         }
       }
-      return `${param.marker} ${filterXSS(param.seriesName!)}: ${value} ${unit}`;
+      return `${param.marker} ${filterXSS(param.seriesName!)}: <div style="direction:ltr; display: inline;">${value} ${unit}</div>`;
     })
     .filter(Boolean);
   let footer = "";
@@ -279,6 +336,44 @@ export function fillDataGapsAndRoundCaps(datasets: BarSeriesOption[]) {
       }
     }
   });
+}
+
+function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
+  const item =
+    datapoint && typeof datapoint === "object" && "value" in datapoint
+      ? datapoint
+      : { value: datapoint };
+  return Number(item.value?.[0]);
+}
+
+export function fillLineGaps(datasets: LineSeriesOption[]) {
+  const buckets = Array.from(
+    new Set(
+      datasets
+        .map((dataset) =>
+          dataset.data!.map((datapoint) => getDatapointX(datapoint))
+        )
+        .flat()
+    )
+  ).sort((a, b) => a - b);
+
+  datasets.forEach((dataset) => {
+    const dataMap = new Map<number, LineDataItemOption>();
+    dataset.data!.forEach((datapoint) => {
+      const item: LineDataItemOption =
+        datapoint && typeof datapoint === "object" && "value" in datapoint
+          ? datapoint
+          : ({ value: datapoint } as LineDataItemOption);
+      const x = getDatapointX(datapoint);
+      if (!Number.isNaN(x)) {
+        dataMap.set(x, item);
+      }
+    });
+
+    dataset.data = buckets.map((bucket) => dataMap.get(bucket) ?? [bucket, 0]);
+  });
+
+  return datasets;
 }
 
 export function getCompareTransform(start: Date, compareStart?: Date) {

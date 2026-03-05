@@ -1,18 +1,12 @@
-import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-icon-next";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-password-field";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-password-field";
 import {
   canDecryptBackupOnDownload,
   getPreferredAgentForDownload,
@@ -27,102 +21,96 @@ import type { DownloadDecryptedBackupDialogParams } from "./show-dialog-download
 class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _params?: DownloadDecryptedBackupDialogParams;
-
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
   @state() private _encryptionKey = "";
 
   @state() private _error = "";
 
   public showDialog(params: DownloadDecryptedBackupDialogParams): void {
-    this._opened = true;
+    this._open = true;
     this._params = params;
   }
 
   public closeDialog() {
-    this._dialog?.close();
+    this._open = false;
     return true;
   }
 
   private _dialogClosed() {
-    if (this._opened) {
+    if (this._open) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
-    this._opened = false;
+    this._open = false;
     this._params = undefined;
     this._encryptionKey = "";
     this._error = "";
   }
 
   protected render() {
-    if (!this._opened || !this._params) {
+    if (!this._params) {
       return nothing;
     }
 
     return html`
-      <ha-md-dialog open @closed=${this._dialogClosed} disable-cancel-action>
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title">
-            ${this.hass.localize(
-              "ui.panel.config.backup.dialogs.download.title"
-            )}
-          </span>
-        </ha-dialog-header>
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.backup.dialogs.download.title"
+        )}
+        prevent-scrim-close
+        @closed=${this._dialogClosed}
+      >
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.backup.dialogs.download.description"
+          )}
+        </p>
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.backup.dialogs.download.download_backup_encrypted",
+            {
+              download_it_encrypted: html`<button
+                class="link"
+                @click=${this._downloadEncrypted}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.download.download_it_encrypted"
+                )}
+              </button>`,
+            }
+          )}
+        </p>
 
-        <div slot="content">
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.backup.dialogs.download.description"
-            )}
-          </p>
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.backup.dialogs.download.download_backup_encrypted",
-              {
-                download_it_encrypted: html`<button
-                  class="link"
-                  @click=${this._downloadEncrypted}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.dialogs.download.download_it_encrypted"
-                  )}
-                </button>`,
-              }
-            )}
-          </p>
+        <ha-password-field
+          .label=${this.hass.localize(
+            "ui.panel.config.backup.dialogs.download.encryption_key"
+          )}
+          @input=${this._keyChanged}
+        ></ha-password-field>
 
-          <ha-password-field
-            .label=${this.hass.localize(
-              "ui.panel.config.backup.dialogs.download.encryption_key"
-            )}
-            @input=${this._keyChanged}
-          ></ha-password-field>
-
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-        </div>
-        <div slot="actions">
-          <ha-button appearance="plain" @click=${this._cancel}>
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing}
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._cancel}
+          >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
 
-          <ha-button @click=${this._submit}>
+          <ha-button slot="primaryAction" @click=${this._submit}>
             ${this.hass.localize(
               "ui.panel.config.backup.dialogs.download.download"
             )}
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -191,17 +179,8 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-md-dialog {
-          --dialog-content-padding: 8px 24px;
-          max-width: 500px;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-md-dialog {
-            max-width: none;
-          }
-          div[slot="content"] {
-            margin-top: 0;
-          }
+        ha-wa-dialog {
+          --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
 
         button.link {

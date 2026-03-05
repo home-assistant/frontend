@@ -1,7 +1,7 @@
-import { mdiLabel, mdiPlus } from "@mdi/js";
+import { mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import {
   customElement,
   property,
@@ -9,14 +9,21 @@ import {
   queryAssignedElements,
   state,
 } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
-import type { LabelRegistryEntry } from "../data/label_registry";
+import {
+  getLabels,
+  labelComboBoxKeys,
+  type LabelComboBoxItem,
+} from "../data/label/label_picker";
 import {
   createLabelRegistryEntry,
-  getLabels,
   subscribeLabelRegistry,
-} from "../data/label_registry";
+  type LabelRegistryEntry,
+} from "../data/label/label_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
@@ -24,12 +31,25 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
-import type { PickerComboBoxItem } from "./ha-picker-combo-box";
-import type { PickerValueRenderer } from "./ha-picker-field";
+import {
+  type PickerComboBoxItem,
+  DEFAULT_ROW_RENDERER_CONTENT,
+} from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
-const NO_LABELS = "___NO_LABELS___";
+
+export const renderLabelColorBadge = (color: string | undefined) =>
+  html`<div
+    style=${styleMap({
+      backgroundColor: color ? computeCssColor(color) : undefined,
+      borderRadius: "var(--ha-border-radius-md)",
+      border: "1px solid var(--outline-color)",
+      boxSizing: "border-box",
+      width: "var(--ha-space-5)",
+      height: "var(--ha-space-5)",
+    })}
+  ></div>`;
 
 @customElement("ha-label-picker")
 export class HaLabelPicker extends SubscribeMixin(LitElement) {
@@ -108,53 +128,24 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _labelMap = memoizeOne(
-    (
-      labels: LabelRegistryEntry[] | undefined
-    ): Map<string, LabelRegistryEntry> => {
-      if (!labels) {
-        return new Map();
-      }
-      return new Map(labels.map((label) => [label.label_id, label]));
-    }
-  );
-
-  private _computeValueRenderer = memoizeOne(
-    (labels: LabelRegistryEntry[] | undefined): PickerValueRenderer =>
-      (value) => {
-        const label = this._labelMap(labels).get(value);
-
-        if (!label) {
-          return html`
-            <ha-svg-icon slot="start" .path=${mdiLabel}></ha-svg-icon>
-            <span slot="headline">${value}</span>
-          `;
-        }
-
-        return html`
-          ${label.icon
-            ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
-            : html`<ha-svg-icon slot="start" .path=${mdiLabel}></ha-svg-icon>`}
-          <span slot="headline">${label.name}</span>
-        `;
-      }
-  );
+  private _rowRenderer: RenderItemFunction<LabelComboBoxItem> = (item) =>
+    html`<ha-combo-box-item type="button" compact>
+      ${DEFAULT_ROW_RENDERER_CONTENT(item)}
+      ${item.id !== ADD_NEW_ID
+        ? html`<div slot="trailing-supporting-text">
+            ${renderLabelColorBadge(item.color)}
+          </div>`
+        : nothing}
+    </ha-combo-box-item>`;
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
-  private _getItems = () => {
-    if (!this._labels || this._labels.length === 0) {
-      return [
-        {
-          id: NO_LABELS,
-          primary: this.hass.localize("ui.components.label-picker.no_labels"),
-          icon_path: mdiLabel,
-        },
-      ];
-    }
-
-    return this._getLabelsMemoized(
-      this.hass,
+  private _getItems = () =>
+    this._getLabelsMemoized(
+      this.hass.states,
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
       this._labels,
       this.includeDomains,
       this.excludeDomains,
@@ -163,7 +154,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       this.entityFilter,
       this.excludeLabels
     );
-  };
 
   private _allLabelNames = memoizeOne((labels?: LabelRegistryEntry[]) => {
     if (!labels) {
@@ -192,7 +182,7 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.label-picker.add_new_sugestion",
+            "ui.components.label-picker.add_new_suggestion",
             {
               name: searchString,
             }
@@ -216,23 +206,24 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       this.placeholder ??
       this.hass.localize("ui.components.label-picker.label");
 
-    const valueRenderer = this._computeValueRenderer(this._labels);
-
     return html`
       <ha-generic-picker
         .disabled=${this.disabled}
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.label-picker.no_match"
+        .helper=${this.helper}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.label-picker.no_labels"
         )}
         .addButtonLabel=${this.hass.localize("ui.components.label-picker.add")}
         .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
-        .valueRenderer=${valueRenderer}
+        .rowRenderer=${this._rowRenderer}
+        .searchKeys=${labelComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
         <slot .slot=${this._slotNodes?.length ? "field" : undefined}></slot>
@@ -244,10 +235,6 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
     ev.stopPropagation();
 
     const value = ev.detail.value;
-
-    if (value === NO_LABELS) {
-      return;
-    }
 
     if (!value) {
       this._setValue(undefined);
@@ -288,6 +275,11 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
       fireEvent(this, "change");
     }, 0);
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.label-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

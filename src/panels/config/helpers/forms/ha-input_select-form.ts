@@ -23,6 +23,8 @@ class HaInputSelectForm extends LitElement {
 
   @property({ type: Boolean }) public new = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _item?: InputSelect;
 
   @state() private _name!: string;
@@ -86,6 +88,7 @@ class HaInputSelectForm extends LitElement {
           )}
           .configValue=${"name"}
           @input=${this._valueChanged}
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-icon-picker
           .hass=${this.hass}
@@ -95,13 +98,18 @@ class HaInputSelectForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
+          .disabled=${this.disabled}
         ></ha-icon-picker>
         <div class="header">
           ${this.hass!.localize(
             "ui.dialogs.helper_settings.input_select.options"
           )}:
         </div>
-        <ha-sortable @item-moved=${this._optionMoved} handle-selector=".handle">
+        <ha-sortable
+          @item-moved=${this._optionMoved}
+          handle-selector=".handle"
+          .disabled=${this.disabled}
+        >
           <ha-list class="options">
             ${this._options.length
               ? repeat(
@@ -124,6 +132,7 @@ class HaInputSelectForm extends LitElement {
                           "ui.dialogs.helper_settings.input_select.remove_option"
                         )}
                         @click=${this._removeOption}
+                        .disabled=${this.disabled}
                         .path=${mdiDelete}
                       ></ha-icon-button>
                     </ha-list-item>
@@ -146,8 +155,13 @@ class HaInputSelectForm extends LitElement {
               "ui.dialogs.helper_settings.input_select.add_option"
             )}
             @keydown=${this._handleKeyAdd}
+            .disabled=${this.disabled}
           ></ha-textfield>
-          <ha-button size="small" appearance="plain" @click=${this._addOption}
+          <ha-button
+            size="small"
+            appearance="plain"
+            @click=${this._addOption}
+            .disabled=${this.disabled}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
             )}</ha-button

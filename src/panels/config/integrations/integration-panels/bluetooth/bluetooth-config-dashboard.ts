@@ -1,21 +1,19 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import "../../../../../components/ha-card";
-import "../../../../../components/ha-code-editor";
-import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-switch";
-import "../../../../../components/ha-button";
-import { getConfigEntries } from "../../../../../data/config_entries";
-import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
-import "../../../../../layouts/hass-subpage";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 import {
-  subscribeBluetoothConnectionAllocations,
-  subscribeBluetoothScannerState,
-  subscribeBluetoothScannersDetails,
-} from "../../../../../data/bluetooth";
+  mdiBroadcast,
+  mdiCogOutline,
+  mdiLan,
+  mdiLinkVariant,
+  mdiNetwork,
+} from "@mdi/js";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import "../../../../../components/ha-alert";
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list";
+import "../../../../../components/ha-list-item";
 import type {
   BluetoothAllocationsData,
   BluetoothScannerState,
@@ -23,28 +21,59 @@ import type {
   HaScannerType,
 } from "../../../../../data/bluetooth";
 import {
-  getValueInPercentage,
-  roundWithOneDecimal,
-} from "../../../../../util/calculate";
-import "../../../../../components/ha-metric";
+  subscribeBluetoothConnectionAllocations,
+  subscribeBluetoothScannerState,
+  subscribeBluetoothScannersDetails,
+} from "../../../../../data/bluetooth";
+import type { ConfigEntry } from "../../../../../data/config_entries";
+import { getConfigEntries } from "../../../../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
+import "../../../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../../../types";
+
+export const bluetoothTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.bluetooth.tabs.overview",
+    path: `/config/bluetooth/dashboard`,
+    iconPath: mdiNetwork,
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.tabs.advertisements",
+    path: `/config/bluetooth/advertisement-monitor`,
+    iconPath: mdiBroadcast,
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.tabs.visualization",
+    path: `/config/bluetooth/visualization`,
+    iconPath: mdiLan,
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.tabs.connections",
+    path: `/config/bluetooth/connection-monitor`,
+    iconPath: mdiLinkVariant,
+  },
+];
 
 @customElement("bluetooth-config-dashboard")
 export class BluetoothConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public route!: Route;
+
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @state() private _configEntries: ConfigEntry[] = [];
 
   @state() private _connectionAllocationData: BluetoothAllocationsData[] = [];
 
-  @state() private _connectionAllocationsError?: string;
-
-  @state() private _scannerState?: BluetoothScannerState;
+  @state() private _scannerStates: Record<string, BluetoothScannerState> = {};
 
   @state() private _scannerDetails?: BluetoothScannersDetails;
-
-  private _configEntry = new URLSearchParams(window.location.search).get(
-    "config_entry"
-  );
 
   private _unsubConnectionAllocations?: (() => Promise<void>) | undefined;
 
@@ -55,41 +84,44 @@ export class BluetoothConfigDashboard extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass) {
+      this._loadConfigEntries();
       this._subscribeBluetoothConnectionAllocations();
       this._subscribeBluetoothScannerState();
       this._subscribeScannerDetails();
     }
   }
 
+  private async _loadConfigEntries(): Promise<void> {
+    this._configEntries = await getConfigEntries(this.hass, {
+      domain: "bluetooth",
+    });
+  }
+
   private async _subscribeBluetoothConnectionAllocations(): Promise<void> {
-    if (this._unsubConnectionAllocations || !this._configEntry) {
+    if (this._unsubConnectionAllocations) {
       return;
     }
-    try {
-      this._unsubConnectionAllocations =
-        await subscribeBluetoothConnectionAllocations(
-          this.hass.connection,
-          (data) => {
-            this._connectionAllocationData = data;
-          },
-          this._configEntry
-        );
-    } catch (err: any) {
-      this._unsubConnectionAllocations = undefined;
-      this._connectionAllocationsError = err.message;
-    }
+    this._unsubConnectionAllocations =
+      await subscribeBluetoothConnectionAllocations(
+        this.hass.connection,
+        (data) => {
+          this._connectionAllocationData = data;
+        }
+      );
   }
 
   private async _subscribeBluetoothScannerState(): Promise<void> {
-    if (this._unsubScannerState || !this._configEntry) {
+    if (this._unsubScannerState) {
       return;
     }
     this._unsubScannerState = await subscribeBluetoothScannerState(
       this.hass.connection,
       (scannerState) => {
-        this._scannerState = scannerState;
-      },
-      this._configEntry
+        this._scannerStates = {
+          ...this._scannerStates,
+          [scannerState.source]: scannerState,
+        };
+      }
     );
   }
 
@@ -122,92 +154,111 @@ export class BluetoothConfigDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    // Get scanner type to determine if options button should be shown
-    const scannerDetails =
-      this._scannerState && this._scannerDetails?.[this._scannerState.source];
-    const scannerType: HaScannerType =
-      scannerDetails?.scanner_type ?? "unknown";
-    const isRemoteScanner = scannerType === "remote";
-
     return html`
-      <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
+      <hass-tabs-subpage
+        header=${this.hass.localize("ui.panel.config.bluetooth.title")}
+        .narrow=${this.narrow}
+        .hass=${this.hass}
+        .route=${this.route}
+        .tabs=${bluetoothTabs}
+      >
         <div class="content">
           <ha-card
             .header=${this.hass.localize(
               "ui.panel.config.bluetooth.settings_title"
             )}
           >
-            <div class="card-content">${this._renderScannerState()}</div>
-            ${!isRemoteScanner
-              ? html`<div class="card-actions">
-                  <ha-button @click=${this._openOptionFlow}
-                    >${this.hass.localize(
-                      "ui.panel.config.bluetooth.option_flow"
-                    )}</ha-button
-                  >
-                </div>`
-              : nothing}
-          </ha-card>
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.config.bluetooth.advertisement_monitor"
-            )}
-          >
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.bluetooth.advertisement_monitor_details"
-                )}
-              </p>
-            </div>
-            <div class="card-actions">
-              <ha-button
-                href="/config/bluetooth/advertisement-monitor"
-                appearance="plain"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.bluetooth.advertisement_monitor"
-                )}
-              </ha-button>
-              <ha-button
-                href="/config/bluetooth/visualization"
-                appearance="plain"
-              >
-                ${this.hass.localize("ui.panel.config.bluetooth.visualization")}
-              </ha-button>
-            </div>
-          </ha-card>
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.config.bluetooth.connection_slot_allocations_monitor"
-            )}
-          >
-            <div class="card-content">
-              ${this._renderConnectionAllocations()}
-            </div>
-            <div class="card-actions">
-              <ha-button
-                href="/config/bluetooth/connection-monitor"
-                appearance="plain"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.bluetooth.connection_monitor"
-                )}
-              </ha-button>
-            </div>
+            <ha-list>${this._renderAdaptersList()}</ha-list>
           </ha-card>
         </div>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
-  private _getUsedAllocations = (used: number, total: number) =>
-    roundWithOneDecimal(getValueInPercentage(used, 0, total));
+  private _renderAdaptersList() {
+    if (this._configEntries.length === 0) {
+      return html`<ha-list-item noninteractive>
+        ${this.hass.localize(
+          "ui.panel.config.bluetooth.no_scanner_state_available"
+        )}
+      </ha-list-item>`;
+    }
+
+    // Build source to device mapping (same as visualization)
+    const sourceDevices: Record<string, DeviceRegistryEntry> = {};
+    Object.values(this.hass.devices).forEach((device) => {
+      const btConnection = device.connections.find(
+        (connection) => connection[0] === "bluetooth"
+      );
+      if (btConnection) {
+        sourceDevices[btConnection[1]] = device;
+      }
+    });
+
+    return this._configEntries.map((entry) => {
+      // Find scanner by matching device's config_entries to this entry
+      const scannerDetails = this._scannerDetails
+        ? Object.values(this._scannerDetails).find((d) => {
+            const device = sourceDevices[d.source];
+            return device?.config_entries.includes(entry.entry_id);
+          })
+        : undefined;
+      const scannerState = scannerDetails
+        ? this._scannerStates[scannerDetails.source]
+        : undefined;
+      const scannerType: HaScannerType =
+        scannerDetails?.scanner_type ?? "unknown";
+      const isRemoteScanner = scannerType === "remote";
+      const hasMismatch =
+        scannerState &&
+        scannerState.current_mode !== scannerState.requested_mode;
+
+      // Find allocation data for this scanner
+      const allocations = scannerDetails
+        ? this._connectionAllocationData.find(
+            (a) => a.source === scannerDetails.source
+          )
+        : undefined;
+
+      const secondaryText = this._formatScannerModeText(scannerState);
+
+      return html`
+        <ha-list-item twoline hasMeta noninteractive>
+          <span>${entry.title}</span>
+          <span slot="secondary">
+            ${secondaryText}${allocations
+              ? allocations.slots > 0
+                ? ` · ${allocations.slots - allocations.free}/${allocations.slots} ${this.hass.localize("ui.panel.config.bluetooth.active_connections")}`
+                : ` · ${this.hass.localize("ui.panel.config.bluetooth.no_connection_slots")}`
+              : nothing}
+          </span>
+          ${!isRemoteScanner
+            ? html`<ha-icon-button
+                slot="meta"
+                .path=${mdiCogOutline}
+                .entry=${entry}
+                @click=${this._openOptionFlow}
+                .label=${this.hass.localize(
+                  "ui.panel.config.bluetooth.option_flow"
+                )}
+              ></ha-icon-button>`
+            : nothing}
+        </ha-list-item>
+        ${hasMismatch && scannerDetails
+          ? this._renderScannerMismatchWarning(
+              entry.title,
+              scannerState,
+              scannerType
+            )
+          : nothing}
+      `;
+    });
+  }
 
   private _renderScannerMismatchWarning(
+    name: string,
     scannerState: BluetoothScannerState,
-    scannerType: HaScannerType,
-    formatMode: (mode: string | null) => string
+    scannerType: HaScannerType
   ) {
     const instructions: string[] = [];
 
@@ -238,8 +289,9 @@ export class BluetoothConfigDashboard extends LitElement {
         ${this.hass.localize(
           "ui.panel.config.bluetooth.scanner_mode_mismatch",
           {
-            requested: formatMode(scannerState.requested_mode),
-            current: formatMode(scannerState.current_mode),
+            name: name,
+            requested: this._formatMode(scannerState.requested_mode),
+            current: this._formatMode(scannerState.current_mode),
           }
         )}
       </div>
@@ -249,127 +301,59 @@ export class BluetoothConfigDashboard extends LitElement {
     </ha-alert>`;
   }
 
-  private _renderScannerState() {
-    if (!this._configEntry || !this._scannerState) {
-      return html`<div>
-        ${this.hass.localize(
-          "ui.panel.config.bluetooth.no_scanner_state_available"
-        )}
-      </div>`;
+  private _formatMode(mode: string | null): string {
+    switch (mode) {
+      case null:
+        return this.hass.localize(
+          "ui.panel.config.bluetooth.scanning_mode_none"
+        );
+      case "active":
+        return this.hass.localize(
+          "ui.panel.config.bluetooth.scanning_mode_active"
+        );
+      case "passive":
+        return this.hass.localize(
+          "ui.panel.config.bluetooth.scanning_mode_passive"
+        );
+      default:
+        return mode;
     }
-
-    const scannerState = this._scannerState;
-    // Find the scanner details for this source
-    const scannerDetails = this._scannerDetails?.[scannerState.source];
-    const scannerType: HaScannerType =
-      scannerDetails?.scanner_type ?? "unknown";
-
-    const formatMode = (mode: string | null) => {
-      switch (mode) {
-        case null:
-          return this.hass.localize(
-            "ui.panel.config.bluetooth.scanning_mode_none"
-          );
-        case "active":
-          return this.hass.localize(
-            "ui.panel.config.bluetooth.scanning_mode_active"
-          );
-        case "passive":
-          return this.hass.localize(
-            "ui.panel.config.bluetooth.scanning_mode_passive"
-          );
-        default:
-          return mode; // Fallback for unknown modes
-      }
-    };
-
-    return html`
-      <div class="scanner-state">
-        <div class="state-row">
-          <span
-            >${this.hass.localize(
-              "ui.panel.config.bluetooth.current_scanning_mode"
-            )}:</span
-          >
-          <span class="state-value"
-            >${formatMode(scannerState.current_mode)}</span
-          >
-        </div>
-        <div class="state-row">
-          <span
-            >${this.hass.localize(
-              "ui.panel.config.bluetooth.requested_scanning_mode"
-            )}:</span
-          >
-          <span class="state-value"
-            >${formatMode(scannerState.requested_mode)}</span
-          >
-        </div>
-        ${scannerState.current_mode !== scannerState.requested_mode
-          ? this._renderScannerMismatchWarning(
-              scannerState,
-              scannerType,
-              formatMode
-            )
-          : nothing}
-      </div>
-    `;
   }
 
-  private _renderConnectionAllocations() {
-    if (this._connectionAllocationsError) {
-      return html`<ha-alert alert-type="error"
-        >${this._connectionAllocationsError}</ha-alert
-      >`;
+  private _formatModeLabel(mode: string | null): string {
+    switch (mode) {
+      case null:
+        return this.hass.localize(
+          "ui.panel.config.bluetooth.scanning_mode_none_label"
+        );
+      case "active":
+        return this.hass.localize(
+          "ui.panel.config.bluetooth.scanning_mode_active_label"
+        );
+      case "passive":
+        return this.hass.localize(
+          "ui.panel.config.bluetooth.scanning_mode_passive_label"
+        );
+      default:
+        return mode;
     }
-    if (this._connectionAllocationData.length === 0) {
-      return html`<div>
-        ${this.hass.localize(
-          "ui.panel.config.bluetooth.no_connection_slot_allocations"
-        )}
-      </div>`;
-    }
-    const allocations = this._connectionAllocationData[0];
-    const allocationsUsed = allocations.slots - allocations.free;
-    const allocationsTotal = allocations.slots;
-    if (allocationsTotal === 0) {
-      return html`<div>
-        ${this.hass.localize(
-          "ui.panel.config.bluetooth.no_active_connection_support"
-        )}
-      </div>`;
-    }
-    return html`
-      <p>
-        ${this.hass.localize(
-          "ui.panel.config.bluetooth.connection_slot_allocations_monitor_details",
-          { slots: allocationsTotal }
-        )}
-      </p>
-      <ha-metric
-        .heading=${this.hass.localize(
-          "ui.panel.config.bluetooth.used_connection_slot_allocations"
-        )}
-        .value=${this._getUsedAllocations(allocationsUsed, allocationsTotal)}
-        .tooltip=${allocations.allocated.length > 0
-          ? `${allocationsUsed}/${allocationsTotal} (${allocations.allocated.join(", ")})`
-          : `${allocationsUsed}/${allocationsTotal}`}
-      ></ha-metric>
-    `;
   }
 
-  private async _openOptionFlow() {
-    const configEntryId = this._configEntry;
-    if (!configEntryId) {
-      return;
+  private _formatScannerModeText(
+    scannerState: BluetoothScannerState | undefined
+  ): string {
+    if (!scannerState) {
+      return this.hass.localize(
+        "ui.panel.config.bluetooth.scanner_state_unknown"
+      );
     }
-    const configEntries = await getConfigEntries(this.hass, {
-      domain: "bluetooth",
-    });
-    const configEntry = configEntries.find(
-      (entry) => entry.entry_id === configEntryId
-    );
-    showOptionsFlowDialog(this, configEntry!);
+
+    return this._formatModeLabel(scannerState.current_mode);
+  }
+
+  private _openOptionFlow(ev: Event) {
+    const button = ev.currentTarget as HTMLElement & { entry: ConfigEntry };
+    showOptionsFlowDialog(this, button.entry);
   }
 
   static get styles(): CSSResultGroup {
@@ -385,7 +369,6 @@ export class BluetoothConfigDashboard extends LitElement {
           padding: 24px 0 32px;
           max-width: 600px;
           margin: 0 auto;
-          direction: ltr;
         }
         ha-card {
           margin-bottom: 16px;
@@ -394,17 +377,9 @@ export class BluetoothConfigDashboard extends LitElement {
           display: flex;
           justify-content: flex-end;
         }
-        .scanner-state {
-          margin-bottom: 16px;
-        }
-        .state-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 4px 0;
-        }
-        .state-value {
-          font-weight: 500;
+        ha-list-item {
+          --mdc-list-item-meta-display: flex;
+          --mdc-list-item-meta-size: 48px;
         }
       `,
     ];

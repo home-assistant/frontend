@@ -166,10 +166,24 @@ export class HuiEnergySourcesTableCard
     cost: number | null,
     compareCost: number | null,
     showCosts: boolean,
-    compare: boolean
+    compare: boolean,
+    bulletColor?: { border: string; background: string },
+    isFinalTotal?: boolean
   ) {
-    return html` <tr class="mdc-data-table__row total">
-      <td class="mdc-data-table__cell"></td>
+    return html` <tr
+      class="mdc-data-table__row ${bulletColor && !isFinalTotal ? "" : "total"}"
+    >
+      <td class="mdc-data-table__cell cell-bullet">
+        ${bulletColor
+          ? html`<div
+              class="bullet"
+              style=${styleMap({
+                borderColor: bulletColor.border,
+                backgroundColor: bulletColor.background,
+              })}
+            ></div>`
+          : nothing}
+      </td>
       <th class="mdc-data-table__cell" scope="row">${label}</th>
       ${compare
         ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
@@ -339,6 +353,8 @@ export class HuiEnergySourcesTableCard
       };
     };
 
+    const showOnlyTotals = this._config.show_only_totals;
+
     const _renderSimpleCategory = (type: "solar" | "gas" | "water") =>
       html` ${types[type]?.map((source, idx) => {
         const cost_stat =
@@ -359,6 +375,10 @@ export class HuiEnergySourcesTableCard
           hasCosts[type] = true;
           totalCosts[type] += cost;
           totalCostsCompare[type] += costCompare;
+        }
+
+        if (showOnlyTotals) {
+          return nothing;
         }
 
         return this._renderRow(
@@ -386,7 +406,27 @@ export class HuiEnergySourcesTableCard
             hasCosts[type] ? totalCosts[type] : null,
             hasCosts[type] ? totalCostsCompare[type] : null,
             showCosts,
-            compare
+            compare,
+            showOnlyTotals
+              ? {
+                  border: getEnergyColor(
+                    computedStyles,
+                    this.hass.themes.darkMode,
+                    false,
+                    false,
+                    colorPropertyMap[type],
+                    0
+                  ),
+                  background: getEnergyColor(
+                    computedStyles,
+                    this.hass.themes.darkMode,
+                    true,
+                    false,
+                    colorPropertyMap[type],
+                    0
+                  ),
+                }
+              : undefined
           )
         : ""}`;
 
@@ -474,6 +514,10 @@ export class HuiEnergySourcesTableCard
                 totalBattery += energyFrom - energyTo;
                 totalBatteryCompare += energyFromCompare - energyToCompare;
 
+                if (showOnlyTotals) {
+                  return nothing;
+                }
+
                 return html` ${this._renderRow(
                   computedStyles,
                   "battery_out",
@@ -511,7 +555,27 @@ export class HuiEnergySourcesTableCard
                     null,
                     null,
                     showCosts,
-                    compare
+                    compare,
+                    showOnlyTotals
+                      ? {
+                          border: getEnergyColor(
+                            computedStyles,
+                            this.hass.themes.darkMode,
+                            false,
+                            false,
+                            colorPropertyMap.battery_out,
+                            0
+                          ),
+                          background: getEnergyColor(
+                            computedStyles,
+                            this.hass.themes.darkMode,
+                            true,
+                            false,
+                            colorPropertyMap.battery_out,
+                            0
+                          ),
+                        }
+                      : undefined
                   )
                 : ""}
               ${types.grid?.map(
@@ -543,6 +607,11 @@ export class HuiEnergySourcesTableCard
                       totalGridCost += cost;
                       totalGridCostCompare += costCompare;
                     }
+
+                    if (showOnlyTotals) {
+                      return nothing;
+                    }
+
                     return this._renderRow(
                       computedStyles,
                       "grid_consumption",
@@ -583,6 +652,11 @@ export class HuiEnergySourcesTableCard
                       totalGridCost -= cost;
                       totalGridCostCompare -= costCompare;
                     }
+
+                    if (showOnlyTotals) {
+                      return nothing;
+                    }
+
                     return this._renderRow(
                       computedStyles,
                       "grid_return",
@@ -611,7 +685,27 @@ export class HuiEnergySourcesTableCard
                     hasGridCost ? totalGridCost : null,
                     hasGridCost ? totalGridCostCompare : null,
                     showCosts,
-                    compare
+                    compare,
+                    showOnlyTotals
+                      ? {
+                          border: getEnergyColor(
+                            computedStyles,
+                            this.hass.themes.darkMode,
+                            false,
+                            false,
+                            colorPropertyMap.grid_consumption,
+                            0
+                          ),
+                          background: getEnergyColor(
+                            computedStyles,
+                            this.hass.themes.darkMode,
+                            true,
+                            false,
+                            colorPropertyMap.grid_consumption,
+                            0
+                          ),
+                        }
+                      : undefined
                   )
                 : ""}
               ${_renderSimpleCategory("gas")} ${_renderSimpleCategory("water")}
@@ -629,7 +723,9 @@ export class HuiEnergySourcesTableCard
                       totalGridCostCompare +
                       totalCostsCompare.water,
                     showCosts,
-                    compare
+                    compare,
+                    undefined,
+                    true
                   )
                 : ""}
             </tbody>
@@ -672,8 +768,8 @@ export class HuiEnergySourcesTableCard
         border-top: 1px solid var(--divider-color);
       }
       ha-card {
-        height: 100%;
-        overflow: hidden;
+        max-height: 100%;
+        overflow: auto;
       }
       .card-header {
         padding-bottom: 0;

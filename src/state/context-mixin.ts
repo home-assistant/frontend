@@ -17,7 +17,7 @@ import {
   userContext,
   userDataContext,
 } from "../data/context";
-import { subscribeLabelRegistry } from "../data/label_registry";
+import { subscribeLabelRegistry } from "../data/label/label_registry";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 

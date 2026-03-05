@@ -2,7 +2,8 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
-import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
@@ -15,7 +16,6 @@ import {
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./more-info-content";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 @customElement("ha-more-info-info")
 export class MoreInfoInfo extends LitElement {
@@ -130,8 +130,8 @@ export class MoreInfoInfo extends LitElement {
       display: flex;
       flex-direction: column;
       flex: 1;
-      padding: 24px;
-      padding-bottom: max(var(--safe-area-inset-bottom), 24px);
+      padding: var(--ha-space-6);
+      padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
     }
 
     [data-domain="camera"] .content {
@@ -153,7 +153,7 @@ export class MoreInfoInfo extends LitElement {
     ha-more-info-history,
     ha-more-info-logbook:not(:last-child) {
       display: block;
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
 
     ha-alert {

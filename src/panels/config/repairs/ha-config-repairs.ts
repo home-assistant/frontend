@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
+import { STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import { domainToName } from "../../../data/integration";
@@ -12,7 +13,7 @@ import {
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { fixStatisticsIssue } from "../../developer-tools/statistics/fix-statistics";
+import { fixStatisticsIssue } from "../developer-tools/statistics/fix-statistics";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
 import type { StatisticsValidationResult } from "../../../data/recorder";
@@ -75,7 +76,6 @@ class HaConfigRepairs extends LitElement {
                 src=${brandsUrl({
                   domain: issue.issue_domain || issue.domain,
                   type: "icon",
-                  useFallback: true,
                   darkOptimized: this.hass.themes?.darkMode,
                 })}
                 .title=${domainName}
@@ -100,7 +100,7 @@ class HaConfigRepairs extends LitElement {
                 ${(issue.severity === "critical" ||
                   issue.severity === "error") &&
                 issue.created
-                  ? " · "
+                  ? STRINGS_SEPARATOR_DOT
                   : ""}
                 ${createdBy
                   ? html`<span .title=${createdBy}>${createdBy}</span>`

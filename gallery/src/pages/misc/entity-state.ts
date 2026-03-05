@@ -39,6 +39,7 @@ const SENSOR_DEVICE_CLASSES = [
   "pm1",
   "pm10",
   "pm25",
+  "pm4",
   "power_factor",
   "power",
   "precipitation",

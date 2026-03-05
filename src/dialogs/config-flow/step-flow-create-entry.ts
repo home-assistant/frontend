@@ -12,14 +12,15 @@ import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
 import "../../components/ha-button";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
+import { getConfigEntries } from "../../data/config_entries";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import { updateDeviceRegistryEntry } from "../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   getAutomaticEntityIds,
   updateEntityRegistryEntry,
   type EntityRegistryDisplayEntry,
-} from "../../data/entity_registry";
+} from "../../data/entity/entity_registry";
 import { domainToName } from "../../data/integration";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
@@ -27,7 +28,6 @@ import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { getConfigEntries } from "../../data/config_entries";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {

@@ -16,18 +16,14 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../common/color/compute-color";
 import { hex2rgb } from "../../common/color/convert-color";
 import { fireEvent } from "../../common/dom/fire_event";
-import { slugify } from "../../common/string/slugify";
-import {
-  computeDeviceName,
-  computeDeviceNameDisplay,
-} from "../../common/entity/compute_device_name";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
-import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { slugify } from "../../common/string/slugify";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
 import { domainToName } from "../../data/integration";
-import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { TargetType } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
@@ -172,23 +168,10 @@ export class HaTargetPickerValueChip extends LitElement {
     if (type === "entity") {
       this._setDomainName(computeDomain(itemId));
 
-      const stateObject = this.hass.states[itemId];
-      const entityName = computeEntityName(
-        stateObject,
-        this.hass.entities,
-        this.hass.devices
-      );
-      const { device } = getEntityContext(
-        stateObject,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
-      const deviceName = device ? computeDeviceName(device) : undefined;
+      const stateObj = this.hass.states[itemId];
       return {
-        name: entityName || deviceName || itemId,
-        stateObject,
+        name: computeStateName(stateObj) || itemId,
+        stateObject: stateObj,
       };
     }
 
@@ -295,8 +278,8 @@ export class HaTargetPickerValueChip extends LitElement {
       direction: var(--direction);
     }
     .expand-btn {
-      margin-right: var(--ha-space-0);
-      margin-inline-end: var(--ha-space-0);
+      margin-right: 0;
+      margin-inline-end: 0;
       margin-inline-start: initial;
     }
     .mdc-chip.area:not(.add),

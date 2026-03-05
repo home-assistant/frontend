@@ -58,7 +58,6 @@ class IntegrationsStartupTime extends LitElement {
                 src=${brandsUrl({
                   domain: setup.domain,
                   type: "icon",
-                  useFallback: true,
                   darkOptimized: this.hass.themes?.darkMode,
                 })}
                 crossorigin="anonymous"

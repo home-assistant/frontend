@@ -11,21 +11,19 @@ import {
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/entity/ha-battery-icon";
-import "../../../components/ha-attributes";
+import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-select";
-import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-} from "../../../data/entity_registry";
+} from "../../../data/entity/entity_registry";
 import type { VacuumEntity } from "../../../data/vacuum";
 import { VacuumEntityFeature } from "../../../data/vacuum";
 import type { HomeAssistant } from "../../../types";
@@ -110,9 +108,6 @@ class MoreInfoVacuum extends LitElement {
 
     const stateObj = this.stateObj;
 
-    const filterExtraAttributes =
-      "fan_speed,fan_speed_list,status,battery_level,battery_icon";
-
     return html`
       ${stateObj.state !== UNAVAILABLE
         ? html` <div class="flex-horizontal">
@@ -176,21 +171,17 @@ class MoreInfoVacuum extends LitElement {
                   .disabled=${stateObj.state === UNAVAILABLE}
                   .value=${stateObj.attributes.fan_speed}
                   @selected=${this._handleFanSpeedChanged}
-                  fixedMenuPosition
-                  naturalMenuWidth
-                  @closed=${stopPropagation}
-                >
-                  ${stateObj.attributes.fan_speed_list!.map(
-                    (mode) => html`
-                      <ha-list-item .value=${mode}>
-                        ${this.hass.formatEntityAttributeValue(
-                          stateObj,
-                          "fan_speed",
-                          mode
-                        )}
-                      </ha-list-item>
-                    `
+                  .options=${stateObj.attributes.fan_speed_list!.map(
+                    (mode) => ({
+                      value: mode,
+                      label: this.hass!.formatEntityAttributeValue(
+                        stateObj,
+                        "fan_speed",
+                        mode
+                      ),
+                    })
                   )}
+                >
                 </ha-select>
                 <div
                   style="justify-content: center; align-self: center; padding-top: 1.3em"
@@ -208,12 +199,6 @@ class MoreInfoVacuum extends LitElement {
             </div>
           `
         : ""}
-
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        .extraFilters=${filterExtraAttributes}
-      ></ha-attributes>
     `;
   }
 
@@ -301,9 +286,9 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  private _handleFanSpeedChanged(ev) {
+  private _handleFanSpeedChanged(ev: HaSelectSelectEvent) {
     const oldVal = this.stateObj!.attributes.fan_speed;
-    const newVal = ev.target.value;
+    const newVal = ev.detail.value;
 
     if (!newVal || oldVal === newVal) {
       return;

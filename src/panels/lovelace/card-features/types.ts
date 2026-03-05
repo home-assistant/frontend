@@ -199,9 +199,10 @@ export interface UpdateActionsCardFeatureConfig {
 export interface TrendGraphCardFeatureConfig {
   type: "trend-graph";
   hours_to_show?: number;
+  detail?: boolean;
 }
 
-export const AREA_CONTROLS = [
+export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
   "cover-shutter",
@@ -217,7 +218,9 @@ export const AREA_CONTROLS = [
   "switch",
 ] as const;
 
-export type AreaControl = (typeof AREA_CONTROLS)[number];
+export type AreaControlDomain = (typeof AREA_CONTROL_DOMAINS)[number];
+
+export type AreaControl = AreaControlDomain | { entity_id: string };
 
 export interface AreaControlsCardFeatureConfig {
   type: "area-controls";
@@ -226,6 +229,8 @@ export interface AreaControlsCardFeatureConfig {
 
 export interface BarGaugeCardFeatureConfig {
   type: "bar-gauge";
+  min?: number;
+  max?: number;
 }
 
 export type LovelaceCardFeaturePosition = "bottom" | "inline";

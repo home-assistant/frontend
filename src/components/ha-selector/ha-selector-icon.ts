@@ -52,7 +52,7 @@ export class HaIconSelector extends LitElement {
         ${!placeholder && stateObj
           ? html`
               <ha-state-icon
-                slot="fallback"
+                slot="start"
                 .hass=${this.hass}
                 .stateObj=${stateObj}
               ></ha-state-icon>

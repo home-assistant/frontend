@@ -1,13 +1,13 @@
 import { mdiHelpCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import type { CloudStatusLoggedIn } from "../../../data/cloud";
@@ -18,8 +18,9 @@ import {
   setExposeNewEntities,
 } from "../../../data/expose";
 import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
+import "../../../components/voice-assistant-brand-icon";
 
+@customElement("cloud-alexa-pref")
 export class CloudAlexaPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -63,16 +64,12 @@ export class CloudAlexaPref extends LitElement {
     return html`
       <ha-card outlined>
         <h1 class="card-header">
-          <img
-            alt=""
-            src=${brandsUrl({
-              domain: "alexa",
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-          />${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
+          <voice-assistant-brand-icon
+            .voiceAssistantId=${"cloud.alexa"}
+            .hass=${this.hass}
+          >
+          </voice-assistant-brand-icon
+          >${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
         </h1>
         <div class="header-actions">
           <a
@@ -103,10 +100,11 @@ export class CloudAlexaPref extends LitElement {
                   "ui.panel.config.cloud.account.alexa.manual_config"
                 )}
               </ha-alert>`
-            : ""}
+            : nothing}
           ${!alexa_enabled
-            ? ""
-            : html`${!alexa_registered
+            ? nothing
+            : html`
+                ${!alexa_registered
                   ? html`<ha-alert
                       .title=${this.hass.localize(
                         "ui.panel.config.cloud.account.alexa.not_configured_title"
@@ -141,42 +139,47 @@ export class CloudAlexaPref extends LitElement {
                         </li>
                       </ul>
                     </ha-alert>`
-                  : ""}<ha-settings-row>
-                  <span slot="heading">
-                    ${this.hass!.localize(
+                  : nothing}
+                <ha-md-list-item>
+                  <span slot="headline"
+                    >${this.hass!.localize(
                       "ui.panel.config.cloud.account.alexa.expose_new_entities"
-                    )}
-                  </span>
-                  <span slot="description">
-                    ${this.hass!.localize(
+                    )}</span
+                  >
+                  <span slot="supporting-text"
+                    >${this.hass!.localize(
                       "ui.panel.config.cloud.account.alexa.expose_new_entities_info"
-                    )}
-                  </span>
+                    )}</span
+                  >
                   <ha-switch
+                    slot="end"
                     .checked=${this._exposeNew}
                     .disabled=${this._exposeNew === undefined}
                     @change=${this._exposeNewToggleChanged}
-                  ></ha-switch> </ha-settings-row
-                >${alexa_registered
+                  ></ha-switch>
+                </ha-md-list-item>
+                ${alexa_registered
                   ? html`
-                      <ha-settings-row>
-                        <span slot="heading">
-                          ${this.hass!.localize(
+                      <ha-md-list-item>
+                        <span slot="headline"
+                          >${this.hass!.localize(
                             "ui.panel.config.cloud.account.alexa.enable_state_reporting"
-                          )}
-                        </span>
-                        <span slot="description">
-                          ${this.hass!.localize(
+                          )}</span
+                        >
+                        <span slot="supporting-text"
+                          >${this.hass!.localize(
                             "ui.panel.config.cloud.account.alexa.info_state_reporting"
-                          )}
-                        </span>
+                          )}</span
+                        >
                         <ha-switch
+                          slot="end"
                           .checked=${alexa_report_state}
                           @change=${this._reportToggleChanged}
                         ></ha-switch>
-                      </ha-settings-row>
+                      </ha-md-list-item>
                     `
-                  : ""}`}
+                  : nothing}
+              `}
         </div>
         ${alexa_enabled
           ? html`<div class="card-actions">
@@ -253,8 +256,10 @@ export class CloudAlexaPref extends LitElement {
     a {
       color: var(--primary-color);
     }
-    ha-settings-row {
-      padding: 0;
+    ha-md-list-item {
+      --md-list-item-leading-space: 0;
+      --md-list-item-trailing-space: 0;
+      --md-item-overflow: visible;
     }
     .header-actions {
       position: absolute;
@@ -283,7 +288,7 @@ export class CloudAlexaPref extends LitElement {
       display: flex;
       align-items: center;
     }
-    img {
+    voice-assistant-brand-icon {
       height: 28px;
       margin-right: 16px;
       margin-inline-end: 16px;
@@ -297,5 +302,3 @@ declare global {
     "cloud-alexa-pref": CloudAlexaPref;
   }
 }
-
-customElements.define("cloud-alexa-pref", CloudAlexaPref);

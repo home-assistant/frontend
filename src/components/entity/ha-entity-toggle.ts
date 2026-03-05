@@ -6,7 +6,11 @@ import { customElement, property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { UNAVAILABLE, UNKNOWN, isUnavailableState } from "../../data/entity";
+import {
+  UNAVAILABLE,
+  UNKNOWN,
+  isUnavailableState,
+} from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import type { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -139,17 +143,19 @@ export class HaEntityToggle extends LitElement {
     // Optimistic update.
     this._isOn = turnOn;
 
-    await this.hass.callService(serviceDomain, service, {
-      entity_id: this.stateObj.entity_id,
-    });
-
-    setTimeout(async () => {
-      // If after 2 seconds we have not received a state update
-      // reset the switch to it's original state.
-      if (this.stateObj === currentState) {
-        this._isOn = isOn(this.stateObj);
-      }
-    }, 2000);
+    try {
+      await this.hass.callService(serviceDomain, service, {
+        entity_id: this.stateObj.entity_id,
+      });
+    } finally {
+      setTimeout(async () => {
+        // If after 2 seconds we have not received a state update
+        // reset the switch to it's original state.
+        if (this.stateObj === currentState) {
+          this._isOn = isOn(this.stateObj);
+        }
+      }, 2000);
+    }
   }
 
   static styles = css`

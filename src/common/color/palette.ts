@@ -79,7 +79,7 @@ export const generateColorPalette = (
   }
 
   return steps.map((step) => {
-    const name = `color-${label}-${step}`;
+    const name = `ha-color-${label}-${step}`;
 
     // Base color at 50%
     if (step === 50) {

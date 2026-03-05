@@ -47,6 +47,7 @@ export class HaDomainIcon extends LitElement {
       if (icn) {
         return html`<ha-icon .icon=${icn}></ha-icon>`;
       }
+
       return this._renderFallback();
     });
 

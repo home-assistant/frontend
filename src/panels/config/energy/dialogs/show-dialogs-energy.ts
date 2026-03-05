@@ -7,6 +7,8 @@ import type {
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GasSourceTypeEnergyPreference,
+  GridPowerSourceEnergyPreference,
+  GridPowerSourceInput,
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
@@ -41,6 +43,12 @@ export interface EnergySettingsGridFlowToDialogParams {
   saveCallback: (source: FlowToGridSourceEnergyPreference) => Promise<void>;
 }
 
+export interface EnergySettingsGridPowerDialogParams {
+  source?: GridPowerSourceEnergyPreference;
+  grid_source?: GridSourceTypeEnergyPreference;
+  saveCallback: (source: GridPowerSourceInput) => Promise<void>;
+}
+
 export interface EnergySettingsSolarDialogParams {
   info: EnergyInfo;
   source?: SolarSourceTypeEnergyPreference;
@@ -70,6 +78,13 @@ export interface EnergySettingsWaterDialogParams {
 }
 
 export interface EnergySettingsDeviceDialogParams {
+  device?: DeviceConsumptionEnergyPreference;
+  device_consumptions: DeviceConsumptionEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
+  saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsDeviceWaterDialogParams {
   device?: DeviceConsumptionEnergyPreference;
   device_consumptions: DeviceConsumptionEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
@@ -150,5 +165,27 @@ export const showEnergySettingsGridFlowToDialog = (
     dialogTag: "dialog-energy-grid-flow-settings",
     dialogImport: () => import("./dialog-energy-grid-flow-settings"),
     dialogParams: { ...dialogParams, direction: "to" },
+  });
+};
+
+export const showEnergySettingsDeviceWaterDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsDeviceWaterDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-device-settings-water",
+    dialogImport: () => import("./dialog-energy-device-settings-water"),
+    dialogParams: dialogParams,
+  });
+};
+
+export const showEnergySettingsGridPowerDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsGridPowerDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-grid-power-settings",
+    dialogImport: () => import("./dialog-energy-grid-power-settings"),
+    dialogParams: dialogParams,
   });
 };

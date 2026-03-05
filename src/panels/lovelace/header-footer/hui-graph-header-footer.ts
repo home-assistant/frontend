@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-spinner";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
@@ -126,8 +127,15 @@ export class HuiGraphHeaderFooter
     `;
   }
 
+  private _handleClick(): void {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config?.entity ?? null,
+    });
+  }
+
   public connectedCallback() {
     super.connectedCallback();
+    this.addEventListener("click", this._handleClick);
     if (this.hasUpdated && this._config) {
       this._subscribeHistory();
     }
@@ -155,16 +163,20 @@ export class HuiGraphHeaderFooter
         }
         const width = this.clientWidth || this.offsetWidth;
         // sample to 1 point per hour or 1 point per 5 pixels
-        const maxDetails =
+        const maxDetails = Math.max(
+          10,
           this._config.detail! > 1
             ? Math.max(width / 5, this._config.hours_to_show!)
-            : this._config.hours_to_show!;
+            : this._config.hours_to_show!
+        );
+        const useMean = this._config.detail !== 2;
         const { points } = coordinatesMinimalResponseCompressedState(
           combinedHistory[this._config.entity],
           width,
           width / 5,
           maxDetails,
-          { minY: this._config.limits?.min, maxY: this._config.limits?.max }
+          { minY: this._config.limits?.min, maxY: this._config.limits?.max },
+          useMean
         );
         this._coordinates = points;
       },
@@ -218,6 +230,10 @@ export class HuiGraphHeaderFooter
   }
 
   static styles = css`
+    :host {
+      display: block;
+      cursor: pointer;
+    }
     ha-spinner {
       position: absolute;
       top: calc(50% - 14px);

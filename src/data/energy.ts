@@ -11,9 +11,10 @@ import {
   isLastDayOfMonth,
   addYears,
 } from "date-fns";
-import type { Collection } from "home-assistant-js-websocket";
+import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import {
   calcDate,
   calcDateProperty,
@@ -102,6 +103,7 @@ export type EnergySolarForecasts = Record<string, EnergySolarForecast>;
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  stat_rate?: string;
   name?: string;
   included_in_stat?: string;
 }
@@ -130,11 +132,36 @@ export interface FlowToGridSourceEnergyPreference {
   number_energy_price: number | null;
 }
 
+export interface PowerConfig {
+  stat_rate?: string; // Standard single sensor
+  stat_rate_inverted?: string; // Inverted single sensor
+  stat_rate_from?: string; // Battery: discharge / Grid: consumption
+  stat_rate_to?: string; // Battery: charge / Grid: return
+}
+
+export interface GridPowerSourceEnergyPreference {
+  stat_rate: string;
+  power_config?: PowerConfig;
+}
+
+/**
+ * Input type for saving grid power sources.
+ * Core requires EITHER stat_rate (legacy) OR power_config (new format).
+ * When reading from backend, stat_rate is always populated.
+ */
+export type GridPowerSourceInput = Omit<
+  GridPowerSourceEnergyPreference,
+  "stat_rate"
+> & {
+  stat_rate?: string;
+};
+
 export interface GridSourceTypeEnergyPreference {
   type: "grid";
 
   flow_from: FlowFromGridSourceEnergyPreference[];
   flow_to: FlowToGridSourceEnergyPreference[];
+  power?: GridPowerSourceEnergyPreference[];
 
   cost_adjustment_day: number;
 }
@@ -143,6 +170,7 @@ export interface SolarSourceTypeEnergyPreference {
   type: "solar";
 
   stat_energy_from: string;
+  stat_rate?: string;
   config_entry_solar_forecast: string[] | null;
 }
 
@@ -150,6 +178,8 @@ export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
   stat_energy_to: string;
+  stat_rate?: string;
+  power_config?: PowerConfig;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
@@ -191,6 +221,7 @@ export type EnergySource =
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
+  device_consumption_water: DeviceConsumptionEnergyPreference[];
 }
 
 export interface EnergyInfo {
@@ -207,6 +238,7 @@ export interface EnergyValidationIssue {
 export interface EnergyPreferencesValidation {
   energy_sources: EnergyValidationIssue[][];
   device_consumption: EnergyValidationIssue[][];
+  device_consumption_water: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (hass: HomeAssistant) =>
@@ -347,8 +379,42 @@ export const getReferencedStatisticIds = (
   if (!(includeTypes && !includeTypes.includes("device"))) {
     statIDs.push(...prefs.device_consumption.map((d) => d.stat_consumption));
   }
+  if (!(includeTypes && !includeTypes.includes("water"))) {
+    statIDs.push(
+      ...prefs.device_consumption_water.map((d) => d.stat_consumption)
+    );
+  }
 
   return statIDs;
+};
+
+export const getReferencedStatisticIdsPower = (
+  prefs: EnergyPreferences
+): string[] => {
+  const statIDs: (string | undefined)[] = [];
+
+  for (const source of prefs.energy_sources) {
+    if (source.type === "gas" || source.type === "water") {
+      continue;
+    }
+
+    if (source.type === "solar") {
+      statIDs.push(source.stat_rate);
+      continue;
+    }
+
+    if (source.type === "battery") {
+      statIDs.push(source.stat_rate);
+      continue;
+    }
+
+    if (source.power) {
+      statIDs.push(...source.power.map((p) => p.stat_rate));
+    }
+  }
+  statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
+
+  return statIDs.filter(Boolean) as string[];
 };
 
 export const enum CompareMode {
@@ -398,19 +464,15 @@ const getEnergyData = async (
     "gas",
     "device",
   ]);
+  const powerStatIds = getReferencedStatisticIdsPower(prefs);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
 
-  const allStatIDs = [...energyStatIds, ...waterStatIds];
+  const allStatIDs = [...energyStatIds, ...waterStatIds, ...powerStatIds];
 
   const dayDifference = differenceInDays(end || new Date(), start);
-  const period =
-    isFirstDayOfMonth(start) &&
-    (!end || isLastDayOfMonth(end)) &&
-    dayDifference > 35
-      ? "month"
-      : dayDifference > 2
-        ? "day"
-        : "hour";
+
+  const period = getSuggestedPeriod(start, end);
+  const finePeriod = getSuggestedPeriod(start, end, true);
 
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
@@ -432,6 +494,9 @@ const getEnergyData = async (
       ? (gasUnit as (typeof VOLUME_UNITS)[number])
       : undefined,
   };
+  const powerUnits: StatisticsUnitConfiguration = {
+    power: "kW",
+  };
   const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
     volume: waterUnit,
@@ -442,6 +507,21 @@ const getEnergyData = async (
         "change",
       ])
     : {};
+  const _powerStats: Statistics | Promise<Statistics> = powerStatIds.length
+    ? fetchStatistics(hass!, start, end, powerStatIds, finePeriod, powerUnits, [
+        "mean",
+      ])
+    : {};
+  // If power stats 5 minute data is selected, then also fetch hourly data which
+  // will be used to back-fill any missing data points in the 5 minute data when
+  // the requested range is beyond the limit of short term statistics.
+  const _powerStatsHour: Statistics | Promise<Statistics> =
+    powerStatIds.length && finePeriod === "5minute"
+      ? fetchStatistics(hass!, start, end, powerStatIds, "hour", powerUnits, [
+          "mean",
+        ])
+      : {};
+
   const _waterStats: Statistics | Promise<Statistics> = waterStatIds.length
     ? fetchStatistics(hass!, start, end, waterStatIds, period, waterUnits, [
         "change",
@@ -532,7 +612,7 @@ const getEnergyData = async (
       consumptionStatIDs,
       co2SignalEntity,
       end,
-      dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+      period
     );
     if (compare) {
       _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
@@ -541,13 +621,15 @@ const getEnergyData = async (
         consumptionStatIDs,
         co2SignalEntity,
         endCompare,
-        dayDifference > 35 ? "month" : dayDifference > 2 ? "day" : "hour"
+        period
       );
     }
   }
 
   const [
     energyStats,
+    powerStats,
+    powerStatsHour,
     waterStats,
     energyStatsCompare,
     waterStatsCompare,
@@ -555,13 +637,46 @@ const getEnergyData = async (
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
     _energyStats,
+    _powerStats,
+    _powerStatsHour,
     _waterStats,
     _energyStatsCompare,
     _waterStatsCompare,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
-  const stats = { ...energyStats, ...waterStats };
+
+  // Back-fill any missing power statistics from hourly data if present
+  if (Object.keys(powerStatsHour).length) {
+    powerStatIds.forEach((powerId) => {
+      if (powerId in powerStatsHour) {
+        // If we have extra hourly power statistics for an ID, we may need to
+        // insert data into statistics
+        if (powerId in powerStats && powerStats[powerId].length) {
+          // We have 5-minute data. Only insert hourly values for time periods
+          // before the first 5-minute value.
+          const powerStatFirst = powerStats[powerId][0];
+          const powerStatHour = powerStatsHour[powerId];
+          let powerStatHourLast = 0;
+          for (const powerStat of powerStatHour) {
+            if (powerStat.end > powerStatFirst.start) {
+              break;
+            }
+            powerStatHourLast++;
+          }
+          powerStats[powerId] = [
+            ...powerStatHour.slice(0, powerStatHourLast),
+            ...powerStats[powerId],
+          ];
+        } else {
+          // There was no 5-minute data, so simply insert full hourly data
+          powerStats[powerId] = powerStatsHour[powerId];
+        }
+      }
+    });
+  }
+
+  const stats = { ...energyStats, ...waterStats, ...powerStats };
   if (compare) {
     statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
   }
@@ -723,6 +838,7 @@ export const getEnergyDataCollection = (
           hass.locale,
           hass.config
         );
+        collection.refresh();
         scheduleUpdatePeriod();
       },
       addHours(
@@ -1301,3 +1417,72 @@ export const calculateSolarConsumedGauge = (
   }
   return undefined;
 };
+
+/**
+ * Get current power value from entity state, normalized to watts (W)
+ * @param stateObj - The entity state object to get power value from
+ * @returns Power value in W (watts), or undefined if entity not found or invalid
+ */
+export const getPowerFromState = (stateObj: HassEntity): number | undefined => {
+  if (!stateObj) {
+    return undefined;
+  }
+  const value = parseFloat(stateObj.state);
+  if (isNaN(value)) {
+    return undefined;
+  }
+
+  return normalizeValueBySIPrefix(
+    value,
+    stateObj.attributes.unit_of_measurement
+  );
+};
+
+/**
+ * Format power value in watts (W) to a short string with the appropriate unit
+ * @param hass - The HomeAssistant instance
+ * @param powerWatts - The power value in watts (W)
+ * @returns A string with the formatted power value and unit
+ */
+export const formatPowerShort = (
+  hass: HomeAssistant,
+  powerWatts: number
+): string => {
+  const units = ["W", "kW", "MW", "GW", "TW"];
+  let unitIndex = 0;
+  let value = powerWatts;
+
+  // Scale the unit to the appropriate power of 1000
+  while (Math.abs(value) >= 1000 && unitIndex < units.length - 1) {
+    value /= 1000;
+    unitIndex++;
+  }
+
+  return (
+    formatNumber(value, hass.locale, {
+      // For watts, show no decimals. For kW and above, always show 3 decimals.
+      maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
+    }) +
+    " " +
+    units[unitIndex]
+  );
+};
+
+export function getSuggestedPeriod(
+  start: Date,
+  end?: Date,
+  fine = false
+): "5minute" | "hour" | "day" | "month" {
+  const dayDifference = differenceInDays(end || new Date(), start);
+
+  if (fine) {
+    return dayDifference > 64 ? "day" : dayDifference > 8 ? "hour" : "5minute";
+  }
+  return isFirstDayOfMonth(start) &&
+    (!end || isLastDayOfMonth(end)) &&
+    dayDifference > 35
+    ? "month"
+    : dayDifference > 2
+      ? "day"
+      : "hour";
+}

@@ -24,21 +24,20 @@ import {
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-divider";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-md-menu-item";
 import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES, getConfigEntries } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { fetchDiagnosticHandler } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import type {
   IntegrationLogInfo,
@@ -169,6 +168,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("domain")) {
       this.hass.loadBackendTranslation("title", [this.domain]);
+      this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
       this._fetchManifest();
@@ -316,7 +316,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             `
           : nothing}
         ${this._manifest?.config_flow || this._logInfo
-          ? html`<ha-md-button-menu positioning="popover" slot="toolbar-icon">
+          ? html`<ha-dropdown slot="toolbar-icon">
               <ha-icon-button
                 slot="trigger"
                 .label=${this.hass.localize("ui.common.menu")}
@@ -325,28 +325,39 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               ${this._manifest &&
               (this._manifest.is_built_in || this._manifest.issue_tracker)
                 ? html`
-                    <ha-md-menu-item
-                      .href=${integrationIssuesUrl(this.domain, this._manifest)}
+                    <a
+                      href=${integrationIssuesUrl(this.domain, this._manifest)}
                       rel="noreferrer"
                       target="_blank"
                     >
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.known_issues"
-                      )}
-                      <ha-svg-icon slot="start" .path=${mdiBug}></ha-svg-icon>
-                      <ha-svg-icon
-                        slot="end"
-                        .path=${mdiOpenInNew}
-                      ></ha-svg-icon>
-                    </ha-md-menu-item>
+                      <ha-dropdown-item>
+                        <ha-svg-icon slot="icon" .path=${mdiBug}></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.known_issues"
+                        )}
+                        <ha-svg-icon
+                          slot="details"
+                          .path=${mdiOpenInNew}
+                        ></ha-svg-icon>
+                      </ha-dropdown-item>
+                    </a>
                   `
                 : nothing}
               ${this._logInfo
-                ? html`<ha-md-menu-item
+                ? html`<ha-dropdown-item
                     @click=${this._logInfo.level === LogSeverity.DEBUG
                       ? this._handleDisableDebugLogging
                       : this._handleEnableDebugLogging}
                   >
+                    <ha-svg-icon
+                      slot="icon"
+                      .variant=${this._logInfo.level === LogSeverity.DEBUG
+                        ? "danger"
+                        : "default"}
+                      .path=${this._logInfo.level === LogSeverity.DEBUG
+                        ? mdiBugStop
+                        : mdiBugPlay}
+                    ></ha-svg-icon>
                     ${this._logInfo.level === LogSeverity.DEBUG
                       ? this.hass.localize(
                           "ui.panel.config.integrations.config_entry.disable_debug_logging"
@@ -354,18 +365,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       : this.hass.localize(
                           "ui.panel.config.integrations.config_entry.enable_debug_logging"
                         )}
-                    <ha-svg-icon
-                      slot="start"
-                      class=${this._logInfo.level === LogSeverity.DEBUG
-                        ? "warning"
-                        : ""}
-                      .path=${this._logInfo.level === LogSeverity.DEBUG
-                        ? mdiBugStop
-                        : mdiBugPlay}
-                    ></ha-svg-icon>
-                  </ha-md-menu-item>`
+                  </ha-dropdown-item>`
                 : nothing}
-            </ha-md-button-menu>`
+            </ha-dropdown>`
           : nothing}
 
         <div class="container">
@@ -533,13 +535,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     .appearance=${canAddDevice ? "filled" : "accent"}
                     @click=${this._addIntegration}
                   >
-                    ${this._manifest?.integration_type
+                    ${this.hass.localize(
+                      `component.${this.domain}.config.initiate_flow.user`
+                    ) ||
+                    (this._manifest?.integration_type
                       ? this.hass.localize(
                           `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
                         )
                       : this.hass.localize(
                           `ui.panel.config.integrations.integration_page.add_entry`
-                        )}
+                        ))}
                   </ha-button>`
                 : nothing}
               ${Array.from(supportedSubentryTypes).map(
@@ -790,7 +795,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const logFileName = `home-assistant_${integration}_${timeString}.log`;
-    const signedUrl = await getSignedPath(this.hass, getErrorLogDownloadUrl);
+    const signedUrl = await getSignedPath(
+      this.hass,
+      getErrorLogDownloadUrl(this.hass)
+    );
     fileDownload(signedUrl.path, logFileName);
   }
 
@@ -867,6 +875,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     }
     showAddIntegrationDialog(this, {
       domain: this.domain,
+      navigateToResult: true,
     });
   }
 

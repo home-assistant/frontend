@@ -2,7 +2,7 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { UNAVAILABLE } from "./entity";
+import { UNAVAILABLE } from "./entity/entity";
 
 export type VacuumEntityState =
   | "on"

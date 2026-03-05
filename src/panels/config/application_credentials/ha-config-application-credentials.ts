@@ -104,7 +104,6 @@ export class HaConfigApplicationCredentials extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          direction: "asc",
         },
         actions: {
           title: "",
@@ -357,11 +356,6 @@ export class HaConfigApplicationCredentials extends LitElement {
     .header-btns > ha-button,
     .header-btns > ha-icon-button {
       margin: 8px;
-    }
-    ha-button-menu {
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: initial;
     }
     .warning {
       --mdc-theme-primary: var(--error-color);

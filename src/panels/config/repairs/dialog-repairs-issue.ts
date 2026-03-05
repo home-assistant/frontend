@@ -1,15 +1,14 @@
-import { mdiClose, mdiOpenInNew } from "@mdi/js";
+import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import "../../../components/ha-alert";
-import "../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../components/ha-md-dialog";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-dialog-header";
+import "../../../components/ha-dialog-footer";
 import "./dialog-repairs-issue-subtitle";
 import "../../../components/ha-markdown";
 import type { RepairsIssue } from "../../../data/repairs";
@@ -26,11 +25,12 @@ class DialogRepairsIssue extends LitElement {
 
   @state() private _params?: RepairsIssueDialogParams;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
+  @state() private _open = false;
 
   public showDialog(params: RepairsIssueDialogParams): void {
     this._params = params;
     this._issue = this._params.issue;
+    this._open = true;
   }
 
   private _dialogClosed() {
@@ -44,7 +44,7 @@ class DialogRepairsIssue extends LitElement {
   }
 
   public closeDialog() {
-    this._dialog?.close();
+    this._open = false;
   }
 
   protected render() {
@@ -62,32 +62,19 @@ class DialogRepairsIssue extends LitElement {
       ) || this.hass!.localize("ui.panel.config.repairs.dialog.title");
 
     return html`
-      <ha-md-dialog
-        open
-        @closed=${this._dialogClosed}
-        aria-labelledby="dialog-repairs-issue-title"
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${dialogTitle}
         aria-describedby="dialog-repairs-issue-description"
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            .label=${this.hass.localize("ui.common.close") ?? "Close"}
-            .path=${mdiClose}
-            @click=${this.closeDialog}
-          ></ha-icon-button>
-          <span
-            slot="title"
-            id="dialog-repairs-issue-title"
-            .title=${dialogTitle}
-            >${dialogTitle}</span
-          >
-          <dialog-repairs-issue-subtitle
-            slot="subtitle"
-            .hass=${this.hass}
-            .issue=${this._issue}
-          ></dialog-repairs-issue-subtitle>
-        </ha-dialog-header>
-        <div slot="content" class="dialog-content">
+        <dialog-repairs-issue-subtitle
+          slot="headerSubtitle"
+          .hass=${this.hass}
+          .issue=${this._issue}
+        ></dialog-repairs-issue-subtitle>
+        <div class="dialog-content">
           ${this._issue.breaks_in_ha_version
             ? html`
                 <ha-alert alert-type="warning">
@@ -122,8 +109,12 @@ class DialogRepairsIssue extends LitElement {
               `
             : ""}
         </div>
-        <div slot="actions">
-          <ha-button appearance="plain" @click=${this._ignoreIssue}>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._ignoreIssue}
+          >
             ${this._issue!.ignored
               ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
               : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
@@ -131,6 +122,7 @@ class DialogRepairsIssue extends LitElement {
           ${this._issue.learn_more_url
             ? html`
                 <ha-button
+                  slot="primaryAction"
                   appearance="filled"
                   rel="noopener noreferrer"
                   href=${learnMoreUrlIsHomeAssistant
@@ -149,8 +141,8 @@ class DialogRepairsIssue extends LitElement {
                 </ha-button>
               `
             : ""}
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -172,7 +164,7 @@ class DialogRepairsIssue extends LitElement {
         padding-top: 0;
       }
       ha-alert {
-        margin-bottom: 16px;
+        margin-bottom: var(--ha-space-4);
         display: block;
       }
       .dismissed {

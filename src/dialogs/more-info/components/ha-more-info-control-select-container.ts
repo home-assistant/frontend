@@ -37,8 +37,8 @@ export class HaMoreInfoControlSelectContainer extends LitElement {
       overflow: auto;
       -ms-overflow-style: none; /* IE and Edge */
       scrollbar-width: none; /* Firefox */
-      margin: -2px -24px;
-      padding: 2px 24px;
+      margin: -2px calc(var(--ha-space-6) * -1);
+      padding: 2px var(--ha-space-6);
     }
     .controls-scroll::-webkit-scrollbar {
       display: none;

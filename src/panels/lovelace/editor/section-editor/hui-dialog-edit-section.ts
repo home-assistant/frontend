@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiClose,
   mdiDotsVertical,
@@ -12,11 +11,12 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-yaml-editor";
@@ -30,7 +30,10 @@ import {
 } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyleDialog } from "../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
 import { addSection, deleteSection, moveSection } from "../config-util";
@@ -42,6 +45,7 @@ import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -64,6 +68,8 @@ export class HuiDialogEditSection
 
   @state() private _currTab: (typeof TABS)[number] = TABS[0];
 
+  @state() private _open = false;
+
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
@@ -77,6 +83,7 @@ export class HuiDialogEditSection
 
   public async showDialog(params: EditSectionDialogParams): Promise<void> {
     this._params = params;
+    this._open = true;
 
     this.lovelace = params.lovelace;
 
@@ -90,12 +97,16 @@ export class HuiDialogEditSection
   }
 
   public closeDialog() {
+    this._open = false;
+    return true;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._yamlMode = false;
     this._config = undefined;
     this._currTab = TABS[0];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    return true;
   }
 
   protected render() {
@@ -113,7 +124,7 @@ export class HuiDialogEditSection
       content = html`
         <ha-yaml-editor
           .hass=${this.hass}
-          dialogInitialFocus
+          autofocus
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;
@@ -144,56 +155,50 @@ export class HuiDialogEditSection
     }
 
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
         @keydown=${this._ignoreKeydown}
-        @closed=${this._cancel}
-        .heading=${heading}
+        @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,
         })}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dialog-header show-border slot="header">
           <ha-icon-button
             slot="navigationIcon"
-            dialogAction="cancel"
+            @click=${this._cancel}
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${heading}</span>
-          <ha-button-menu
+          <ha-dropdown
             slot="actionItems"
-            fixed
-            corner="BOTTOM_END"
-            menu-corner="END"
+            placement="bottom-end"
             @closed=${stopPropagation}
-            @action=${this._handleAction}
+            @wa-select=${this._handleAction}
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass!.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item graphic="icon">
+            <ha-dropdown-item value="toggle-yaml">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
               ${this.hass.localize(
                 `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="move-to-view">
               <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
+                slot="icon"
+                .path=${mdiFileMoveOutline}
               ></ha-svg-icon>
-            </ha-list-item>
-            <ha-list-item graphic="icon">
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_view.move_to_view"
               )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiFileMoveOutline}
-              ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
           ${!this._yamlMode
             ? html`
                 <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
@@ -215,18 +220,20 @@ export class HuiDialogEditSection
             : nothing}
         </ha-dialog-header>
         ${content}
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this._cancel}
-        >
-          ${this.hass!.localize("ui.common.cancel")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._cancel}
+          >
+            ${this.hass!.localize("ui.common.cancel")}
+          </ha-button>
 
-        <ha-button slot="primaryAction" @click=${this._save}>
-          ${this.hass!.localize("ui.common.save")}
-        </ha-button>
-      </ha-dialog>
+          <ha-button slot="primaryAction" @click=${this._save}>
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -243,14 +250,13 @@ export class HuiDialogEditSection
     this._currTab = newTab;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    ev.stopPropagation();
-    ev.preventDefault();
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleAction(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value;
+    switch (value) {
+      case "toggle-yaml":
         this._yamlMode = !this._yamlMode;
         break;
-      case 1:
+      case "move-to-view":
         this._openSelectView();
         break;
     }
@@ -418,20 +424,12 @@ export class HuiDialogEditSection
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
-        ha-dialog {
-          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
-          --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: 40px;
+        ha-wa-dialog {
+          --dialog-content-padding: var(--ha-space-6);
         }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
-            --dialog-surface-margin-top: 0px;
-          }
-        }
-        ha-dialog.yaml-mode {
+        ha-wa-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
         ha-tab-group-tab {
@@ -440,11 +438,6 @@ export class HuiDialogEditSection
         ha-tab-group-tab::part(base) {
           width: 100%;
           justify-content: center;
-        }
-        @media all and (min-width: 600px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 600px;
-          }
         }
       `,
     ];

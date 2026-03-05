@@ -1,19 +1,17 @@
 import { mdiFan } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
-import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -51,9 +49,6 @@ class HuiClimateFanModesCardFeature
 
   @state() _currentFanMode?: string;
 
-  @query("ha-control-select-menu", true)
-  private _haSelect?: HaControlSelectMenu;
-
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -71,9 +66,7 @@ class HuiClimateFanModesCardFeature
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import(
-      "../editor/config-elements/hui-climate-fan-modes-card-feature-editor"
-    );
+    await import("../editor/config-elements/hui-climate-fan-modes-card-feature-editor");
     return document.createElement("hui-climate-fan-modes-card-feature-editor");
   }
 
@@ -98,27 +91,16 @@ class HuiClimateFanModesCardFeature
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (this._haSelect && changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        this.hass &&
-        this.hass.formatEntityAttributeValue !==
-          oldHass?.formatEntityAttributeValue
-      ) {
-        this._haSelect.layoutOptions();
-      }
-    }
-  }
-
-  private async _valueChanged(ev: CustomEvent) {
-    const fanMode =
-      (ev.detail as any).value ?? ((ev.target as any).value as string);
+  private async _valueChanged(
+    ev: CustomEvent<{ value?: string; item?: { value: string } }>
+  ) {
+    const fanMode = ev.detail.value ?? ev.detail.item?.value;
 
     const oldFanMode = this._stateObj!.attributes.fan_mode;
 
-    if (fanMode === oldFanMode) return;
+    if (fanMode === oldFanMode || !fanMode) {
+      return;
+    }
 
     this._currentFanMode = fanMode;
 
@@ -159,19 +141,21 @@ class HuiClimateFanModesCardFeature
         "fan_mode",
         mode
       ),
-      icon: html`<ha-attribute-icon
-        slot="graphic"
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        attribute="fan_mode"
-        .attributeValue=${mode}
-      ></ha-attribute-icon>`,
     }));
 
     if (this._config.style === "icons") {
       return html`
         <ha-control-select
-          .options=${options}
+          .options=${options.map((option) => ({
+            ...option,
+            icon: html`<ha-attribute-icon
+              slot="graphic"
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+              attribute="fan_mode"
+              .attributeValue=${option.value}
+            ></ha-attribute-icon>`,
+          }))}
           .value=${this._currentFanMode}
           @value-changed=${this._valueChanged}
           hide-option-label
@@ -184,32 +168,22 @@ class HuiClimateFanModesCardFeature
 
     return html`
       <ha-control-select-menu
+        .hass=${this.hass}
         show-arrow
         hide-label
         .label=${this.hass!.formatEntityAttributeName(stateObj, "fan_mode")}
         .value=${this._currentFanMode}
         .disabled=${this._stateObj.state === UNAVAILABLE}
-        fixedMenuPosition
-        naturalMenuWidth
-        @selected=${this._valueChanged}
-        @closed=${stopPropagation}
-      >
-        ${this._currentFanMode
-          ? html`<ha-attribute-icon
-              slot="icon"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-              attribute="fan_mode"
-              .attributeValue=${this._currentFanMode}
-            ></ha-attribute-icon>`
-          : html` <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>`}
-        ${options.map(
-          (option) => html`
-            <ha-list-item .value=${option.value} graphic="icon">
-              ${option.icon}${option.label}
-            </ha-list-item>
-          `
-        )}
+        @wa-select=${this._valueChanged}
+        .options=${options.map((option) => ({
+          ...option,
+          attributeIcon: {
+            stateObj: stateObj,
+            attribute: "fan_mode",
+            attributeValue: option.value,
+          },
+        }))}
+        ><ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
       </ha-control-select-menu>
     `;
   }

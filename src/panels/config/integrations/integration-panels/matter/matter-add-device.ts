@@ -9,10 +9,10 @@ export class MatterAddDevice extends HTMLElement {
   public hass!: HomeAssistant;
 
   connectedCallback() {
-    showMatterAddDeviceDialog(this);
-    navigate(`/config/devices`, {
+    navigate("/config/devices/dashboard", {
       replace: true,
     });
+    showMatterAddDeviceDialog(this);
   }
 }
 

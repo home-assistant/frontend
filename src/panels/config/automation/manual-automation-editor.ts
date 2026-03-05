@@ -1,5 +1,6 @@
-import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import { ContextProvider } from "@lit/context";
+import { mdiContentSave } from "@mdi/js";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -46,9 +47,14 @@ import {
   isTrigger,
   normalizeAutomationConfig,
 } from "../../../data/automation";
+import {
+  subscribeAndProcessConfigEntries,
+  type ConfigEntry,
+} from "../../../data/config_entries";
+import { configEntriesContext } from "../../../data/context";
 import { getActionType, type Action } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
@@ -80,7 +86,7 @@ const automationConfigStruct = union([
 export const SIDEBAR_DEFAULT_WIDTH = 500;
 
 @customElement("manual-automation-editor")
-export class HaManualAutomationEditor extends LitElement {
+export class HaManualAutomationEditor extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -117,11 +123,28 @@ export class HaManualAutomationEditor extends LitElement {
     HaAutomationAction | HaAutomationCondition
   >;
 
+  private _configEntries = new ContextProvider(this, {
+    context: configEntriesContext,
+    initialValue: [],
+  });
+
   private _prevSidebarWidthPx?: number;
 
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("paste", this._handlePaste);
+  }
+
+  public hassSubscribe(): Promise<UnsubscribeFunc>[] {
+    return [
+      subscribeAndProcessConfigEntries(
+        this.hass,
+        (message: ConfigEntry[]) => {
+          this._configEntries.setValue(message);
+        },
+        undefined
+      ),
+    ];
   }
 
   public disconnectedCallback() {
@@ -144,18 +167,6 @@ export class HaManualAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.triggers.header"
           )}
         </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/automation/trigger/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.learn_more"
-            )}
-          ></ha-icon-button>
-        </a>
       </div>
       ${!ensureArray(this.config.triggers)?.length
         ? html`<p>
@@ -190,18 +201,6 @@ export class HaManualAutomationEditor extends LitElement {
             >(${this.hass.localize("ui.common.optional")})</span
           >
         </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/automation/condition/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.learn_more"
-            )}
-          ></ha-icon-button>
-        </a>
       </div>
       ${!ensureArray(this.config.conditions)?.length
         ? html`<p>
@@ -234,20 +233,6 @@ export class HaManualAutomationEditor extends LitElement {
             "ui.panel.config.automation.editor.actions.header"
           )}
         </h2>
-        <div>
-          <a
-            href=${documentationUrl(this.hass, "/docs/automation/action/")}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <ha-icon-button
-              .path=${mdiHelpCircle}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.learn_more"
-              )}
-            ></ha-icon-button>
-          </a>
-        </div>
       </div>
       ${!ensureArray(this.config.actions)?.length
         ? html`<p>
@@ -317,6 +302,7 @@ export class HaManualAutomationEditor extends LitElement {
             @value-changed=${this._sidebarConfigChanged}
             @sidebar-resized=${this._resizeSidebar}
             @sidebar-resizing-stopped=${this._stopResizeSidebar}
+            @sidebar-reset-size=${this._resetSidebarWidth}
           ></ha-automation-sidebar>
         </div>
       </div>
@@ -358,7 +344,7 @@ export class HaManualAutomationEditor extends LitElement {
     this._sidebarElement?.focus();
   }
 
-  private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
+  private _sidebarConfigChanged(ev: ValueChangedEvent<SidebarConfig>) {
     ev.stopPropagation();
     if (!this._sidebarConfig) {
       return;
@@ -413,7 +399,6 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _saveAutomation() {
-    this.triggerCloseSidebar();
     fireEvent(this, "save-automation");
   }
 
@@ -698,6 +683,16 @@ export class HaManualAutomationEditor extends LitElement {
   private _stopResizeSidebar(ev) {
     ev.stopPropagation();
     this._prevSidebarWidthPx = undefined;
+  }
+
+  private _resetSidebarWidth(ev: Event) {
+    ev.stopPropagation();
+    this._prevSidebarWidthPx = undefined;
+    this._sidebarWidthPx = SIDEBAR_DEFAULT_WIDTH;
+    this.style.setProperty(
+      "--sidebar-dynamic-width",
+      `${this._sidebarWidthPx}px`
+    );
   }
 
   static get styles(): CSSResultGroup {

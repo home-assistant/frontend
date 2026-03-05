@@ -15,7 +15,7 @@ import "../../components/ha-alert";
 import "../../components/ha-expansion-panel";
 import "../../components/ha-fade-in";
 import "../../components/ha-icon-next";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-adaptive-dialog";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
@@ -109,7 +109,7 @@ class DialogRestart extends LitElement {
     const dialogTitle = this.hass.localize("ui.dialogs.restart.heading");
 
     return html`
-      <ha-wa-dialog
+      <ha-adaptive-dialog
         .hass=${this.hass}
         .open=${this._dialogOpen}
         header-title=${dialogTitle}
@@ -257,7 +257,7 @@ class DialogRestart extends LitElement {
                 </ha-expansion-panel>
               `}
         </div>
-      </ha-wa-dialog>
+      </ha-adaptive-dialog>
     `;
   }
 
@@ -405,7 +405,7 @@ class DialogRestart extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-adaptive-dialog {
           --dialog-content-padding: 0;
         }
 

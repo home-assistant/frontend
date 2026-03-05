@@ -4,16 +4,16 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-wa-dialog";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
@@ -23,6 +23,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: LovelaceDashboardDetailsDialogParams;
+
+  @state() private _open = false;
 
   @state() private _urlPathChanged = false;
 
@@ -36,6 +38,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._urlPathChanged = false;
+    this._open = true;
     if (this._params.dashboard) {
       this._data = this._params.dashboard;
     } else {
@@ -50,6 +53,10 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._data = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -59,100 +66,80 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params || !this._data) {
       return nothing;
     }
-    const defaultPanelUrlPath = this.hass.defaultPanel;
+
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this._params.urlPath
-            ? this._data.title ||
-                this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
-                )
-            : this.hass.localize(
-                "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
-              )
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this._params.urlPath
+          ? this._data.title ||
+            this.hass.localize(
+              "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
+            )
+          : this.hass.localize(
+              "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
+            )}
+        @closed=${this._dialogClosed}
       >
         <div>
-          ${this._params.dashboard && !this._params.dashboard.id
+          ${this._params.dashboard?.mode === "yaml"
             ? this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
               )
-            : this._params.urlPath === "lovelace"
-              ? this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.cant_edit_default"
-                )
-              : html`
-                  <ha-form
-                    .schema=${this._schema(this._params)}
-                    .data=${this._data}
-                    .hass=${this.hass}
-                    .error=${this._error}
-                    .computeLabel=${this._computeLabel}
-                    @value-changed=${this._valueChanged}
-                  ></ha-form>
-                `}
+            : html`
+                <ha-form
+                  autofocus
+                  .schema=${this._schema(this._params)}
+                  .data=${this._data}
+                  .hass=${this.hass}
+                  .error=${this._error}
+                  .computeLabel=${this._computeLabel}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `}
         </div>
-        ${this._params.urlPath
-          ? html`
-              ${this._params.dashboard?.id
-                ? html`
-                    <ha-button
-                      slot="secondaryAction"
-                      variant="danger"
-                      appearance="plain"
-                      @click=${this._deleteDashboard}
-                      .disabled=${this._submitting}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.lovelace.dashboards.detail.delete"
-                      )}
-                    </ha-button>
-                  `
-                : ""}
-              <ha-button
-                slot="secondaryAction"
-                appearance="plain"
-                @click=${this._toggleDefault}
-                .disabled=${this._params.urlPath === "lovelace" &&
-                defaultPanelUrlPath === "lovelace"}
-              >
-                ${this._params.urlPath === defaultPanelUrlPath
-                  ? this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.remove_default"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.set_default"
-                    )}
-              </ha-button>
-            `
-          : ""}
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateDashboard}
-          .disabled=${(this._error && "url_path" in this._error) ||
-          titleInvalid ||
-          this._submitting}
-          dialogInitialFocus
-        >
+        <ha-dialog-footer slot="footer">
           ${this._params.urlPath
-            ? this._params.dashboard?.id
-              ? this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.detail.update"
-                )
-              : this.hass.localize("ui.common.close")
-            : this.hass.localize(
-                "ui.panel.config.lovelace.dashboards.detail.create"
-              )}
-        </ha-button>
-      </ha-dialog>
+            ? html`
+                ${this._params.dashboard?.mode === "storage"
+                  ? html`
+                      <ha-button
+                        slot="secondaryAction"
+                        variant="danger"
+                        appearance="plain"
+                        @click=${this._deleteDashboard}
+                        .disabled=${this._submitting}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.lovelace.dashboards.detail.delete"
+                        )}
+                      </ha-button>
+                    `
+                  : nothing}
+              `
+            : nothing}
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateDashboard}
+            .disabled=${(this._error && "url_path" in this._error) ||
+            titleInvalid ||
+            this._submitting}
+            ?autofocus=${this._params.dashboard?.mode === "yaml"}
+          >
+            ${this._params.urlPath
+              ? this._params.dashboard?.mode === "storage"
+                ? this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.detail.update"
+                  )
+                : this.hass.localize("ui.common.close")
+              : this.hass.localize(
+                  "ui.panel.config.lovelace.dashboards.detail.create"
+                )}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
@@ -251,20 +238,10 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     };
   }
 
-  private _toggleDefault() {
-    const urlPath = this._params?.urlPath;
-    if (!urlPath) {
-      return;
-    }
-    setDefaultPanel(
-      this,
-      urlPath === this.hass.defaultPanel ? DEFAULT_PANEL : urlPath
-    );
-  }
-
   private async _updateDashboard() {
-    if (this._params?.urlPath && !this._params.dashboard?.id) {
+    if (this._params?.urlPath && this._params.dashboard?.mode === "yaml") {
       this.closeDialog();
+      return;
     }
     this._submitting = true;
     try {
@@ -283,7 +260,20 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       }
       this.closeDialog();
     } catch (err: any) {
-      this._error = { base: err?.message || "Unknown error" };
+      let localizedErrorMessage: string | undefined;
+      if (err?.translation_domain && err?.translation_key) {
+        const localize = await this.hass.loadBackendTranslation(
+          "exceptions",
+          err.translation_domain
+        );
+        localizedErrorMessage = localize(
+          `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+          err.translation_placeholders
+        );
+      }
+      this._error = {
+        base: localizedErrorMessage || err?.message || "Unknown error",
+      };
     } finally {
       this._submitting = false;
     }

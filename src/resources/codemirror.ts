@@ -15,7 +15,13 @@ import { tags } from "@lezer/highlight";
 export { autocompletion } from "@codemirror/autocomplete";
 export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 export { highlightingFor, foldGutter } from "@codemirror/language";
-export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+export {
+  closeSearchPanel,
+  highlightSelectionMatches,
+  openSearchPanel,
+  search,
+  searchKeymap,
+} from "@codemirror/search";
 export { EditorState } from "@codemirror/state";
 export {
   crosshairCursor,

@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
   findEntities,
   generateEntityFilter,
@@ -10,12 +11,12 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 import {
-  computeAreaTileCardConfig,
-  getAreas,
-  getFloors,
-} from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "../../lovelace/strategies/home/helpers/home-structure";
+  LARGE_SCREEN_CONDITION,
+  SMALL_SCREEN_CONDITION,
+} from "../../lovelace/strategies/helpers/screen-conditions";
+import type { ToggleGroupCardConfig } from "../../lovelace/cards/types";
 
 export interface LightViewStrategyConfig {
   type: "light";
@@ -49,16 +50,97 @@ const processAreasForLight = (
     }
 
     if (areaCards.length > 0) {
+      // Visibility condition: any light is on
+      const anyOnCondition = {
+        condition: "or" as const,
+        conditions: areaLights.map((entityId) => ({
+          condition: "state" as const,
+          entity: entityId,
+          state: "on",
+        })),
+      };
+
       cards.push({
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
+        tap_action: {
+          action: "navigate",
+          navigation_path: `/home/areas-${area.area_id}`,
+        },
+        badges: [
+          // Toggle buttons for mobile
+          {
+            type: "button",
+            icon: "mdi:power",
+            tap_action: {
+              action: "perform-action",
+              perform_action: "light.turn_on",
+              target: {
+                area_id: area.area_id,
+              },
+            },
+            visibility: [
+              SMALL_SCREEN_CONDITION,
+              {
+                condition: "not",
+                conditions: [anyOnCondition],
+              },
+            ],
+          },
+          {
+            type: "button",
+            icon: "mdi:power",
+            color: "amber",
+            tap_action: {
+              action: "perform-action",
+              perform_action: "light.turn_off",
+              target: {
+                area_id: area.area_id,
+              },
+            },
+            visibility: [SMALL_SCREEN_CONDITION, anyOnCondition],
+          },
+        ] satisfies LovelaceCardConfig[],
       });
+
+      // Toggle group card for desktop
+      cards.push({
+        type: "toggle-group",
+        title: hass.localize("ui.panel.lovelace.strategy.light.all_lights"),
+        color: "amber",
+        entities: areaLights,
+        visibility: [LARGE_SCREEN_CONDITION],
+        grid_options: {
+          columns: 6,
+          rows: 1,
+          min_columns: 6,
+        },
+      } as ToggleGroupCardConfig);
+
       cards.push(...areaCards);
     }
   }
 
   return cards;
+};
+
+const processUnassignedLights = (
+  hass: HomeAssistant,
+  entities: string[]
+): LovelaceCardConfig[] => {
+  const unassignedFilter = generateEntityFilter(hass, {
+    area: null,
+  });
+  const unassignedLights = entities.filter(unassignedFilter);
+  const areaCards: LovelaceCardConfig[] = [];
+  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+
+  for (const entityId of unassignedLights) {
+    areaCards.push(computeTileCard(entityId));
+  }
+
+  return areaCards;
 };
 
 @customElement("light-view-strategy")
@@ -67,9 +149,9 @@ export class LightViewStrategy extends ReactiveElement {
     _config: LightViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(hass.areas);
-    const floors = getFloors(hass.floors);
-    const home = getHomeStructure(floors, areas);
+    const areas = Object.values(hass.areas);
+    const floors = Object.values(hass.floors);
+    const hierarchy = getAreasFloorHierarchy(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
 
@@ -81,10 +163,11 @@ export class LightViewStrategy extends ReactiveElement {
 
     const entities = findEntities(allEntities, lightFilters);
 
-    const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
+    const floorCount =
+      hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
 
     // Process floors
-    for (const floorStructure of home.floors) {
+    for (const floorStructure of hierarchy.floors) {
       const floorId = floorStructure.id;
       const areaIds = floorStructure.areas;
       const floor = hass.floors[floorId];
@@ -113,7 +196,7 @@ export class LightViewStrategy extends ReactiveElement {
     }
 
     // Process unassigned areas
-    if (home.areas.length > 0) {
+    if (hierarchy.areas.length > 0) {
       const section: LovelaceSectionRawConfig = {
         type: "grid",
         column_span: 2,
@@ -128,7 +211,7 @@ export class LightViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLight(home.areas, hass, entities);
+      const areaCards = processAreasForLight(hierarchy.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -136,10 +219,30 @@ export class LightViewStrategy extends ReactiveElement {
       }
     }
 
+    // Process unassigned lights
+    const unassignedCards = processUnassignedLights(hass, entities);
+    if (unassignedCards.length > 0) {
+      const section: LovelaceSectionRawConfig = {
+        type: "grid",
+        column_span: 2,
+        cards: [
+          {
+            type: "heading",
+            heading:
+              sections.length > 0
+                ? hass.localize("ui.panel.lovelace.strategy.light.other_lights")
+                : hass.localize("ui.panel.lovelace.strategy.light.lights"),
+          },
+          ...unassignedCards,
+        ],
+      };
+      sections.push(section);
+    }
+
     return {
       type: "sections",
       max_columns: 2,
-      sections: sections || [],
+      sections: sections,
     };
   }
 }

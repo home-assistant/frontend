@@ -38,13 +38,11 @@ export class HaAuthFormString extends HaFormString {
         }
       </style>
       <ha-auth-textfield
-      .type=${
-        !this.isPassword
+        .type=${!this.isPassword
           ? this.stringType
           : this.unmaskedPassword
             ? "text"
-            : "password"
-      }
+            : "password"}
         .label=${this.label}
         .value=${this.data || ""}
         .helper=${this.helper}
@@ -55,18 +53,17 @@ export class HaAuthFormString extends HaFormString {
         .name=${this.schema.name}
         .autocomplete=${this.schema.autocomplete}
         ?autofocus=${this.schema.autofocus}
-        .suffix=${
-          this.isPassword
-            ? // reserve some space for the icon.
-              html`<div style="width: 24px"></div>`
-            : this.schema.description?.suffix
-        }
-        .validationMessage=${this.schema.required ? this.localize?.("ui.panel.page-authorize.form.error_required") : undefined}
+        .suffix=${this.isPassword
+          ? // reserve some space for the icon.
+            html`<div style="width: 24px"></div>`
+          : this.schema.description?.suffix}
+        .validationMessage=${this.schema.required
+          ? this.localize?.("ui.panel.page-authorize.form.error_required")
+          : undefined}
         @input=${this._valueChanged}
         @change=${this._valueChanged}
-        ></ha-auth-textfield>
-        ${this.renderIcon()}
-      </ha-auth-textfield>
+      ></ha-auth-textfield>
+      ${this.renderIcon()}
     `;
   }
 }

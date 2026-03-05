@@ -38,6 +38,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "distribution",
+    showElement: true,
+  },
+  {
     type: "statistics-graph",
     showElement: false,
   },

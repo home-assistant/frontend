@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { LightColor } from "../../../../data/light";
 
 export interface LightColorFavoriteDialogParams {
@@ -7,7 +7,6 @@ export interface LightColorFavoriteDialogParams {
   title: string;
   initialColor?: LightColor;
   submit?: (color?: LightColor) => void;
-  cancel?: () => void;
 }
 
 export const loadLightColorFavoriteDialog = () =>
@@ -18,7 +17,6 @@ export const showLightColorFavoriteDialog = (
   dialogParams: LightColorFavoriteDialogParams
 ) =>
   new Promise<LightColor | null>((resolve) => {
-    const origCancel = dialogParams.cancel;
     const origSubmit = dialogParams.submit;
 
     fireEvent(element, "show-dialog", {
@@ -26,12 +24,6 @@ export const showLightColorFavoriteDialog = (
       dialogImport: loadLightColorFavoriteDialog,
       dialogParams: {
         ...dialogParams,
-        cancel: () => {
-          resolve(null);
-          if (origCancel) {
-            origCancel();
-          }
-        },
         submit: (color: LightColor) => {
           resolve(color);
           if (origSubmit) {

@@ -139,7 +139,7 @@ export class DemoHaWaDialog extends LitElement {
             </tr>
             <tr>
               <td><code>large</code></td>
-              <td><code>min(720px, var(--full-width))</code></td>
+              <td><code>min(1024px, var(--full-width))</code></td>
             </tr>
             <tr>
               <td><code>full</code></td>
@@ -380,10 +380,6 @@ export class DemoHaWaDialog extends LitElement {
             <tr>
               <td><code>--dialog-z-index</code></td>
               <td>Z-index for the dialog.</td>
-            </tr>
-            <tr>
-              <td><code>--dialog-surface-position</code></td>
-              <td>CSS position of the dialog surface.</td>
             </tr>
             <tr>
               <td><code>--dialog-surface-margin-top</code></td>

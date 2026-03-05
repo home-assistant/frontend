@@ -223,7 +223,6 @@ export class HaRelatedItems extends LitElement {
                         .src=${brandsUrl({
                           domain: entry.domain,
                           type: "icon",
-                          useFallback: true,
                           darkOptimized: this.hass.themes?.darkMode,
                         })}
                         crossorigin="anonymous"
@@ -249,7 +248,6 @@ export class HaRelatedItems extends LitElement {
                           .src=${brandsUrl({
                             domain: integration,
                             type: "icon",
-                            useFallback: true,
                             darkOptimized: this.hass.themes?.darkMode,
                           })}
                           crossorigin="anonymous"

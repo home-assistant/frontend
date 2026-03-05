@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiAlertCircleCheck,
@@ -16,6 +17,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
@@ -32,11 +34,10 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-divider";
-import "../../../../components/ha-md-menu-item";
 import "../../../../components/ha-service-icon";
 import "../../../../components/ha-tooltip";
 import {
@@ -52,18 +53,14 @@ import type {
 } from "../../../../data/automation";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import type { FloorRegistryEntry } from "../../../../data/floor_registry";
-import type { LabelRegistryEntry } from "../../../../data/label_registry";
+import { fullEntitiesContext } from "../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type {
   Action,
+  DeviceAction,
   NonConditionAction,
   RepeatAction,
+  ServiceAction,
 } from "../../../../data/script";
 import { getActionType, isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
@@ -77,6 +74,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import "../target/ha-automation-row-targets";
 import "./ha-automation-action-editor";
 import type HaAutomationActionEditor from "./ha-automation-action-editor";
 import "./types/ha-automation-action-choose";
@@ -93,6 +91,7 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -175,14 +174,6 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
-  @state()
-  @consume({ context: labelsContext, subscribe: true })
-  _labelReg!: LabelRegistryEntry[];
-
-  @state()
-  @consume({ context: floorsContext, subscribe: true })
-  _floorReg!: Record<string, FloorRegistryEntry>;
-
   @state() private _uiModeAvailable = true;
 
   @state() private _yamlMode = false;
@@ -243,6 +234,13 @@ export default class HaAutomationActionRow extends LitElement {
   private _renderRow() {
     const type = getAutomationActionType(this.action);
 
+    const target =
+      type === "service" && "target" in this.action
+        ? (this.action as ServiceAction).target
+        : type === "device_id" && (this.action as DeviceAction).device_id
+          ? { device_id: (this.action as DeviceAction).device_id }
+          : undefined;
+
     return html`
       ${type === "service" && "action" in this.action && this.action.action
         ? html`
@@ -262,14 +260,9 @@ export default class HaAutomationActionRow extends LitElement {
           `}
       <h3 slot="header">
         ${capitalizeFirstLetter(
-          describeAction(
-            this.hass,
-            this._entityReg,
-            this._labelReg,
-            this._floorReg,
-            this.action
-          )
+          describeAction(this.hass, this._entityReg, this.action)
         )}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -288,15 +281,12 @@ export default class HaAutomationActionRow extends LitElement {
             </ha-tooltip>`
         : nothing}
 
-      <ha-md-button-menu
-        quick
+      <ha-dropdown
         slot="icons"
         @click=${preventDefaultStopPropagation}
         @keydown=${stopPropagation}
-        @closed=${stopPropagation}
-        positioning="fixed"
-        anchor-corner="end-end"
-        menu-corner="start-end"
+        @wa-select=${this._handleDropdownSelect}
+        placement="bottom-end"
       >
         <ha-icon-button
           slot="trigger"
@@ -304,30 +294,24 @@ export default class HaAutomationActionRow extends LitElement {
           .path=${mdiDotsVertical}
         ></ha-icon-button>
 
-        <ha-md-menu-item .clickAction=${this._runAction}>
-          <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
+        <ha-dropdown-item value="run">
+          <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize("ui.panel.config.automation.editor.actions.run")
           )}
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          .clickAction=${this._renameAction}
-          .disabled=${this.disabled}
-        >
-          <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+        </ha-dropdown-item>
+        <ha-dropdown-item value="rename" .disabled=${this.disabled}>
+          <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.rename"
             )
           )}
-        </ha-md-menu-item>
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-        <ha-md-menu-item
-          .clickAction=${this._duplicateAction}
-          .disabled=${this.disabled}
-        >
+        </ha-dropdown-item>
+        <wa-divider></wa-divider>
+        <ha-dropdown-item value="duplicate" .disabled=${this.disabled}>
           <ha-svg-icon
-            slot="start"
+            slot="icon"
             .path=${mdiPlusCircleMultipleOutline}
           ></ha-svg-icon>
 
@@ -336,13 +320,10 @@ export default class HaAutomationActionRow extends LitElement {
               "ui.panel.config.automation.editor.actions.duplicate"
             )
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._copyAction}
-          .disabled=${this.disabled}
-        >
-          <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+        <ha-dropdown-item value="copy" .disabled=${this.disabled}>
+          <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.copy"
@@ -351,7 +332,6 @@ export default class HaAutomationActionRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -362,13 +342,10 @@ export default class HaAutomationActionRow extends LitElement {
               <span>C</span>
             </span>`
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._cutAction}
-          .disabled=${this.disabled}
-        >
-          <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
+        <ha-dropdown-item value="cut" .disabled=${this.disabled}>
+          <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.cut"
@@ -377,7 +354,6 @@ export default class HaAutomationActionRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -388,51 +364,48 @@ export default class HaAutomationActionRow extends LitElement {
               <span>X</span>
             </span>`
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
         ${!this.optionsInSidebar
           ? html`
-              <ha-md-menu-item
-                .clickAction=${this._moveUp}
+              <ha-dropdown-item
+                value="move_up"
                 .disabled=${this.disabled || !!this.first}
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.move_up"
                 )}
-                <ha-svg-icon slot="start" .path=${mdiArrowUp}></ha-svg-icon
-              ></ha-md-menu-item>
-              <ha-md-menu-item
-                .clickAction=${this._moveDown}
+                <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
+              ></ha-dropdown-item>
+              <ha-dropdown-item
+                value="move_down"
                 .disabled=${this.disabled || !!this.last}
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.move_down"
                 )}
-                <ha-svg-icon slot="start" .path=${mdiArrowDown}></ha-svg-icon
-              ></ha-md-menu-item>
+                <ha-svg-icon slot="icon" .path=${mdiArrowDown}></ha-svg-icon
+              ></ha-dropdown-item>
             `
           : nothing}
 
-        <ha-md-menu-item
-          .clickAction=${this._toggleYamlMode}
+        <ha-dropdown-item
+          value="toggle_yaml_mode"
           .disabled=${!this._uiModeAvailable || !!this._warnings}
         >
-          <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
             )
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <wa-divider></wa-divider>
 
-        <ha-md-menu-item
-          .clickAction=${this._onDisable}
-          .disabled=${this.disabled}
-        >
+        <ha-dropdown-item value="disable" .disabled=${this.disabled}>
           <ha-svg-icon
-            slot="start"
+            slot="icon"
             .path=${this.action.enabled === false
               ? mdiPlayCircleOutline
               : mdiStopCircleOutline}
@@ -443,15 +416,15 @@ export default class HaAutomationActionRow extends LitElement {
               `ui.panel.config.automation.editor.actions.${this.action.enabled === false ? "enable" : "disable"}`
             )
           )}
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          class="warning"
-          .clickAction=${this._onDelete}
+        </ha-dropdown-item>
+        <ha-dropdown-item
+          value="delete"
+          variant="danger"
           .disabled=${this.disabled}
         >
           <ha-svg-icon
             class="warning"
-            slot="start"
+            slot="icon"
             .path=${mdiDelete}
           ></ha-svg-icon>
 
@@ -463,7 +436,6 @@ export default class HaAutomationActionRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -478,8 +450,8 @@ export default class HaAutomationActionRow extends LitElement {
               >
             </span>`
           )}
-        </ha-md-menu-item>
-      </ha-md-button-menu>
+        </ha-dropdown-item>
+      </ha-dropdown>
 
       ${!this.optionsInSidebar
         ? html`${this._warnings
@@ -576,6 +548,14 @@ export default class HaAutomationActionRow extends LitElement {
     `;
   }
 
+  private _renderTargets = memoizeOne(
+    (target?: HassServiceTarget) =>
+      html`<ha-automation-row-targets
+        .hass=${this.hass}
+        .target=${target}
+      ></ha-automation-row-targets>`
+  );
+
   private _onValueChange(event: CustomEvent) {
     // reload sidebar if sort, deleted,... happend
     if (this._selected && this.optionsInSidebar) {
@@ -588,7 +568,11 @@ export default class HaAutomationActionRow extends LitElement {
       ...this._clipboard,
       action: deepClone(this.action),
     };
-    copyToClipboard(dump(this.action));
+    let action = this.action;
+    if ("sequence" in action) {
+      action = { ...this.action, metadata: {} };
+    }
+    copyToClipboard(dump(action));
   }
 
   private _onDisable = () => {
@@ -684,15 +668,7 @@ export default class HaAutomationActionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeAction(
-          this.hass,
-          this._entityReg,
-          this._labelReg,
-          this._floorReg,
-          this.action,
-          undefined,
-          true
-        )
+        describeAction(this.hass, this._entityReg, this.action, undefined, true)
       ),
       defaultValue: this.action.alias,
       confirmText: this.hass.localize("ui.common.submit"),
@@ -884,6 +860,48 @@ export default class HaAutomationActionRow extends LitElement {
 
   public focus() {
     this._automationRowElement?.focus();
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    ev.stopPropagation();
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "run":
+        this._runAction();
+        break;
+      case "rename":
+        this._renameAction();
+        break;
+      case "duplicate":
+        this._duplicateAction();
+        break;
+      case "copy":
+        this._copyAction();
+        break;
+      case "cut":
+        this._cutAction();
+        break;
+      case "move_up":
+        this._moveUp();
+        break;
+      case "move_down":
+        this._moveDown();
+        break;
+      case "toggle_yaml_mode":
+        this._toggleYamlMode(ev.target as HTMLElement);
+        break;
+      case "disable":
+        this._onDisable();
+        break;
+      case "delete":
+        this._onDelete();
+        break;
+    }
   }
 
   static styles = [rowStyles, overflowStyles];

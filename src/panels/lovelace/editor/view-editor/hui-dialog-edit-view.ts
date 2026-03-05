@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiClose,
   mdiDotsVertical,
@@ -11,14 +10,15 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { navigate } from "../../../../common/navigate";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-list-item";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
@@ -36,7 +36,10 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyleDialog } from "../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../components/hui-entity-editor";
 import type { Lovelace } from "../../types";
@@ -55,6 +58,7 @@ import "./hui-view-background-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -82,6 +86,8 @@ export class HuiDialogEditView extends LitElement {
 
   @state() private _currentType = getViewType();
 
+  @state() private _open = false;
+
   get _type(): string {
     return getViewType(this._config);
   }
@@ -97,6 +103,7 @@ export class HuiDialogEditView extends LitElement {
 
   public showDialog(params: EditViewDialogParams): void {
     this._params = params;
+    this._open = true;
 
     if (this._params.viewIndex === undefined) {
       this._config = {
@@ -120,6 +127,10 @@ export class HuiDialogEditView extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._params = undefined;
     this._config = {};
     this._yamlMode = false;
@@ -150,7 +161,7 @@ export class HuiDialogEditView extends LitElement {
       content = html`
         <ha-yaml-editor
           .hass=${this.hass}
-          dialogInitialFocus
+          autofocus
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;
@@ -197,56 +208,49 @@ export class HuiDialogEditView extends LitElement {
       this._config?.sections?.length;
 
     return html`
-      <ha-dialog
-        open
-        scrimClickAction
-        escapeKeyAction
-        @closed=${this.closeDialog}
-        .heading=${this._viewConfigTitle}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        width="large"
+        @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,
         })}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dialog-header show-border slot="header">
           <ha-icon-button
             slot="navigationIcon"
-            dialogAction="cancel"
+            @click=${this.closeDialog}
             .label=${this.hass!.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
           <h2 slot="title">${this._viewConfigTitle}</h2>
-          <ha-button-menu
+          <ha-dropdown
             slot="actionItems"
-            fixed
-            corner="BOTTOM_END"
-            menu-corner="END"
-            @action=${this._handleAction}
-            @closed=${stopPropagation}
+            placement="bottom-end"
+            @wa-select=${this._handleAction}
           >
             <ha-icon-button
               slot="trigger"
               .label=${this.hass!.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-list-item graphic="icon">
+            <ha-dropdown-item value="toggle-mode">
               ${this.hass!.localize(
                 `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPlaylistEdit}
-              ></ha-svg-icon>
-            </ha-list-item>
-            <ha-list-item graphic="icon">
+              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            </ha-dropdown-item>
+            <ha-dropdown-item value="move-to-dashboard">
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_view.move_to_dashboard"
               )}
               <ha-svg-icon
-                slot="graphic"
+                slot="icon"
                 .path=${mdiFileMoveOutline}
               ></ha-svg-icon>
-            </ha-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
           ${convertToSection
             ? html`
                 <ha-alert alert-type="info">
@@ -293,48 +297,54 @@ export class HuiDialogEditView extends LitElement {
             : nothing}
         </ha-dialog-header>
         ${content}
-        ${this._params.viewIndex !== undefined
-          ? html`
-              <ha-button
-                variant="danger"
-                appearance="plain"
-                slot="secondaryAction"
-                @click=${this._deleteConfirm}
-              >
-                ${this.hass!.localize(
-                  "ui.panel.lovelace.editor.edit_view.delete"
-                )}
-              </ha-button>
-            `
-          : nothing}
-        <ha-button
-          class="save"
-          slot="primaryAction"
-          ?disabled=${!this._config ||
-          this._saving ||
-          !this._dirty ||
-          !this._valid ||
-          convertToSection ||
-          convertNotSupported}
-          @click=${this._save}
-        >
-          ${this._saving
-            ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
+        <ha-dialog-footer slot="footer">
+          ${this._params.viewIndex !== undefined
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  variant="danger"
+                  appearance="plain"
+                  @click=${this._deleteConfirm}
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.delete"
+                  )}
+                </ha-button>
+              `
             : nothing}
-          ${this.hass!.localize("ui.common.save")}</ha-button
-        >
-      </ha-dialog>
+          <ha-button
+            class="save"
+            slot="primaryAction"
+            ?disabled=${!this._config ||
+            this._saving ||
+            !this._dirty ||
+            !this._valid ||
+            convertToSection ||
+            convertNotSupported}
+            @click=${this._save}
+          >
+            ${this._saving
+              ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
+              : nothing}
+            ${this.hass!.localize("ui.common.save")}</ha-button
+          >
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
-  private async _handleAction(ev: CustomEvent<ActionDetail>) {
-    ev.stopPropagation();
-    ev.preventDefault();
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "toggle-mode":
         this._yamlMode = !this._yamlMode;
         break;
-      case 1:
+      case "move-to-dashboard":
         this._openSelectDashboard();
         break;
     }
@@ -631,20 +641,12 @@ export class HuiDialogEditView extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
-        ha-dialog {
-          /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
-          --vertical-align-dialog: flex-start;
-          --dialog-surface-margin-top: 40px;
+        ha-wa-dialog {
+          --dialog-content-padding: var(--ha-space-6);
         }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* When in fullscreen dialog should be attached to top */
-          ha-dialog {
-            --dialog-surface-margin-top: 0px;
-          }
-        }
-        ha-dialog.yaml-mode {
+        ha-wa-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
         h2 {
@@ -685,12 +687,6 @@ export class HuiDialogEditView extends LitElement {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-        }
-
-        @media all and (min-width: 600px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 600px;
-          }
         }
       `,
     ];

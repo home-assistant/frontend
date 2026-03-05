@@ -11,14 +11,14 @@ import type { HaCameraStream } from "../../../components/ha-camera-stream";
 import "../../../components/ha-spinner";
 import type { CameraEntity } from "../../../data/camera";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
-import type { HomeAssistant } from "../../../types";
 import {
   isMediaSourceContentId,
   resolveMediaSource,
 } from "../../../data/media_source";
+import type { HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";

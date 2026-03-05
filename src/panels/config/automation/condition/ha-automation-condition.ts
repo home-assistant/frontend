@@ -1,22 +1,34 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type {
-  AutomationClipboard,
-  Condition,
+import {
+  getValueFromDynamic,
+  isDynamic,
+  type AutomationClipboard,
+  type Condition,
 } from "../../../../data/automation";
-import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
+import type { ConditionDescriptions } from "../../../../data/condition";
+import {
+  CONDITION_BUILDING_BLOCKS,
+  subscribeConditions,
+} from "../../../../data/condition";
+import { subscribeLabFeature } from "../../../../data/labs";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -25,10 +37,9 @@ import {
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
-import { ensureArray } from "../../../../common/array/ensure-array";
 
 @customElement("ha-automation-condition")
-export default class HaAutomationCondition extends LitElement {
+export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public conditions!: Condition[];
@@ -45,6 +56,8 @@ export default class HaAutomationCondition extends LitElement {
     false;
 
   @state() private _rowSortSelected?: number;
+
+  @state() private _conditionDescriptions: ConditionDescriptions = {};
 
   @state()
   @storage({
@@ -63,6 +76,59 @@ export default class HaAutomationCondition extends LitElement {
   private _focusConditionIndexOnChange?: number;
 
   private _conditionKeys = new WeakMap<Condition, string>();
+
+  private _unsub?: Promise<UnsubscribeFunc>;
+
+  // @ts-ignore
+  @state() private _newTriggersAndConditions = false;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribe();
+  }
+
+  protected hassSubscribe() {
+    return [
+      subscribeLabFeature(
+        this.hass!.connection,
+        "automation",
+        "new_triggers_conditions",
+        (feature) => {
+          this._newTriggersAndConditions = feature.enabled;
+        }
+      ),
+    ];
+  }
+
+  private _subscribeDescriptions() {
+    this._unsubscribe();
+    this._conditionDescriptions = {};
+    this._unsub = subscribeConditions(this.hass, (descriptions) => {
+      this._conditionDescriptions = {
+        ...this._conditionDescriptions,
+        ...descriptions,
+      };
+    });
+  }
+
+  private _unsubscribe() {
+    if (this._unsub) {
+      this._unsub.then((unsub) => unsub());
+      this._unsub = undefined;
+    }
+  }
+
+  protected willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("_newTriggersAndConditions")) {
+      this._subscribeDescriptions();
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("conditions");
+  }
 
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("conditions")) {
@@ -168,6 +234,7 @@ export default class HaAutomationCondition extends LitElement {
                 .last=${idx === this.conditions.length - 1}
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
+                .conditionDescriptions=${this._conditionDescriptions}
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 @duplicate=${this._duplicateCondition}
@@ -231,12 +298,17 @@ export default class HaAutomationCondition extends LitElement {
     });
   }
 
-  private _addCondition = (value) => {
+  private _addCondition = (value: string, target?: HassServiceTarget) => {
     let conditions: Condition[];
     if (value === PASTE_VALUE) {
       conditions = this.conditions.concat(
         deepClone(this._clipboard!.condition)
       );
+    } else if (isDynamic(value)) {
+      conditions = this.conditions.concat({
+        condition: getValueFromDynamic(value),
+        target,
+      });
     } else {
       const condition = value as Condition["condition"];
       const elClass = customElements.get(

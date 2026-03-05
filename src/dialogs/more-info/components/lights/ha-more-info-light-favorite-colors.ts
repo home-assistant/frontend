@@ -6,9 +6,9 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-control-slider";
 import "../../../../components/ha-sortable";
-import { UNAVAILABLE } from "../../../../data/entity";
-import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../../data/entity_registry";
+import { UNAVAILABLE } from "../../../../data/entity/entity";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import { computeDefaultFavoriteColors } from "../../../../data/light";
 import { actionHandler } from "../../../../panels/lovelace/common/directives/action-handler-directive";
@@ -254,14 +254,14 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: -8px;
+      margin: calc(var(--ha-space-2) * -1);
       flex-wrap: wrap;
       max-width: 250px;
       user-select: none;
     }
 
     .container > * {
-      margin: 8px;
+      margin: var(--ha-space-2);
     }
 
     .color {

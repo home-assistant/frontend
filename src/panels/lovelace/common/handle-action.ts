@@ -67,7 +67,10 @@ export const handleAction = async (
         await hass.loadBackendTranslation("title");
         const localize = await hass.loadBackendTranslation("services");
         serviceName = `${domainToName(localize, domain)}: ${
-          localize(`component.${domain}.services.${serviceName}.name`) ||
+          localize(
+            `component.${domain}.services.${service}.name`,
+            hass.services[domain][service].description_placeholders
+          ) ||
           serviceDomains[domain][service].name ||
           service
         }`;
@@ -86,6 +89,9 @@ export const handleAction = async (
               ) ||
               actionConfig.action,
           }),
+        title: actionConfig.confirmation.title,
+        dismissText: actionConfig.confirmation.dismiss_text,
+        confirmText: actionConfig.confirmation.confirm_text,
       }))
     ) {
       return;

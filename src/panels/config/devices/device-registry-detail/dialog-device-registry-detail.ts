@@ -11,7 +11,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
-import type { DeviceRegistryEntry } from "../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";

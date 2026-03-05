@@ -6,13 +6,16 @@ import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
-import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-tab-group";
 import "../../../../../components/ha-tab-group-tab";
+import "../../../../../components/ha-wa-dialog";
 import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
-import { haStyleDialog } from "../../../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+} from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { sortZHADevices, sortZHAGroups } from "./functions";
 import type {
@@ -41,6 +44,8 @@ class DialogZHAManageZigbeeDevice extends LitElement {
 
   @state() private _groups: ZHAGroup[] = [];
 
+  @state() private _open = false;
+
   public async showDialog(
     params: ZHAManageZigbeeDeviceDialogParams
   ): Promise<void> {
@@ -51,9 +56,14 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     }
     this._currTab = params.tab || "clusters";
     this.large = false;
+    this._open = true;
   }
 
   public closeDialog() {
+    this._open = false;
+  }
+
+  private _dialogClosed() {
     this._device = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -85,18 +95,17 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     const tabs = this._getTabs(this._device);
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        @closed=${this._dialogClosed}
       >
-        <ha-dialog-header show-border slot="heading">
+        <ha-dialog-header show-border slot="header">
           <ha-icon-button
             slot="navigationIcon"
-            dialogAction="cancel"
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
+            @click=${this.closeDialog}
           ></ha-icon-button>
           <span
             slot="title"
@@ -121,7 +130,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
             )}
           </ha-tab-group>
         </ha-dialog-header>
-        <div class="content" tabindex="-1" dialogInitialFocus>
+        <div class="content" tabindex="-1" autofocus>
           ${cache(
             this._currTab === "clusters"
               ? html`
@@ -167,7 +176,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                     `
           )}
         </div>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -211,27 +220,13 @@ class DialogZHAManageZigbeeDevice extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
-        ha-dialog {
-          --dialog-surface-position: static;
-          --dialog-content-position: static;
-          --vertical-align-dialog: flex-start;
-        }
-
         .content {
           outline: none;
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-2);
-        }
-
-        @media all and (min-width: 600px) and (min-height: 501px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 560px;
-            --mdc-dialog-max-width: 560px;
-            --dialog-surface-margin-top: 40px;
-            --mdc-dialog-max-height: calc(100% - 72px);
-          }
         }
 
         ha-tab-group-tab {

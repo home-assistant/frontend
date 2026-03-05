@@ -8,8 +8,8 @@ import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-theme-picker";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureCardConfig } from "../../cards/types";
-import "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -72,6 +72,7 @@ export class HuiPictureCardEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -85,6 +86,7 @@ export class HuiPictureCardEditor
                       default_action: "none" as const,
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 })
               ),
             },

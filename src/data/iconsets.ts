@@ -12,15 +12,13 @@ const getStore = memoizeOne(async () => {
   const iconStore = createStore("hass-icon-db", "mdi-icon-store");
 
   // Supervisor doesn't use icons, and should not update/downgrade the icon DB.
-  if (!__SUPERVISOR__) {
-    const version = await get("_version", iconStore);
+  const version = await get("_version", iconStore);
 
-    if (!version) {
-      set("_version", iconMetadata.version, iconStore);
-    } else if (version !== iconMetadata.version) {
-      await clear(iconStore);
-      set("_version", iconMetadata.version, iconStore);
-    }
+  if (!version) {
+    set("_version", iconMetadata.version, iconStore);
+  } else if (version !== iconMetadata.version) {
+    await clear(iconStore);
+    set("_version", iconMetadata.version, iconStore);
   }
 
   return iconStore;
@@ -80,14 +78,16 @@ export const findIconChunk = (icon: string): string => {
 
 export const writeCache = async (chunks: Chunks) => {
   const keys = Object.keys(chunks);
-  const iconsSets: Icons[] = await Promise.all(Object.values(chunks));
+  const results = await Promise.allSettled(Object.values(chunks));
   const iconStore = await getStore();
   // We do a batch opening the store just once, for (considerable) performance
   iconStore("readwrite", (store) => {
-    iconsSets.forEach((icons, idx) => {
-      Object.entries(icons).forEach(([name, path]) => {
-        store.put(path, name);
-      });
+    results.forEach((result, idx) => {
+      if (result.status === "fulfilled") {
+        Object.entries(result.value).forEach(([name, path]) => {
+          store.put(path, name);
+        });
+      }
       delete chunks[keys[idx]];
     });
   });

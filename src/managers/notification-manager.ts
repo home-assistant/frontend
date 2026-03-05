@@ -1,6 +1,6 @@
 import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import type { LocalizeKeys } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-icon-button";
@@ -26,6 +26,7 @@ export interface ToastActionParams {
     | { translationKey: LocalizeKeys; args?: Record<string, string> };
 }
 
+@customElement("notification-manager")
 class NotificationManager extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -114,8 +115,6 @@ class NotificationManager extends LitElement {
     }
   }
 }
-
-customElements.define("notification-manager", NotificationManager);
 
 declare global {
   interface HTMLElementTagNameMap {

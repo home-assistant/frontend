@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
@@ -14,7 +15,10 @@ import {
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -34,23 +38,27 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
+import "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-divider";
-import "../../../../components/ha-md-menu-item";
 import "../../../../components/ha-svg-icon";
+import { TRIGGER_ICONS } from "../../../../components/ha-trigger-icon";
 import type {
   AutomationClipboard,
+  PlatformTrigger,
   Trigger,
+  TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
 import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { TRIGGER_ICONS, isTriggerList } from "../../../../data/trigger";
+import type { DeviceTrigger } from "../../../../data/device/device_automation";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { TriggerDescriptions } from "../../../../data/trigger";
+import { isTriggerList } from "../../../../data/trigger";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -60,6 +68,7 @@ import { isMac } from "../../../../util/is_mac";
 import { showToast } from "../../../../util/toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import "../target/ha-automation-row-targets";
 import "./ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
@@ -69,9 +78,9 @@ import "./types/ha-automation-trigger-event";
 import "./types/ha-automation-trigger-geo_location";
 import "./types/ha-automation-trigger-homeassistant";
 import "./types/ha-automation-trigger-list";
-import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
 import "./types/ha-automation-trigger-persistent_notification";
+import "./types/ha-automation-trigger-platform";
 import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-tag";
@@ -80,6 +89,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -137,6 +147,9 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _warnings?: string[];
 
+  @property({ attribute: false })
+  public triggerDescriptions: TriggerDescriptions = {};
+
   @property({ type: Boolean }) public narrow = false;
 
   @query("ha-automation-trigger-editor")
@@ -178,59 +191,69 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _renderRow() {
-    const type = this._getType(this.trigger);
+    const type = this._getType(this.trigger, this.triggerDescriptions);
 
     const supported = this._uiSupported(type);
 
     const yamlMode = this._yamlMode || !supported;
 
+    const target =
+      type === "platform" &&
+      "target" in
+        this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
+        ? (this.trigger as PlatformTrigger).target
+        : type === "device" && (this.trigger as DeviceTrigger).device_id
+          ? { device_id: (this.trigger as DeviceTrigger).device_id }
+          : undefined;
+
     return html`
-      <ha-svg-icon
-        slot="leading-icon"
-        class="trigger-icon"
-        .path=${TRIGGER_ICONS[type]}
-      ></ha-svg-icon>
+      ${type === "list"
+        ? html`<ha-svg-icon
+            slot="leading-icon"
+            class="trigger-icon"
+            .path=${TRIGGER_ICONS[type]}
+          ></ha-svg-icon>`
+        : html`<ha-trigger-icon
+            slot="leading-icon"
+            .hass=${this.hass}
+            .trigger=${(this.trigger as Exclude<Trigger, TriggerList>).trigger}
+          ></ha-trigger-icon>`}
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
 
-      <ha-md-button-menu
-        quick
+      <ha-dropdown
         slot="icons"
         @click=${preventDefaultStopPropagation}
         @keydown=${stopPropagation}
-        @closed=${stopPropagation}
-        positioning="fixed"
-        anchor-corner="end-end"
-        menu-corner="start-end"
+        @wa-select=${this._handleDropdownSelect}
+        placement="bottom-end"
       >
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
-        <ha-md-menu-item
-          .clickAction=${this._renameTrigger}
+        <ha-dropdown-item
+          value="rename"
           .disabled=${this.disabled || type === "list"}
         >
-          <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.rename"
             )
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <wa-divider></wa-divider>
 
-        <ha-md-menu-item
-          .clickAction=${this._duplicateTrigger}
-          .disabled=${this.disabled}
-        >
+        <ha-dropdown-item value="duplicate" .disabled=${this.disabled}>
           <ha-svg-icon
-            slot="start"
+            slot="icon"
             .path=${mdiPlusCircleMultipleOutline}
           ></ha-svg-icon>
 
@@ -239,13 +262,10 @@ export default class HaAutomationTriggerRow extends LitElement {
               "ui.panel.config.automation.editor.actions.duplicate"
             )
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._copyTrigger}
-          .disabled=${this.disabled}
-        >
-          <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+        <ha-dropdown-item value="copy" .disabled=${this.disabled}>
+          <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.copy"
@@ -254,7 +274,6 @@ export default class HaAutomationTriggerRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -265,13 +284,10 @@ export default class HaAutomationTriggerRow extends LitElement {
               <span>C</span>
             </span>`
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._cutTrigger}
-          .disabled=${this.disabled}
-        >
-          <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
+        <ha-dropdown-item value="cut" .disabled=${this.disabled}>
+          <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.cut"
@@ -280,7 +296,6 @@ export default class HaAutomationTriggerRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -291,51 +306,51 @@ export default class HaAutomationTriggerRow extends LitElement {
               <span>X</span>
             </span>`
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
         ${!this.optionsInSidebar
           ? html`
-              <ha-md-menu-item
-                .clickAction=${this._moveUp}
+              <ha-dropdown-item
+                value="move_up"
                 .disabled=${this.disabled || !!this.first}
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.move_up"
                 )}
-                <ha-svg-icon slot="start" .path=${mdiArrowUp}></ha-svg-icon
-              ></ha-md-menu-item>
-              <ha-md-menu-item
-                .clickAction=${this._moveDown}
+                <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
+              ></ha-dropdown-item>
+              <ha-dropdown-item
+                value="move_down"
                 .disabled=${this.disabled || !!this.last}
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.move_down"
                 )}
-                <ha-svg-icon slot="start" .path=${mdiArrowDown}></ha-svg-icon
-              ></ha-md-menu-item>
+                <ha-svg-icon slot="icon" .path=${mdiArrowDown}></ha-svg-icon
+              ></ha-dropdown-item>
             `
           : nothing}
 
-        <ha-md-menu-item
-          .clickAction=${this._toggleYamlMode}
+        <ha-dropdown-item
+          value="toggle_yaml_mode"
           .disabled=${!supported || !!this._warnings}
         >
-          <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
               `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
             )
           )}
-        </ha-md-menu-item>
+        </ha-dropdown-item>
 
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <wa-divider></wa-divider>
 
-        <ha-md-menu-item
-          .clickAction=${this._onDisable}
+        <ha-dropdown-item
+          value="disable"
           .disabled=${this.disabled || type === "list"}
         >
           <ha-svg-icon
-            slot="start"
+            slot="icon"
             .path=${"enabled" in this.trigger && this.trigger.enabled === false
               ? mdiPlayCircleOutline
               : mdiStopCircleOutline}
@@ -346,15 +361,15 @@ export default class HaAutomationTriggerRow extends LitElement {
               `ui.panel.config.automation.editor.actions.${"enabled" in this.trigger && this.trigger.enabled === false ? "enable" : "disable"}`
             )
           )}
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          .clickAction=${this._onDelete}
-          class="warning"
+        </ha-dropdown-item>
+        <ha-dropdown-item
+          value="delete"
+          variant="danger"
           .disabled=${this.disabled}
         >
           <ha-svg-icon
             class="warning"
-            slot="start"
+            slot="icon"
             .path=${mdiDelete}
           ></ha-svg-icon>
           ${this._renderOverflowLabel(
@@ -365,7 +380,6 @@ export default class HaAutomationTriggerRow extends LitElement {
               <span
                 >${isMac
                   ? html`<ha-svg-icon
-                      slot="start"
                       .path=${mdiAppleKeyboardCommand}
                     ></ha-svg-icon>`
                   : this.hass.localize(
@@ -380,8 +394,8 @@ export default class HaAutomationTriggerRow extends LitElement {
               >
             </span>`
           )}
-        </ha-md-menu-item>
-      </ha-md-button-menu>
+        </ha-dropdown-item>
+      </ha-dropdown>
       ${!this.optionsInSidebar
         ? html`${this._warnings
               ? html`<ha-automation-editor-warning
@@ -393,6 +407,9 @@ export default class HaAutomationTriggerRow extends LitElement {
             <ha-automation-trigger-editor
               .hass=${this.hass}
               .trigger=${this.trigger}
+              .description=${"trigger" in this.trigger
+                ? this.triggerDescriptions[this.trigger.trigger]
+                : undefined}
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
               .uiSupported=${supported}
@@ -448,6 +465,14 @@ export default class HaAutomationTriggerRow extends LitElement {
       </ha-card>
     `;
   }
+
+  private _renderTargets = memoizeOne(
+    (target?: HassServiceTarget) =>
+      html`<ha-automation-row-targets
+        .hass=${this.hass}
+        .target=${target}
+      ></ha-automation-row-targets>`
+  );
 
   protected willUpdate(changedProperties) {
     // on yaml toggle --> clear warnings
@@ -552,6 +577,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   public openSidebar(trigger?: Trigger): void {
+    trigger = trigger || this.trigger;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
@@ -576,8 +602,14 @@ export default class HaAutomationTriggerRow extends LitElement {
       duplicate: this._duplicateTrigger,
       cut: this._cutTrigger,
       insertAfter: this._insertAfter,
-      config: trigger || this.trigger,
-      uiSupported: this._uiSupported(this._getType(trigger || this.trigger)),
+      config: trigger,
+      uiSupported: this._uiSupported(
+        this._getType(trigger, this.triggerDescriptions)
+      ),
+      description:
+        "trigger" in trigger
+          ? this.triggerDescriptions[trigger.trigger]
+          : undefined,
       yamlMode: this._yamlMode,
     } satisfies TriggerSidebarConfig);
     this._selected = true;
@@ -759,8 +791,18 @@ export default class HaAutomationTriggerRow extends LitElement {
     });
   }
 
-  private _getType = memoizeOne((trigger: Trigger) =>
-    isTriggerList(trigger) ? "list" : trigger.trigger
+  private _getType = memoizeOne(
+    (trigger: Trigger, triggerDescriptions: TriggerDescriptions) => {
+      if (isTriggerList(trigger)) {
+        return "list";
+      }
+
+      if (trigger.trigger in triggerDescriptions) {
+        return "platform";
+      }
+
+      return trigger.trigger;
+    }
   );
 
   private _uiSupported = memoizeOne(
@@ -770,6 +812,45 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   public focus() {
     this._automationRowElement?.focus();
+  }
+
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    ev.stopPropagation();
+    const action = ev.detail?.item?.value;
+
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case "rename":
+        this._renameTrigger();
+        break;
+      case "duplicate":
+        this._duplicateTrigger();
+        break;
+      case "copy":
+        this._copyTrigger();
+        break;
+      case "cut":
+        this._cutTrigger();
+        break;
+      case "move_up":
+        this._moveUp();
+        break;
+      case "move_down":
+        this._moveDown();
+        break;
+      case "toggle_yaml_mode":
+        this._toggleYamlMode(ev.target as HTMLElement);
+        break;
+      case "disable":
+        this._onDisable();
+        break;
+      case "delete":
+        this._onDelete();
+        break;
+    }
   }
 
   static get styles(): CSSResultGroup {

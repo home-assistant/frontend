@@ -43,7 +43,6 @@ export default tseslint.config(
         __BUILD__: false,
         __VERSION__: false,
         __STATIC_PATH__: false,
-        __SUPERVISOR__: false,
       },
 
       parser: tseslint.parser,
@@ -186,6 +185,12 @@ export default tseslint.config(
         },
       ],
       "no-use-before-define": "off",
+    },
+  },
+  {
+    files: ["src/util/recorder-worklet.js"],
+    languageOptions: {
+      globals: globals.audioWorklet,
     },
   }
 );

@@ -5,13 +5,15 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-combo-box";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-fade-in";
+import "../../../components/ha-generic-picker";
 import "../../../components/ha-markdown";
 import "../../../components/ha-password-field";
+import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
+import "../../../components/ha-wa-dialog";
 import type {
   ApplicationCredential,
   ApplicationCredentialsConfig,
@@ -59,6 +61,10 @@ export class DialogAddApplicationCredential extends LitElement {
 
   @state() private _config?: ApplicationCredentialsConfig;
 
+  @state() private _open = false;
+
+  @state() private _invalid = false;
+
   public showDialog(params: AddApplicationCredentialDialogParams) {
     this._params = params;
     this._domain = params.selectedDomain;
@@ -69,6 +75,7 @@ export class DialogAddApplicationCredential extends LitElement {
     this._clientSecret = "";
     this._error = undefined;
     this._loading = false;
+    this._open = true;
     this._fetchConfig();
   }
 
@@ -90,16 +97,16 @@ export class DialogAddApplicationCredential extends LitElement {
       ? domainToName(this.hass.localize, this._domain!)
       : "";
     return html`
-      <ha-dialog
-        open
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
         @closed=${this._abortDialog}
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            "ui.panel.config.application_credentials.editor.caption"
-          )
+        .preventScrimClose=${!!this._domain ||
+        !!this._name ||
+        !!this._clientId ||
+        !!this._clientSecret}
+        .headerTitle=${this.hass.localize(
+          "ui.panel.config.application_credentials.editor.caption"
         )}
       >
         ${!this._config
@@ -165,20 +172,23 @@ export class DialogAddApplicationCredential extends LitElement {
                   : nothing}
                 ${this._params.selectedDomain
                   ? nothing
-                  : html`<ha-combo-box
+                  : html`<ha-generic-picker
                       name="domain"
                       .hass=${this.hass}
                       .label=${this.hass.localize(
                         "ui.panel.config.application_credentials.editor.domain"
                       )}
                       .value=${this._domain}
-                      .items=${this._domains}
-                      item-id-path="id"
-                      item-value-path="id"
-                      item-label-path="name"
+                      .invalid=${this._invalid && !this._domain}
+                      .getItems=${this._getDomainItems}
                       required
+                      .disabled=${!this._domains}
+                      .valueRenderer=${this._domainRenderer}
                       @value-changed=${this._handleDomainPicked}
-                    ></ha-combo-box>`}
+                      .errorMessage=${this.hass.localize(
+                        "ui.common.error_required"
+                      )}
+                    ></ha-generic-picker>`}
                 ${this._description
                   ? html`<ha-markdown
                       breaks
@@ -192,9 +202,10 @@ export class DialogAddApplicationCredential extends LitElement {
                     "ui.panel.config.application_credentials.editor.name"
                   )}
                   .value=${this._name}
+                  .invalid=${this._invalid && !this._name}
                   required
                   @input=${this._handleValueChanged}
-                  .validationMessage=${this.hass.localize(
+                  .errorMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
                   dialogInitialFocus
@@ -206,9 +217,10 @@ export class DialogAddApplicationCredential extends LitElement {
                     "ui.panel.config.application_credentials.editor.client_id"
                   )}
                   .value=${this._clientId}
+                  .invalid=${this._invalid && !this._clientId}
                   required
                   @input=${this._handleValueChanged}
-                  .validationMessage=${this.hass.localize(
+                  .errorMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
                   dialogInitialFocus
@@ -223,9 +235,10 @@ export class DialogAddApplicationCredential extends LitElement {
                   )}
                   name="clientSecret"
                   .value=${this._clientSecret}
+                  .invalid=${this._invalid && !this._clientSecret}
                   required
                   @input=${this._handleValueChanged}
-                  .validationMessage=${this.hass.localize(
+                  .errorMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
                   .helper=${this.hass.localize(
@@ -235,28 +248,31 @@ export class DialogAddApplicationCredential extends LitElement {
                 ></ha-password-field>
               </div>
 
-              <ha-button
-                appearance="plain"
-                slot="secondaryAction"
-                @click=${this._abortDialog}
-                .disabled=${this._loading}
-              >
-                ${this.hass.localize("ui.common.cancel")}
-              </ha-button>
-              <ha-button
-                slot="primaryAction"
-                .disabled=${!this._domain ||
-                !this._clientId ||
-                !this._clientSecret}
-                @click=${this._addApplicationCredential}
-                .loading=${this._loading}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.application_credentials.editor.add"
-                )}
-              </ha-button>`}
-      </ha-dialog>
+              <ha-dialog-footer slot="footer">
+                <ha-button
+                  appearance="plain"
+                  slot="secondaryAction"
+                  @click=${this._closeDialog}
+                  .disabled=${this._loading}
+                >
+                  ${this.hass.localize("ui.common.cancel")}
+                </ha-button>
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._addApplicationCredential}
+                  .loading=${this._loading}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.application_credentials.editor.add"
+                  )}
+                </ha-button>
+              </ha-dialog-footer>`}
+      </ha-wa-dialog>
     `;
+  }
+
+  private _closeDialog() {
+    this._open = false;
   }
 
   public closeDialog() {
@@ -303,9 +319,16 @@ export class DialogAddApplicationCredential extends LitElement {
 
   private async _addApplicationCredential(ev) {
     ev.preventDefault();
-    if (!this._domain || !this._clientId || !this._clientSecret) {
+    if (
+      !this._domain ||
+      !this._name ||
+      !this._clientId ||
+      !this._clientSecret
+    ) {
+      this._invalid = true;
       return;
     }
+    this._invalid = false;
 
     this._loading = true;
     this._error = "";
@@ -328,6 +351,20 @@ export class DialogAddApplicationCredential extends LitElement {
     this.closeDialog();
   }
 
+  private _getDomainItems = (): PickerComboBoxItem[] =>
+    this._domains?.map((domain) => ({
+      id: domain.id,
+      primary: domain.name,
+      sorting_label: domain.name,
+    })) ?? [];
+
+  private _domainRenderer = (domainId: string) => {
+    const domain = this._domains?.find((d) => d.id === domainId);
+    return html`<span slot="headline"
+      >${domain ? domain.name : domainId}</span
+    >`;
+  };
+
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
@@ -338,15 +375,12 @@ export class DialogAddApplicationCredential extends LitElement {
         }
         .row {
           display: flex;
-          padding: 8px 0;
-        }
-        ha-combo-box {
-          display: block;
-          margin-bottom: 24px;
+          padding: var(--ha-space-2) 0;
         }
         ha-textfield {
           display: block;
-          margin-bottom: 24px;
+          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-4);
         }
         a {
           text-decoration: none;
@@ -355,7 +389,8 @@ export class DialogAddApplicationCredential extends LitElement {
           --mdc-icon-size: 16px;
         }
         ha-markdown {
-          margin-bottom: 16px;
+          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-4);
         }
         ha-fade-in {
           display: flex;

@@ -20,6 +20,10 @@ const SCHEMA = [
     default: DEFAULT_HOURS_TO_SHOW,
     selector: { number: { min: 1, mode: "box" } },
   },
+  {
+    name: "detail",
+    selector: { boolean: {} },
+  },
 ] as const satisfies HaFormSchema[];
 
 @customElement("hui-trend-graph-card-feature-editor")
@@ -48,6 +52,10 @@ export class HuiTrendGraphCardFeatureEditor
       data.hours_to_show = DEFAULT_HOURS_TO_SHOW;
     }
 
+    if (this._config.detail === undefined) {
+      data.detail = true;
+    }
+
     return html`
       <ha-form
         .hass=${this.hass}
@@ -68,6 +76,10 @@ export class HuiTrendGraphCardFeatureEditor
       case "hours_to_show":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+      case "detail":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.trend-graph.detail"
         );
       default:
         return "";

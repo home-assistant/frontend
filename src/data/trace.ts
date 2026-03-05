@@ -106,8 +106,7 @@ export interface AutomationTrace extends BaseTrace {
 }
 
 export interface AutomationTraceExtended
-  extends AutomationTrace,
-    BaseTraceExtended {
+  extends AutomationTrace, BaseTraceExtended {
   config: ManualAutomationConfig;
   blueprint_inputs?: BlueprintAutomationConfig;
 }

@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
@@ -21,12 +21,14 @@ import { measureTextWidth } from "../../util/text";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
+import { filterXSS } from "../../common/util/xss";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
   return isFinite(parsed) ? parsed : null;
 };
 
+@customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -48,16 +50,16 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
-  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
+  @property({ attribute: false }) public paddingYAxis = 0;
 
-  @property({ attribute: false, type: Number }) public chartIndex?;
+  @property({ attribute: false }) public chartIndex?;
 
   @property({ attribute: "logarithmic-scale", type: Boolean })
   public logarithmicScale = false;
 
-  @property({ attribute: false, type: Number }) public minYAxis?: number;
+  @property({ attribute: false }) public minYAxis?: number;
 
-  @property({ attribute: false, type: Number }) public maxYAxis?: number;
+  @property({ attribute: false }) public maxYAxis?: number;
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
@@ -86,6 +88,8 @@ export class StateHistoryChartLine extends LitElement {
   private _chartTime: Date = new Date();
 
   private _previousYAxisLabelValue = 0;
+
+  private _yAxisMaximumFractionDigits = 0;
 
   protected render() {
     return html`
@@ -181,7 +185,7 @@ export class StateHistoryChartLine extends LitElement {
           }
 
           if (param.seriesName) {
-            return `${param.marker} ${param.seriesName}: ${value}`;
+            return `${param.marker} ${filterXSS(param.seriesName)}: ${value}`;
           }
           return `${param.marker} ${value}`;
         })
@@ -302,7 +306,10 @@ export class StateHistoryChartLine extends LitElement {
         visualMap: this._visualMap,
         tooltip: {
           trigger: "axis",
-          appendTo: document.body,
+          renderMode: "html",
+          position: "bottom",
+          align: "center",
+          confine: true,
           formatter: this._renderTooltip,
         },
       };
@@ -712,6 +719,18 @@ export class StateHistoryChartLine extends LitElement {
       // Add an entry for final values
       pushData(endTime, prevValues);
 
+      // For sensors, append current state if viewing recent data
+      const now = new Date();
+      // allow 1s of leeway for "now"
+      const isUpToNow = now.getTime() - endTime.getTime() <= 1000;
+      if (domain === "sensor" && isUpToNow && data.length === 1) {
+        const stateObj = this.hass.states[states.entity_id];
+        const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
+        if (currentValue !== null) {
+          data[0].data!.push([now, currentValue]);
+        }
+      }
+
       // Concat two arrays
       Array.prototype.push.apply(datasets, data);
     });
@@ -757,8 +776,12 @@ export class StateHistoryChartLine extends LitElement {
         Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
       )
     );
+    this._yAxisMaximumFractionDigits = Math.max(
+      this._yAxisMaximumFractionDigits,
+      maximumFractionDigits
+    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits,
+      maximumFractionDigits: this._yAxisMaximumFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
@@ -789,7 +812,6 @@ export class StateHistoryChartLine extends LitElement {
     return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 }
-customElements.define("state-history-chart-line", StateHistoryChartLine);
 
 declare global {
   interface HTMLElementTagNameMap {

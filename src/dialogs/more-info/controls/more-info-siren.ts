@@ -3,7 +3,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-attributes";
 import "../../../state-control/ha-state-control-toggle";
 import "../../../components/ha-button";
 import type { HomeAssistant } from "../../../types";
@@ -60,10 +59,6 @@ class MoreInfoSiren extends LitElement {
             </ha-button>`
           : nothing}
       </div>
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-      ></ha-attributes>
     `;
   }
 

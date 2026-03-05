@@ -87,7 +87,6 @@ export class HaMediaSelector extends LitElement {
         this._thumbnailUrl = brandsUrl({
           domain: extractDomainFromBrandUrl(thumbnail),
           type: "icon",
-          useFallback: true,
           darkOptimized: this.hass.themes?.darkMode,
         });
       } else {

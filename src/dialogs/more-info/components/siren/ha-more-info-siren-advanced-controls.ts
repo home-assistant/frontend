@@ -1,23 +1,19 @@
-import { mdiClose, mdiPlay, mdiStop } from "@mdi/js";
+import { mdiPlay, mdiStop } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import "../../../../components/ha-button";
 import "../../../../components/ha-control-button";
-import "../../../../components/ha-dialog-header";
+import type { HaSelectSelectEvent } from "../../../../components/ha-select";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
-import {
-  getMobileCloseToBottomAnimation,
-  getMobileOpenFromBottomAnimation,
-} from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-select";
 import "../../../../components/ha-textfield";
+import "../../../../components/ha-wa-dialog";
 import { SirenEntityFeature } from "../../../../data/siren";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -28,23 +24,25 @@ class MoreInfoSirenAdvancedControls extends LitElement {
 
   @state() _stateObj?: HassEntity;
 
+  @state() private _open = false;
+
   @state() _tone?: string;
 
   @state() _volume?: number;
 
   @state() _duration?: number;
 
-  @query("ha-md-dialog") private _dialog?: HaMdDialog;
-
   public showDialog({ stateObj }: { stateObj: HassEntity }) {
     this._stateObj = stateObj;
+    this._open = true;
   }
 
   public closeDialog(): void {
-    this._dialog?.close();
+    this._open = false;
   }
 
   private _dialogClosed(): void {
+    this._open = false;
     this._stateObj = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -65,50 +63,33 @@ class MoreInfoSirenAdvancedControls extends LitElement {
       SirenEntityFeature.DURATION
     );
     return html`
-      <ha-md-dialog
-        open
+      <ha-wa-dialog
+        .open=${this._open}
+        .hass=${this.hass}
+        header-title=${this.hass.localize(
+          "ui.components.siren.advanced_controls"
+        )}
         @closed=${this._dialogClosed}
-        aria-labelledby="dialog-light-color-favorite-title"
-        .getOpenAnimation=${getMobileOpenFromBottomAnimation}
-        .getCloseAnimation=${getMobileCloseToBottomAnimation}
       >
-        <ha-dialog-header slot="headline">
-          <ha-icon-button
-            slot="navigationIcon"
-            @click=${this.closeDialog}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${mdiClose}
-          ></ha-icon-button>
-          <span slot="title" id="dialog-light-color-favorite-title"
-            >${this.hass.localize(
-              "ui.components.siren.advanced_controls"
-            )}</span
-          >
-        </ha-dialog-header>
-        <div slot="content">
+        <div>
           <div class="options">
             ${supportsTones
               ? html`
                   <ha-select
                     .label=${this.hass.localize("ui.components.siren.tone")}
-                    @closed=${stopPropagation}
-                    @change=${this._handleToneChange}
+                    @selected=${this._handleToneChange}
                     .value=${this._tone}
+                    .options=${Object.entries(
+                      this._stateObj!.attributes.available_tones
+                    ).map(([toneId, toneName]) => ({
+                      value: Array.isArray(
+                        this._stateObj!.attributes.available_tones
+                      )
+                        ? toneName
+                        : toneId,
+                      label: toneName,
+                    }))}
                   >
-                    ${Object.entries(
-                      this._stateObj.attributes.available_tones
-                    ).map(
-                      ([toneId, toneName]) => html`
-                        <ha-list-item
-                          .value=${Array.isArray(
-                            this._stateObj!.attributes.available_tones
-                          )
-                            ? toneName
-                            : toneId}
-                          >${toneName}</ha-list-item
-                        >
-                      `
-                    )}
                   </ha-select>
                 `
               : nothing}
@@ -153,17 +134,21 @@ class MoreInfoSirenAdvancedControls extends LitElement {
             </ha-control-button>
           </div>
         </div>
-        <div slot="actions">
-          <ha-button @click=${this.closeDialog}>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
             ${this.hass.localize("ui.common.close")}
           </ha-button>
-        </div>
-      </ha-md-dialog>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 
-  private _handleToneChange(ev) {
-    this._tone = ev.target.value;
+  private _handleToneChange(ev: HaSelectSelectEvent) {
+    this._tone = ev.detail.value;
   }
 
   private _handleVolumeChange(ev) {
@@ -209,7 +194,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
           flex-direction: row;
           justify-content: center;
           gap: var(--ha-space-4);
-          margin-top: 16px;
+          margin-top: var(--ha-space-4);
         }
         ha-control-button {
           --control-button-border-radius: var(--ha-border-radius-xl);

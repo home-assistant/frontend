@@ -10,7 +10,7 @@ import { stateActive } from "../common/entity/state_active";
 import { stateColorCss } from "../common/entity/state_color";
 import "../components/ha-control-button";
 import "../components/ha-control-switch";
-import { UNAVAILABLE, UNKNOWN } from "../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import { forwardHaptic } from "../data/haptics";
 import { stateControlToggleStyle } from "../resources/state-control-styles";
 import type { HomeAssistant } from "../types";

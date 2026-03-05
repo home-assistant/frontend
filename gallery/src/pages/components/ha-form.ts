@@ -10,12 +10,12 @@ import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervis
 import { computeInitialHaFormData } from "../../../../src/components/ha-form/compute-initial-ha-form-data";
 import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
-import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
+import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {
@@ -169,7 +169,7 @@ const SCHEMAS: {
   {
     title: "Selectors",
     translations: {
-      addon: "Addon",
+      app: "App",
       entity: "Entity",
       device: "Device",
       area: "Area",
@@ -188,7 +188,7 @@ const SCHEMAS: {
       entities: "Entities",
     },
     schema: [
-      { name: "addon", selector: { addon: {} } },
+      { name: "app", selector: { app: {} } },
       { name: "entity", selector: { entity: {} } },
       {
         name: "Attribute",

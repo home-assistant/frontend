@@ -23,6 +23,8 @@ export interface PageNavigation {
   core?: boolean;
   advancedOnly?: boolean;
   iconPath?: string;
+  iconSecondaryPath?: string;
+  iconViewBox?: string;
   description?: string;
   iconColor?: string;
   info?: any;
@@ -31,8 +33,6 @@ export interface PageNavigation {
 @customElement("hass-tabs-subpage")
 class HassTabsSubpage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean }) public supervisor = false;
 
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
@@ -131,13 +131,12 @@ class HassTabsSubpage extends LitElement {
     );
     const showTabs = tabs.length > 1;
     return html`
-      <div class="toolbar">
+      <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <slot name="toolbar">
           <div class="toolbar-content">
             ${this.mainPage || (!this.backPath && history.state?.root)
               ? html`
                   <ha-menu-button
-                    .hassio=${this.supervisor}
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                   ></ha-menu-button>
@@ -321,7 +320,10 @@ class HassTabsSubpage extends LitElement {
           max-height: var(--header-height);
           line-height: var(--ha-line-height-normal);
           color: var(--sidebar-text-color);
-          margin: var(--main-title-margin, var(--margin-title));
+          margin-inline-start: var(--main-title-margin, var(--ha-space-6));
+        }
+        .narrow .main-title {
+          margin-inline-start: var(--main-title-margin, var(--ha-space-2));
         }
 
         .content {

@@ -8,22 +8,23 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-metric";
 import "../../../../../components/ha-relative-time";
 import type {
-  BluetoothScannersDetails,
-  BluetoothConnectionData,
   BluetoothAllocationsData,
+  BluetoothConnectionData,
+  BluetoothScannersDetails,
 } from "../../../../../data/bluetooth";
 import {
-  subscribeBluetoothScannersDetails,
-  subscribeBluetoothConnectionAllocations,
   subscribeBluetoothAdvertisements,
+  subscribeBluetoothConnectionAllocations,
+  subscribeBluetoothScannersDetails,
 } from "../../../../../data/bluetooth";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import "../../../../../components/ha-metric";
+import { bluetoothTabs } from "./bluetooth-config-dashboard";
 
 @customElement("bluetooth-connection-monitor")
 export class BluetoothConnectionMonitorPanel extends LitElement {
@@ -214,6 +215,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        .tabs=${bluetoothTabs}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
         .initialGroupColumn=${this._activeGrouping}

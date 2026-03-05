@@ -9,7 +9,7 @@ export class HaTooltip extends Tooltip {
   @property({ attribute: "show-delay", type: Number }) showDelay = 150;
 
   /** The amount of time to wait before hiding the tooltip when the user mouses out.. */
-  @property({ attribute: "hide-delay", type: Number }) hideDelay = 400;
+  @property({ attribute: "hide-delay", type: Number }) hideDelay = 150;
 
   static get styles(): CSSResultGroup {
     return [

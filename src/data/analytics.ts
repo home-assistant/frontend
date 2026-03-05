@@ -5,6 +5,7 @@ export interface AnalyticsPreferences {
   diagnostics?: boolean;
   usage?: boolean;
   statistics?: boolean;
+  snapshots?: boolean;
 }
 
 export interface Analytics {

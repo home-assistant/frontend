@@ -9,12 +9,15 @@ import type {
 import { processEvent } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 import "./assist-render-pipeline-run";
+import type { ChatLog } from "../../../../data/chat_log";
 
 @customElement("assist-render-pipeline-events")
 export class AssistPipelineEvents extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public events!: PipelineRunEvent[];
+
+  @property({ attribute: false }) public chatLog?: ChatLog;
 
   private _processEvents = memoizeOne(
     (events: PipelineRunEvent[]): PipelineRun | undefined => {
@@ -30,22 +33,33 @@ export class AssistPipelineEvents extends LitElement {
     const run = this._processEvents(this.events);
     if (!run) {
       if (this.events.length) {
-        return html`<ha-alert alert-type="error">Error showing run</ha-alert>
+        return html`<ha-alert alert-type="error"
+            >${this.hass.localize(
+              "ui.panel.config.voice_assistants.debug.error.showing_run"
+            )}</ha-alert
+          >
           <ha-card>
             <ha-expansion-panel>
-              <span slot="header">Raw</span>
+              <span slot="header"
+                >${this.hass.localize(
+                  "ui.panel.config.voice_assistants.debug.raw"
+                )}</span
+              >
               <pre>${JSON.stringify(this.events, null, 2)}</pre>
             </ha-expansion-panel>
           </ha-card>`;
       }
       return html`<ha-alert alert-type="warning"
-        >There were no events in this run.</ha-alert
+        >${this.hass.localize(
+          "ui.panel.config.voice_assistants.debug.no_events"
+        )}</ha-alert
       >`;
     }
     return html`
       <assist-render-pipeline-run
         .hass=${this.hass}
         .pipelineRun=${run}
+        .chatLog=${this.chatLog}
       ></assist-render-pipeline-run>
     `;
   }

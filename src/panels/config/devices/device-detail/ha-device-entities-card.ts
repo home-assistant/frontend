@@ -10,8 +10,8 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
-import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
-import { getExtendedEntityRegistryEntry } from "../../../../data/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
@@ -228,7 +228,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     addEntitiesToLovelaceView(
       this,
       this.hass,
-      computeCards(this.hass.states, entities, {
+      computeCards(this.hass, entities, {
         title: this.deviceName,
       }),
       computeSection(entities, {

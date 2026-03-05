@@ -64,6 +64,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   @state() private _targetPickerValue: HassServiceTarget = {};
 
+  @state() private _stateFilter?: string[];
+
   public getCardSize(): number {
     return 9 + (this._config?.title ? 1 : 0);
   }
@@ -129,6 +131,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     };
 
     this._targetPickerValue = target;
+
+    this._stateFilter = ensureArray(config.state_filter);
   }
 
   private _getEntityIds(): string[] | undefined {
@@ -209,6 +213,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
             .hass=${this.hass}
             .time=${this._time}
             .entityIds=${this._getEntityIds()}
+            .stateFilter=${this._stateFilter}
             narrow
             relative-time
             virtualize

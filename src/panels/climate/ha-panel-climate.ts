@@ -1,24 +1,25 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { goBack } from "../../common/navigate";
+import { debounce } from "../../common/util/debounce";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
-import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
+import "../lovelace/views/hui-view-background";
 import "../lovelace/views/hui-view-container";
 
-const CLIMATE_LOVELACE_CONFIG: LovelaceConfig = {
-  views: [
-    {
-      strategy: {
-        type: "climate",
-      },
-    },
-  ],
+const CLIMATE_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
+  strategy: {
+    type: "climate",
+  },
 };
 
 @customElement("ha-panel-climate")
@@ -33,65 +34,124 @@ class PanelClimate extends LitElement {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  public firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
-  }
-
   public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    // Initial setup
     if (!this.hasUpdated) {
-      this.hass.loadFragmentTranslation("lovelace");
+      this._setup();
+      return;
     }
+
     if (!changedProps.has("hass")) {
       return;
     }
+
     const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass?.locale !== this.hass.locale) {
+    if (oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
+      return;
+    }
+
+    if (oldHass && this.hass) {
+      // If the entity registry changed, ask the user if they want to refresh the config
+      if (
+        oldHass.entities !== this.hass.entities ||
+        oldHass.devices !== this.hass.devices ||
+        oldHass.areas !== this.hass.areas ||
+        oldHass.floors !== this.hass.floors
+      ) {
+        if (this.hass.config.state === "RUNNING") {
+          this._debounceRegistriesChanged();
+          return;
+        }
+      }
+      // If ha started, refresh the config
+      if (
+        this.hass.config.state === "RUNNING" &&
+        oldHass.config.state !== "RUNNING"
+      ) {
+        this._setLovelace();
+      }
     }
   }
+
+  private async _setup() {
+    await this.hass.loadFragmentTranslation("lovelace");
+    this._setLovelace();
+  }
+
+  private _debounceRegistriesChanged = debounce(
+    () => this._registriesChanged(),
+    200
+  );
+
+  private _registriesChanged = async () => {
+    this._setLovelace();
+  };
 
   private _back(ev) {
     ev.stopPropagation();
     goBack();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     return html`
-      <div class="header">
+      <div class="header ${classMap({ narrow: this.narrow })}">
         <div class="toolbar">
-          ${this._searchParms.has("historyBack")
-            ? html`
-                <ha-icon-button-arrow-prev
-                  @click=${this._back}
-                  slot="navigationIcon"
-                ></ha-icon-button-arrow-prev>
-              `
-            : html`
-                <ha-menu-button
-                  slot="navigationIcon"
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></ha-menu-button>
-              `}
+          ${
+            this._searchParms.has("historyBack")
+              ? html`
+                  <ha-icon-button-arrow-prev
+                    @click=${this._back}
+                    slot="navigationIcon"
+                  ></ha-icon-button-arrow-prev>
+                `
+              : html`
+                  <ha-menu-button
+                    slot="navigationIcon"
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `
+          }
           <div class="main-title">${this.hass.localize("panel.climate")}</div>
         </div>
       </div>
-
-      <hui-view-container .hass=${this.hass}>
-        <hui-view
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-          .lovelace=${this._lovelace}
-          .index=${this._viewIndex}
-        ></hui-view>
+      ${
+        this._lovelace
+          ? html`
+              <hui-view-container .hass=${this.hass}>
+                <hui-view-background .hass=${this.hass}> </hui-view-background>
+                <hui-view
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .lovelace=${this._lovelace}
+                  .index=${this._viewIndex}
+                ></hui-view
+              ></hui-view-container>
+            `
+          : nothing
+      }
       </hui-view-container>
     `;
   }
 
-  private _setLovelace() {
+  private async _setLovelace() {
+    const viewConfig = await generateLovelaceViewStrategy(
+      CLIMATE_LOVELACE_VIEW_CONFIG,
+      this.hass
+    );
+
+    const config = { views: [viewConfig] };
+    const rawConfig = { views: [CLIMATE_LOVELACE_VIEW_CONFIG] };
+
+    if (deepEqual(config, this._lovelace?.config)) {
+      return;
+    }
+
     this._lovelace = {
-      config: CLIMATE_LOVELACE_CONFIG,
-      rawConfig: CLIMATE_LOVELACE_CONFIG,
+      config: config,
+      rawConfig: rawConfig,
       editMode: false,
       urlPath: "climate",
       mode: "generated",
@@ -116,7 +176,6 @@ class PanelClimate extends LitElement {
         .header {
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
           position: fixed;
           top: 0;
           width: calc(
@@ -127,7 +186,6 @@ class PanelClimate extends LitElement {
           );
           padding-top: var(--safe-area-inset-top);
           z-index: 4;
-          transition: box-shadow 200ms linear;
           display: flex;
           flex-direction: row;
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
@@ -161,14 +219,18 @@ class PanelClimate extends LitElement {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
+          border-bottom: var(--app-header-border-bottom, none);
         }
         :host([narrow]) .toolbar {
           padding: 0 4px;
         }
         .main-title {
-          margin: var(--margin-title);
+          margin-inline-start: var(--ha-space-6);
           line-height: var(--ha-line-height-normal);
           flex-grow: 1;
+        }
+        .narrow .main-title {
+          margin-inline-start: var(--ha-space-2);
         }
         hui-view-container {
           position: relative;

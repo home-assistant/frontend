@@ -3,9 +3,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
-import "../../../components/ha-settings-row";
 import "../../../components/ha-button";
 import "../../../components/ha-textfield";
 import type {
@@ -30,11 +30,14 @@ class DialogCategoryDetail extends LitElement {
 
   @state() private _submitting?: boolean;
 
+  @state() private _open = false;
+
   public async showDialog(
     params: CategoryRegistryDetailDialogParams
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
+    this._open = true;
     if (this._params.entry) {
       this._name = this._params.entry.name || "";
       this._icon = this._params.entry.icon || null;
@@ -46,6 +49,10 @@ class DialogCategoryDetail extends LitElement {
   }
 
   public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
     this._error = "";
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -58,61 +65,55 @@ class DialogCategoryDetail extends LitElement {
     const entry = this._params.entry;
     const nameInvalid = !this._isNameValid();
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          entry
-            ? this.hass.localize("ui.panel.config.category.editor.edit")
-            : this.hass.localize("ui.panel.config.category.editor.create")
-        )}
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${entry
+          ? this.hass.localize("ui.panel.config.category.editor.edit")
+          : this.hass.localize("ui.panel.config.category.editor.create")}
+        @closed=${this._dialogClosed}
       >
-        <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
-          <div class="form">
-            <ha-textfield
-              .value=${this._name}
-              @input=${this._nameChanged}
-              .label=${this.hass.localize(
-                "ui.panel.config.category.editor.name"
-              )}
-              .validationMessage=${this.hass.localize(
-                "ui.panel.config.category.editor.required_error_msg"
-              )}
-              required
-              dialogInitialFocus
-            ></ha-textfield>
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
+        <div class="form">
+          <ha-textfield
+            .value=${this._name}
+            @input=${this._nameChanged}
+            .label=${this.hass.localize("ui.panel.config.category.editor.name")}
+            .validationMessage=${this.hass.localize(
+              "ui.panel.config.category.editor.required_error_msg"
+            )}
+            required
+            autofocus
+          ></ha-textfield>
 
-            <ha-icon-picker
-              .hass=${this.hass}
-              .value=${this._icon}
-              @value-changed=${this._iconChanged}
-              .label=${this.hass.localize(
-                "ui.panel.config.category.editor.icon"
-              )}
-            ></ha-icon-picker>
-          </div>
+          <ha-icon-picker
+            .hass=${this.hass}
+            .value=${this._icon}
+            @value-changed=${this._iconChanged}
+            .label=${this.hass.localize("ui.panel.config.category.editor.icon")}
+          ></ha-icon-picker>
         </div>
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${nameInvalid || !!this._submitting}
-        >
-          ${entry
-            ? this.hass.localize("ui.common.save")
-            : this.hass.localize("ui.common.add")}
-        </ha-button>
-      </ha-dialog>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateEntry}
+            .disabled=${nameInvalid || !!this._submitting}
+          >
+            ${entry
+              ? this.hass.localize("ui.common.save")
+              : this.hass.localize("ui.common.add")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-wa-dialog>
     `;
   }
 

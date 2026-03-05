@@ -87,7 +87,7 @@ export class MoreInfoConfigurator extends LitElement {
       flex-direction: column;
     }
     p {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
     }
 
     a {

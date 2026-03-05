@@ -97,6 +97,9 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
     pm25: {
       default: "mdi:molecule",
     },
+    pm4: {
+      default: "mdi:molecule",
+    },
     power: {
       default: "mdi:flash",
     },
@@ -672,6 +675,9 @@ export const ENTITY_COMPONENT_ICONS: Record<string, ComponentIcons> = {
       default: "mdi:molecule",
     },
     pm25: {
+      default: "mdi:molecule",
+    },
+    pm4: {
       default: "mdi:molecule",
     },
     power: {

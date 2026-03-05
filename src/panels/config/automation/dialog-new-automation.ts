@@ -12,8 +12,8 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-wa-dialog";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-tip";
@@ -29,7 +29,6 @@ import {
   getBlueprintSourceType,
 } from "../../../data/blueprint";
 import { showScriptEditor } from "../../../data/script";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -43,17 +42,20 @@ const SOURCE_TYPE_ICONS: Record<BlueprintSourceType, string> = {
 };
 
 @customElement("ha-dialog-new-automation")
-class DialogNewAutomation extends LitElement implements HassDialog {
+class DialogNewAutomation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
+
+  @state() private _params?: NewAutomationDialogParams;
 
   @state() private _mode: BlueprintDomain = "automation";
 
   @state() public blueprints?: Blueprints;
 
   public showDialog(params: NewAutomationDialogParams): void {
-    this._opened = true;
+    this._params = params;
+    this._open = true;
     this._mode = params?.mode || "automation";
 
     fetchBlueprints(this.hass!, this._mode).then((blueprints) => {
@@ -61,12 +63,14 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     });
   }
 
-  public closeDialog() {
-    if (this._opened) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
-    }
-    this._opened = false;
-    return true;
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._params = undefined;
+    this.blueprints = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _processedBlueprints = memoizeOne((blueprints?: Blueprints) => {
@@ -90,21 +94,20 @@ class DialogNewAutomation extends LitElement implements HassDialog {
   });
 
   protected render() {
-    if (!this._opened) {
+    if (!this._params) {
       return nothing;
     }
 
     const processedBlueprints = this._processedBlueprints(this.blueprints);
 
     return html`
-      <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(`ui.panel.config.${this._mode}.dialog_new.header`)
+      <ha-wa-dialog
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          `ui.panel.config.${this._mode}.dialog_new.header`
         )}
+        @closed=${this._dialogClosed}
       >
         <ha-list
           innerRole="listbox"
@@ -113,7 +116,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
             `ui.panel.config.${this._mode}.dialog_new.header`
           )}
           rootTabbable
-          dialogInitialFocus
+          autofocus
         >
           <ha-list-item
             hasmeta
@@ -197,7 +200,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
                 </ha-tip>
               `}
         </ha-list>
-      </ha-dialog>
+      </ha-wa-dialog>
     `;
   }
 
@@ -229,13 +232,13 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       haStyle,
       haStyleDialog,
       css`
-        ha-dialog {
+        ha-wa-dialog {
           --dialog-content-padding: 0;
           --mdc-dialog-max-height: 60vh;
           --mdc-dialog-max-height: 60dvh;
         }
         @media all and (min-width: 550px) {
-          ha-dialog {
+          ha-wa-dialog {
             --mdc-dialog-min-width: 500px;
           }
         }

@@ -82,7 +82,7 @@ export class MoreInfoLogbook extends LitElement {
           flex-direction: row;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 8px;
+          margin-bottom: var(--ha-space-2);
         }
         .header > a,
         a:visited {

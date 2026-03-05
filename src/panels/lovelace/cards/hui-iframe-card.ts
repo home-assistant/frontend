@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
@@ -97,7 +98,10 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       : `${sandbox_user_params} ${IFRAME_SANDBOX}`;
 
     return html`
-      <ha-card .header=${this._config.title}>
+      <ha-card
+        class=${classMap({ "hide-background": this._config.hide_background })}
+        .header=${this._config.title}
+      >
         <div
           id="root"
           style=${styleMap({
@@ -131,6 +135,12 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       height: 100%;
       display: flex;
       flex-direction: column;
+    }
+
+    ha-card.hide-background {
+      background: transparent;
+      box-shadow: none;
+      border: none;
     }
 
     #root {

@@ -12,11 +12,12 @@ import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-progress-ring";
 import "../../../components/ha-spinner";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import { subscribeDeviceRegistry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
@@ -30,6 +31,8 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public updateEntities?: UpdateEntity[];
 
   @property({ type: Number }) public total?: number;
+
+  @property({ attribute: false }) public isInstallable = true;
 
   @state() private _devices?: DeviceRegistryEntry[];
 
@@ -56,6 +59,29 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
       this._entities?.find((entity) => entity.entity_id === entityId)
   );
 
+  private _renderUpdateProgress(entity: UpdateEntity) {
+    if (entity.attributes.update_percentage != null) {
+      return html`<ha-progress-ring
+        size="small"
+        .value=${entity.attributes.update_percentage}
+        .label=${this.hass.localize(
+          "ui.panel.config.updates.update_in_progress"
+        )}
+      ></ha-progress-ring>`;
+    }
+
+    if (entity.attributes.in_progress) {
+      return html`<ha-spinner
+        size="small"
+        .ariaLabel=${this.hass.localize(
+          "ui.panel.config.updates.update_in_progress"
+        )}
+      ></ha-spinner>`;
+    }
+
+    return html`<ha-icon-next></ha-icon-next>`;
+  }
+
   protected render() {
     if (!this.updateEntities?.length) {
       return nothing;
@@ -65,9 +91,16 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
     return html`
       <div class="title" role="heading" aria-level="2">
-        ${this.hass.localize("ui.panel.config.updates.title", {
-          count: this.total || this.updateEntities.length,
-        })}
+        ${this.isInstallable
+          ? this.hass.localize("ui.panel.config.updates.title", {
+              count: this.total || this.updateEntities.length,
+            })
+          : this.hass.localize(
+              "ui.panel.config.updates.title_not_installable",
+              {
+                count: this.total || this.updateEntities.length,
+              }
+            )}
       </div>
       <ha-md-list>
         ${updates.map((entity) => {
@@ -106,13 +139,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                   )}
                 ></state-badge>
                 ${this.narrow && entity.attributes.in_progress
-                  ? html`<ha-spinner
-                      class="absolute"
-                      size="small"
-                      .ariaLabel=${this.hass.localize(
-                        "ui.panel.config.updates.update_in_progress"
-                      )}
-                    ></ha-spinner>`
+                  ? html`<div class="absolute">
+                      ${this._renderUpdateProgress(entity)}
+                    </div>`
                   : nothing}
               </div>
               <span slot="headline"
@@ -128,16 +157,9 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                   : nothing}
               </span>
               ${!this.narrow
-                ? entity.attributes.in_progress
-                  ? html`<div slot="end">
-                      <ha-spinner
-                        size="small"
-                        .ariaLabel=${this.hass.localize(
-                          "ui.panel.config.updates.update_in_progress"
-                        )}
-                      ></ha-spinner>
-                    </div>`
-                  : html`<ha-icon-next slot="end"></ha-icon-next>`
+                ? html`<div slot="end">
+                    ${this._renderUpdateProgress(entity)}
+                  </div>`
                 : nothing}
             </ha-md-list-item>
           `;
@@ -193,13 +215,13 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
         div[slot="start"] {
           position: relative;
         }
-        ha-spinner.absolute {
+        div.absolute {
           position: absolute;
           left: 6px;
           top: 6px;
         }
         state-badge.updating {
-          opacity: 0.5;
+          opacity: 0.2;
         }
       `,
     ];

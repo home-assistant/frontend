@@ -111,11 +111,7 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   private _addToLovelaceView(): void {
-    const cardConfig = computeCards(
-      this.hass.states,
-      this._selectedEntities,
-      {}
-    );
+    const cardConfig = computeCards(this.hass, this._selectedEntities, {});
     const sectionConfig = computeSection(this._selectedEntities, {});
 
     if (this.lovelace.config.views.length === 1) {

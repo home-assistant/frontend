@@ -1,9 +1,9 @@
 import { customElement } from "lit/decorators";
-import type { DeviceTrigger } from "../../data/device_automation";
+import type { DeviceTrigger } from "../../data/device/device_automation";
 import {
   fetchDeviceTriggers,
   localizeDeviceAutomationTrigger,
-} from "../../data/device_automation";
+} from "../../data/device/device_automation";
 import { HaDeviceAutomationPicker } from "./ha-device-automation-picker";
 
 @customElement("ha-device-trigger-picker")

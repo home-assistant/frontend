@@ -3,25 +3,28 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/chart/state-history-charts";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-tooltip";
 import {
   computeHistory,
-  subscribeHistoryStatesTimeWindow,
-  type HistoryResult,
   convertStatisticsToHistory,
   mergeHistoryResults,
+  subscribeHistoryStatesTimeWindow,
+  type HistoryResult,
 } from "../../../data/history";
+import { fetchStatistics } from "../../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
+import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
+import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { HistoryGraphCardConfig } from "./types";
-import { createSearchParam } from "../../../common/url/search-params";
-import { fetchStatistics } from "../../../data/recorder";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -50,6 +53,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _names: Record<string, string> = {};
 
   private _entityIds: string[] = [];
+
+  private _entities: EntityConfig[] = [];
+
+  private _historyLinkId = `history-${Math.random().toString(36).substring(2, 9)}`;
 
   private _hoursToShow = DEFAULT_HOURS_TO_SHOW;
 
@@ -80,21 +87,35 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       throw new Error("You must include at least one entity");
     }
 
-    const configEntities = config.entities
+    this._entities = config.entities
       ? processConfigEntities(config.entities)
       : [];
-
-    this._entityIds = [];
-    configEntities.forEach((entity) => {
-      this._entityIds.push(entity.entity);
-      if (entity.name) {
-        this._names[entity.entity] = entity.name;
-      }
-    });
+    this._entityIds = this._entities.map((entity) => entity.entity);
 
     this._hoursToShow = config.hours_to_show || DEFAULT_HOURS_TO_SHOW;
 
     this._config = config;
+    this._computeNames();
+  }
+
+  private _computeNames() {
+    if (!this.hass || !this._config) {
+      return;
+    }
+    this._names = {};
+    this._entities.forEach((entity) => {
+      const stateObj = this.hass!.states[entity.entity];
+      this._names[entity.entity] = stateObj
+        ? computeLovelaceEntityName(this.hass!, stateObj, entity.name)
+        : entity.entity;
+    });
+  }
+
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("hass")) {
+      this._computeNames();
+    }
   }
 
   public connectedCallback() {
@@ -116,6 +137,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
     const { numeric_device_classes: sensorNumericDeviceClasses } =
       await getSensorNumericDeviceClasses(this.hass!);
+
+    if (!this.isConnected) {
+      return; // Skip subscribe if we already disconnected while awaiting
+    }
 
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
@@ -194,7 +219,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _setRedrawTimer() {
     // redraw the graph every minute to update the time axis
     clearInterval(this._interval);
-    this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
+    if (this.isConnected) {
+      this._interval = window.setInterval(() => this._redrawGraph(), 1000 * 60);
+    }
   }
 
   private _unsubscribeHistory() {
@@ -250,6 +277,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     now.setHours(now.getHours() - this._hoursToShow);
     const configUrl = `/history?${createSearchParam({
       entity_id: this._entityIds.join(","),
+      back: "1",
       start_date: now.toISOString(),
     })}`;
 
@@ -263,7 +291,16 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           ? html`
               <h1 class="card-header">
                 ${this._config.title}
-                <a href=${configUrl}><ha-icon-next></ha-icon-next></a>
+                <a
+                  id=${this._historyLinkId}
+                  href=${configUrl}
+                  aria-label=${this.hass.localize("panel.history")}
+                >
+                  <ha-icon-next></ha-icon-next>
+                </a>
+                <ha-tooltip for=${this._historyLinkId} placement="left">
+                  ${this.hass.localize("panel.history")}
+                </ha-tooltip>
               </h1>
             `
           : nothing}

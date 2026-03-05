@@ -21,8 +21,8 @@ export const computeLovelaceEntityName = (
   if (!config) {
     return stateObj ? computeStateName(stateObj) : "";
   }
-  if (typeof config === "string") {
-    return config;
+  if (typeof config !== "object") {
+    return String(config);
   }
   if (stateObj) {
     return hass.formatEntityName(stateObj, config);

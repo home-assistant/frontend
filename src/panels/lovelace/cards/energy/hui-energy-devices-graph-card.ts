@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption, PieSeriesOption } from "echarts/charts";
 import { PieChart } from "echarts/charts";
 import type { ECElementEvent } from "echarts/types/dist/shared";
+import type { PieDataItemOption } from "echarts/types/src/chart/pie/PieSeries";
 import { filterXSS } from "../../../../common/util/xss";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -59,7 +60,7 @@ export class HuiEnergyDevicesGraphCard
     state: true,
     subscribe: false,
   })
-  private _chartType: "bar" | "pie" = "bar";
+  private _chartType?: "bar" | "pie";
 
   @state()
   @storage({
@@ -100,6 +101,14 @@ export class HuiEnergyDevicesGraphCard
     this._config = config;
   }
 
+  private _getAllowedModes(): ("bar" | "pie")[] {
+    // Empty array or undefined = allow all modes
+    if (!this._config?.modes || this._config.modes.length === 0) {
+      return ["bar", "pie"];
+    }
+    return this._config.modes;
+  }
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
@@ -108,22 +117,43 @@ export class HuiEnergyDevicesGraphCard
     );
   }
 
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (changedProps.has("_config") && this._config) {
+      const allowedModes = this._getAllowedModes();
+
+      // If _chartType is not set or not in allowed modes, use first from config
+      if (!this._chartType || !allowedModes.includes(this._chartType)) {
+        this._chartType = allowedModes[0];
+      }
+    }
+  }
+
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this.hass || !this._config || !this._chartType) {
       return nothing;
     }
+
+    const modes = this._getAllowedModes();
 
     return html`
       <ha-card>
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
-          <ha-icon-button
-            .path=${this._chartType === "pie" ? mdiChartBar : mdiChartDonut}
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
-            )}
-            @click=${this._handleChartTypeChange}
-          ></ha-icon-button>
+          ${modes.length > 1
+            ? html`
+                <ha-icon-button
+                  .path=${this._chartType === "pie"
+                    ? mdiChartBar
+                    : mdiChartDonut}
+                  .label=${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
+                  )}
+                  @click=${this._handleChartTypeChange}
+                ></ha-icon-button>
+              `
+            : nothing}
         </div>
         <div
           class="content ${classMap({
@@ -138,7 +168,7 @@ export class HuiEnergyDevicesGraphCard
               this._chartType,
               this._legendData
             )}
-            .height=${`${Math.max(300, (this._legendData?.length || 0) * 28 + 50)}px`}
+            .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
             .extraComponents=${[PieChart]}
             @chart-click=${this._handleChartClick}
             @dataset-hidden=${this._datasetHidden}
@@ -156,8 +186,8 @@ export class HuiEnergyDevicesGraphCard
       params.value[0] as number,
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    )} kWh`;
-    return `${title}${params.marker} ${params.seriesName}: ${value}`;
+    )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
+    return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
   }
 
   private _createOptions = memoizeOne(
@@ -187,6 +217,9 @@ export class HuiEnergyDevicesGraphCard
           show: true,
           type: "value",
           name: "kWh",
+          axisPointer: {
+            show: false,
+          },
         };
         options.yAxis = {
           show: true,
@@ -387,6 +420,7 @@ export class HuiEnergyDevicesGraphCard
     });
 
     if (this._chartType === "pie") {
+      const pieChartData = chartData as NonNullable<PieSeriesOption["data"]>;
       const { summedData, compareSummedData } = getSummedData(energyData);
       const { consumption, compareConsumption } = computeConsumptionData(
         summedData,
@@ -399,7 +433,10 @@ export class HuiEnergyDevicesGraphCard
         "from_battery" in summedData;
       const untracked = showUntracked
         ? totalUsed -
-          chartData.reduce((acc: number, d: any) => acc + d.value[0], 0)
+          pieChartData.reduce(
+            (acc: number, d) => acc + (d as PieDataItemOption).value![0],
+            0
+          )
         : 0;
       if (untracked > 0) {
         const color = getEnergyColor(
@@ -409,7 +446,7 @@ export class HuiEnergyDevicesGraphCard
           false,
           "--history-unknown-color"
         );
-        chartData.push({
+        pieChartData.push({
           id: "untracked",
           value: [untracked, "untracked"] as any,
           name: this.hass.localize(
@@ -442,21 +479,28 @@ export class HuiEnergyDevicesGraphCard
           }
         }
       }
+      const totalChart = pieChartData.reduce(
+        (acc: number, d) =>
+          this._hiddenStats.includes((d as PieDataItemOption).id as string)
+            ? acc
+            : acc + (d as PieDataItemOption).value![0],
+        0
+      );
       datasets.push({
         type: "pie",
         radius: ["0%", compareData ? "30%" : "40%"],
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_devices_graph.total_energy_usage"
         ),
-        data: [totalUsed],
+        data: [totalChart],
         label: {
           show: true,
           position: "center",
           color: computedStyle.getPropertyValue("--secondary-text-color"),
-          fontSize: computedStyle.getPropertyValue("--ha-font-size-l"),
+          fontSize: computedStyle.getPropertyValue("--ha-font-size-m"),
           lineHeight: 24,
           fontWeight: "bold",
-          formatter: `{a}\n${formatNumber(totalUsed, this.hass.locale)} kWh`,
+          formatter: `{a}\n${formatNumber(totalChart, this.hass.locale)} kWh`,
         },
         cursor: "default",
         itemStyle: {
@@ -510,14 +554,23 @@ export class HuiEnergyDevicesGraphCard
       e.detail.seriesType === "pie" &&
       e.detail.event?.target?.type === "tspan" // label
     ) {
-      fireEvent(this, "hass-more-info", {
-        entityId: (e.detail.data as any).id as string,
-      });
+      const id = (e.detail.data as any).id as string;
+      if (id !== "untracked") {
+        fireEvent(this, "hass-more-info", {
+          entityId: id,
+        });
+      }
     }
   }
 
   private _handleChartTypeChange(): void {
-    this._chartType = this._chartType === "pie" ? "bar" : "pie";
+    if (!this._chartType) {
+      return;
+    }
+    const allowedModes = this._getAllowedModes();
+    const currentIndex = allowedModes.indexOf(this._chartType);
+    const nextIndex = (currentIndex + 1) % allowedModes.length;
+    this._chartType = allowedModes[nextIndex];
     this._getStatistics(this._data!);
   }
 

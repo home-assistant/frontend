@@ -4,15 +4,12 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
-import type { HomeAssistant } from "../types";
 import { showAppDialog } from "./dialogs/show-app-dialog";
 import { showCommunityDialog } from "./dialogs/show-community-dialog";
 import "./onboarding-welcome-link";
 
 @customElement("onboarding-welcome-links")
 class OnboardingWelcomeLinks extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public localize!: LocalizeFunc<any>;
 
   @property({ attribute: "mobile-app", type: Boolean })
