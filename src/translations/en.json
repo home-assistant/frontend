@@ -8440,6 +8440,8 @@
             },
             "show_icon_and_title": "Show icon and title",
             "subview": "Subview",
+            "sync_chart_tooltips": "Sync chart tooltips",
+            "sync_chart_tooltips_helper": "Show tooltips on all charts when hovering or tapping on one chart.",
             "max_columns": "Max number of sections wide",
             "section_specifics": "Sections view specific settings",
             "dense_section_placement": "Dense section placement",

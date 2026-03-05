@@ -7,6 +7,7 @@ import { BarChart, LineChart, CustomChart } from "echarts/charts";
 // Import the title, tooltip, rectangular coordinate system, dataset and transform components
 import {
   TooltipComponent,
+  AxisPointerComponent,
   DatasetComponent,
   TransformComponent,
   LegendComponent,
@@ -71,6 +72,7 @@ echarts.use([
   LineChart,
   CustomChart,
   TooltipComponent,
+  AxisPointerComponent,
   DatasetComponent,
   LegendComponent,
   GridComponent,
