@@ -182,7 +182,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @storage({ key: "scene-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;

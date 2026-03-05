@@ -187,7 +187,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @storage({ key: "script-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;

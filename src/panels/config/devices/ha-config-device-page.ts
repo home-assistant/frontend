@@ -147,7 +147,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _logbookTime = { recent: 86400 };
 

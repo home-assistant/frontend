@@ -262,7 +262,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _filteredHelperEntityIds?: string[] | null;
 

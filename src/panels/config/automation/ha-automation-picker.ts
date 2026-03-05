@@ -235,10 +235,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private _automations = memoizeOne(
     (
       automations: AutomationEntity[],
-      entityReg: EntityRegistryEntry[] | undefined,
+      entityReg: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
       categoryReg?: CategoryRegistryEntry[],
-      labelReg?: LabelRegistryEntry[] | undefined,
+      labelReg?: LabelRegistryEntry[],
       filteredAutomations?: string[] | null
     ): AutomationItem[] => {
       if (filteredAutomations === null) {
@@ -251,13 +251,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )
           : automations
       ).map((automation) => {
-        const entityRegEntry = (entityReg || []).find(
+        const entityRegEntry = entityReg.find(
           (reg) => reg.entity_id === automation.entity_id
         );
         const category = entityRegEntry?.categories.automation;
-        const labels = labelReg && entityRegEntry?.labels;
+        const labels = entityRegEntry?.labels;
         const assistants = getEntityVoiceAssistantsIds(
-          entityReg || [],
+          entityReg,
           automation.entity_id
         );
         return {
@@ -271,9 +271,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          ),
+          label_entries: (labels || [])
+            .map((lbl) => labelReg.find((label) => label.label_id === lbl)!)
+            .filter(Boolean),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,

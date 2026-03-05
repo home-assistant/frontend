@@ -133,7 +133,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @query("ha-automation-condition-editor")
   public conditionEditor?: HaAutomationConditionEditor;
