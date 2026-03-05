@@ -94,9 +94,14 @@ export class HaButtonToggleSelector extends LitElement {
       gap: var(--ha-space-2);
       align-items: center;
     }
+
+    ha-button-toggle-group {
+      margin-inline-start: auto;
+    }
+
     @media all and (max-width: 600px) {
       ha-button-toggle-group {
-        flex: 1;
+        flex: none;
       }
     }
   `;
