@@ -8,7 +8,10 @@ import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select";
 import type { CoverEntity } from "../../../data/cover";
-import { CoverEntityFeature } from "../../../data/cover";
+import {
+  CoverEntityFeature,
+  DEFAULT_COVER_FAVORITE_POSITIONS,
+} from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -18,7 +21,7 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
-export const DEFAULT_COVER_POSITION_PRESETS = [0, 25, 75, 100];
+export const DEFAULT_COVER_POSITION_PRESETS = DEFAULT_COVER_FAVORITE_POSITIONS;
 
 export const supportsCoverPositionPresetCardFeature = (
   hass: HomeAssistant,

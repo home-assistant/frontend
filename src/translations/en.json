@@ -1602,9 +1602,32 @@
           "create_zone": "Create zone from current location"
         },
         "cover": {
+          "edit_mode": "Edit favorites",
           "switch_mode": {
             "button": "Switch to button mode",
             "position": "Switch to position mode"
+          },
+          "favorite_position": {
+            "set": "Set favorite position {number}",
+            "edit": "Edit favorite position {number}",
+            "delete": "Delete favorite position {number}",
+            "delete_confirm_title": "Delete favorite position?",
+            "delete_confirm_text": "This favorite position will be permanently deleted.",
+            "delete_confirm_action": "Delete",
+            "add": "Add new favorite position",
+            "edit_title": "Edit favorite position",
+            "add_title": "Add favorite position"
+          },
+          "favorite_tilt_position": {
+            "set": "Set favorite tilt position {number}",
+            "edit": "Edit favorite tilt position {number}",
+            "delete": "Delete favorite tilt position {number}",
+            "delete_confirm_title": "Delete favorite tilt position?",
+            "delete_confirm_text": "This favorite tilt position will be permanently deleted.",
+            "delete_confirm_action": "Delete",
+            "add": "Add new favorite tilt position",
+            "edit_title": "Edit favorite tilt position",
+            "add_title": "Add favorite tilt position"
           }
         },
         "zone": {

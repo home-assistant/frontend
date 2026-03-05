@@ -55,11 +55,13 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
+import type { CoverEntity } from "../../data/cover";
+import { coverSupportsFavoritePositions } from "../../data/cover";
 import type { LightColor } from "../../data/light";
 import {
+  computeDefaultFavoriteColors,
   LightColorMode,
   lightSupportsColor,
-  computeDefaultFavoriteColors,
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
 } from "../../data/light";
@@ -343,7 +345,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _toggleInfoEditMode() {
-    this._infoEditMode = !this._infoEditMode;
+    withViewTransition(() => {
+      this._infoEditMode = !this._infoEditMode;
+    });
   }
 
   private _toggleDetailsYamlMode() {
@@ -355,7 +359,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleToggleInfoEditModeEvent(ev) {
-    this._infoEditMode = ev.detail;
+    withViewTransition(() => {
+      this._infoEditMode = ev.detail;
+    });
   }
 
   private _goToRelated(): void {
@@ -700,8 +706,12 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                         : nothing}
                       ${this._entry &&
                       stateObj &&
-                      domain === "light" &&
-                      lightSupportsFavoriteColors(stateObj)
+                      ((domain === "light" &&
+                        lightSupportsFavoriteColors(stateObj)) ||
+                        (domain === "cover" &&
+                          coverSupportsFavoritePositions(
+                            stateObj as CoverEntity
+                          )))
                         ? html`
                             <ha-dropdown-item value="toggle_edit">
                               <ha-svg-icon
@@ -712,12 +722,19 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                               ></ha-svg-icon>
                               ${this._infoEditMode
                                 ? this.hass.localize(
-                                    `ui.dialogs.more_info_control.exit_edit_mode`
+                                    "ui.dialogs.more_info_control.exit_edit_mode"
                                   )
                                 : this.hass.localize(
                                     `ui.dialogs.more_info_control.${domain}.edit_mode`
                                   )}
                             </ha-dropdown-item>
+                          `
+                        : nothing}
+                      ${this._entry &&
+                      stateObj &&
+                      domain === "light" &&
+                      lightSupportsFavoriteColors(stateObj)
+                        ? html`
                             <ha-dropdown-item
                               value="reset_favorites"
                               .disabled=${!this._entry.options?.light
@@ -728,7 +745,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 .path=${mdiBackupRestore}
                               ></ha-svg-icon>
                               ${this.hass.localize(
-                                `ui.dialogs.more_info_control.light.reset_favorites`
+                                "ui.dialogs.more_info_control.light.reset_favorites"
                               )}
                             </ha-dropdown-item>
                             <ha-dropdown-item value="copy_favorites">
@@ -737,7 +754,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 .path=${mdiContentDuplicate}
                               ></ha-svg-icon>
                               ${this.hass.localize(
-                                `ui.dialogs.more_info_control.light.copy_favorites`
+                                "ui.dialogs.more_info_control.light.copy_favorites"
                               )}
                             </ha-dropdown-item>
                           `

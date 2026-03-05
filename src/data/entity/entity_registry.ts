@@ -92,6 +92,11 @@ export interface LightEntityOptions {
   favorite_colors?: LightColor[];
 }
 
+export interface CoverEntityOptions {
+  favorite_positions?: number[];
+  favorite_tilt_positions?: number[];
+}
+
 export interface NumberEntityOptions {
   unit_of_measurement?: string | null;
 }
@@ -134,6 +139,7 @@ export interface EntityRegistryOptions {
   lock?: LockEntityOptions;
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
+  cover?: CoverEntityOptions;
   vacuum?: VacuumEntityOptions;
   switch_as_x?: SwitchAsXEntityOptions;
   conversation?: Record<string, unknown>;
@@ -158,6 +164,7 @@ export interface EntityRegistryEntryUpdateParams {
     | CalendarEntityOptions
     | WeatherEntityOptions
     | LightEntityOptions
+    | CoverEntityOptions
     | VacuumEntityOptions;
   aliases?: string[];
   labels?: string[];

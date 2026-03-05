@@ -3,6 +3,7 @@ import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-sortable";
@@ -26,11 +27,6 @@ declare global {
     };
   }
 }
-
-const SORTABLE_OPTIONS = {
-  delay: 250,
-  delayOnTouchOnly: false,
-};
 
 @customElement("ha-more-info-favorites")
 export class HaMoreInfoFavorites extends LitElement {
@@ -99,7 +95,6 @@ export class HaMoreInfoFavorites extends LitElement {
         draggable-selector=".favorite"
         no-style
         .disabled=${!this.editMode}
-        .options=${SORTABLE_OPTIONS}
       >
         <div class="container">
           ${this.items.map(
@@ -129,8 +124,8 @@ export class HaMoreInfoFavorites extends LitElement {
                           @click=${this._handleDelete}
                           class="delete"
                           data-index=${String(index)}
-                          aria-label=${this.deleteLabel?.(index)}
-                          .title=${this.deleteLabel?.(index)}
+                          aria-label=${ifDefined(this.deleteLabel?.(index))}
+                          title=${ifDefined(this.deleteLabel?.(index))}
                         >
                           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
                         </button>

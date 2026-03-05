@@ -5,9 +5,13 @@ import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { CoverEntity } from "../../../data/cover";
 import {
   CoverEntityFeature,
+  coverSupportsFavoritePosition,
+  coverSupportsFavoritePositions,
+  coverSupportsFavoriteTiltPosition,
   computeCoverPositionStateDisplay,
 } from "../../../data/cover";
 import "../../../state-control/cover/ha-state-control-cover-buttons";
@@ -15,6 +19,7 @@ import "../../../state-control/cover/ha-state-control-cover-position";
 import "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import "../../../state-control/cover/ha-state-control-cover-toggle";
 import type { HomeAssistant } from "../../../types";
+import "../components/covers/ha-more-info-cover-favorite-positions";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
@@ -25,6 +30,10 @@ class MoreInfoCover extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: CoverEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
+
+  @property({ attribute: false }) public editMode?: boolean;
 
   @state() private _mode?: Mode;
 
@@ -66,15 +75,25 @@ class MoreInfoCover extends LitElement {
       return nothing;
     }
 
-    const supportsPosition = supportsFeature(
-      this.stateObj,
-      CoverEntityFeature.SET_POSITION
+    const supportsPosition = coverSupportsFavoritePosition(this.stateObj);
+
+    const supportsTiltPosition = coverSupportsFavoriteTiltPosition(
+      this.stateObj
     );
 
-    const supportsTiltPosition = supportsFeature(
-      this.stateObj,
-      CoverEntityFeature.SET_TILT_POSITION
-    );
+    const hasFavoritePositions =
+      this.entry &&
+      (this.entry.options?.cover?.favorite_positions == null ||
+        this.entry.options.cover.favorite_positions.length > 0);
+
+    const hasFavoriteTiltPositions =
+      this.entry &&
+      (this.entry.options?.cover?.favorite_tilt_positions == null ||
+        this.entry.options.cover.favorite_tilt_positions.length > 0);
+
+    const hasFavorites =
+      (supportsPosition && hasFavoritePositions) ||
+      (supportsTiltPosition && hasFavoriteTiltPositions);
 
     const supportsOpenClose =
       supportsFeature(this.stateObj, CoverEntityFeature.OPEN) ||
@@ -174,6 +193,20 @@ class MoreInfoCover extends LitElement {
               : nothing
           }
         </div>
+        ${
+          this.entry &&
+          coverSupportsFavoritePositions(this.stateObj) &&
+          (this.editMode || hasFavorites)
+            ? html`
+                <ha-more-info-cover-favorite-positions
+                  .hass=${this.hass}
+                  .stateObj=${this.stateObj}
+                  .entry=${this.entry}
+                  .editMode=${this.editMode}
+                ></ha-more-info-cover-favorite-positions>
+              `
+            : nothing
+        }
       </div>
     `;
   }
