@@ -9384,6 +9384,9 @@
               "light-brightness": {
                 "label": "Light brightness"
               },
+              "light-color-favorites": {
+                "label": "Light color favorites"
+              },
               "light-color-temp": {
                 "label": "Light color temperature"
               },

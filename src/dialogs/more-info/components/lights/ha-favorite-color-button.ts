@@ -29,6 +29,8 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @property({ attribute: false }) color!: LightColor;
 
+  @property({ type: Boolean }) wide = false;
+
   @query("ha-outlined-icon-button", true)
   private _button?: HaOutlinedIconButton;
 
@@ -107,6 +109,23 @@ class MoreInfoViewLightColorPicker extends LitElement {
           --md-ripple-hover-opacity: 0;
           --md-ripple-pressed-opacity: 0;
           border-radius: var(--ha-border-radius-pill);
+        }
+        :host([wide]) ha-outlined-icon-button {
+          width: 100%;
+          border-radius: var(--ha-favorite-color-button-border-radius);
+          --_container-shape: var(--ha-favorite-color-button-border-radius);
+          --_container-shape-start-start: var(
+            --ha-favorite-color-button-border-radius
+          );
+          --_container-shape-start-end: var(
+            --ha-favorite-color-button-border-radius
+          );
+          --_container-shape-end-start: var(
+            --ha-favorite-color-button-border-radius
+          );
+          --_container-shape-end-end: var(
+            --ha-favorite-color-button-border-radius
+          );
         }
         :host([disabled]) {
           pointer-events: none;
