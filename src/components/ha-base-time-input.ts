@@ -441,6 +441,8 @@ export class HaBaseTimeInput extends LitElement {
     }
 
     label {
+      display: block;
+      margin: 0 0 8px;
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       -webkit-font-smoothing: var(--ha-font-smoothing);
       font-family: var(
