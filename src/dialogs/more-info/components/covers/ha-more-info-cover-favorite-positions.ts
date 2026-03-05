@@ -9,8 +9,8 @@ import "../../../../components/ha-control-button";
 import type { CoverEntity } from "../../../../data/cover";
 import {
   computeDefaultFavoriteCoverPositions,
-  coverSupportsFavoritePosition,
-  coverSupportsFavoriteTiltPosition,
+  coverSupportsPosition,
+  coverSupportsTiltPosition,
   normalizeCoverFavoritePositions,
 } from "../../../../data/cover";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
@@ -52,16 +52,14 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     ) {
       const options = this.entry.options?.cover;
 
-      this._favoritePositions = coverSupportsFavoritePosition(this.stateObj)
+      this._favoritePositions = coverSupportsPosition(this.stateObj)
         ? normalizeCoverFavoritePositions(
             options?.favorite_positions ??
               computeDefaultFavoriteCoverPositions()
           )
         : [];
 
-      this._favoriteTiltPositions = coverSupportsFavoriteTiltPosition(
-        this.stateObj
-      )
+      this._favoriteTiltPositions = coverSupportsTiltPosition(this.stateObj)
         ? normalizeCoverFavoritePositions(
             options?.favorite_tilt_positions ??
               computeDefaultFavoriteCoverPositions()
@@ -111,11 +109,11 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       ...(this.entry.options?.cover ?? {}),
     };
 
-    if (coverSupportsFavoritePosition(this.stateObj)) {
+    if (coverSupportsPosition(this.stateObj)) {
       currentOptions.favorite_positions = this._favoritePositions;
     }
 
-    if (coverSupportsFavoriteTiltPosition(this.stateObj)) {
+    if (coverSupportsTiltPosition(this.stateObj)) {
       currentOptions.favorite_tilt_positions = this._favoriteTiltPositions;
     }
 
@@ -388,10 +386,8 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       return nothing;
     }
 
-    const supportsPosition = coverSupportsFavoritePosition(this.stateObj);
-    const supportsTiltPosition = coverSupportsFavoriteTiltPosition(
-      this.stateObj
-    );
+    const supportsPosition = coverSupportsPosition(this.stateObj);
+    const supportsTiltPosition = coverSupportsTiltPosition(this.stateObj);
 
     const showDoneOnPosition = supportsPosition && !supportsTiltPosition;
 

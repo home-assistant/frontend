@@ -20,15 +20,14 @@ export const enum CoverEntityFeature {
 
 export const DEFAULT_COVER_FAVORITE_POSITIONS = [0, 25, 75, 100];
 
-export const coverSupportsFavoritePosition = (stateObj: CoverEntity) =>
+export const coverSupportsPosition = (stateObj: CoverEntity) =>
   supportsFeature(stateObj, CoverEntityFeature.SET_POSITION);
 
-export const coverSupportsFavoriteTiltPosition = (stateObj: CoverEntity) =>
+export const coverSupportsTiltPosition = (stateObj: CoverEntity) =>
   supportsFeature(stateObj, CoverEntityFeature.SET_TILT_POSITION);
 
-export const coverSupportsFavoritePositions = (stateObj: CoverEntity) =>
-  coverSupportsFavoritePosition(stateObj) ||
-  coverSupportsFavoriteTiltPosition(stateObj);
+export const coverSupportsAnyPosition = (stateObj: CoverEntity) =>
+  coverSupportsPosition(stateObj) || coverSupportsTiltPosition(stateObj);
 
 export const computeDefaultFavoriteCoverPositions = () => [
   ...DEFAULT_COVER_FAVORITE_POSITIONS,

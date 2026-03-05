@@ -6,9 +6,8 @@ import { computeAttributeNameDisplay } from "../../../common/entity/compute_attr
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-slider";
-import { CoverEntityFeature, type CoverEntity } from "../../../data/cover";
+import { coverSupportsPosition, type CoverEntity } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { HomeAssistant } from "../../../types";
@@ -28,10 +27,7 @@ export const supportsCoverPositionCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "cover" &&
-    supportsFeature(stateObj, CoverEntityFeature.SET_POSITION)
-  );
+  return domain === "cover" && coverSupportsPosition(stateObj as CoverEntity);
 };
 
 @customElement("hui-cover-position-card-feature")

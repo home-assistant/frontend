@@ -5,12 +5,11 @@ import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select";
 import type { CoverEntity } from "../../../data/cover";
 import {
-  CoverEntityFeature,
   DEFAULT_COVER_FAVORITE_POSITIONS,
+  coverSupportsPosition,
 } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
@@ -32,10 +31,7 @@ export const supportsCoverPositionPresetCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "cover" &&
-    supportsFeature(stateObj, CoverEntityFeature.SET_POSITION)
-  );
+  return domain === "cover" && coverSupportsPosition(stateObj as CoverEntity);
 };
 
 @customElement("hui-cover-position-preset-card-feature")

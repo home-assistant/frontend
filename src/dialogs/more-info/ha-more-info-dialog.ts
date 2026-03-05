@@ -56,7 +56,7 @@ import {
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
 import type { CoverEntity } from "../../data/cover";
-import { coverSupportsFavoritePositions } from "../../data/cover";
+import { coverSupportsAnyPosition } from "../../data/cover";
 import type { LightColor } from "../../data/light";
 import {
   computeDefaultFavoriteColors,
@@ -709,9 +709,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                       ((domain === "light" &&
                         lightSupportsFavoriteColors(stateObj)) ||
                         (domain === "cover" &&
-                          coverSupportsFavoritePositions(
-                            stateObj as CoverEntity
-                          )))
+                          coverSupportsAnyPosition(stateObj as CoverEntity)))
                         ? html`
                             <ha-dropdown-item value="toggle_edit">
                               <ha-svg-icon

@@ -9,9 +9,9 @@ import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registr
 import type { CoverEntity } from "../../../data/cover";
 import {
   CoverEntityFeature,
-  coverSupportsFavoritePosition,
-  coverSupportsFavoritePositions,
-  coverSupportsFavoriteTiltPosition,
+  coverSupportsAnyPosition,
+  coverSupportsPosition,
+  coverSupportsTiltPosition,
   computeCoverPositionStateDisplay,
 } from "../../../data/cover";
 import "../../../state-control/cover/ha-state-control-cover-buttons";
@@ -47,11 +47,9 @@ class MoreInfoCover extends LitElement {
       const entityId = this.stateObj.entity_id;
       const oldEntityId = changedProps.get("stateObj")?.entity_id;
       if (!this._mode || entityId !== oldEntityId) {
-        this._mode =
-          supportsFeature(this.stateObj, CoverEntityFeature.SET_POSITION) ||
-          supportsFeature(this.stateObj, CoverEntityFeature.SET_TILT_POSITION)
-            ? "position"
-            : "button";
+        this._mode = coverSupportsAnyPosition(this.stateObj)
+          ? "position"
+          : "button";
       }
     }
   }
@@ -75,11 +73,9 @@ class MoreInfoCover extends LitElement {
       return nothing;
     }
 
-    const supportsPosition = coverSupportsFavoritePosition(this.stateObj);
+    const supportsPosition = coverSupportsPosition(this.stateObj);
 
-    const supportsTiltPosition = coverSupportsFavoriteTiltPosition(
-      this.stateObj
-    );
+    const supportsTiltPosition = coverSupportsTiltPosition(this.stateObj);
 
     const hasFavoritePositions =
       this.entry &&
@@ -195,7 +191,7 @@ class MoreInfoCover extends LitElement {
         </div>
         ${
           this.entry &&
-          coverSupportsFavoritePositions(this.stateObj) &&
+          coverSupportsAnyPosition(this.stateObj) &&
           (this.editMode || hasFavorites)
             ? html`
                 <ha-more-info-cover-favorite-positions
