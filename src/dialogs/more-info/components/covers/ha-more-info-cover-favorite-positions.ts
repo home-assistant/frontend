@@ -30,6 +30,11 @@ import type { HaMoreInfoFavorites } from "../ha-more-info-favorites";
 
 type FavoriteKind = "position" | "tilt";
 
+const favoriteKey = (
+  kind: FavoriteKind
+): "favorite_position" | "favorite_tilt_position" =>
+  kind === "position" ? "favorite_position" : "favorite_tilt_position";
+
 @customElement("ha-more-info-cover-favorite-positions")
 export class HaMoreInfoCoverFavoritePositions extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -66,19 +71,13 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     }
   }
 
-  private _favoriteKey(
-    kind: FavoriteKind
-  ): "favorite_position" | "favorite_tilt_position" {
-    return kind === "position" ? "favorite_position" : "favorite_tilt_position";
-  }
-
   private _localizeFavorite(
     kind: FavoriteKind,
     key: string,
     values?: Record<string, string | number>
   ): string {
     return this.hass.localize(
-      `ui.dialogs.more_info_control.cover.${this._favoriteKey(kind)}.${key}` as LocalizeKeys,
+      `ui.dialogs.more_info_control.cover.${favoriteKey(kind)}.${key}` as LocalizeKeys,
       values
     );
   }
