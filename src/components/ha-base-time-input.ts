@@ -349,7 +349,11 @@ export class HaBaseTimeInput extends LitElement {
       text-align: center;
       --mdc-shape-small: 0;
       --text-field-appearance: none;
-      --text-field-padding: 0 4px;
+      --text-field-padding-top: 0;
+      --text-field-padding-bottom: 0;
+      --text-field-padding-start: 4px;
+      --text-field-padding-end: 4px;
+
       --text-field-suffix-padding-left: 2px;
       --text-field-suffix-padding-right: 0;
       --text-field-text-align: center;
