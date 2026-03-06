@@ -18,6 +18,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
 import { isUnavailableState } from "../../data/entity/entity";
+import "../search-input-outlined";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -129,6 +130,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @state() private _currentItem?: MediaPlayerItem;
 
+  @state() private _searchQuery = "";
+
   @query(".header") private _header?: HTMLDivElement;
 
   @query(".content") private _content?: HTMLDivElement;
@@ -201,6 +204,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     // We're navigating. Reset the shizzle.
     this._content?.scrollTo(0, 0);
     this.scrolled = false;
+    this._searchQuery = "";
     const oldCurrentItem = this._currentItem;
     const oldParentItem = this._parentItem;
     this._currentItem = undefined;
@@ -407,6 +411,16 @@ export class HaMediaPlayerBrowse extends LitElement {
       });
     }
 
+    const isRadioBrowser = currentItem.media_content_id?.startsWith(
+      "media-source://radio_browser"
+    );
+    const showRadioSearch = isRadioBrowser && children.length > 0;
+    if (showRadioSearch && this._searchQuery) {
+      children = children.filter((child) =>
+        child.title.toLowerCase().includes(this._searchQuery.toLowerCase())
+      );
+    }
+
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
       ? MediaClassBrowserSettings[currentItem.children_media_class]
@@ -504,6 +518,22 @@ export class HaMediaPlayerBrowse extends LitElement {
                     `
                   : ""
               }
+          ${
+            showRadioSearch
+              ? html`
+                  <div class="radio-search">
+                    <search-input-outlined
+                      .hass=${this.hass}
+                      .filter=${this._searchQuery}
+                      .placeholder=${this.hass.localize(
+                        "ui.components.media-browser.radio_browser.search_placeholder"
+                      )}
+                      @value-changed=${this._handleSearchQuery}
+                    ></search-input-outlined>
+                  </div>
+                `
+              : nothing
+          }
           <div
             class="content"
             @scroll=${this._scroll}
@@ -888,6 +918,10 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._resizeObserver.observe(this);
   }
 
+  private _handleSearchQuery(ev: CustomEvent) {
+    this._searchQuery = ev.detail.value;
+  }
+
   private _closeDialogAction(): void {
     fireEvent(this, "close-dialog");
   }
@@ -1002,6 +1036,19 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .no-items {
           padding-left: 32px;
+        }
+
+        .radio-search {
+          padding: 8px 16px;
+          background-color: var(--card-background-color);
+          position: sticky;
+          top: 0;
+          z-index: 2;
+          border-bottom: 1px solid var(--divider-color);
+        }
+
+        .radio-search search-input-outlined {
+          width: 100%;
         }
 
         .highlight-add-button {
