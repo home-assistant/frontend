@@ -1769,15 +1769,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:7.2.2":
-  version: 7.2.2
-  resolution: "@formatjs/intl-datetimeformat@npm:7.2.2"
+"@formatjs/intl-datetimeformat@npm:7.2.4":
+  version: 7.2.4
+  resolution: "@formatjs/intl-datetimeformat@npm:7.2.4"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:3.1.1"
     "@formatjs/intl-localematcher": "npm:0.8.1"
     decimal.js: "npm:^10.6.0"
     tslib: "npm:^2.8.1"
-  checksum: 10/7ab7bc95687cdb6e6e22d5b717d6770b8b692e7feb630d0b206825e12ed82b0eb6692d4b9e7b067b2e63deaf9d08305ecb9ae43bcd5b6ad426c13d32659be62b
+  checksum: 10/9d8c4b26d53543cae96b48bb637ad0e30e4d6144e38d261441e4e9546ab2de25de8db4630babda20ff36e5fccab50f5ff815808572e063ea15290e3f6c9cd52e
   languageName: node
   linkType: hard
 
@@ -9150,7 +9150,7 @@ __metadata:
     "@codemirror/view": "npm:6.39.16"
     "@date-fns/tz": "npm:1.4.1"
     "@egjs/hammerjs": "npm:2.0.17"
-    "@formatjs/intl-datetimeformat": "npm:7.2.2"
+    "@formatjs/intl-datetimeformat": "npm:7.2.4"
     "@formatjs/intl-displaynames": "npm:7.2.1"
     "@formatjs/intl-durationformat": "npm:0.10.1"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.1"
