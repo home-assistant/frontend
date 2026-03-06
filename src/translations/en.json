@@ -994,7 +994,10 @@
         "media_player_unavailable": "The selected media player is unavailable.",
         "auto": "Auto",
         "grid": "Grid",
-        "list": "List"
+        "list": "List",
+        "radio_browser": {
+          "search_placeholder": "Search radio stations"
+        }
       },
       "todo": {
         "item": {
