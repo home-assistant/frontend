@@ -801,7 +801,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         }
 
         :host([clearable]) {
-          --text-field-padding: 0 0 0 var(--ha-space-4);
+          --text-field-padding-top: 0;
+          --text-field-padding-bottom: 0;
+          --text-field-padding-start: var(--ha-space-4);
+          --text-field-padding-end: 0;
         }
 
         ha-textfield {
