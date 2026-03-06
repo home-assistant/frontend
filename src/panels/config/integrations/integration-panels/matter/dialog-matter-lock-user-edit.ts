@@ -6,6 +6,8 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-select-box";
+import type { SelectBoxOption } from "../../../../../components/ha-select-box";
 import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-wa-dialog";
 import type { MatterLockUserType } from "../../../../../data/matter-lock";
@@ -118,28 +120,12 @@ class DialogMatterLockUserEdit extends LitElement {
                 "ui.panel.config.matter.lock.users.type"
               )}</label
             >
-            ${SIMPLE_USER_TYPES.map(
-              (type) => html`
-                <div
-                  class="user-type-option ${this._userType === type
-                    ? "selected"
-                    : ""}"
-                  .userType=${type}
-                  @click=${this._handleUserTypeClick}
-                >
-                  <div class="user-type-label">
-                    ${this.hass.localize(
-                      `ui.panel.config.matter.lock.users.user_types.${type}.label`
-                    )}
-                  </div>
-                  <div class="user-type-description">
-                    ${this.hass.localize(
-                      `ui.panel.config.matter.lock.users.user_types.${type}.description`
-                    )}
-                  </div>
-                </div>
-              `
-            )}
+            <ha-select-box
+              .options=${this._userTypeOptions}
+              .value=${this._userType}
+              .maxColumns=${1}
+              @value-changed=${this._handleUserTypeChanged}
+            ></ha-select-box>
           </div>
         </div>
 
@@ -177,12 +163,20 @@ class DialogMatterLockUserEdit extends LitElement {
     (ev.target as HTMLInputElement).value = value;
   }
 
-  private _handleUserTypeClick(ev: Event): void {
-    this._userType = (
-      ev.currentTarget as HTMLElement & {
-        userType: MatterLockUserType;
-      }
-    ).userType;
+  private get _userTypeOptions(): SelectBoxOption[] {
+    return SIMPLE_USER_TYPES.map((type) => ({
+      value: type,
+      label: this.hass.localize(
+        `ui.panel.config.matter.lock.users.user_types.${type}.label` as any
+      ),
+      description: this.hass.localize(
+        `ui.panel.config.matter.lock.users.user_types.${type}.description` as any
+      ),
+    }));
+  }
+
+  private _handleUserTypeChanged(ev: CustomEvent): void {
+    this._userType = ev.detail.value as MatterLockUserType;
   }
 
   private async _save(): Promise<void> {
@@ -298,34 +292,6 @@ class DialogMatterLockUserEdit extends LitElement {
         .user-type-section > label {
           font-weight: 500;
           color: var(--primary-text-color);
-        }
-
-        .user-type-option {
-          padding: var(--ha-space-3) var(--ha-space-4);
-          border: 1px solid var(--divider-color);
-          border-radius: var(--ha-border-radius-md);
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .user-type-option:hover {
-          background: var(--secondary-background-color);
-        }
-
-        .user-type-option.selected {
-          border-color: var(--primary-color);
-          background: rgba(var(--rgb-primary-color), 0.1);
-        }
-
-        .user-type-label {
-          font-weight: 500;
-          color: var(--primary-text-color);
-        }
-
-        .user-type-description {
-          font-size: var(--ha-font-size-s, 12px);
-          color: var(--secondary-text-color);
-          margin-top: 2px;
         }
 
         ha-alert {
