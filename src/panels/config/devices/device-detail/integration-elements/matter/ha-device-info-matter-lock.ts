@@ -130,7 +130,7 @@ export class HaDeviceInfoMatterLock extends LitElement {
             timestamp: new Date(eventState.last_changed),
             description:
               this.hass.localize(
-                `ui.panel.config.matter.lock.events.types.${eventType}`
+                `ui.panel.config.matter.lock.events.types.${eventType}` as any
               ) || eventType,
           });
         }
