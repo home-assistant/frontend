@@ -207,7 +207,7 @@
     "pinst": "3.0.0",
     "prettier": "3.8.1",
     "rspack-manifest-plugin": "5.2.1",
-    "serve": "14.2.5",
+    "serve": "14.2.6",
     "sinon": "21.0.2",
     "tar": "7.5.9",
     "terser-webpack-plugin": "5.3.17",
