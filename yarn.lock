@@ -1638,16 +1638,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/css-tree@npm:^3.6.9":
-  version: 3.6.9
-  resolution: "@eslint/css-tree@npm:3.6.9"
-  dependencies:
-    mdn-data: "npm:2.23.0"
-    source-map-js: "npm:^1.0.1"
-  checksum: 10/f3ce66f5c8ba1957b82e1c1df79b91092cde79d3c6d3abeb9facaccb4fecc21018bf352f75e39d614b7bb2e33dd4bebaa60f2d98468167237080b9e31b35e19d
-  languageName: node
-  linkType: hard
-
 "@eslint/eslintrc@npm:^3.3.1":
   version: 3.3.3
   resolution: "@eslint/eslintrc@npm:3.3.3"
@@ -1990,76 +1980,73 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@html-eslint/core@npm:^0.57.0":
-  version: 0.57.0
-  resolution: "@html-eslint/core@npm:0.57.0"
+"@html-eslint/core@npm:^0.58.0":
+  version: 0.58.0
+  resolution: "@html-eslint/core@npm:0.58.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.57.0"
-    eslint: "npm:^9.39.1"
+    "@html-eslint/types": "npm:^0.58.0"
     html-standard: "npm:^0.0.13"
-  checksum: 10/18b7aaf455969008dc5b79f6fd4b38792d893053e77c098c56a9238fe9b3ac3fa36441a88b908ade71de2f5179d5b4c45f552d7da5beff1d5c8df9cb3fd14e63
+  checksum: 10/ab47e9b5ff5aa272219fa6a2e1c53158213536811e32349c8e1f9666b728728cd82d5c852bfa61fa08acd904a5ceeb96694e79bba3c2794fc9217e7a6fbd52c9
   languageName: node
   linkType: hard
 
-"@html-eslint/eslint-plugin@npm:0.57.1":
-  version: 0.57.1
-  resolution: "@html-eslint/eslint-plugin@npm:0.57.1"
+"@html-eslint/eslint-plugin@npm:0.58.0":
+  version: 0.58.0
+  resolution: "@html-eslint/eslint-plugin@npm:0.58.0"
   dependencies:
     "@eslint/plugin-kit": "npm:^0.4.1"
-    "@html-eslint/core": "npm:^0.57.0"
-    "@html-eslint/parser": "npm:^0.57.1"
-    "@html-eslint/template-parser": "npm:^0.57.0"
-    "@html-eslint/template-syntax-parser": "npm:^0.57.0"
-    "@html-eslint/types": "npm:^0.57.0"
+    "@html-eslint/core": "npm:^0.58.0"
+    "@html-eslint/parser": "npm:^0.58.0"
+    "@html-eslint/template-parser": "npm:^0.58.0"
+    "@html-eslint/template-syntax-parser": "npm:^0.58.0"
+    "@html-eslint/types": "npm:^0.58.0"
     "@rviscomi/capo.js": "npm:^2.1.0"
     html-standard: "npm:^0.0.13"
   peerDependencies:
     eslint: ">=8.0.0 || ^10.0.0-0"
-  checksum: 10/21a923a1ee8efb02f01c015345a23b38cd0a9e98c4f3fa07d79afe1f8e9f26651e0a9d6983b2f9cfae76be71c14f3224fd64433612535c1e04e3c9b440e46245
+  checksum: 10/6f69f644f367563c447fcb87e9868be380a9e1d808495396f15e4fa541c28266f318fcaa2c8ea5f74c94c05d536351eec28843fd5d19702b52358184264bdf5d
   languageName: node
   linkType: hard
 
-"@html-eslint/parser@npm:^0.57.1":
-  version: 0.57.1
-  resolution: "@html-eslint/parser@npm:0.57.1"
+"@html-eslint/parser@npm:^0.58.0":
+  version: 0.58.0
+  resolution: "@html-eslint/parser@npm:0.58.0"
   dependencies:
-    "@eslint/css-tree": "npm:^3.6.9"
-    "@html-eslint/template-syntax-parser": "npm:^0.57.0"
-    "@html-eslint/types": "npm:^0.57.0"
+    "@html-eslint/template-syntax-parser": "npm:^0.58.0"
+    "@html-eslint/types": "npm:^0.58.0"
     css-tree: "npm:^3.1.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/3e148f0bf83600e5b931938dc02d01e805c275b0534fad0adc8ac68ceb37220896c007b1d33ebc4347cb59ab35d1cc3c57207ff798f08d2327d92abf1c88e72b
+  checksum: 10/1be19389b0f6494af2bc112f63490855959fb7f138287499546185b4d580f3f6ac56c451c22715c8af01442f85c8de20daedce0b068be309e4bc595a8541eed2
   languageName: node
   linkType: hard
 
-"@html-eslint/template-parser@npm:^0.57.0":
-  version: 0.57.0
-  resolution: "@html-eslint/template-parser@npm:0.57.0"
+"@html-eslint/template-parser@npm:^0.58.0":
+  version: 0.58.0
+  resolution: "@html-eslint/template-parser@npm:0.58.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.57.0"
+    "@html-eslint/types": "npm:^0.58.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/160d7f6156f242ed7bd4e7f13d79c350bf5db7fef089ba7b404ef770d80547620e9ee860ead8892a4079668db1cdccf6a6c6b91183a8c478a634314b39efea32
+  checksum: 10/00d95b9ff6504802fcbbe46bfd9d9b5b99d642ecaee7da93a50e1c887be0c49a96efd6972d394c9588ae9f07b207cbef11642ccfe707edd4e88628c69970b5eb
   languageName: node
   linkType: hard
 
-"@html-eslint/template-syntax-parser@npm:^0.57.0":
-  version: 0.57.0
-  resolution: "@html-eslint/template-syntax-parser@npm:0.57.0"
+"@html-eslint/template-syntax-parser@npm:^0.58.0":
+  version: 0.58.0
+  resolution: "@html-eslint/template-syntax-parser@npm:0.58.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.57.0"
-  checksum: 10/147d8d15ebc5ea9b75eea04463b9f29cfc476be2e98c5a2129442be6f66d32a9e8bb11a1be13cc3778df25e14d7ed1cd345342951ecec05292545f64bb3d92c6
+    "@html-eslint/types": "npm:^0.58.0"
+  checksum: 10/c2723f28ee05368f180389f58105daa9901366d15375461dd31f7802be0233431a29c01bd3fd3bf5c176a8257dc3426352144862631c72e1da138d7fa03afe31
   languageName: node
   linkType: hard
 
-"@html-eslint/types@npm:^0.57.0":
-  version: 0.57.0
-  resolution: "@html-eslint/types@npm:0.57.0"
+"@html-eslint/types@npm:^0.58.0":
+  version: 0.58.0
+  resolution: "@html-eslint/types@npm:0.58.0"
   dependencies:
     "@types/css-tree": "npm:^2.3.11"
     "@types/estree": "npm:^1.0.6"
     es-html-parser: "npm:0.3.1"
-    eslint: "npm:^9.39.1"
-  checksum: 10/44d0bde592786a2da966beab13c3d543e6669b1e38b6e5feea0f01121eec928be0081969df3ada1f27c9bd43d6286596afa56a2e075da843251079a940cf0825
+  checksum: 10/c38c690d2da98f533a17900f31f5f150b14fd446c23c7b98ec4776c8acc931fef863f51069479eec65db6281de2ef8cabf197b4c6dc4ba7cd7700c049044e555
   languageName: node
   linkType: hard
 
@@ -8000,7 +7987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:9.39.3, eslint@npm:^9.39.1":
+"eslint@npm:9.39.3":
   version: 9.39.3
   resolution: "eslint@npm:9.39.3"
   dependencies:
@@ -9154,7 +9141,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
     "@home-assistant/webawesome": "npm:3.2.1-ha.3"
-    "@html-eslint/eslint-plugin": "npm:0.57.1"
+    "@html-eslint/eslint-plugin": "npm:0.58.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
     "@lit-labs/observers": "npm:2.1.0"
@@ -10889,13 +10876,6 @@ __metadata:
   version: 2.12.2
   resolution: "mdn-data@npm:2.12.2"
   checksum: 10/854e41715a9358e69f9a530117cd6ca7e71d06176469de8d70b1e629753b6827f5bd730995c16ad3750f3c9bad92230f8e4e178de2b34926b05f5205d27d76af
-  languageName: node
-  linkType: hard
-
-"mdn-data@npm:2.23.0":
-  version: 2.23.0
-  resolution: "mdn-data@npm:2.23.0"
-  checksum: 10/081db7e8585be60e6f031c7537d613a2a4e692e3c58e2968f5d7ce7104900f6530e2600dfe7c7d92e4d4378d60fc5c57a76ca5f0a5a77b3359f4b7e9a69de531
   languageName: node
   linkType: hard
 
