@@ -146,7 +146,7 @@ export class QuickBar extends LitElement {
   private _dialogOpened = async () => {
     this._opened = true;
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass)) {
+      if (this.hass && isIosApp(this.hass.auth.external)) {
         this.hass.auth.external!.fireMessage({
           type: "focus_element",
           payload: {

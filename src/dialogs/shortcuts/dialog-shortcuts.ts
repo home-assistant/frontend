@@ -1,12 +1,13 @@
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import { customElement, state } from "lit/decorators";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
-import "../../components/ha-svg-icon";
 import "../../components/ha-dialog";
-import type { HomeAssistant } from "../../types";
+import "../../components/ha-svg-icon";
+import { localizeContext } from "../../data/context";
 import { isMac } from "../../util/is_mac";
+import { DialogMixin } from "../dialog-mixin";
 
 interface Text {
   textTranslationKey: LocalizeKeys;
@@ -165,24 +166,10 @@ const _SHORTCUTS: Section[] = [
 ];
 
 @customElement("dialog-shortcuts")
-class DialogShortcuts extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private _open = false;
-
-  public async showDialog(): Promise<void> {
-    this._open = true;
-  }
-
-  private _dialogClosed() {
-    this._open = false;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  public async closeDialog() {
-    this._open = false;
-    return true;
-  }
+class DialogShortcuts extends DialogMixin(LitElement) {
+  @state()
+  @consume({ context: localizeContext, subscribe: true })
+  private localize!: ContextType<typeof localizeContext>;
 
   private _renderShortcut(
     shortcutKeys: ShortcutString[],
@@ -196,15 +183,13 @@ class DialogShortcuts extends LitElement {
               >${shortcutKey === CTRL_CMD
                 ? isMac
                   ? "⌘"
-                  : this.hass.localize("ui.dialogs.shortcuts.keys.ctrl")
+                  : this.localize("ui.dialogs.shortcuts.keys.ctrl")
                 : typeof shortcutKey === "string"
                   ? shortcutKey
-                  : this.hass.localize(
-                      shortcutKey.shortcutTranslationKey
-                    )}</span
+                  : this.localize(shortcutKey.shortcutTranslationKey)}</span
             >`
         )}
-        ${this.hass.localize(descriptionKey)}
+        ${this.localize(descriptionKey)}
       </div>
     `;
   }
@@ -212,14 +197,13 @@ class DialogShortcuts extends LitElement {
   protected render() {
     return html`
       <ha-dialog
-        .open=${this._open}
-        @closed=${this._dialogClosed}
-        .headerTitle=${this.hass.localize("ui.dialogs.shortcuts.title")}
+        open
+        .headerTitle=${this.localize("ui.dialogs.shortcuts.title")}
       >
         <div class="content">
           ${_SHORTCUTS.map(
             (section) => html`
-              <h3>${this.hass.localize(section.titleTranslationKey)}</h3>
+              <h3>${this.localize(section.titleTranslationKey)}</h3>
               <div class="items">
                 ${section.items.map((item) => {
                   if ("shortcut" in item) {
@@ -229,7 +213,7 @@ class DialogShortcuts extends LitElement {
                     );
                   }
                   return html`<p>
-                    ${this.hass.localize((item as Text).textTranslationKey)}
+                    ${this.localize((item as Text).textTranslationKey)}
                   </p>`;
                 })}
               </div>
@@ -238,9 +222,9 @@ class DialogShortcuts extends LitElement {
         </div>
 
         <ha-alert slot="footer">
-          ${this.hass.localize("ui.dialogs.shortcuts.enable_shortcuts_hint", {
+          ${this.localize("ui.dialogs.shortcuts.enable_shortcuts_hint", {
             user_profile: html`<a href="/profile/general#shortcuts"
-              >${this.hass.localize(
+              >${this.localize(
                 "ui.dialogs.shortcuts.enable_shortcuts_hint_user_profile"
               )}</a
             >`,
