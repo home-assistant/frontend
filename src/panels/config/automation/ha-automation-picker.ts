@@ -255,7 +255,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           (reg) => reg.entity_id === automation.entity_id
         );
         const category = entityRegEntry?.categories.automation;
-        const labels = entityRegEntry?.labels;
+        const labels = labelReg && entityRegEntry?.labels;
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           automation.entity_id
@@ -272,7 +272,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
           label_entries: (labels || [])
-            .map((lbl) => labelReg.find((label) => label.label_id === lbl)!)
+            .map((lbl) => labelReg!.find((label) => label.label_id === lbl)!)
             .filter(Boolean),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
