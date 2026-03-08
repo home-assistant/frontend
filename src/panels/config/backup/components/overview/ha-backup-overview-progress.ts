@@ -1,5 +1,5 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiHarddisk, mdiNas } from "@mdi/js";
+import { mdiCheck, mdiHarddisk, mdiNas } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -265,44 +265,59 @@ export class HaBackupOverviewProgress extends LitElement {
     }
 
     return html`
-      <ha-md-list class="agent-list">
-        ${this.agents.map((agent) => {
-          const name = computeBackupAgentName(
-            this.hass.localize,
-            agent.agent_id,
-            this.agents
-          );
-          const agentPercent = this._computeAgentPercent(agent.agent_id);
+      <div class="agent-list-wrapper">
+        <ha-md-list class="agent-list">
+          ${this.agents.map((agent) => {
+            const name = computeBackupAgentName(
+              this.hass.localize,
+              agent.agent_id,
+              this.agents
+            );
+            const agentPercent = this._computeAgentPercent(agent.agent_id);
 
-          if (agentPercent !== undefined) {
+            if (agentPercent !== undefined) {
+              if (agentPercent >= 100) {
+                return html`
+                  <ha-md-list-item>
+                    ${this._renderAgentIcon(agent.agent_id)}
+                    <div slot="headline">${name}</div>
+                    <ha-svg-icon
+                      slot="end"
+                      class="agent-complete"
+                      .path=${mdiCheck}
+                    ></ha-svg-icon>
+                  </ha-md-list-item>
+                `;
+              }
+              return html`
+                <ha-md-list-item>
+                  ${this._renderAgentIcon(agent.agent_id)}
+                  <div slot="headline" class="agent-headline">
+                    <span>${name}</span>
+                    <span class="progress-percentage">
+                      ${agentPercent}${blankBeforePercent(this.hass.locale)}%
+                    </span>
+                  </div>
+                  <div slot="supporting-text">
+                    <mwc-linear-progress
+                      .progress=${agentPercent / 100}
+                      buffer=""
+                    ></mwc-linear-progress>
+                  </div>
+                </ha-md-list-item>
+              `;
+            }
+
             return html`
               <ha-md-list-item>
                 ${this._renderAgentIcon(agent.agent_id)}
-                <div slot="headline" class="agent-headline">
-                  <span>${name}</span>
-                  <span class="progress-percentage">
-                    ${agentPercent}${blankBeforePercent(this.hass.locale)}%
-                  </span>
-                </div>
-                <div slot="supporting-text">
-                  <mwc-linear-progress
-                    .progress=${agentPercent / 100}
-                    buffer=""
-                  ></mwc-linear-progress>
-                </div>
+                <div slot="headline">${name}</div>
+                <ha-spinner slot="end" size="tiny"></ha-spinner>
               </ha-md-list-item>
             `;
-          }
-
-          return html`
-            <ha-md-list-item>
-              ${this._renderAgentIcon(agent.agent_id)}
-              <div slot="headline">${name}</div>
-              <ha-spinner slot="end" size="tiny"></ha-spinner>
-            </ha-md-list-item>
-          `;
-        })}
-      </ha-md-list>
+          })}
+        </ha-md-list>
+      </div>
     `;
   }
 
@@ -380,10 +395,26 @@ export class HaBackupOverviewProgress extends LitElement {
         mwc-linear-progress {
           width: 100%;
         }
+        .agent-list-wrapper {
+          display: grid;
+          grid-template-rows: 1fr;
+          animation: expand var(--ha-animation-duration-slow, 350ms) ease-out;
+        }
+        @keyframes expand {
+          from {
+            grid-template-rows: 0fr;
+            opacity: 0;
+          }
+          to {
+            grid-template-rows: 1fr;
+            opacity: 1;
+          }
+        }
         .agent-list {
           background: none;
           padding: 0;
           margin-top: var(--ha-space-4);
+          overflow: hidden;
         }
         ha-md-list-item {
           --md-list-item-leading-space: 0;
@@ -413,6 +444,10 @@ export class HaBackupOverviewProgress extends LitElement {
         ha-md-list-item [slot="supporting-text"] {
           display: flex;
           align-items: center;
+        }
+        .agent-complete {
+          color: var(--success-color);
+          --mdc-icon-size: 24px;
         }
       `,
     ];
