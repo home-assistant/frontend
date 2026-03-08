@@ -61,6 +61,10 @@ import "./ha-browse-media-manual";
 import type { ManualMediaPickedEvent } from "./ha-browse-media-manual";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
+import {
+  filterRadioBrowserChildren,
+  RADIO_BROWSER_MEDIA_SOURCE_PREFIX,
+} from "./radio-browser-util";
 
 declare global {
   interface HASSDomEvents {
@@ -412,13 +416,11 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
 
     const isRadioBrowser = currentItem.media_content_id?.startsWith(
-      "media-source://radio_browser"
+      RADIO_BROWSER_MEDIA_SOURCE_PREFIX
     );
     const showRadioSearch = isRadioBrowser && children.length > 0;
     if (showRadioSearch && this._searchQuery) {
-      children = children.filter((child) =>
-        child.title.toLowerCase().includes(this._searchQuery.toLowerCase())
-      );
+      children = filterRadioBrowserChildren(children, this._searchQuery);
     }
 
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
