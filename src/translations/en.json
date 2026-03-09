@@ -3303,6 +3303,10 @@
                 "apps": "Apps",
                 "media": "Media",
                 "upload": "Uploading backup"
+              },
+              "agent_status": {
+                "uploading": "Uploading...",
+                "uploaded": "Uploaded"
               }
             },
             "summary": {

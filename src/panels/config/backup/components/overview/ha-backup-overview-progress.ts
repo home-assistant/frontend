@@ -279,6 +279,11 @@ export class HaBackupOverviewProgress extends LitElement {
                   <ha-md-list-item>
                     ${this._renderAgentIcon(agent.agent_id)}
                     <div slot="headline">${name}</div>
+                    <div slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.overview.progress.agent_status.uploaded"
+                      )}
+                    </div>
                     <ha-svg-icon
                       slot="end"
                       class="agent-complete"
@@ -291,6 +296,11 @@ export class HaBackupOverviewProgress extends LitElement {
                 <ha-md-list-item>
                   ${this._renderAgentIcon(agent.agent_id)}
                   <div slot="headline">${name}</div>
+                  <div slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.overview.progress.agent_status.uploading"
+                    )}
+                  </div>
                   <span slot="end" class="progress-percentage">
                     ${agentPercent}%
                   </span>
@@ -303,6 +313,11 @@ export class HaBackupOverviewProgress extends LitElement {
               <ha-md-list-item>
                 ${this._renderAgentIcon(agent.agent_id)}
                 <div slot="headline">${name}</div>
+                <div slot="supporting-text">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.overview.progress.agent_status.uploading"
+                  )}
+                </div>
                 <ha-spinner slot="end" size="tiny"></ha-spinner>
               </ha-md-list-item>
             `;
