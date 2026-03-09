@@ -30,7 +30,7 @@ declare global {
 
 const SORTABLE_OPTIONS = {
   delay: 250,
-  delayOnTouchOnly: false,
+  delayOnTouchOnly: true,
 };
 
 @customElement("ha-more-info-favorites")
