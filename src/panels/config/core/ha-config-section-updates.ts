@@ -3,6 +3,7 @@ import {
   mdiDotsVertical,
   mdiLocationEnter,
   mdiLocationExit,
+  mdiMenuDown,
   mdiRefresh,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
@@ -32,6 +33,7 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "@home-assistant/webawesome/dist/components/divider/divider";
@@ -87,14 +89,49 @@ class HaConfigSectionUpdates extends LitElement {
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
       >
         <div slot="toolbar-icon">
-          <ha-icon-button
-            .label=${this.hass.localize(
-              "ui.panel.config.updates.select_multiple"
-            )}
-            .path=${mdiFormatListChecks}
-            class=${this._multiSelectMode ? "active" : ""}
-            @click=${this._toggleMultiSelectMode}
-          ></ha-icon-button>
+          <ha-dropdown @wa-select=${this._handleSelectDropdown}>
+            <ha-assist-chip
+              .label=${this.hass.localize(
+                "ui.components.subpage-data-table.select"
+              )}
+              slot="trigger"
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiFormatListChecks}
+              ></ha-svg-icon>
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon>
+            </ha-assist-chip>
+            ${this._multiSelectMode
+              ? html`
+                  <ha-dropdown-item value="all">
+                    ${this.hass.localize(
+                      "ui.components.subpage-data-table.select_all"
+                    )}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item value="none">
+                    ${this.hass.localize(
+                      "ui.components.subpage-data-table.select_none"
+                    )}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>
+                  <ha-dropdown-item value="disable_select_mode">
+                    ${this.hass.localize(
+                      "ui.components.subpage-data-table.exit_selection_mode"
+                    )}
+                  </ha-dropdown-item>
+                `
+              : html`
+                  <ha-dropdown-item value="enable_select_mode">
+                    ${this.hass.localize(
+                      "ui.components.subpage-data-table.enter_selection_mode"
+                    )}
+                  </ha-dropdown-item>
+                `}
+          </ha-dropdown>
           <ha-icon-button
             .label=${this.hass.localize(
               "ui.panel.config.updates.check_updates"
@@ -254,6 +291,43 @@ class HaConfigSectionUpdates extends LitElement {
     }
   }
 
+  private _handleSelectDropdown(ev: HaDropdownSelectEvent): void {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "enable_select_mode":
+        ev.preventDefault();
+        this._toggleMultiSelectMode();
+        break;
+      case "disable_select_mode":
+        this._toggleMultiSelectMode();
+        break;
+      case "all":
+        this._selectAll();
+        break;
+      case "none":
+        this._selectNone();
+        break;
+    }
+  }
+
+  private _selectAll(): void {
+    const allEntities = [
+      ...this._filterInstallableUpdateEntities(
+        this.hass.states,
+        this._showSkipped
+      ),
+      ...this._filterNotInstallableUpdateEntities(
+        this.hass.states,
+        this._showSkipped
+      ),
+    ];
+    this._selectedEntities = new Set(allEntities.map((e) => e.entity_id));
+  }
+
+  private _selectNone(): void {
+    this._selectedEntities = new Set();
+  }
+
   private _handleSelectionChanged(ev: CustomEvent<{ entityId: string }>): void {
     const { entityId } = ev.detail;
     const updated = new Set(this._selectedEntities);
@@ -329,9 +403,6 @@ class HaConfigSectionUpdates extends LitElement {
     }
     li[divider] {
       border-bottom-color: var(--divider-color);
-    }
-    ha-icon-button.active {
-      color: var(--primary-color);
     }
     .fab-container ha-fab {
       --ha-fab-icon-display: none;
