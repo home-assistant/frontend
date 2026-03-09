@@ -98,6 +98,10 @@ export class HaChartBase extends LitElement {
 
   private _layoutTransitionActive = false;
 
+  private _zoomStart = 0;
+
+  private _zoomEnd = 100;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
@@ -243,6 +247,12 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
+      if (this._isZoomed) {
+        const yAxis = this._computeYAxisForZoom(this._zoomStart, this._zoomEnd);
+        if (yAxis) {
+          chartOptions.yAxis = yAxis;
+        }
+      }
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
@@ -578,7 +588,7 @@ export class HaChartBase extends LitElement {
       id: "dataZoom",
       type: "inside",
       orient: "horizontal",
-      filterMode: "filter",
+      filterMode: "none",
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
@@ -643,7 +653,7 @@ export class HaChartBase extends LitElement {
           dataZoom: {
             show: true,
             yAxisIndex: false,
-            filterMode: "filter",
+            filterMode: "none",
             showTitle: false,
           },
         },
@@ -1001,6 +1011,12 @@ export class HaChartBase extends LitElement {
 
     this._isZoomed = start !== 0 || end !== 100;
     this._zoomRatio = (end - start) / 100;
+    this._zoomStart = start;
+    this._zoomEnd = end;
+    const yAxis = this._computeYAxisForZoom(start, end);
+    if (yAxis) {
+      this._setChartOptions({ yAxis });
+    }
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
@@ -1008,6 +1024,83 @@ export class HaChartBase extends LitElement {
       });
     }
     fireEvent(this, "chart-zoom", { start, end });
+  }
+
+  private _computeYAxisForZoom(
+    start: number,
+    end: number
+  ): YAXisOption[] | undefined {
+    if (!this.chart || !this.data) return undefined;
+
+    const yAxisOptions = this.options?.yAxis;
+    if (!yAxisOptions) return undefined;
+
+    const yAxisArray = (
+      Array.isArray(yAxisOptions) ? yAxisOptions : [yAxisOptions]
+    ) as YAXisOption[];
+
+    // Reset to original when fully zoomed out
+    if (start === 0 && end === 100) {
+      return yAxisArray;
+    }
+
+    const option = this.chart.getOption() as any;
+    const xAxisOpt = option.xAxis?.[0] ?? option.xAxis;
+    if (xAxisOpt?.min == null || xAxisOpt?.max == null) return undefined;
+
+    const axisMin = new Date(xAxisOpt.min).getTime();
+    const axisMax = new Date(xAxisOpt.max).getTime();
+    const axisRange = axisMax - axisMin;
+    if (axisRange <= 0) return undefined;
+
+    const visibleXMin = axisMin + (start / 100) * axisRange;
+    const visibleXMax = axisMin + (end / 100) * axisRange;
+    const buffer = (visibleXMax - visibleXMin) * 0.02;
+
+    const yRanges: { min: number; max: number }[] = yAxisArray.map(() => ({
+      min: Infinity,
+      max: -Infinity,
+    }));
+
+    const datasets = ensureArray(this.data);
+    for (const series of datasets) {
+      if (this._hiddenDatasets.has(String(series.id ?? series.name))) continue;
+      if (!series.data) continue;
+
+      const yAxisIndex = (series as any).yAxisIndex ?? 0;
+      if (yAxisIndex >= yRanges.length) continue;
+
+      const range = yRanges[yAxisIndex];
+      for (const point of series.data as any[]) {
+        if (!Array.isArray(point)) continue;
+        const x =
+          typeof point[0] === "number"
+            ? point[0]
+            : new Date(point[0]).getTime();
+        if (x < visibleXMin - buffer || x > visibleXMax + buffer) continue;
+        const y = point[1];
+        if (typeof y === "number" && isFinite(y)) {
+          if (y < range.min) range.min = y;
+          if (y > range.max) range.max = y;
+        }
+      }
+    }
+
+    return yAxisArray.map((axis, i) => {
+      if (axis.type && axis.type !== "value") return axis;
+
+      const range = yRanges[i];
+      if (!isFinite(range.min) || !isFinite(range.max)) return axis;
+
+      const span = range.max - range.min;
+      const padding = Math.max(span * 0.05, Number.EPSILON);
+
+      return {
+        ...axis,
+        min: range.min - padding,
+        max: range.max + padding,
+      };
+    });
   }
 
   private _legendClick(ev: any) {
