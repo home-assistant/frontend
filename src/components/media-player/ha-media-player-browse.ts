@@ -1045,7 +1045,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           background-color: var(--card-background-color);
           position: sticky;
           top: 0;
-          z-index: 2;
           border-bottom: 1px solid var(--divider-color);
         }
 
