@@ -1,5 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { LitElement } from "lit";
+import { html, type LitElement } from "lit";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../common/util/promise-all-settled-results";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import type { CoverEntity } from "../../data/cover";
 import {
@@ -28,6 +32,7 @@ import {
   lightSupportsFavoriteColors,
 } from "../../data/light";
 import type { HomeAssistant } from "../../types";
+import { showAlertDialog } from "../generic/show-dialog-box";
 import { showFormDialog } from "../form/show-form-dialog";
 
 export interface FavoritesDialogContext {
@@ -76,6 +81,14 @@ const copyFavoriteOptionsToEntities = async (
   includeEntities: string[],
   options: object
 ) => {
+  const registryBackedEntities = includeEntities.filter(
+    (entityId) => entityId in hass.entities
+  );
+
+  if (registryBackedEntities.length === 0) {
+    return;
+  }
+
   const selected = await showFormDialog(host, {
     title: hass.localize(
       `ui.dialogs.more_info_control.${domain}.copy_favorites`
@@ -85,7 +98,7 @@ const copyFavoriteOptionsToEntities = async (
         name: "entity",
         selector: {
           entity: {
-            include_entities: includeEntities,
+            include_entities: registryBackedEntities,
             multiple: true,
           },
         },
@@ -104,7 +117,7 @@ const copyFavoriteOptionsToEntities = async (
   });
 
   if (selected?.entity) {
-    await Promise.all(
+    const result = await Promise.allSettled(
       selected.entity.map((entityId: string) =>
         updateEntityRegistryEntry(hass, entityId, {
           options_domain: domain,
@@ -112,6 +125,23 @@ const copyFavoriteOptionsToEntities = async (
         })
       )
     );
+
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+
+      showAlertDialog(host, {
+        title: hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map(
+              (item) => item.reason.message || item.reason.code || item.reason
+            )
+            .join("\r\n")}</pre
+        >`,
+      });
+    }
   }
 };
 
