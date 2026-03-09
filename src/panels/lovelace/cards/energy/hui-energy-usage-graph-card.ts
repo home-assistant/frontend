@@ -503,7 +503,7 @@ export class HuiEnergyUsageGraphCard
           order:
             type === "used_solar"
               ? 1
-              : type === "to_battery"
+              : type === "to_grid"
                 ? Object.keys(combinedData).length
                 : idx + 2,
           barMaxWidth: 50,
