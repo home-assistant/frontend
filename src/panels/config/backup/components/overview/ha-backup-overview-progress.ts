@@ -94,6 +94,13 @@ export class HaBackupOverviewProgress extends LitElement {
         return this.hass.localize(
           `ui.panel.config.backup.overview.progress.description.restore_backup.${this.manager.stage}`
         );
+      case "receive_backup":
+        if (!this.manager.stage) {
+          return "";
+        }
+        return this.hass.localize(
+          `ui.panel.config.backup.overview.progress.description.receive_backup.${this.manager.stage}`
+        );
 
       default:
         return "";
@@ -396,6 +403,11 @@ export class HaBackupOverviewProgress extends LitElement {
           }
           50% {
             opacity: 0.5;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .segment-bar.active {
+            animation: none;
           }
         }
         .agent-list-wrapper {
