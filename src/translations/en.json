@@ -3297,6 +3297,16 @@
                   "receive_file": "Receiving file",
                   "upload_to_agents": "Uploading to locations"
                 }
+              },
+              "segments": {
+                "home_assistant": "Home Assistant",
+                "apps": "Apps",
+                "media": "Media",
+                "upload": "Uploading backup"
+              },
+              "agent_status": {
+                "uploading": "Uploading...",
+                "uploaded": "Uploaded"
               }
             },
             "summary": {
@@ -3304,7 +3314,7 @@
               "next_automatic_backup": "Next automatic backup {day} at {time}",
               "today": "today",
               "tomorrow": "tomorrow",
-              "loading": "Loading backups...",
+              "loading": "Loading backups",
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
