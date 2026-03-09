@@ -20,7 +20,7 @@ type SummaryStatus =
   | "loading"
   | "none";
 
-const ICONS: Record<SummaryStatus, string> = {
+const ICONS: Partial<Record<SummaryStatus, string>> = {
   success: mdiCheck,
   error: mdiAlertCircleOutline,
   warning: mdiAlertOutline,
@@ -100,6 +100,7 @@ class HaBackupSummaryCard extends LitElement {
       justify-content: center;
       overflow: hidden;
       --icon-color: var(--primary-color);
+      animation: pop-in var(--ha-animation-duration-normal, 250ms) ease-out;
     }
     .icon.success {
       --icon-color: var(--success-color);
@@ -161,6 +162,16 @@ class HaBackupSummaryCard extends LitElement {
         width: 100%;
         display: flex;
         justify-content: flex-end;
+      }
+    }
+    @keyframes pop-in {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
       }
     }
   `;
