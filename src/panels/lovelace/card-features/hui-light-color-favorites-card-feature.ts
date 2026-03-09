@@ -73,7 +73,7 @@ class HuiLightColorFavoritesCardFeature
     this._resizeObserver?.disconnect();
   }
 
-  private async _unsubscribeEntityRegistry() {
+  private _unsubscribeEntityRegistry() {
     if (this._unsubEntityRegistry) {
       this._unsubEntityRegistry();
       this._unsubEntityRegistry = undefined;
@@ -105,7 +105,7 @@ class HuiLightColorFavoritesCardFeature
     this._maxVisible = Math.floor(w / pillMin);
   }
 
-  private async _attachObserver(): Promise<void> {
+  private _attachObserver(): void {
     if (!this._resizeObserver) {
       this._resizeObserver = new ResizeObserver(
         debounce(() => this._measure(), 250, false)
