@@ -93,6 +93,7 @@ const copyFavoriteOptionsToEntities = async (
     title: hass.localize(
       `ui.dialogs.more_info_control.${domain}.copy_favorites`
     ),
+    submitText: hass.localize("ui.common.copy"),
     schema: [
       {
         name: "entity",
