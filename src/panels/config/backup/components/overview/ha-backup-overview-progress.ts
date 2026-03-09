@@ -87,6 +87,7 @@ export class HaBackupOverviewProgress extends LitElement {
     switch (this.manager.manager_state) {
       case "create_backup":
         return "";
+
       case "restore_backup":
         if (!this.manager.stage) {
           return "";
@@ -94,6 +95,7 @@ export class HaBackupOverviewProgress extends LitElement {
         return this.hass.localize(
           `ui.panel.config.backup.overview.progress.description.restore_backup.${this.manager.stage}`
         );
+
       case "receive_backup":
         if (!this.manager.stage) {
           return "";
