@@ -80,19 +80,18 @@ class MoreInfoCover extends LitElement {
 
     const supportsTiltPosition = coverSupportsTiltPosition(this.stateObj);
 
-    const hasFavoritePositions =
+    const showFavoriteControls = Boolean(
       this.entry &&
-      hasFavoriteOptionValues(this.entry.options?.cover?.favorite_positions);
-
-    const hasFavoriteTiltPositions =
-      this.entry &&
-      hasFavoriteOptionValues(
-        this.entry.options?.cover?.favorite_tilt_positions
-      );
-
-    const hasFavorites =
-      (supportsPosition && hasFavoritePositions) ||
-      (supportsTiltPosition && hasFavoriteTiltPositions);
+      (this.editMode ||
+        (coverSupportsPosition(this.stateObj) &&
+          hasFavoriteOptionValues(
+            this.entry.options?.cover?.favorite_positions
+          )) ||
+        (coverSupportsTiltPosition(this.stateObj) &&
+          hasFavoriteOptionValues(
+            this.entry.options?.cover?.favorite_tilt_positions
+          )))
+    );
 
     const supportsOpenClose =
       supportsFeature(this.stateObj, CoverEntityFeature.OPEN) ||
@@ -193,9 +192,7 @@ class MoreInfoCover extends LitElement {
           }
         </div>
         ${
-          this.entry &&
-          coverSupportsAnyPosition(this.stateObj) &&
-          (this.editMode || hasFavorites)
+          showFavoriteControls
             ? html`
                 <ha-more-info-cover-favorite-positions
                   .hass=${this.hass}

@@ -103,9 +103,16 @@ export type FavoriteOptionValue = LightColor[] | number[];
 
 export const DOMAINS_WITH_FAVORITES: FavoritesDomain[] = ["light", "cover"];
 
+export const isFavoritesDomain = (domain: string): domain is FavoritesDomain =>
+  DOMAINS_WITH_FAVORITES.includes(domain as FavoritesDomain);
+
 export const hasFavoriteOptionValues = (
   values?: FavoriteOptionValue | null
 ): boolean => values == null || values.length > 0;
+
+export const hasCustomFavoriteOptionValues = (
+  values?: FavoriteOptionValue | null
+): boolean => values != null;
 
 export interface CoverEntityOptions {
   favorite_positions?: number[];

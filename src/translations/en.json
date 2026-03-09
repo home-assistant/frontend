@@ -1603,6 +1603,11 @@
         },
         "cover": {
           "edit_mode": "Edit favorites",
+          "reset_favorites": "Reset favorites",
+          "reset_favorites_text": "Do you want to reset all favorites for this cover back to default?",
+          "copy_favorites": "Copy favorites to...",
+          "copy_favorites_helper": "Select one or more covers to receive the copied favorites from this cover. Covers must support the same position controls.",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "switch_mode": {
             "button": "Switch to button mode",
             "position": "Switch to position mode"

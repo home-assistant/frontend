@@ -50,13 +50,22 @@ import "../../components/ha-related-items";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
+  FavoriteOption,
 } from "../../data/entity/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
+  hasCustomFavoriteOptionValues,
+  isFavoritesDomain,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
 import type { CoverEntity } from "../../data/cover";
-import { coverSupportsAnyPosition } from "../../data/cover";
+import {
+  DEFAULT_COVER_FAVORITE_POSITIONS,
+  coverSupportsAnyPosition,
+  coverSupportsPosition,
+  coverSupportsTiltPosition,
+  normalizeCoverFavoritePositions,
+} from "../../data/cover";
 import type { LightColor } from "../../data/light";
 import {
   computeDefaultFavoriteColors,
@@ -402,16 +411,55 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private async _resetFavorites() {
+    const entityId = this._entityId;
+    const stateObj =
+      entityId && (this.hass.states[entityId] as HassEntity | undefined);
+
+    if (!this._entry || !stateObj) {
+      return;
+    }
+
+    const domain = computeStateDomain(stateObj);
+    const supportedFavorites: FavoriteOption[] = [];
+
+    if (!isFavoritesDomain(domain)) {
+      return;
+    }
+
+    if (domain === "light") {
+      supportedFavorites.push("favorite_colors");
+    }
+
+    if (domain === "cover") {
+      if (coverSupportsPosition(stateObj as CoverEntity)) {
+        supportedFavorites.push("favorite_positions");
+      }
+
+      if (coverSupportsTiltPosition(stateObj as CoverEntity)) {
+        supportedFavorites.push("favorite_tilt_positions");
+      }
+    }
+
+    if (supportedFavorites.length === 0) {
+      return;
+    }
+
+    const options: Partial<Record<FavoriteOption, undefined>> = {};
+
+    for (const favorite of supportedFavorites) {
+      options[favorite] = undefined;
+    }
+
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.dialogs.more_info_control.light.reset_favorites"
+        title: this.hass.localize(
+          `ui.dialogs.more_info_control.${domain}.reset_favorites`
         ),
-        text: this.hass!.localize(
-          "ui.dialogs.more_info_control.light.reset_favorites_text"
+        text: this.hass.localize(
+          `ui.dialogs.more_info_control.${domain}.reset_favorites_text`
         ),
-        dismissText: this.hass!.localize("ui.common.cancel"),
-        confirmText: this.hass!.localize("ui.common.reset"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+        confirmText: this.hass.localize("ui.common.reset"),
         destructive: true,
       }))
     ) {
@@ -420,12 +468,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
     const result = await updateEntityRegistryEntry(
       this.hass,
-      this._entry!.entity_id,
+      this._entry.entity_id,
       {
-        options_domain: "light",
-        options: {
-          favorite_colors: undefined,
-        },
+        options_domain: domain,
+        options,
       }
     );
     this._entry = result.entity_entry;
@@ -444,9 +490,93 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const entityId = this._entityId;
     const stateObj =
       entityId && (this.hass.states[entityId] as HassEntity | undefined);
+
+    if (!this._entry || !stateObj) {
+      return;
+    }
+
+    if (computeStateDomain(stateObj) === "cover") {
+      const coverStateObj = stateObj as CoverEntity;
+
+      if (!coverSupportsAnyPosition(coverStateObj)) {
+        return;
+      }
+
+      const favoritePositions = coverSupportsPosition(coverStateObj)
+        ? normalizeCoverFavoritePositions(
+            this._entry.options?.cover?.favorite_positions ??
+              DEFAULT_COVER_FAVORITE_POSITIONS
+          )
+        : undefined;
+
+      const favoriteTiltPositions = coverSupportsTiltPosition(coverStateObj)
+        ? normalizeCoverFavoritePositions(
+            this._entry.options?.cover?.favorite_tilt_positions ??
+              DEFAULT_COVER_FAVORITE_POSITIONS
+          )
+        : undefined;
+
+      const compatibleCovers = Object.values(this.hass.states).filter((s) => {
+        if (s.entity_id === entityId || computeStateDomain(s) !== "cover") {
+          return false;
+        }
+
+        return (
+          (!coverSupportsPosition(coverStateObj) ||
+            coverSupportsPosition(s as CoverEntity)) &&
+          (!coverSupportsTiltPosition(coverStateObj) ||
+            coverSupportsTiltPosition(s as CoverEntity))
+        );
+      });
+
+      const selected = await showFormDialog(this, {
+        title: this.hass.localize(
+          "ui.dialogs.more_info_control.cover.copy_favorites"
+        ),
+        schema: [
+          {
+            name: "entity",
+            selector: {
+              entity: {
+                include_entities: compatibleCovers.map(
+                  (cover) => cover.entity_id
+                ),
+                multiple: true,
+              },
+            },
+            required: true,
+          },
+        ],
+        computeLabel: () =>
+          this.hass.localize(
+            "ui.dialogs.more_info_control.cover.copy_favorites_entities"
+          ),
+        computeHelper: () =>
+          this.hass.localize(
+            "ui.dialogs.more_info_control.cover.copy_favorites_helper"
+          ),
+        data: {},
+      });
+
+      selected?.entity.forEach((id) => {
+        updateEntityRegistryEntry(this.hass, id, {
+          options_domain: "cover",
+          options: {
+            ...(favoritePositions !== undefined
+              ? { favorite_positions: [...favoritePositions] }
+              : {}),
+            ...(favoriteTiltPositions !== undefined
+              ? { favorite_tilt_positions: [...favoriteTiltPositions] }
+              : {}),
+          },
+        });
+      });
+      return;
+    }
+
     let favorites: LightColor[] | undefined;
-    if (this._entry!.options?.light?.favorite_colors) {
-      favorites = this._entry!.options.light.favorite_colors;
+    if (this._entry.options?.light?.favorite_colors) {
+      favorites = this._entry.options.light.favorite_colors;
     } else if (stateObj) {
       favorites = computeDefaultFavoriteColors(stateObj);
     }
@@ -471,35 +601,30 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         )
     );
 
-    const schema = [
-      {
-        name: "entity",
-        selector: {
-          entity: {
-            include_entities: compatibleLights.map((l) => l.entity_id),
-            multiple: true,
-          },
-        },
-        required: true,
-      },
-    ];
-
-    const computeLabel = () =>
-      this.hass.localize(
-        "ui.dialogs.more_info_control.light.copy_favorites_entities"
-      );
-    const computeHelper = () =>
-      this.hass.localize(
-        "ui.dialogs.more_info_control.light.copy_favorites_helper"
-      );
-
     const selected = await showFormDialog(this, {
       title: this.hass.localize(
         "ui.dialogs.more_info_control.light.copy_favorites"
       ),
-      schema,
-      computeLabel,
-      computeHelper,
+      schema: [
+        {
+          name: "entity",
+          selector: {
+            entity: {
+              include_entities: compatibleLights.map((l) => l.entity_id),
+              multiple: true,
+            },
+          },
+          required: true,
+        },
+      ],
+      computeLabel: () =>
+        this.hass.localize(
+          "ui.dialogs.more_info_control.light.copy_favorites_entities"
+        ),
+      computeHelper: () =>
+        this.hass.localize(
+          "ui.dialogs.more_info_control.light.copy_favorites_helper"
+        ),
       data: {},
     });
 
@@ -587,6 +712,28 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       (v): v is string => Boolean(v)
     );
     const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
+
+    const supportsFavorites = Boolean(
+      this._entry &&
+      stateObj &&
+      ((domain === "light" && lightSupportsFavoriteColors(stateObj)) ||
+        (domain === "cover" &&
+          coverSupportsAnyPosition(stateObj as CoverEntity)))
+    );
+
+    const resetFavoritesDisabled =
+      this._entry && stateObj && domain === "light"
+        ? !hasCustomFavoriteOptionValues(
+            this._entry.options?.light?.favorite_colors
+          )
+        : this._entry && stateObj && domain === "cover"
+          ? !hasCustomFavoriteOptionValues(
+              this._entry.options?.cover?.favorite_positions
+            ) &&
+            !hasCustomFavoriteOptionValues(
+              this._entry.options?.cover?.favorite_tilt_positions
+            )
+          : false;
 
     const isRTL = computeRTL(this.hass);
 
@@ -704,12 +851,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                             </ha-dropdown-item>
                           `
                         : nothing}
-                      ${this._entry &&
-                      stateObj &&
-                      ((domain === "light" &&
-                        lightSupportsFavoriteColors(stateObj)) ||
-                        (domain === "cover" &&
-                          coverSupportsAnyPosition(stateObj as CoverEntity)))
+                      ${supportsFavorites
                         ? html`
                             <ha-dropdown-item value="toggle_edit">
                               <ha-svg-icon
@@ -723,27 +865,27 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                     "ui.dialogs.more_info_control.exit_edit_mode"
                                   )
                                 : this.hass.localize(
-                                    `ui.dialogs.more_info_control.${domain}.edit_mode`
+                                    domain === "light"
+                                      ? "ui.dialogs.more_info_control.light.edit_mode"
+                                      : "ui.dialogs.more_info_control.cover.edit_mode"
                                   )}
                             </ha-dropdown-item>
                           `
                         : nothing}
-                      ${this._entry &&
-                      stateObj &&
-                      domain === "light" &&
-                      lightSupportsFavoriteColors(stateObj)
+                      ${supportsFavorites
                         ? html`
                             <ha-dropdown-item
                               value="reset_favorites"
-                              .disabled=${!this._entry.options?.light
-                                ?.favorite_colors}
+                              .disabled=${resetFavoritesDisabled}
                             >
                               <ha-svg-icon
                                 slot="icon"
                                 .path=${mdiBackupRestore}
                               ></ha-svg-icon>
                               ${this.hass.localize(
-                                "ui.dialogs.more_info_control.light.reset_favorites"
+                                domain === "light"
+                                  ? "ui.dialogs.more_info_control.light.reset_favorites"
+                                  : "ui.dialogs.more_info_control.cover.reset_favorites"
                               )}
                             </ha-dropdown-item>
                             <ha-dropdown-item value="copy_favorites">
@@ -752,7 +894,9 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 .path=${mdiContentDuplicate}
                               ></ha-svg-icon>
                               ${this.hass.localize(
-                                "ui.dialogs.more_info_control.light.copy_favorites"
+                                domain === "light"
+                                  ? "ui.dialogs.more_info_control.light.copy_favorites"
+                                  : "ui.dialogs.more_info_control.cover.copy_favorites"
                               )}
                             </ha-dropdown-item>
                           `

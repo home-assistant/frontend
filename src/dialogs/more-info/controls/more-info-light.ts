@@ -113,9 +113,12 @@ class MoreInfoLight extends LitElement {
       LightEntityFeature.EFFECT
     );
 
-    const hasFavoriteColors =
+    const showFavoriteColors = Boolean(
       this.entry &&
-      hasFavoriteOptionValues(this.entry.options?.light?.favorite_colors);
+      (this.editMode ||
+        (lightSupportsFavoriteColors(this.stateObj) &&
+          hasFavoriteOptionValues(this.entry.options?.light?.favorite_colors)))
+    );
 
     return html`
       <ha-more-info-state-header
@@ -241,9 +244,7 @@ class MoreInfoLight extends LitElement {
                     `
                   : nothing}
               </ha-icon-button-group>
-              ${this.entry &&
-              lightSupportsFavoriteColors(this.stateObj) &&
-              (this.editMode || hasFavoriteColors)
+              ${showFavoriteColors
                 ? html`
                     <ha-more-info-light-favorite-colors
                       .hass=${this.hass}
