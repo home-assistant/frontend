@@ -50,30 +50,11 @@ import "../../components/ha-related-items";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-  FavoriteOption,
 } from "../../data/entity/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
-  hasCustomFavoriteOptionValues,
-  isFavoritesDomain,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import type { CoverEntity } from "../../data/cover";
-import {
-  DEFAULT_COVER_FAVORITE_POSITIONS,
-  coverSupportsAnyPosition,
-  coverSupportsPosition,
-  coverSupportsTiltPosition,
-  normalizeCoverFavoritePositions,
-} from "../../data/cover";
-import type { LightColor } from "../../data/light";
-import {
-  computeDefaultFavoriteColors,
-  LightColorMode,
-  lightSupportsColor,
-  lightSupportsColorMode,
-  lightSupportsFavoriteColors,
-} from "../../data/light";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
@@ -98,9 +79,9 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
+import type { FavoritesDialogContext } from "./favorites";
+import { getFavoritesDialogHandler } from "./favorites";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { showFormDialog } from "../form/show-form-dialog";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -377,6 +358,23 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     this._setView("related");
   }
 
+  private _getFavoritesContext(): FavoritesDialogContext | undefined {
+    const entityId = this._entityId;
+    const stateObj =
+      entityId && (this.hass.states[entityId] as HassEntity | undefined);
+
+    if (!this._entry || !stateObj) {
+      return undefined;
+    }
+
+    return {
+      host: this,
+      hass: this.hass,
+      entry: this._entry,
+      stateObj,
+    };
+  }
+
   private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     switch (action) {
@@ -411,53 +409,26 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private async _resetFavorites() {
-    const entityId = this._entityId;
-    const stateObj =
-      entityId && (this.hass.states[entityId] as HassEntity | undefined);
+    const favoritesContext = this._getFavoritesContext();
 
-    if (!this._entry || !stateObj) {
+    if (!favoritesContext) {
       return;
     }
 
-    const domain = computeStateDomain(stateObj);
-    const supportedFavorites: FavoriteOption[] = [];
+    const favoritesHandler = getFavoritesDialogHandler(
+      favoritesContext.stateObj
+    );
 
-    if (!isFavoritesDomain(domain)) {
+    if (!favoritesHandler) {
       return;
     }
 
-    if (domain === "light") {
-      supportedFavorites.push("favorite_colors");
-    }
-
-    if (domain === "cover") {
-      if (coverSupportsPosition(stateObj as CoverEntity)) {
-        supportedFavorites.push("favorite_positions");
-      }
-
-      if (coverSupportsTiltPosition(stateObj as CoverEntity)) {
-        supportedFavorites.push("favorite_tilt_positions");
-      }
-    }
-
-    if (supportedFavorites.length === 0) {
-      return;
-    }
-
-    const options: Partial<Record<FavoriteOption, undefined>> = {};
-
-    for (const favorite of supportedFavorites) {
-      options[favorite] = undefined;
-    }
+    const labels = favoritesHandler.getLabels(this.hass);
 
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize(
-          `ui.dialogs.more_info_control.${domain}.reset_favorites`
-        ),
-        text: this.hass.localize(
-          `ui.dialogs.more_info_control.${domain}.reset_favorites_text`
-        ),
+        title: labels.reset,
+        text: labels.resetText,
         dismissText: this.hass.localize("ui.common.cancel"),
         confirmText: this.hass.localize("ui.common.reset"),
         destructive: true,
@@ -468,10 +439,10 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
 
     const result = await updateEntityRegistryEntry(
       this.hass,
-      this._entry.entity_id,
+      favoritesContext.entry.entity_id,
       {
-        options_domain: domain,
-        options,
+        options_domain: favoritesHandler.domain,
+        options: favoritesHandler.getResetOptions(favoritesContext.stateObj),
       }
     );
     this._entry = result.entity_entry;
@@ -487,155 +458,21 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private async _copyFavorites() {
-    const entityId = this._entityId;
-    const stateObj =
-      entityId && (this.hass.states[entityId] as HassEntity | undefined);
+    const favoritesContext = this._getFavoritesContext();
 
-    if (!this._entry || !stateObj) {
+    if (!favoritesContext) {
       return;
     }
 
-    if (computeStateDomain(stateObj) === "cover") {
-      const coverStateObj = stateObj as CoverEntity;
-
-      if (!coverSupportsAnyPosition(coverStateObj)) {
-        return;
-      }
-
-      const favoritePositions = coverSupportsPosition(coverStateObj)
-        ? normalizeCoverFavoritePositions(
-            this._entry.options?.cover?.favorite_positions ??
-              DEFAULT_COVER_FAVORITE_POSITIONS
-          )
-        : undefined;
-
-      const favoriteTiltPositions = coverSupportsTiltPosition(coverStateObj)
-        ? normalizeCoverFavoritePositions(
-            this._entry.options?.cover?.favorite_tilt_positions ??
-              DEFAULT_COVER_FAVORITE_POSITIONS
-          )
-        : undefined;
-
-      const compatibleCovers = Object.values(this.hass.states).filter((s) => {
-        if (s.entity_id === entityId || computeStateDomain(s) !== "cover") {
-          return false;
-        }
-
-        return (
-          (!coverSupportsPosition(coverStateObj) ||
-            coverSupportsPosition(s as CoverEntity)) &&
-          (!coverSupportsTiltPosition(coverStateObj) ||
-            coverSupportsTiltPosition(s as CoverEntity))
-        );
-      });
-
-      const selected = await showFormDialog(this, {
-        title: this.hass.localize(
-          "ui.dialogs.more_info_control.cover.copy_favorites"
-        ),
-        schema: [
-          {
-            name: "entity",
-            selector: {
-              entity: {
-                include_entities: compatibleCovers.map(
-                  (cover) => cover.entity_id
-                ),
-                multiple: true,
-              },
-            },
-            required: true,
-          },
-        ],
-        computeLabel: () =>
-          this.hass.localize(
-            "ui.dialogs.more_info_control.cover.copy_favorites_entities"
-          ),
-        computeHelper: () =>
-          this.hass.localize(
-            "ui.dialogs.more_info_control.cover.copy_favorites_helper"
-          ),
-        data: {},
-      });
-
-      selected?.entity.forEach((id) => {
-        updateEntityRegistryEntry(this.hass, id, {
-          options_domain: "cover",
-          options: {
-            ...(favoritePositions !== undefined
-              ? { favorite_positions: [...favoritePositions] }
-              : {}),
-            ...(favoriteTiltPositions !== undefined
-              ? { favorite_tilt_positions: [...favoriteTiltPositions] }
-              : {}),
-          },
-        });
-      });
-      return;
-    }
-
-    let favorites: LightColor[] | undefined;
-    if (this._entry.options?.light?.favorite_colors) {
-      favorites = this._entry.options.light.favorite_colors;
-    } else if (stateObj) {
-      favorites = computeDefaultFavoriteColors(stateObj);
-    }
-    if (!favorites) return;
-
-    const favoriteTypes = [...new Set(favorites.map((o) => Object.keys(o)[0]))];
-
-    const compatibleLights = Object.values(this.hass.states).filter(
-      (s) =>
-        s.entity_id !== entityId &&
-        computeStateDomain(s) === "light" &&
-        favoriteTypes.every((type) =>
-          type === "color_temp_kelvin"
-            ? lightSupportsColorMode(s, LightColorMode.COLOR_TEMP)
-            : type === "hs_color" || type === "rgb_color"
-              ? lightSupportsColor(s)
-              : type === "rgbw_color"
-                ? lightSupportsColorMode(s, LightColorMode.RGBW)
-                : type === "rgbww_color"
-                  ? lightSupportsColorMode(s, LightColorMode.RGBWW)
-                  : false
-        )
+    const favoritesHandler = getFavoritesDialogHandler(
+      favoritesContext.stateObj
     );
 
-    const selected = await showFormDialog(this, {
-      title: this.hass.localize(
-        "ui.dialogs.more_info_control.light.copy_favorites"
-      ),
-      schema: [
-        {
-          name: "entity",
-          selector: {
-            entity: {
-              include_entities: compatibleLights.map((l) => l.entity_id),
-              multiple: true,
-            },
-          },
-          required: true,
-        },
-      ],
-      computeLabel: () =>
-        this.hass.localize(
-          "ui.dialogs.more_info_control.light.copy_favorites_entities"
-        ),
-      computeHelper: () =>
-        this.hass.localize(
-          "ui.dialogs.more_info_control.light.copy_favorites_helper"
-        ),
-      data: {},
-    });
+    if (!favoritesHandler) {
+      return;
+    }
 
-    selected?.entity.forEach((id) => {
-      updateEntityRegistryEntry(this.hass, id, {
-        options_domain: "light",
-        options: {
-          favorite_colors: favorites,
-        },
-      });
-    });
+    await favoritesHandler.copy(favoritesContext);
   }
 
   private _goToAddEntityTo(ev) {
@@ -713,27 +550,28 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     );
     const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
-    const supportsFavorites = Boolean(
-      this._entry &&
-      stateObj &&
-      ((domain === "light" && lightSupportsFavoriteColors(stateObj)) ||
-        (domain === "cover" &&
-          coverSupportsAnyPosition(stateObj as CoverEntity)))
-    );
+    const favoritesContext =
+      this._entry && stateObj
+        ? {
+            host: this,
+            hass: this.hass,
+            entry: this._entry,
+            stateObj,
+          }
+        : undefined;
+
+    const favoritesHandler = favoritesContext
+      ? getFavoritesDialogHandler(favoritesContext.stateObj)
+      : undefined;
+
+    const favoritesLabels = favoritesHandler?.getLabels(this.hass);
+
+    const supportsFavorites = Boolean(favoritesHandler && favoritesContext);
 
     const resetFavoritesDisabled =
-      this._entry && stateObj && domain === "light"
-        ? !hasCustomFavoriteOptionValues(
-            this._entry.options?.light?.favorite_colors
-          )
-        : this._entry && stateObj && domain === "cover"
-          ? !hasCustomFavoriteOptionValues(
-              this._entry.options?.cover?.favorite_positions
-            ) &&
-            !hasCustomFavoriteOptionValues(
-              this._entry.options?.cover?.favorite_tilt_positions
-            )
-          : false;
+      favoritesContext && favoritesHandler
+        ? !favoritesHandler.hasCustomFavorites(favoritesContext.entry)
+        : false;
 
     const isRTL = computeRTL(this.hass);
 
@@ -864,11 +702,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 ? this.hass.localize(
                                     "ui.dialogs.more_info_control.exit_edit_mode"
                                   )
-                                : this.hass.localize(
-                                    domain === "light"
-                                      ? "ui.dialogs.more_info_control.light.edit_mode"
-                                      : "ui.dialogs.more_info_control.cover.edit_mode"
-                                  )}
+                                : favoritesLabels?.editMode}
                             </ha-dropdown-item>
                           `
                         : nothing}
@@ -882,22 +716,14 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                                 slot="icon"
                                 .path=${mdiBackupRestore}
                               ></ha-svg-icon>
-                              ${this.hass.localize(
-                                domain === "light"
-                                  ? "ui.dialogs.more_info_control.light.reset_favorites"
-                                  : "ui.dialogs.more_info_control.cover.reset_favorites"
-                              )}
+                              ${favoritesLabels?.reset}
                             </ha-dropdown-item>
                             <ha-dropdown-item value="copy_favorites">
                               <ha-svg-icon
                                 slot="icon"
                                 .path=${mdiContentDuplicate}
                               ></ha-svg-icon>
-                              ${this.hass.localize(
-                                domain === "light"
-                                  ? "ui.dialogs.more_info_control.light.copy_favorites"
-                                  : "ui.dialogs.more_info_control.cover.copy_favorites"
-                              )}
+                              ${favoritesLabels?.copy}
                             </ha-dropdown-item>
                           `
                         : nothing}
