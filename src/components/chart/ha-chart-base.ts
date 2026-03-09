@@ -1059,6 +1059,13 @@ export class HaChartBase extends LitElement {
       const data = s.data as any[];
       if (!data?.length) continue;
 
+      // Track the nearest points just outside the visible range
+      // so line segments crossing the boundary are accounted for
+      let leftBoundaryX = -Infinity;
+      let leftBoundaryY: number | null = null;
+      let rightBoundaryX = Infinity;
+      let rightBoundaryY: number | null = null;
+
       for (const item of data) {
         const vals = Array.isArray(item) ? item : item?.value;
         if (!Array.isArray(vals)) continue;
@@ -1074,7 +1081,22 @@ export class HaChartBase extends LitElement {
         if (x >= startValue && x <= endValue) {
           yMin = Math.min(yMin, y);
           yMax = Math.max(yMax, y);
+        } else if (x < startValue && x > leftBoundaryX) {
+          leftBoundaryX = x;
+          leftBoundaryY = y;
+        } else if (x > endValue && x < rightBoundaryX) {
+          rightBoundaryX = x;
+          rightBoundaryY = y;
         }
+      }
+
+      if (leftBoundaryY != null) {
+        yMin = Math.min(yMin, leftBoundaryY);
+        yMax = Math.max(yMax, leftBoundaryY);
+      }
+      if (rightBoundaryY != null) {
+        yMin = Math.min(yMin, rightBoundaryY);
+        yMax = Math.max(yMax, rightBoundaryY);
       }
     }
 
