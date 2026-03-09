@@ -578,7 +578,7 @@ export class HaChartBase extends LitElement {
       id: "dataZoom",
       type: "inside",
       orient: "horizontal",
-      filterMode: "none",
+      filterMode: "filter",
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
@@ -643,7 +643,7 @@ export class HaChartBase extends LitElement {
           dataZoom: {
             show: true,
             yAxisIndex: false,
-            filterMode: "none",
+            filterMode: "filter",
             showTitle: false,
           },
         },
