@@ -21,6 +21,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { isNumericState } from "../../../common/number/format_number";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { stringCompare } from "../../../common/string/compare";
@@ -1832,9 +1833,7 @@ class DialogAddAutomationElement
       const stateObj = this.hass.states[entityId];
       if (
         NUMERIC_DOMAINS.includes(domain) ||
-        (stateObj &&
-          ("unit_of_measurement" in stateObj.attributes ||
-            "state_class" in stateObj.attributes))
+        (stateObj && isNumericState(stateObj))
       ) {
         items.push(
           this._convertToItem("numeric_state", {}, type, this.hass.localize)
