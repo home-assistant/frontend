@@ -98,6 +98,10 @@ export class HaChartBase extends LitElement {
 
   private _layoutTransitionActive = false;
 
+  private _zoomStart = 0;
+
+  private _zoomEnd = 100;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
@@ -578,7 +582,7 @@ export class HaChartBase extends LitElement {
       id: "dataZoom",
       type: "inside",
       orient: "horizontal",
-      filterMode: "filter",
+      filterMode: "none",
       xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
@@ -643,7 +647,7 @@ export class HaChartBase extends LitElement {
           dataZoom: {
             show: true,
             yAxisIndex: false,
-            filterMode: "filter",
+            filterMode: "none",
             showTitle: false,
           },
         },
@@ -1001,6 +1005,9 @@ export class HaChartBase extends LitElement {
 
     this._isZoomed = start !== 0 || end !== 100;
     this._zoomRatio = (end - start) / 100;
+    this._zoomStart = start;
+    this._zoomEnd = end;
+    this._updateYAxisBoundsForZoom();
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
@@ -1008,6 +1015,72 @@ export class HaChartBase extends LitElement {
       });
     }
     fireEvent(this, "chart-zoom", { start, end });
+  }
+
+  private _updateYAxisBoundsForZoom() {
+    if (!this.chart || !this.data) return;
+
+    if (!this._isZoomed) {
+      // Reset y-axis to original options
+      const origYAxis = this.options?.yAxis;
+      const origY = (Array.isArray(origYAxis) ? origYAxis[0] : origYAxis) as
+        | YAXisOption
+        | undefined;
+      this._setChartOptions({
+        yAxis: {
+          min: origY?.min,
+          max: origY?.max,
+        } as YAXisOption,
+      });
+      return;
+    }
+
+    // Get x-axis range from chart
+    const option = this.chart.getOption() as any;
+    const xAxisOpt = ensureArray(option.xAxis ?? [])[0] as
+      | XAXisOption
+      | undefined;
+    if (!xAxisOpt?.min || !xAxisOpt?.max) return;
+
+    const axisMin = new Date(xAxisOpt.min as any).getTime();
+    const axisMax = new Date(xAxisOpt.max as any).getTime();
+    const range = axisMax - axisMin;
+    if (range <= 0) return;
+
+    const startValue = axisMin + range * (this._zoomStart / 100);
+    const endValue = axisMin + range * (this._zoomEnd / 100);
+
+    // Find y bounds from visible data
+    let yMin = Infinity;
+    let yMax = -Infinity;
+
+    for (const s of ensureArray(this.data)) {
+      if (this._hiddenDatasets.has(String(s.id ?? s.name))) continue;
+      const data = s.data as any[];
+      if (!data?.length) continue;
+
+      for (const item of data) {
+        const vals = Array.isArray(item) ? item : item?.value;
+        if (!Array.isArray(vals)) continue;
+        const x = typeof vals[0] === "number" ? vals[0] : null;
+        const y = typeof vals[1] === "number" ? vals[1] : null;
+        if (x == null || y == null || !isFinite(y)) continue;
+        if (x >= startValue && x <= endValue) {
+          yMin = Math.min(yMin, y);
+          yMax = Math.max(yMax, y);
+        }
+      }
+    }
+
+    if (!isFinite(yMin) || !isFinite(yMax)) return;
+
+    // Add padding
+    const diff = yMax - yMin;
+    const padding = diff === 0 ? Math.abs(yMin) * 0.1 || 1 : diff * 0.05;
+
+    this._setChartOptions({
+      yAxis: { min: yMin - padding, max: yMax + padding },
+    });
   }
 
   private _legendClick(ev: any) {
