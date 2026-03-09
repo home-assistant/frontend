@@ -9523,7 +9523,6 @@
             "add": "Add feature",
             "edit": "Edit feature",
             "remove": "Remove feature",
-            "learn_more": "Learn more",
             "types": {
               "button": {
                 "label": "Button"

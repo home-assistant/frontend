@@ -2,7 +2,6 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-alert";
 import type { HomeAssistant } from "../../../../types";
-import { documentationUrl } from "../../../../util/documentation-url";
 import type {
   CoverTiltFavoriteCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -34,13 +33,6 @@ export class HuiCoverTiltFavoriteCardFeatureEditor
         ${this.hass.localize(
           "ui.panel.lovelace.editor.features.types.cover-tilt-favorite.description"
         )}
-        <a
-          href=${documentationUrl(this.hass, "/dashboards/features/")}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          ${this.hass.localize("ui.panel.lovelace.editor.features.learn_more")}
-        </a>
       </ha-alert>
     `;
   }
