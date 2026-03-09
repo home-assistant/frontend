@@ -85,10 +85,6 @@ const copyFavoriteOptionsToEntities = async (
     (entityId) => entityId in hass.entities
   );
 
-  if (registryBackedEntities.length === 0) {
-    return;
-  }
-
   const selected = await showFormDialog(host, {
     title: hass.localize(
       `ui.dialogs.more_info_control.${domain}.copy_favorites`
