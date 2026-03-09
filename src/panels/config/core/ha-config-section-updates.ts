@@ -1,5 +1,5 @@
 import {
-  mdiCheckboxMultipleOutline,
+  mdiFormatListChecks,
   mdiDotsVertical,
   mdiLocationEnter,
   mdiLocationExit,
@@ -91,7 +91,7 @@ class HaConfigSectionUpdates extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.updates.select_multiple"
             )}
-            .path=${mdiCheckboxMultipleOutline}
+            .path=${mdiFormatListChecks}
             class=${this._multiSelectMode ? "active" : ""}
             @click=${this._toggleMultiSelectMode}
           ></ha-icon-button>
