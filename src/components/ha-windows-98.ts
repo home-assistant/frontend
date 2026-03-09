@@ -20,7 +20,6 @@ const TIPS = [
   "You can automate your coffee machine, but you still have to drink it yourself.",
   "You can save energy by not having a home.",
   "Psst... you can drag me anywhere you want!",
-  "Right-click me if you need some alone time. I won't be offended!",
   "Did you know? I never sleep. Well, sometimes I do. Zzz...",
   "Zigbee, Z-Wave, Wi-Fi, Thread... so many protocols, so little time.",
   "The sun can trigger your automations. Nature is the best sensor.",
