@@ -10,8 +10,7 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../../components/ha-form/types";
-
-type TimeoutType = "string_template" | "object_template" | "duration";
+import type { TimeoutType } from "../../types";
 
 @customElement("ha-automation-action-wait_template")
 export class HaWaitAction extends LitElement implements ActionElement {

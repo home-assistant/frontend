@@ -769,11 +769,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
         alt=""
         crossorigin="anonymous"
         referrerpolicy="no-referrer"
-        src=${brandsUrl({
-          domain,
-          type: "icon",
-          darkOptimized: this.hass.themes?.darkMode,
-        })}
+        src=${brandsUrl(
+          {
+            domain,
+            type: "icon",
+            darkOptimized: this.hass.themes?.darkMode,
+          },
+          this.hass.auth.data.hassUrl
+        )}
       />
     `;
 

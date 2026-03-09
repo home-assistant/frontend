@@ -11,21 +11,30 @@ import {
 describe("Generate brands Url", () => {
   it("Generate logo brands url for cloud component", () => {
     assert.strictEqual(
-      brandsUrl({ domain: "cloud", type: "logo" }),
-      "/api/brands/integration/cloud/logo.png"
+      brandsUrl(
+        { domain: "cloud", type: "logo" },
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/integration/cloud/logo.png"
     );
   });
   it("Generate icon brands url for cloud component", () => {
     assert.strictEqual(
-      brandsUrl({ domain: "cloud", type: "icon" }),
-      "/api/brands/integration/cloud/icon.png"
+      brandsUrl(
+        { domain: "cloud", type: "icon" },
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/integration/cloud/icon.png"
     );
   });
 
   it("Generate dark theme optimized logo brands url for cloud component", () => {
     assert.strictEqual(
-      brandsUrl({ domain: "cloud", type: "logo", darkOptimized: true }),
-      "/api/brands/integration/cloud/dark_logo.png"
+      brandsUrl(
+        { domain: "cloud", type: "logo", darkOptimized: true },
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/integration/cloud/dark_logo.png"
     );
   });
 });
@@ -33,14 +42,20 @@ describe("Generate brands Url", () => {
 describe("addBrandsAuth", () => {
   it("Returns non-brands URLs unchanged", () => {
     assert.strictEqual(
-      addBrandsAuth("/api/camera_proxy/camera.foo?token=abc"),
+      addBrandsAuth(
+        "/api/camera_proxy/camera.foo?token=abc",
+        "http://homeassistant.local:8123"
+      ),
       "/api/camera_proxy/camera.foo?token=abc"
     );
   });
 
   it("Returns brands URL unchanged when no token is available", () => {
     assert.strictEqual(
-      addBrandsAuth("/api/brands/integration/demo/icon.png"),
+      addBrandsAuth(
+        "/api/brands/integration/demo/icon.png",
+        "http://homeassistant.local:8123"
+      ),
       "/api/brands/integration/demo/icon.png"
     );
   });
@@ -52,8 +67,11 @@ describe("addBrandsAuth", () => {
     await fetchBrandsAccessToken(mockHass);
 
     assert.strictEqual(
-      addBrandsAuth("/api/brands/integration/demo/icon.png"),
-      "/api/brands/integration/demo/icon.png?token=test-token-123"
+      addBrandsAuth(
+        "/api/brands/integration/demo/icon.png",
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/integration/demo/icon.png?token=test-token-123"
     );
   });
 
@@ -64,8 +82,11 @@ describe("addBrandsAuth", () => {
     await fetchBrandsAccessToken(mockHass);
 
     assert.strictEqual(
-      addBrandsAuth("/api/brands/integration/demo/icon.png?token=old-token"),
-      "/api/brands/integration/demo/icon.png?token=new-token"
+      addBrandsAuth(
+        "/api/brands/integration/demo/icon.png?token=old-token",
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/integration/demo/icon.png?token=new-token"
     );
   });
 });
@@ -90,8 +111,11 @@ describe("scheduleBrandsTokenRefresh", () => {
     await fetchBrandsAccessToken(mockHass);
     assert.strictEqual(callCount, 1);
     assert.strictEqual(
-      brandsUrl({ domain: "test", type: "icon" }),
-      "/api/brands/integration/test/icon.png?token=token-1"
+      brandsUrl(
+        { domain: "test", type: "icon" },
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/integration/test/icon.png?token=token-1"
     );
 
     scheduleBrandsTokenRefresh(mockHass);
@@ -100,8 +124,11 @@ describe("scheduleBrandsTokenRefresh", () => {
     await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
     assert.strictEqual(callCount, 2);
     assert.strictEqual(
-      brandsUrl({ domain: "test", type: "icon" }),
-      "/api/brands/integration/test/icon.png?token=token-2"
+      brandsUrl(
+        { domain: "test", type: "icon" },
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/integration/test/icon.png?token=token-2"
     );
   });
 

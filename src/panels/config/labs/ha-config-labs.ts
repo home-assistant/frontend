@@ -208,11 +208,14 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
           <div class="card-header">
             <img
               alt=""
-              src=${brandsUrl({
-                domain: preview_feature.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: preview_feature.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />

@@ -186,11 +186,14 @@ export class EnergyGridSettings extends LitElement {
                       alt=""
                       crossorigin="anonymous"
                       referrerpolicy="no-referrer"
-                      src=${brandsUrl({
-                        domain: "co2signal",
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      })}
+                      src=${brandsUrl(
+                        {
+                          domain: "co2signal",
+                          type: "icon",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
                     />
                     <span class="content">${this._co2ConfigEntry.title}</span>
                     <ha-icon-button

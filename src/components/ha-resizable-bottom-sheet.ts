@@ -214,8 +214,14 @@ export class HaResizableBottomSheet extends LitElement {
     }
     dialog {
       height: var(--height, auto);
-      max-height: var(--max-height, 70vh);
-      max-height: var(--max-height, 70dvh);
+      max-height: min(
+        var(--max-height, 70vh),
+        calc(100vh - var(--safe-area-inset-top))
+      );
+      max-height: min(
+        var(--max-height, 70dvh),
+        calc(100dvh - var(--safe-area-inset-top))
+      );
       min-height: var(--min-height, 30vh);
       min-height: var(--min-height, 30dvh);
       background-color: var(
