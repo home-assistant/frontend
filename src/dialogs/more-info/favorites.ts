@@ -103,12 +103,16 @@ const copyFavoriteOptionsToEntities = async (
     data: {},
   });
 
-  selected?.entity.forEach((entityId) => {
-    updateEntityRegistryEntry(hass, entityId, {
-      options_domain: domain,
-      options,
-    });
-  });
+  if (selected?.entity) {
+    await Promise.all(
+      selected.entity.map((entityId: string) =>
+        updateEntityRegistryEntry(hass, entityId, {
+          options_domain: domain,
+          options,
+        })
+      )
+    );
+  }
 };
 
 const coverFavoritesHandler: FavoritesDialogHandler = {
