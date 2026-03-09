@@ -441,8 +441,7 @@ export class HaBackupOverviewProgress extends LitElement {
         .agent-complete {
           color: var(--success-color);
           --mdc-icon-size: 24px;
-          animation: pop-in var(--ha-animation-duration-normal, 250ms)
-            ease-out;
+          animation: pop-in var(--ha-animation-duration-normal, 250ms) ease-out;
         }
         @keyframes pop-in {
           from {
