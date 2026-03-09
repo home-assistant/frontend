@@ -945,7 +945,9 @@ export class HaChartBase extends LitElement {
       }
     }
 
-    const replaceMerge = options.series ? ["series"] : [];
+    const replaceMerge: string[] = [];
+    if (options.series) replaceMerge.push("series");
+    if (options.yAxis) replaceMerge.push("yAxis");
     this.chart.setOption(options, { replaceMerge });
   }
 
@@ -1013,10 +1015,7 @@ export class HaChartBase extends LitElement {
     this._zoomRatio = (end - start) / 100;
     this._zoomStart = start;
     this._zoomEnd = end;
-    const yAxis = this._computeYAxisForZoom(start, end);
-    if (yAxis) {
-      this._setChartOptions({ yAxis });
-    }
+    this._rescaleYAxis(start, end);
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
@@ -1024,6 +1023,14 @@ export class HaChartBase extends LitElement {
       });
     }
     fireEvent(this, "chart-zoom", { start, end });
+  }
+
+  private _rescaleYAxis(start: number, end: number) {
+    if (!this.chart) return;
+    const yAxis = this._computeYAxisForZoom(start, end);
+    if (yAxis) {
+      this.chart.setOption({ yAxis }, { replaceMerge: ["yAxis"] });
+    }
   }
 
   private _computeYAxisForZoom(
