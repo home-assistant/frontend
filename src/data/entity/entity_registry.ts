@@ -106,7 +106,7 @@ export const DOMAINS_WITH_FAVORITES: FavoritesDomain[] = ["light", "cover"];
 export const isFavoritesDomain = (domain: string): domain is FavoritesDomain =>
   DOMAINS_WITH_FAVORITES.includes(domain as FavoritesDomain);
 
-export const hasFavoriteOptionValues = (
+export const shouldShowFavoriteOptions = (
   values?: FavoriteOptionValue | null
 ): boolean => values == null || values.length > 0;
 

@@ -6,7 +6,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import {
-  hasFavoriteOptionValues,
+  shouldShowFavoriteOptions,
   type ExtEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import type { CoverEntity } from "../../../data/cover";
@@ -84,11 +84,11 @@ class MoreInfoCover extends LitElement {
       this.entry &&
       (this.editMode ||
         (coverSupportsPosition(this.stateObj) &&
-          hasFavoriteOptionValues(
+          shouldShowFavoriteOptions(
             this.entry.options?.cover?.favorite_positions
           )) ||
         (coverSupportsTiltPosition(this.stateObj) &&
-          hasFavoriteOptionValues(
+          shouldShowFavoriteOptions(
             this.entry.options?.cover?.favorite_tilt_positions
           )))
     );
