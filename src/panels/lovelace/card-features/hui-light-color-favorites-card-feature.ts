@@ -80,13 +80,13 @@ class HuiLightColorFavoritesCardFeature
     }
   }
 
-  private async _subscribeEntityEntry() {
+  private _subscribeEntityEntry() {
     if (this.hass && this.context?.entity_id) {
       const id = this.context.entity_id;
       try {
         this._unsubEntityRegistry = subscribeEntityRegistry(
           this.hass!.connection,
-          async (entries) => {
+          (entries) => {
             const entry = entries.find((e) => e.entity_id === id);
             if (entry) {
               this._entry = entry;
@@ -119,10 +119,6 @@ class HuiLightColorFavoritesCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id] as LightEntity | undefined;
-  }
-
-  protected firstUpdated(): void {
-    this._attachObserver();
   }
 
   protected updated(changedProps: PropertyValues): void {
