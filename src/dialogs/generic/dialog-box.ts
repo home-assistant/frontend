@@ -198,7 +198,7 @@ class DialogBox extends LitElement {
 
   private _validateInput(): void {
     this._validInput = this._params?.prompt
-      ? (this._textField?.reportValidity() ?? true)
+      ? (this._textField?.checkValidity() ?? true)
       : true;
   }
 
