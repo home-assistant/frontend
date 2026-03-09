@@ -656,6 +656,41 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                         .path=${mdiDotsVertical}
                       ></ha-icon-button>
 
+                      ${supportsFavorites
+                        ? html`
+                            <ha-dropdown-item value="toggle_edit">
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${this._infoEditMode
+                                  ? mdiPencilOff
+                                  : mdiPencil}
+                              ></ha-svg-icon>
+                              ${this._infoEditMode
+                                ? this.hass.localize(
+                                    "ui.dialogs.more_info_control.exit_edit_mode"
+                                  )
+                                : favoritesLabels?.editMode}
+                            </ha-dropdown-item>
+                            <ha-dropdown-item
+                              value="reset_favorites"
+                              .disabled=${resetFavoritesDisabled}
+                            >
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiBackupRestore}
+                              ></ha-svg-icon>
+                              ${favoritesLabels?.reset}
+                            </ha-dropdown-item>
+                            <ha-dropdown-item value="copy_favorites">
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiContentDuplicate}
+                              ></ha-svg-icon>
+                              ${favoritesLabels?.copy}
+                            </ha-dropdown-item>
+                            <wa-divider></wa-divider>
+                          `
+                        : nothing}
                       ${deviceId
                         ? html`
                             <ha-dropdown-item value="device">
@@ -686,44 +721,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                               ${this.hass.localize(
                                 "ui.dialogs.more_info_control.edit"
                               )}
-                            </ha-dropdown-item>
-                          `
-                        : nothing}
-                      ${supportsFavorites
-                        ? html`
-                            <ha-dropdown-item value="toggle_edit">
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${this._infoEditMode
-                                  ? mdiPencilOff
-                                  : mdiPencil}
-                              ></ha-svg-icon>
-                              ${this._infoEditMode
-                                ? this.hass.localize(
-                                    "ui.dialogs.more_info_control.exit_edit_mode"
-                                  )
-                                : favoritesLabels?.editMode}
-                            </ha-dropdown-item>
-                          `
-                        : nothing}
-                      ${supportsFavorites
-                        ? html`
-                            <ha-dropdown-item
-                              value="reset_favorites"
-                              .disabled=${resetFavoritesDisabled}
-                            >
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiBackupRestore}
-                              ></ha-svg-icon>
-                              ${favoritesLabels?.reset}
-                            </ha-dropdown-item>
-                            <ha-dropdown-item value="copy_favorites">
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiContentDuplicate}
-                              ></ha-svg-icon>
-                              ${favoritesLabels?.copy}
                             </ha-dropdown-item>
                           `
                         : nothing}
