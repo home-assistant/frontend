@@ -640,11 +640,12 @@ export class StatisticsChart extends LitElement {
             ) {
               // Then push the current state at now
               statTypes.forEach((type, i) => {
-                const val: (number | null)[] = [];
                 if (type === "sum" || type === "change") {
-                  // Skip cumulative types - need special calculation
-                  val.push(null);
-                } else if (
+                  // Skip cumulative types - need special calculation.
+                  return;
+                }
+                const val: (number | null)[] = [];
+                if (
                   type === bandTop &&
                   this.chartType === "line" &&
                   drawBands &&
