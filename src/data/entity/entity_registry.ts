@@ -92,6 +92,21 @@ export interface LightEntityOptions {
   favorite_colors?: LightColor[];
 }
 
+export type FavoriteOption =
+  | "favorite_colors"
+  | "favorite_positions"
+  | "favorite_tilt_positions";
+
+export type FavoritesDomain = "light" | "cover";
+
+export type FavoriteOptionValue = LightColor[] | number[];
+
+export const DOMAINS_WITH_FAVORITES: FavoritesDomain[] = ["light", "cover"];
+
+export const hasFavoriteOptionValues = (
+  values?: FavoriteOptionValue | null
+): boolean => values == null || values.length > 0;
+
 export interface CoverEntityOptions {
   favorite_positions?: number[];
   favorite_tilt_positions?: number[];

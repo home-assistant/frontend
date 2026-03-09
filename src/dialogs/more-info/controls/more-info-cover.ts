@@ -5,7 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
-import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import {
+  hasFavoriteOptionValues,
+  type ExtEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import type { CoverEntity } from "../../../data/cover";
 import {
   CoverEntityFeature,
@@ -79,13 +82,13 @@ class MoreInfoCover extends LitElement {
 
     const hasFavoritePositions =
       this.entry &&
-      (this.entry.options?.cover?.favorite_positions == null ||
-        this.entry.options.cover.favorite_positions.length > 0);
+      hasFavoriteOptionValues(this.entry.options?.cover?.favorite_positions);
 
     const hasFavoriteTiltPositions =
       this.entry &&
-      (this.entry.options?.cover?.favorite_tilt_positions == null ||
-        this.entry.options.cover.favorite_tilt_positions.length > 0);
+      hasFavoriteOptionValues(
+        this.entry.options?.cover?.favorite_tilt_positions
+      );
 
     const hasFavorites =
       (supportsPosition && hasFavoritePositions) ||

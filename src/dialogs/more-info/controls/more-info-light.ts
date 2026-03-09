@@ -16,7 +16,10 @@ import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
-import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import {
+  hasFavoriteOptionValues,
+  type ExtEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import type { LightEntity } from "../../../data/light";
 import {
@@ -112,8 +115,7 @@ class MoreInfoLight extends LitElement {
 
     const hasFavoriteColors =
       this.entry &&
-      (this.entry.options?.light?.favorite_colors == null ||
-        this.entry.options.light.favorite_colors.length > 0);
+      hasFavoriteOptionValues(this.entry.options?.light?.favorite_colors);
 
     return html`
       <ha-more-info-state-header
