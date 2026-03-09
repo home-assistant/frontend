@@ -1062,7 +1062,13 @@ export class HaChartBase extends LitElement {
       for (const item of data) {
         const vals = Array.isArray(item) ? item : item?.value;
         if (!Array.isArray(vals)) continue;
-        const x = typeof vals[0] === "number" ? vals[0] : null;
+        const xRaw = vals[0];
+        const x =
+          xRaw instanceof Date
+            ? xRaw.getTime()
+            : typeof xRaw === "number"
+              ? xRaw
+              : null;
         const y = typeof vals[1] === "number" ? vals[1] : null;
         if (x == null || y == null || !isFinite(y)) continue;
         if (x >= startValue && x <= endValue) {
