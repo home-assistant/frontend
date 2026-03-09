@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheck, mdiHarddisk, mdiNas } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,7 +5,6 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
-import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
@@ -292,18 +290,11 @@ export class HaBackupOverviewProgress extends LitElement {
               return html`
                 <ha-md-list-item>
                   ${this._renderAgentIcon(agent.agent_id)}
-                  <div slot="headline" class="agent-headline">
-                    <span>${name}</span>
-                    <span class="progress-percentage">
-                      ${agentPercent}${blankBeforePercent(this.hass.locale)}%
-                    </span>
-                  </div>
-                  <div slot="supporting-text">
-                    <mwc-linear-progress
-                      .progress=${agentPercent / 100}
-                      buffer=""
-                    ></mwc-linear-progress>
-                  </div>
+                  <div slot="headline">${name}</div>
+                  <span slot="end" class="progress-percentage">
+                    ${agentPercent}%
+                  </span>
+                  <ha-spinner slot="end" size="tiny"></ha-spinner>
                 </ha-md-list-item>
               `;
             }
@@ -332,7 +323,7 @@ export class HaBackupOverviewProgress extends LitElement {
         .hass=${this.hass}
         .heading=${this._heading}
         .description=${this._description}
-        status="loading"
+        status="info"
       >
         ${hasProgressContent
           ? html`
@@ -392,9 +383,6 @@ export class HaBackupOverviewProgress extends LitElement {
             opacity: 0.5;
           }
         }
-        mwc-linear-progress {
-          width: 100%;
-        }
         .agent-list-wrapper {
           display: grid;
           grid-template-rows: 1fr;
@@ -419,7 +407,6 @@ export class HaBackupOverviewProgress extends LitElement {
         ha-md-list-item {
           --md-list-item-leading-space: 0;
           --md-list-item-trailing-space: 0;
-          --md-list-item-two-line-container-height: 64px;
         }
         ha-md-list-item img {
           width: 48px;
@@ -428,18 +415,9 @@ export class HaBackupOverviewProgress extends LitElement {
           --mdc-icon-size: 48px;
           color: var(--primary-text-color);
         }
-        ha-md-list-item [slot="headline"] {
-          margin-bottom: var(--ha-space-1);
-        }
-        .agent-headline {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
         .progress-percentage {
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
-          flex-shrink: 0;
         }
         ha-md-list-item [slot="supporting-text"] {
           display: flex;
@@ -448,6 +426,18 @@ export class HaBackupOverviewProgress extends LitElement {
         .agent-complete {
           color: var(--success-color);
           --mdc-icon-size: 24px;
+          animation: pop-in var(--ha-animation-duration-normal, 250ms)
+            ease-out;
+        }
+        @keyframes pop-in {
+          from {
+            transform: scale(0);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
         }
       `,
     ];
