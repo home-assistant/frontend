@@ -175,7 +175,6 @@ class DialogBox extends LitElement {
 
   private async _confirm(): Promise<void> {
     if (this._params?.prompt && !this._textField?.reportValidity()) {
-      this._validateInput();
       return;
     }
 
