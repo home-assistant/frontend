@@ -26,6 +26,8 @@ class DialogBox extends LitElement {
 
   @state() private _loading = false;
 
+  @state() private _validInput = true;
+
   @query("ha-textfield") private _textField?: HaTextField;
 
   private _closePromise?: Promise<void>;
@@ -37,7 +39,10 @@ class DialogBox extends LitElement {
       await this._closePromise;
     }
     this._params = params;
+    this._validInput = true;
     this._open = true;
+    await this.updateComplete;
+    this._validateInput();
   }
 
   public closeDialog(): boolean {
@@ -61,7 +66,6 @@ class DialogBox extends LitElement {
     }
 
     const confirmPrompt = this._params.confirmation || !!this._params.prompt;
-
     const dialogTitle =
       this._params.title ||
       (this._params.confirmation &&
@@ -118,6 +122,7 @@ class DialogBox extends LitElement {
                   .min=${this._params.inputMin}
                   .max=${this._params.inputMax}
                   .disabled=${this._loading}
+                  @input=${this._validateInput}
                 ></ha-textfield>
               `
             : ""}
@@ -142,6 +147,8 @@ class DialogBox extends LitElement {
             slot="primaryAction"
             @click=${this._confirm}
             ?autofocus=${!this._params.prompt && !this._params.destructive}
+            ?disabled=${this._loading ||
+            (!!this._params.prompt && !this._validInput)}
             .loading=${this._loading}
             variant=${this._params.destructive ? "danger" : "brand"}
           >
@@ -167,6 +174,11 @@ class DialogBox extends LitElement {
   }
 
   private async _confirm(): Promise<void> {
+    if (this._params?.prompt && !this._textField?.reportValidity()) {
+      this._validateInput();
+      return;
+    }
+
     if (this._params!.action) {
       this._loading = true;
       try {
@@ -182,6 +194,12 @@ class DialogBox extends LitElement {
       this._params!.confirm(this._textField?.value);
     }
     this._closeDialog();
+  }
+
+  private _validateInput(): void {
+    this._validInput = this._params?.prompt
+      ? (this._textField?.reportValidity() ?? true)
+      : true;
   }
 
   private _closeDialog() {
