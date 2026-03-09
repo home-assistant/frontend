@@ -28,6 +28,11 @@ declare global {
   }
 }
 
+const SORTABLE_OPTIONS = {
+  delay: 250,
+  delayOnTouchOnly: false,
+};
+
 @customElement("ha-more-info-favorites")
 export class HaMoreInfoFavorites extends LitElement {
   @property({ attribute: false }) public items: unknown[] = [];
@@ -95,6 +100,7 @@ export class HaMoreInfoFavorites extends LitElement {
         draggable-selector=".favorite"
         no-style
         .disabled=${!this.editMode}
+        .options=${SORTABLE_OPTIONS}
       >
         <div class="container">
           ${this.items.map(
