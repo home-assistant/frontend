@@ -193,11 +193,14 @@ export class DialogEnergySolarSettings
                         crossorigin="anonymous"
                         referrerpolicy="no-referrer"
                         style="height: 24px; margin-right: 16px; margin-inline-end: 16px; margin-inline-start: initial;"
-                        src=${brandsUrl({
-                          domain: entry.domain,
-                          type: "icon",
-                          darkOptimized: this.hass.themes?.darkMode,
-                        })}
+                        src=${brandsUrl(
+                          {
+                            domain: entry.domain,
+                            type: "icon",
+                            darkOptimized: this.hass.themes?.darkMode,
+                          },
+                          this.hass.auth.data.hassUrl
+                        )}
                       />${entry.title}
                     </div>`}
                   >

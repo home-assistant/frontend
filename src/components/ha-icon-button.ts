@@ -74,6 +74,7 @@ export class HaIconButton extends LitElement {
       );
       --wa-color-on-normal: currentColor;
       --wa-color-fill-quiet: transparent;
+      --ha-button-label-overflow: visible;
     }
     ha-button::after {
       content: "";

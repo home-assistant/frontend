@@ -55,11 +55,14 @@ export class AITaskPref extends LitElement {
         <h1 class="card-header">
           <img
             alt=""
-            src=${brandsUrl({
-              domain: "ai_task",
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
+            src=${brandsUrl(
+              {
+                domain: "ai_task",
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              },
+              this.hass.auth.data.hassUrl
+            )}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.ai_task.header")}

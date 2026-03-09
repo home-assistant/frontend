@@ -765,6 +765,19 @@ export class HaMediaPlayerBrowse extends LitElement {
       return "";
     }
 
+    if (isBrandUrl(thumbnailUrl)) {
+      // The backend is not aware of the theme used by the users,
+      // so we rewrite the URL to show a proper icon
+      return brandsUrl(
+        {
+          domain: extractDomainFromBrandUrl(thumbnailUrl),
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
+    }
+
     if (thumbnailUrl.startsWith("/")) {
       // Thumbnails served by local API require authentication
       return new Promise((resolve, reject) => {
@@ -784,16 +797,6 @@ export class HaMediaPlayerBrowse extends LitElement {
             reader.onerror = (e) => reject(e);
             reader.readAsDataURL(blob);
           });
-      });
-    }
-
-    if (isBrandUrl(thumbnailUrl)) {
-      // The backend is not aware of the theme used by the users,
-      // so we rewrite the URL to show a proper icon
-      thumbnailUrl = brandsUrl({
-        domain: extractDomainFromBrandUrl(thumbnailUrl),
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
       });
     }
 
