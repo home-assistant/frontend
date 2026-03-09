@@ -12,7 +12,13 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-spinner";
 
-type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
+type SummaryStatus =
+  | "success"
+  | "error"
+  | "info"
+  | "warning"
+  | "loading"
+  | "none";
 
 const ICONS: Record<SummaryStatus, string> = {
   success: mdiCheck,
@@ -42,11 +48,13 @@ class HaBackupSummaryCard extends LitElement {
         <div class="summary">
           ${this.status === "loading"
             ? html`<ha-spinner></ha-spinner>`
-            : html`
-                <div class="icon ${this.status}">
-                  <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
-                </div>
-              `}
+            : this.status === "none"
+              ? nothing
+              : html`
+                  <div class="icon ${this.status}">
+                    <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
+                  </div>
+                `}
 
           <div class="content">
             <p class="heading">${this.heading}</p>

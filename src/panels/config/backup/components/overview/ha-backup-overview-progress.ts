@@ -323,7 +323,7 @@ export class HaBackupOverviewProgress extends LitElement {
         .hass=${this.hass}
         .heading=${this._heading}
         .description=${this._description}
-        status="info"
+        status="none"
       >
         ${hasProgressContent
           ? html`
