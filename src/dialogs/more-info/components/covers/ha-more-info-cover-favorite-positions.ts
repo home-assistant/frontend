@@ -270,9 +270,12 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
   private _renderFavoriteButton =
     (kind: FavoriteKind): HaMoreInfoFavorites["renderItem"] =>
-    (favorite, _index, _editMode) => {
+    (favorite, _index, editMode) => {
       const currentValue = this._getCurrentValue(kind);
       const active = currentValue === favorite;
+      const label = this._localizeFavorite(kind, editMode ? "edit" : "set", {
+        value: `${favorite as number}%`,
+      });
 
       return html`
         <ha-control-button
@@ -284,6 +287,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
             width: "72px",
             height: "36px",
           })}
+          .label=${label}
           .disabled=${this.stateObj.state === UNAVAILABLE}
         >
           ${favorite as number}%

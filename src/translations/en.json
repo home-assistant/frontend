@@ -1613,8 +1613,8 @@
             "position": "Switch to position mode"
           },
           "favorite_position": {
-            "set": "Set favorite position {number}",
-            "edit": "Edit favorite position {number}",
+            "set": "Set position to {value}",
+            "edit": "Set position to {value}",
             "delete": "Delete favorite position {number}",
             "delete_confirm_title": "Delete favorite position?",
             "delete_confirm_text": "This favorite position will be permanently deleted.",
@@ -1624,8 +1624,8 @@
             "add_title": "Add favorite position"
           },
           "favorite_tilt_position": {
-            "set": "Set favorite tilt position {number}",
-            "edit": "Edit favorite tilt position {number}",
+            "set": "Set tilt position to {value}",
+            "edit": "Set tilt position to {value}",
             "delete": "Delete favorite tilt position {number}",
             "delete_confirm_title": "Delete favorite tilt position?",
             "delete_confirm_text": "This favorite tilt position will be permanently deleted.",

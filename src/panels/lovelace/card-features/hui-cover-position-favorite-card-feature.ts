@@ -257,6 +257,10 @@ class HuiCoverPositionFavoriteCardFeature
     const options = positions.map((position) => ({
       value: String(position),
       label: `${position}%`,
+      ariaLabel: this.hass!.localize(
+        "ui.dialogs.more_info_control.cover.favorite_position.set",
+        { value: `${position}%` }
+      ),
     }));
 
     const currentValue =
