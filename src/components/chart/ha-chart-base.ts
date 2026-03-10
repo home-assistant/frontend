@@ -962,6 +962,9 @@ export class HaChartBase extends LitElement {
     if (!this.chart) {
       return;
     }
+    if (this._isZoomed) {
+      this._restoreYAxis();
+    }
     const range = this._isZoomed
       ? [0, 100]
       : [
@@ -985,7 +988,15 @@ export class HaChartBase extends LitElement {
   }
 
   private _handleZoomReset() {
+    this._restoreYAxis();
     this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+  }
+
+  private _restoreYAxis() {
+    const origYAxis = this.options?.yAxis;
+    if (origYAxis) {
+      this._setChartOptions({ yAxis: origYAxis });
+    }
   }
 
   private _handleDataZoomEvent(e: any) {
@@ -1026,11 +1037,7 @@ export class HaChartBase extends LitElement {
     if (this._isZoomed) {
       this._updateYAxisBoundsForZoom();
     } else if (wasZoomed) {
-      // Restore original yAxis when zooming out
-      const origYAxis = this.options?.yAxis;
-      if (origYAxis) {
-        this._setChartOptions({ yAxis: origYAxis });
-      }
+      this._restoreYAxis();
     }
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
