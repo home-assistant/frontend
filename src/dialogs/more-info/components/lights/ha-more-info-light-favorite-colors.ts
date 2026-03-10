@@ -1,6 +1,7 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
@@ -154,7 +155,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     );
 
   private _handleFavoriteAction = (
-    ev: CustomEvent<{ action: string; index: number }>
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-action"]>
   ): void => {
     ev.stopPropagation();
 
@@ -174,25 +175,29 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   };
 
   private _handleFavoriteMoved = (
-    ev: CustomEvent<{ oldIndex: number; newIndex: number }>
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-moved"]>
   ): void => {
     ev.stopPropagation();
     this._move(ev.detail.oldIndex, ev.detail.newIndex);
   };
 
   private _handleFavoriteDelete = (
-    ev: CustomEvent<{ index: number }>
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-delete"]>
   ): void => {
     ev.stopPropagation();
     this._delete(ev.detail.index);
   };
 
-  private _handleFavoriteAdd = (ev: CustomEvent): void => {
+  private _handleFavoriteAdd = (
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-add"]>
+  ): void => {
     ev.stopPropagation();
     this._add();
   };
 
-  private _handleFavoriteDone = (ev: CustomEvent): void => {
+  private _handleFavoriteDone = (
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-done"]>
+  ): void => {
     ev.stopPropagation();
     fireEvent(this, "toggle-edit-mode", false);
   };

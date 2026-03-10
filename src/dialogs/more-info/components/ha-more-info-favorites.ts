@@ -4,6 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-sortable";
@@ -43,7 +44,7 @@ export class HaMoreInfoFavorites extends LitElement {
 
   @property({ attribute: false }) public doneLabel = "";
 
-  private _itemMoved(ev: CustomEvent): void {
+  private _itemMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>): void {
     ev.stopPropagation();
     fireEvent(this, "favorite-item-moved", ev.detail);
   }

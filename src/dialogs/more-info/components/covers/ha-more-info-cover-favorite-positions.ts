@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-control-button";
 import type { CoverEntity } from "../../../../data/cover";
@@ -303,7 +304,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       });
 
   private _handleFavoriteAction = (
-    ev: CustomEvent<{ action: string; index: number }>
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-action"]>
   ): void => {
     ev.stopPropagation();
     const kind = favoriteKindFromEvent(ev);
@@ -324,7 +325,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
   };
 
   private _handleFavoriteMoved = (
-    ev: CustomEvent<{ oldIndex: number; newIndex: number }>
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-moved"]>
   ): void => {
     ev.stopPropagation();
     const kind = favoriteKindFromEvent(ev);
@@ -332,20 +333,24 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
   };
 
   private _handleFavoriteDelete = (
-    ev: CustomEvent<{ index: number }>
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-delete"]>
   ): void => {
     ev.stopPropagation();
     const kind = favoriteKindFromEvent(ev);
     this._deleteFavorite(kind, ev.detail.index);
   };
 
-  private _handleFavoriteAdd = (ev: CustomEvent): void => {
+  private _handleFavoriteAdd = (
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-add"]>
+  ): void => {
     ev.stopPropagation();
     const kind = favoriteKindFromEvent(ev);
     this._addFavorite(kind);
   };
 
-  private _handleFavoriteDone = (ev: CustomEvent): void => {
+  private _handleFavoriteDone = (
+    ev: HASSDomEvent<HASSDomEvents["favorite-item-done"]>
+  ): void => {
     ev.stopPropagation();
     fireEvent(this, "toggle-edit-mode", false);
   };
