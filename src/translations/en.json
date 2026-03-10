@@ -9006,7 +9006,7 @@
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
               "icon": "Icon",
-              "color": "Color",
+              "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "icon_height": "Icon height",
               "image": "Image path",
               "maximum": "Maximum",
