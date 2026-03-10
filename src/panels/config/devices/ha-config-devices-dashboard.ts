@@ -121,7 +121,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  entities!: EntityRegistryEntry[];
+  entities: EntityRegistryEntry[] = [];
 
   @property({ attribute: false }) public manifests!: IntegrationManifest[];
 
