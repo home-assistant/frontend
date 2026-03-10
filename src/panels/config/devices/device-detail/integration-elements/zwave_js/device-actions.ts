@@ -4,7 +4,7 @@ import {
   mdiDelete,
   mdiDeleteForever,
   mdiHospitalBox,
-  mdiInformation,
+  mdiInformationOutline,
   mdiPlus,
   mdiUpload,
   mdiWrench,
@@ -60,7 +60,7 @@ export const getZwaveDeviceActions = async (
   if (provisioningEntry && !provisioningEntry.nodeId) {
     return [
       {
-        label: hass.localize("ui.panel.config.devices.delete_device"),
+        label: hass.localize("ui.common.remove"),
         classes: "warning",
         icon: mdiDelete,
         action: async () => {
@@ -128,14 +128,14 @@ export const getZwaveDeviceActions = async (
         label: hass.localize(
           "ui.panel.config.zwave_js.device_info.node_statistics"
         ),
-        icon: mdiInformation,
+        icon: mdiInformationOutline,
         action: () =>
           showZWaveJSNodeStatisticsDialog(el, {
             device,
           }),
       },
       {
-        label: hass.localize("ui.panel.config.devices.delete_device"),
+        label: hass.localize("ui.common.remove"),
         classes: "warning",
         icon: mdiDelete,
         action: () =>

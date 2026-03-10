@@ -2,6 +2,7 @@ import { ContextProvider } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   areasContext,
+  authContext,
   configContext,
   connectionContext,
   devicesContext,
@@ -100,6 +101,10 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       labels: new ContextProvider(this, {
         context: labelsContext,
         initialValue: [],
+      }),
+      auth: new ContextProvider(this, {
+        context: authContext,
+        initialValue: this.hass?.auth,
       }),
     };
 

@@ -46,7 +46,7 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
       }
       @media (prefers-reduced-motion: reduce) {
         .mdc-top-app-bar {
-          transition: none;
+          transition: 1ms;
         }
       }
       .mdc-top-app-bar__title {

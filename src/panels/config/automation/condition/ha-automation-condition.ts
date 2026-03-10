@@ -318,6 +318,7 @@ export default class HaAutomationCondition extends SubscribeMixin(LitElement) {
       };
       conditions = this.conditions.concat({
         ...elClass.defaultConfig,
+        ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
       });
     }
     this._focusLastConditionOnChange = true;

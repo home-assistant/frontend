@@ -17,7 +17,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-formfield";
-import "../../../components/ha-settings-row";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
@@ -180,16 +180,17 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     const anyExposed = uiExposed || manExposedAlexa || manExposedGoogle;
 
     return html`
-      <ha-settings-row>
-        <h3 slot="heading">
+      <ha-md-list-item>
+        <h3 slot="headline">
           ${this.hass.localize("ui.dialogs.voice-settings.expose_header")}
         </h3>
         <ha-switch
+          slot="end"
           @change=${this._toggleAll}
           .assistants=${uiAssistants}
           .checked=${anyExposed}
         ></ha-switch>
-      </ha-settings-row>
+      </ha-md-list-item>
       ${anyExposed
         ? showAssistants.map((key) => {
             const supported = !this._unsupported[key];
@@ -212,16 +213,16 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               this._googleEntity?.might_2fa;
 
             return html`
-              <ha-settings-row .threeLine=${!supported && manualConfig}>
+              <ha-md-list-item>
                 <voice-assistant-brand-icon
-                  slot="prefix"
+                  slot="start"
                   .voiceAssistantId=${key}
                   .hass=${this.hass}
                 >
                 </voice-assistant-brand-icon>
-                <span slot="heading">${voiceAssistants[key].name}</span>
+                <span slot="headline">${voiceAssistants[key].name}</span>
                 ${!supported
-                  ? html`<div slot="description" class="unsupported">
+                  ? html`<div slot="supporting-text" class="unsupported">
                       <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.dialogs.voice-settings.unsupported"
@@ -230,7 +231,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                   : nothing}
                 ${manualConfig
                   ? html`
-                      <div slot="description">
+                      <div slot="supporting-text">
                         ${this.hass.localize(
                           "ui.dialogs.voice-settings.manual_config"
                         )}
@@ -240,7 +241,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 ${support2fa
                   ? html`
                       <ha-formfield
-                        slot="description"
+                        slot="supporting-text"
                         .label=${this.hass.localize(
                           "ui.dialogs.voice-settings.ask_pin"
                         )}
@@ -253,12 +254,13 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                     `
                   : nothing}
                 <ha-switch
+                  slot="end"
                   .assistant=${key}
                   @change=${this._toggleAssistant}
                   .disabled=${manualConfig || (!exposed && !supported)}
                   .checked=${exposed}
                 ></ha-switch>
-              </ha-settings-row>
+              </ha-md-list-item>
             `;
           })
         : nothing}
@@ -373,11 +375,11 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           display: block;
           margin: 32px;
           margin-top: 0;
-          --settings-row-prefix-display: contents;
-          --settings-row-content-display: contents;
         }
-        ha-settings-row {
-          padding: 0;
+        ha-md-list-item {
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+          --md-item-overflow: visible;
         }
         img {
           height: 32px;

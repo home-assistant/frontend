@@ -61,6 +61,7 @@ class HaSegmentedBar extends LitElement {
                 : html`
                     <ha-tooltip for="segment-${index}" placement="top">
                       ${segment.label}
+                      (${((segment.value / totalValue) * 100).toFixed(1)}%)
                     </ha-tooltip>
                   `}
               <div

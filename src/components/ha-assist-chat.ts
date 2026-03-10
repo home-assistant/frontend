@@ -1,8 +1,9 @@
 import { mdiAlertCircle, mdiMicrophone, mdiSend } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { haStyleScrollbar } from "../resources/styles";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
   runAssistPipeline,
@@ -114,7 +115,7 @@ export class HaAssistChat extends LitElement {
     const supportsSTT = this.pipeline?.stt_engine && !this.disableSpeech;
 
     return html`
-      <div class="messages">
+      <div class="messages ha-scrollbar">
         ${controlHA
           ? nothing
           : html`
@@ -585,154 +586,167 @@ export class HaAssistChat extends LitElement {
     return progress;
   }
 
-  static styles = css`
-    :host {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    ha-alert {
-      margin-bottom: 8px;
-    }
-    ha-textfield {
-      display: block;
-    }
-    .messages {
-      flex: 1;
-      display: block;
-      box-sizing: border-box;
-      overflow-y: auto;
-      max-height: 100%;
-      display: flex;
-      flex-direction: column;
-      padding: 0 12px 16px;
-    }
-    .spacer {
-      flex: 1;
-    }
-    .message {
-      font-size: var(--ha-font-size-l);
-      clear: both;
-      max-width: -webkit-fill-available;
-      overflow-wrap: break-word;
-      scroll-margin-top: 24px;
-      margin: 8px 0;
-      padding: 8px;
-      border-radius: var(--ha-border-radius-xl);
-    }
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      .message {
-        font-size: var(--ha-font-size-l);
-      }
-    }
-    .message.user {
-      margin-left: 24px;
-      margin-inline-start: 24px;
-      margin-inline-end: initial;
-      align-self: flex-end;
-      border-bottom-right-radius: 0px;
-      --markdown-link-color: var(--text-primary-color);
-      background-color: var(--chat-background-color-user, var(--primary-color));
-      color: var(--text-primary-color);
-      direction: var(--direction);
-    }
-    .message.hass {
-      margin-right: 24px;
-      margin-inline-end: 24px;
-      margin-inline-start: initial;
-      align-self: flex-start;
-      border-bottom-left-radius: 0px;
-      background-color: var(
-        --chat-background-color-hass,
-        var(--secondary-background-color)
-      );
+  static get styles(): CSSResultGroup {
+    return [
+      haStyleScrollbar,
+      css`
+        :host {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+        ha-alert {
+          margin-bottom: var(--ha-space-2);
+        }
+        ha-textfield {
+          display: block;
+        }
+        .messages {
+          flex: 1 1 400px;
+          display: block;
+          box-sizing: border-box;
+          overflow-y: auto;
+          min-height: 0;
+          max-height: 100%;
+          display: flex;
+          flex-direction: column;
+          padding: 0 var(--ha-space-3) var(--ha-space-4);
+        }
+        .input {
+          padding: var(--ha-space-1) var(--ha-space-4) var(--ha-space-6);
+        }
+        .spacer {
+          flex: 1;
+        }
+        .message {
+          font-size: var(--ha-font-size-l);
+          clear: both;
+          max-width: -webkit-fill-available;
+          overflow-wrap: break-word;
+          scroll-margin-top: var(--ha-space-6);
+          margin: var(--ha-space-2) 0;
+          padding: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-xl);
+        }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          .message {
+            font-size: var(--ha-font-size-l);
+          }
+        }
+        .message.user {
+          margin-left: var(--ha-space-6);
+          margin-inline-start: var(--ha-space-6);
+          margin-inline-end: initial;
+          align-self: flex-end;
+          border-bottom-right-radius: 0px;
+          --markdown-link-color: var(--text-primary-color);
+          background-color: var(
+            --chat-background-color-user,
+            var(--primary-color)
+          );
+          color: var(--text-primary-color);
+          direction: var(--direction);
+        }
+        .message.hass {
+          margin-right: var(--ha-space-6);
+          margin-inline-end: var(--ha-space-6);
+          margin-inline-start: initial;
+          align-self: flex-start;
+          border-bottom-left-radius: 0px;
+          background-color: var(
+            --chat-background-color-hass,
+            var(--secondary-background-color)
+          );
 
-      color: var(--primary-text-color);
-      direction: var(--direction);
-    }
-    .message.error {
-      background-color: var(--error-color);
-      color: var(--text-primary-color);
-    }
-    ha-markdown {
-      --markdown-image-border-radius: calc(var(--ha-border-radius-xl) / 2);
-      --markdown-table-border-color: var(--divider-color);
-      --markdown-code-background-color: var(--primary-background-color);
-      --markdown-code-text-color: var(--primary-text-color);
-      --markdown-list-indent: 1.15em;
-      &:not(:has(ha-markdown-element)) {
-        min-height: 1lh;
-        min-width: 1lh;
-        flex-shrink: 0;
-      }
-    }
-    .bouncer {
-      width: 48px;
-      height: 48px;
-      position: absolute;
-    }
-    .double-bounce1,
-    .double-bounce2 {
-      width: 48px;
-      height: 48px;
-      border-radius: var(--ha-border-radius-circle);
-      background-color: var(--primary-color);
-      opacity: 0.2;
-      position: absolute;
-      top: 0;
-      left: 0;
-      -webkit-animation: sk-bounce 2s infinite ease-in-out;
-      animation: sk-bounce 2s infinite ease-in-out;
-    }
-    .double-bounce2 {
-      -webkit-animation-delay: -1s;
-      animation-delay: -1s;
-    }
-    @-webkit-keyframes sk-bounce {
-      0%,
-      100% {
-        -webkit-transform: scale(0);
-      }
-      50% {
-        -webkit-transform: scale(1);
-      }
-    }
-    @keyframes sk-bounce {
-      0%,
-      100% {
-        transform: scale(0);
-        -webkit-transform: scale(0);
-      }
-      50% {
-        transform: scale(1);
-        -webkit-transform: scale(1);
-      }
-    }
+          color: var(--primary-text-color);
+          direction: var(--direction);
+        }
+        .message.error {
+          background-color: var(--error-color);
+          color: var(--text-primary-color);
+        }
+        ha-markdown {
+          --markdown-image-border-radius: calc(var(--ha-border-radius-xl) / 2);
+          --markdown-table-border-color: var(--divider-color);
+          --markdown-code-background-color: var(--primary-background-color);
+          --markdown-code-text-color: var(--primary-text-color);
+          --markdown-list-indent: 1.15em;
+        }
+        ha-markdown:not(:has(ha-markdown-element)) {
+          min-height: 1lh;
+          min-width: 1lh;
+          flex-shrink: 0;
+        }
+        .bouncer {
+          width: 48px;
+          height: 48px;
+          position: absolute;
+        }
+        .double-bounce1,
+        .double-bounce2 {
+          width: 48px;
+          height: 48px;
+          border-radius: var(--ha-border-radius-circle);
+          background-color: var(--primary-color);
+          opacity: 0.2;
+          position: absolute;
+          top: 0;
+          left: 0;
+          -webkit-animation: sk-bounce 2s infinite ease-in-out;
+          animation: sk-bounce 2s infinite ease-in-out;
+        }
+        .double-bounce2 {
+          -webkit-animation-delay: -1s;
+          animation-delay: -1s;
+        }
+        @-webkit-keyframes sk-bounce {
+          0%,
+          100% {
+            -webkit-transform: scale(0);
+          }
+          50% {
+            -webkit-transform: scale(1);
+          }
+        }
+        @keyframes sk-bounce {
+          0%,
+          100% {
+            transform: scale(0);
+            -webkit-transform: scale(0);
+          }
+          50% {
+            transform: scale(1);
+            -webkit-transform: scale(1);
+          }
+        }
 
-    .listening-icon {
-      position: relative;
-      color: var(--secondary-text-color);
-      margin-right: -24px;
-      margin-inline-end: -24px;
-      margin-inline-start: initial;
-      direction: var(--direction);
-      transform: scaleX(var(--scale-direction));
-    }
+        .listening-icon {
+          position: relative;
+          color: var(--secondary-text-color);
+          margin-right: -24px;
+          margin-inline-end: -24px;
+          margin-inline-start: initial;
+          direction: var(--direction);
+          transform: scaleX(var(--scale-direction));
+        }
 
-    .listening-icon[active] {
-      color: var(--primary-color);
-    }
+        .listening-icon[active] {
+          color: var(--primary-color);
+        }
 
-    .unsupported {
-      color: var(--error-color);
-      position: absolute;
-      --mdc-icon-size: 16px;
-      right: 5px;
-      inset-inline-end: 5px;
-      inset-inline-start: initial;
-      top: 0px;
-    }
-  `;
+        .unsupported {
+          color: var(--error-color);
+          position: absolute;
+          --mdc-icon-size: 16px;
+          right: 5px;
+          inset-inline-end: 5px;
+          inset-inline-start: initial;
+          top: 0px;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {

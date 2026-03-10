@@ -376,11 +376,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <div class="logo-container">
                 <img
                   alt=${domainToName(this.hass.localize, this.domain)}
-                  src=${brandsUrl({
-                    domain: this.domain,
-                    type: "icon@2x",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  src=${brandsUrl(
+                    {
+                      domain: this.domain,
+                      type: "icon@2x",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   @load=${this._onImageLoad}

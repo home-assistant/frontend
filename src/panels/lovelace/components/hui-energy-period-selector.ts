@@ -2,6 +2,7 @@ import {
   mdiChevronLeft,
   mdiChevronRight,
   mdiDotsVertical,
+  mdiDownload,
   mdiCheckboxBlankOutline,
   mdiCheckboxOutline,
   mdiHomeClock,
@@ -53,7 +54,11 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../data/energy";
-import { CompareMode, getEnergyDataCollection } from "../../../data/energy";
+import {
+  CompareMode,
+  downloadEnergyData,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 
@@ -120,7 +125,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _measure() {
-    this.narrow = this.offsetWidth < 450;
+    this.narrow = this.offsetWidth < 425;
     this._collapseButtons = this.offsetWidth < 320;
   }
 
@@ -238,6 +243,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         ),
         action: () => this._toggleCompare(),
       },
+      {
+        path: mdiDownload,
+        alwaysCollapse: true,
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.download_data"
+        ),
+        action: () => downloadEnergyData(this.hass, this.collectionKey),
+      },
     ] as OverflowMenuItem[];
 
     return html`
@@ -349,7 +362,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                       !item.hidden
                         ? html`<ha-dropdown-item
                             ?disabled=${item.disabled}
-                            @click=${item.action}
+                            @click=${item.disabled ? undefined : item.action}
                           >
                             <ha-svg-icon
                               slot="icon"
@@ -676,6 +689,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       margin-inline-end: initial;
       flex-shrink: 0;
       --ha-button-theme-color: currentColor;
+    }
+    ha-ripple {
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .backdrop {
       position: fixed;

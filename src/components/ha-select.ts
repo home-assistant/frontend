@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-dropdown";
 import "./ha-dropdown-item";
+import "./ha-input-helper-text";
 import "./ha-picker-field";
 import type { HaPickerField } from "./ha-picker-field";
 import "./ha-svg-icon";
@@ -75,7 +76,7 @@ export class HaSelect extends LitElement {
 
   protected override render() {
     if (this.disabled) {
-      return this._renderField();
+      return html`${this._renderField()}${this._renderHelper()}`;
     }
 
     return html`
@@ -94,10 +95,8 @@ export class HaSelect extends LitElement {
                   .disabled=${typeof option === "string"
                     ? false
                     : (option.disabled ?? false)}
-                  class=${this.value ===
-                  (typeof option === "string" ? option : option.value)
-                    ? "selected"
-                    : ""}
+                  .selected=${this.value ===
+                  (typeof option === "string" ? option : option.value)}
                 >
                   ${option.iconPath
                     ? html`<ha-svg-icon
@@ -118,6 +117,7 @@ export class HaSelect extends LitElement {
             )
           : html`<slot></slot>`}
       </ha-dropdown>
+      ${this._renderHelper()}
     `;
   }
 
@@ -133,7 +133,6 @@ export class HaSelect extends LitElement {
         aria-label=${ifDefined(this.label)}
         @clear=${this._clearValue}
         .label=${this.label}
-        .helper=${this.helper}
         .value=${valueLabel}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -144,6 +143,14 @@ export class HaSelect extends LitElement {
       >
       </ha-picker-field>
     `;
+  }
+
+  private _renderHelper() {
+    return this.helper
+      ? html`<ha-input-helper-text .disabled=${this.disabled}
+          >${this.helper}</ha-input-helper-text
+        >`
+      : nothing;
   }
 
   private _handleSelect(ev: CustomEvent<{ item: { value: string } }>) {
@@ -182,10 +189,6 @@ export class HaSelect extends LitElement {
     ha-picker-field.opened {
       --mdc-text-field-idle-line-color: var(--primary-color);
     }
-    ha-dropdown-item.selected:hover {
-      background-color: var(--ha-color-fill-primary-quiet-hover);
-    }
-
     ha-dropdown-item .content {
       display: flex;
       gap: var(--ha-space-1);
@@ -201,12 +204,9 @@ export class HaSelect extends LitElement {
       min-width: var(--select-menu-width);
     }
 
-    :host ::slotted(ha-dropdown-item.selected),
-    ha-dropdown-item.selected {
-      font-weight: var(--ha-font-weight-medium);
-      color: var(--primary-color);
-      background-color: var(--ha-color-fill-primary-quiet-resting);
-      --icon-primary-color: var(--primary-color);
+    ha-input-helper-text {
+      display: block;
+      margin: var(--ha-space-2) 0 0;
     }
   `;
 }

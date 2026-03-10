@@ -14,6 +14,14 @@ export class HaIconButtonPrev extends LitElement {
 
   @property() public label?: string;
 
+  @property() href?: string;
+
+  @property() target?: "_blank" | "_parent" | "_self" | "_top";
+
+  @property() rel?: string;
+
+  @property() download?: string;
+
   @state() private _icon =
     mainWindow.document.dir === "rtl" ? mdiChevronRight : mdiChevronLeft;
 
@@ -23,6 +31,10 @@ export class HaIconButtonPrev extends LitElement {
         .disabled=${this.disabled}
         .label=${this.label || this.hass?.localize("ui.common.back") || "Back"}
         .path=${this._icon}
+        .href=${this.href}
+        .target=${this.target}
+        .rel=${this.rel}
+        .download=${this.download}
       ></ha-icon-button>
     `;
   }
