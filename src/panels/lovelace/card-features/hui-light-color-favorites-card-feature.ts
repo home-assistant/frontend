@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   computeDefaultFavoriteColors,
