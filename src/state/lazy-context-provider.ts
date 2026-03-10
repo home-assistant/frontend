@@ -82,7 +82,7 @@ export class LazyContextProvider<
    * Does not start subscribing -- that only happens when a consumer
    * requests the context.
    */
-  setConnection(connection: Connection): void {
+  public setConnection(connection: Connection): void {
     this._connection = connection;
 
     // If we were already subscribed (reconnection scenario), re-subscribe
@@ -100,7 +100,7 @@ export class LazyContextProvider<
   /**
    * Clean up the subscription and all internal state.
    */
-  unsubscribe(): void {
+  public unsubscribe(): void {
     this._clearTeardownTimer();
     if (this._unsubscribe) {
       this._unsubscribe();
