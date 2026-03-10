@@ -1,6 +1,7 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
 import type { IframeCardConfig } from "../../cards/types";
 
 export interface IframeViewStrategyConfig {
@@ -11,6 +12,14 @@ export interface IframeViewStrategyConfig {
 
 @customElement("iframe-view-strategy")
 export class IframeViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: IframeViewStrategyConfig,
+    _oldHass: HomeAssistant,
+    _newHass: HomeAssistant
+  ): boolean {
+    return false;
+  }
+
   static async generate(
     config: IframeViewStrategyConfig
   ): Promise<LovelaceViewConfig> {

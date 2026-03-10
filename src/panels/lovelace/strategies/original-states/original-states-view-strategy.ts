@@ -18,6 +18,19 @@ export interface OriginalStatesViewStrategyConfig {
 
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: OriginalStatesViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ): boolean {
+    return (
+      oldHass.entities !== newHass.entities ||
+      oldHass.devices !== newHass.devices ||
+      oldHass.areas !== newHass.areas ||
+      oldHass.floors !== newHass.floors
+    );
+  }
+
   static async generate(
     config: OriginalStatesViewStrategyConfig,
     hass: HomeAssistant

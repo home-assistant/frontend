@@ -274,8 +274,7 @@ export const checkStrategyShouldRegenerate = (
     oldHass.entities !== newHass.entities ||
     oldHass.devices !== newHass.devices ||
     oldHass.areas !== newHass.areas ||
-    oldHass.floors !== newHass.floors ||
-    oldHass.config.state !== newHass.config.state
+    oldHass.floors !== newHass.floors
   );
 };
 

@@ -34,6 +34,19 @@ const computeHeadingCard = (
 
 @customElement("area-view-strategy")
 export class AreaViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: AreaViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ): boolean {
+    return (
+      oldHass.areas !== newHass.areas ||
+      oldHass.floors !== newHass.floors ||
+      oldHass.entities !== newHass.entities ||
+      oldHass.devices !== newHass.devices
+    );
+  }
+
   static async generate(
     config: AreaViewStrategyConfig,
     hass: HomeAssistant

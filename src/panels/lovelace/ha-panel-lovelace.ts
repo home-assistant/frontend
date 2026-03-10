@@ -192,12 +192,13 @@ export class LovelacePanel extends LitElement {
     ) {
       if (
         this.hass.config.state === "RUNNING" &&
-        checkStrategyShouldRegenerate(
-          "dashboard",
-          this.lovelace.rawConfig.strategy,
-          oldHass,
-          this.hass
-        )
+        (oldHass.config.state !== "RUNNING" ||
+          checkStrategyShouldRegenerate(
+            "dashboard",
+            this.lovelace.rawConfig.strategy,
+            oldHass,
+            this.hass
+          ))
       ) {
         this._debounceRegenerateStrategy();
       }

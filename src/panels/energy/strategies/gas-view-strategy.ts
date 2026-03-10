@@ -9,6 +9,14 @@ import type { LovelaceSectionConfig } from "../../../data/lovelace/config/sectio
 
 @customElement("gas-view-strategy")
 export class GasViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: LovelaceStrategyConfig,
+    _oldHass: HomeAssistant,
+    _newHass: HomeAssistant
+  ): boolean {
+    return false;
+  }
+
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant

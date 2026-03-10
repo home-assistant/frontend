@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
-
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
@@ -189,12 +188,13 @@ export class HUIView extends ReactiveElement {
     if (oldHass && this.hass && this.lovelace && isStrategyView(viewConfig)) {
       if (
         this.hass.config.state === "RUNNING" &&
-        checkStrategyShouldRegenerate(
-          "view",
-          viewConfig.strategy,
-          oldHass,
-          this.hass
-        )
+        (oldHass.config.state !== "RUNNING" ||
+          checkStrategyShouldRegenerate(
+            "view",
+            viewConfig.strategy,
+            oldHass,
+            this.hass
+          ))
       ) {
         this._debounceRefreshConfig();
       }

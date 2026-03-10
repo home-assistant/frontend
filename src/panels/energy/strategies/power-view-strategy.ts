@@ -11,6 +11,14 @@ import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: LovelaceStrategyConfig,
+    _oldHass: HomeAssistant,
+    _newHass: HomeAssistant
+  ): boolean {
+    return false;
+  }
+
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant

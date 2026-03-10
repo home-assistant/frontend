@@ -125,6 +125,19 @@ const processUnassignedEntities = (
 
 @customElement("security-view-strategy")
 export class SecurityViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: SecurityViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ): boolean {
+    return (
+      oldHass.areas !== newHass.areas ||
+      oldHass.floors !== newHass.floors ||
+      oldHass.entities !== newHass.entities ||
+      oldHass.devices !== newHass.devices
+    );
+  }
+
   static async generate(
     _config: SecurityViewStrategyConfig,
     hass: HomeAssistant

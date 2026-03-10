@@ -167,6 +167,19 @@ const processUnassignedLights = (
 
 @customElement("light-view-strategy")
 export class LightViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: LightViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ): boolean {
+    return (
+      oldHass.areas !== newHass.areas ||
+      oldHass.floors !== newHass.floors ||
+      oldHass.entities !== newHass.entities ||
+      oldHass.devices !== newHass.devices
+    );
+  }
+
   static async generate(
     _config: LightViewStrategyConfig,
     hass: HomeAssistant

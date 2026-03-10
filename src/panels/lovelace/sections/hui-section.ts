@@ -121,12 +121,13 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       this.hass &&
       isStrategySection(this.config) &&
       this.hass.config.state === "RUNNING" &&
-      checkStrategyShouldRegenerate(
-        "section",
-        this.config.strategy,
-        oldHass,
-        this.hass
-      )
+      (oldHass.config.state !== "RUNNING" ||
+        checkStrategyShouldRegenerate(
+          "section",
+          this.config.strategy,
+          oldHass,
+          this.hass
+        ))
     ) {
       this._debounceRefreshConfig();
     }

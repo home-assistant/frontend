@@ -26,10 +26,7 @@ export class HomeDashboardStrategy extends ReactiveElement {
     oldHass: HomeAssistant,
     newHass: HomeAssistant
   ): boolean {
-    return (
-      oldHass.areas !== newHass.areas ||
-      oldHass.config.state !== newHass.config.state
-    );
+    return oldHass.areas !== newHass.areas;
   }
 
   static async generate(

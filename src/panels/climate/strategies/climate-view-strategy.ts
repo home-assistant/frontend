@@ -137,6 +137,19 @@ const processUnassignedEntities = (
 
 @customElement("climate-view-strategy")
 export class ClimateViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: ClimateViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ): boolean {
+    return (
+      oldHass.areas !== newHass.areas ||
+      oldHass.floors !== newHass.floors ||
+      oldHass.entities !== newHass.entities ||
+      oldHass.devices !== newHass.devices
+    );
+  }
+
   static async generate(
     _config: ClimateViewStrategyConfig,
     hass: HomeAssistant

@@ -32,6 +32,18 @@ export interface HomeAreaViewStrategyConfig {
 
 @customElement("home-area-view-strategy")
 export class HomeAreaViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: HomeAreaViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ): boolean {
+    return (
+      oldHass.areas !== newHass.areas ||
+      oldHass.entities !== newHass.entities ||
+      oldHass.devices !== newHass.devices
+    );
+  }
+
   static async generate(
     config: HomeAreaViewStrategyConfig,
     hass: HomeAssistant

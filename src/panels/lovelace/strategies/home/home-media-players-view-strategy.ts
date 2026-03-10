@@ -80,6 +80,14 @@ const processUnassignedEntities = (
 
 @customElement("home-media-players-view-strategy")
 export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
+  static shouldRegenerate(
+    _config: HomeMediaPlayersViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ): boolean {
+    return oldHass.areas !== newHass.areas || oldHass.floors !== newHass.floors;
+  }
+
   static async generate(
     _config: HomeMediaPlayersViewStrategyConfig,
     hass: HomeAssistant
