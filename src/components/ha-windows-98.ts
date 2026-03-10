@@ -23,6 +23,7 @@ const TIPS = [
   "Did you know? I never sleep. Well, sometimes I do. Zzz...",
   "Zigbee, Z-Wave, Wi-Fi, Thread... so many protocols, so little time.",
   "The sun can trigger your automations. Nature is the best sensor.",
+  "It looks like you're trying to automate your home! Would you like help?",
   "My previous job was a paperclip. I got promoted.",
   "I run entirely on YAML and good vibes.",
   "Somewhere, a smart plug is blinking and nobody knows why.",
