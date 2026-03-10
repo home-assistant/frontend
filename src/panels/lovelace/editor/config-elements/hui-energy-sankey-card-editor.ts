@@ -27,6 +27,7 @@ const cardConfigStruct = assign(
       literal("power-sankey"),
       literal("water-sankey"),
       literal("energy-sankey"),
+      literal("water-flow-sankey"),
     ]),
     title: optional(string()),
     collection_key: optional(string()),
