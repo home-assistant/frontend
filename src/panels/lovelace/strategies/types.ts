@@ -10,7 +10,8 @@ export type LovelaceStrategyRegistryKey =
   | "devices"
   | "areas"
   | "floors"
-  | "labels";
+  | "labels"
+  | "panels";
 
 export interface LovelaceStrategy<T = any> {
   generate(config: LovelaceStrategyConfig, hass: HomeAssistant): Promise<T>;
