@@ -103,6 +103,10 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
         context: floorsContext,
         initialValue: this.hass ? this.hass.floors : this._pendingHass.floors,
       }),
+      auth: new ContextProvider(this, {
+        context: authContext,
+        initialValue: this.hass?.auth,
+      }),
     };
 
     private __lazyContextProviders = {
@@ -127,10 +131,6 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
             { type: "config_entries/subscribe" }
           );
         },
-      }),
-      auth: new ContextProvider(this, {
-        context: authContext,
-        initialValue: this.hass?.auth,
       }),
     };
 
