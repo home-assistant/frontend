@@ -247,8 +247,18 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
+      if (this._isZoomed && !changedProps.has("options")) {
+        this._updateYAxisBoundsForZoom();
+      }
     }
     if (changedProps.has("options")) {
+      // Reset zoom state when options change (e.g. date picker)
+      if (this._isZoomed) {
+        this._isZoomed = false;
+        this._zoomStart = 0;
+        this._zoomEnd = 100;
+        this._zoomRatio = 1;
+      }
       chartOptions = { ...chartOptions, ...this._createOptions() };
       if (
         this._compareCustomLegendOptions(
