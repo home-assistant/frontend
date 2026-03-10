@@ -247,17 +247,20 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
-      if (this._isZoomed && !changedProps.has("options")) {
-        this._updateYAxisBoundsForZoom();
-      }
     }
     if (changedProps.has("options")) {
-      // Reset zoom state when options change (e.g. date picker)
+      // Reset zoom state when options change externally (e.g. date picker)
       if (this._isZoomed) {
         this._isZoomed = false;
         this._zoomStart = 0;
         this._zoomEnd = 100;
         this._zoomRatio = 1;
+        this.chart?.dispatchAction({
+          type: "dataZoom",
+          start: 0,
+          end: 100,
+          silent: true,
+        });
       }
       chartOptions = { ...chartOptions, ...this._createOptions() };
       if (
@@ -949,7 +952,9 @@ export class HaChartBase extends LitElement {
       }
     }
 
-    const replaceMerge = options.series ? ["series"] : [];
+    const replaceMerge: string[] = [];
+    if (options.series) replaceMerge.push("series");
+    if (options.yAxis) replaceMerge.push("yAxis");
     this.chart.setOption(options, { replaceMerge });
   }
 
@@ -1021,8 +1026,11 @@ export class HaChartBase extends LitElement {
     if (this._isZoomed) {
       this._updateYAxisBoundsForZoom();
     } else if (wasZoomed) {
-      // Restore original yAxis options when zooming out
-      this._setChartOptions(this._createOptions());
+      // Restore original yAxis when zooming out
+      const origYAxis = this.options?.yAxis;
+      if (origYAxis) {
+        this._setChartOptions({ yAxis: origYAxis });
+      }
     }
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
