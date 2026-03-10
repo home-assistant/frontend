@@ -76,7 +76,6 @@ export class CloudLogin extends LitElement {
           id="email"
           name="username"
           type="email"
-          hint="This should be a real email address, not an alias. If you used an alias to register, use the email address that the alias forwards to."
           autocomplete="username"
           required
           .value=${this.email ?? ""}
@@ -91,7 +90,6 @@ export class CloudLogin extends LitElement {
           type="password"
           password-toggle
           name="password"
-          hint="Use your nabu casa password, not your Home Assistant password. If you don't remember it, use the forgot password link below."
           .label=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.password`
           )}
