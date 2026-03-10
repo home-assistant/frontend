@@ -10,24 +10,6 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import { actionHandler } from "../../../panels/lovelace/common/directives/action-handler-directive";
 
-declare global {
-  interface HASSDomEvents {
-    "favorite-item-action": {
-      index: number;
-      action: string;
-    };
-    "favorite-item-delete": {
-      index: number;
-    };
-    "favorite-item-add";
-    "favorite-item-done";
-    "favorite-item-moved": {
-      oldIndex: number;
-      newIndex: number;
-    };
-  }
-}
-
 const SORTABLE_OPTIONS = {
   delay: 250,
   delayOnTouchOnly: true,
@@ -260,6 +242,22 @@ export class HaMoreInfoFavorites extends LitElement {
 }
 
 declare global {
+  interface HASSDomEvents {
+    "favorite-item-action": {
+      index: number;
+      action: string;
+    };
+    "favorite-item-delete": {
+      index: number;
+    };
+    "favorite-item-add";
+    "favorite-item-done";
+    "favorite-item-moved": {
+      oldIndex: number;
+      newIndex: number;
+    };
+  }
+
   interface HTMLElementTagNameMap {
     "ha-more-info-favorites": HaMoreInfoFavorites;
   }
