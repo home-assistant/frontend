@@ -152,7 +152,7 @@ export const haTheme = EditorView.theme({
       "var(--code-editor-background-color, var(--card-background-color))",
     border: "1px solid var(--divider-color)",
     borderRadius: "var(--mdc-shape-medium, 4px)",
-    maxWidth: "min(420px, calc(100vw - (2 * var(--ha-space-4, 16px))))",
+    maxWidth: "min(420px, calc(var(--safe-width) - (2 * var(--ha-space-4))))",
     boxSizing: "border-box",
     boxShadow:
       "0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)",
@@ -160,7 +160,7 @@ export const haTheme = EditorView.theme({
 
   ".cm-tooltip.cm-tooltip-autocomplete": {
     maxWidth:
-      "min(420px, calc(100vw - (2 * var(--ha-space-4, 16px))), calc(100% - var(--ha-space-2, 8px)))",
+      "min(420px, calc(var(--safe-width) - (2 * var(--ha-space-4))), calc(100% - var(--ha-space-2)))",
   },
 
   ".cm-tooltip-autocomplete > ul": {
