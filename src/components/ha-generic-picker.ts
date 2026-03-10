@@ -14,7 +14,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
-import { authContext, localizeContext } from "../data/context";
+import { authContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import { isIosApp } from "../util/is_ios";
@@ -112,10 +112,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
-
-  @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize?: ContextType<typeof localizeContext>;
 
   @state()
   @consume({ context: authContext, subscribe: true })
