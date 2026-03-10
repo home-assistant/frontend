@@ -8430,6 +8430,19 @@
                   "scroll": "Scroll",
                   "fixed": "Fixed"
                 }
+              },
+              "type_image": "Image",
+              "type_gradient": "Gradient",
+              "gradient": {
+                "base_color": "Base color",
+                "add_layer": "Add layer",
+                "remove_layer": "Remove layer",
+                "layer": "Layer {number}",
+                "color": "Color",
+                "opacity": "Opacity",
+                "size": "Size",
+                "randomize": "Randomize",
+                "layers_count": "{count}/{max} layers"
               }
             },
             "edit": "Edit view",

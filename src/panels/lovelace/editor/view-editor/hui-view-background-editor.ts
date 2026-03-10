@@ -3,16 +3,28 @@ import { LitElement, css, html, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { ToggleButton } from "../../../../types";
 
 import {
   isMediaSourceContentId,
   resolveMediaSource,
 } from "../../../../data/media_source";
+
+type BackgroundMode = "image" | "gradient";
+
+function _detectMode(config?: LovelaceViewConfig): BackgroundMode {
+  const bg = config?.background;
+  if (typeof bg === "string" && bg.includes("radial-gradient")) {
+    return "gradient";
+  }
+  return "image";
+}
 
 @customElement("hui-view-background-editor")
 export class HuiViewBackgroundEditor extends LitElement {
@@ -22,7 +34,12 @@ export class HuiViewBackgroundEditor extends LitElement {
 
   @state({ attribute: false }) private _resolvedImage?: string;
 
+  @state() private _mode: BackgroundMode = "image";
+
   set config(config: LovelaceViewConfig) {
+    if (!this._config) {
+      this._mode = _detectMode(config);
+    }
     this._config = config;
   }
 
@@ -125,6 +142,7 @@ export class HuiViewBackgroundEditor extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (
+      this._mode === "image" &&
       this._config &&
       this.hass &&
       (changedProps.has("_config") ||
@@ -151,11 +169,47 @@ export class HuiViewBackgroundEditor extends LitElement {
     }
   }
 
+  private _modeButtons = memoizeOne(
+    (localize: LocalizeFunc): ToggleButton[] => [
+      {
+        value: "image",
+        label: localize(
+          "ui.panel.lovelace.editor.edit_view.background.type_image"
+        ),
+      },
+      {
+        value: "gradient",
+        label: localize(
+          "ui.panel.lovelace.editor.edit_view.background.type_gradient"
+        ),
+      },
+    ]
+  );
+
   protected render() {
     if (!this.hass) {
       return nothing;
     }
 
+    return html`
+      <ha-button-toggle-group
+        full-width
+        .buttons=${this._modeButtons(this.hass.localize)}
+        .active=${this._mode}
+        @value-changed=${this._modeChanged}
+      ></ha-button-toggle-group>
+
+      ${this._mode === "gradient"
+        ? html`<hui-view-gradient-editor
+            .hass=${this.hass}
+            .config=${this._config}
+            @view-config-changed=${this._gradientConfigChanged}
+          ></hui-view-gradient-editor>`
+        : this._renderImageEditor()}
+    `;
+  }
+
+  private _renderImageEditor() {
     const background = this._backgroundData(this._config);
 
     return html`
@@ -218,6 +272,20 @@ export class HuiViewBackgroundEditor extends LitElement {
     }
   );
 
+  private _modeChanged(ev: CustomEvent): void {
+    this._mode = ev.detail.value as BackgroundMode;
+    if (this._mode === "gradient") {
+      import("./hui-view-gradient-editor");
+    }
+  }
+
+  private _gradientConfigChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (ev.detail?.config) {
+      fireEvent(this, "view-config-changed", { config: ev.detail.config });
+    }
+  }
+
   private _valueChanged(ev: CustomEvent): void {
     const config = {
       ...this._config,
@@ -265,6 +333,9 @@ export class HuiViewBackgroundEditor extends LitElement {
     :host {
       display: block;
       --file-upload-image-border-radius: var(--ha-border-radius-sm);
+    }
+    ha-button-toggle-group {
+      margin-bottom: 16px;
     }
     .previewContainer {
       width: 100%;
