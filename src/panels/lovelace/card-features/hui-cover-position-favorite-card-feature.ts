@@ -4,6 +4,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-select";
@@ -212,9 +213,9 @@ class HuiCoverPositionFavoriteCardFeature
   }
 
   private async _valueChanged(
-    ev: CustomEvent<{ value?: string; item?: { value: string } }>
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
   ) {
-    const value = ev.detail.value ?? ev.detail.item?.value;
+    const value = ev.detail.value;
     if (value == null) return;
 
     const position = Number(value);
