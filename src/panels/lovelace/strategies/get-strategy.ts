@@ -18,6 +18,7 @@ import type { AsyncReturnType, HomeAssistant } from "../../../types";
 import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
 import type {
   LovelaceDashboardStrategy,
+  LovelaceStrategyRegistryKey,
   LovelaceSectionStrategy,
   LovelaceStrategy,
   LovelaceViewStrategy,
@@ -25,6 +26,13 @@ import type {
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
 const CUSTOM_PREFIX = "custom:";
+
+const DEFAULT_REGISTRY_DEPENDENCIES: readonly LovelaceStrategyRegistryKey[] = [
+  "entities",
+  "devices",
+  "areas",
+  "floors",
+];
 
 const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
   dashboard: {
@@ -269,13 +277,9 @@ export const checkStrategyShouldRegenerate = (
     return strategy.shouldRegenerate(strategyConfig, oldHass, newHass);
   }
 
-  // Default: check common registries for strategies without shouldRegenerate
-  return (
-    oldHass.entities !== newHass.entities ||
-    oldHass.devices !== newHass.devices ||
-    oldHass.areas !== newHass.areas ||
-    oldHass.floors !== newHass.floors
-  );
+  const dependencies =
+    strategy?.registryDependencies ?? DEFAULT_REGISTRY_DEPENDENCIES;
+  return dependencies.some((key) => oldHass[key] !== newHass[key]);
 };
 
 /**

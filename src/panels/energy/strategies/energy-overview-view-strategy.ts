@@ -9,13 +9,7 @@ import { DEFAULT_ENERGY_COLLECTION_KEY } from "../ha-panel-energy";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
-  static shouldRegenerate(
-    _config: LovelaceStrategyConfig,
-    _oldHass: HomeAssistant,
-    _newHass: HomeAssistant
-  ): boolean {
-    return false;
-  }
+  static registryDependencies = [];
 
   static async generate(
     _config: LovelaceStrategyConfig,

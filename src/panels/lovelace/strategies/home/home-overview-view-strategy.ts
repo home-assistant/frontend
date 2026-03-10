@@ -72,19 +72,6 @@ const computeAreaCard = (
 
 @customElement("home-overview-view-strategy")
 export class HomeOverviewViewStrategy extends ReactiveElement {
-  static shouldRegenerate(
-    _config: HomeOverviewViewStrategyConfig,
-    oldHass: HomeAssistant,
-    newHass: HomeAssistant
-  ): boolean {
-    return (
-      oldHass.entities !== newHass.entities ||
-      oldHass.devices !== newHass.devices ||
-      oldHass.areas !== newHass.areas ||
-      oldHass.floors !== newHass.floors
-    );
-  }
-
   static async generate(
     config: HomeOverviewViewStrategyConfig,
     hass: HomeAssistant

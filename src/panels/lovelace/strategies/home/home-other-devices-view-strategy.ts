@@ -26,19 +26,6 @@ export interface HomeOtherDevicesViewStrategyConfig {
 
 @customElement("home-other-devices-view-strategy")
 export class HomeOtherDevicesViewStrategy extends ReactiveElement {
-  static shouldRegenerate(
-    _config: HomeOtherDevicesViewStrategyConfig,
-    oldHass: HomeAssistant,
-    newHass: HomeAssistant
-  ): boolean {
-    return (
-      oldHass.entities !== newHass.entities ||
-      oldHass.devices !== newHass.devices ||
-      oldHass.areas !== newHass.areas ||
-      oldHass.floors !== newHass.floors
-    );
-  }
-
   static async generate(
     config: HomeOtherDevicesViewStrategyConfig,
     hass: HomeAssistant

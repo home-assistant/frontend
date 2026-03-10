@@ -26,13 +26,7 @@ export interface CommonControlSectionStrategyConfig {
 
 @customElement("common-controls-section-strategy")
 export class CommonControlsSectionStrategy extends ReactiveElement {
-  static shouldRegenerate(
-    _config: CommonControlSectionStrategyConfig,
-    _oldHass: HomeAssistant,
-    _newHass: HomeAssistant
-  ): boolean {
-    return false;
-  }
+  static registryDependencies = [];
 
   static async generate(
     config: CommonControlSectionStrategyConfig,

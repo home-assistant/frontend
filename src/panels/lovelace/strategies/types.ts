@@ -5,6 +5,13 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceGenericElementEditor } from "../types";
 
+export type LovelaceStrategyRegistryKey =
+  | "entities"
+  | "devices"
+  | "areas"
+  | "floors"
+  | "labels";
+
 export interface LovelaceStrategy<T = any> {
   generate(config: LovelaceStrategyConfig, hass: HomeAssistant): Promise<T>;
   shouldRegenerate?(
@@ -12,6 +19,7 @@ export interface LovelaceStrategy<T = any> {
     oldHass: HomeAssistant,
     newHass: HomeAssistant
   ): boolean;
+  registryDependencies?: readonly LovelaceStrategyRegistryKey[];
   getConfigElement?: () => LovelaceStrategyEditor;
   noEditor?: boolean;
   configRequired?: boolean;

@@ -10,13 +10,7 @@ import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("water-view-strategy")
 export class WaterViewStrategy extends ReactiveElement {
-  static shouldRegenerate(
-    _config: LovelaceStrategyConfig,
-    _oldHass: HomeAssistant,
-    _newHass: HomeAssistant
-  ): boolean {
-    return false;
-  }
+  static registryDependencies = [];
 
   static async generate(
     _config: LovelaceStrategyConfig,

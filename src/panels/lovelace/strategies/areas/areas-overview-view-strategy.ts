@@ -38,19 +38,6 @@ export interface AreasViewStrategyConfig {
 
 @customElement("areas-overview-view-strategy")
 export class AreasOverviewViewStrategy extends ReactiveElement {
-  static shouldRegenerate(
-    _config: AreasViewStrategyConfig,
-    oldHass: HomeAssistant,
-    newHass: HomeAssistant
-  ): boolean {
-    return (
-      oldHass.areas !== newHass.areas ||
-      oldHass.floors !== newHass.floors ||
-      oldHass.entities !== newHass.entities ||
-      oldHass.devices !== newHass.devices
-    );
-  }
-
   static async generate(
     config: AreasViewStrategyConfig,
     hass: HomeAssistant

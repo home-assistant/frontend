@@ -1,7 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { HomeAssistant } from "../../../../types";
 import type { LovelaceStrategyEditor } from "../types";
 import type { IframeViewStrategyConfig } from "./iframe-view-strategy";
 
@@ -9,13 +8,7 @@ export type IframeDashboardStrategyConfig = IframeViewStrategyConfig;
 
 @customElement("iframe-dashboard-strategy")
 export class IframeDashboardStrategy extends ReactiveElement {
-  static shouldRegenerate(
-    _config: IframeDashboardStrategyConfig,
-    _oldHass: HomeAssistant,
-    _newHass: HomeAssistant
-  ): boolean {
-    return false;
-  }
+  static registryDependencies = [];
 
   static async generate(
     config: IframeDashboardStrategyConfig
