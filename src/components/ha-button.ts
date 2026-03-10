@@ -58,7 +58,8 @@ export class HaButton extends Button {
           font-size: var(--ha-font-size-m);
           line-height: 1;
 
-          transition: background-color 0.15s ease-in-out;
+          transition: background-color var(--ha-animation-duration-fast)
+            ease-out;
           text-wrap: wrap;
         }
 
@@ -245,7 +246,7 @@ export class HaButton extends Button {
         }
 
         .label {
-          overflow: hidden;
+          overflow: var(--ha-button-label-overflow, hidden);
           text-overflow: ellipsis;
           padding: var(--ha-space-1) 0;
         }

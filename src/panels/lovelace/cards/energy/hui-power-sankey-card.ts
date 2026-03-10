@@ -631,18 +631,21 @@ class HuiPowerSankeyCard
       });
 
     // Collect battery power (positive = discharge, negative = charge)
+    // Sum all battery values first, then determine net direction.
+    // Momentary power should only flow in one direction across all batteries.
+    let net_battery = 0;
     prefs.energy_sources
       .filter((source) => source.type === "battery")
       .forEach((source) => {
         if (source.type === "battery" && source.stat_rate) {
-          const value = this._getCurrentPower(source.stat_rate);
-          if (value > 0) {
-            from_battery += value;
-          } else if (value < 0) {
-            to_battery += Math.abs(value);
-          }
+          net_battery += this._getCurrentPower(source.stat_rate);
         }
       });
+    if (net_battery > 0) {
+      from_battery = net_battery;
+    } else if (net_battery < 0) {
+      to_battery = Math.abs(net_battery);
+    }
 
     // Calculate total consumption
     const used_total = from_grid + solar + from_battery - to_grid - to_battery;

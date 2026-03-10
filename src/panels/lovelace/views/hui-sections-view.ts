@@ -418,15 +418,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _toggleView() {
-    // The scroll container is the hui-view-container parent
-    const scrollContainer = this.closest("hui-view-container");
-    const scrollTop = scrollContainer?.scrollTop ?? 0;
-
     // Save current scroll position
     if (this._sidebarTabActive) {
-      this._sidebarScrollTop = scrollTop;
+      this._sidebarScrollTop = window.scrollY;
     } else {
-      this._contentScrollTop = scrollTop;
+      this._contentScrollTop = window.scrollY;
     }
 
     this._sidebarTabActive = !this._sidebarTabActive;
@@ -442,7 +438,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       const scrollY = this._sidebarTabActive
         ? this._sidebarScrollTop
         : this._contentScrollTop;
-      scrollContainer?.scrollTo(0, scrollY);
+      window.scrollTo(0, scrollY);
     });
   }
 
@@ -465,6 +461,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       --column-min-width: var(--ha-view-sections-column-min-width, 320px);
       --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
       display: block;
+      flex: 1;
     }
 
     @media (max-width: 600px) {
@@ -474,7 +471,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
 
     .wrapper {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100% - 2 * var(--row-gap));
       padding: var(--row-gap) var(--column-gap);
       box-sizing: content-box;
       margin: 0 auto;
@@ -507,6 +506,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       gap: var(--row-gap) var(--column-gap);
       padding: var(--row-gap) 0;
       align-items: flex-start;
+      flex: 1 0 auto;
     }
 
     .wrapper.has-sidebar .container {

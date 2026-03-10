@@ -12,6 +12,10 @@ export class HaAuthFormString extends HaFormString {
     return this;
   }
 
+  public reportValidity(): boolean {
+    return this.querySelector("ha-auth-textfield")?.reportValidity() ?? true;
+  }
+
   protected render(): TemplateResult {
     return html`
       <style>

@@ -74,11 +74,14 @@ class HaConfigRepairs extends LitElement {
                 slot="start"
                 alt=${domainName}
                 loading="lazy"
-                src=${brandsUrl({
-                  domain: issue.issue_domain || issue.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                })}
+                src=${brandsUrl(
+                  {
+                    domain: issue.issue_domain || issue.domain,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
                 .title=${domainName}
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"
@@ -143,8 +146,7 @@ class HaConfigRepairs extends LitElement {
       }
     } else if (
       issue.domain === "vacuum" &&
-      (issue.translation_key === "segments_changed" ||
-        issue.translation_key === "segments_mapping_not_configured")
+      issue.translation_key === "segments_changed"
     ) {
       const data = await fetchRepairsIssueData(
         this.hass.connection,

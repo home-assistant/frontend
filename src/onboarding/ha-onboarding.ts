@@ -226,7 +226,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     ) {
       import("../resources/particles");
     }
-    makeDialogManager(this, this.shadowRoot!);
+    makeDialogManager(this);
     import("../components/ha-language-picker");
   }
 

@@ -516,6 +516,14 @@ export class DemoHaAdaptiveDialog extends LitElement {
               <td>Dialog/sheet background color.</td>
             </tr>
             <tr>
+              <td><code>--ha-dialog-surface-backdrop-filter</code></td>
+              <td>Dialog/sheet surface backdrop filter.</td>
+            </tr>
+            <tr>
+              <td><code>--dialog-box-shadow</code></td>
+              <td>Dialog surface box shadow (dialog mode only).</td>
+            </tr>
+            <tr>
               <td><code>--ha-dialog-border-radius</code></td>
               <td>Border radius of the dialog surface (dialog mode only).</td>
             </tr>
@@ -526,6 +534,34 @@ export class DemoHaAdaptiveDialog extends LitElement {
             <tr>
               <td><code>--ha-dialog-hide-duration</code></td>
               <td>Hide animation duration (dialog mode only).</td>
+            </tr>
+            <tr>
+              <td><code>--ha-dialog-scrim-backdrop-filter</code></td>
+              <td>Dialog/sheet scrim backdrop filter.</td>
+            </tr>
+            <tr>
+              <td><code>--dialog-backdrop-filter</code></td>
+              <td>Dialog/sheet scrim backdrop filter (legacy fallback).</td>
+            </tr>
+            <tr>
+              <td><code>--mdc-dialog-scrim-color</code></td>
+              <td>Dialog/sheet scrim color (legacy compatibility).</td>
+            </tr>
+            <tr>
+              <td><code>--ha-bottom-sheet-surface-background</code></td>
+              <td>Bottom sheet background color (sheet mode only).</td>
+            </tr>
+            <tr>
+              <td><code>--ha-bottom-sheet-surface-backdrop-filter</code></td>
+              <td>Bottom sheet surface backdrop filter (sheet mode only).</td>
+            </tr>
+            <tr>
+              <td><code>--ha-bottom-sheet-scrim-backdrop-filter</code></td>
+              <td>Bottom sheet scrim backdrop filter (sheet mode only).</td>
+            </tr>
+            <tr>
+              <td><code>--ha-bottom-sheet-scrim-color</code></td>
+              <td>Bottom sheet scrim color (sheet mode only).</td>
             </tr>
           </tbody>
         </table>

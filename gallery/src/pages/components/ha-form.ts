@@ -12,34 +12,53 @@ import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
 
 const ENTITIES = [
-  getEntity("alarm_control_panel", "alarm", "disarmed", {
-    friendly_name: "Alarm",
-  }),
-  getEntity("media_player", "livingroom", "playing", {
-    friendly_name: "Livingroom",
-    media_content_type: "music",
-    device_class: "tv",
-  }),
-  getEntity("media_player", "lounge", "idle", {
-    friendly_name: "Lounge",
-    supported_features: 444983,
-    device_class: "speaker",
-  }),
-  getEntity("light", "bedroom", "on", {
-    friendly_name: "Bedroom",
-    effect: "colorloop",
-    effect_list: ["colorloop", "random"],
-  }),
-  getEntity("switch", "coffee", "off", {
-    friendly_name: "Coffee",
-    device_class: "switch",
-  }),
+  {
+    entity_id: "alarm_control_panel.alarm",
+    state: "disarmed",
+    attributes: {
+      friendly_name: "Alarm",
+    },
+  },
+  {
+    entity_id: "media_player.livingroom",
+    state: "playing",
+    attributes: {
+      friendly_name: "Livingroom",
+      media_content_type: "music",
+      device_class: "tv",
+    },
+  },
+  {
+    entity_id: "media_player.lounge",
+    state: "idle",
+    attributes: {
+      friendly_name: "Lounge",
+      supported_features: 444983,
+      device_class: "speaker",
+    },
+  },
+  {
+    entity_id: "light.bedroom",
+    state: "on",
+    attributes: {
+      friendly_name: "Bedroom",
+      effect: "colorloop",
+      effect_list: ["colorloop", "random"],
+    },
+  },
+  {
+    entity_id: "switch.coffee",
+    state: "off",
+    attributes: {
+      friendly_name: "Coffee",
+      device_class: "switch",
+    },
+  },
 ];
 
 const DEVICES: DeviceRegistryEntry[] = [

@@ -234,6 +234,7 @@ export default class HaAutomationTrigger extends SubscribeMixin(LitElement) {
       };
       triggers = this.triggers.concat({
         ...elClass.defaultConfig,
+        ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
       });
     }
     this._focusLastTriggerOnChange = true;

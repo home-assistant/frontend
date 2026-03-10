@@ -1524,6 +1524,7 @@
         "settings": "Settings",
         "edit": "Edit entity",
         "details": "Details",
+        "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
         "raw": "Raw",
         "back_to_info": "Back to info",
@@ -1611,6 +1612,11 @@
         },
         "light": {
           "edit_mode": "Edit favorite colors",
+          "reset_favorites": "Reset favorite colors",
+          "reset_favorites_text": "Do you want to reset all favorite colors for this light back to default?",
+          "copy_favorites": "Copy favorites to...",
+          "copy_favorites_helper": "Select one or more lights to receive the copied favorites from this light (must support same color modes).",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "toggle": "Toggle",
           "color": "Color",
           "color_temp": "Temperature",
@@ -2595,27 +2601,27 @@
             "missing_apps": "Looking for apps? Enable advanced mode.",
             "no_results_found": "No results found in {repository}"
           },
-          "dialog": {
-            "repositories": {
-              "title": "Manage app repositories",
-              "add": "Add",
-              "remove": "Remove",
-              "used": "In use by installed apps",
-              "no_repositories": "You don't have any app repositories configured"
-            },
-            "registries": {
-              "title_add": "Add registry",
-              "title_manage": "Manage registries",
-              "add_registry": "Add",
-              "add_new_registry": "Add new registry",
-              "username": "Username",
-              "remove": "Remove registry",
-              "no_registries": "You don't have any registries configured",
-              "failed_to_add": "Failed to add registry",
-              "failed_to_remove": "Failed to remove registry",
-              "registry": "Registry",
-              "password": "Password"
-            }
+          "repositories": {
+            "maintainer": "Maintainer",
+            "url": "URL",
+            "confirm_remove": "Are you sure you want to remove {name}?",
+            "add_title": "Add repository",
+            "add": "Add",
+            "remove": "Remove",
+            "used": "In use by installed apps",
+            "no_repositories": "You don't have any app repositories configured"
+          },
+          "registries": {
+            "add_title": "Add registry",
+            "add": "Add",
+            "username": "Username",
+            "remove": "Remove",
+            "confirm_remove": "Are you sure you want to remove {name}?",
+            "no_registries": "You don't have any registries configured",
+            "failed_to_add": "Failed to add registry",
+            "failed_to_remove": "Failed to remove registry",
+            "registry": "Registry",
+            "password": "Password"
           },
           "my": {
             "add_repository_title": "Add app repository?",
@@ -3291,6 +3297,16 @@
                   "receive_file": "Receiving file",
                   "upload_to_agents": "Uploading to locations"
                 }
+              },
+              "segments": {
+                "home_assistant": "Home Assistant",
+                "apps": "Apps",
+                "media": "Media",
+                "upload": "Uploading backup"
+              },
+              "agent_status": {
+                "uploading": "Uploading...",
+                "uploaded": "Uploaded"
               }
             },
             "summary": {
@@ -3298,7 +3314,7 @@
               "next_automatic_backup": "Next automatic backup {day} at {time}",
               "today": "today",
               "tomorrow": "tomorrow",
-              "loading": "Loading backups...",
+              "loading": "Loading backups",
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
@@ -5674,6 +5690,8 @@
             "override_title": "This blueprint already exists",
             "override_description": "Importing it will override the existing blueprint. If the updated blueprint is not compatible, it can break your automations. Automations will have to be adjusted manually.",
             "error_no_url": "Please enter the blueprint address.",
+            "source_warning_title": "Review this blueprint source",
+            "source_warning_description": "This blueprint is not imported from GitHub or an official Home Assistant website. Only continue if you trust this source.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint path"
           }
@@ -7420,9 +7438,9 @@
             }
           },
           "remove_node": {
-            "title": "Remove a Z-Wave device",
+            "title": "Remove device",
             "introduction": "There are two ways to remove a device from your Z-Wave network depending on the state of the device. If the device is working, you can remove it by following the instructions that came with your device to put it into exclusion mode. If the device is unavailable, you can force-remove it from the network.",
-            "exclusion_intro": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
+            "exclusion_intro": "Useful when a device is stuck in another network and must be excluded before it can be included again.",
             "failed_node_intro": "{name} is unable to connect to your Z-Wave network. Home Assistant can force-remove a device for you. After removing it you might need to factory reset your device.",
             "menu_exclude_device": "Remove a working device",
             "menu_remove_device": "Force-remove an unavailable device",
@@ -8088,7 +8106,9 @@
           },
           "light": {
             "lights": "Lights",
-            "other_lights": "Other lights"
+            "other_lights": "Other lights",
+            "on": "On",
+            "off": "Off"
           },
           "security": {
             "devices": "Devices",
@@ -8493,8 +8513,7 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
             "settings": {
-              "column_span": "Width",
-              "column_span_helper": "[%key:ui::panel::lovelace::editor::edit_section::settings::column_span_helper%]"
+              "max_width": "Max width"
             }
           },
           "edit_badges": {
@@ -9444,8 +9463,20 @@
               "cover-position": {
                 "label": "Cover position"
               },
+              "cover-position-preset": {
+                "label": "Cover position preset",
+                "position": "Position",
+                "add_position": "Add position",
+                "remove_position": "Remove position"
+              },
               "cover-tilt": {
                 "label": "Cover tilt"
+              },
+              "cover-tilt-preset": {
+                "label": "Cover tilt preset",
+                "position": "Position",
+                "add_position": "Add position",
+                "remove_position": "Remove position"
               },
               "cover-tilt-position": {
                 "label": "Cover tilt position"
@@ -10431,6 +10462,7 @@
         }
       },
       "energy": {
+        "error_loading_preferences": "An error occurred loading energy preferences: {error}",
         "title": {
           "overview": "Summary",
           "electricity": "Electricity",

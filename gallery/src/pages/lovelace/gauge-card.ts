@@ -1,23 +1,30 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  getEntity("sensor", "brightness", "12", {}),
-  getEntity("sensor", "brightness_medium", "53", {}),
-  getEntity("sensor", "brightness_high", "87", {}),
-  getEntity("plant", "bonsai", "ok", {}),
-  getEntity("sensor", "not_working", "unavailable", {}),
-  getEntity("sensor", "outside_humidity", "54", {
-    unit_of_measurement: "%",
-  }),
-  getEntity("sensor", "outside_temperature", "15.6", {
-    unit_of_measurement: "°C",
-  }),
+  { entity_id: "sensor.brightness", state: "12", attributes: {} },
+  { entity_id: "sensor.brightness_medium", state: "53", attributes: {} },
+  { entity_id: "sensor.brightness_high", state: "87", attributes: {} },
+  { entity_id: "plant.bonsai", state: "ok", attributes: {} },
+  { entity_id: "sensor.not_working", state: "unavailable", attributes: {} },
+  {
+    entity_id: "sensor.outside_humidity",
+    state: "54",
+    attributes: {
+      unit_of_measurement: "%",
+    },
+  },
+  {
+    entity_id: "sensor.outside_temperature",
+    state: "15.6",
+    attributes: {
+      unit_of_measurement: "°C",
+    },
+  },
 ];
 
 const CONFIGS = [
