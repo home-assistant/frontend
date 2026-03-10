@@ -85,7 +85,12 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
     oldHass: HomeAssistant,
     newHass: HomeAssistant
   ): boolean {
-    return oldHass.areas !== newHass.areas || oldHass.floors !== newHass.floors;
+    return (
+      oldHass.entities !== newHass.entities ||
+      oldHass.devices !== newHass.devices ||
+      oldHass.areas !== newHass.areas ||
+      oldHass.floors !== newHass.floors
+    );
   }
 
   static async generate(
