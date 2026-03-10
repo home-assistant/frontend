@@ -1,3 +1,4 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume } from "@lit/context";
 import { mdiPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -11,16 +12,15 @@ import {
   state,
 } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
+import { labelsContext } from "../data/context";
 import {
   getLabels,
   labelComboBoxKeys,
   type LabelComboBoxItem,
 } from "../data/label/label_picker";
-import { labelsContext } from "../data/context";
 import {
   createLabelRegistryEntry,
   type LabelRegistryEntry,
@@ -32,8 +32,8 @@ import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import {
-  type PickerComboBoxItem,
   DEFAULT_ROW_RENDERER_CONTENT,
+  type PickerComboBoxItem,
 } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 
@@ -220,7 +220,10 @@ export class HaLabelPicker extends LitElement {
         .searchKeys=${labelComboBoxKeys}
         @value-changed=${this._valueChanged}
       >
-        <slot .slot=${this._slotNodes?.length ? "field" : undefined}></slot>
+        <slot
+          @slotchange=${this._handleSlotChange}
+          .slot=${this._slotNodes?.length ? "field" : undefined}
+        ></slot>
       </ha-generic-picker>
     `;
   }
@@ -274,6 +277,10 @@ export class HaLabelPicker extends LitElement {
     this.hass.localize("ui.components.label-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
+
+  private _handleSlotChange() {
+    this.requestUpdate();
+  }
 }
 
 declare global {
