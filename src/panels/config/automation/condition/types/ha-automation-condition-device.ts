@@ -35,7 +35,7 @@ export class HaDeviceCondition extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origCondition?: DeviceCondition;
 
