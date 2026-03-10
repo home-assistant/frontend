@@ -5693,6 +5693,8 @@
             "override_title": "This blueprint already exists",
             "override_description": "Importing it will override the existing blueprint. If the updated blueprint is not compatible, it can break your automations. Automations will have to be adjusted manually.",
             "error_no_url": "Please enter the blueprint address.",
+            "source_warning_title": "Review this blueprint source",
+            "source_warning_description": "This blueprint is not imported from GitHub or an official Home Assistant website. Only continue if you trust this source.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint path"
           }
