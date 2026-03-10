@@ -1102,8 +1102,8 @@ export class HaScriptEditor extends SubscribeMixin(
 
         .alert-wrapper {
           position: sticky;
-          top: -24px;
-          margin-top: -24px;
+          top: 0;
+          margin-top: 0;
           margin-bottom: 8px;
           z-index: 1;
           width: 100%;
