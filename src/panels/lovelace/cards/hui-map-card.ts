@@ -37,6 +37,10 @@ import {
 import { processConfigEntities } from "../common/process-config-entities";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { MapCardConfig, MapEntityConfig } from "./types";
+import {
+  addEntityToCondition,
+  checkConditionsMet,
+} from "../common/validate-condition";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
@@ -67,6 +71,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @state() private _mapEntities: HaMapEntity[] = [];
 
+  private _filteredMapEntities: HaMapEntity[] = [];
+
   private _colorDict: Record<string, string> = {};
 
   private _colorIndex = 0;
@@ -94,7 +100,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       }
     });
 
-    return locationEntities.filter((entity) => !personSources.has(entity));
+    return locationEntities.filter(
+      (entityId) =>
+        !hass.entities?.[entityId]?.hidden && !personSources.has(entityId)
+    );
   }
 
   public setConfig(config: MapCardConfig): void {
@@ -173,6 +182,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return { type: "map", entities: foundEntities, theme_mode: "auto" };
   }
 
+  protected firstUpdated() {
+    this._mapEntities = this._getMapEntities();
+  }
+
   protected render() {
     if (!this._config) {
       return nothing;
@@ -199,7 +212,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         <div id="root">
           <ha-map
             .hass=${this.hass}
-            .entities=${this._mapEntities}
+            .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
@@ -210,7 +223,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             render-passive
           ></ha-map>
           <div id="buttons">
-            ${this._mapEntities.length > 1
+            ${this._filteredMapEntities.length > 1
               ? html`
                   <ha-icon-button
                     .label=${this.hass!.localize(
@@ -293,6 +306,19 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       )
     ) {
       this._mapEntities = this._getMapEntities();
+    }
+
+    // Filter entities by conditions
+    if (this._config?.conditions && this._mapEntities) {
+      const conditions = this._config.conditions;
+      this._filteredMapEntities = this._mapEntities.filter((entity) => {
+        const conditionWithEntity = conditions.map((condition) =>
+          addEntityToCondition(condition, entity.entity_id)
+        );
+        return checkConditionsMet(conditionWithEntity, this.hass!);
+      });
+    } else {
+      this._filteredMapEntities = this._mapEntities;
     }
   }
 
@@ -394,7 +420,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (color) {
       return color;
     }
-    color = getColorByIndex(this._colorIndex);
+    const computedStyles = getComputedStyle(this);
+    color = getColorByIndex(this._colorIndex, computedStyles);
     this._colorIndex++;
     this._colorDict[entityId] = color;
     return color;

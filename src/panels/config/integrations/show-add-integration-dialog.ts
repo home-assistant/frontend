@@ -5,6 +5,7 @@ export interface AddIntegrationDialogParams {
   brand?: string;
   domain?: string;
   initialFilter?: string;
+  navigateToResult?: boolean;
 }
 
 export interface YamlIntegrationDialogParams {

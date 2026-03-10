@@ -12,7 +12,7 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { WaterHeaterEntity } from "../../../data/water_heater";
 import { WaterHeaterEntityFeature } from "../../../data/water_heater";
 import type { HomeAssistant } from "../../../types";

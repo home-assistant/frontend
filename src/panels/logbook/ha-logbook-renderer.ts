@@ -157,12 +157,14 @@ class HaLogbookRenderer extends LitElement {
       !item.state &&
       domain &&
       isComponentLoaded(this.hass, domain)
-        ? brandsUrl({
-            domain: domain!,
-            type: "icon",
-            useFallback: true,
-            darkOptimized: this.hass.themes?.darkMode,
-          })
+        ? brandsUrl(
+            {
+              domain: domain!,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            },
+            this.hass.auth.data.hassUrl
+          )
         : undefined;
 
     const traceContext =
@@ -400,7 +402,9 @@ class HaLogbookRenderer extends LitElement {
         ? `${domainToName(this.hass.localize, item.context_domain)}:
       ${
         this.hass.localize(
-          `component.${item.context_domain}.services.${item.context_service}.name`
+          `component.${item.context_domain}.services.${item.context_service}.name`,
+          this.hass.services[item.context_domain][item.context_service]
+            .description_placeholders
         ) ||
         this.hass.services[item.context_domain]?.[item.context_service]?.name ||
         item.context_service

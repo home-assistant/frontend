@@ -14,6 +14,7 @@ import "../../../components/ha-state-icon";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { PersonEntity } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -29,7 +30,6 @@ import type {
   PictureGlanceCardConfig,
   PictureGlanceEntityConfig,
 } from "./types";
-import type { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
@@ -207,9 +207,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       hasAction(this._config.tap_action) ||
       Boolean(
         !this._config.tap_action &&
-          (this._config.camera_image ||
-            this._config.image_entity ||
-            this._config.entity)
+        (this._config.camera_image ||
+          this._config.image_entity ||
+          this._config.entity)
       );
 
     return html`
@@ -382,7 +382,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       font-size: 0;
     }
     ha-icon-button {
-      --mdc-icon-button-size: 40px;
+      --ha-icon-button-size: 40px;
       --disabled-text-color: currentColor;
       color: var(--ha-picture-icon-button-color, #a9a9a9);
     }

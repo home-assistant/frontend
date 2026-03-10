@@ -4,7 +4,7 @@ import type {
   HassEntityBase,
   HassEvent,
 } from "home-assistant-js-websocket";
-import { BINARY_STATE_ON, BINARY_STATE_OFF } from "../common/const";
+import { BINARY_STATE_OFF, BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -13,7 +13,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
-import type { EntitySources } from "./entity_sources";
+import type { EntitySources } from "./entity/entity_sources";
 
 export enum UpdateEntityFeature {
   INSTALL = 1,
@@ -44,13 +44,26 @@ export const updateUsesProgress = (entity: UpdateEntity): boolean =>
   supportsFeature(entity, UpdateEntityFeature.PROGRESS) &&
   entity.attributes.update_percentage !== null;
 
+export const updateAvailable = (
+  entity: UpdateEntity,
+  showSkipped = false
+): boolean =>
+  entity.state === BINARY_STATE_ON ||
+  (showSkipped && Boolean(entity.attributes.skipped_version));
+
 export const updateCanInstall = (
   entity: UpdateEntity,
   showSkipped = false
 ): boolean =>
-  (entity.state === BINARY_STATE_ON ||
-    (showSkipped && Boolean(entity.attributes.skipped_version))) &&
+  updateAvailable(entity, showSkipped) &&
   supportsFeature(entity, UpdateEntityFeature.INSTALL);
+
+export const updateCanNotInstall = (
+  entity: UpdateEntity,
+  showSkipped = false
+): boolean =>
+  updateAvailable(entity, showSkipped) &&
+  !supportsFeature(entity, UpdateEntityFeature.INSTALL);
 
 export const latestVersionIsSkipped = (entity: UpdateEntity): boolean =>
   !!(
@@ -108,13 +121,17 @@ export const filterUpdateEntities = (
     );
   });
 
-export const filterUpdateEntitiesWithInstall = (
+export const filterUpdateEntitiesParameterized = (
   entities: HassEntities,
-  showSkipped = false
+  showSkipped = false,
+  showNotInstallable = false
 ) =>
-  filterUpdateEntities(entities).filter((entity) =>
-    updateCanInstall(entity, showSkipped)
-  );
+  filterUpdateEntities(entities).filter((entity) => {
+    if (showNotInstallable) {
+      return updateCanNotInstall(entity, showSkipped);
+    }
+    return updateCanInstall(entity, showSkipped);
+  });
 
 export const checkForEntityUpdates = async (
   element: HTMLElement,

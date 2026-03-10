@@ -1,6 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-attributes";
 import "../../../components/ha-button";
 import type { TimerEntity } from "../../../data/timer";
 import type { HomeAssistant } from "../../../types";
@@ -63,11 +62,6 @@ class MoreInfoTimer extends LitElement {
             `
           : ""}
       </div>
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="remaining,restore"
-      ></ha-attributes>
     `;
   }
 
@@ -80,7 +74,7 @@ class MoreInfoTimer extends LitElement {
 
   static styles = css`
     .actions {
-      margin: 8px 0;
+      margin: var(--ha-space-2) 0;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;

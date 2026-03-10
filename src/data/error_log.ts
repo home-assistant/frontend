@@ -1,10 +1,12 @@
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { atLeastVersion } from "../common/config/version";
 import type { HomeAssistant } from "../types";
+import type { HassioAddonInfo } from "./hassio/addon";
 
 export interface LogProvider {
   key: string;
   name: string;
+  addon?: HassioAddonInfo;
 }
 
 export const fetchErrorLog = (hass: HomeAssistant) =>

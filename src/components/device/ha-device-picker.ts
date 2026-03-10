@@ -1,4 +1,4 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -9,14 +9,16 @@ import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import {
+  deviceComboBoxKeys,
   getDevices,
   type DevicePickerItem,
-  type DeviceRegistryEntry,
-} from "../../data/device_registry";
+} from "../../data/device/device_picker";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
@@ -46,7 +48,7 @@ export class HaDevicePicker extends LitElement {
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
 
-  @property({ attribute: false, type: Array }) public createDomains?: string[];
+  @property({ attribute: false }) public createDomains?: string[];
 
   /**
    * Show only devices with entities from specific domains.
@@ -93,7 +95,30 @@ export class HaDevicePicker extends LitElement {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
-  private _getDevicesMemoized = memoizeOne(getDevices);
+  private _getDevicesMemoized = memoizeOne(
+    (
+      _devices: HomeAssistant["devices"],
+      configEntryLookup: Record<string, ConfigEntry>,
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      includeDeviceClasses?: string[],
+      deviceFilter?: HaDevicePickerDeviceFilterFunc,
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      excludeDevices?: string[],
+      value?: string
+    ) =>
+      getDevices(
+        this.hass,
+        configEntryLookup,
+        includeDomains,
+        excludeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value
+      )
+  );
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
@@ -109,7 +134,7 @@ export class HaDevicePicker extends LitElement {
 
   private _getItems = () =>
     this._getDevicesMemoized(
-      this.hass,
+      this.hass.devices,
       this._configEntryLookup,
       this.includeDomains,
       this.excludeDomains,
@@ -148,11 +173,14 @@ export class HaDevicePicker extends LitElement {
               alt=""
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
-              src=${brandsUrl({
-                domain: configEntry.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: configEntry.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
             />`
           : nothing}
         <span slot="headline">${primary}</span>
@@ -161,7 +189,7 @@ export class HaDevicePicker extends LitElement {
     }
   );
 
-  private _rowRenderer: ComboBoxLitRenderer<DevicePickerItem> = (item) => html`
+  private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => html`
     <ha-combo-box-item type="button">
       ${item.domain
         ? html`
@@ -170,11 +198,14 @@ export class HaDevicePicker extends LitElement {
               alt=""
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
-              src=${brandsUrl({
-                domain: item.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: item.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
             />
           `
         : nothing}
@@ -197,9 +228,6 @@ export class HaDevicePicker extends LitElement {
     const placeholder =
       this.placeholder ??
       this.hass.localize("ui.components.device-picker.placeholder");
-    const notFoundLabel = this.hass.localize(
-      "ui.components.device-picker.no_match"
-    );
 
     const valueRenderer = this._valueRenderer(this._configEntryLookup);
 
@@ -207,15 +235,24 @@ export class HaDevicePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
+        .disabled=${this.disabled}
+        .helper=${this.helper}
         .label=${this.label}
         .searchLabel=${this.searchLabel}
-        .notFoundLabel=${notFoundLabel}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.device-picker.no_devices"
+        )}
         .placeholder=${placeholder}
         .value=${this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
+        .searchKeys=${deviceComboBoxKeys}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.device-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -233,6 +270,11 @@ export class HaDevicePicker extends LitElement {
     this.value = value;
     fireEvent(this, "value-changed", { value });
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.device-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

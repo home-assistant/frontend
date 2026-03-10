@@ -2,13 +2,13 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { debounce } from "../common/util/debounce";
 import "../components/entity/state-info";
 import "../components/ha-slider";
 import "../components/ha-textfield";
-import type { HomeAssistant } from "../types";
+import { isUnavailableState } from "../data/entity/entity";
 import { haStyle } from "../resources/styles";
-import { isUnavailableState } from "../data/entity";
-import { debounce } from "../common/util/debounce";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-number")
 class StateCardNumber extends LitElement {

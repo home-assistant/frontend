@@ -1,9 +1,10 @@
-import type { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
-import { mainWindow } from "../common/dom/get_main_window";
-import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
+import type { LitElement } from "lit";
 import { ancestorsWithProperty } from "../common/dom/ancestors-with-property";
 import { deepActiveElement } from "../common/dom/deep-active-element";
+import type { HASSDomEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
 import { nextRender } from "../common/util/render-status";
+import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 
 declare global {
   // for fire event
@@ -19,17 +20,22 @@ declare global {
   }
 }
 
-export interface HassDialog<T = HASSDomEvents[ValidHassDomEvent]>
-  extends HTMLElement {
+export interface HassDialog<T = unknown> extends HTMLElement {
   showDialog(params: T);
-  closeDialog?: () => boolean;
+  closeDialog?: (historyState?: any) => Promise<boolean> | boolean;
 }
 
-interface ShowDialogParams<T> {
+export interface HassDialogNext<T = unknown> extends HTMLElement {
+  params?: T;
+  closeDialog?: (historyState?: any) => Promise<boolean> | boolean;
+}
+
+export interface ShowDialogParams<T> {
   dialogTag: keyof HTMLElementTagNameMap;
   dialogImport: () => Promise<unknown>;
-  dialogParams: T;
+  dialogParams?: T;
   addHistory?: boolean;
+  parentElement?: LitElement;
 }
 
 export interface DialogClosedParams {
@@ -38,7 +44,6 @@ export interface DialogClosedParams {
 
 export interface DialogState {
   element: HTMLElement & ProvideHassElement;
-  root: ShadowRoot | HTMLElement;
   dialogTag: string;
   dialogParams: unknown;
   dialogImport?: () => Promise<unknown>;
@@ -46,7 +51,7 @@ export interface DialogState {
 }
 
 interface LoadedDialogInfo {
-  element: Promise<HassDialog>;
+  element: Promise<HassDialogNext | HassDialog> | null;
   closedFocusTargets?: Set<Element>;
 }
 
@@ -56,12 +61,24 @@ const LOADED: LoadedDialogsDict = {};
 const OPEN_DIALOG_STACK: DialogState[] = [];
 export const FOCUS_TARGET = Symbol.for("HA focus target");
 
+/**
+ * Shows a dialog element, lazy-loading it if needed, and optionally integrates
+ * dialog open/close behavior with browser history.
+ *
+ * @param element The host element that can provide `hass` and receives the dialog by default.
+ * @param dialogTag The custom element tag name of the dialog.
+ * @param dialogParams The params passed to the dialog via `showDialog()` or `params`.
+ * @param dialogImport Optional lazy import used when the dialog has not been loaded yet.
+ * @param parentElement Optional parent to append the dialog to instead of root element.
+ * @param addHistory Whether to add/update browser history so back navigation closes dialogs.
+ * @returns `true` if the dialog was shown (or could be shown), `false` if it could not be loaded.
+ */
 export const showDialog = async (
-  element: HTMLElement & ProvideHassElement,
-  root: ShadowRoot | HTMLElement,
+  element: LitElement & ProvideHassElement,
   dialogTag: string,
   dialogParams: unknown,
   dialogImport?: () => Promise<unknown>,
+  parentElement?: LitElement,
   addHistory = true
 ): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
@@ -76,10 +93,18 @@ export const showDialog = async (
     }
     LOADED[dialogTag] = {
       element: dialogImport().then(() => {
-        const dialogEl = document.createElement(dialogTag) as HassDialog;
-        element.provideHass(dialogEl);
+        const dialogEl = document.createElement(dialogTag) as
+          | HassDialogNext
+          | HassDialog;
+
+        if ("showDialog" in dialogEl) {
+          // provide hass for legacy persistent dialogs
+          element.provideHass(dialogEl);
+        }
+
         dialogEl.addEventListener("dialog-closed", _handleClosed);
         dialogEl.addEventListener("dialog-closed", _handleClosedFocus);
+
         return dialogEl;
       }),
     };
@@ -95,10 +120,10 @@ export const showDialog = async (
       });
       return showDialog(
         element,
-        root,
         dialogTag,
         dialogParams,
         dialogImport,
+        parentElement,
         addHistory
       );
     }
@@ -110,7 +135,6 @@ export const showDialog = async (
     }
     OPEN_DIALOG_STACK.push({
       element,
-      root,
       dialogTag,
       dialogParams,
       dialogImport,
@@ -133,37 +157,54 @@ export const showDialog = async (
     FOCUS_TARGET
   );
 
-  const dialogElement = await LOADED[dialogTag].element;
+  let dialogElement: HassDialogNext | HassDialog | null;
 
-  // Append it again so it's the last element in the root,
-  // so it's guaranteed to be on top of the other elements
-  root.appendChild(dialogElement);
-  dialogElement.showDialog(dialogParams);
+  if (LOADED[dialogTag] && LOADED[dialogTag].element === null) {
+    dialogElement = document.createElement(dialogTag) as HassDialogNext;
+    dialogElement.addEventListener("dialog-closed", _handleClosed);
+    dialogElement.addEventListener("dialog-closed", _handleClosedFocus);
+    LOADED[dialogTag].element = Promise.resolve(dialogElement);
+  } else {
+    dialogElement = await LOADED[dialogTag].element;
+  }
+
+  if ("showDialog" in dialogElement!) {
+    dialogElement.showDialog(dialogParams);
+  } else {
+    dialogElement!.params = dialogParams;
+  }
+
+  (parentElement || element).shadowRoot!.appendChild(dialogElement!);
 
   return true;
 };
 
-export const closeDialog = async (dialogTag: string): Promise<boolean> => {
+export const closeDialog = async (
+  dialogTag: string,
+  historyState?: any
+): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
     return true;
   }
   const dialogElement = await LOADED[dialogTag].element;
-  if (dialogElement.closeDialog) {
-    return dialogElement.closeDialog() !== false;
+  if (dialogElement && dialogElement.closeDialog) {
+    return dialogElement.closeDialog(historyState) !== false;
   }
   return true;
 };
 
 // called on back()
-export const closeLastDialog = async () => {
+export const closeLastDialog = async (historyState?: any) => {
   if (OPEN_DIALOG_STACK.length) {
-    const lastDialog = OPEN_DIALOG_STACK.pop();
-    const closed = await closeDialog(lastDialog!.dialogTag);
+    const lastDialog = OPEN_DIALOG_STACK.pop() as DialogState;
+    const closed = await closeDialog(lastDialog.dialogTag, historyState);
     if (!closed) {
       // if the dialog was not closed, put it back on the stack
-      OPEN_DIALOG_STACK.push(lastDialog!);
-    }
-    if (OPEN_DIALOG_STACK.length && mainWindow.history.state?.opensDialog) {
+      OPEN_DIALOG_STACK.push(lastDialog);
+    } else if (
+      OPEN_DIALOG_STACK.length &&
+      mainWindow.history.state?.opensDialog
+    ) {
       // if there are more dialogs open, push a new state so back() will close the next top dialog
       mainWindow.history.pushState(
         { dialog: OPEN_DIALOG_STACK[OPEN_DIALOG_STACK.length - 1].dialogTag },
@@ -208,22 +249,34 @@ const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
       mainWindow.history.back();
     }
   }
+
+  // cleanup element
+  if (ev.currentTarget && "params" in ev.currentTarget) {
+    const dialogElement = ev.currentTarget as HassDialogNext;
+    dialogElement.removeEventListener("dialog-closed", _handleClosed);
+    dialogElement.removeEventListener("dialog-closed", _handleClosedFocus);
+    LOADED[ev.detail.dialog].element = null;
+  }
 };
 
-export const makeDialogManager = (
-  element: HTMLElement & ProvideHassElement,
-  root: ShadowRoot | HTMLElement
-) => {
+export const makeDialogManager = (element: LitElement & ProvideHassElement) => {
   element.addEventListener(
     "show-dialog",
     (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
-      const { dialogTag, dialogImport, dialogParams, addHistory } = e.detail;
+      const {
+        dialogTag,
+        dialogImport,
+        dialogParams,
+        addHistory,
+        parentElement,
+      } = e.detail;
+
       showDialog(
         element,
-        root,
         dialogTag,
         dialogParams,
         dialogImport,
+        parentElement,
         addHistory
       );
     }

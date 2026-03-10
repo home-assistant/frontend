@@ -1,5 +1,5 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -39,6 +39,12 @@ class HaDomainIntegrations extends LitElement {
   @property({ attribute: false })
   public flowsInProgress?: DataEntryFlowProgress[];
 
+  @property({ attribute: false })
+  public navigateToResult = false;
+
+  @property({ attribute: false })
+  public showManageLink = false;
+
   protected render() {
     return html`<ha-list>
       ${this.flowsInProgress?.length
@@ -49,6 +55,7 @@ class HaDomainIntegrations extends LitElement {
               (flow) =>
                 html`<ha-list-item
                   graphic="medium"
+                  twoLine
                   .flow=${flow}
                   @request-selected=${this._flowInProgressPicked}
                   hasMeta
@@ -57,17 +64,22 @@ class HaDomainIntegrations extends LitElement {
                     alt=""
                     slot="graphic"
                     loading="lazy"
-                    src=${brandsUrl({
-                      domain: flow.handler,
-                      type: "icon",
-                      useFallback: true,
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    src=${brandsUrl(
+                      {
+                        domain: flow.handler,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                   />
                   <span
                     >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
+                  >
+                  <span slot="secondary"
+                    >${domainToName(this.hass.localize, flow.handler)}</span
                   >
                   <ha-icon-next slot="meta"></ha-icon-next>
                 </ha-list-item>`
@@ -81,8 +93,8 @@ class HaDomainIntegrations extends LitElement {
                     "ui.panel.config.integrations.available_integrations"
                   )}
                 </h3>`
-              : ""}`
-        : ""}
+              : nothing}`
+        : nothing}
       ${this.integration?.iot_standards
         ? this.integration.iot_standards
             .filter((standard) =>
@@ -103,12 +115,14 @@ class HaDomainIntegrations extends LitElement {
                   slot="graphic"
                   loading="lazy"
                   alt=""
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    useFallback: true,
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  src=${brandsUrl(
+                    {
+                      domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
@@ -167,12 +181,14 @@ class HaDomainIntegrations extends LitElement {
               slot="graphic"
               loading="lazy"
               alt=""
-              src=${brandsUrl({
-                domain: this.domain,
-                type: "icon",
-                useFallback: true,
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: this.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
@@ -227,6 +243,27 @@ class HaDomainIntegrations extends LitElement {
               >
               </ha-integration-list-item>`}`
         : ""}
+      ${this.showManageLink &&
+      // Only show manage link if not already on the integrations dashboard
+      !location.pathname.startsWith("/config/integrations")
+        ? html`<ha-list-item
+            twoLine
+            @request-selected=${this._manageDiscovered}
+            hasMeta
+          >
+            <span
+              >${this.hass.localize(
+                "ui.panel.config.integrations.manage_discovered"
+              )}</span
+            >
+            <span slot="secondary"
+              >${this.hass.localize(
+                "ui.panel.config.integrations.manage_discovered_description"
+              )}</span
+            >
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </ha-list-item>`
+        : nothing}
     </ha-list> `;
   }
 
@@ -282,7 +319,7 @@ class HaDomainIntegrations extends LitElement {
       {
         startFlowHandler: domain,
         showAdvanced: this.hass.userData?.showAdvanced,
-        navigateToResult: true,
+        navigateToResult: this.navigateToResult,
         manifest: await fetchIntegrationManifest(this.hass, domain),
       }
     );
@@ -299,12 +336,20 @@ class HaDomainIntegrations extends LitElement {
       root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
       {
         continueFlowId: flow.flow_id,
-        navigateToResult: true,
+        navigateToResult: this.navigateToResult,
         showAdvanced: this.hass.userData?.showAdvanced,
         manifest: await fetchIntegrationManifest(this.hass, flow.handler),
       }
     );
     fireEvent(this, "close-dialog");
+  }
+
+  private _manageDiscovered(ev: CustomEvent<RequestSelectedDetail>) {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    fireEvent(this, "close-dialog");
+    navigate("/config/integrations/dashboard?historyBack=1");
   }
 
   private _standardPicked(ev: CustomEvent<RequestSelectedDetail>) {

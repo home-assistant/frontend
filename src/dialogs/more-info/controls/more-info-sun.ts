@@ -83,7 +83,7 @@ class MoreInfoSun extends LitElement {
     hr {
       border-color: var(--divider-color);
       border-bottom: none;
-      margin: 16px 0;
+      margin: var(--ha-space-4) 0;
     }
   `;
 }

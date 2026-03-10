@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDelete,
   mdiDragHorizontalVariant,
@@ -8,10 +9,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { CustomCardFeatureEntry } from "../../../../data/lovelace_custom_cards";
@@ -24,6 +26,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
+import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
@@ -33,7 +36,9 @@ import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-cl
 import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
+import { supportsCoverPositionPresetCardFeature } from "../../card-features/hui-cover-position-preset-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
+import { supportsCoverTiltPresetCardFeature } from "../../card-features/hui-cover-tilt-preset-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
@@ -52,15 +57,14 @@ import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
-import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
+import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
 import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
-import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
   LovelaceCardFeatureConfig,
@@ -88,6 +92,8 @@ const UI_FEATURE_TYPES = [
   "counter-actions",
   "cover-open-close",
   "cover-position",
+  "cover-position-preset",
+  "cover-tilt-preset",
   "cover-tilt-position",
   "cover-tilt",
   "date-set",
@@ -123,6 +129,7 @@ type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
   "area-controls",
+  "bar-gauge",
   "button",
   "climate-fan-modes",
   "climate-hvac-modes",
@@ -130,6 +137,8 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
   "counter-actions",
+  "cover-position-preset",
+  "cover-tilt-preset",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
@@ -159,6 +168,8 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "counter-actions": supportsCounterActionsCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
   "cover-position": supportsCoverPositionCardFeature,
+  "cover-position-preset": supportsCoverPositionPresetCardFeature,
+  "cover-tilt-preset": supportsCoverTiltPresetCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
   "date-set": supportsDateSetCardFeature,
@@ -403,45 +414,39 @@ export class HuiCardFeaturesEditor extends LitElement {
       </ha-sortable>
       ${supportedFeaturesType.length > 0
         ? html`
-            <ha-button-menu
-              fixed
-              @action=${this._addFeature}
-              @closed=${stopPropagation}
-            >
+            <ha-dropdown @wa-select=${this._addFeature}>
               <ha-button slot="trigger" appearance="filled" size="small">
                 <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.hass!.localize(`ui.panel.lovelace.editor.features.add`)}
               </ha-button>
               ${types.map(
                 (type) => html`
-                  <ha-list-item .value=${type}>
+                  <ha-dropdown-item .value=${type}>
                     ${this._getFeatureTypeLabel(type)}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `
               )}
               ${types.length > 0 && customTypes.length > 0
-                ? html`<li divider role="separator"></li>`
+                ? html`<wa-divider></wa-divider>`
                 : nothing}
               ${customTypes.map(
                 (type) => html`
-                  <ha-list-item .value=${type}>
+                  <ha-dropdown-item .value=${type}>
                     ${this._getFeatureTypeLabel(type)}
-                  </ha-list-item>
+                  </ha-dropdown-item>
                 `
               )}
-            </ha-button-menu>
+            </ha-dropdown>
           `
         : nothing}
     `;
   }
 
-  private async _addFeature(ev: CustomEvent): Promise<void> {
-    const index = ev.detail.index as number;
-
-    if (index == null) return;
-
-    const value = this._getSupportedFeaturesType()[index];
-    if (!value) return;
+  private async _addFeature(ev: HaDropdownSelectEvent) {
+    const value = ev.detail.item.value as FeatureType;
+    if (!value) {
+      return;
+    }
 
     const elClass = await getCardFeatureElementClass(value);
 
@@ -498,7 +503,9 @@ export class HuiCardFeaturesEditor extends LitElement {
       display: flex !important;
       flex-direction: column;
     }
-    ha-button-menu {
+    ha-dropdown {
+      display: inline-block;
+      align-self: flex-start;
       margin-top: var(--ha-space-2);
     }
     .feature {
@@ -533,7 +540,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .remove-icon,
     .edit-icon {
-      --mdc-icon-button-size: var(--ha-space-9);
+      --ha-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
 

@@ -17,6 +17,8 @@ class HaInputDateTimeForm extends LitElement {
 
   @property({ type: Boolean }) public new = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   private _item?: InputDateTime;
 
   @state() private _name!: string;
@@ -73,6 +75,7 @@ class HaInputDateTimeForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}
           dialogInitialFocus
+          .disabled=${this.disabled}
         ></ha-textfield>
         <ha-icon-picker
           .hass=${this.hass}
@@ -82,6 +85,7 @@ class HaInputDateTimeForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
+          .disabled=${this.disabled}
         ></ha-icon-picker>
         <br />
         ${this.hass.localize("ui.dialogs.helper_settings.input_datetime.mode")}:
@@ -97,6 +101,7 @@ class HaInputDateTimeForm extends LitElement {
             value="date"
             .checked=${this._mode === "date"}
             @change=${this._modeChanged}
+            .disabled=${this.disabled}
           ></ha-radio>
         </ha-formfield>
         <ha-formfield
@@ -109,6 +114,7 @@ class HaInputDateTimeForm extends LitElement {
             value="time"
             .checked=${this._mode === "time"}
             @change=${this._modeChanged}
+            .disabled=${this.disabled}
           ></ha-radio>
         </ha-formfield>
         <ha-formfield
@@ -121,6 +127,7 @@ class HaInputDateTimeForm extends LitElement {
             value="datetime"
             .checked=${this._mode === "datetime"}
             @change=${this._modeChanged}
+            .disabled=${this.disabled}
           ></ha-radio>
         </ha-formfield>
       </div>

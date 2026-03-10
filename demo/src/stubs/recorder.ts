@@ -17,17 +17,15 @@ const generateMeanStatistics = (
   end: Date,
   // eslint-disable-next-line default-param-last
   period: "5minute" | "hour" | "day" | "month" = "hour",
-  initValue: number,
   maxDiff: number
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
   let currentDate = new Date(start);
   currentDate.setMinutes(0, 0, 0);
-  let lastVal = initValue;
   const now = new Date();
   while (end > currentDate && currentDate < now) {
     const delta = Math.random() * maxDiff;
-    const mean = lastVal + delta;
+    const mean = delta;
     statistics.push({
       start: currentDate.getTime(),
       end: currentDate.getTime(),
@@ -38,7 +36,6 @@ const generateMeanStatistics = (
       state: mean,
       sum: null,
     });
-    lastVal = mean;
     currentDate =
       period === "day"
         ? addDays(currentDate, 1)
@@ -336,7 +333,6 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
                   start,
                   end,
                   period,
-                  state,
                   state * (state > 80 ? 0.05 : 0.1)
                 );
         }

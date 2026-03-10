@@ -64,8 +64,15 @@ export class HaStopAction extends LitElement implements ActionElement {
 
   private _responseChanged(ev: Event) {
     ev.stopPropagation();
+    const newAction = { ...this.action };
+    const newValue = (ev.target as any).value;
+    if (newValue) {
+      newAction.response_variable = newValue;
+    } else {
+      delete newAction.response_variable;
+    }
     fireEvent(this, "value-changed", {
-      value: { ...this.action, response_variable: (ev.target as any).value },
+      value: newAction,
     });
   }
 

@@ -4,10 +4,8 @@ import type { EntityFilterFunc } from "../../../../../common/entity/entity_filte
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
 import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare } from "../../../../../common/string/compare";
-import type { AreaRegistryEntry } from "../../../../../data/area_registry";
-import { areaCompare } from "../../../../../data/area_registry";
+import type { AreaRegistryEntry } from "../../../../../data/area/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
-import { floorCompare } from "../../../../../data/floor_registry";
 import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
@@ -288,7 +286,11 @@ export const getAreas = (
     ? areas.filter((area) => !hiddenAreas!.includes(area.area_id))
     : areas.concat();
 
-  const compare = areaCompare(entries, areasOrder);
+  if (!areasOrder) {
+    return filteredAreas;
+  }
+
+  const compare = orderCompare(areasOrder);
 
   const sortedAreas = filteredAreas.sort((areaA, areaB) =>
     compare(areaA.area_id, areaB.area_id)
@@ -302,7 +304,12 @@ export const getFloors = (
   floorsOrder?: string[]
 ): FloorRegistryEntry[] => {
   const floors = Object.values(entries);
-  const compare = floorCompare(entries, floorsOrder);
+
+  if (!floorsOrder) {
+    return floors;
+  }
+
+  const compare = orderCompare(floorsOrder);
 
   return floors.sort((floorA, floorB) =>
     compare(floorA.floor_id, floorB.floor_id)

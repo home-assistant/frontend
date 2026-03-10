@@ -1,6 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { TargetType, TargetTypeFloorless } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
@@ -89,7 +89,7 @@ export class HaTargetPickerItemGroup extends LitElement {
   static styles = css`
     :host {
       display: block;
-      --expansion-panel-content-padding: var(--ha-space-0);
+      --expansion-panel-content-padding: 0;
     }
     ha-expansion-panel::part(summary) {
       background-color: var(--ha-color-fill-neutral-quiet-resting);
@@ -101,7 +101,7 @@ export class HaTargetPickerItemGroup extends LitElement {
       min-height: unset;
     }
     ha-md-list {
-      padding: var(--ha-space-0);
+      padding: 0;
     }
   `;
 }

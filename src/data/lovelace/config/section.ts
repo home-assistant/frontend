@@ -18,8 +18,7 @@ export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {
   cards?: LovelaceCardConfig[];
 }
 
-export interface LovelaceStrategySectionConfig
-  extends LovelaceBaseSectionConfig {
+export interface LovelaceStrategySectionConfig extends LovelaceBaseSectionConfig {
   strategy: LovelaceStrategyConfig;
 }
 

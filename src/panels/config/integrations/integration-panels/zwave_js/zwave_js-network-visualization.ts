@@ -5,6 +5,7 @@ import type {
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/chart/ha-network-graph";
@@ -13,7 +14,7 @@ import type {
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
   ZWaveJSNodeStatus,
@@ -23,10 +24,9 @@ import {
   NodeStatus,
   subscribeZwaveNodeStatistics,
 } from "../../../../../data/zwave_js";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
@@ -71,11 +71,14 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   protected render() {
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.navigation.visualization"
+        )}
+        back-path="/config/zwave_js/dashboard?config_entry=${this
+          .configEntryId}"
       >
         <ha-network-graph
           .hass=${this.hass}
@@ -85,8 +88,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           )}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
-        ></ha-network-graph
-      ></hass-tabs-subpage>
+        ></ha-network-graph>
+      </hass-subpage>
     `;
   }
 
@@ -124,7 +127,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       return tip;
     }
     const { id, name } = data as any;
-    const device = this._devices[id];
+    const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
     let tip = `${(params as any).marker} ${name}`;
     tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.node_id")}:</b> ${id}`;
@@ -136,6 +139,12 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.status")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.node_status.${nodeStatus.status}`)}`;
       if (nodeStatus.zwave_plus_version) {
         tip += `<br><b>Z-Wave Plus:</b> ${this.hass.localize("ui.panel.config.zwave_js.visualization.version")} ${nodeStatus.zwave_plus_version}`;
+      }
+    }
+    if (device) {
+      const area = getDeviceContext(device, this.hass).area;
+      if (area) {
+        tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.area")}:</b> ${area.name}`;
       }
     }
     return tip;
@@ -197,10 +206,16 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         if (node.is_controller_node) {
           controllerNode = node.node_id;
         }
-        const device = this._devices[node.node_id];
+        const device = this._devices[node.node_id] as
+          | DeviceRegistryEntry
+          | undefined;
+        const area = device
+          ? getDeviceContext(device, this.hass).area
+          : undefined;
         nodes.push({
           id: String(node.node_id),
           name: device?.name_by_user ?? device?.name ?? String(node.node_id),
+          context: area?.name,
           value: node.is_controller_node ? 3 : node.is_routing ? 2 : 1,
           category:
             node.status === NodeStatus.Dead

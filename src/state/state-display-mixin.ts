@@ -53,8 +53,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
 
       const {
         formatEntityState,
+        formatEntityStateToParts,
         formatEntityAttributeName,
         formatEntityAttributeValue,
+        formatEntityAttributeValueToParts,
         formatEntityName,
       } = await computeFormatFunctions(
         this.hass.localize,
@@ -68,8 +70,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
       );
       this._updateHass({
         formatEntityState,
+        formatEntityStateToParts,
         formatEntityAttributeName,
         formatEntityAttributeValue,
+        formatEntityAttributeValueToParts,
         formatEntityName,
       });
     };

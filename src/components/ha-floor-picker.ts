@@ -1,5 +1,5 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
@@ -8,13 +8,13 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
-import { updateAreaRegistryEntry } from "../data/area_registry";
+import { updateAreaRegistryEntry } from "../data/area/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
-} from "../data/device_registry";
-import { getDeviceEntityDisplayLookup } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+} from "../data/device/device_registry";
+import { getDeviceEntityDisplayLookup } from "../data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
   createFloorRegistryEntry,
   getFloorAreaLookup,
@@ -34,6 +34,12 @@ import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
+
+const SEARCH_KEYS = [
+  { name: "search_labels.floorName", weight: 10 },
+  { name: "search_labels.aliases", weight: 8 },
+  { name: "search_labels.floor_id", weight: 3 },
+];
 
 interface FloorComboBoxItem extends PickerComboBoxItem {
   floor?: FloorRegistryEntry;
@@ -285,10 +291,11 @@ export class HaFloorPicker extends LitElement {
           id: floor.floor_id,
           primary: floorName,
           floor: floor,
-          sorting_label: floor.level?.toString() || "zzzzz",
-          search_labels: [floorName, floor.floor_id, ...floor.aliases].filter(
-            (v): v is string => Boolean(v)
-          ),
+          search_labels: {
+            floorName,
+            floor_id: floor.floor_id,
+            aliases: floor.aliases.join(" "),
+          },
         };
       });
 
@@ -296,7 +303,7 @@ export class HaFloorPicker extends LitElement {
     }
   );
 
-  private _rowRenderer: ComboBoxLitRenderer<FloorComboBoxItem> = (item) => html`
+  private _rowRenderer: RenderItemFunction<FloorComboBoxItem> = (item) => html`
     <ha-combo-box-item type="button" compact>
       ${item.icon_path
         ? html`
@@ -352,7 +359,7 @@ export class HaFloorPicker extends LitElement {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.floor-picker.add_new_sugestion",
+            "ui.components.floor-picker.add_new_suggestion",
             {
               name: searchString,
             }
@@ -382,16 +389,23 @@ export class HaFloorPicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
+        .disabled=${this.disabled}
         .label=${this.label}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.floor-picker.no_match"
-        )}
+        .helper=${this.helper}
         .placeholder=${placeholder}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass.localize(
+          "ui.components.floor-picker.no_floors"
+        )}
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .searchKeys=${SEARCH_KEYS}
+        .unknownItemText=${this.hass.localize(
+          "ui.components.floor-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -444,6 +458,11 @@ export class HaFloorPicker extends LitElement {
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
+
+  private _notFoundLabel = (search: string) =>
+    this.hass.localize("ui.components.floor-picker.no_match", {
+      term: html`<b>‘${search}’</b>`,
+    });
 }
 
 declare global {

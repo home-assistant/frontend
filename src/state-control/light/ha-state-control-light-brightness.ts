@@ -6,7 +6,7 @@ import { hsv2rgb, rgb2hex, rgb2hsv } from "../../common/color/convert-color";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
-import { UNAVAILABLE } from "../../data/entity";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import type { LightEntity } from "../../data/light";
 import type { HomeAssistant } from "../../types";
 

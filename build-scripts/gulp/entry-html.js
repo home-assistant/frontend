@@ -266,28 +266,3 @@ gulp.task(
     paths.landingPage_output_es5
   )
 );
-
-const HASSIO_PAGE_ENTRIES = { "entrypoint.js": ["entrypoint"] };
-
-gulp.task(
-  "gen-pages-hassio-dev",
-  genPagesDevTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    "src",
-    paths.hassio_publicPath
-  )
-);
-
-gulp.task(
-  "gen-pages-hassio-prod",
-  genPagesProdTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    paths.hassio_output_latest,
-    paths.hassio_output_es5,
-    "src"
-  )
-);

@@ -10,7 +10,9 @@ export const getElementStubConfig = async (
 ): Promise<LovelaceElementConfig> => {
   let elementConfig: LovelaceElementConfig = { type };
 
-  if (type !== "conditional") {
+  if (type === "conditional") {
+    elementConfig = { type, conditions: [], elements: [] };
+  } else {
     elementConfig.style = { left: "50%", top: "50%" };
   }
 

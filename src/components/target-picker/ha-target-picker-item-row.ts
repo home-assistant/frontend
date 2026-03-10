@@ -6,8 +6,10 @@ import {
   mdiLabel,
   mdiTextureBox,
 } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -19,11 +21,14 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
+import type { AreaRegistryEntry } from "../../data/area/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
-import type { HaEntityPickerEntityFilterFunc } from "../../data/entity";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
+import type { FloorRegistryEntry } from "../../data/floor_registry";
 import { domainToName } from "../../data/integration";
-import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import {
   areaMeetsFilter,
   deviceMeetsFilter,
@@ -111,10 +116,10 @@ export class HaTargetPickerItemRow extends LitElement {
   }
 
   protected render() {
-    const { name, context, iconPath, fallbackIconPath, stateObject } =
+    const { name, context, iconPath, fallbackIconPath, stateObject, notFound } =
       this._itemData(this.type, this.itemId);
 
-    const showEntities = this.type !== "entity";
+    const showEntities = this.type !== "entity" && !notFound;
 
     const entries = this.parentEntries || this._entries;
 
@@ -127,8 +132,17 @@ export class HaTargetPickerItemRow extends LitElement {
       return nothing;
     }
 
+    const replaceable = !this.subEntry && !this.expand;
+
     return html`
-      <ha-md-list-item type="text">
+      <ha-md-list-item
+        type=${replaceable ? "button" : "text"}
+        class=${classMap({
+          error: notFound,
+          replaceable,
+        })}
+        @click=${replaceable ? this._replaceItem : undefined}
+      >
         <div class="icon" slot="start">
           ${this.subEntry
             ? html`
@@ -148,11 +162,15 @@ export class HaTargetPickerItemRow extends LitElement {
                 />`
               : fallbackIconPath
                 ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
-                : stateObject
+                : this.type === "entity"
                   ? html`
                       <ha-state-icon
                         .hass=${this.hass}
-                        .stateObj=${stateObject}
+                        .stateObj=${stateObject ||
+                        ({
+                          entity_id: this.itemId,
+                          attributes: {},
+                        } as HassEntity)}
                       >
                       </ha-state-icon>
                     `
@@ -160,8 +178,14 @@ export class HaTargetPickerItemRow extends LitElement {
         </div>
 
         <div slot="headline">${name}</div>
-        ${context && !this.hideContext
-          ? html`<span slot="supporting-text">${context}</span>`
+        ${notFound || (context && !this.hideContext)
+          ? html`<span slot="supporting-text"
+              >${notFound
+                ? this.hass.localize(
+                    `ui.components.target-picker.${this.type}_not_found`
+                  )
+                : context}</span
+            >`
           : nothing}
         ${this._domainName && this.subEntry
           ? html`<span slot="supporting-text" class="domain"
@@ -474,26 +498,28 @@ export class HaTargetPickerItemRow extends LitElement {
 
   private _itemData = memoizeOne((type: TargetType, item: string) => {
     if (type === "floor") {
-      const floor = this.hass.floors?.[item];
+      const floor: FloorRegistryEntry | undefined = this.hass.floors?.[item];
       return {
         name: floor?.name || item,
         iconPath: floor?.icon,
         fallbackIconPath: floor ? floorDefaultIconPath(floor) : mdiHome,
+        notFound: !floor,
       };
     }
     if (type === "area") {
-      const area = this.hass.areas?.[item];
+      const area: AreaRegistryEntry | undefined = this.hass.areas?.[item];
       return {
         name: area?.name || item,
-        context: area.floor_id && this.hass.floors?.[area.floor_id]?.name,
+        context: area?.floor_id && this.hass.floors?.[area.floor_id]?.name,
         iconPath: area?.icon,
         fallbackIconPath: mdiTextureBox,
+        notFound: !area,
       };
     }
     if (type === "device") {
-      const device = this.hass.devices?.[item];
+      const device: DeviceRegistryEntry | undefined = this.hass.devices?.[item];
 
-      if (device.primary_config_entry) {
+      if (device?.primary_config_entry) {
         this._getDeviceDomain(device.primary_config_entry);
       }
 
@@ -501,24 +527,25 @@ export class HaTargetPickerItemRow extends LitElement {
         name: device ? computeDeviceNameDisplay(device, this.hass) : item,
         context: device?.area_id && this.hass.areas?.[device.area_id]?.name,
         fallbackIconPath: mdiDevices,
+        notFound: !device,
       };
     }
     if (type === "entity") {
       this._setDomainName(computeDomain(item));
 
-      const stateObject = this.hass.states[item];
-      const entityName = computeEntityName(
-        stateObject,
-        this.hass.entities,
-        this.hass.devices
-      );
-      const { area, device } = getEntityContext(
-        stateObject,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
+      const stateObject: HassEntity | undefined = this.hass.states[item];
+      const entityName = stateObject
+        ? computeEntityName(stateObject, this.hass.entities, this.hass.devices)
+        : item;
+      const { area, device } = stateObject
+        ? getEntityContext(
+            stateObject,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          )
+        : { area: undefined, device: undefined };
       const deviceName = device ? computeDeviceName(device) : undefined;
       const areaName = area ? computeAreaName(area) : undefined;
       const context = [areaName, entityName ? deviceName : undefined]
@@ -528,15 +555,19 @@ export class HaTargetPickerItemRow extends LitElement {
         name: entityName || deviceName || item,
         context,
         stateObject,
+        notFound: !stateObject && item !== "all" && item !== "none",
       };
     }
 
     // type label
-    const label = this._labelRegistry.find((lab) => lab.label_id === item);
+    const label: LabelRegistryEntry | undefined = this._labelRegistry.find(
+      (lab) => lab.label_id === item
+    );
     return {
       name: label?.name || item,
       iconPath: label?.icon,
       fallbackIconPath: mdiLabel,
+      notFound: !label,
     };
   });
 
@@ -544,7 +575,7 @@ export class HaTargetPickerItemRow extends LitElement {
     this._domainName = domainToName(this.hass.localize, domain);
   }
 
-  private _removeItem(ev) {
+  private _removeItem(ev: MouseEvent) {
     ev.stopPropagation();
     fireEvent(this, "remove-target-item", {
       type: this.type,
@@ -556,11 +587,14 @@ export class HaTargetPickerItemRow extends LitElement {
     try {
       const data = await getConfigEntry(this.hass, configEntryId);
       const domain = data.config_entry.domain;
-      this._iconImg = brandsUrl({
-        domain: domain,
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      });
+      this._iconImg = brandsUrl(
+        {
+          domain: domain,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      );
 
       this._setDomainName(domain);
     } catch {
@@ -568,7 +602,16 @@ export class HaTargetPickerItemRow extends LitElement {
     }
   }
 
-  private _openDetails() {
+  private _replaceItem(ev: MouseEvent) {
+    ev.stopPropagation();
+    fireEvent(this, "replace-target-item", {
+      type: this.type,
+      id: this.itemId,
+    });
+  }
+
+  private _openDetails(ev: MouseEvent) {
+    ev.stopPropagation();
     showTargetDetailsDialog(this, {
       title: this._itemData(this.type, this.itemId).name,
       type: this.type,
@@ -584,8 +627,8 @@ export class HaTargetPickerItemRow extends LitElement {
     buttonLinkStyle,
     css`
       :host {
-        --md-list-item-top-space: var(--ha-space-0);
-        --md-list-item-bottom-space: var(--ha-space-0);
+        --md-list-item-top-space: 0;
+        --md-list-item-bottom-space: 0;
         --md-list-item-leading-space: var(--ha-space-2);
         --md-list-item-trailing-space: var(--ha-space-2);
         --md-list-item-two-line-container-height: 56px;
@@ -597,20 +640,38 @@ export class HaTargetPickerItemRow extends LitElement {
         border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
       }
 
+      .error {
+        background: var(--ha-color-fill-warning-quiet-resting);
+      }
+
+      .error [slot="supporting-text"] {
+        color: var(--ha-color-on-warning-normal);
+      }
+
+      .replaceable {
+        cursor: pointer;
+      }
+
+      .replaceable:hover {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
+      }
+
       state-badge {
         color: var(--ha-color-on-neutral-quiet);
       }
 
       .icon {
+        width: 24px;
         display: flex;
       }
 
       img {
         width: 24px;
         height: 24px;
+        z-index: 1;
       }
       ha-icon-button {
-        --mdc-icon-button-size: 32px;
+        --ha-icon-button-size: 32px;
       }
       .summary {
         display: flex;

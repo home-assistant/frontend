@@ -48,7 +48,6 @@ export class HaAnsiToHtml extends LitElement {
 
   static styles = css`
     pre {
-      overflow-x: auto;
       margin: 0;
     }
     pre.wrap {

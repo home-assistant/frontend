@@ -4,16 +4,16 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-button";
-import "../../components/ha-spinner";
 import "../../components/ha-dialog-header";
+import "../../components/ha-spinner";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { interceptWakeWord } from "../../data/assist_satellite";
+import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import { computeDomain } from "../../common/entity/compute_domain";
 
 @customElement("ha-voice-assistant-setup-step-wake-word")
 export class HaVoiceAssistantSetupStepWakeWord extends LitElement {

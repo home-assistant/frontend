@@ -90,9 +90,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
       this._email = this._cloudLoginElement.emailField.value;
     }
 
-    await import(
-      "../../panels/config/cloud/forgot-password/cloud-forgot-password-card"
-    );
+    await import("../../panels/config/cloud/forgot-password/cloud-forgot-password-card");
     this._view = "forgot-password";
   }
 

@@ -101,6 +101,10 @@ const Component = Vue.extend({
       type: String,
       default: "en",
     },
+    opensVertical: {
+      type: String,
+      default: undefined,
+    },
   },
   render(createElement) {
     // @ts-expect-error
@@ -128,6 +132,11 @@ const Component = Vue.extend({
           fireEvent(this.$el as HTMLElement, "change", value);
         },
         expression: "dateRange",
+      },
+      on: {
+        toggle: (open: boolean) => {
+          fireEvent(this.$el as HTMLElement, "toggle", { open });
+        },
       },
       scopedSlots: {
         input() {
@@ -309,6 +318,10 @@ class DateRangePickerElement extends WrappedElement {
             min-width: unset !important;
             display: block !important;
           }
+          :host([opens-vertical="up"]) .daterangepicker {
+            bottom: 100%;
+            top: auto !important;
+          }
         `;
     if (mainWindow.document.dir === "rtl") {
       style.innerHTML += `
@@ -339,5 +352,8 @@ class DateRangePickerElement extends WrappedElement {
 declare global {
   interface HTMLElementTagNameMap {
     "date-range-picker": DateRangePickerElement;
+  }
+  interface HASSDomEvents {
+    toggle: { open: boolean };
   }
 }

@@ -29,6 +29,8 @@ class StepFlowForm extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "autofocus" }) public autoFocus = false;
+
   @property({ attribute: false }) public step!: DataEntryFlowStepForm;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,19 +47,37 @@ class StepFlowForm extends LitElement {
 
   private _errors?: Record<string, string>;
 
+  static shadowRootOptions: ShadowRootInit = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("keydown", this._handleKeyDown);
   }
 
-  private handleReadOnlyFields = memoizeOne((schema) =>
-    schema?.map((field) => ({
-      ...field,
-      ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]?.read_only
-        ? { disabled: true }
-        : {}),
-    }))
-  );
+  private handleReadOnlyFields = memoizeOne((schema) => {
+    function handleReadOnlyField(field: HaFormSchema) {
+      return {
+        ...field,
+        ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]
+          ?.read_only
+          ? { disabled: true }
+          : {}),
+      };
+    }
+    return schema?.map((field: HaFormSchema) =>
+      field.type === "expandable" && field.schema
+        ? {
+            ...field,
+            schema: field.schema.map((sectionField) =>
+              handleReadOnlyField(sectionField)
+            ),
+          }
+        : handleReadOnlyField(field)
+    );
+  });
 
   protected render(): TemplateResult {
     const step = this.step;
@@ -70,6 +90,7 @@ class StepFlowForm extends LitElement {
           ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
           : ""}
         <ha-form
+          ?autofocus=${this.autoFocus}
           .hass=${this.hass}
           .narrow=${this.narrow}
           .data=${stepData}
@@ -120,8 +141,11 @@ class StepFlowForm extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
     this.addEventListener("keydown", this._handleKeyDown);
+  }
+
+  public override focus(_options?: FocusOptions): void {
+    this.renderRoot.querySelector("ha-form")?.focus();
   }
 
   protected willUpdate(changedProps: PropertyValues): void {

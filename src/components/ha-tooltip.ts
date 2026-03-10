@@ -9,15 +9,21 @@ export class HaTooltip extends Tooltip {
   @property({ attribute: "show-delay", type: Number }) showDelay = 150;
 
   /** The amount of time to wait before hiding the tooltip when the user mouses out.. */
-  @property({ attribute: "hide-delay", type: Number }) hideDelay = 400;
+  @property({ attribute: "hide-delay", type: Number }) hideDelay = 150;
 
   static get styles(): CSSResultGroup {
     return [
       Tooltip.styles,
       css`
         :host {
-          --wa-tooltip-background-color: var(--secondary-background-color);
-          --wa-tooltip-content-color: var(--primary-text-color);
+          --wa-tooltip-background-color: var(
+            --ha-tooltip-background-color,
+            var(--secondary-background-color)
+          );
+          --wa-tooltip-content-color: var(
+            --ha-tooltip-text-color,
+            var(--primary-text-color)
+          );
           --wa-tooltip-font-family: var(
             --ha-tooltip-font-family,
             var(--ha-font-family-body)
@@ -34,13 +40,14 @@ export class HaTooltip extends Tooltip {
             --ha-tooltip-line-height,
             var(--ha-line-height-condensed)
           );
-          --wa-tooltip-padding: 8px;
+          --wa-tooltip-padding: var(--ha-tooltip-padding, var(--ha-space-2));
           --wa-tooltip-border-radius: var(
             --ha-tooltip-border-radius,
             var(--ha-border-radius-sm)
           );
           --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
-          --wa-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
+          --wa-tooltip-border-width: 0px;
+          --wa-z-index-tooltip: 1000;
         }
       `,
     ];

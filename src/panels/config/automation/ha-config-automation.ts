@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
 import type { AutomationEntity } from "../../../data/automation";
+import type { CloudStatus } from "../../../data/cloud";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../types";
@@ -27,6 +28,8 @@ class HaConfigAutomation extends HassRouterPage {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public showAdvanced = false;
+
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public automations: AutomationEntity[] = [];
 
@@ -77,6 +80,7 @@ class HaConfigAutomation extends HassRouterPage {
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
     pageEl.showAdvanced = this.showAdvanced;
+    pageEl.cloudStatus = this.cloudStatus;
 
     if (this.hass) {
       if (!pageEl.automations || !changedProps) {

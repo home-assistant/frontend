@@ -1,14 +1,13 @@
 import { mdiClose } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
-import "./ha-list-item";
 import "./ha-select";
+import type { HaSelectSelectEvent } from "./ha-select";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -134,6 +133,17 @@ export class HaBaseTimeInput extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 
+  @queryAll("ha-textfield") private _inputs?: HaTextField[];
+
+  static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
+    return this._inputs?.every((input) => input.reportValidity()) ?? true;
+  }
+
   protected render(): TemplateResult {
     return html`
       ${this.label
@@ -208,7 +218,8 @@ export class HaBaseTimeInput extends LitElement {
             ? html`<ha-textfield
                 id="sec"
                 type="number"
-                inputmode="numeric"
+                inputmode="decimal"
+                step="any"
                 .value=${this._formatValue(this.seconds)}
                 .label=${this.secLabel}
                 @change=${this._valueChanged}
@@ -217,7 +228,6 @@ export class HaBaseTimeInput extends LitElement {
                 no-spinner
                 .required=${this.required}
                 .autoValidate=${this.autoValidate}
-                maxlength="2"
                 max="59"
                 min="0"
                 .disabled=${this.disabled}
@@ -260,14 +270,10 @@ export class HaBaseTimeInput extends LitElement {
               .required=${this.required}
               .value=${this.amPm}
               .disabled=${this.disabled}
-              name="amPm"
-              naturalMenuWidth
-              fixedMenuPosition
+              .name=${"amPm"}
               @selected=${this._valueChanged}
-              @closed=${stopPropagation}
+              .options=${["AM", "PM"]}
             >
-              <ha-list-item value="AM">AM</ha-list-item>
-              <ha-list-item value="PM">PM</ha-list-item>
             </ha-select>`}
       </div>
       ${this.helper
@@ -282,10 +288,12 @@ export class HaBaseTimeInput extends LitElement {
     fireEvent(this, "value-changed");
   }
 
-  private _valueChanged(ev: InputEvent) {
+  private _valueChanged(ev: InputEvent | HaSelectSelectEvent): void {
     const textField = ev.currentTarget as HaTextField;
     this[textField.name] =
-      textField.name === "amPm" ? textField.value : Number(textField.value);
+      textField.name === "amPm"
+        ? (ev as HaSelectSelectEvent).detail.value
+        : Number(textField.value);
     const value: TimeChangedEvent = {
       hours: this.hours,
       minutes: this.minutes,
@@ -311,7 +319,8 @@ export class HaBaseTimeInput extends LitElement {
    * Format time fragments
    */
   private _formatValue(value: number, padding = 2) {
-    return value.toString().padStart(padding, "0");
+    const str = value.toString();
+    return str.includes(".") ? str : str.padStart(padding, "0");
   }
 
   /**
@@ -351,7 +360,11 @@ export class HaBaseTimeInput extends LitElement {
       text-align: center;
       --mdc-shape-small: 0;
       --text-field-appearance: none;
-      --text-field-padding: 0 4px;
+      --text-field-padding-top: 0;
+      --text-field-padding-bottom: 0;
+      --text-field-padding-start: 4px;
+      --text-field-padding-end: 4px;
+
       --text-field-suffix-padding-left: 2px;
       --text-field-suffix-padding-right: 0;
       --text-field-text-align: center;
@@ -365,16 +378,12 @@ export class HaBaseTimeInput extends LitElement {
     ha-textfield:last-child {
       --text-field-border-top-right-radius: var(--mdc-shape-medium);
     }
-    ha-select {
-      --mdc-shape-small: 0;
-      width: 85px;
-    }
     :host([clearable]) .mdc-select__anchor {
       padding-inline-end: var(--select-selected-text-padding-end, 12px);
     }
     ha-icon-button {
       position: relative;
-      --mdc-icon-button-size: 36px;
+      --ha-icon-button-size: 36px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
       direction: var(--direction);

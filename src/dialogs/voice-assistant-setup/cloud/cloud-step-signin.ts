@@ -137,7 +137,7 @@ export class CloudStepSignin extends LitElement {
             ),
           });
           if (totpCode !== null && totpCode !== "") {
-            await doLogin(username, totpCode);
+            await doLogin(username, totpCode.trim());
             return;
           }
         }

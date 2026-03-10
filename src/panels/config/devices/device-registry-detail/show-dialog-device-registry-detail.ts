@@ -2,7 +2,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   DeviceRegistryEntry,
   DeviceRegistryEntryMutableParams,
-} from "../../../../data/device_registry";
+} from "../../../../data/device/device_registry";
 
 export interface DeviceRegistryDetailDialogParams {
   device: DeviceRegistryEntry;

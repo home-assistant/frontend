@@ -65,6 +65,10 @@ export class HaDateRangePicker extends LitElement {
   @property({ attribute: "time-picker", type: Boolean })
   public timePicker = false;
 
+  public open(): void {
+    this._openPicker();
+  }
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public minimal = false;
@@ -73,6 +77,9 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ attribute: "extended-presets", type: Boolean })
   public extendedPresets = false;
+
+  @property({ attribute: "vertical-opening-direction" })
+  public verticalOpeningDirection?: "up" | "down";
 
   @property({ attribute: false }) public openingDirection?:
     | "right"
@@ -85,6 +92,8 @@ export class HaDateRangePicker extends LitElement {
     | "left"
     | "center"
     | "inline";
+
+  @state() private _calcedVerticalOpeningDirection?: "up" | "down";
 
   protected willUpdate(changedProps: PropertyValues) {
     if (
@@ -126,6 +135,9 @@ export class HaDateRangePicker extends LitElement {
         ?ranges=${this.ranges !== false}
         opening-direction=${ifDefined(
           this.openingDirection || this._calcedOpeningDirection
+        )}
+        opens-vertical=${ifDefined(
+          this.verticalOpeningDirection || this._calcedVerticalOpeningDirection
         )}
         first-day=${firstWeekdayIndex(this.hass.locale)}
         language=${this.hass.locale.language}
@@ -302,6 +314,15 @@ export class HaDateRangePicker extends LitElement {
     return dateRangePicker.vueComponent.$children[0];
   }
 
+  private _openPicker() {
+    if (!this._dateRangePicker.open) {
+      const datePicker = this.shadowRoot!.querySelector(
+        "date-range-picker div.date-range-inputs"
+      ) as any;
+      datePicker?.click();
+    }
+  }
+
   private _handleInputClick() {
     // close the date picker, so it will open again on the click event
     if (this._dateRangePicker.open) {
@@ -311,17 +332,24 @@ export class HaDateRangePicker extends LitElement {
 
   private _handleClick() {
     // calculate opening direction if not set
-    if (!this._dateRangePicker.open && !this.openingDirection) {
-      const datePickerPosition = this.getBoundingClientRect().x;
-      let opens: "right" | "left" | "center" | "inline";
-      if (datePickerPosition > (2 * window.innerWidth) / 3) {
-        opens = "left";
-      } else if (datePickerPosition < window.innerWidth / 3) {
-        opens = "right";
-      } else {
-        opens = "center";
+    if (!this._dateRangePicker.open) {
+      if (!this.openingDirection) {
+        const datePickerPosition = this.getBoundingClientRect().x;
+        let opens: "right" | "left" | "center" | "inline";
+        if (datePickerPosition > (2 * window.innerWidth) / 3) {
+          opens = "left";
+        } else if (datePickerPosition < window.innerWidth / 3) {
+          opens = "right";
+        } else {
+          opens = "center";
+        }
+        this._calcedOpeningDirection = opens;
       }
-      this._calcedOpeningDirection = opens;
+      if (!this.verticalOpeningDirection) {
+        const rect = this.getBoundingClientRect();
+        this._calcedVerticalOpeningDirection =
+          rect.top > window.innerHeight / 2 ? "up" : "down";
+      }
     }
   }
 

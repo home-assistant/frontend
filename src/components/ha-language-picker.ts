@@ -1,6 +1,7 @@
+import { mdiMenuDown } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { formatLanguageCode } from "../common/language/format_language";
@@ -8,10 +9,16 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { FrontendLocaleData } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
+import "./ha-button";
 import "./ha-generic-picker";
-import "./ha-list-item";
+import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
-import "./ha-select";
+
+const SEARCH_KEYS = [
+  { name: "primary", weight: 10 },
+  { name: "secondary", weight: 8 },
+  { name: "search_labels.english", weight: 5 },
+];
 
 export const getLanguageOptions = (
   languages: string[],
@@ -21,6 +28,7 @@ export const getLanguageOptions = (
 ): PickerComboBoxItem[] => {
   let options: PickerComboBoxItem[] = [];
 
+  const enLocale = { language: "en" } as FrontendLocaleData;
   if (nativeName) {
     const translations = translationMetadata.translations;
     options = languages.map((lang) => {
@@ -36,18 +44,35 @@ export const getLanguageOptions = (
           primary = lang;
         }
       }
+      const currentLang = formatLanguageCode(
+        lang,
+        locale || ({ language: navigator.language } as FrontendLocaleData)
+      );
+      const englishName = formatLanguageCode(lang, enLocale);
+
+      const secondary = currentLang !== primary ? currentLang : undefined;
+
       return {
         id: lang,
         primary,
-        search_labels: [primary],
+        secondary,
+        search_labels: {
+          english: englishName !== primary ? englishName : null,
+        },
       };
     });
   } else if (locale) {
-    options = languages.map((lang) => ({
-      id: lang,
-      primary: formatLanguageCode(lang, locale),
-      search_labels: [formatLanguageCode(lang, locale)],
-    }));
+    options = languages.map((lang) => {
+      const primary = formatLanguageCode(lang, locale);
+      const englishName = formatLanguageCode(lang, enLocale);
+      return {
+        id: lang,
+        primary,
+        search_labels: {
+          english: englishName !== primary ? englishName : null,
+        },
+      };
+    });
   }
 
   if (!noSort && locale) {
@@ -72,15 +97,19 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property() public helper?: string;
+
   @property({ attribute: "native-name", type: Boolean })
   public nativeName = false;
 
+  @property({ type: Boolean, attribute: "button-style" })
+  public buttonStyle = false;
+
   @property({ attribute: "no-sort", type: Boolean }) public noSort = false;
 
-  @property({ attribute: "inline-arrow", type: Boolean })
-  public inlineArrow = false;
-
   @state() _defaultLanguages: string[] = [];
+
+  @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -101,14 +130,20 @@ export class HaLanguagePicker extends LitElement {
       this.hass?.locale
     );
 
-  private _valueRenderer = (value) => {
-    const language = this._getItems().find(
-      (lang) => lang.id === value
-    )?.primary;
-    return html`<span slot="headline">${language ?? value}</span> `;
-  };
+  private _getLanguageName = (lang?: string) =>
+    this._getItems().find((language) => language.id === lang)?.primary;
+
+  private _valueRenderer = (value) =>
+    html`<span slot="headline"
+      >${this._getLanguageName(value) ?? value}</span
+    > `;
 
   protected render() {
+    const label =
+      this.label ??
+      (this.hass?.localize("ui.components.language-picker.language") ||
+        "Language");
+
     const value =
       this.value ??
       (this.required && !this.disabled ? this._getItems()[0].id : this.value);
@@ -118,26 +153,44 @@ export class HaLanguagePicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         popover-placement="bottom-end"
-        .notFoundLabel=${this.hass?.localize(
-          "ui.components.language-picker.no_match"
-        )}
-        .placeholder=${this.label ??
-        (this.hass?.localize("ui.components.language-picker.language") ||
-          "Language")}
+        .notFoundLabel=${this._notFoundLabel}
+        .emptyLabel=${this.hass?.localize(
+          "ui.components.language-picker.no_languages"
+        ) || "No languages available"}
+        .label=${label}
         .value=${value}
         .valueRenderer=${this._valueRenderer}
         .disabled=${this.disabled}
+        .helper=${this.helper}
         .getItems=${this._getItems}
+        .searchKeys=${SEARCH_KEYS}
         @value-changed=${this._changed}
         hide-clear-icon
-      ></ha-generic-picker>
+      >
+        ${this.buttonStyle
+          ? html`<ha-button
+              slot="field"
+              .disabled=${this.disabled}
+              @click=${this._openPicker}
+              appearance="plain"
+              variant="neutral"
+            >
+              ${this._getLanguageName(value)}
+              <ha-svg-icon slot="end" .path=${mdiMenuDown}></ha-svg-icon>
+            </ha-button>`
+          : nothing}
+      </ha-generic-picker>
     `;
+  }
+
+  private _openPicker(ev: Event) {
+    ev.stopPropagation();
+    this.genericPicker.open();
   }
 
   static styles = css`
     ha-generic-picker {
       width: 100%;
-      min-width: 200px;
       display: block;
     }
   `;
@@ -147,6 +200,15 @@ export class HaLanguagePicker extends LitElement {
     this.value = ev.detail.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
+
+  private _notFoundLabel = (search: string) => {
+    const term = html`<b>‘${search}’</b>`;
+    return this.hass
+      ? this.hass.localize("ui.components.language-picker.no_match", {
+          term,
+        })
+      : html`No languages found for ${term}`;
+  };
 }
 
 declare global {

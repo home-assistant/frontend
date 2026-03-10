@@ -20,7 +20,7 @@ export class ZHAAddGroupPage extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @state() private _processingAdd = false;

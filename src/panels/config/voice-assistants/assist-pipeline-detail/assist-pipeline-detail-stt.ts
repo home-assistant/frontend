@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { AssistPipeline } from "../../../../data/assist_pipeline";
@@ -78,6 +79,18 @@ export class AssistPipelineDetailSTT extends LitElement {
 
   private _supportedLanguagesChanged(ev) {
     this._supportedLanguages = ev.detail.value;
+
+    if (
+      !this.data?.stt_language ||
+      !this._supportedLanguages?.includes(this.data.stt_language)
+    ) {
+      // wait for update of conversation_engine
+      setTimeout(() => {
+        const value = { ...this.data };
+        value.stt_language = this._supportedLanguages?.[0] ?? null;
+        fireEvent(this, "value-changed", { value });
+      }, 0);
+    }
   }
 
   static styles = css`

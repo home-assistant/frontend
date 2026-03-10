@@ -1,5 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css } from "lit";
+import { customElement } from "lit/decorators";
 import { computeCardSize } from "../common/compute-card-size";
 import type { LovelaceCardEditor } from "../types";
 import { HuiStackCard } from "./hui-stack-card";
@@ -12,6 +13,7 @@ const SQUARE_ROW_HEIGHTS_BY_COLUMNS = {
   3: 2,
 };
 
+@customElement("hui-grid-card")
 class HuiGridCard extends HuiStackCard<GridCardConfig> {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-grid-card-editor");
@@ -115,5 +117,3 @@ declare global {
     "hui-grid-card": HuiGridCard;
   }
 }
-
-customElements.define("hui-grid-card", HuiGridCard);

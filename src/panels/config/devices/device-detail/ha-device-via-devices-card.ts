@@ -6,7 +6,7 @@ import { caseInsensitiveStringCompare } from "../../../../common/string/compare"
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list-item";
-import type { DeviceRegistryEntry } from "../../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import type { HomeAssistant } from "../../../../types";
 
 const MAX_VISIBLE_VIA_DEVICES = 10;

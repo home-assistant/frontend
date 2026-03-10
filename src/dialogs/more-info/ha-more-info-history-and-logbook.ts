@@ -58,7 +58,7 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
       display: block;
     }
     ha-more-info-history + ha-more-info-logbook {
-      margin-top: 16px;
+      margin-top: var(--ha-space-4);
     }
   `;
 }

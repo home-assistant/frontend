@@ -222,6 +222,7 @@ export interface StopAction extends BaseAction {
 
 export interface SequenceAction extends BaseAction {
   sequence: (ManualScriptConfig | Action)[];
+  metadata?: {};
 }
 
 export interface ParallelAction extends BaseAction {
@@ -479,6 +480,7 @@ export const migrateAutomationAction = (
   }
 
   if (typeof action === "object" && action !== null && "sequence" in action) {
+    delete (action as SequenceAction).metadata;
     for (const sequenceAction of (action as SequenceAction).sequence) {
       migrateAutomationAction(sequenceAction);
     }

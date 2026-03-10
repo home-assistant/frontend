@@ -9,12 +9,15 @@ import type {
 import { processEvent } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
 import "./assist-render-pipeline-run";
+import type { ChatLog } from "../../../../data/chat_log";
 
 @customElement("assist-render-pipeline-events")
 export class AssistPipelineEvents extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public events!: PipelineRunEvent[];
+
+  @property({ attribute: false }) public chatLog?: ChatLog;
 
   private _processEvents = memoizeOne(
     (events: PipelineRunEvent[]): PipelineRun | undefined => {
@@ -56,6 +59,7 @@ export class AssistPipelineEvents extends LitElement {
       <assist-render-pipeline-run
         .hass=${this.hass}
         .pipelineRun=${run}
+        .chatLog=${this.chatLog}
       ></assist-render-pipeline-run>
     `;
   }

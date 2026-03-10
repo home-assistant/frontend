@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -12,7 +11,7 @@ import type {
 } from "home-assistant-js-websocket/dist/types";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
-import { property, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
@@ -27,11 +26,11 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-button-menu";
 import "../../components/ha-date-range-picker";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-spinner";
 import "../../components/ha-target-picker";
@@ -47,11 +46,13 @@ import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 
+@customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
 
@@ -147,25 +148,25 @@ class HaPanelHistory extends LitElement {
               ></ha-icon-button>
             `
           : ""}
-        <ha-button-menu slot="actionItems" @action=${this._handleMenuAction}>
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+          <ha-dropdown-item value="download" .disabled=${this._isLoading}>
             ${this.hass.localize("ui.panel.history.download_data")}
-            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </ha-list-item>
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
 
-          <ha-list-item graphic="icon" .disabled=${this._isLoading}>
+          <ha-dropdown-item value="add-card" .disabled=${this._isLoading}>
             ${this.hass.localize("ui.panel.history.add_card")}
-            <ha-svg-icon slot="graphic" .path=${mdiImagePlus}></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+            <ha-svg-icon slot="icon" .path=${mdiImagePlus}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
-        <div class="flex content">
+        <div class="flex content ha-scrollbar">
           <div class="filters">
             <ha-date-range-picker
               .hass=${this.hass}
@@ -476,12 +477,13 @@ class HaPanelHistory extends LitElement {
     navigate(`/history?${createSearchParam(params)}`, { replace: true });
   }
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "download":
         this._downloadHistory();
         break;
-      case 1:
+      case "add-card":
         this._suggestCard();
         break;
     }
@@ -618,6 +620,7 @@ class HaPanelHistory extends LitElement {
   static get styles() {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ha-top-app-bar-fixed {
           height: 100vh;
@@ -626,11 +629,20 @@ class HaPanelHistory extends LitElement {
         }
 
         .content {
+          height: calc(
+            100vh - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
+                0px
+              ) - var(--safe-area-inset-bottom, 0px)
+          );
+          box-sizing: border-box;
+          overflow-x: hidden;
           padding: 0 16px 16px;
         }
 
         :host([virtualize]) {
           height: 100%;
+          --ha-generic-picker-max-width: 400px;
         }
 
         .progress-wrapper {
@@ -678,8 +690,6 @@ class HaPanelHistory extends LitElement {
     ];
   }
 }
-
-customElements.define("ha-panel-history", HaPanelHistory);
 
 declare global {
   interface HTMLElementTagNameMap {

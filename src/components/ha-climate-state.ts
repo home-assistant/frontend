@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { ClimateEntity } from "../data/climate";
 import { CLIMATE_PRESET_NONE } from "../data/climate";
-import { isUnavailableState, OFF } from "../data/entity";
+import { isUnavailableState, OFF } from "../data/entity/entity";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-climate-state")

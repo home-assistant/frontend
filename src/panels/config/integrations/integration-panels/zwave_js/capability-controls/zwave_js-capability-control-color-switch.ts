@@ -1,11 +1,11 @@
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import type { HomeAssistant } from "../../../../../../types";
-import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-spinner";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
+import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../../types";
 import "./zwave_js-capability-control-multilevel-switch";
 
 enum ColorComponent {

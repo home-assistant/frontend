@@ -36,6 +36,13 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
   type: "config/get";
 }
 
+interface EMOutgoingMessageEntityAddToGetActions extends EMMessage {
+  type: "entity/add_to/get_actions";
+  payload: {
+    entity_id: string;
+  };
+}
+
 interface EMOutgoingMessageBarCodeScan extends EMMessage {
   type: "bar_code/scan";
   payload: {
@@ -74,6 +81,10 @@ interface EMOutgoingMessageWithAnswer {
   "config/get": {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
+  };
+  "entity/add_to/get_actions": {
+    request: EMOutgoingMessageEntityAddToGetActions;
+    response: ExternalEntityAddToActions;
   };
 }
 
@@ -157,6 +168,21 @@ interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageAddEntityTo extends EMMessage {
+  type: "entity/add_to";
+  payload: {
+    entity_id: string;
+    app_payload: string; // Opaque string received from get_actions
+  };
+}
+
+interface EMOutgoingMessageFocusElement extends EMMessage {
+  type: "focus_element";
+  payload: {
+    element_id: string;
+  };
+}
+
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
   | EMMessageResultSuccess
@@ -177,7 +203,9 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageThemeUpdate
   | EMOutgoingMessageThreadStoreInPlatformKeychain
   | EMOutgoingMessageImprovScan
-  | EMOutgoingMessageImprovConfigureDevice;
+  | EMOutgoingMessageImprovConfigureDevice
+  | EMOutgoingMessageAddEntityTo
+  | EMOutgoingMessageFocusElement;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -273,6 +301,15 @@ export interface EMIncomingMessageImprovDeviceSetupDone extends EMMessage {
   command: "improv/device_setup_done";
 }
 
+export interface EMIncomingMessageKioskModeSet {
+  id: number;
+  type: "command";
+  command: "kiosk_mode/set";
+  payload: {
+    enable: boolean;
+  };
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
@@ -283,7 +320,8 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageBarCodeScanResult
   | EMIncomingMessageBarCodeScanAborted
   | EMIncomingMessageImprovDeviceDiscovered
-  | EMIncomingMessageImprovDeviceSetupDone;
+  | EMIncomingMessageImprovDeviceSetupDone
+  | EMIncomingMessageKioskModeSet;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess
@@ -293,18 +331,30 @@ type EMIncomingMessage =
 type EMIncomingMessageHandler = (msg: EMIncomingMessageCommands) => boolean;
 
 export interface ExternalConfig {
-  hasSettingsScreen: boolean;
-  hasSidebar: boolean;
-  canWriteTag: boolean;
-  hasExoPlayer: boolean;
-  canCommissionMatter: boolean;
-  canImportThreadCredentials: boolean;
-  canTransferThreadCredentialsToKeychain: boolean;
-  hasAssist: boolean;
-  hasBarCodeScanner: number;
-  canSetupImprov: boolean;
-  downloadFileSupported: boolean;
-  appVersion: string;
+  hasSettingsScreen?: boolean;
+  hasSidebar?: boolean;
+  canWriteTag?: boolean;
+  hasExoPlayer?: boolean;
+  canCommissionMatter?: boolean;
+  canImportThreadCredentials?: boolean;
+  canTransferThreadCredentialsToKeychain?: boolean;
+  hasAssist?: boolean;
+  hasBarCodeScanner?: number;
+  canSetupImprov?: boolean;
+  appVersion?: string;
+  hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
+}
+
+export interface ExternalEntityAddToAction {
+  enabled: boolean;
+  name: string; // Translated name of the action to be displayed in the UI
+  details?: string; // Optional translated details of the action to be displayed in the UI
+  mdi_icon: string; // MDI icon name to be displayed in the UI (e.g., "mdi:car")
+  app_payload: string; // Opaque string to be sent back when the action is selected
+}
+
+export interface ExternalEntityAddToActions {
+  actions: ExternalEntityAddToAction[];
 }
 
 export class ExternalMessaging {

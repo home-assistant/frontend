@@ -22,6 +22,7 @@ const NON_STANDARD_URLS = {
   "energy-devices-graph": "energy/#devices-energy-graph",
   "energy-devices-detail-graph": "energy/#detail-devices-energy-graph",
   "energy-sankey": "energy/#sankey-energy-graph",
+  "power-sources-graph": "energy/#power-sources-graph",
 };
 
 export const getCardDocumentationURL = (

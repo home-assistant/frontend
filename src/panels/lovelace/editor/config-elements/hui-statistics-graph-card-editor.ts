@@ -62,6 +62,7 @@ const cardConfigStruct = assign(
         literal("day"),
         literal("week"),
         literal("month"),
+        literal("year"),
       ])
     ),
     chart_type: optional(union([literal("bar"), literal("line")])),
@@ -75,7 +76,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const periods = ["5minute", "hour", "day", "week", "month"] as const;
+const periods = ["5minute", "hour", "day", "week", "month", "year"] as const;
 const stat_types = [
   "mean",
   "min",
@@ -316,7 +317,6 @@ export class HuiStatisticsGraphCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
         <ha-statistics-picker
-          allow-custom-entity
           .hass=${this.hass}
           .placeholder=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
