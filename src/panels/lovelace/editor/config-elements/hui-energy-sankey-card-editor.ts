@@ -77,19 +77,25 @@ export class HuiEnergySankeyCardEditor
             },
           },
           {
+            name: "",
+            type: "grid",
+            schema: [
+              {
+                name: "group_by_floor",
+                required: false,
+                selector: { boolean: {} },
+              },
+              {
+                name: "group_by_area",
+                required: false,
+                selector: { boolean: {} },
+              },
+            ],
+          },
+          {
             type: "string",
             name: "collection_key",
             required: false,
-          },
-          {
-            name: "group_by_floor",
-            required: false,
-            selector: { boolean: {} },
-          },
-          {
-            name: "group_by_area",
-            required: false,
-            selector: { boolean: {} },
           },
         ],
       },

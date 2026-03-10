@@ -45,11 +45,6 @@ export class HuiEnergyGraphCardEditor
   private _schema = memoizeOne((type: string) => {
     const schema: HaFormSchema[] = [
       { name: "title", selector: { text: {} } },
-      {
-        type: "string",
-        name: "collection_key",
-        required: false,
-      },
       ...(type === "power-sources-graph"
         ? [
             {
@@ -68,6 +63,11 @@ export class HuiEnergyGraphCardEditor
             },
           ]
         : []),
+      {
+        type: "string",
+        name: "collection_key",
+        required: false,
+      },
     ];
     return schema;
   });

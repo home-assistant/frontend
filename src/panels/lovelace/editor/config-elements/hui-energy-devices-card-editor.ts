@@ -68,16 +68,6 @@ export class HuiEnergyDevicesCardEditor
         name: "",
         type: "grid",
         schema: [
-          {
-            type: "string",
-            name: "collection_key",
-            required: false,
-          },
-          {
-            name: "max_devices",
-            required: false,
-            selector: { number: { min: 1, mode: "box" } },
-          },
           ...(type === "energy-devices-graph"
             ? ([
                 {
@@ -103,6 +93,16 @@ export class HuiEnergyDevicesCardEditor
                 },
               ] as HaFormSchema[])
             : []),
+          {
+            name: "max_devices",
+            required: false,
+            selector: { number: { min: 1, mode: "box" } },
+          },
+          {
+            type: "string",
+            name: "collection_key",
+            required: false,
+          },
         ],
       },
     ];

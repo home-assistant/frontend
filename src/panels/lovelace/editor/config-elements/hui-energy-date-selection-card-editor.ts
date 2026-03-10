@@ -68,14 +68,14 @@ export class HuiEnergyDateSelectionCardEditor
             },
           },
           {
-            type: "string",
-            name: "collection_key",
-            required: false,
-          },
-          {
             name: "disable_compare",
             required: false,
             selector: { boolean: {} },
+          },
+          {
+            type: "string",
+            name: "collection_key",
+            required: false,
           },
         ],
       },
