@@ -123,7 +123,6 @@ export class HuiEnergyDateSelectionCardEditor
     switch (schema.name) {
       case "vertical_opening_direction":
       case "disable_compare":
-      case "collection_key":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.energy-date-selection.${schema.name}`
         );
