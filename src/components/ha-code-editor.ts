@@ -1,4 +1,5 @@
-import "@home-assistant/webawesome/dist/components/popover/popover";
+import "@home-assistant/webawesome/dist/components/popup/popup";
+import type WaPopup from "@home-assistant/webawesome/dist/components/popup/popup";
 import type {
   Completion,
   CompletionContext,
@@ -111,6 +112,18 @@ export class HaCodeEditor extends ReactiveElement {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
+  private _completionInfoPopover?: WaPopup;
+
+  private _completionInfoContainer?: HTMLDivElement;
+
+  private _completionInfoDestroy?: () => void;
+
+  private _completionInfoRequest = 0;
+
+  private _completionInfoKey?: string;
+
+  private _completionInfoFrame?: number;
+
   private _editorToolbar?: HaIconButtonToolbar;
 
   private _iconList?: Completion[];
@@ -156,6 +169,14 @@ export class HaCodeEditor extends ReactiveElement {
 
   public disconnectedCallback() {
     fireEvent(this, "dialog-set-fullscreen", false);
+    this._clearCompletionInfo();
+    if (this._completionInfoFrame !== undefined) {
+      cancelAnimationFrame(this._completionInfoFrame);
+      this._completionInfoFrame = undefined;
+    }
+    this._completionInfoPopover?.remove();
+    this._completionInfoPopover = undefined;
+    this._completionInfoContainer = undefined;
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
     this.removeEventListener("keydown", this._handleKeyDown);
@@ -599,6 +620,157 @@ export class HaCodeEditor extends ReactiveElement {
     return completionInfo;
   };
 
+  private _getCompletionInfo = (
+    completion: Completion
+  ): CompletionInfo | Promise<CompletionInfo> | null => {
+    if (this.hass && completion.label in this.hass.states) {
+      return this._renderInfo(completion);
+    }
+
+    if (completion.label.startsWith("mdi:")) {
+      return renderIcon(completion);
+    }
+
+    return null;
+  };
+
+  private _ensureCompletionInfoPopover(): WaPopup {
+    if (!this._completionInfoPopover) {
+      this._completionInfoPopover = document.createElement(
+        "wa-popup"
+      ) as WaPopup;
+      this._completionInfoPopover.classList.add("completion-info-popover");
+      this._completionInfoPopover.placement = "right-start";
+      this._completionInfoPopover.distance = 4;
+      this._completionInfoPopover.flip = true;
+      this._completionInfoPopover.flipFallbackPlacements =
+        "left-start bottom-start top-start";
+      this._completionInfoPopover.shift = true;
+      this._completionInfoPopover.shiftPadding = 8;
+      this._completionInfoPopover.autoSize = "both";
+      this._completionInfoPopover.autoSizePadding = 8;
+
+      this._completionInfoContainer = document.createElement("div");
+      this._completionInfoPopover.appendChild(this._completionInfoContainer);
+      this.renderRoot.appendChild(this._completionInfoPopover);
+    }
+
+    return this._completionInfoPopover;
+  }
+
+  private _clearCompletionInfo() {
+    this._completionInfoRequest += 1;
+    this._completionInfoKey = undefined;
+    this._completionInfoDestroy?.();
+    this._completionInfoDestroy = undefined;
+    this._completionInfoContainer?.replaceChildren();
+
+    if (this._completionInfoPopover?.active) {
+      this._completionInfoPopover.active = false;
+    }
+  }
+
+  private _renderCompletionInfoContent(info: CompletionInfo) {
+    this._completionInfoDestroy?.();
+    this._completionInfoDestroy = undefined;
+
+    if (!this._completionInfoContainer) {
+      return;
+    }
+
+    if (info === null) {
+      this._completionInfoContainer.replaceChildren();
+      return;
+    }
+
+    if ("nodeType" in info) {
+      this._completionInfoContainer.replaceChildren(info);
+      return;
+    }
+
+    this._completionInfoContainer.replaceChildren(info.dom);
+    this._completionInfoDestroy = info.destroy;
+  }
+
+  private _syncCompletionInfoPopover = () => {
+    if (this._completionInfoFrame !== undefined) {
+      cancelAnimationFrame(this._completionInfoFrame);
+    }
+
+    this._completionInfoFrame = requestAnimationFrame(() => {
+      this._completionInfoFrame = undefined;
+      this._syncCompletionInfoPopoverNow();
+    });
+  };
+
+  private _syncCompletionInfoPopoverNow = () => {
+    if (!this.codemirror || !this._loadedCodeMirror) {
+      return;
+    }
+
+    if (window.matchMedia("(max-width: 600px)").matches) {
+      this._clearCompletionInfo();
+      return;
+    }
+
+    const completion = this._loadedCodeMirror.selectedCompletion(
+      this.codemirror.state
+    );
+    const selectedOption = this.codemirror.dom.querySelector(
+      ".cm-tooltip-autocomplete li[aria-selected]"
+    ) as HTMLElement | null;
+
+    if (!completion || !selectedOption) {
+      this._clearCompletionInfo();
+      return;
+    }
+
+    const infoResult = this._getCompletionInfo(completion);
+
+    if (!infoResult) {
+      this._clearCompletionInfo();
+      return;
+    }
+
+    const requestId = ++this._completionInfoRequest;
+    const infoKey = completion.label;
+    const popover = this._ensureCompletionInfoPopover();
+    popover.anchor = selectedOption;
+
+    const showPopover = async (info: CompletionInfo) => {
+      if (requestId !== this._completionInfoRequest) {
+        if (info && typeof info === "object" && "destroy" in info) {
+          info.destroy?.();
+        }
+        return;
+      }
+
+      if (infoKey !== this._completionInfoKey) {
+        this._renderCompletionInfoContent(info);
+        this._completionInfoKey = infoKey;
+      }
+
+      await popover.updateComplete;
+      popover.active = true;
+      popover.reposition();
+    };
+
+    if ("then" in infoResult) {
+      infoResult.then(showPopover).catch(() => {
+        if (requestId === this._completionInfoRequest) {
+          this._clearCompletionInfo();
+        }
+      });
+      return;
+    }
+
+    showPopover(infoResult).catch(() => {
+      if (requestId === this._completionInfoRequest) {
+        this._clearCompletionInfo();
+      }
+    });
+  };
+
   private _getStates = memoizeOne((states: HassEntities): Completion[] => {
     if (!states) {
       return [];
@@ -608,7 +780,6 @@ export class HaCodeEditor extends ReactiveElement {
       type: "variable",
       label: key,
       detail: states[key].attributes.friendly_name,
-      info: this._renderInfo,
     }));
 
     return options;
@@ -782,7 +953,6 @@ export class HaCodeEditor extends ReactiveElement {
         type: "variable",
         label: `mdi:${icon.name}`,
         detail: icon.keywords.join(", "),
-        info: renderIcon,
       }));
     }
 
@@ -810,6 +980,7 @@ export class HaCodeEditor extends ReactiveElement {
   private _onUpdate = (update: ViewUpdate): void => {
     this._canUndo = !this.readOnly && undoDepth(update.state) > 0;
     this._canRedo = !this.readOnly && redoDepth(update.state) > 0;
+    this._syncCompletionInfoPopover();
     if (!update.docChanged) {
       return;
     }
@@ -929,9 +1100,31 @@ export class HaCodeEditor extends ReactiveElement {
           padding: 8px;
         }
 
+        wa-popup.completion-info-popover {
+          --auto-size-available-width: min(
+            420px,
+            calc(100vw - (2 * var(--ha-space-4, 16px)))
+          );
+        }
+
+        wa-popup.completion-info-popover::part(popup) {
+          padding: 0;
+          color: var(--primary-text-color);
+          background-color: var(
+            --code-editor-background-color,
+            var(--card-background-color)
+          );
+          border: 1px solid var(--divider-color);
+          border-radius: var(--mdc-shape-medium, 4px);
+          box-shadow:
+            0px 5px 5px -3px rgb(0 0 0 / 20%),
+            0px 8px 10px 1px rgb(0 0 0 / 14%),
+            0px 3px 14px 2px rgb(0 0 0 / 12%);
+        }
+
         /* Hide completion info on narrow screens */
         @media (max-width: 600px) {
-          .cm-completionInfo,
+          wa-popup.completion-info-popover,
           .completion-info {
             display: none;
           }

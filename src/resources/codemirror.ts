@@ -12,7 +12,7 @@ import type { KeyBinding } from "@codemirror/view";
 import { EditorView } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 
-export { autocompletion } from "@codemirror/autocomplete";
+export { autocompletion, selectedCompletion } from "@codemirror/autocomplete";
 export { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 export { highlightingFor, foldGutter } from "@codemirror/language";
 export {
@@ -188,30 +188,6 @@ export const haTheme = EditorView.theme({
 
   "li[aria-selected] .cm-completionDetail": {
     color: "var(--text-primary-color)",
-  },
-
-  "& .cm-completionInfo.cm-completionInfo-left, & .cm-completionInfo.cm-completionInfo-left-narrow":
-    {
-      left: "var(--ha-space-2, 8px)",
-      right: "auto",
-    },
-
-  "& .cm-completionInfo.cm-completionInfo-right, & .cm-completionInfo.cm-completionInfo-right-narrow":
-    {
-      left: "auto",
-      right: "var(--ha-space-2, 8px)",
-    },
-
-  "& .cm-completionInfo.cm-completionInfo-above, & .cm-completionInfo.cm-completionInfo-below":
-    {
-      left: "var(--ha-space-2, 8px)",
-      right: "auto",
-    },
-
-  "& .cm-tooltip.cm-completionInfo": {
-    padding: "4px 8px",
-    marginTop: "-5px",
-    maxWidth: "calc(100% - (2 * var(--ha-space-2, 8px)))",
   },
 
   ".cm-selectionMatch": {
