@@ -34,20 +34,13 @@ const cardConfigStruct = assign(
         literal("right"),
         literal("left"),
         literal("center"),
-        literal("inline"),
       ])
     ),
   })
 );
 
 const verticalOpeningDirections = ["auto", "up", "down"] as const;
-const openingDirections = [
-  "auto",
-  "right",
-  "left",
-  "center",
-  "inline",
-] as const;
+const openingDirections = ["auto", "right", "left", "center"] as const;
 
 @customElement("hui-energy-date-selection-card-editor")
 export class HuiEnergyDateSelectionCardEditor

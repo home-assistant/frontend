@@ -8915,8 +8915,7 @@
                 "auto": "Automatic",
                 "right": "Right",
                 "left": "Left",
-                "center": "Center",
-                "inline": "Inline"
+                "center": "Center"
               }
             },
             "energy-distribution": {
