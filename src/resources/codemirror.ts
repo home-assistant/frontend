@@ -32,6 +32,7 @@ export {
   lineNumbers,
   rectangularSelection,
   dropCursor,
+  tooltips,
 } from "@codemirror/view";
 export { indentationMarkers } from "@replit/codemirror-indentation-markers";
 export { tags } from "@lezer/highlight";
@@ -151,8 +152,20 @@ export const haTheme = EditorView.theme({
       "var(--code-editor-background-color, var(--card-background-color))",
     border: "1px solid var(--divider-color)",
     borderRadius: "var(--mdc-shape-medium, 4px)",
+    maxWidth: "min(420px, calc(100vw - (2 * var(--ha-space-4, 16px))))",
+    boxSizing: "border-box",
     boxShadow:
       "0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)",
+  },
+
+  ".cm-tooltip.cm-tooltip-autocomplete": {
+    maxWidth:
+      "min(420px, calc(100vw - (2 * var(--ha-space-4, 16px))), calc(100% - var(--ha-space-2, 8px)))",
+  },
+
+  ".cm-tooltip-autocomplete > ul": {
+    maxWidth: "100%",
+    boxSizing: "border-box",
   },
 
   "& .cm-tooltip.cm-tooltip-autocomplete > ul > li": {
@@ -177,13 +190,28 @@ export const haTheme = EditorView.theme({
     color: "var(--text-primary-color)",
   },
 
-  "& .cm-completionInfo.cm-completionInfo-right": {
-    left: "calc(100% + 4px)",
-  },
+  "& .cm-completionInfo.cm-completionInfo-left, & .cm-completionInfo.cm-completionInfo-left-narrow":
+    {
+      left: "var(--ha-space-2, 8px)",
+      right: "auto",
+    },
+
+  "& .cm-completionInfo.cm-completionInfo-right, & .cm-completionInfo.cm-completionInfo-right-narrow":
+    {
+      left: "auto",
+      right: "var(--ha-space-2, 8px)",
+    },
+
+  "& .cm-completionInfo.cm-completionInfo-above, & .cm-completionInfo.cm-completionInfo-below":
+    {
+      left: "var(--ha-space-2, 8px)",
+      right: "auto",
+    },
 
   "& .cm-tooltip.cm-completionInfo": {
     padding: "4px 8px",
     marginTop: "-5px",
+    maxWidth: "calc(100% - (2 * var(--ha-space-2, 8px)))",
   },
 
   ".cm-selectionMatch": {

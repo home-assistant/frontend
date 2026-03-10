@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/popover/popover";
 import type {
   Completion,
   CompletionContext,
@@ -288,6 +289,9 @@ export class HaCodeEditor extends ReactiveElement {
       this._loadedCodeMirror.foldingCompartment.of(
         this._getFoldingExtensions()
       ),
+      this._loadedCodeMirror.tooltips({
+        position: "absolute",
+      }),
       ...(this.placeholder ? [placeholder(this.placeholder)] : []),
     ];
 
