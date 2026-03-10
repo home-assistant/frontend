@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
+import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
@@ -91,6 +92,8 @@ export class HUIView extends ReactiveElement {
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceViewElement;
+
+  private _config?: LovelaceViewConfig;
 
   @storage({
     key: "dashboardCardClipboard",
@@ -285,6 +288,12 @@ export class HUIView extends ReactiveElement {
     viewConfig: LovelaceViewConfig,
     isStrategy: boolean
   ) {
+    if (isStrategy && deepEqual(viewConfig, this._config)) {
+      return;
+    }
+
+    this._config = viewConfig;
+
     // Create a new layout element if necessary.
     let addLayoutElement = false;
 

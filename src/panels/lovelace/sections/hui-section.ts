@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
+import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -13,8 +14,8 @@ import type {
   LovelaceSectionRawConfig,
 } from "../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../data/lovelace/config/section";
-import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
+import type { HomeAssistant } from "../../../types";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { checkConditionsMet } from "../common/validate-condition";
@@ -196,6 +197,11 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       ...sectionConfig,
       type: sectionConfig.type || DEFAULT_SECTION_LAYOUT,
     };
+
+    if (isStrategy && deepEqual(sectionConfig, this._config)) {
+      return;
+    }
+
     this._config = sectionConfig;
 
     // Create a new layout element if necessary.

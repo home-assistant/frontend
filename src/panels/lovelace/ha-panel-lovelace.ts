@@ -12,6 +12,7 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-button";
 import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
@@ -24,6 +25,7 @@ import {
   isStrategyDashboard,
   saveConfig,
 } from "../../data/lovelace/config/types";
+import { fetchDashboards } from "../../data/lovelace/dashboard";
 import { fetchResources } from "../../data/lovelace/resource";
 import type { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
@@ -41,7 +43,6 @@ import {
 } from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
 import { generateDefaultView } from "./views/default-view";
-import { fetchDashboards } from "../../data/lovelace/dashboard";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -223,6 +224,10 @@ export class LovelacePanel extends LitElement {
 
     try {
       const conf = await generateLovelaceDashboardStrategy(rawConf, this.hass!);
+
+      if (deepEqual(conf, this.lovelace.config)) {
+        return;
+      }
       this._setLovelaceConfig(conf, rawConf, "generated");
     } catch (err: any) {
       // eslint-disable-next-line no-console
