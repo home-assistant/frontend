@@ -188,7 +188,7 @@ export class HaInput extends LitElement {
   private readonly _hasSlotController = new HasSlotController(
     this,
     "label",
-    "label-end"
+    "hint"
   );
 
   static shadowRootOptions: ShadowRootInit = {
@@ -285,6 +285,10 @@ export class HaInput extends LitElement {
     const hasLabelSlot = this.label
       ? false
       : this._hasSlotController.test("label");
+
+    const hasHintSlot = this.hint
+      ? false
+      : this._hasSlotController.test("hint");
     return html`
       <wa-input
         .type=${this.type}
@@ -321,7 +325,7 @@ export class HaInput extends LitElement {
         @blur=${this._handleBlur}
         @wa-invalid=${this._handleInvalid}
       >
-        ${this.label || this.hint || hasLabelSlot
+        ${this.label || hasLabelSlot
           ? html`<slot name="label" slot="label">${this.label}</slot>`
           : nothing}
         <slot name="start" slot="start"></slot>
@@ -341,23 +345,17 @@ export class HaInput extends LitElement {
             .path=${mdiEyeOff}
           ></ha-icon-button>
         </slot>
-        ${this.hint || this.invalid || this._invalid
-          ? html`
-              <div
-                slot="hint"
-                class=${this.invalid || this._invalid ? "error" : ""}
-                role=${ifDefined(
-                  this.invalid || this._invalid ? "alert" : undefined
-                )}
-                aria-live="polite"
-              >
-                <span
-                  >${this.validationMessage ||
-                  this._input?.validationMessage}</span
-                >
-              </div>
-            `
-          : nothing}
+        <div
+          slot="hint"
+          class=${this.invalid || this._invalid ? "error" : ""}
+          role=${ifDefined(this.invalid || this._invalid ? "alert" : undefined)}
+          aria-live="polite"
+        >
+          ${this._invalid || this.invalid
+            ? this.validationMessage || this._input?.validationMessage
+            : this.hint ||
+              (hasHintSlot ? html`<slot name="hint"></slot>` : nothing)}
+        </div>
       </wa-input>
     `;
   }
@@ -414,24 +412,29 @@ export class HaInput extends LitElement {
     wa-input {
       flex: 1;
       min-width: 0;
-      --wa-transition-fast: 0.15s;
+      height: 76px;
+      --wa-transition-fast: var(--wa-transition-normal);
     }
 
-    wa-input:not([disabled])::part(base):hover {
-      --wa-form-control-border-color: var(--ha-color-border-neutral-normal);
+    wa-input::part(base) {
+      height: 32px;
+      background-color: var(--mdc-text-field-fill-color, whitesmoke);
+      border-radius: var(--ha-border-radius-square);
+      border: none;
+      padding: 0 var(--ha-space-4);
+      border-bottom: 1px solid
+        var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+      transform: border 180ms ease-in-out;
     }
 
-    wa-input:not([disabled])::part(base):focus-within {
-      outline: none;
-      --wa-form-control-border-color: var(--ha-color-border-primary-normal);
+    :host(:focus-within) wa-input::part(base) {
+      border-width: 2px;
+      border-color: var(--primary-color);
     }
 
+    :host(:focus-within) wa-input.invalid::part(base),
     wa-input.invalid:not([disabled])::part(base) {
-      --wa-form-control-border-color: var(--ha-color-border-danger-quiet);
-    }
-    wa-input.invalid:not([disabled])::part(base):hover,
-    wa-input.invalid:not([disabled])::part(base):focus-within {
-      --wa-form-control-border-color: var(--ha-color-border-danger-normal);
+      border-color: var(--ha-color-border-danger-normal);
     }
 
     wa-input:disabled::part(base) {
@@ -439,32 +442,33 @@ export class HaInput extends LitElement {
     }
 
     wa-input::part(label) {
-      margin-block-end: 0;
+      background-color: var(--mdc-text-field-fill-color, whitesmoke);
+      border-top-left-radius: var(--ha-border-radius-sm);
+      border-top-right-radius: var(--ha-border-radius-sm);
+      padding: 0 var(--ha-space-4);
+
+      color: var(--secondary-text-color);
+      line-height: var(--ha-line-height-condensed);
+      font-size: var(--ha-font-size-xs);
+      font-weight: var(--ha-font-weight-normal);
+      font-family: var(--ha-font-family-body);
+      padding-top: var(--ha-space-3);
+      margin-bottom: 0;
     }
 
     wa-input::part(hint) {
+      height: var(--ha-space-5);
       margin-block-start: 0;
-      color: var(--ha-color-on-danger-quiet);
       font-size: var(--ha-font-size-s);
       margin-inline-start: var(--ha-space-3);
     }
 
-    .error span {
-      display: inline-block;
-      padding-top: var(--ha-space-1);
-      height: calc(var(--ha-font-size-s) + var(--ha-space-2));
+    .error {
+      color: var(--ha-color-on-danger-quiet);
     }
 
     wa-input::part(end) {
       color: var(--ha-color-text-secondary);
-    }
-
-    :host(:focus-within) {
-      --ha-input-label-background: var(--ha-color-fill-primary-quiet-hover);
-    }
-
-    wa-input.invalid {
-      --ha-input-label-background: var(--ha-color-fill-danger-quiet-active);
     }
   `;
 }
