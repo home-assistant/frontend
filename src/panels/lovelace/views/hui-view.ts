@@ -323,9 +323,9 @@ export class HUIView extends ReactiveElement {
 
   private async _initializeConfig() {
     const rawConfig = this.lovelace.config.views[this.index];
+    const isStrategy = isStrategyView(rawConfig);
 
     const viewConfig = await this._generateConfig(rawConfig);
-    const isStrategy = isStrategyView(viewConfig);
 
     this._setConfig(viewConfig, isStrategy);
   }

@@ -156,7 +156,7 @@ class HUIRoot extends LitElement {
 
   private _configChangedByUndo = false;
 
-  private _viewCache?: Record<string, HUIView>;
+  private _viewCache: Record<string, HUIView> = {};
 
   private _viewScrollPositions: Record<string, number> = {};
 
@@ -181,7 +181,12 @@ class HUIRoot extends LitElement {
     // The view can trigger a re-render when it knows that certain
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView, true),
+      () => {
+        // Reset current view to force re-creation on ll-rebuild in edit mode
+        const curView = this._curView;
+        this._curView = undefined;
+        this._selectView(curView);
+      },
       100,
       false
     );
@@ -762,7 +767,6 @@ class HUIRoot extends LitElement {
     }
 
     let newSelectView;
-    let force = false;
 
     let viewPath: string | undefined = this.route!.path.split("/")[1];
     viewPath = viewPath ? decodeURI(viewPath) : undefined;
@@ -794,9 +798,8 @@ class HUIRoot extends LitElement {
         | Lovelace
         | undefined;
 
-      if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        // On config change, recreate the current view from scratch.
-        force = true;
+      if (oldLovelace && oldLovelace.config !== this.lovelace!.config) {
+        this._cleanupViewCache(oldLovelace);
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
@@ -815,15 +818,12 @@ class HUIRoot extends LitElement {
         }
       }
 
-      if (!force && huiView) {
+      if (huiView) {
         huiView.lovelace = this.lovelace!;
       }
     }
 
-    if (newSelectView !== undefined || force) {
-      if (force && newSelectView === undefined) {
-        newSelectView = this._curView;
-      }
+    if (newSelectView !== undefined) {
       // Will allow for ripples to start rendering
       afterNextRender(() => {
         if (changedProperties.has("route")) {
@@ -835,7 +835,7 @@ class HUIRoot extends LitElement {
             scrollTo({ behavior: "auto", top: position })
           );
         }
-        this._selectView(newSelectView, force);
+        this._selectView(newSelectView);
       });
     }
   }
@@ -1162,8 +1162,27 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
-    if (!force && this._curView === viewIndex) {
+  private _cleanupViewCache(oldLovelace: Lovelace): void {
+    // Clean up cache entries for views that no longer exist
+    const newViewPaths = new Set(
+      this.lovelace!.config.views.map((v, i) => v.path ?? String(i))
+    );
+    const keys = new Set([
+      ...Object.keys(this._viewCache),
+      ...Object.keys(this._viewScrollPositions),
+    ]);
+    for (const key of keys) {
+      const index = Number(key);
+      const oldPath = oldLovelace.config.views[index]?.path ?? String(index);
+      if (!newViewPaths.has(oldPath)) {
+        delete this._viewCache[key];
+        delete this._viewScrollPositions[key];
+      }
+    }
+  }
+
+  private _selectView(viewIndex: HUIRoot["_curView"]): void {
+    if (this._curView === viewIndex) {
       return;
     }
 
@@ -1175,11 +1194,6 @@ class HUIRoot extends LitElement {
     viewIndex = viewIndex === undefined ? 0 : viewIndex;
 
     this._curView = viewIndex;
-
-    if (force) {
-      this._viewCache = {};
-      this._viewScrollPositions = {};
-    }
 
     // Recreate a new element to clear the applied themes.
     const root = this._viewRoot;
@@ -1208,12 +1222,12 @@ class HUIRoot extends LitElement {
       return;
     }
 
-    if (!force && this._viewCache![viewIndex]) {
-      view = this._viewCache![viewIndex];
+    if (this._viewCache[viewIndex]) {
+      view = this._viewCache[viewIndex];
     } else {
       view = document.createElement("hui-view");
       view.index = viewIndex;
-      this._viewCache![viewIndex] = view;
+      this._viewCache[viewIndex] = view;
     }
 
     view.lovelace = this.lovelace;
