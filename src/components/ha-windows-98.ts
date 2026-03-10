@@ -4,36 +4,13 @@ import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
+import type { LocalizeKeys } from "../common/translations/localize";
+import { subscribeLabFeature } from "../data/labs";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import { WINDOWS_98_THEME } from "./ha-windows-98-theme";
 
-const TIPS = [
-  "Try turning your house off and on again.",
-  "If your automation doesn't work, just add more YAML.",
-  "Talk to your devices. They won't answer, but it helps.",
-  "The best way to secure your smart home is to go back to candles.",
-  "Rebooting fixes everything. Everything.",
-  "Naming your vacuum 'DJ Roomba' increases cleaning efficiency by 200%.",
-  "Your automations run better when you're not looking.",
-  "Every time you restart Home Assistant, a smart bulb loses its pairing.",
-  "The cloud is just someone else's Raspberry Pi.",
-  "You can automate your coffee machine, but you still have to drink it yourself.",
-  "You can save energy by not having a home.",
-  "Psst... you can drag me anywhere you want!",
-  "Did you know? I never sleep. Well, sometimes I do. Zzz...",
-  "Zigbee, Z-Wave, Wi-Fi, Thread... so many protocols, so little time.",
-  "The sun can trigger your automations. Nature is the best sensor.",
-  "It looks like you're trying to automate your home! Would you like help?",
-  "My previous job was a paperclip. I got promoted.",
-  "I run entirely on YAML and good vibes.",
-  "Somewhere, a smart plug is blinking and nobody knows why.",
-  "Home Assistant runs on a Raspberry Pi. I run on hopes and dreams.",
-  "Behind every great home, there's someone staring at logs at 2am.",
-  "404: Motivation not found. Try again after coffee.",
-  "There are two types of people: those who back up, and those who will.",
-  "My favorite color is #008080. Don't ask me why.",
-  "Automations are just spicy if-then statements.",
-];
+const TIP_COUNT = 25;
 
 type CasitaExpression =
   | "hi"
@@ -49,12 +26,25 @@ const BUBBLE_TIMEOUT = 8000;
 const SLEEP_TIMEOUT = 30000;
 
 @customElement("ha-windows-98")
-export class HaWindows98 extends LitElement {
+export class HaWindows98 extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _enabled = true;
+  @state() private _enabled = false;
+
+  public hassSubscribe() {
+    return [
+      subscribeLabFeature(
+        this.hass!.connection,
+        "frontend",
+        "windows_98",
+        (feature) => {
+          this._enabled = feature.enabled;
+        }
+      ),
+    ];
+  }
 
   @state() private _casitaVisible = true;
 
@@ -81,8 +71,6 @@ export class HaWindows98 extends LitElement {
   private _bubbleTimer?: ReturnType<typeof setTimeout>;
 
   private _sleepTimer?: ReturnType<typeof setTimeout>;
-
-  private _tipIndex = 0;
 
   private _boundPointerMove = this._onPointerMove.bind(this);
 
@@ -114,6 +102,7 @@ export class HaWindows98 extends LitElement {
   protected willUpdate(changedProps: Map<string, unknown>): void {
     if (changedProps.has("_enabled")) {
       if (this._enabled) {
+        this.hass!.loadFragmentTranslation("windows_98");
         this._applyWin98Theme();
         this._startThemeObserver();
       } else {
@@ -303,8 +292,10 @@ export class HaWindows98 extends LitElement {
   }
 
   private _showTip(): void {
-    this._bubbleText = TIPS[this._tipIndex % TIPS.length];
-    this._tipIndex++;
+    const tipIndex = Math.floor(Math.random() * TIP_COUNT) + 1;
+    this._bubbleText = this.hass!.localize(
+      `ui.panel.windows_98.tip_${tipIndex}` as LocalizeKeys
+    );
     this._showBubble = true;
     this._expression = "ok-nabu";
     this._resetSleepTimer();
@@ -388,7 +379,7 @@ export class HaWindows98 extends LitElement {
                   @pointerdown=${this._stopPropagation}
                   @click=${this._dismiss}
                 >
-                  Dismiss me
+                  ${this.hass!.localize("ui.panel.windows_98.dismiss")}
                 </button>
                 <div class="bubble-arrow"></div>
               </div>
