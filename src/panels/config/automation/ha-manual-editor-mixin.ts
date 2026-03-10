@@ -1,8 +1,8 @@
 import { mdiContentSave } from "@mdi/js";
 import {
   html,
-  type nothing,
   type LitElement,
+  type nothing,
   type PropertyValues,
   type TemplateResult,
 } from "lit";
@@ -71,7 +71,6 @@ export const ManualEditorMixin = <TConfig>(
       }
     >;
 
-
     private _prevSidebarWidthPx?: number;
 
     protected handlePaste = async (_ev: ClipboardEvent): Promise<void> => {
@@ -82,7 +81,6 @@ export const ManualEditorMixin = <TConfig>(
       super.connectedCallback();
       window.addEventListener("paste", this.handlePaste);
     }
-
 
     public disconnectedCallback() {
       window.removeEventListener("paste", this.handlePaste);
