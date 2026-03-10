@@ -49,7 +49,9 @@ export class HaMoreInfoFavorites extends LitElement {
     fireEvent(this, "favorite-item-moved", ev.detail);
   }
 
-  private _handleItemAction = (ev): void => {
+  private _handleItemAction = (
+    ev: HASSDomEvent<HASSDomEvents["action"]>
+  ): void => {
     ev.stopPropagation();
     const target = ev.currentTarget as HTMLElement;
     fireEvent(this, "favorite-item-action", {
@@ -58,7 +60,7 @@ export class HaMoreInfoFavorites extends LitElement {
     });
   };
 
-  private _handleDelete = (ev): void => {
+  private _handleDelete = (ev: MouseEvent): void => {
     ev.stopPropagation();
     const target = ev.currentTarget as HTMLElement;
     fireEvent(this, "favorite-item-delete", {
@@ -66,12 +68,12 @@ export class HaMoreInfoFavorites extends LitElement {
     });
   };
 
-  private _handleAdd = (ev): void => {
+  private _handleAdd = (ev: MouseEvent): void => {
     ev.stopPropagation();
     fireEvent(this, "favorite-item-add");
   };
 
-  private _handleDone = (ev): void => {
+  private _handleDone = (ev: MouseEvent): void => {
     ev.stopPropagation();
     fireEvent(this, "favorite-item-done");
   };
