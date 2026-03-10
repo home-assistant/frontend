@@ -1103,7 +1103,7 @@ export class HaCodeEditor extends ReactiveElement {
         wa-popup.completion-info-popover {
           --auto-size-available-width: min(
             420px,
-            calc(var(--safe-width) - (2 * var(--ha-space-4)))
+            calc(var(--safe-width) - var(--ha-space-8))
           );
         }
 
