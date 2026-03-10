@@ -70,6 +70,11 @@ export class HuiEnergyDateSelectionCard
         ? undefined
         : this._config.vertical_opening_direction;
 
+    const openingDirection =
+      this._config.opening_direction === "auto"
+        ? undefined
+        : this._config.opening_direction;
+
     return html`
       <ha-card>
         <div class="card-content">
@@ -77,6 +82,7 @@ export class HuiEnergyDateSelectionCard
             .hass=${this.hass}
             .collectionKey=${this._config.collection_key}
             .verticalOpeningDirection=${verticalOpeningDirection}
+            .openingDirection=${openingDirection}
             .allowCompare=${!this._config.disable_compare}
           ></hui-energy-period-selector>
         </div>

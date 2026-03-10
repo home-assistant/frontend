@@ -28,10 +28,26 @@ const cardConfigStruct = assign(
     vertical_opening_direction: optional(
       union([literal("auto"), literal("up"), literal("down")])
     ),
+    opening_direction: optional(
+      union([
+        literal("auto"),
+        literal("right"),
+        literal("left"),
+        literal("center"),
+        literal("inline"),
+      ])
+    ),
   })
 );
 
 const verticalOpeningDirections = ["auto", "up", "down"] as const;
+const openingDirections = [
+  "auto",
+  "right",
+  "left",
+  "center",
+  "inline",
+] as const;
 
 @customElement("hui-energy-date-selection-card-editor")
 export class HuiEnergyDateSelectionCardEditor
@@ -62,6 +78,20 @@ export class HuiEnergyDateSelectionCardEditor
                   value: direction,
                   label: localize(
                     `ui.panel.lovelace.editor.card.energy-date-selection.vertical_opening_directions.${direction}`
+                  ),
+                })),
+              },
+            },
+          },
+          {
+            name: "opening_direction",
+            required: false,
+            selector: {
+              select: {
+                options: openingDirections.map((direction) => ({
+                  value: direction,
+                  label: localize(
+                    `ui.panel.lovelace.editor.card.energy-date-selection.opening_directions.${direction}`
                   ),
                 })),
               },
@@ -122,6 +152,7 @@ export class HuiEnergyDateSelectionCardEditor
   private _computeLabelCallback = (schema) => {
     switch (schema.name) {
       case "vertical_opening_direction":
+      case "opening_direction":
       case "disable_compare":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.energy-date-selection.${schema.name}`
