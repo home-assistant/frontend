@@ -5,11 +5,11 @@ import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot
 import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import "../ha-icon-button";
 import "../ha-tooltip";
-import "./ha-input-label";
 
 @customElement("ha-input")
 export class HaInput extends LitElement {
@@ -322,20 +322,7 @@ export class HaInput extends LitElement {
         @wa-invalid=${this._handleInvalid}
       >
         ${this.label || this.hint || hasLabelSlot
-          ? html`
-              <ha-input-label
-                slot="label"
-                .label=${this.label}
-                .hint=${this.hint}
-              >
-                ${hasLabelSlot
-                  ? html`<slot name="label" slot="label"></slot>`
-                  : nothing}
-                ${!this.hint && this._hasSlotController.test("label-end")
-                  ? html`<slot name="label-end" slot="label"></slot>`
-                  : nothing}
-              </ha-input-label>
-            `
+          ? html`<slot name="label" slot="label">${this.label}</slot>`
           : nothing}
         <slot name="start" slot="start"></slot>
         <slot name="end" slot="end"></slot>
@@ -354,16 +341,23 @@ export class HaInput extends LitElement {
             .path=${mdiEyeOff}
           ></ha-icon-button>
         </slot>
-        <div
-          slot="hint"
-          class="error ${this.invalid || this._invalid ? "visible" : ""}"
-          role="alert"
-          aria-live="assertive"
-        >
-          <span
-            >${this.validationMessage || this._input?.validationMessage}</span
-          >
-        </div>
+        ${this.hint || this.invalid || this._invalid
+          ? html`
+              <div
+                slot="hint"
+                class=${this.invalid || this._invalid ? "error" : ""}
+                role=${ifDefined(
+                  this.invalid || this._invalid ? "alert" : undefined
+                )}
+                aria-live="polite"
+              >
+                <span
+                  >${this.validationMessage ||
+                  this._input?.validationMessage}</span
+                >
+              </div>
+            `
+          : nothing}
       </wa-input>
     `;
   }
@@ -455,29 +449,10 @@ export class HaInput extends LitElement {
       margin-inline-start: var(--ha-space-3);
     }
 
-    .error {
-      transition:
-        opacity 0.3s ease-out,
-        height 0.3s ease-out;
-      height: 0;
-      overflow: hidden;
-    }
-
     .error span {
-      transition: transform 0.3s ease-out;
       display: inline-block;
-      transform: translateY(
-        calc(-1 * (var(--ha-font-size-s) + var(--ha-space-1)))
-      );
-    }
-
-    .error.visible {
       padding-top: var(--ha-space-1);
       height: calc(var(--ha-font-size-s) + var(--ha-space-2));
-    }
-
-    .error.visible span {
-      transform: translateY(0);
     }
 
     wa-input::part(end) {
