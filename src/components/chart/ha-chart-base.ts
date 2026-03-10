@@ -1003,11 +1003,17 @@ export class HaChartBase extends LitElement {
       }
     }
 
+    const wasZoomed = this._isZoomed;
     this._isZoomed = start !== 0 || end !== 100;
     this._zoomRatio = (end - start) / 100;
     this._zoomStart = start;
     this._zoomEnd = end;
-    this._updateYAxisBoundsForZoom();
+    if (this._isZoomed) {
+      this._updateYAxisBoundsForZoom();
+    } else if (wasZoomed) {
+      // Restore original yAxis options when zooming out
+      this._setChartOptions(this._createOptions());
+    }
     if (this._isTouchDevice) {
       this.chart?.dispatchAction({
         type: "hideTip",
@@ -1018,22 +1024,7 @@ export class HaChartBase extends LitElement {
   }
 
   private _updateYAxisBoundsForZoom() {
-    if (!this.chart || !this.data) return;
-
-    if (!this._isZoomed) {
-      // Reset y-axis to original options
-      const origYAxis = this.options?.yAxis;
-      const origY = (Array.isArray(origYAxis) ? origYAxis[0] : origYAxis) as
-        | YAXisOption
-        | undefined;
-      this._setChartOptions({
-        yAxis: {
-          min: origY?.min,
-          max: origY?.max,
-        } as YAXisOption,
-      });
-      return;
-    }
+    if (!this.chart || !this.data || !this._isZoomed) return;
 
     // Get x-axis range from chart
     const option = this.chart.getOption() as any;
