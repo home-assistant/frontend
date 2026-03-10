@@ -291,6 +291,9 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._unsub = subscribeBackupEvents(
       this.hass!,
       (event) => {
+        if ("agent_id" in event) {
+          return;
+        }
         if (event.manager_state === "idle" && this._state === "in_progress") {
           this.closeDialog();
         }

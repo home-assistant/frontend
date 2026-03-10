@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { consume, type ContextType } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
 import {
   css,
@@ -13,10 +14,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
-import { throttle } from "../common/util/throttle";
+import { authContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
-import type { HomeAssistant } from "../types";
 import { isIosApp } from "../util/is_ios";
 import "./ha-bottom-sheet";
 import "./ha-button";
@@ -33,8 +33,6 @@ import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends PickerMixin(LitElement) {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
@@ -115,6 +113,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
+  @state()
+  @consume({ context: authContext, subscribe: true })
+  private auth?: ContextType<typeof authContext>;
+
   @state() private _opened = false;
 
   @state() private _pickerWrapperOpen = false;
@@ -146,10 +148,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   protected willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("value")) {
       this._setUnknownValue();
-      return;
-    }
-    if (changedProperties.has("hass")) {
-      this._throttleUnknownValue();
     }
   }
 
@@ -257,7 +255,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     return html`
       <ha-picker-combo-box
         id="combo-box"
-        .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
         .value=${this._selectedValue ?? this.value}
@@ -296,13 +293,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     );
   };
 
-  private _throttleUnknownValue = throttle(
-    this._setUnknownValue,
-    1000,
-    true,
-    false
-  );
-
   private _renderHelper() {
     const showError = this.invalid && this.errorMessage;
     const showHelper = !showError && this.helper;
@@ -326,8 +316,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         this._comboBox?.setFieldValue(this._initialFieldValue);
         this._initialFieldValue = undefined;
       }
-      if (this.hass && isIosApp(this.hass)) {
-        this.hass.auth.external!.fireMessage({
+      if (this.auth?.external && isIosApp(this.auth.external)) {
+        this.auth.external.fireMessage({
           type: "focus_element",
           payload: {
             element_id: "combo-box",

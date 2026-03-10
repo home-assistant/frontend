@@ -5,6 +5,7 @@ import {
 } from "../data/config_entries";
 import {
   areasContext,
+  authContext,
   configContext,
   configEntriesContext,
   connectionContext,
@@ -126,6 +127,10 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
             { type: "config_entries/subscribe" }
           );
         },
+      }),
+      auth: new ContextProvider(this, {
+        context: authContext,
+        initialValue: this.hass?.auth,
       }),
     };
 
