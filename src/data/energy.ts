@@ -753,12 +753,10 @@ const convertCollectionKeyToConnection = (
   if (collectionKey) {
     validateEnergyCollectionKey(collectionKey);
     key = `_${collectionKey}`;
-  } else {
+  } else if (hass.panelUrl) {
     const defaultKey = ENERGY_COLLECTION_KEY_PREFIX + hass.panelUrl;
-    if (defaultKey) {
-      key = `_${defaultKey}`;
-      collectionKey = defaultKey;
-    }
+    key = `_${defaultKey}`;
+    collectionKey = defaultKey;
   }
   return [key, collectionKey];
 };
