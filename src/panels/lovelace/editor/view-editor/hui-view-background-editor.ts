@@ -36,9 +36,22 @@ export class HuiViewBackgroundEditor extends LitElement {
 
   @state() private _mode: BackgroundMode = "image";
 
+  private _cachedBackground: Record<BackgroundMode, any> = {
+    image: undefined,
+    gradient: undefined,
+  };
+
+  get config(): LovelaceViewConfig {
+    return this._config;
+  }
+
   set config(config: LovelaceViewConfig) {
     if (!this._config) {
       this._mode = _detectMode(config);
+      this._cachedBackground[this._mode] = config.background;
+      if (this._mode === "gradient") {
+        import("./hui-view-gradient-editor");
+      }
     }
     this._config = config;
   }
@@ -273,15 +286,28 @@ export class HuiViewBackgroundEditor extends LitElement {
   );
 
   private _modeChanged(ev: CustomEvent): void {
-    this._mode = ev.detail.value as BackgroundMode;
+    const newMode = ev.detail.value as BackgroundMode;
+    if (newMode === this._mode) return;
+
+    this._cachedBackground[this._mode] = this._config.background;
+
+    this._mode = newMode;
+
     if (this._mode === "gradient") {
       import("./hui-view-gradient-editor");
+    }
+
+    const cachedBg = this._cachedBackground[this._mode];
+    if (cachedBg !== undefined) {
+      const config = { ...this._config, background: cachedBg };
+      fireEvent(this, "view-config-changed", { config });
     }
   }
 
   private _gradientConfigChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (ev.detail?.config) {
+      this._cachedBackground.gradient = ev.detail.config.background;
       fireEvent(this, "view-config-changed", { config: ev.detail.config });
     }
   }
@@ -291,6 +317,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       ...this._config,
       background: ev.detail.value,
     };
+    this._cachedBackground.image = ev.detail.value;
     fireEvent(this, "view-config-changed", { config });
   }
 
@@ -335,7 +362,7 @@ export class HuiViewBackgroundEditor extends LitElement {
       --file-upload-image-border-radius: var(--ha-border-radius-sm);
     }
     ha-button-toggle-group {
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
     .previewContainer {
       width: 100%;
@@ -346,7 +373,7 @@ export class HuiViewBackgroundEditor extends LitElement {
     img {
       max-width: 100%;
       max-height: 200px;
-      margin-bottom: 4px;
+      margin-bottom: var(--ha-space-1);
       border-radius: var(--file-upload-image-border-radius);
       transition: opacity 0.3s;
       opacity: var(--picture-opacity, 1);
