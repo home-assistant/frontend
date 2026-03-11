@@ -84,8 +84,7 @@ class MoreInfoContent extends LitElement {
 
     const memberIds =
       (this.entry?.capabilities?.group_entities as string[] | undefined) ??
-      ((!this.entry || ["group", "min_max"].includes(this.entry.platform)) &&
-      Array.isArray(stateObj.attributes.entity_id)
+      (Array.isArray(stateObj.attributes.entity_id)
         ? (stateObj.attributes.entity_id as string[])
         : undefined);
 
