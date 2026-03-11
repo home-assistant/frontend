@@ -7,7 +7,6 @@ import { styleMap } from "lit/directives/style-map";
 import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
-import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-button";
 import "../../components/ha-svg-icon";
 import { updateAreaRegistryEntry } from "../../data/area/area_registry";
@@ -26,7 +25,10 @@ import { showDeviceRegistryDetailDialog } from "../config/devices/device-registr
 import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
 import "../lovelace/hui-root";
 import type { ExtraActionItem } from "../lovelace/hui-root";
-import { expandLovelaceConfigStrategies } from "../lovelace/strategies/get-strategy";
+import {
+  checkStrategyShouldRegenerate,
+  generateLovelaceDashboardStrategy,
+} from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
 import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 import { showNewOverviewDialog } from "./dialogs/show-dialog-new-overview";
@@ -95,26 +97,19 @@ class PanelHome extends LitElement {
       return;
     }
 
-    if (oldHass && this.hass) {
-      // If the entity registry changed, ask the user if they want to refresh the config
-      if (
-        oldHass.entities !== this.hass.entities ||
-        oldHass.devices !== this.hass.devices ||
-        oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors ||
-        oldHass.panels !== this.hass.panels
-      ) {
-        if (this.hass.config.state === "RUNNING") {
-          this._debounceRegistriesChanged();
-          return;
-        }
-      }
-      // If ha started, refresh the config
-      if (
-        this.hass.config.state === "RUNNING" &&
-        oldHass.config.state !== "RUNNING"
-      ) {
+    if (oldHass && this.hass && this.hass.config.state === "RUNNING") {
+      if (oldHass.config.state !== "RUNNING") {
         this._setup();
+        return;
+      }
+      const shouldRegenerate = checkStrategyShouldRegenerate(
+        "dashboard",
+        this._strategyConfig.strategy,
+        oldHass,
+        this.hass
+      );
+      if (shouldRegenerate) {
+        this._debounceRegenerateStrategy();
       }
     }
   }
@@ -135,12 +130,12 @@ class PanelHome extends LitElement {
     this._setLovelace();
   }
 
-  private _debounceRegistriesChanged = debounce(
-    () => this._registriesChanged(),
+  private _debounceRegenerateStrategy = debounce(
+    () => this._regenerateStrategyConfig(),
     200
   );
 
-  private _registriesChanged = async () => {
+  private _regenerateStrategyConfig() {
     // If on an area view that no longer exists, redirect to overview
     const path = this.route?.path?.split("/")[1];
     if (path?.startsWith("areas-")) {
@@ -151,7 +146,7 @@ class PanelHome extends LitElement {
       }
     }
     this._setLovelace();
-  };
+  }
 
   private _updateExtraActionItems() {
     const path = this.route?.path?.split("/")[1];
@@ -312,23 +307,21 @@ class PanelHome extends LitElement {
     });
   }
 
-  private async _setLovelace() {
-    const strategyConfig: LovelaceDashboardStrategyConfig = {
+  private get _strategyConfig(): LovelaceDashboardStrategyConfig {
+    return {
       strategy: {
         type: "home",
         favorite_entities: this._config.favorite_entities,
         home_panel: true,
       },
     };
+  }
 
-    const config = await expandLovelaceConfigStrategies(
-      strategyConfig,
+  private async _setLovelace() {
+    const config = await generateLovelaceDashboardStrategy(
+      this._strategyConfig,
       this.hass
     );
-
-    if (deepEqual(config, this._lovelace?.config)) {
-      return;
-    }
 
     this._lovelace = {
       config: config,

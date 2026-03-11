@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
-import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
@@ -42,7 +41,10 @@ import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { createErrorSectionConfig } from "../sections/hui-error-section";
 import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
-import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
+import {
+  checkStrategyShouldRegenerate,
+  generateLovelaceViewStrategy,
+} from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { getViewType } from "./get-view-type";
 
@@ -185,10 +187,13 @@ export class HUIView extends ReactiveElement {
     if (oldHass && this.hass && this.lovelace && isStrategyView(viewConfig)) {
       if (
         this.hass.config.state === "RUNNING" &&
-        (oldHass.entities !== this.hass.entities ||
-          oldHass.devices !== this.hass.devices ||
-          oldHass.areas !== this.hass.areas ||
-          oldHass.floors !== this.hass.floors)
+        (oldHass.config.state !== "RUNNING" ||
+          checkStrategyShouldRegenerate(
+            "view",
+            viewConfig.strategy,
+            oldHass,
+            this.hass
+          ))
       ) {
         this._debounceRefreshConfig();
       }

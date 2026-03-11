@@ -12,7 +12,6 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
-import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-button";
 import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
@@ -36,7 +35,10 @@ import { checkLovelaceConfig } from "./common/check-lovelace-config";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
-import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
+import {
+  checkStrategyShouldRegenerate,
+  generateLovelaceDashboardStrategy,
+} from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
 import { generateDefaultView } from "./views/default-view";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
@@ -49,12 +51,6 @@ interface LovelacePanelConfig {
 
 let editorLoaded = false;
 let resourcesLoaded = false;
-
-declare global {
-  interface HASSDomEvents {
-    "strategy-config-changed": undefined;
-  }
-}
 
 @customElement("ha-panel-lovelace")
 export class LovelacePanel extends LitElement {
@@ -129,7 +125,6 @@ export class LovelacePanel extends LitElement {
           .route=${this.route}
           .narrow=${this.narrow}
           @config-refresh=${this._forceFetchConfig}
-          @strategy-config-changed=${this._strategyConfigChanged}
         ></hui-root>
       `;
     }
@@ -195,60 +190,25 @@ export class LovelacePanel extends LitElement {
       this.lovelace &&
       isStrategyDashboard(this.lovelace.rawConfig)
     ) {
-      // If the entity registry changed, ask the user if they want to refresh the config
-      if (
-        oldHass.entities !== this.hass.entities ||
-        oldHass.devices !== this.hass.devices ||
-        oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors
-      ) {
-        if (this.hass.config.state === "RUNNING") {
-          this._debounceRegistriesChanged();
-        }
-      }
-      // If ha started, refresh the config
       if (
         this.hass.config.state === "RUNNING" &&
-        oldHass.config.state !== "RUNNING"
+        (oldHass.config.state !== "RUNNING" ||
+          checkStrategyShouldRegenerate(
+            "dashboard",
+            this.lovelace.rawConfig.strategy,
+            oldHass,
+            this.hass
+          ))
       ) {
-        this._regenerateStrategyConfig();
+        this._debounceRegenerateStrategy();
       }
     }
   }
 
-  private _debounceRegistriesChanged = debounce(
-    () => this._registriesChanged(),
+  private _debounceRegenerateStrategy = debounce(
+    () => this._regenerateStrategyConfig(),
     200
   );
-
-  private _registriesChanged = async () => {
-    if (!this.hass || !this.lovelace) {
-      return;
-    }
-    const rawConfig = this.lovelace.rawConfig;
-
-    if (!isStrategyDashboard(rawConfig)) {
-      return;
-    }
-
-    const oldConfig = this.lovelace.config;
-    const generatedConfig = await generateLovelaceDashboardStrategy(
-      rawConfig,
-      this.hass!
-    );
-
-    const newConfig = checkLovelaceConfig(generatedConfig) as LovelaceConfig;
-
-    // Regenerate if the config changed
-    if (!deepEqual(newConfig, oldConfig)) {
-      this._regenerateStrategyConfig();
-    }
-  };
-
-  private _strategyConfigChanged = (ev: CustomEvent) => {
-    ev.stopPropagation();
-    this._regenerateStrategyConfig();
-  };
 
   private async _regenerateStrategyConfig() {
     if (!this.hass || !this.lovelace) {
