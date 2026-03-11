@@ -13,6 +13,7 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { animationStyles } from "../../../../../resources/theme/animations.globals";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -207,7 +208,9 @@ class ZHAConfigDashboard extends LitElement {
                       "ui.panel.config.zha.configuration_page.group_count",
                       { count: this._totalGroups }
                     )
-                  : nothing}
+                  : this.hass.localize(
+                      "ui.panel.config.zha.groups.groups.caption"
+                    )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -417,6 +420,7 @@ class ZHAConfigDashboard extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      animationStyles,
       css`
         ha-card {
           margin: auto;
@@ -516,15 +520,6 @@ class ZHAConfigDashboard extends LitElement {
         .network-status small.offline,
         .fade-in {
           animation: fade-in var(--ha-animation-duration-slow) ease-in;
-        }
-
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
         }
 
         .container {
