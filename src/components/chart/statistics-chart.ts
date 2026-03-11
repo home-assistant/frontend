@@ -507,7 +507,6 @@ export class StatisticsChart extends LitElement {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
             smooth: this.chartType === "line" ? 0.4 : false,
-            smoothMonotone: "x",
             cursor: "default",
             data: [],
             name: name
