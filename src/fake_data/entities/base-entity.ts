@@ -37,6 +37,8 @@ export class MockBaseEntity {
 
   public hass?: MockHassLike;
 
+  private _transitionTimer?: ReturnType<typeof setTimeout>;
+
   static CAPABILITY_ATTRIBUTES: Set<string> = BASE_CAPABILITY_ATTRIBUTES;
 
   constructor(input: EntityInput) {
@@ -76,6 +78,28 @@ export class MockBaseEntity {
     );
   }
 
+  protected _transition(
+    transitioning: string,
+    final: string,
+    duration: number,
+    onComplete?: () => void
+  ): void {
+    this._clearTransition();
+    this.update({ state: transitioning });
+    this._transitionTimer = setTimeout(() => {
+      this._transitionTimer = undefined;
+      this.update({ state: final });
+      onComplete?.();
+    }, duration);
+  }
+
+  protected _clearTransition(): void {
+    if (this._transitionTimer) {
+      clearTimeout(this._transitionTimer);
+      this._transitionTimer = undefined;
+    }
+  }
+
   public update(changes: {
     state?: string;
     attributes?: EntityAttributes;
@@ -94,11 +118,41 @@ export class MockBaseEntity {
     });
   }
 
+  protected _getBaseAttributes(): EntityAttributes {
+    const attrs = this.attributes;
+    const baseAttrs: EntityAttributes = {};
+    for (const key of [
+      "friendly_name",
+      "icon",
+      "entity_picture",
+      "assumed_state",
+      "device_class",
+      "supported_features",
+    ]) {
+      if (key in attrs) {
+        baseAttrs[key] = attrs[key];
+      }
+    }
+    return baseAttrs;
+  }
+
+  protected _getCapabilityAttributes(): EntityAttributes {
+    return {};
+  }
+
+  protected _getStateAttributes(): EntityAttributes {
+    return {};
+  }
+
   public toState(): HassEntity {
     return {
       entity_id: this.entityId,
       state: this.state,
-      attributes: this.state === "off" ? this.baseAttributes : this.attributes,
+      attributes: {
+        ...this._getBaseAttributes(),
+        ...this._getCapabilityAttributes(),
+        ...this._getStateAttributes(),
+      },
       last_changed: this.lastChanged,
       last_updated: this.lastUpdated,
       context: { id: this.entityId, user_id: null, parent_id: null },

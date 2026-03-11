@@ -95,11 +95,12 @@ export class HaTextField extends TextFieldBase {
         width: var(--ha-textfield-input-width, 100%);
       }
       .mdc-text-field:not(.mdc-text-field--with-leading-icon) {
-        padding: var(--text-field-padding, 0px 16px);
+        padding-top: var(--text-field-padding-top, 0px);
+        padding-bottom: var(--text-field-padding-bottom, 0px);
+        padding-inline-start: var(--text-field-padding-start, 16px);
+        padding-inline-end: var(--text-field-padding-end, 16px);
       }
       .mdc-text-field__affix--suffix {
-        padding-left: var(--text-field-suffix-padding-left, 12px);
-        padding-right: var(--text-field-suffix-padding-right, 0px);
         padding-inline-start: var(--text-field-suffix-padding-left, 12px);
         padding-inline-end: var(--text-field-suffix-padding-right, 0px);
         direction: ltr;
@@ -110,12 +111,12 @@ export class HaTextField extends TextFieldBase {
         direction: var(--direction);
       }
 
-      .mdc-text-field--with-leading-icon.mdc-text-field--with-trailing-icon {
-        padding-left: var(--text-field-suffix-padding-left, 0px);
-        padding-right: var(--text-field-suffix-padding-right, 0px);
-        padding-inline-start: var(--text-field-suffix-padding-left, 0px);
+      .mdc-text-field--with-trailing-icon {
+        padding-inline-start: var(--text-field-suffix-padding-left, 16px);
         padding-inline-end: var(--text-field-suffix-padding-right, 0px);
+        direction: var(--direction);
       }
+
       .mdc-text-field:not(.mdc-text-field--disabled)
         .mdc-text-field__affix--suffix {
         color: var(--secondary-text-color);

@@ -1612,6 +1612,11 @@
         },
         "light": {
           "edit_mode": "Edit favorite colors",
+          "reset_favorites": "Reset favorite colors",
+          "reset_favorites_text": "Do you want to reset all favorite colors for this light back to default?",
+          "copy_favorites": "Copy favorites to...",
+          "copy_favorites_helper": "Select one or more lights to receive the copied favorites from this light (must support same color modes).",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "toggle": "Toggle",
           "color": "Color",
           "color_temp": "Temperature",
@@ -3292,6 +3297,16 @@
                   "receive_file": "Receiving file",
                   "upload_to_agents": "Uploading to locations"
                 }
+              },
+              "segments": {
+                "home_assistant": "Home Assistant",
+                "apps": "Apps",
+                "media": "Media",
+                "upload": "Uploading backup"
+              },
+              "agent_status": {
+                "uploading": "Uploading...",
+                "uploaded": "Uploaded"
               }
             },
             "summary": {
@@ -3299,7 +3314,7 @@
               "next_automatic_backup": "Next automatic backup {day} at {time}",
               "today": "today",
               "tomorrow": "tomorrow",
-              "loading": "Loading backups...",
+              "loading": "Loading backups",
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
@@ -5675,6 +5690,8 @@
             "override_title": "This blueprint already exists",
             "override_description": "Importing it will override the existing blueprint. If the updated blueprint is not compatible, it can break your automations. Automations will have to be adjusted manually.",
             "error_no_url": "Please enter the blueprint address.",
+            "source_warning_title": "Review this blueprint source",
+            "source_warning_description": "This blueprint is not imported from GitHub or an official Home Assistant website. Only continue if you trust this source.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint path"
           }
@@ -9363,8 +9380,20 @@
               "cover-position": {
                 "label": "Cover position"
               },
+              "cover-position-preset": {
+                "label": "Cover position preset",
+                "position": "Position",
+                "add_position": "Add position",
+                "remove_position": "Remove position"
+              },
               "cover-tilt": {
                 "label": "Cover tilt"
+              },
+              "cover-tilt-preset": {
+                "label": "Cover tilt preset",
+                "position": "Position",
+                "add_position": "Add position",
+                "remove_position": "Remove position"
               },
               "cover-tilt-position": {
                 "label": "Cover tilt position"

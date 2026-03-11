@@ -29,7 +29,6 @@ import {
   MODES,
   normalizeScriptConfig,
 } from "../../../data/script";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "../automation/action/ha-automation-action";
@@ -52,7 +51,7 @@ const scriptConfigStruct = object({
 
 @customElement("manual-script-editor")
 export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
-  SubscribeMixin(LitElement)
+  LitElement
 ) {
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;

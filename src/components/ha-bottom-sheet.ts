@@ -90,7 +90,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass)) {
+      if (this.hass && isIosApp(this.hass.auth.external)) {
         const element = this.renderRoot.querySelector("[autofocus]");
         if (element !== null) {
           if (!element.id) {
