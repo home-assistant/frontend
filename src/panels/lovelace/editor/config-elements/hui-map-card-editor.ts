@@ -168,6 +168,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           required: true,
         },
         { name: "name", selector: { text: {} } },
+        { name: "color", selector: { ui_color: {} } },
         {
           name: "",
           type: "grid",
