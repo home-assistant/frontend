@@ -71,6 +71,7 @@ import type {
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
+import { supportsLightColorFavoritesCardFeature } from "../../card-features/hui-light-color-favorites-card-feature";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];
 
@@ -106,6 +107,7 @@ const UI_FEATURE_TYPES = [
   "lawn-mower-commands",
   "light-brightness",
   "light-color-temp",
+  "light-color-favorites",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
@@ -182,6 +184,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
+  "light-color-favorites": supportsLightColorFavoritesCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
