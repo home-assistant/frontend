@@ -263,7 +263,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           .schema=${this._subSchema(
             this.hass.localize,
             entityId,
-            locationEntities,
+            locationEntities
           )}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
