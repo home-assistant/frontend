@@ -684,8 +684,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       align-items: center;
     }
     ha-button {
-      margin-left: 8px;
-      margin-inline-start: 8px;
+      margin-left: var(--ha-space-2);
+      margin-inline-start: var(--ha-space-2);
       margin-inline-end: initial;
       flex-shrink: 0;
       --ha-button-theme-color: currentColor;
