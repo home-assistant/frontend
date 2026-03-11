@@ -1118,12 +1118,15 @@ export class HaChartBase extends LitElement {
 
     if (!isFinite(yMin) || !isFinite(yMax)) return;
 
-    // Add padding
+    // Add padding and round to whole numbers
     const diff = yMax - yMin;
     const padding = diff === 0 ? Math.abs(yMin) * 0.1 || 1 : diff * 0.05;
 
     this._setChartOptions({
-      yAxis: { min: yMin - padding, max: yMax + padding },
+      yAxis: {
+        min: Math.floor(yMin - padding),
+        max: Math.ceil(yMax + padding),
+      },
     });
   }
 
