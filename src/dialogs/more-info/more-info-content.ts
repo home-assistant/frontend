@@ -53,6 +53,8 @@ class MoreInfoContent extends LitElement {
 
     if (!moreInfoType) return nothing;
 
+    const memberIds = this._getEntityMemberIds(this.stateObj);
+
     return html`
       ${dynamicElement(moreInfoType, {
         hass: this.hass,
@@ -61,13 +63,11 @@ class MoreInfoContent extends LitElement {
         editMode: this.editMode,
         data: this.data,
       })}
-      ${this._showEntityMembers(this.stateObj)
+      ${memberIds?.length
         ? html`
             <hui-section
               .hass=${this.hass}
-              .config=${this._entitiesSectionConfig(
-                this.stateObj.attributes.entity_id
-              )}
+              .config=${this._entitiesSectionConfig(memberIds)}
             >
             </hui-section>
           `
@@ -75,19 +75,22 @@ class MoreInfoContent extends LitElement {
     `;
   }
 
-  private _showEntityMembers(stateObj: HassEntity): boolean {
+  private _getEntityMemberIds(stateObj: HassEntity): string[] | undefined {
     if (computeStateDomain(stateObj) === "group") {
       // Don't show entity members for legacy groups as they already show
       // the members in their more info dialog.
-      return false;
+      return undefined;
     }
-    return (
-      stateObj.attributes &&
-      stateObj.attributes.entity_id &&
-      Array.isArray(stateObj.attributes.entity_id) &&
-      stateObj.attributes.entity_id.some(
-        (entityId: string) => !this.hass!.entities[entityId]?.hidden
-      )
+
+    const memberIds =
+      (this.entry?.capabilities?.group_entities as string[] | undefined) ??
+      ((!this.entry || this.entry.platform === "group") &&
+      Array.isArray(stateObj.attributes.entity_id)
+        ? (stateObj.attributes.entity_id as string[])
+        : undefined);
+
+    return memberIds?.filter(
+      (entityId) => !this.hass!.entities[entityId]?.hidden
     );
   }
 
