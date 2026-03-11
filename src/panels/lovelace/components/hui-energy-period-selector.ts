@@ -43,6 +43,7 @@ import { calcDateRange } from "../../../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDateMonth,
+  formatDateMonthShort,
   formatDateVeryShort,
   formatDateYear,
 } from "../../../common/datetime/format_date";
@@ -293,11 +294,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 : html`${simpleRange === "12month" ||
                   simpleRange === "months" ||
                   simpleRange === "quarter"
-                    ? html`${formatDateMonth(
+                    ? html`${formatDateMonthShort(
                         this._startDate,
                         this.hass.locale,
                         this.hass.config
-                      )}&ndash;${formatDateMonth(
+                      )}&ndash;${formatDateMonthShort(
                         this._endDate || new Date(),
                         this.hass.locale,
                         this.hass.config
