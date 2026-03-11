@@ -215,10 +215,9 @@ class HuiCoverTiltFavoriteCardFeature
   private async _valueChanged(
     ev: HASSDomEvent<HASSDomEvents["value-changed"]>
   ) {
-    const value = ev.detail.value;
-    if (value == null) return;
+    if (ev.detail.value == null) return;
 
-    const tiltPosition = Number(value);
+    const tiltPosition = Number(ev.detail.value);
     if (isNaN(tiltPosition)) return;
 
     const oldTiltPosition = this._stateObj!.attributes.current_tilt_position;
