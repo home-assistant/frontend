@@ -6129,11 +6129,11 @@
           "update": "Update",
           "no_devices": "No devices",
           "enabled_label": "Enable {type}",
-          "enabled_cause": "The {type} is disabled by {cause}.",
+          "enabled_cause": "The {type} is disabled by {cause}",
           "disabled_by": {
-            "user": "User",
-            "integration": "Integration",
-            "config_entry": "Config entry"
+            "user": "user",
+            "integration": "integration",
+            "config_entry": "config entry"
           },
           "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
