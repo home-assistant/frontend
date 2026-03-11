@@ -1,6 +1,15 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  literal,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
@@ -17,6 +26,19 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
+    type: union([
+      literal("energy-carbon-consumed-gauge"),
+      literal("energy-compare"),
+      literal("energy-distribution"),
+      literal("energy-gas-graph"),
+      literal("energy-grid-neutrality-gauge"),
+      literal("energy-self-sufficiency-gauge"),
+      literal("energy-solar-consumed-gauge"),
+      literal("energy-solar-graph"),
+      literal("energy-usage-graph"),
+      literal("energy-water-graph"),
+      literal("power-sources-graph"),
+    ]),
     title: optional(string()),
     collection_key: optional(string()),
     show_legend: optional(boolean()),
