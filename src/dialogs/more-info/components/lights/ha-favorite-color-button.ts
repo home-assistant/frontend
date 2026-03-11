@@ -29,7 +29,7 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @property({ attribute: false }) color!: LightColor;
 
-  @property({ type: Boolean }) wide = false;
+  @property({ type: Boolean, reflect: true }) wide = false;
 
   @query("ha-outlined-icon-button", true)
   private _button?: HaOutlinedIconButton;
