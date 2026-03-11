@@ -31,6 +31,7 @@ export class HuiEnergyDateSelectionCard
     return {
       type: "energy-date-selection",
       vertical_opening_direction: "auto",
+      opening_direction: "auto",
     };
   }
 
