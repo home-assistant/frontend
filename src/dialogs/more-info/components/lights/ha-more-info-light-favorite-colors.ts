@@ -131,7 +131,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   };
 
   private _renderFavorite = (
-    color: unknown,
+    color: LightColor,
     index: number,
     editMode: boolean
   ): TemplateResult =>
@@ -143,7 +143,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
         { number: index + 1 }
       )}
       .disabled=${this.stateObj.state === UNAVAILABLE}
-      .color=${color as LightColor}
+      .color=${color}
     ></ha-favorite-color-button>`;
 
   private _deleteLabel = (index: number): string =>
