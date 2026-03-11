@@ -1,7 +1,7 @@
 import { mdiCheck, mdiHarddisk, mdiNas } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
@@ -51,6 +51,7 @@ const STAGE_ORDER: CreateBackupStage[][] = [
   MEDIA_STAGES,
   HA_STAGES,
   ["upload_to_agents"],
+  ["cleaning_up"],
 ];
 
 @customElement("ha-backup-overview-progress")
@@ -65,6 +66,22 @@ export class HaBackupOverviewProgress extends LitElement {
     string,
     { uploaded_bytes: number; total_bytes: number }
   > = {};
+
+  @state() private _collapsingAgents = false;
+
+  @state() private _wasUploadStage = false;
+
+  @state() private _delayingCollapse = false;
+
+  private _collapseTimeout?: ReturnType<typeof setTimeout>;
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._collapseTimeout) {
+      clearTimeout(this._collapseTimeout);
+      this._collapseTimeout = undefined;
+    }
+  }
 
   private get _heading() {
     const managerState = this.manager.manager_state;
@@ -144,61 +161,75 @@ export class HaBackupOverviewProgress extends LitElement {
     const isHassio = isComponentLoaded(this.hass, "hassio");
 
     if (isHassio) {
-      // Split creation into 3 sub-segments + Upload
+      // Split creation into 3 sub-segments + Upload + Cleaning up
       return [
         {
           label: this.hass.localize(
             "ui.panel.config.backup.overview.progress.segments.apps"
           ),
           state: this._getSegmentState(0, currentGroupIndex),
-          flex: 1,
+          flex: 2,
         },
         {
           label: this.hass.localize(
             "ui.panel.config.backup.overview.progress.segments.media"
           ),
           state: this._getSegmentState(1, currentGroupIndex),
-          flex: 1,
+          flex: 2,
         },
         {
           label: this.hass.localize(
             "ui.panel.config.backup.overview.progress.segments.home_assistant"
           ),
           state: this._getSegmentState(2, currentGroupIndex),
-          flex: 1,
+          flex: 2,
         },
         {
           label: this.hass.localize(
             "ui.panel.config.backup.overview.progress.segments.upload"
           ),
           state: this._getSegmentState(3, currentGroupIndex),
-          flex: 3,
+          flex: 5,
+        },
+        {
+          label: this.hass.localize(
+            "ui.panel.config.backup.overview.progress.segments.cleaning_up"
+          ),
+          state: this._getSegmentState(4, currentGroupIndex),
+          flex: 1,
         },
       ];
     }
 
-    // Non-HAOS: No app segment, just Media, HA and Upload
+    // Non-HAOS: No app segment, just Media, HA, Upload and Cleaning up
     return [
       {
         label: this.hass.localize(
           "ui.panel.config.backup.overview.progress.segments.media"
         ),
         state: this._getSegmentState(1, currentGroupIndex),
-        flex: 1,
+        flex: 2,
       },
       {
         label: this.hass.localize(
           "ui.panel.config.backup.overview.progress.segments.home_assistant"
         ),
         state: this._getSegmentState(2, currentGroupIndex),
-        flex: 1,
+        flex: 2,
       },
       {
         label: this.hass.localize(
           "ui.panel.config.backup.overview.progress.segments.upload"
         ),
         state: this._getSegmentState(3, currentGroupIndex),
-        flex: 3,
+        flex: 5,
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.config.backup.overview.progress.segments.cleaning_up"
+        ),
+        state: this._getSegmentState(4, currentGroupIndex),
+        flex: 1,
       },
     ];
   }
@@ -228,6 +259,26 @@ export class HaBackupOverviewProgress extends LitElement {
       />
     `;
   }
+
+  override willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("manager")) {
+      const isUpload = this._isUploadStage;
+      if (this._wasUploadStage && !isUpload) {
+        // Delay collapse to let the checkmark animation finish
+        this._delayingCollapse = true;
+        this._collapseTimeout = setTimeout(() => {
+          this._delayingCollapse = false;
+          this._collapsingAgents = true;
+          this._collapseTimeout = undefined;
+        }, 300);
+      }
+      this._wasUploadStage = isUpload;
+    }
+  }
+
+  private _handleAgentCollapseEnd = () => {
+    this._collapsingAgents = false;
+  };
 
   private _renderSegmentedProgress() {
     const managerState = this.manager.manager_state;
@@ -261,7 +312,10 @@ export class HaBackupOverviewProgress extends LitElement {
   }
 
   private _renderAgentProgress() {
-    if (!this._isUploadStage || this.agents.length === 0) {
+    const showAgents =
+      this._isUploadStage || this._delayingCollapse || this._collapsingAgents;
+
+    if (!showAgents || this.agents.length === 0) {
       return nothing;
     }
 
@@ -272,7 +326,12 @@ export class HaBackupOverviewProgress extends LitElement {
     }
 
     return html`
-      <div class="agent-list-wrapper">
+      <div
+        class="agent-list-wrapper ${this._collapsingAgents ? "collapsing" : ""}"
+        @animationend=${this._collapsingAgents
+          ? this._handleAgentCollapseEnd
+          : nothing}
+      >
         <ha-md-list class="agent-list">
           ${this.agents.map((agent) => {
             const name = computeBackupAgentName(
@@ -417,6 +476,10 @@ export class HaBackupOverviewProgress extends LitElement {
           grid-template-rows: 1fr;
           animation: expand var(--ha-animation-duration-slow, 350ms) ease-out;
         }
+        .agent-list-wrapper.collapsing {
+          animation: collapse var(--ha-animation-duration-slow, 350ms)
+            ease-out forwards;
+        }
         @keyframes expand {
           from {
             grid-template-rows: 0fr;
@@ -425,6 +488,16 @@ export class HaBackupOverviewProgress extends LitElement {
           to {
             grid-template-rows: 1fr;
             opacity: 1;
+          }
+        }
+        @keyframes collapse {
+          from {
+            grid-template-rows: 1fr;
+            opacity: 1;
+          }
+          to {
+            grid-template-rows: 0fr;
+            opacity: 0;
           }
         }
         .agent-list {
