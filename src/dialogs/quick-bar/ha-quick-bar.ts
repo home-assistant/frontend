@@ -146,7 +146,7 @@ export class QuickBar extends LitElement {
   private _dialogOpened = async () => {
     this._opened = true;
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass)) {
+      if (this.hass && isIosApp(this.hass.auth.external)) {
         this.hass.auth.external!.fireMessage({
           type: "focus_element",
           payload: {
@@ -855,6 +855,7 @@ export class QuickBar extends LitElement {
           );
           --dialog-content-padding: 0;
           --safe-area-inset-bottom: 0px;
+          --ha-dialog-show-duration: var(--ha-animation-duration-instant);
         }
 
         ha-tip {
