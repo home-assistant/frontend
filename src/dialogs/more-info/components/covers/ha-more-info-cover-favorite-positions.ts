@@ -452,6 +452,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       color: var(--secondary-text-color);
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
+      text-align: center;
     }
   `;
 }
