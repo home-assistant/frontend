@@ -78,7 +78,7 @@ import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
 
 @customElement("ha-config-entry-row")
-class HaConfigEntryRow extends LitElement {
+export class HaConfigEntryRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
