@@ -158,15 +158,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   private _subSchema = memoizeOne(
     (localize: LocalizeFunc, entityId: string) =>
       [
-        {
-          name: "entity",
-          selector: {
-            entity: {
-              filter: [{ filterFunc: hasLocation }],
-            },
-          },
-          required: true,
-        },
+        { name: "entity", selector: { entity: {} }, required: true },
         { name: "name", selector: { text: {} } },
         { name: "color", selector: { ui_color: {} } },
         {
