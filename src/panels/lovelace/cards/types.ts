@@ -404,6 +404,7 @@ export interface MapEntityConfig extends EntityConfig {
   unit?: string;
   focus?: boolean;
   name?: string;
+  color?: string;
 }
 
 export interface GeoLocationSourceConfig {

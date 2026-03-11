@@ -55,6 +55,19 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "Rendering needle and severity levels",
+    config: `
+- type: gauge
+  entity: sensor.brightness_high
+  name: Brightness High
+  needle: true
+  severity:
+    red: 75
+    green: 0
+    yellow: 50
+    `,
+  },
+  {
     heading: "Setting severity levels",
     config: `
 - type: gauge
