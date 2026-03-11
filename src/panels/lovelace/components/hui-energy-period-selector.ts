@@ -126,7 +126,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _measure() {
     this.narrow = this.offsetWidth < 425;
-    this._collapseButtons = this.offsetWidth < 320;
+    this._collapseButtons = this.offsetWidth < 275;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -644,7 +644,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     .date-range {
       flex: 1;
-      padding: 2px var(--ha-space-2);
+      padding: 2px var(--ha-space-2) 2px 0px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -684,14 +684,18 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       align-items: center;
     }
     ha-button {
-      margin-left: 8px;
-      margin-inline-start: 8px;
+      margin-left: var(--ha-space-2);
+      margin-inline-start: var(--ha-space-2);
       margin-inline-end: initial;
       flex-shrink: 0;
       --ha-button-theme-color: currentColor;
     }
     ha-ripple {
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+    }
+    :host([narrow]) ha-date-range-picker {
+      --ha-icon-button-size: 24px;
+      --mdc-icon-size: 16px;
     }
     .backdrop {
       position: fixed;
