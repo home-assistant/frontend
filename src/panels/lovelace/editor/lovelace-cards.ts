@@ -169,6 +169,10 @@ export const energyCards: Card[] = [
     showElement: false,
   },
   {
+    type: "energy-sources-table",
+    showElement: false,
+  },
+  {
     type: "energy-devices-graph",
     showElement: false,
   },

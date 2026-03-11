@@ -8955,6 +8955,19 @@
                 "pie": "Pie"
               }
             },
+            "energy-sources-table": {
+              "name": "Energy sources table",
+              "description": "This card shows shows all your energy sources, and the corresponding amount of energy for each.",
+              "show_only_totals": "Show only totals",
+              "types": "Types",
+              "type_options": {
+                "grid": "Grid",
+                "solar": "Solar",
+                "battery": "Battery",
+                "gas": "Gas",
+                "water": "Water"
+              }
+            },
             "energy-devices-detail-graph": {
               "name": "Device energy detail graph",
               "description": "This card shows energy usage per device over time."
