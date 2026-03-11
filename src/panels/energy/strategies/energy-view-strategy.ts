@@ -33,6 +33,8 @@ export class EnergyViewStrategy extends ReactiveElement {
         card: {
           type: "energy-date-selection",
           collection_key: collectionKey,
+          opening_direction: "right",
+          vertical_opening_direction: "up",
         },
       },
     };
