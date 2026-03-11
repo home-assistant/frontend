@@ -241,7 +241,6 @@ interface EntitySelectorFilter {
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
   supported_features?: number | [number];
-  filterFunc?: (stateObj: HassEntity) => boolean;
 }
 
 export interface EntitySelector {
@@ -813,7 +812,6 @@ export const filterSelectorEntities = (
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
     integration: filterIntegration,
-    filterFunc,
   } = filterEntity;
 
   if (filterDomain) {
@@ -853,10 +851,6 @@ export const filterSelectorEntities = (
     entitySources?.[entity.entity_id]?.domain !== filterIntegration
   ) {
     return false;
-  }
-
-  if (filterFunc) {
-    return filterFunc(entity);
   }
 
   return true;
