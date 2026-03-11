@@ -78,7 +78,7 @@ import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
 
 @customElement("ha-config-entry-row")
-class HaConfigEntryRow extends LitElement {
+export class HaConfigEntryRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -821,6 +821,20 @@ class HaConfigEntryRow extends LitElement {
   static styles = [
     haStyle,
     css`
+      :host {
+        display: block;
+        position: relative;
+      }
+      :host(.highlight)::after {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+        box-shadow:
+          0 0 0 1px rgba(var(--rgb-info-color), 0.5),
+          0 0 12px rgba(var(--rgb-info-color), 0.28);
+        content: "";
+      }
       .expand-button {
         margin: 0 -12px;
         transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
