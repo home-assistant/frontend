@@ -9,6 +9,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 
 const NON_STANDARD_URLS = {
   "energy-date-selection": "energy/#energy-date-picker",
+  "energy-compare": "energy/#energy-compare-alert",
   "energy-usage-graph": "energy/#energy-usage-graph",
   "energy-solar-graph": "energy/#solar-production-graph",
   "energy-gas-graph": "energy/#gas-consumption-graph",
