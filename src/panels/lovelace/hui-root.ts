@@ -35,7 +35,6 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
@@ -170,27 +169,9 @@ class HUIRoot extends LitElement {
     }),
   });
 
-  private _debouncedConfigChanged: () => void;
-
   private _conversation = memoizeOne((_components) =>
     isComponentLoaded(this.hass, "conversation")
   );
-
-  constructor() {
-    super();
-    // The view can trigger a re-render when it knows that certain
-    // web components have been loaded.
-    this._debouncedConfigChanged = debounce(
-      () => {
-        // Reset current view to force re-creation on ll-rebuild in edit mode
-        const curView = this._curView;
-        this._curView = undefined;
-        this._selectView(curView);
-      },
-      100,
-      false
-    );
-  }
 
   private _renderActionItems(): TemplateResult {
     const result: TemplateResult[] = [];
@@ -637,7 +618,6 @@ class HUIRoot extends LitElement {
           .hass=${this.hass}
           .theme=${curViewConfig?.theme}
           id="view"
-          @ll-rebuild=${this._debouncedConfigChanged}
         >
           <hui-view-background .hass=${this.hass} .background=${background}>
           </hui-view-background>

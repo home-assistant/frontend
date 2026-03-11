@@ -140,11 +140,8 @@ export class HUIView extends ReactiveElement {
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
-        // In edit mode let it go to hui-root and rebuild whole view.
-        if (!this.lovelace!.editMode) {
-          ev.stopPropagation();
-          this._rebuildSection(element, sectionConfig);
-        }
+        ev.stopPropagation();
+        this._rebuildSection(element, sectionConfig);
       },
       { once: true }
     );
