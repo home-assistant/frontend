@@ -4,7 +4,10 @@ import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { LovelaceStrategyEditor } from "../types";
+import type {
+  LovelaceStrategyEditor,
+  LovelaceStrategyRegistryKey,
+} from "../types";
 import {
   getSummaryLabel,
   HOME_SUMMARIES_ICONS,
@@ -25,6 +28,10 @@ export interface HomeDashboardStrategyConfig {
 
 @customElement("home-dashboard-strategy")
 export class HomeDashboardStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+    "areas",
+  ];
+
   static async generate(
     config: HomeDashboardStrategyConfig,
     hass: HomeAssistant

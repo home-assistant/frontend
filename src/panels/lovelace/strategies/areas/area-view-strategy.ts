@@ -6,6 +6,7 @@ import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import type { LovelaceStrategyRegistryKey } from "../types";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   computeAreaTileCardConfig,
@@ -34,6 +35,12 @@ const computeHeadingCard = (
 
 @customElement("area-view-strategy")
 export class AreaViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+    "entities",
+    "devices",
+    "areas",
+  ];
+
   static async generate(
     config: AreaViewStrategyConfig,
     hass: HomeAssistant
