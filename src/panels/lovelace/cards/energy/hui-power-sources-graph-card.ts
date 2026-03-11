@@ -217,7 +217,6 @@ export class HuiPowerSourcesGraphCard
     const commonSeriesOptions: LineSeriesOption = {
       type: "line",
       smooth: 0.4,
-      smoothMonotone: "x",
       lineStyle: {
         width: 1,
       },

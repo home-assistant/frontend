@@ -44,6 +44,10 @@ export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
 }
 
+export interface LightColorFavoritesCardFeatureConfig {
+  type: "light-color-favorites";
+}
+
 export interface LockCommandsCardFeatureConfig {
   type: "lock-commands";
 }
@@ -271,6 +275,7 @@ export type LovelaceCardFeatureConfig =
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
+  | LightColorFavoritesCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig
