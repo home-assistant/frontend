@@ -8968,6 +8968,10 @@
                 "water": "Water"
               }
             },
+            "energy-compare": {
+              "name": "Energy compare alert",
+              "description": "This card shows which date ranges are being compared. It is hidden if comparison is disabled."
+            },
             "energy-devices-detail-graph": {
               "name": "Device energy detail graph",
               "description": "This card shows energy usage per device over time."
