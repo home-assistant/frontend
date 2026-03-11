@@ -56,6 +56,8 @@ export class HuiEnergyCompareCard
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean, reflect: true }) hidden = true;
 
+  @property({ attribute: false }) public preview = false;
+
   // Energy compare card cannot tolerate being removed from the DOM by hui-card,
   // as it calculates its own visibility and needs an active collection
   // subscription to do so.
@@ -85,12 +87,52 @@ export class HuiEnergyCompareCard
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
+      changedProps.has("preview") ||
       changedProps.size > 1 ||
       !changedProps.has("hass")
     );
   }
 
+  protected update(changedProps: PropertyValues): void {
+    super.update(changedProps);
+
+    if (changedProps.has("preview")) {
+      this._checkVisibility();
+    }
+  }
+
   protected render() {
+    if (this.preview) {
+      return html`
+        <ha-alert dismissable>
+          ${this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_compare.info",
+            {
+              start: html`<b
+                >${formatDate(
+                  new Date(),
+                  this.hass.locale,
+                  this.hass.config
+                )}</b
+              >`,
+              end: html`<b
+                  >${formatDate(
+                    new Date(),
+                    this.hass.locale,
+                    this.hass.config
+                  )}</b
+                >
+                <span
+                  >(${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_compare.compare_preview"
+                  )})</span
+                >`,
+            }
+          )}
+        </ha-alert>
+      `;
+    }
+
     if (!this._startCompare || !this._endCompare) {
       return nothing;
     }
@@ -162,8 +204,12 @@ export class HuiEnergyCompareCard
     this._startCompare = data.startCompare;
     this._endCompare = data.endCompare;
     this._compareMode = data.compareMode;
+    this._checkVisibility();
+  }
+
+  private _checkVisibility() {
     const oldHidden = this.hidden;
-    this.hidden = !this._startCompare;
+    this.hidden = !this._startCompare && !this.preview;
     if (oldHidden !== this.hidden) {
       fireEvent(this, "card-visibility-changed");
     }

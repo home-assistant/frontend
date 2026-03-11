@@ -8280,7 +8280,8 @@
             "energy_compare": {
               "info": "You are comparing the period {start} with the period {end}",
               "compare_previous_year": "Compare previous year",
-              "compare_previous_period": "Compare previous period"
+              "compare_previous_period": "Compare previous period",
+              "compare_preview": "Card preview"
             },
             "power_total_title": "Power usage",
             "water_total_title": "[%key:ui::panel::config::energy::water::dialog::water_flow_rate%]",
