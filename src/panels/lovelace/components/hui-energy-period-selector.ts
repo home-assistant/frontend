@@ -126,7 +126,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _measure() {
     this.narrow = this.offsetWidth < 425;
-    this._collapseButtons = this.offsetWidth < 320;
+    this._collapseButtons = this.offsetWidth < 300;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -644,7 +644,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     .date-range {
       flex: 1;
-      padding: 2px var(--ha-space-2);
+      padding: 2px var(--ha-space-2) 2px 0px;
       display: flex;
       flex-direction: column;
       justify-content: center;
