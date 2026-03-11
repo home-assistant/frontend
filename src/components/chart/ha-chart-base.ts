@@ -993,6 +993,8 @@ export class HaChartBase extends LitElement {
   }
 
   private _restoreYAxis() {
+    this._currentYMin = undefined;
+    this._currentYMax = undefined;
     const origYAxis = this.options?.yAxis;
     if (origYAxis) {
       this._setChartOptions({ yAxis: origYAxis });
@@ -1047,6 +1049,10 @@ export class HaChartBase extends LitElement {
     }
     fireEvent(this, "chart-zoom", { start, end });
   }
+
+  private _currentYMin?: number;
+
+  private _currentYMax?: number;
 
   private _updateYAxisBoundsForZoom() {
     if (!this.chart || !this.data || !this._isZoomed) return;
@@ -1121,13 +1127,18 @@ export class HaChartBase extends LitElement {
     // Add padding and round to whole numbers
     const diff = yMax - yMin;
     const padding = diff === 0 ? Math.abs(yMin) * 0.1 || 1 : diff * 0.05;
+    const newMin = Math.floor(yMin - padding);
+    const newMax = Math.ceil(yMax + padding);
 
-    this._setChartOptions({
-      yAxis: {
-        min: Math.floor(yMin - padding),
-        max: Math.ceil(yMax + padding),
-      },
-    });
+    // Skip update if bounds haven't changed
+    if (newMin === this._currentYMin && newMax === this._currentYMax) return;
+    this._currentYMin = newMin;
+    this._currentYMax = newMax;
+
+    this.chart.setOption(
+      { yAxis: { min: newMin, max: newMax } },
+      { replaceMerge: ["yAxis"] }
+    );
   }
 
   private _legendClick(ev: any) {
