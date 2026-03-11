@@ -208,4 +208,8 @@ export const energyCards: Card[] = [
     type: "energy-carbon-consumed-gauge",
     showElement: false,
   },
+  {
+    type: "energy-compare",
+    showElement: false,
+  },
 ];
