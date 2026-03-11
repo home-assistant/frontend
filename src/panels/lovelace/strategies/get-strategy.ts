@@ -19,6 +19,7 @@ import type { AsyncReturnType, HomeAssistant } from "../../../types";
 import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
 import type {
   LovelaceDashboardStrategy,
+  LovelaceStrategyRegistryKey,
   LovelaceSectionStrategy,
   LovelaceStrategy,
   LovelaceViewStrategy,
@@ -26,6 +27,13 @@ import type {
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
 const CUSTOM_PREFIX = "custom:";
+
+const DEFAULT_REGISTRY_DEPENDENCIES: readonly LovelaceStrategyRegistryKey[] = [
+  "entities",
+  "devices",
+  "areas",
+  "floors",
+];
 
 const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
   dashboard: {
@@ -235,6 +243,45 @@ export const generateLovelaceSectionStrategy = async (
     ...base,
     ...generated,
   };
+};
+
+/**
+ * Synchronously checks whether a strategy needs regeneration.
+ * Falls back to checking common registries if the strategy doesn't implement shouldRegenerate.
+ */
+export const checkStrategyShouldRegenerate = (
+  configType: LovelaceStrategyConfigType,
+  strategyConfig: LovelaceStrategyConfig,
+  oldHass: HomeAssistant,
+  newHass: HomeAssistant
+): boolean => {
+  const strategyType = strategyConfig.type;
+  if (!strategyType) {
+    return false;
+  }
+
+  let strategy: LovelaceStrategy | undefined;
+
+  if (strategyType in STRATEGIES[configType]) {
+    const tag = `${strategyType}-${configType}-strategy`;
+    strategy = customElements.get(tag) as unknown as
+      | LovelaceStrategy
+      | undefined;
+  } else if (strategyType.startsWith(CUSTOM_PREFIX)) {
+    const name = strategyType.slice(CUSTOM_PREFIX.length);
+    const tag = `ll-strategy-${configType}-${name}`;
+    const legacyTag = `ll-strategy-${name}`;
+    strategy = (customElements.get(tag) ??
+      customElements.get(legacyTag)) as unknown as LovelaceStrategy | undefined;
+  }
+
+  if (strategy?.shouldRegenerate) {
+    return strategy.shouldRegenerate(strategyConfig, oldHass, newHass);
+  }
+
+  const dependencies =
+    strategy?.registryDependencies ?? DEFAULT_REGISTRY_DEPENDENCIES;
+  return dependencies.some((key) => oldHass[key] !== newHass[key]);
 };
 
 /**
