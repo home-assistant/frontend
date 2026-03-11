@@ -359,7 +359,8 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     kind: FavoriteKind,
     label: string,
     favorites: number[],
-    showDone: boolean
+    showDone: boolean,
+    showLabel: boolean
   ): TemplateResult | typeof nothing {
     if (!this.editMode && favorites.length === 0) {
       return nothing;
@@ -367,7 +368,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
     return html`
       <section class="group">
-        <h4>${label}</h4>
+        ${showLabel ? html`<h4>${label}</h4>` : nothing}
         <ha-more-info-favorites
           data-kind=${kind}
           .items=${favorites}
@@ -398,6 +399,14 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
     const supportsPosition = coverSupportsPosition(this.stateObj);
     const supportsTiltPosition = coverSupportsTiltPosition(this.stateObj);
+    const showPositionSection = supportsPosition
+      ? this.editMode || this._favoritePositions.length > 0
+      : false;
+    const showTiltSection = supportsTiltPosition
+      ? this.editMode || this._favoriteTiltPositions.length > 0
+      : false;
+    const showLabels =
+      [showPositionSection, showTiltSection].filter(Boolean).length > 1;
 
     const showDoneOnPosition = supportsPosition && !supportsTiltPosition;
 
@@ -408,7 +417,8 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
               "position",
               this.hass.localize("ui.card.cover.position"),
               this._favoritePositions,
-              showDoneOnPosition
+              showDoneOnPosition,
+              showLabels
             )
           : nothing}
         ${supportsTiltPosition
@@ -416,7 +426,8 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
               "tilt",
               this.hass.localize("ui.card.cover.tilt_position"),
               this._favoriteTiltPositions,
-              true
+              true,
+              showLabels
             )
           : nothing}
       </div>
