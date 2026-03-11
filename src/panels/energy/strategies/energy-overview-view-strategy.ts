@@ -9,6 +9,8 @@ import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant

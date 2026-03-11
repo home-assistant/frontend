@@ -34,6 +34,8 @@ const computeHeadingCard = (
 
 @customElement("area-view-strategy")
 export class AreaViewStrategy extends ReactiveElement {
+  static registryDependencies = ["entities", "devices", "areas"];
+
   static async generate(
     config: AreaViewStrategyConfig,
     hass: HomeAssistant

@@ -11,6 +11,8 @@ export interface IframeViewStrategyConfig {
 
 @customElement("iframe-view-strategy")
 export class IframeViewStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     config: IframeViewStrategyConfig
   ): Promise<LovelaceViewConfig> {

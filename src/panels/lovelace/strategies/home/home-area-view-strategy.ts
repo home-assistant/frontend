@@ -32,6 +32,8 @@ export interface HomeAreaViewStrategyConfig {
 
 @customElement("home-area-view-strategy")
 export class HomeAreaViewStrategy extends ReactiveElement {
+  static registryDependencies = ["entities", "devices", "areas", "panels"];
+
   static async generate(
     config: HomeAreaViewStrategyConfig,
     hass: HomeAssistant

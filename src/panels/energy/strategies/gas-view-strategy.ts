@@ -9,6 +9,8 @@ import type { LovelaceSectionConfig } from "../../../data/lovelace/config/sectio
 
 @customElement("gas-view-strategy")
 export class GasViewStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant

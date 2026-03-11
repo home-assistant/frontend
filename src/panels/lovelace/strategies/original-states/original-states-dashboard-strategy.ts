@@ -9,6 +9,8 @@ export type OriginalStatesDashboardStrategyConfig =
 
 @customElement("original-states-dashboard-strategy")
 export class OriginalStatesDashboardStrategy extends ReactiveElement {
+  static registryDependencies = [];
+
   static async generate(
     config: OriginalStatesDashboardStrategyConfig
   ): Promise<LovelaceConfig> {
