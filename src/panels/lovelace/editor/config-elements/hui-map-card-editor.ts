@@ -1,3 +1,4 @@
+import type { HassEntities } from "home-assistant-js-websocket";
 import { mdiPalette } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -106,6 +107,15 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   @state() private _possibleGeoSources?: { value: string; label?: string }[];
 
+  private _getItems = memoizeOne((states: HassEntities): string[] => {
+    if (!states) {
+      return [];
+    }
+    return Object.keys(states).filter((entity_id) =>
+      hasLocation(states[entity_id])
+    );
+  });
+
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
       [
@@ -159,7 +169,15 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   private _subSchema = memoizeOne(
     (localize: LocalizeFunc, entityId: string) =>
       [
-        { name: "entity", selector: { entity: {} }, required: true },
+        {
+          name: "entity",
+          selector: {
+            entity: {
+              include_entities: includeEntities,
+            }
+          },
+          required: true
+        },
         { name: "name", selector: { text: {} } },
         { name: "color", selector: { ui_color: {} } },
         {
@@ -237,11 +255,16 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       const entityId = (
         this._subElementEditorConfig.elementConfig! as { entity: string }
       ).entity;
+      const locationEntities = this._getItems(this.hass!.states);
       return html`
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .schema=${this._subSchema(this.hass.localize, entityId)}
+          .schema=${this._subSchema(
+            this.hass.localize,
+            entityId,
+            locationEntities,
+          )}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
         >
