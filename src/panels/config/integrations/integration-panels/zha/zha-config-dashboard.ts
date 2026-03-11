@@ -26,14 +26,12 @@ import { getConfigEntries } from "../../../../../data/config_entries";
 import type {
   ZHAConfiguration,
   ZHANetworkBackupAndMetadata,
-  ZHANetworkSettings,
 } from "../../../../../data/zha";
 import {
   createZHANetworkBackup,
   fetchDevices,
   fetchGroups,
   fetchZHAConfiguration,
-  fetchZHANetworkSettings,
 } from "../../../../../data/zha";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
@@ -62,8 +60,6 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _asyncDataLoaded = false;
 
-  @state() private _networkSettings?: ZHANetworkSettings;
-
   @state() private _error?: string;
 
   protected firstUpdated(changedProperties: PropertyValues) {
@@ -73,7 +69,6 @@ class ZHAConfigDashboard extends LitElement {
       this._fetchConfigEntry();
       this._fetchConfiguration();
       this._fetchDevicesAndGroups();
-      this._fetchNetworkSettings();
     }
   }
 
@@ -353,10 +348,6 @@ class ZHAConfigDashboard extends LitElement {
 
   private async _fetchConfiguration(): Promise<void> {
     this._configuration = await fetchZHAConfiguration(this.hass!);
-  }
-
-  private async _fetchNetworkSettings(): Promise<void> {
-    this._networkSettings = await fetchZHANetworkSettings(this.hass!);
   }
 
   private async _createAndDownloadBackup(): Promise<void> {
