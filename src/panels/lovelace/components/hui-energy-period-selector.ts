@@ -126,7 +126,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _measure() {
     this.narrow = this.offsetWidth < 425;
-    this._collapseButtons = this.offsetWidth < 300;
+    this._collapseButtons = this.offsetWidth < 275;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -692,6 +692,10 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
     ha-ripple {
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+    }
+    :host([narrow]) ha-date-range-picker {
+      --ha-icon-button-size: 24px;
+      --mdc-icon-size: 16px;
     }
     .backdrop {
       position: fixed;
