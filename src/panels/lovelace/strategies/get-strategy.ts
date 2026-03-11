@@ -23,11 +23,19 @@ import type {
   LovelaceDashboardStrategyGetCreateSuggestions,
   LovelaceSectionStrategy,
   LovelaceStrategy,
+  LovelaceStrategyRegistryKey,
   LovelaceViewStrategy,
 } from "./types";
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
 const CUSTOM_PREFIX = "custom:";
+
+const DEFAULT_REGISTRY_DEPENDENCIES: readonly LovelaceStrategyRegistryKey[] = [
+  "entities",
+  "devices",
+  "areas",
+  "floors",
+];
 
 const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
   dashboard: {
@@ -239,6 +247,48 @@ export const generateLovelaceSectionStrategy = async (
     ...base,
     ...generated,
   };
+};
+
+/**
+ * Synchronously checks whether a strategy needs regeneration.
+ * Strategies can implement `shouldRegenerate` for custom logic or declare
+ * `registryDependencies` to opt in to the default reference-equality check.
+ * The default list (entities, devices, areas, floors) is used when neither is
+ * provided, preserving the previous behavior for third-party strategies.
+ */
+export const checkStrategyShouldRegenerate = (
+  configType: LovelaceStrategyConfigType,
+  strategyConfig: LovelaceStrategyConfig,
+  oldHass: HomeAssistant,
+  newHass: HomeAssistant
+): boolean => {
+  const strategyType = strategyConfig.type;
+  if (!strategyType) {
+    return false;
+  }
+
+  let strategy: LovelaceStrategy | undefined;
+
+  if (strategyType in STRATEGIES[configType]) {
+    const tag = `${strategyType}-${configType}-strategy`;
+    strategy = customElements.get(tag) as unknown as
+      | LovelaceStrategy
+      | undefined;
+  } else if (strategyType.startsWith(CUSTOM_PREFIX)) {
+    const name = strategyType.slice(CUSTOM_PREFIX.length);
+    const tag = `ll-strategy-${configType}-${name}`;
+    const legacyTag = `ll-strategy-${name}`;
+    strategy = (customElements.get(tag) ??
+      customElements.get(legacyTag)) as unknown as LovelaceStrategy | undefined;
+  }
+
+  if (strategy?.shouldRegenerate) {
+    return strategy.shouldRegenerate(strategyConfig, oldHass, newHass);
+  }
+
+  const dependencies =
+    strategy?.registryDependencies ?? DEFAULT_REGISTRY_DEPENDENCIES;
+  return dependencies.some((key) => oldHass[key] !== newHass[key]);
 };
 
 /**
