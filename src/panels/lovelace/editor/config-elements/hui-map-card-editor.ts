@@ -422,15 +422,12 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    if (
-      ev.detail.value.show_all &&
-      ev.detail.value.entities &&
-      ev.detail.value.entities.length === 0
-    ) {
-      // remove "entities: []" line since "show_all: true" is present
-      delete ev.detail.value.entities;
+    ev.stopPropagation();
+    let config = { ...ev.detail.value };
+    if (config.show_all && config.entities?.length === 0) {
+      delete config.entities;
     }
-    const config = this._orderProperties(ev.detail.value);
+    config = this._orderProperties(config);
     fireEvent(this, "config-changed", { config });
   }
 
