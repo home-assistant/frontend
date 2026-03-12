@@ -9114,7 +9114,7 @@
                 "auto": "Auto",
                 "live": "Live"
               },
-              "energy_date_selection": "Link to energy date selector",
+              "energy_date_selection": "Link to energy collection",
               "collection_key": "Energy collection name",
               "collection_key_description": "Optionally connect a collection of date selection, statistics graphs and energy cards. All cards with matching key will respond to the connected date selection card. Any card on this dashboard with no key will automatically be linked together.",
               "double_tap_action": "Double tap behavior",
