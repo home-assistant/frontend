@@ -101,7 +101,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
-  private _disabledLabelMode = (entityId: string) =>
+  private _disabledOptions = (entityId: string) =>
     computeDomain(entityId) === "zone";
 
   @state() private _possibleGeoSources?: { value: string; label?: string }[];
@@ -171,14 +171,18 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           required: true,
         },
         { name: "name", selector: { text: {} } },
-        { name: "color", selector: { ui_color: {} } },
+        {
+          name: "color",
+          disabled: this._disabledOptions(entityId),
+          selector: { ui_color: {} },
+        },
         {
           name: "",
           type: "grid",
           schema: [
             {
               name: "label_mode",
-              disabled: this._disabledLabelMode(entityId),
+              disabled: this._disabledOptions(entityId),
               selector: {
                 select: {
                   mode: "dropdown",
@@ -193,7 +197,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             },
             {
               name: "attribute",
-              disabled: this._disabledLabelMode(entityId),
+              disabled: this._disabledOptions(entityId),
               selector: {
                 attribute: {
                   entity_id: entityId,
@@ -203,7 +207,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             },
             {
               name: "unit",
-              disabled: this._disabledLabelMode(entityId),
+              disabled: this._disabledOptions(entityId),
               selector: { text: {} },
             },
             { name: "focus", default: true, selector: { boolean: {} } },
@@ -328,9 +332,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     // get updated entity config
     let newEntityConfig = ev.detail.config as MapEntityConfig;
     const entityId = newEntityConfig.entity;
-    if (this._disabledLabelMode(entityId)) {
-      // remove unused "label_mode" etc options
-      newEntityConfig = this._deleteLabelModeOptions(newEntityConfig);
+    if (this._disabledOptions(entityId)) {
+      // remove unused "color", "label_mode" etc options
+      newEntityConfig = this._deleteOptions(newEntityConfig);
     }
 
     // update card config with updated entity config
@@ -481,8 +485,11 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   };
 
   // remove "label_mode", "attribute" & "unit" options when needed
-  private _deleteLabelModeOptions(config: MapEntityConfig): MapEntityConfig {
+  private _deleteOptions(config: MapEntityConfig): MapEntityConfig {
     const cfg = { ...config };
+    if (cfg.color) {
+      delete cfg.color;
+    }
     if (cfg.label_mode) {
       delete cfg.label_mode;
     }
