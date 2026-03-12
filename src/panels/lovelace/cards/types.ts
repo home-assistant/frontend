@@ -459,7 +459,6 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
-  title?: string;
   entities: (EntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
