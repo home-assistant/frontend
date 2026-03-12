@@ -24,7 +24,6 @@ declare global {
   interface HASSDomEvents {
     "ll-rebuild": Record<string, unknown>;
     "ll-upgrade": Record<string, unknown>;
-    "ll-badge-rebuild": Record<string, unknown>;
   }
 }
 
