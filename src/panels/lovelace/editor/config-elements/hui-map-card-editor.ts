@@ -379,11 +379,8 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       if (ev.detail.entities.length || !this._config!.show_all) {
         this._config = { ...this._config!, entities: ev.detail.entities };
       } else if (this._config!.entities) {
-        this._config = {
-          ...this._config,
-          entities: undefined,
-        } as MapCardConfig;
-        delete this._config!.entities;
+        const { entities: _, ...rest } = this._config!;
+        this._config = rest as MapCardConfig;
       }
       const config = this._orderProperties(this._config!);
       fireEvent(this, "config-changed", { config: config });
