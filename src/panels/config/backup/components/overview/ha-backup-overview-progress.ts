@@ -477,8 +477,8 @@ export class HaBackupOverviewProgress extends LitElement {
           animation: expand var(--ha-animation-duration-slow, 350ms) ease-out;
         }
         .agent-list-wrapper.collapsing {
-          animation: collapse var(--ha-animation-duration-slow, 350ms)
-            ease-out forwards;
+          animation: collapse var(--ha-animation-duration-slow, 350ms) ease-out
+            forwards;
         }
         @keyframes expand {
           from {
