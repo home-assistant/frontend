@@ -11,7 +11,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-wa-dialog";
+import "../../../../components/ha-dialog";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { getConfigEntries } from "../../../../data/config_entries";
@@ -102,12 +102,13 @@ export class DialogEnergySolarSettings
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.solar.dialog.header"
         )}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -192,11 +193,14 @@ export class DialogEnergySolarSettings
                         crossorigin="anonymous"
                         referrerpolicy="no-referrer"
                         style="height: 24px; margin-right: 16px; margin-inline-end: 16px; margin-inline-start: initial;"
-                        src=${brandsUrl({
-                          domain: entry.domain,
-                          type: "icon",
-                          darkOptimized: this.hass.themes?.darkMode,
-                        })}
+                        src=${brandsUrl(
+                          {
+                            domain: entry.domain,
+                            type: "icon",
+                            darkOptimized: this.hass.themes?.darkMode,
+                          },
+                          this.hass.auth.data.hassUrl
+                        )}
                       />${entry.title}
                     </div>`}
                   >
@@ -239,7 +243,7 @@ export class DialogEnergySolarSettings
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

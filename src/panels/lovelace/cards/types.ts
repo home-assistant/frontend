@@ -166,37 +166,44 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
 }
 
 export interface EnergyCardBaseConfig extends LovelaceCardConfig {
+  title?: string;
   collection_key?: string;
+}
+
+export interface EnergyCardSankeyConfig extends EnergyCardBaseConfig {
+  layout?: "auto" | "vertical" | "horizontal";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
+}
+
+export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
+  vertical_opening_direction?: "auto" | "up" | "down";
+  opening_direction?: "auto" | "right" | "left" | "center" | "inline";
+  disable_compare?: boolean;
 }
 
 export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
   type: "energy-distribution";
-  title?: string;
   link_dashboard?: boolean;
 }
 export interface EnergyUsageGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-usage-graph";
-  title?: string;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-solar-graph";
-  title?: string;
 }
 
 export interface EnergyGasGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-gas-graph";
-  title?: string;
 }
 
 export interface EnergyWaterGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-water-graph";
-  title?: string;
 }
 
 export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-graph";
-  title?: string;
   max_devices?: number;
   hide_compound_stats?: boolean;
   modes?: ("bar" | "pie")[];
@@ -204,65 +211,50 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
 
 export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
   type: "energy-devices-detail-graph";
-  title?: string;
   max_devices?: number;
 }
 
 export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
   type: "energy-sources-table";
-  title?: string;
   types?: (keyof EnergySourceByType)[];
   show_only_totals?: boolean;
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-solar-consumed-gauge";
-  title?: string;
 }
 
 export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-self-sufficiency-gauge";
-  title?: string;
 }
 
 export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-grid-neutrality-gauge";
-  title?: string;
 }
 
 export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
   type: "energy-carbon-consumed-gauge";
-  title?: string;
-}
-
-export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
-  type: "energy-sankey";
-  title?: string;
-  layout?: "vertical" | "horizontal" | "auto";
-  group_by_floor?: boolean;
-  group_by_area?: boolean;
-}
-
-export interface WaterSankeyCardConfig extends EnergyCardBaseConfig {
-  type: "water-sankey";
-  title?: string;
-  layout?: "vertical" | "horizontal" | "auto";
-  group_by_floor?: boolean;
-  group_by_area?: boolean;
 }
 
 export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
   type: "power-sources-graph";
-  title?: string;
   show_legend?: boolean;
 }
 
-export interface PowerSankeyCardConfig extends EnergyCardBaseConfig {
+export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "energy-sankey";
+}
+
+export interface PowerSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "power-sankey";
-  title?: string;
-  layout?: "vertical" | "horizontal" | "auto";
-  group_by_floor?: boolean;
-  group_by_area?: boolean;
+}
+
+export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "water-sankey";
+}
+
+export interface WaterFlowSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "water-flow-sankey";
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -390,6 +382,7 @@ export interface MapEntityConfig extends EntityConfig {
   unit?: string;
   focus?: boolean;
   name?: string;
+  color?: string;
 }
 
 export interface GeoLocationSourceConfig {

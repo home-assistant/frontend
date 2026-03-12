@@ -35,6 +35,7 @@ import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { isUnavailableState } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
@@ -169,10 +170,12 @@ class MoreInfoMediaPlayer extends LitElement {
                     : nothing}
                   <div
                     class="volume-slider-container"
-                    @touchstart=${this._volumeController.handleTouchStart}
+                    @touchstart=${this._handleVolumePointerDown}
                     @touchmove=${this._volumeController.handleTouchMove}
-                    @touchend=${this._volumeController.handleTouchEnd}
-                    @touchcancel=${this._volumeController.handleTouchCancel}
+                    @touchend=${this._handleVolumePointerUp}
+                    @touchcancel=${this._handleVolumePointerUp}
+                    @pointerdown=${this._handleVolumePointerDown}
+                    @pointerup=${this._handleVolumePointerUp}
                     @wheel=${this._volumeController.handleWheel}
                   >
                     <ha-slider
@@ -182,8 +185,8 @@ class MoreInfoMediaPlayer extends LitElement {
                       .value=${Number(this.stateObj.attributes.volume_level) *
                       100}
                       .step=${this._volumeStep}
-                      @input=${this._volumeController.handleInput}
-                      @change=${this._volumeController.handleChange}
+                      @input=${this._handleVolumeInput}
+                      @change=${this._handleVolumeChange}
                     ></ha-slider>
                   </div>
                 `
@@ -583,12 +586,6 @@ class MoreInfoMediaPlayer extends LitElement {
       width: 100%;
     }
 
-    @media (pointer: coarse) {
-      .volume-slider {
-        pointer-events: none;
-      }
-    }
-
     .volume ha-svg-icon {
       padding: var(--ha-space-1);
       height: 16px;
@@ -596,7 +593,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     .volume ha-icon-button {
-      --mdc-icon-button-size: 32px;
+      --ha-icon-button-size: 32px;
       --mdc-icon-size: 16px;
     }
 
@@ -786,6 +783,36 @@ class MoreInfoMediaPlayer extends LitElement {
       seek_position: newValue,
     });
   }
+
+  private _handleVolumePointerDown = (
+    ev: TouchEvent | PointerEvent | MouseEvent
+  ) => {
+    if (ev.type === "touchstart") {
+      this._volumeController.handleTouchStart(ev as TouchEvent);
+    }
+    if (!this._volumeController.isInteracting) {
+      fireEvent(this, "slider-interaction-start");
+    }
+  };
+
+  private _handleVolumePointerUp = (
+    ev: TouchEvent | PointerEvent | MouseEvent
+  ) => {
+    if (ev.type === "touchend" || ev.type === "touchcancel") {
+      this._volumeController.handleTouchEnd(ev as TouchEvent);
+    }
+    setTimeout(() => {
+      fireEvent(this, "slider-interaction-stop");
+    }, 100);
+  };
+
+  private _handleVolumeInput = (ev: Event) => {
+    this._volumeController.handleInput(ev);
+  };
+
+  private _handleVolumeChange = (ev: Event) => {
+    this._volumeController.handleChange(ev);
+  };
 }
 
 declare global {

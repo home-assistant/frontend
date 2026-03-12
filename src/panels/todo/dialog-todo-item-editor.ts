@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-alert";
 import "../../components/ha-button";
@@ -14,7 +15,7 @@ import "../../components/ha-dialog-footer";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
-import "../../components/ha-wa-dialog";
+import "../../components/ha-dialog";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
@@ -109,6 +110,10 @@ class DialogTodoItemEditor extends LitElement {
       return nothing;
     }
     const isCreate = this._params.item === undefined;
+    const listName =
+      this._params.entity in this.hass.states
+        ? computeStateName(this.hass.states[this._params.entity])
+        : this._params.entity;
 
     const { dueDate, dueTime } = this._getLocaleStrings(this._due);
 
@@ -117,13 +122,14 @@ class DialogTodoItemEditor extends LitElement {
     );
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           `ui.components.todo.item.${isCreate ? "add" : "edit"}`
         )}
-        width="medium"
+        header-subtitle=${listName}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -246,7 +252,7 @@ class DialogTodoItemEditor extends LitElement {
                   : ""}
               `}
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

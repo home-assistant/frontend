@@ -1,6 +1,8 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-icon-button-prev";
@@ -11,11 +13,12 @@ import "./notification-item";
 import "../../components/ha-header-bar";
 import "../../components/ha-button";
 import "../../components/ha-drawer";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HaDrawer } from "../../components/ha-drawer";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 
 @customElement("notification-drawer")
-export class HuiNotificationDrawer extends LitElement {
+export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _notifications: PersistentNotification[] = [];
@@ -66,6 +69,14 @@ export class HuiNotificationDrawer extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   };
 
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+  }
+
   protected render() {
     if (!this._open) {
       return nothing;
@@ -111,24 +122,21 @@ export class HuiNotificationDrawer extends LitElement {
         </ha-header-bar>
         <div class="notifications">
           ${notifications.length
-            ? html`${notifications.map(
-                (notification) =>
-                  html`<div class="notification">
-                    <notification-item
-                      .hass=${this.hass}
-                      .notification=${notification}
-                    ></notification-item>
-                  </div>`
-              )}
-              ${this._notifications.length > 1
-                ? html`<div class="notification-actions">
-                    <ha-button appearance="filled" @click=${this._dismissAll}>
-                      ${this.hass.localize(
-                        "ui.notification_drawer.dismiss_all"
-                      )}
-                    </ha-button>
-                  </div>`
-                : ""}`
+            ? html`<div class="list-container">
+                  <lit-virtualizer
+                    .items=${notifications}
+                    .renderItem=${this._renderItem}
+                  ></lit-virtualizer>
+                </div>
+                ${this._notifications.length > 1
+                  ? html`<div class="notification-actions">
+                      <ha-button appearance="filled" @click=${this._dismissAll}>
+                        ${this.hass.localize(
+                          "ui.notification_drawer.dismiss_all"
+                        )}
+                      </ha-button>
+                    </div>`
+                  : ""}`
             : html` <div class="empty">
                 ${this.hass.localize("ui.notification_drawer.empty")}
                 <div></div>
@@ -138,6 +146,15 @@ export class HuiNotificationDrawer extends LitElement {
     `;
   }
 
+  private _renderItem = (notification: PersistentNotification) => html`
+    <div class="notification">
+      <notification-item
+        .hass=${this.hass}
+        .notification=${notification}
+      ></notification-item>
+    </div>
+  `;
+
   private _dialogClosed(ev: Event) {
     ev.stopPropagation();
     this._open = false;
@@ -146,6 +163,12 @@ export class HuiNotificationDrawer extends LitElement {
   private _dismissAll() {
     this.hass.callService("persistent_notification", "dismiss_all");
     this.closeDialog();
+  }
+
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    return {
+      Escape: () => this.closeDialog(),
+    };
   }
 
   static styles = css`
@@ -165,9 +188,16 @@ export class HuiNotificationDrawer extends LitElement {
       }
     }
 
+    .list-container {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding-top: var(--ha-space-4);
+    }
+
     .notifications {
-      overflow-y: auto;
-      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
       padding-left: var(--safe-area-inset-left, 0px);
       padding-inline-start: var(--safe-area-inset-left, 0px);
       padding-bottom: var(--safe-area-inset-bottom, 0px);
@@ -187,16 +217,19 @@ export class HuiNotificationDrawer extends LitElement {
     }
 
     .notification {
-      padding: 0 16px 16px;
+      padding: 0 var(--ha-space-4) var(--ha-space-4);
+      width: 100%;
     }
 
     .notification-actions {
-      padding: 0 16px 16px;
+      border-top: 1px solid var(--divider-color);
+      padding: var(--ha-space-4);
       text-align: center;
+      flex: 0 0 auto;
     }
 
     .empty {
-      padding: 16px;
+      padding: var(--ha-space-4);
       text-align: center;
     }
   `;

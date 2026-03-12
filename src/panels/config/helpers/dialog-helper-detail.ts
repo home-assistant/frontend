@@ -15,7 +15,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import "../../../components/ha-wa-dialog";
+import "../../../components/ha-dialog";
 import "../../../components/search-input";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
@@ -252,11 +252,14 @@ export class DialogHelperDetail extends LitElement {
                   slot="graphic"
                   loading="lazy"
                   alt=""
-                  src=${brandsUrl({
-                    domain,
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  })}
+                  src=${brandsUrl(
+                    {
+                      domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
@@ -283,7 +286,7 @@ export class DialogHelperDetail extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this._domain
@@ -304,7 +307,7 @@ export class DialogHelperDetail extends LitElement {
         @closed=${this._dialogClosed}
       >
         ${content} ${footer}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -441,7 +444,7 @@ export class DialogHelperDetail extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         ha-icon-next {

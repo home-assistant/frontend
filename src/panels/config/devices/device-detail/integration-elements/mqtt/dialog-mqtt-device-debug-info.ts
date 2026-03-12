@@ -7,7 +7,7 @@ import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-switch";
-import "../../../../../../components/ha-wa-dialog";
+import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-button";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import type { MQTTDeviceDebugInfo } from "../../../../../../data/mqtt";
@@ -48,7 +48,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         width="large"
@@ -119,7 +119,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             ${this.hass!.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 

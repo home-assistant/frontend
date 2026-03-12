@@ -43,9 +43,6 @@ export class HuiEntityPickerTable extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean, attribute: "no-label-float" })
-  public noLabelFloat? = false;
-
   @property({ type: Array }) public entities?: string[];
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -115,7 +112,6 @@ export class HuiEntityPickerTable extends LitElement {
         .searchLabel=${this.hass.localize(
           "ui.panel.lovelace.unused_entities.search"
         )}
-        .noLabelFloat=${this.noLabelFloat}
         .noDataText=${this.hass.localize(
           "ui.panel.lovelace.unused_entities.no_data"
         )}

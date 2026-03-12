@@ -54,7 +54,7 @@ export class HaTracePathDetails extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @state()
   @consume({ context: labelsContext, subscribe: true })

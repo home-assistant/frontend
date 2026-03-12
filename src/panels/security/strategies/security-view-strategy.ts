@@ -32,7 +32,7 @@ export const securityEntityFilters: EntityFilter[] = [
   },
   {
     domain: "cover",
-    device_class: ["door", "garage", "gate"],
+    device_class: ["door", "garage", "gate", "window"],
     entity_category: "none",
   },
   {
@@ -91,10 +91,12 @@ const processAreasForSecurity = (
         heading_style: "subtitle",
         type: "heading",
         heading: area.name,
-        tap_action: {
-          action: "navigate",
-          navigation_path: `/home/areas-${area.area_id}`,
-        },
+        tap_action: hass.panels.home
+          ? {
+              action: "navigate",
+              navigation_path: `/home/areas-${area.area_id}`,
+            }
+          : undefined,
       });
       cards.push(...areaCards);
     }

@@ -242,6 +242,10 @@ class BrowseMediaTTS extends LitElement {
         margin-top: 16px;
         display: flex;
         justify-content: space-between;
+        gap: var(--ha-space-2);
+      }
+      ha-language-picker {
+        width: 100%;
       }
       ha-textarea {
         width: 100%;
@@ -260,7 +264,7 @@ class BrowseMediaTTS extends LitElement {
       }
       .footer {
         --mdc-icon-size: 14px;
-        --mdc-icon-button-size: 24px;
+        --ha-icon-button-size: 24px;
         display: flex;
         justify-content: center;
         align-items: center;
