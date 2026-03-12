@@ -169,6 +169,12 @@ export interface EnergyCardBaseConfig extends LovelaceCardConfig {
   collection_key?: string;
 }
 
+export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
+  vertical_opening_direction?: "auto" | "up" | "down";
+  opening_direction?: "auto" | "right" | "left" | "center" | "inline";
+  disable_compare?: boolean;
+}
+
 export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
   type: "energy-distribution";
   title?: string;
@@ -398,6 +404,7 @@ export interface MapEntityConfig extends EntityConfig {
   unit?: string;
   focus?: boolean;
   name?: string;
+  color?: string;
 }
 
 export interface GeoLocationSourceConfig {

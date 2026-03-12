@@ -64,7 +64,7 @@ import {
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import type { CloudStatus } from "../../../data/cloud";
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
@@ -80,10 +80,7 @@ import type {
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { getEntityVoiceAssistantsIds } from "../../../data/expose";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import {
-  createLabelRegistryEntry,
-  subscribeLabelRegistry,
-} from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
 import type { ScriptEntity } from "../../../data/script";
 import {
   deleteScript,
@@ -184,12 +181,13 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   @state()
   _categories!: CategoryRegistryEntry[];
 
+  @consume({ context: labelsContext, subscribe: true })
   @state()
-  _labels!: LabelRegistryEntry[];
+  _labels?: LabelRegistryEntry[];
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   @storage({ key: "script-table-sort", state: false, subscribe: false })
   private _activeSorting?: SortingChangedEvent;
@@ -406,9 +404,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           this._categories = categories;
         }
       ),
-      subscribeLabelRegistry(this.hass.connection, (labels) => {
-        this._labels = labels;
-      }),
     ];
   }
 

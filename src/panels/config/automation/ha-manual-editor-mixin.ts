@@ -1,10 +1,8 @@
-import { ContextProvider } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   html,
-  type nothing,
   type LitElement,
+  type nothing,
   type PropertyValues,
   type TemplateResult,
 } from "lit";
@@ -21,8 +19,6 @@ import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type { SidebarConfig } from "../../../data/automation";
-import { subscribeAndProcessConfigEntries } from "../../../data/config_entries";
-import { configEntriesContext } from "../../../data/context";
 import type {
   Constructor,
   HomeAssistant,
@@ -75,11 +71,6 @@ export const ManualEditorMixin = <TConfig>(
       }
     >;
 
-    protected configEntries = new ContextProvider(this, {
-      context: configEntriesContext,
-      initialValue: [],
-    });
-
     private _prevSidebarWidthPx?: number;
 
     protected handlePaste = async (_ev: ClipboardEvent): Promise<void> => {
@@ -89,14 +80,6 @@ export const ManualEditorMixin = <TConfig>(
     public connectedCallback() {
       super.connectedCallback();
       window.addEventListener("paste", this.handlePaste);
-    }
-
-    public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-      return [
-        subscribeAndProcessConfigEntries(this.hass, (configEntries) => {
-          this.configEntries.setValue(configEntries);
-        }),
-      ];
     }
 
     public disconnectedCallback() {
