@@ -28,7 +28,6 @@ import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-ent
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -238,37 +237,44 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return features;
   });
 
+  private _shouldRenderSkeleton(stateObj?: HassEntity) {
+    return !this.hass || !stateObj;
+  }
+
+  private _renderSkeleton() {
+    return html`
+      <ha-card class="skeleton">
+        <ha-skeleton-tile></ha-skeleton-tile>
+      </ha-card>
+    `;
+  }
+
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
-    const entityId = this._config.entity;
-    const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
-    if (!stateObj) {
-      return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
-      `;
+    const entityId = this._config.entity;
+    const stateObj = entityId ? this.hass?.states[entityId] : undefined;
+
+    if (this._shouldRenderSkeleton(stateObj)) {
+      return this._renderSkeleton();
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const hass = this.hass!;
 
-    const active = stateActive(stateObj);
-    const color = this._computeStateColor(stateObj, this._config.color);
-    const domain = computeDomain(stateObj.entity_id);
+    const name = computeLovelaceEntityName(hass, stateObj!, this._config.name);
+
+    const active = stateActive(stateObj!);
+    const color = this._computeStateColor(stateObj!, this._config.color);
+    const domain = computeDomain(stateObj!.entity_id);
 
     const stateDisplay = this._config.hide_state
       ? nothing
       : html`
           <state-display
             .stateObj=${stateObj}
-            .hass=${this.hass}
+            .hass=${hass}
             .content=${this._config.state_content}
           >
           </state-display>
@@ -279,7 +285,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     };
 
     const imageUrl = this._config.show_entity_picture
-      ? this._getImageUrl(stateObj)
+      ? this._getImageUrl(stateObj!)
       : undefined;
 
     const featurePosition = this._featurePosition(this._config);
@@ -309,7 +315,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .interactive=${this._hasIconAction}
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
-            data-state=${ifDefined(stateObj?.state)}
+            data-state=${ifDefined(stateObj!.state)}
             class=${classMap({ image: hasImage })}
           >
             ${hasImage
@@ -319,10 +325,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     slot="icon"
                     .icon=${this._config.icon}
                     .stateObj=${stateObj}
-                    .hass=${this.hass}
+                    .hass=${hass}
                   ></ha-state-icon>
                 `}
-            ${renderTileBadge(stateObj, this.hass)}
+            ${renderTileBadge(stateObj!, hass)}
           </ha-tile-icon>
           <ha-tile-info slot="info">
             <span slot="primary" class="primary">${name}</span>
@@ -334,7 +340,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ? html`
                 <hui-card-features
                   slot="features"
-                  .hass=${this.hass}
+                  .hass=${hass}
                   .context=${this._featureContext}
                   .color=${this._config.color}
                   .features=${features}
@@ -354,6 +360,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       }
       ha-card.active {
         --tile-color: var(--state-icon-color);
+      }
+      ha-card.skeleton {
+        box-sizing: border-box;
+        padding: 10px;
       }
       ha-tile-badge {
         position: absolute;
