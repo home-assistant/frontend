@@ -690,11 +690,9 @@ export class HaConfigEntities extends LitElement {
           (lbl) => labelReg!.find((label) => label.label_id === lbl)!
         );
 
-        const entityName = computeEntityEntryName(
-          entry as EntityRegistryEntry,
-          this.hass.devices,
-          entity
-        );
+        const entityName =
+          computeEntityEntryName(entry as EntityRegistryEntry) ??
+          (entity ? computeStateName(entity) : undefined);
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;

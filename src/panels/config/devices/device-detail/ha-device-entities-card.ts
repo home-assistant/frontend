@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
+import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
@@ -202,11 +203,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         @click=${this._openEditEntry}
       >
         <ha-icon slot="graphic" .icon=${icon}></ha-icon>
-        <div class="name">
-          ${name
-            ? stripPrefixFromEntityName(name, this.deviceName) || name
-            : entry.entity_id}
-        </div>
+        <div class="name">${name || entry.entity_id}</div>
       </ha-list-item>
     `;
   }
