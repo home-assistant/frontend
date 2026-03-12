@@ -586,12 +586,6 @@ class MoreInfoMediaPlayer extends LitElement {
       width: 100%;
     }
 
-    @media (pointer: coarse) {
-      .volume-slider {
-        pointer-events: none;
-      }
-    }
-
     .volume ha-svg-icon {
       padding: var(--ha-space-1);
       height: 16px;
