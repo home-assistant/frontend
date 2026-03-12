@@ -221,11 +221,6 @@ export class HuiStatisticsGraphCardEditor
           name: "",
           type: "grid",
           schema: [
-            {
-              name: "energy_date_selection",
-              required: false,
-              selector: { boolean: {} },
-            },
             ...(enableDateSelect
               ? ([
                   {
@@ -235,6 +230,11 @@ export class HuiStatisticsGraphCardEditor
                   },
                 ] as HaFormSchema[])
               : []),
+            {
+              name: "energy_date_selection",
+              required: false,
+              selector: { boolean: {} },
+            },
           ],
         },
         {
