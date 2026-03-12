@@ -152,6 +152,7 @@ export const AutomationSortableListMixin = <T extends object>(
         items[index] = newValue;
       }
 
+      this.items = items;
       fireEvent(this, "value-changed", { value: items });
     }
 
