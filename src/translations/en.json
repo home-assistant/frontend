@@ -7162,7 +7162,6 @@
             "node_id": "ID",
             "node_ready": "Ready",
             "device_config": "Configure",
-            "installer_settings": "Installer settings",
             "reinterview_device": "Re-interview",
             "rebuild_routes": "Rebuild routes",
             "update_firmware": "Update",
@@ -7567,84 +7566,6 @@
             "2": "Z-Wave 40 kbps",
             "3": "Z-Wave 100 kbps",
             "4": "Long Range 100 kbps"
-          },
-          "node_installer": {
-            "header": "Installer settings",
-            "introduction": "Configure your device installer settings.",
-            "endpoint": "Endpoint",
-            "no_settings": "This device does not have any installer settings.",
-            "command_class": "Command class",
-            "capability_controls": {
-              "thermostat_setback": {
-                "title": "Thermostat setback",
-                "setback_state_label": "Setback in Kelvin",
-                "setback_state_helper": "Min: -12.8, max: 12.0",
-                "setback_special_state": {
-                  "label": "Setback special state",
-                  "frost_protection": "Frost protection",
-                  "energy_saving": "Energy saving",
-                  "unused": "Unused"
-                },
-                "setback_type": {
-                  "label": "Setback type",
-                  "none": "None",
-                  "temporary": "Temporary",
-                  "permanent": "Permanent"
-                },
-                "get_setback_failed": "Failed to get setback state. {error}",
-                "save_setback_failed": "Failed to save setback state. {error}"
-              },
-              "multilevel_switch": {
-                "title": "Transition",
-                "direction": "Direction",
-                "up": "Up",
-                "down": "Down",
-                "ignore_start_level": "Ignore start level",
-                "start_level": "Start level",
-                "start_transition": "Start transition",
-                "stop_transition": "Stop transition",
-                "control_failed": "Failed to control transition. {error}"
-              },
-              "door_lock": {
-                "title": "Door lock",
-                "twist_assist": "Twist assist",
-                "block_to_block": "Block to block",
-                "auto_relock_time": "Autorelock time",
-                "hold_release_time": "Hold and release time",
-                "operation_type": "Operation type",
-                "operation_types": {
-                  "1": "Constant",
-                  "2": "Timed"
-                },
-                "mode": "Mode",
-                "modes": {
-                  "0": "Unsecured",
-                  "1": "Unsecured with timeout",
-                  "16": "Inside unsecured",
-                  "17": "Inside unsecured with timeout",
-                  "32": "Outside unsecured",
-                  "33": "Outside unsecured with timeout",
-                  "254": "Unknown",
-                  "255": "Secured"
-                },
-                "lock_timeout": "Lock timeout",
-                "lock_timeout_helper": "Number of seconds before the lock automatically locks after being unlocked"
-              },
-              "color_switch": {
-                "color_component": "Color component",
-                "colors": {
-                  "0": "Warm white",
-                  "1": "Cold white",
-                  "2": "Red",
-                  "3": "Green",
-                  "4": "Blue",
-                  "5": "Amber",
-                  "6": "Cyan",
-                  "7": "Purple",
-                  "8": "Index"
-                }
-              }
-            }
           },
           "picker": {
             "title": "Select Z-Wave network",
