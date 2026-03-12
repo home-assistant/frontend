@@ -38,14 +38,14 @@ export class HuiDiscoveredDevicesCard
   @state() private _discoveredFlows: DataEntryFlowProgress[] = [];
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    if (!this.hass || !this.hass.user?.is_admin) {
+    if (!this.hass!.user?.is_admin) {
       this._discoveredFlows = [];
       return [];
     }
 
     return [
       subscribeConfigFlowInProgress(
-        this.hass,
+        this.hass!,
         (messages: ConfigFlowInProgressMessage[]) => {
           if (messages.length === 0) {
             this._discoveredFlows = [];
