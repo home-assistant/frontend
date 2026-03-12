@@ -1461,7 +1461,7 @@ export const calculateSolarConsumedGauge = (
 /** Exact number of liters in one US gallon */
 const LITERS_PER_GALLON = 3.785411784;
 
-const FLOW_RATE_TO_LMIN: Record<string, number> = {
+export const FLOW_RATE_TO_LMIN: Record<string, number> = {
   "m³/h": 1000 / 60,
   "m³/min": 1000,
   "m³/s": 60000,

@@ -5,11 +5,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
+import { formatNumber } from "../../../../common/number/format_number";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
-  formatFlowRateShort,
+  FLOW_RATE_TO_LMIN,
   getEnergyDataCollection,
-  getFlowRateFromState,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -66,24 +66,63 @@ export class HuiWaterTotalBadge
     return false;
   }
 
-  private _getCurrentFlowRate(entityId: string): number {
-    this._entities.add(entityId);
-    return getFlowRateFromState(this.hass.states[entityId]) ?? 0;
-  }
-
-  private _computeTotalFlowRate(prefs: EnergyPreferences): number {
+  private _computeTotalFlowRate(prefs: EnergyPreferences): {
+    value: number;
+    unit: string;
+  } {
     this._entities.clear();
 
+    let targetUnit: string | undefined;
     let totalFlow = 0;
 
     prefs.energy_sources.forEach((source) => {
-      if (source.type === "water" && source.stat_rate) {
-        const value = this._getCurrentFlowRate(source.stat_rate);
-        if (value > 0) totalFlow += value;
+      if (source.type !== "water" || !source.stat_rate) {
+        return;
+      }
+
+      const entityId = source.stat_rate;
+      this._entities.add(entityId);
+
+      const stateObj = this.hass.states[entityId];
+      if (!stateObj) {
+        return;
+      }
+
+      const rawValue = parseFloat(stateObj.state);
+      if (isNaN(rawValue) || rawValue <= 0) {
+        return;
+      }
+
+      const entityUnit = stateObj.attributes.unit_of_measurement;
+      if (!entityUnit) {
+        return;
+      }
+
+      if (targetUnit === undefined) {
+        targetUnit = entityUnit;
+        totalFlow += rawValue;
+        return;
+      }
+
+      if (entityUnit === targetUnit) {
+        totalFlow += rawValue;
+        return;
+      }
+
+      const sourceFactor = FLOW_RATE_TO_LMIN[entityUnit];
+      const targetFactor = FLOW_RATE_TO_LMIN[targetUnit];
+
+      if (sourceFactor !== undefined && targetFactor !== undefined) {
+        totalFlow += (rawValue * sourceFactor) / targetFactor;
+      } else {
+        totalFlow += rawValue;
       }
     });
 
-    return Math.max(0, totalFlow);
+    return {
+      value: Math.max(0, totalFlow),
+      unit: targetUnit ?? "",
+    };
   }
 
   protected render() {
@@ -91,12 +130,8 @@ export class HuiWaterTotalBadge
       return nothing;
     }
 
-    const flowRate = this._computeTotalFlowRate(this._data.prefs);
-    const displayValue = formatFlowRateShort(
-      this.hass.locale,
-      this.hass.config.unit_system.length,
-      flowRate
-    );
+    const { value, unit } = this._computeTotalFlowRate(this._data.prefs);
+    const displayValue = `${formatNumber(value, this.hass.locale, { maximumFractionDigits: 1 })} ${unit}`;
 
     const name =
       this._config.title ||
