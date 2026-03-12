@@ -178,7 +178,7 @@ export interface EnergyCardSankeyConfig extends EnergyCardBaseConfig {
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
   vertical_opening_direction?: "auto" | "up" | "down";
-  opening_direction?: "auto" | "right" | "left" | "center";
+  opening_direction?: "auto" | "right" | "left" | "center" | "inline";
   disable_compare?: boolean;
 }
 
