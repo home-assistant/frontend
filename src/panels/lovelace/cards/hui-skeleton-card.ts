@@ -2,18 +2,45 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
 import "../../../components/skeletons/ha-skeleton-tile";
+import type { HaFormSchema } from "../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceConfigForm,
+  LovelaceGridOptions,
+} from "../types";
 import type { SkeletonCardConfig } from "./types";
+
+const SCHEMA = [
+  {
+    name: "mode",
+    selector: {
+      select: {
+        mode: "dropdown",
+        options: ["tile"],
+      },
+    },
+  },
+] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-skeleton-card")
 export class HuiSkeletonCard extends LitElement implements LovelaceCard {
+  public static getConfigForm(): LovelaceConfigForm {
+    return {
+      schema: [...SCHEMA],
+      computeLabel: (schema, localize) =>
+        schema.name === "mode"
+          ? localize("ui.panel.lovelace.editor.card.skeleton.mode")
+          : undefined,
+    };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) private _config?: SkeletonCardConfig;
 
   public getCardSize(): number {
-    switch (this._config?.skeleton_type ?? "tile") {
+    switch (this._config?.mode ?? "tile") {
       case "tile":
       default:
         return 1;
@@ -21,7 +48,7 @@ export class HuiSkeletonCard extends LitElement implements LovelaceCard {
   }
 
   public getGridOptions(): LovelaceGridOptions {
-    switch (this._config?.skeleton_type ?? "tile") {
+    switch (this._config?.mode ?? "tile") {
       case "tile":
       default:
         return {
@@ -34,7 +61,10 @@ export class HuiSkeletonCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: SkeletonCardConfig): void {
-    this._config = config;
+    this._config = {
+      mode: "tile",
+      ...config,
+    };
   }
 
   protected render() {

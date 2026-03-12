@@ -9179,6 +9179,11 @@
                 }
               }
             },
+            "skeleton": {
+              "name": "Skeleton",
+              "description": "This card displays a placeholder skeleton layout.",
+              "mode": "Mode"
+            },
             "media-control": {
               "name": "Media control",
               "description": "This card is used to display media player entities on an interface with easy to use controls."
