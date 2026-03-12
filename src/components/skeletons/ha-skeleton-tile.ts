@@ -7,7 +7,7 @@ export class HaSkeletonTile extends LitElement {
   protected render() {
     return html`
       <div class="tile">
-        <wa-skeleton class="icon" effect="sheen"></wa-skeleton>
+        <wa-skeleton class="icon" effect="pulse"></wa-skeleton>
         <div class="info">
           <wa-skeleton class="primary" effect="sheen"></wa-skeleton>
           <wa-skeleton class="secondary" effect="sheen"></wa-skeleton>
@@ -44,7 +44,7 @@ export class HaSkeletonTile extends LitElement {
     .tile {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: var(--ha-space-4);
       height: 100%;
     }
 

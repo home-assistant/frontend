@@ -70,9 +70,7 @@ export class HuiSkeletonCard extends LitElement implements LovelaceCard {
   protected render() {
     return html`
       <ha-card>
-        <div class="card-content">
-          <ha-skeleton-tile></ha-skeleton-tile>
-        </div>
+        <ha-skeleton-tile></ha-skeleton-tile>
       </ha-card>
     `;
   }
@@ -85,9 +83,6 @@ export class HuiSkeletonCard extends LitElement implements LovelaceCard {
 
     ha-card {
       height: 100%;
-    }
-
-    .card-content {
       padding: var(--ha-space-2);
       height: 100%;
       box-sizing: border-box;
