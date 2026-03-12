@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
-import "../../../components/skeletons/ha-skeleton-tile";
+import "../../../components/skeletons/skeleton-card-tile";
 import type { HaFormSchema } from "../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../types";
 import type {
