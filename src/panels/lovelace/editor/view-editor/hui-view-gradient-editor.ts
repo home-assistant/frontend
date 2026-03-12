@@ -1,31 +1,26 @@
-import { mdiDelete, mdiPlus, mdiRefresh } from "@mdi/js";
+import { mdiRefresh } from "@mdi/js";
+import memoizeOne from "memoize-one";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
 import { hex2rgb, rgb2hex } from "../../../../common/color/convert-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-slider";
-
+import "../../../../components/ha-button";
+import "../../../../components/ha-button-toggle-group";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-textfield";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { ToggleButton } from "../../../../types";
+
+type GradientSubMode = "solid" | "random";
 
 interface GradientBlob {
-  id: number;
   color: string;
   opacity: number;
   size: number;
   x: number;
   y: number;
-}
-
-const MAX_BLOBS = 8;
-
-function _randomColor(): string {
-  const h = Math.floor(Math.random() * 360);
-  const s = 70 + Math.floor(Math.random() * 30);
-  const l = 40 + Math.floor(Math.random() * 30);
-  return _hslToHex(h, s, l);
 }
 
 function _hslToHex(h: number, s: number, l: number): string {
@@ -42,55 +37,103 @@ function _hslToHex(h: number, s: number, l: number): string {
   return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-function _parseGradientString(bg: string): {
+function _randomVariant(baseHex: string): string {
+  const [r, g, b] = hex2rgb(baseHex);
+  const shift = () => Math.min(255, Math.max(0, Math.round((Math.random() - 0.5) * 80)));
+  return rgb2hex([
+    Math.min(255, Math.max(0, r + shift())),
+    Math.min(255, Math.max(0, g + shift())),
+    Math.min(255, Math.max(0, b + shift())),
+  ]);
+}
+
+function _generateBlobs(colors: string[]): {
   blobs: GradientBlob[];
   baseColor: string;
 } {
+  const count = 3 + Math.floor(Math.random() * 4);
+  const baseR = Math.floor(Math.random() * 20);
+  const baseG = Math.floor(Math.random() * 20);
+  const baseB = Math.floor(Math.random() * 25);
+  const baseColor = rgb2hex([baseR, baseG, baseB]);
+
+  const palette = colors.filter((c) => c !== "");
   const blobs: GradientBlob[] = [];
-  let baseColor = "#0e1117";
-  let blobId = 1;
-
-  const gradientRegex =
-    /radial-gradient\(\s*at\s+(\d+)%\s+(\d+)%\s*,\s*rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)\s*0px\s*,\s*transparent\s+(\d+)%\s*\)/g;
-
-  let match = gradientRegex.exec(bg);
-  while (match) {
+  for (let i = 0; i < count; i++) {
+    const seedColor =
+      palette.length > 0
+        ? palette[i % palette.length]
+        : _hslToHex(
+            Math.floor(Math.random() * 360),
+            70 + Math.floor(Math.random() * 30),
+            40 + Math.floor(Math.random() * 30)
+          );
     blobs.push({
-      id: blobId++,
-      x: parseInt(match[1], 10),
-      y: parseInt(match[2], 10),
-      color: rgb2hex([
-        parseInt(match[3], 10),
-        parseInt(match[4], 10),
-        parseInt(match[5], 10),
-      ]),
-      opacity: parseFloat(match[6]),
-      size: parseInt(match[7], 10),
+      color: palette.length > 0 ? _randomVariant(seedColor) : seedColor,
+      opacity: +(0.15 + Math.random() * 0.65).toFixed(2),
+      size: 35 + Math.floor(Math.random() * 55),
+      x: Math.round(Math.random() * 80 + 10),
+      y: Math.round(Math.random() * 80 + 10),
     });
-    match = gradientRegex.exec(bg);
   }
-
-  const hexMatch = bg.match(/(#[0-9a-fA-F]{6})\s*$/);
-  if (hexMatch) {
-    baseColor = hexMatch[1];
-  }
-
   return { blobs, baseColor };
+}
+
+function _buildGradientString(blobs: GradientBlob[], baseColor: string): string {
+  const parts = blobs.map((b) => {
+    const [r, g, bVal] = hex2rgb(b.color);
+    return `radial-gradient(at ${b.x}% ${b.y}%, rgba(${r},${g},${bVal},${b.opacity.toFixed(2)}) 0px, transparent ${b.size}%)`;
+  });
+  parts.push(baseColor);
+  return parts.join(",\n  ");
+}
+
+function _detectSubMode(bg: unknown): GradientSubMode {
+  if (typeof bg === "string" && bg.includes("radial-gradient")) {
+    return "random";
+  }
+  return "solid";
+}
+
+function _parseGradientColors(bg: string): string[] {
+  const colors: string[] = [];
+  const regex =
+    /radial-gradient\(\s*at\s+\d+%\s+\d+%\s*,\s*rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,/g;
+
+  let match = regex.exec(bg);
+  while (match) {
+    const hex = rgb2hex([
+      parseInt(match[1], 10),
+      parseInt(match[2], 10),
+      parseInt(match[3], 10),
+    ]);
+    if (!colors.includes(hex)) {
+      colors.push(hex);
+    }
+    match = regex.exec(bg);
+  }
+  return colors.slice(0, 3);
 }
 
 @customElement("hui-view-gradient-editor")
 export class HuiViewGradientEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _blobs: GradientBlob[] = [];
+  @state() private _subMode: GradientSubMode = "random";
 
-  @state() private _baseColor = "#0e1117";
+  @state() private _solidColor = "#3a5f8c";
 
-  private _dragIndex: number | null = null;
+  @state() private _color1 = "#ec7a41";
+
+  @state() private _color2 = "#4169e1";
+
+  @state() private _color3 = "";
+
+  @state() private _gradientString = "";
 
   private _config?: LovelaceViewConfig;
 
-  private _nextBlobId = 1;
+  private _initialized = false;
 
   get config(): LovelaceViewConfig | undefined {
     return this._config;
@@ -105,39 +148,39 @@ export class HuiViewGradientEditor extends LitElement {
     }
   }
 
-  private _initialized = false;
-
   private _initFromConfig(config: LovelaceViewConfig) {
     const bg = config?.background;
-    if (typeof bg === "string" && bg.includes("radial-gradient")) {
-      const parsed = _parseGradientString(bg);
-      this._blobs = parsed.blobs;
-      this._baseColor = parsed.baseColor;
-      this._nextBlobId =
-        this._blobs.reduce((max, b) => Math.max(max, b.id), 0) + 1;
-    } else if (!this._blobs.length) {
-      this._generateRandomBlobs();
+    this._subMode = _detectSubMode(bg);
+
+    if (this._subMode === "random" && typeof bg === "string") {
+      this._gradientString = bg;
+      const colors = _parseGradientColors(bg);
+      if (colors.length > 0) this._color1 = colors[0];
+      if (colors.length > 1) this._color2 = colors[1];
+      if (colors.length > 2) this._color3 = colors[2];
+    } else if (typeof bg === "string" && bg.startsWith("#")) {
+      this._solidColor = bg;
     }
+
     this._initialized = true;
   }
 
-  private _buildGradientString(): string {
-    const parts = this._blobs.map((b) => {
-      const [r, g, bVal] = hex2rgb(b.color);
-      return `radial-gradient(at ${b.x}% ${b.y}%, rgba(${r},${g},${bVal},${b.opacity.toFixed(2)}) 0px, transparent ${b.size}%)`;
-    });
-    parts.push(this._baseColor);
-    return parts.join(",\n  ");
-  }
-
-  private _fireConfigChanged() {
-    const gradientStr = this._buildGradientString();
-    const config: LovelaceViewConfig = {
-      ...this._config,
-      background: gradientStr,
-    };
-    fireEvent(this, "view-config-changed", { config });
-  }
+  private _subModeButtons = memoizeOne(
+    (localize: LocalizeFunc): ToggleButton[] => [
+      {
+        value: "solid",
+        label: localize(
+          "ui.panel.lovelace.editor.edit_view.background.gradient.mode_solid"
+        ),
+      },
+      {
+        value: "random",
+        label: localize(
+          "ui.panel.lovelace.editor.edit_view.background.gradient.mode_random"
+        ),
+      },
+    ]
+  );
 
   protected render() {
     if (!this.hass) {
@@ -146,309 +189,128 @@ export class HuiViewGradientEditor extends LitElement {
 
     return html`
       <div class="gradient-editor">
-        <div
-          class="preview"
-          style="background: ${this._buildGradientString()}"
-        >
-          ${repeat(
-            this._blobs,
-            (b) => b.id,
-            (b, i) => html`
-              <div
-                class="blob-handle"
-                role="slider"
-                tabindex="0"
-                aria-label=${this.hass.localize(
-                  "ui.panel.lovelace.editor.edit_view.background.gradient.layer",
-                  { number: i + 1 }
-                )}
-                aria-valuetext="X: ${b.x}%, Y: ${b.y}%"
-                data-index=${i}
-                style="left:${b.x}%;top:${b.y}%;background:${b.color}"
-                @pointerdown=${this._onHandlePointerDown}
-                @keydown=${this._onHandleKeyDown}
-              >
-                <span class="handle-label">${i + 1}</span>
-              </div>
-            `
-          )}
-        </div>
+        <ha-button-toggle-group
+          full-width
+          .buttons=${this._subModeButtons(this.hass.localize)}
+          .active=${this._subMode}
+          @value-changed=${this._subModeChanged}
+        ></ha-button-toggle-group>
 
-        <div class="toolbar">
-          <div class="base-color-control">
-            <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.base_color")}</label>
-            <input
-              type="color"
-              .value=${this._baseColor}
-              @input=${this._baseColorChanged}
-            />
-          </div>
-          <div class="toolbar-actions">
-            <ha-icon-button
-              .path=${mdiPlus}
-              .label=${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.add_layer")}
-              .disabled=${this._blobs.length >= MAX_BLOBS}
-              @click=${this._addBlob}
-            ></ha-icon-button>
-            <ha-icon-button
-              .path=${mdiRefresh}
-              .label=${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.randomize")}
-              @click=${this._randomize}
-            ></ha-icon-button>
-          </div>
-        </div>
-
-        <div class="layer-count">
-          ${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.layers_count", { count: this._blobs.length, max: MAX_BLOBS })}
-        </div>
-
-        <div class="blob-list">
-          ${repeat(
-            this._blobs,
-            (b) => b.id,
-            (b, i) => this._renderBlobCard(b, i)
-          )}
-        </div>
+        ${this._subMode === "solid"
+          ? this._renderSolidEditor()
+          : this._renderRandomEditor()}
       </div>
     `;
   }
 
-  private _renderBlobCard(blob: GradientBlob, index: number) {
+  private _renderSolidEditor() {
     return html`
-      <div class="blob-card">
-        <div class="blob-card-header">
-          <span class="blob-card-title">
-            <span
-              class="color-dot"
-              style="background:${blob.color}"
-            ></span>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.layer", { number: index + 1 })}
-          </span>
-          <ha-icon-button
-            .path=${mdiDelete}
-            .label=${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.remove_layer")}
-            @click=${() => this._removeBlob(index)}
-          ></ha-icon-button>
-        </div>
-        <div class="blob-card-controls">
-          <div class="control-row">
-            <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.color")}</label>
-            <input
-              type="color"
-              .value=${blob.color}
-              data-index=${index}
-              @input=${this._blobColorChanged}
-            />
-          </div>
-          <div class="control-row">
-            <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.opacity")}</label>
-            <ha-slider
-              min="1"
-              max="100"
-              .value=${Math.round(blob.opacity * 100)}
-              data-index=${index}
-              data-prop="opacity"
-              @change=${this._blobSliderChanged}
-            ></ha-slider>
-            <span class="value-label">${Math.round(blob.opacity * 100)}%</span>
-          </div>
-          <div class="control-row">
-            <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.size")}</label>
-            <ha-slider
-              min="10"
-              max="100"
-              .value=${blob.size}
-              data-index=${index}
-              data-prop="size"
-              @change=${this._blobSliderChanged}
-            ></ha-slider>
-            <span class="value-label">${blob.size}%</span>
-          </div>
-          <div class="control-row">
-            <label>X</label>
-            <ha-slider
-              min="0"
-              max="100"
-              .value=${blob.x}
-              data-index=${index}
-              data-prop="x"
-              @change=${this._blobSliderChanged}
-            ></ha-slider>
-            <span class="value-label">${blob.x}%</span>
-          </div>
-          <div class="control-row">
-            <label>Y</label>
-            <ha-slider
-              min="0"
-              max="100"
-              .value=${blob.y}
-              data-index=${index}
-              data-prop="y"
-              @change=${this._blobSliderChanged}
-            ></ha-slider>
-            <span class="value-label">${blob.y}%</span>
-          </div>
-        </div>
+      <div
+        class="preview"
+        style="background: ${this._solidColor}"
+      ></div>
+      <div class="color-row">
+        <ha-textfield
+          type="color"
+          .value=${this._solidColor}
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.edit_view.background.gradient.color"
+          )}
+          @change=${this._solidColorChanged}
+        ></ha-textfield>
       </div>
     `;
   }
 
-  private _baseColorChanged(ev: Event) {
-    this._baseColor = (ev.target as HTMLInputElement).value;
-    this._fireConfigChanged();
+  private _renderRandomEditor() {
+    const previewBg =
+      this._gradientString || this._solidColor;
+
+    return html`
+      <div
+        class="preview"
+        style="background: ${previewBg}"
+      ></div>
+      <div class="color-inputs">
+        <ha-textfield
+          type="color"
+          .value=${this._color1}
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.edit_view.background.gradient.base_color_1"
+          )}
+          data-index="0"
+          @change=${this._baseColorInputChanged}
+        ></ha-textfield>
+        <ha-textfield
+          type="color"
+          .value=${this._color2}
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.edit_view.background.gradient.base_color_2"
+          )}
+          data-index="1"
+          @change=${this._baseColorInputChanged}
+        ></ha-textfield>
+        <ha-textfield
+          type="color"
+          .value=${this._color3 || "#ffffff"}
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.edit_view.background.gradient.base_color_3"
+          )}
+          data-index="2"
+          @change=${this._baseColorInputChanged}
+        ></ha-textfield>
+      </div>
+      <ha-button @click=${this._randomize}>
+        <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+        ${this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.background.gradient.randomize"
+        )}
+      </ha-button>
+    `;
   }
 
-  private _blobColorChanged(ev: Event) {
+  private _subModeChanged(ev: CustomEvent) {
+    const newMode = ev.detail.value as GradientSubMode;
+    if (newMode === this._subMode) return;
+    this._subMode = newMode;
+
+    if (newMode === "solid") {
+      this._fireConfigChanged(this._solidColor);
+    } else if (this._gradientString) {
+      this._fireConfigChanged(this._gradientString);
+    }
+  }
+
+  private _solidColorChanged(ev: Event) {
+    this._solidColor = (ev.target as HTMLInputElement).value;
+    this._fireConfigChanged(this._solidColor);
+  }
+
+  private _baseColorInputChanged(ev: Event) {
     const target = ev.target as HTMLInputElement;
     const index = parseInt(target.dataset.index!, 10);
-    this._blobs = this._blobs.map((b, i) =>
-      i === index ? { ...b, color: target.value } : b
-    );
-    this._fireConfigChanged();
-  }
-
-  private _blobSliderChanged(ev: Event) {
-    const target = ev.target as HTMLElement & { value: number };
-    const index = parseInt(target.dataset.index!, 10);
-    const prop = target.dataset.prop!;
     const value = target.value;
 
-    this._blobs = this._blobs.map((b, i) => {
-      if (i !== index) return b;
-      if (prop === "opacity") {
-        return { ...b, opacity: value / 100 };
-      }
-      return { ...b, [prop]: Math.round(value) };
-    });
-    this._fireConfigChanged();
-  }
-
-  private _addBlob() {
-    if (this._blobs.length >= MAX_BLOBS) return;
-    this._blobs = [
-      ...this._blobs,
-      {
-        id: this._nextBlobId++,
-        color: _randomColor(),
-        opacity: 0.3,
-        size: 50,
-        x: Math.round(Math.random() * 80 + 10),
-        y: Math.round(Math.random() * 80 + 10),
-      },
-    ];
-    this._fireConfigChanged();
-  }
-
-  private _removeBlob(index: number) {
-    this._blobs = this._blobs.filter((_, i) => i !== index);
-    this._fireConfigChanged();
-  }
-
-  private _generateRandomBlobs() {
-    const count = 3 + Math.floor(Math.random() * 4);
-    const r = Math.floor(Math.random() * 20);
-    const g = Math.floor(Math.random() * 20);
-    const b = Math.floor(Math.random() * 25);
-    this._baseColor = rgb2hex([r, g, b]);
-
-    const blobs: GradientBlob[] = [];
-    for (let i = 0; i < count; i++) {
-      blobs.push({
-        id: this._nextBlobId++,
-        color: _randomColor(),
-        opacity: +(0.15 + Math.random() * 0.65).toFixed(2),
-        size: 35 + Math.floor(Math.random() * 55),
-        x: Math.round(Math.random() * 80 + 10),
-        y: Math.round(Math.random() * 80 + 10),
-      });
-    }
-    this._blobs = blobs;
+    if (index === 0) this._color1 = value;
+    else if (index === 1) this._color2 = value;
+    else if (index === 2) this._color3 = value;
   }
 
   private _randomize() {
-    this._generateRandomBlobs();
-    this._fireConfigChanged();
+    const colors = [this._color1, this._color2, this._color3].filter(
+      (c) => c !== ""
+    );
+    const { blobs, baseColor } = _generateBlobs(colors);
+    this._gradientString = _buildGradientString(blobs, baseColor);
+    this._fireConfigChanged(this._gradientString);
   }
 
-  private _onHandlePointerDown(ev: PointerEvent) {
-    ev.preventDefault();
-    ev.stopPropagation();
-    const handle = ev.currentTarget as HTMLElement;
-    const index = parseInt(handle.dataset.index!, 10);
-    this._dragIndex = index;
-
-    handle.setPointerCapture(ev.pointerId);
-    handle.addEventListener("pointermove", this._onHandlePointerMove);
-    handle.addEventListener("pointerup", this._onHandlePointerUp);
-    handle.addEventListener("pointercancel", this._onHandlePointerUp);
-  }
-
-  private _onHandlePointerMove = (ev: PointerEvent) => {
-    if (this._dragIndex === null) return;
-
-    const preview = this.shadowRoot!.querySelector(".preview") as HTMLElement;
-    const rect = preview.getBoundingClientRect();
-
-    const x = Math.min(
-      100,
-      Math.max(0, ((ev.clientX - rect.left) / rect.width) * 100)
-    );
-    const y = Math.min(
-      100,
-      Math.max(0, ((ev.clientY - rect.top) / rect.height) * 100)
-    );
-
-    this._blobs = this._blobs.map((b, i) =>
-      i === this._dragIndex ? { ...b, x: Math.round(x), y: Math.round(y) } : b
-    );
-  };
-
-  private _onHandlePointerUp = (ev: PointerEvent) => {
-    const handle = ev.currentTarget as HTMLElement;
-    handle.releasePointerCapture(ev.pointerId);
-    handle.removeEventListener("pointermove", this._onHandlePointerMove);
-    handle.removeEventListener("pointerup", this._onHandlePointerUp);
-    handle.removeEventListener("pointercancel", this._onHandlePointerUp);
-    this._dragIndex = null;
-    this._fireConfigChanged();
-  };
-
-  private _onHandleKeyDown(ev: KeyboardEvent) {
-    const step = ev.shiftKey ? 10 : 1;
-    let dx = 0;
-    let dy = 0;
-
-    switch (ev.key) {
-      case "ArrowLeft":
-        dx = -step;
-        break;
-      case "ArrowRight":
-        dx = step;
-        break;
-      case "ArrowUp":
-        dy = -step;
-        break;
-      case "ArrowDown":
-        dy = step;
-        break;
-      default:
-        return;
-    }
-
-    ev.preventDefault();
-    ev.stopPropagation();
-    const handle = ev.currentTarget as HTMLElement;
-    const index = parseInt(handle.dataset.index!, 10);
-
-    this._blobs = this._blobs.map((b, i) => {
-      if (i !== index) return b;
-      return {
-        ...b,
-        x: Math.min(100, Math.max(0, b.x + dx)),
-        y: Math.min(100, Math.max(0, b.y + dy)),
-      };
-    });
-    this._fireConfigChanged();
+  private _fireConfigChanged(background: string) {
+    const config: LovelaceViewConfig = {
+      ...this._config,
+      background,
+    };
+    fireEvent(this, "view-config-changed", { config });
   }
 
   static styles = css`
@@ -463,183 +325,31 @@ export class HuiViewGradientEditor extends LitElement {
     }
 
     .preview {
-      position: relative;
       width: 100%;
       height: 200px;
       border-radius: var(--ha-border-radius, 12px);
       border: 1px solid var(--divider-color);
-      overflow: hidden;
-      cursor: crosshair;
     }
 
-    .blob-handle {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      transform: translate(-50%, -50%);
-      cursor: grab;
-      z-index: 10;
-      box-shadow:
-        0 0 8px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(0, 0, 0, 0.3);
-      touch-action: none;
+    .color-row {
       display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    .blob-handle:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
-    }
-
-    .blob-handle:active {
-      cursor: grabbing;
-    }
-
-    .handle-label {
-      font-size: 9px;
-      font-weight: 700;
-      color: #fff;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--ha-space-2);
-    }
-
-    .base-color-control {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-2);
-    }
-
-    .base-color-control label {
-      font-size: var(--ha-font-size-s);
-      color: var(--primary-text-color);
-    }
-
-    .base-color-control input[type="color"] {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 36px;
-      height: 28px;
-      border: 1px solid var(--divider-color);
-      border-radius: 6px;
-      background: transparent;
-      cursor: pointer;
-      padding: 2px;
-    }
-
-    .base-color-control input[type="color"]::-webkit-color-swatch-wrapper {
-      padding: 0;
-    }
-
-    .base-color-control input[type="color"]::-webkit-color-swatch {
-      border: none;
-      border-radius: 4px;
-    }
-
-    .toolbar-actions {
-      display: flex;
-      gap: var(--ha-space-1);
-    }
-
-    .layer-count {
-      font-size: var(--ha-font-size-s);
-      color: var(--secondary-text-color);
-    }
-
-    .blob-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-2);
-    }
-
-    .blob-card {
-      background: var(--card-background-color);
-      border: 1px solid var(--divider-color);
-      border-radius: var(--ha-border-radius, 12px);
-      padding: var(--ha-space-3);
-    }
-
-    .blob-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: var(--ha-space-2);
-    }
-
-    .blob-card-title {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-2);
-      font-size: var(--ha-font-size-m);
-      font-weight: 500;
-    }
-
-    .color-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .blob-card-controls {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-1);
-    }
-
-    .control-row {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-2);
-    }
-
-    .control-row label {
-      font-size: var(--ha-font-size-s);
-      color: var(--secondary-text-color);
-      min-width: 52px;
-    }
-
-    .control-row ha-slider {
+    .color-row ha-textfield {
       flex: 1;
     }
 
-    .control-row input[type="color"] {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 36px;
-      height: 24px;
-      border: 1px solid var(--divider-color);
-      border-radius: 4px;
-      background: transparent;
-      cursor: pointer;
-      padding: 2px;
+    .color-inputs {
+      display: flex;
+      gap: var(--ha-space-2);
     }
 
-    .control-row input[type="color"]::-webkit-color-swatch-wrapper {
-      padding: 0;
+    .color-inputs ha-textfield {
+      flex: 1;
     }
 
-    .control-row input[type="color"]::-webkit-color-swatch {
-      border: none;
-      border-radius: 2px;
-    }
-
-    .value-label {
-      font-size: var(--ha-font-size-xs);
-      color: var(--secondary-text-color);
-      min-width: 32px;
-      text-align: right;
+    ha-button {
+      --mdc-theme-primary: var(--primary-color);
     }
   `;
 }

@@ -20,8 +20,10 @@ type BackgroundMode = "image" | "gradient";
 
 function _detectMode(config?: LovelaceViewConfig): BackgroundMode {
   const bg = config?.background;
-  if (typeof bg === "string" && bg.includes("radial-gradient")) {
-    return "gradient";
+  if (typeof bg === "string") {
+    if (bg.includes("radial-gradient") || /^#[0-9a-fA-F]{3,8}$/.test(bg)) {
+      return "gradient";
+    }
   }
   return "image";
 }

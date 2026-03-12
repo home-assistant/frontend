@@ -8434,15 +8434,13 @@
               "type_image": "Image",
               "type_gradient": "Gradient",
               "gradient": {
-                "base_color": "Base color",
-                "add_layer": "Add layer",
-                "remove_layer": "Remove layer",
-                "layer": "Layer {number}",
+                "mode_solid": "Solid color",
+                "mode_random": "Random gradient",
                 "color": "Color",
-                "opacity": "Opacity",
-                "size": "Size",
-                "randomize": "Randomize",
-                "layers_count": "{count}/{max} layers"
+                "base_color_1": "Color 1",
+                "base_color_2": "Color 2",
+                "base_color_3": "Color 3 (optional)",
+                "randomize": "Randomize"
               }
             },
             "edit": "Edit view",
