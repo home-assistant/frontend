@@ -37,7 +37,7 @@ export class HuiSkeletonCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) private _config?: SkeletonCardConfig;
+  private _config?: SkeletonCardConfig;
 
   public getCardSize(): number {
     switch (this._config?.mode ?? "tile") {

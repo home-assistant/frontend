@@ -49,8 +49,8 @@ export class HaSkeletonTile extends LitElement {
     }
 
     .icon {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       flex: none;
     }
 
@@ -63,17 +63,18 @@ export class HaSkeletonTile extends LitElement {
       flex: 1;
       min-width: 0;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
+      justify-content: center;
     }
 
     .primary {
-      height: 20px;
-      width: 85%;
+      height: 18px;
+      width: min(68%, 240px);
     }
 
     .secondary {
-      height: 16px;
-      width: 30%;
+      height: 14px;
+      width: min(22%, 84px);
     }
   `;
 }
