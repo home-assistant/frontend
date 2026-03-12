@@ -985,13 +985,16 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
       haStyleScrollbar,
       css`
         :host {
-          --ha-bottom-sheet-height: calc(
+          --ha-bottom-sheet-max-height: calc(
             100vh - max(var(--safe-area-inset-top), 48px)
           );
-          --ha-bottom-sheet-height: calc(
+          --ha-bottom-sheet-max-height: calc(
             100dvh - max(var(--safe-area-inset-top), 48px)
           );
-          --ha-bottom-sheet-max-height: var(--ha-bottom-sheet-height);
+          --ha-bottom-sheet-height: min(
+            800px,
+            var(--ha-bottom-sheet-max-height)
+          );
         }
 
         ha-adaptive-dialog {
