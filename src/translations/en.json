@@ -3275,7 +3275,8 @@
                   "finishing_file": "Finishing backup file",
                   "folders": "Backing up folders",
                   "home_assistant": "Backing up Home Assistant",
-                  "upload_to_agents": "Uploading to locations"
+                  "upload_to_agents": "Uploading to locations",
+                  "cleaning_up": "Cleaning up"
                 },
                 "restore_backup": {
                   "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::app_repositories%]",
@@ -3302,7 +3303,8 @@
                 "home_assistant": "Home Assistant",
                 "apps": "Apps",
                 "media": "Media",
-                "upload": "Uploading backup"
+                "upload": "Uploading backup",
+                "cleaning_up": "Cleaning up"
               },
               "agent_status": {
                 "uploading": "Uploading...",
@@ -6129,11 +6131,11 @@
           "update": "Update",
           "no_devices": "No devices",
           "enabled_label": "Enable {type}",
-          "enabled_cause": "The {type} is disabled by {cause}.",
+          "enabled_cause": "The {type} is disabled by {cause}",
           "disabled_by": {
-            "user": "User",
-            "integration": "Integration",
-            "config_entry": "Config entry"
+            "user": "user",
+            "integration": "integration",
+            "config_entry": "config entry"
           },
           "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",

@@ -61,6 +61,12 @@ export class HaSlider extends Slider {
           width: 200px;
         }
 
+        /* Expand slider touch target to 32px */
+        #slider {
+          padding-block: 14px;
+          margin-block: -14px;
+        }
+
         #thumb {
           border: none;
           background-color: var(--ha-slider-thumb-color, var(--primary-color));
