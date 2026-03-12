@@ -7,7 +7,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-toggle-group";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-textfield";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -190,7 +189,8 @@ export class HuiViewGradientEditor extends LitElement {
     return html`
       <div class="gradient-editor">
         <ha-button-toggle-group
-          full-width
+          size="small"
+          variant="neutral"
           .buttons=${this._subModeButtons(this.hass.localize)}
           .active=${this._subMode}
           @value-changed=${this._subModeChanged}
@@ -209,63 +209,62 @@ export class HuiViewGradientEditor extends LitElement {
         class="preview"
         style="background: ${this._solidColor}"
       ></div>
-      <div class="color-row">
-        <ha-textfield
+      <div class="color-picker-row">
+        <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.color")}</label>
+        <input
           type="color"
           .value=${this._solidColor}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.edit_view.background.gradient.color"
-          )}
-          @change=${this._solidColorChanged}
-        ></ha-textfield>
+          @input=${this._solidColorChanged}
+        />
       </div>
     `;
   }
 
   private _renderRandomEditor() {
-    const previewBg =
-      this._gradientString || this._solidColor;
+    const previewBg = this._gradientString || this._solidColor;
 
     return html`
       <div
         class="preview"
         style="background: ${previewBg}"
       ></div>
-      <div class="color-inputs">
-        <ha-textfield
-          type="color"
-          .value=${this._color1}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.edit_view.background.gradient.base_color_1"
-          )}
-          data-index="0"
-          @change=${this._baseColorInputChanged}
-        ></ha-textfield>
-        <ha-textfield
-          type="color"
-          .value=${this._color2}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.edit_view.background.gradient.base_color_2"
-          )}
-          data-index="1"
-          @change=${this._baseColorInputChanged}
-        ></ha-textfield>
-        <ha-textfield
-          type="color"
-          .value=${this._color3 || "#ffffff"}
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.edit_view.background.gradient.base_color_3"
-          )}
-          data-index="2"
-          @change=${this._baseColorInputChanged}
-        ></ha-textfield>
+      <div class="color-pickers">
+        <div class="color-picker-row">
+          <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.base_color_1")}</label>
+          <input
+            type="color"
+            .value=${this._color1}
+            data-index="0"
+            @input=${this._baseColorInputChanged}
+          />
+        </div>
+        <div class="color-picker-row">
+          <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.base_color_2")}</label>
+          <input
+            type="color"
+            .value=${this._color2}
+            data-index="1"
+            @input=${this._baseColorInputChanged}
+          />
+        </div>
+        <div class="color-picker-row">
+          <label>${this.hass.localize("ui.panel.lovelace.editor.edit_view.background.gradient.base_color_3")}</label>
+          <input
+            type="color"
+            .value=${this._color3 || "#ffffff"}
+            data-index="2"
+            @input=${this._baseColorInputChanged}
+          />
+        </div>
       </div>
-      <ha-button @click=${this._randomize}>
-        <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
-        ${this.hass.localize(
-          "ui.panel.lovelace.editor.edit_view.background.gradient.randomize"
-        )}
-      </ha-button>
+      <div class="randomize-row">
+        <ha-button @click=${this._randomize}>
+          <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.edit_view.background.gradient.randomize"
+          )}
+        </ha-button>
+      </div>
     `;
   }
 
@@ -324,6 +323,11 @@ export class HuiViewGradientEditor extends LitElement {
       gap: var(--ha-space-3);
     }
 
+    .gradient-editor > ha-button-toggle-group {
+      align-self: center;
+      margin-top: var(--ha-space-6);
+    }
+
     .preview {
       width: 100%;
       height: 200px;
@@ -331,21 +335,48 @@ export class HuiViewGradientEditor extends LitElement {
       border: 1px solid var(--divider-color);
     }
 
-    .color-row {
+    .color-pickers {
       display: flex;
-    }
-
-    .color-row ha-textfield {
-      flex: 1;
-    }
-
-    .color-inputs {
-      display: flex;
+      flex-direction: column;
       gap: var(--ha-space-2);
     }
 
-    .color-inputs ha-textfield {
-      flex: 1;
+    .color-picker-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ha-space-3);
+    }
+
+    .color-picker-row label {
+      font-size: var(--ha-font-size-m);
+      color: var(--primary-text-color);
+    }
+
+    .color-picker-row input[type="color"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 48px;
+      height: 32px;
+      border: 1px solid var(--divider-color);
+      border-radius: var(--ha-border-radius-sm, 6px);
+      background: transparent;
+      cursor: pointer;
+      padding: 2px;
+    }
+
+    .color-picker-row input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .color-picker-row input[type="color"]::-webkit-color-swatch {
+      border: none;
+      border-radius: 4px;
+    }
+
+    .randomize-row {
+      display: flex;
+      justify-content: center;
     }
 
     ha-button {
