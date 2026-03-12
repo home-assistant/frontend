@@ -600,6 +600,11 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   };
 }
 
+export interface SkeletonCardConfig extends LovelaceCardConfig {
+  type: "skeleton";
+  skeleton_type?: "tile";
+}
+
 export interface TodoListCardConfig extends LovelaceCardConfig {
   title?: string;
   theme?: string;
