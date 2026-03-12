@@ -779,7 +779,7 @@ class HUIRoot extends LitElement {
         | undefined;
 
       if (oldLovelace && oldLovelace.config !== this.lovelace!.config) {
-        this._cleanupViewCache(oldLovelace);
+        this._cleanupViewCache();
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
@@ -1142,7 +1142,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _cleanupViewCache(_oldLovelace: Lovelace): void {
+  private _cleanupViewCache(): void {
     // Keep only the currently displayed view to avoid UI flash.
     // All other cached views are cleared and will be recreated on next visit.
     const currentView =
