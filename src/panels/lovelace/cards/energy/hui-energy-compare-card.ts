@@ -104,7 +104,7 @@ export class HuiEnergyCompareCard
   protected render() {
     if (this.preview) {
       return html`
-        <ha-alert dismissable>
+        <ha-alert>
           ${this.hass.localize(
             "ui.panel.lovelace.cards.energy.energy_compare.info",
             {
