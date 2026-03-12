@@ -7,7 +7,7 @@ export class HaSkeletonTile extends LitElement {
   protected render() {
     return html`
       <div class="tile">
-        <wa-skeleton class="icon" effect="pulse"></wa-skeleton>
+        <wa-skeleton class="icon" effect="sheen"></wa-skeleton>
         <div class="info">
           <wa-skeleton class="primary" effect="sheen"></wa-skeleton>
           <wa-skeleton class="secondary" effect="sheen"></wa-skeleton>
@@ -17,12 +17,6 @@ export class HaSkeletonTile extends LitElement {
   }
 
   static styles = css`
-    :host {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
     wa-skeleton {
       width: 100%;
       height: 100%;
