@@ -992,7 +992,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
             100dvh - max(var(--safe-area-inset-top), 48px)
           );
           --ha-bottom-sheet-height: min(
-            800px,
+            810px,
             var(--ha-bottom-sheet-max-height)
           );
         }
