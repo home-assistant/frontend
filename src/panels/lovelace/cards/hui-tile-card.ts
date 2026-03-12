@@ -21,7 +21,6 @@ import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
-import { addBrandsAuth } from "../../../util/brands-url";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
@@ -159,10 +158,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     if (!entityPicture) return undefined;
 
-    let imageUrl = addBrandsAuth(
-      this.hass!.hassUrl(entityPicture),
-      this.hass?.auth.data.hassUrl
-    );
+    let imageUrl = this.hass!.hassUrl(entityPicture);
     if (computeDomain(entity.entity_id) === "camera") {
       imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
     }
