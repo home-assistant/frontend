@@ -3275,7 +3275,8 @@
                   "finishing_file": "Finishing backup file",
                   "folders": "Backing up folders",
                   "home_assistant": "Backing up Home Assistant",
-                  "upload_to_agents": "Uploading to locations"
+                  "upload_to_agents": "Uploading to locations",
+                  "cleaning_up": "Cleaning up"
                 },
                 "restore_backup": {
                   "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::app_repositories%]",
@@ -3302,7 +3303,8 @@
                 "home_assistant": "Home Assistant",
                 "apps": "Apps",
                 "media": "Media",
-                "upload": "Uploading backup"
+                "upload": "Uploading backup",
+                "cleaning_up": "Cleaning up"
               },
               "agent_status": {
                 "uploading": "Uploading...",
@@ -6129,11 +6131,11 @@
           "update": "Update",
           "no_devices": "No devices",
           "enabled_label": "Enable {type}",
-          "enabled_cause": "The {type} is disabled by {cause}.",
+          "enabled_cause": "The {type} is disabled by {cause}",
           "disabled_by": {
-            "user": "User",
-            "integration": "Integration",
-            "config_entry": "Config entry"
+            "user": "user",
+            "integration": "integration",
+            "config_entry": "config entry"
           },
           "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
@@ -7160,7 +7162,6 @@
             "node_id": "ID",
             "node_ready": "Ready",
             "device_config": "Configure",
-            "installer_settings": "Installer settings",
             "reinterview_device": "Re-interview",
             "rebuild_routes": "Rebuild routes",
             "update_firmware": "Update",
@@ -7565,84 +7566,6 @@
             "2": "Z-Wave 40 kbps",
             "3": "Z-Wave 100 kbps",
             "4": "Long Range 100 kbps"
-          },
-          "node_installer": {
-            "header": "Installer settings",
-            "introduction": "Configure your device installer settings.",
-            "endpoint": "Endpoint",
-            "no_settings": "This device does not have any installer settings.",
-            "command_class": "Command class",
-            "capability_controls": {
-              "thermostat_setback": {
-                "title": "Thermostat setback",
-                "setback_state_label": "Setback in Kelvin",
-                "setback_state_helper": "Min: -12.8, max: 12.0",
-                "setback_special_state": {
-                  "label": "Setback special state",
-                  "frost_protection": "Frost protection",
-                  "energy_saving": "Energy saving",
-                  "unused": "Unused"
-                },
-                "setback_type": {
-                  "label": "Setback type",
-                  "none": "None",
-                  "temporary": "Temporary",
-                  "permanent": "Permanent"
-                },
-                "get_setback_failed": "Failed to get setback state. {error}",
-                "save_setback_failed": "Failed to save setback state. {error}"
-              },
-              "multilevel_switch": {
-                "title": "Transition",
-                "direction": "Direction",
-                "up": "Up",
-                "down": "Down",
-                "ignore_start_level": "Ignore start level",
-                "start_level": "Start level",
-                "start_transition": "Start transition",
-                "stop_transition": "Stop transition",
-                "control_failed": "Failed to control transition. {error}"
-              },
-              "door_lock": {
-                "title": "Door lock",
-                "twist_assist": "Twist assist",
-                "block_to_block": "Block to block",
-                "auto_relock_time": "Autorelock time",
-                "hold_release_time": "Hold and release time",
-                "operation_type": "Operation type",
-                "operation_types": {
-                  "1": "Constant",
-                  "2": "Timed"
-                },
-                "mode": "Mode",
-                "modes": {
-                  "0": "Unsecured",
-                  "1": "Unsecured with timeout",
-                  "16": "Inside unsecured",
-                  "17": "Inside unsecured with timeout",
-                  "32": "Outside unsecured",
-                  "33": "Outside unsecured with timeout",
-                  "254": "Unknown",
-                  "255": "Secured"
-                },
-                "lock_timeout": "Lock timeout",
-                "lock_timeout_helper": "Number of seconds before the lock automatically locks after being unlocked"
-              },
-              "color_switch": {
-                "color_component": "Color component",
-                "colors": {
-                  "0": "Warm white",
-                  "1": "Cold white",
-                  "2": "Red",
-                  "3": "Green",
-                  "4": "Blue",
-                  "5": "Amber",
-                  "6": "Cyan",
-                  "7": "Purple",
-                  "8": "Index"
-                }
-              }
-            }
           },
           "picker": {
             "title": "Select Z-Wave network",
@@ -8280,7 +8203,8 @@
             "energy_compare": {
               "info": "You are comparing the period {start} with the period {end}",
               "compare_previous_year": "Compare previous year",
-              "compare_previous_period": "Compare previous period"
+              "compare_previous_period": "Compare previous period",
+              "compare_preview": "Card preview"
             },
             "power_total_title": "Power usage",
             "water_total_title": "[%key:ui::panel::config::energy::water::dialog::water_flow_rate%]",
@@ -8900,6 +8824,122 @@
               "max_y_axis": "Y axis maximum",
               "fit_y_data": "Extend Y axis limits to fit data"
             },
+            "energy-date-selection": {
+              "name": "Energy date picker",
+              "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
+              "disable_compare": "Disable data comparison",
+              "vertical_opening_direction": "Vertical opening direction",
+              "vertical_opening_directions": {
+                "auto": "Automatic",
+                "up": "Up",
+                "down": "Down"
+              },
+              "opening_direction": "Horizontal opening direction",
+              "opening_directions": {
+                "auto": "Automatic",
+                "right": "Right",
+                "left": "Left",
+                "center": "Center"
+              }
+            },
+            "energy-distribution": {
+              "name": "Energy distribution",
+              "description": "This card shows how the energy flowed between energy sources and the home.",
+              "link_dashboard": "Link to energy dashboard"
+            },
+            "energy-usage-graph": {
+              "name": "Energy usage graph",
+              "description": "This card shows the amount of energy your house has consumed, and from what source this energy came."
+            },
+            "energy-solar-graph": {
+              "name": "Solar production graph",
+              "description": "This card shows the amount of energy your solar panels have produced."
+            },
+            "energy-gas-graph": {
+              "name": "Gas consumption graph",
+              "description": "This card shows the amount of gas consumed per source."
+            },
+            "energy-water-graph": {
+              "name": "Water consumption graph",
+              "description": "This card shows the amount of water consumed per source."
+            },
+            "power-sources-graph": {
+              "name": "Power sources graph",
+              "description": "This card shows historical power data.",
+              "show_legend": "Show legend"
+            },
+            "energy-devices-graph": {
+              "name": "Device energy graph",
+              "description": "This card shows the energy usage per device, it is sorted by usage.",
+              "max_devices": "Maximum devices allowed",
+              "hide_compound_stats": "Hide upstream devices",
+              "modes": "Chart display mode",
+              "mode_options": {
+                "bar": "Bar",
+                "pie": "Pie"
+              }
+            },
+            "energy-sources-table": {
+              "name": "Energy sources table",
+              "description": "This card shows shows all your energy sources, and the corresponding amount of energy for each.",
+              "show_only_totals": "Show only totals",
+              "types": "Types",
+              "type_options": {
+                "grid": "Grid",
+                "solar": "Solar",
+                "battery": "Battery",
+                "gas": "Gas",
+                "water": "Water"
+              }
+            },
+            "energy-compare": {
+              "name": "Energy compare alert",
+              "description": "This card shows which date ranges are being compared. It is hidden if comparison is disabled."
+            },
+            "energy-devices-detail-graph": {
+              "name": "Device energy detail graph",
+              "description": "This card shows energy usage per device over time."
+            },
+            "energy-sankey": {
+              "name": "Electrical energy Sankey graph",
+              "description": "This card shows the distribution of energy in your home on a Sankey graph.",
+              "group_by_floor": "Group entities by floor",
+              "group_by_area": "Group entities by area",
+              "layout": "Graph direction",
+              "layout_directions": {
+                "auto": "Automatic",
+                "vertical": "Vertical",
+                "horizontal": "Horizontal"
+              }
+            },
+            "power-sankey": {
+              "name": "Power Sankey graph",
+              "description": "This card shows the real-time flow of power in your home."
+            },
+            "water-sankey": {
+              "name": "Water Sankey graph",
+              "description": "This card shows the distribution of water consumption in your home on a Sankey graph."
+            },
+            "water-flow-sankey": {
+              "name": "Water flow Sankey graph",
+              "description": "This card shows the real-time flow of water in your home."
+            },
+            "energy-solar-consumed-gauge": {
+              "name": "Solar consumed gauge",
+              "description": "This card shows how much of the solar energy was used by your home and was not returned to the grid."
+            },
+            "energy-self-sufficiency-gauge": {
+              "name": "Self-sufficiency gauge",
+              "description": "This card shows how self-sufficient from the grid your home is."
+            },
+            "energy-grid-neutrality-gauge": {
+              "name": "Grid neutrality gauge",
+              "description": "This card shows your energy dependency on the grid."
+            },
+            "energy-carbon-consumed-gauge": {
+              "name": "Carbon consumed gauge",
+              "description": "This card shows how much of the energy consumed by your home was generated using non-fossil fuels."
+            },
             "statistics-graph": {
               "name": "Statistics graph",
               "description": "This card allows you to display a graph of the statistics for each of the entities listed.",
@@ -8993,6 +9033,9 @@
                 "auto": "Auto",
                 "live": "Live"
               },
+              "energy_date_selection": "Link to energy date selector",
+              "collection_key": "Energy collection name",
+              "collection_key_description": "Optionally connect a collection of date selection, statistics graphs and energy cards. All cards with matching key will respond to the connected date selection card. Any card on this dashboard with no key will automatically be linked together.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
@@ -9034,7 +9077,8 @@
               "search": "Search",
               "state_color": "Show state color",
               "suggested_cards": "Suggested cards",
-              "other_cards": "Other cards",
+              "core_cards": "Core cards",
+              "energy_cards": "Energy cards",
               "custom_cards": "Custom cards",
               "round_temperature": "Round temperature",
               "features": "Features",

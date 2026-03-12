@@ -13,6 +13,7 @@ import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -41,9 +42,26 @@ export class HuiEnergySourcesTableCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sources-table-card-editor");
+    return document.createElement("hui-energy-sources-table-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergySourcesTableCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergySourcesTableCardConfig {
+    return {
+      type: "energy-sources-table",
+      show_only_totals: false,
+      types: ["grid", "solar", "battery"],
+    };
+  }
 
   @state() private _data?: EnergyData;
 
@@ -64,6 +82,9 @@ export class HuiEnergySourcesTableCard
   }
 
   public setConfig(config: EnergySourcesTableCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 

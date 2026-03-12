@@ -7,15 +7,33 @@ import { hasConfigChanged } from "../../common/has-changed";
 import "../../components/hui-energy-period-selector";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergyDateSelectorCardConfig } from "../types";
+import { validateEnergyCollectionKey } from "../../../../data/energy";
 
 @customElement("hui-energy-date-selection-card")
 export class HuiEnergyDateSelectionCard
   extends LitElement
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-date-selection-card-editor");
+    return document.createElement("hui-energy-date-selection-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDateSelectorCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergyDateSelectorCardConfig {
+    return {
+      type: "energy-date-selection",
+      vertical_opening_direction: "auto",
+      opening_direction: "auto",
+    };
+  }
 
   public getCardSize(): Promise<number> | number {
     return 1;
@@ -29,6 +47,9 @@ export class HuiEnergyDateSelectionCard
   }
 
   public setConfig(config: EnergyDateSelectorCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
