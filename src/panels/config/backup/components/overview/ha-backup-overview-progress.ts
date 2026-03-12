@@ -330,7 +330,7 @@ export class HaBackupOverviewProgress extends LitElement {
         class="agent-list-wrapper ${this._collapsingAgents ? "collapsing" : ""}"
         @animationend=${this._collapsingAgents
           ? this._handleAgentCollapseEnd
-          : nothing}
+          : undefined}
       >
         <ha-md-list class="agent-list">
           ${this.agents.map((agent) => {
