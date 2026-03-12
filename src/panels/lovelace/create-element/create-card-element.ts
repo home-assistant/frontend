@@ -95,6 +95,7 @@ const LAZY_LOAD_TYPES = {
   picture: () => import("../cards/hui-picture-card"),
   "plant-status": () => import("../cards/hui-plant-status-card"),
   "recovery-mode": () => import("../cards/hui-recovery-mode-card"),
+  skeleton: () => import("../cards/hui-skeleton-card"),
   "toggle-group": () => import("../cards/hui-toggle-group-card"),
   "todo-list": () => import("../cards/hui-todo-list-card"),
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
