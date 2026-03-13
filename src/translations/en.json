@@ -7656,6 +7656,7 @@
             "ping_device": "Ping device",
             "open_commissioning_window": "Share device",
             "manage_fabrics": "Manage fabrics",
+            "manage_lock": "Manage lock",
             "view_thread_network": "View Thread network"
           },
           "manage_fabrics": {
@@ -7696,6 +7697,102 @@
             "success": "Your device is ready to be added to another Matter platform.",
             "scan_code": "With their app, scan the QR code or enter the sharing code below to finish setup.",
             "copy_code": "Copy code"
+          },
+          "lock": {
+            "manage": "Manage lock",
+            "dialog_title": "Manage lock",
+            "users": {
+              "title": "Users",
+              "add": "Add user",
+              "edit": "Edit user",
+              "delete": "Delete user",
+              "name": "Name",
+              "status": "Status",
+              "type": "Type",
+              "credential_rule": "Credential rule",
+              "credentials": "Credentials",
+              "no_users": "No users configured",
+              "user_status": {
+                "available": "Available",
+                "occupied_enabled": "Enabled",
+                "occupied_disabled": "Disabled"
+              },
+              "user_type": {
+                "unrestricted_user": "Unrestricted",
+                "year_day_schedule_user": "Day-of-the-year schedule",
+                "week_day_schedule_user": "Day-of-the-week schedule",
+                "programming_user": "Programming",
+                "non_access_user": "Non-access",
+                "forced_user": "Forced",
+                "disposable_user": "Disposable",
+                "expiring_user": "Expiring",
+                "schedule_restricted_user": "Schedule-restricted",
+                "remote_only_user": "Remote-only"
+              },
+              "credential_rules": {
+                "single": "Single credential",
+                "dual": "Dual credentials",
+                "tri": "Triple credentials"
+              },
+              "user_types": {
+                "unrestricted_user": {
+                  "label": "Full access",
+                  "description": "Can lock/unlock anytime, 24/7"
+                },
+                "disposable_user": {
+                  "label": "One-time access",
+                  "description": "Code works once, then is deleted"
+                }
+              }
+            },
+            "credentials": {
+              "add": "Add credential",
+              "edit": "Edit credential",
+              "delete": "Delete credential",
+              "type": "Type",
+              "data": "PIN code",
+              "pin": "PIN",
+              "types": {
+                "pin": "PIN code",
+                "rfid": "RFID",
+                "fingerprint": "Fingerprint",
+                "finger_vein": "Finger vein",
+                "face": "Face",
+                "aliro_credential": "Aliro credential",
+                "aliro_evictable": "Aliro evictable",
+                "aliro_non_evictable": "Aliro non-evictable"
+              }
+            },
+            "events": {
+              "title": "Recent lock events",
+              "types": {
+                "lock": "Locked",
+                "unlock": "Unlocked",
+                "lock_jammed": "Lock jammed",
+                "lock_failure": "Lock failure",
+                "invalid_pin": "Invalid PIN"
+              },
+              "sources": {
+                "manual": "Manual",
+                "pin": "PIN",
+                "remote": "Remote",
+                "auto": "Auto"
+              },
+              "no_events": "No recent events"
+            },
+            "errors": {
+              "load_failed": "Failed to load lock information",
+              "save_failed": "Failed to save changes",
+              "not_supported": "This feature is not supported by your lock",
+              "user_not_found": "User not found",
+              "name_required": "Please enter a name for this user.",
+              "pin_required": "Please enter a PIN code.",
+              "pin_length": "PIN code must be {min}-{max} digits.",
+              "pin_digits_only": "PIN code must contain only numbers.",
+              "pin_placeholder": "{min}-{max} digits"
+            },
+            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
+            "confirm_delete_credential": "Are you sure you want to delete this credential?"
           }
         },
         "tips": {
