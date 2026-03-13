@@ -36,6 +36,7 @@ import type {
 import type { HuiErrorCard } from "./hui-error-card";
 import type { EntityCardConfig, StatisticCardConfig } from "./types";
 
+/* @deprecated */
 export const PERIOD_ENERGY = "energy_date_selection";
 export const STATISTIC_CARD_DEFAULT_PERIOD = {
   calendar: { period: "month" },

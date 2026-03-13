@@ -471,7 +471,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   expand_legend?: boolean;
 }
 
-export interface StatisticCardConfig extends EnergyCardBaseConfig {
+export interface StatisticCardConfig extends Omit<EnergyCardBaseConfig, "title"> {
   name?: string | EntityNameItem | EntityNameItem[];
   entities: (EntityConfig | string)[];
   period:
@@ -480,7 +480,7 @@ export interface StatisticCardConfig extends EnergyCardBaseConfig {
         calendar?: { period: string; offset: number };
         rolling_window?: { duration: HaDurationData; offset: HaDurationData };
       }
-    | "energy_date_selection"; // Maintained for legacy compatability, use new key instead.
+    | "energy_date_selection"; // Maintained for legacy compatibility, use new key instead.
   energy_date_selection?: boolean;
   stat_type: keyof Statistic;
   theme?: string;
