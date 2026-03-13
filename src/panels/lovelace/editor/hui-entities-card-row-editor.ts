@@ -188,6 +188,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     }
     .add-entity {
       display: block;
+      margin-bottom: var(--ha-space-1);
       margin-left: 31px;
       margin-right: 71px;
       margin-inline-start: 31px;
