@@ -166,7 +166,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         energy_date_selection: true,
         ...config,
         period: STATISTIC_CARD_DEFAULT_PERIOD,
-      } as StatisticCardConfig;
+      };
     }
 
     this._config = config;

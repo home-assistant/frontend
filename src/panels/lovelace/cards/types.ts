@@ -480,7 +480,7 @@ export interface StatisticCardConfig extends EnergyCardBaseConfig {
   period:
     | {
         fixed_period?: { start: string; end: string };
-        calendar?: { period: string; offset: number };
+        calendar?: { period: string; offset?: number };
         rolling_window?: { duration: HaDurationData; offset: HaDurationData };
       }
     | "energy_date_selection"; // Maintained for legacy compatibility, use new key instead.

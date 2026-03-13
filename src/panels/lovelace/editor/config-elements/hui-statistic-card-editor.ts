@@ -90,7 +90,7 @@ export class HuiStatisticCardEditor
         energy_date_selection: true,
         ...config,
         period: STATISTIC_CARD_DEFAULT_PERIOD,
-      } as StatisticCardConfig;
+      };
     }
     this._config = config;
     this._fetchMetadata();
