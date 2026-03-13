@@ -154,9 +154,11 @@ export class CloudRemotePref extends LitElement {
                   "ui.panel.config.cloud.account.remote.external_activation_secondary"
                 )}</span
               >
-              <ha-switch slot="end">
+              <ha-switch
+                slot="end"
                 .checked=${remote_allow_remote_enable}
                 @change=${this._toggleAllowRemoteEnabledChanged}
+              >
               </ha-switch>
             </ha-md-list-item>
             <hr />
