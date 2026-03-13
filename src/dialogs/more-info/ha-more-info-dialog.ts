@@ -583,6 +583,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
     const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
     const isRTL = computeRTL(this.hass);
+    const preventScrimClose =
+      this._currView === "settings" || !this._isEscapeEnabled;
 
     return html`
       <ha-adaptive-dialog
@@ -591,7 +593,7 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
-        ?prevent-scrim-close=${!this._isEscapeEnabled}
+        .preventScrimClose=${preventScrimClose}
         flexcontent
       >
         ${showCloseIcon
