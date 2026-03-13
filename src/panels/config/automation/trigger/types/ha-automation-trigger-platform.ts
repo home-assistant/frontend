@@ -461,6 +461,21 @@ export class HaPlatformTrigger extends LitElement {
   ) {
     this._resolvedTargetEntityCount =
       await this._resolveTargetEntityCount(target);
+
+    if (
+      this._resolvedTargetEntityCount === 1 &&
+      this.trigger.options?.behavior !== undefined
+    ) {
+      const options = { ...this.trigger.options };
+      delete options.behavior;
+
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.trigger,
+          options,
+        },
+      });
+    }
   }
 
   static styles = css`
