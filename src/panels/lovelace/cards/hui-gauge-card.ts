@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
+import { mdiDotsVertical } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,10 +7,12 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
+import "../../../components/ha-icon-button";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
@@ -81,6 +84,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     this._config = { min: DEFAULT_MIN, max: DEFAULT_MAX, ...config };
   }
 
+  private _handleMoreInfo() {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config!.entity,
+    });
+  }
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -148,6 +157,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             : undefined
         )}
       >
+        <p class="title">${name}</p>
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
@@ -167,7 +177,15 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
         ></ha-gauge>
-        <div class="name" .title=${name}>${name}</div>
+        <ha-icon-button
+          class="more-info"
+          .label=${this.hass!.localize(
+            "ui.panel.lovelace.cards.show_more_info"
+          )}
+          .path=${mdiDotsVertical}
+          @click=${this._handleMoreInfo}
+          tabindex="0"
+        ></ha-icon-button>
       </ha-card>
     `;
   }
@@ -282,14 +300,20 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   static styles = css`
-    ha-card {
+    :host {
+      position: relative;
+      display: block;
       height: 100%;
-      overflow: hidden;
-      padding: 16px;
+    }
+    ha-card {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      padding: 0;
       display: flex;
-      align-items: center;
-      justify-content: center;
       flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
       box-sizing: border-box;
     }
 
@@ -301,16 +325,35 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       outline: none;
     }
 
-    ha-gauge {
+    .title {
       width: 100%;
+      font-size: var(--ha-font-size-l);
+      line-height: var(--ha-line-height-expanded);
+      padding: 8px 30px 8px 30px;
+      margin: 0;
+      text-align: center;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: none;
+      color: var(--primary-text-color);
     }
 
-    .name {
-      text-align: center;
-      line-height: initial;
-      color: var(--primary-text-color);
+    .more-info {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      right: 0;
+      inset-inline-end: 0px;
+      inset-inline-start: initial;
+      border-radius: var(--ha-border-radius-pill);
+      color: var(--secondary-text-color);
+      direction: var(--direction);
+    }
+
+    ha-gauge {
       width: 100%;
-      font-size: var(--ha-font-size-m);
     }
   `;
 }
