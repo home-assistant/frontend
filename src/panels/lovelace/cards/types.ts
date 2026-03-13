@@ -4,7 +4,11 @@ import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { EnergySourceByType } from "../../../data/energy";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { Statistic, StatisticType } from "../../../data/recorder";
+import type {
+  Statistic,
+  StatisticPeriod,
+  StatisticType,
+} from "../../../data/recorder";
 import type { MediaSelectorValue } from "../../../data/selector";
 import type { TimeFormat } from "../../../data/translation";
 import type { ForecastType } from "../../../data/weather";
@@ -458,11 +462,10 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
-  title?: string;
   entities: (EntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
-  period?: "5minute" | "hour" | "day" | "month";
+  period?: "auto" | StatisticPeriod;
   stat_types?: StatisticType | StatisticType[];
   chart_type?: "line" | "bar";
   min_y_axis?: number;
