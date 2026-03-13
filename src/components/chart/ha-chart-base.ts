@@ -279,19 +279,23 @@ export class HaChartBase extends LitElement {
           <div class="chart"></div>
         </div>
         ${this._renderLegend()}
-        <slot name="search"></slot>
-        <div class="chart-controls ${classMap({ small: this.smallControls })}">
-          ${this._isZoomed && !this.hideResetButton
-            ? html`<ha-icon-button
-                class="zoom-reset"
-                .path=${mdiRestart}
-                @click=${this._handleZoomReset}
-                title=${this.hass.localize(
-                  "ui.components.history_charts.zoom_reset"
-                )}
-              ></ha-icon-button>`
-            : nothing}
-          <slot name="button"></slot>
+        <div class="top-controls">
+          <slot name="search"></slot>
+          <div
+            class="chart-controls ${classMap({ small: this.smallControls })}"
+          >
+            ${this._isZoomed && !this.hideResetButton
+              ? html`<ha-icon-button
+                  class="zoom-reset"
+                  .path=${mdiRestart}
+                  @click=${this._handleZoomReset}
+                  title=${this.hass.localize(
+                    "ui.components.history_charts.zoom_reset"
+                  )}
+                ></ha-icon-button>`
+              : nothing}
+            <slot name="button"></slot>
+          </div>
         </div>
       </div>
     `;
@@ -1100,20 +1104,29 @@ export class HaChartBase extends LitElement {
       height: 100%;
       width: 100%;
     }
-    ::slotted([slot="search"]) {
+    .top-controls {
       position: absolute;
       top: var(--ha-space-4);
-      inset-inline-start: var(--ha-space-4);
+      inset-inline: var(--ha-space-4);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--ha-space-2);
       z-index: 1;
-      width: 250px;
+      pointer-events: none;
+    }
+    ::slotted([slot="search"]) {
+      flex: 1 1 250px;
+      min-width: 0;
+      max-width: 250px;
+      pointer-events: auto;
     }
     .chart-controls {
-      position: absolute;
-      top: 16px;
-      right: 4px;
       display: flex;
       flex-direction: column;
       gap: var(--ha-space-1);
+      margin-inline-start: auto;
+      flex-shrink: 0;
+      pointer-events: auto;
     }
     .chart-controls.small {
       top: 0;
