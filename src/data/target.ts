@@ -47,11 +47,13 @@ export interface ExtractFromTargetResultReferenced {
 
 export const extractFromTarget = async (
   hass: HomeAssistant,
-  target: HassServiceTarget
+  target: HassServiceTarget,
+  expandGroup = false
 ) =>
   hass.callWS<ExtractFromTargetResult>({
     type: "extract_from_target",
     target,
+    expand_group: expandGroup,
   });
 
 export const getResolvedTargetEntityCount = async (
@@ -62,7 +64,7 @@ export const getResolvedTargetEntityCount = async (
     return undefined;
   }
 
-  const result = await extractFromTarget(hass, target);
+  const result = await extractFromTarget(hass, target, true);
   return result.referenced_entities.length;
 };
 
