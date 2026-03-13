@@ -46,67 +46,67 @@ export class HaDeviceEntitiesCard extends LitElement {
       `;
     }
 
-    const shownEntities: EntityRegistryEntry[] = [];
-    const hiddenEntities: EntityRegistryEntry[] = [];
+    const enabledEntities: EntityRegistryEntry[] = [];
+    const disabledEntities: EntityRegistryEntry[] = [];
 
     this.entities.forEach((entry) => {
       if (entry.disabled_by) {
-        hiddenEntities.push(entry);
+        disabledEntities.push(entry);
       } else {
-        shownEntities.push(entry);
+        enabledEntities.push(entry);
       }
     });
 
     return html`
       <ha-card outlined .header=${this.header}>
-        ${shownEntities.length
+        ${enabledEntities.length
           ? html`
               <div id="entities" class="move-up">
                 <ha-list>
                   ${repeat(
-                    shownEntities,
+                    enabledEntities,
                     (entry) => entry.entity_id,
                     (entry) =>
                       this.hass.states[entry.entity_id]
                         ? this._renderEntity(entry)
-                        : this._renderEntry(entry)
+                        : this._renderUnavailableEntity(entry)
                   )}
                 </ha-list>
               </div>
             `
           : nothing}
-        ${hiddenEntities.length
-          ? html`
-              <div class=${classMap({ "move-up": !shownEntities.length })}>
-                ${!this.showHidden
-                  ? html`
-                      <button
-                        class="show-more"
-                        @click=${this._toggleShowHidden}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.devices.entities.disabled_entities",
-                          { count: hiddenEntities.length }
-                        )}
-                      </button>
-                    `
-                  : html`
-                      <ha-list>
-                        ${hiddenEntities.map((entry) =>
-                          this._renderEntry(entry)
-                        )}
-                      </ha-list>
-                      <button
-                        class="show-more"
-                        @click=${this._toggleShowHidden}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.devices.entities.show_less"
-                        )}
-                      </button>
-                    `}
-              </div>
-            `
+        ${disabledEntities.length
+          ? html`<div
+              class=${classMap({ "move-up": !enabledEntities.length })}
+            >
+              ${!this.showHidden
+                ? html`
+                    <button
+                      class="show-more"
+                      @click=${this._toggleShowHidden}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.devices.entities.disabled_entities",
+                        { count: disabledEntities.length }
+                      )}
+                    </button>
+                  `
+                : html`
+                    <ha-list>
+                      ${disabledEntities.map((entry) =>
+                        this._renderUnavailableEntity(entry)
+                      )}
+                    </ha-list>
+                    <button
+                      class="show-more"
+                      @click=${this._toggleShowHidden}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.devices.entities.show_less"
+                      )}
+                    </button>
+                  `}
+            </div>`
           : nothing}
         <div class="card-actions">
           <ha-button appearance="plain" @click=${this._addToLovelaceView}>
@@ -137,7 +137,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     </div>`;
   }
 
-  private _renderEntry(
+  private _renderUnavailableEntity(
     entry: EntityRegistryEntryWithDisplayName
   ): TemplateResult {
     const name = entry.display_name || this.deviceName;
@@ -212,6 +212,9 @@ export class HaDeviceEntitiesCard extends LitElement {
     }
     #entities > ha-list {
       margin: 0 16px 0 8px;
+    }
+    #entities > ha-list > ha-list-item {
+      padding: 0 16px 0 12px;
     }
     .name {
       font-size: var(--ha-font-size-m);
