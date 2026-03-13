@@ -123,6 +123,10 @@ import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
+import {
+  splitOutGenericAutomationCollections,
+  type AutomationDialogCollection,
+} from "./split-out-generic-automation-collections";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
 import { getTargetText } from "./target/get_target_text";
@@ -663,7 +667,7 @@ class DialogAddAutomationElement
                         <wa-divider></wa-divider>`
                     : nothing}
                   ${collections.map(
-                    (collection, index) => html`
+                    (collection) => html`
                       ${collection.titleKey && collection.groups.length
                         ? html`<ha-section-title>
                             ${this.hass.localize(collection.titleKey)}
@@ -677,7 +681,7 @@ class DialogAddAutomationElement
                             interactive
                             type="button"
                             .value=${item.key}
-                            .index=${index}
+                            .index=${collection.collectionIndex}
                             @click=${this._groupSelected}
                             class=${item.key === this._selectedGroup
                               ? "selected"
@@ -956,12 +960,14 @@ class DialogAddAutomationElement
       conditionDescriptions: ConditionDescriptions,
       manifests?: DomainManifestLookup
     ): {
+      collectionIndex: number;
       titleKey?: LocalizeKeys;
       groups: AddAutomationElementListItem[];
     }[] => {
-      const generatedCollections: any = [];
+      const generatedCollections: AutomationDialogCollection<AddAutomationElementListItem>[] =
+        [];
 
-      collections.forEach((collection) => {
+      collections.forEach((collection, collectionIndex) => {
         let collectionGroups = Object.entries(collection.groups);
         const groups: AddAutomationElementListItem[] = [];
 
@@ -1043,6 +1049,7 @@ class DialogAddAutomationElement
         );
 
         generatedCollections.push({
+          collectionIndex,
           titleKey: collection.titleKey,
           groups: groups.sort((a, b) => {
             // make sure device is always on top
@@ -1056,7 +1063,13 @@ class DialogAddAutomationElement
           }),
         });
       });
-      return generatedCollections;
+      return generatedCollections.flatMap((collection) =>
+        splitOutGenericAutomationCollections(
+          type,
+          collection,
+          this._newTriggersAndConditions
+        )
+      );
     }
   );
 

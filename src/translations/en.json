@@ -4835,6 +4835,7 @@
               "none_entities": "No entities",
               "template": "Template"
             },
+            "generic": "Generic",
             "triggers": {
               "name": "Triggers",
               "header": "When",
