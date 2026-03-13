@@ -882,10 +882,20 @@ export class HaChartBase extends LitElement {
           };
         }
         if (s.sampling === "minmax") {
-          const minX =
-            xAxis?.min && typeof xAxis.min === "number" ? xAxis.min : undefined;
-          const maxX =
-            xAxis?.max && typeof xAxis.max === "number" ? xAxis.max : undefined;
+          const minX = xAxis?.min
+            ? xAxis.min instanceof Date
+              ? xAxis.min.getTime()
+              : typeof xAxis.min === "number"
+                ? xAxis.min
+                : undefined
+            : undefined;
+          const maxX = xAxis?.max
+            ? xAxis.max instanceof Date
+              ? xAxis.max.getTime()
+              : typeof xAxis.max === "number"
+                ? xAxis.max
+                : undefined
+            : undefined;
           return {
             ...s,
             sampling: undefined,

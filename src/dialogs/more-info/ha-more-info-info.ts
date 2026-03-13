@@ -119,6 +119,7 @@ export class MoreInfoInfo extends LitElement {
       display: flex;
       flex-direction: column;
       flex: 1;
+      height: 100%;
     }
     .container {
       display: flex;

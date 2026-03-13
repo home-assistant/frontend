@@ -37,7 +37,7 @@ export class HaDeviceTrigger extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _origTrigger?: DeviceTrigger;
 
