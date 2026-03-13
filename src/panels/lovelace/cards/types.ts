@@ -166,11 +166,14 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
 }
 
 export interface EnergyCardBaseConfig extends LovelaceCardConfig {
-  title?: string;
   collection_key?: string;
 }
 
-export interface EnergyCardSankeyConfig extends EnergyCardBaseConfig {
+export interface EnergyCardConfig extends EnergyCardBaseConfig {
+  title?: string;
+}
+
+export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   layout?: "auto" | "vertical" | "horizontal";
   group_by_floor?: boolean;
   group_by_area?: boolean;
@@ -182,61 +185,61 @@ export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
   disable_compare?: boolean;
 }
 
-export interface EnergyDistributionCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDistributionCardConfig extends EnergyCardConfig {
   type: "energy-distribution";
   link_dashboard?: boolean;
 }
-export interface EnergyUsageGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
 }
 
-export interface EnergySolarGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
   type: "energy-solar-graph";
 }
 
-export interface EnergyGasGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
 }
 
-export interface EnergyWaterGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
 }
 
-export interface EnergyDevicesGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-graph";
   max_devices?: number;
   hide_compound_stats?: boolean;
   modes?: ("bar" | "pie")[];
 }
 
-export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardBaseConfig {
+export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-detail-graph";
   max_devices?: number;
 }
 
-export interface EnergySourcesTableCardConfig extends EnergyCardBaseConfig {
+export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
   type: "energy-sources-table";
   types?: (keyof EnergySourceByType)[];
   show_only_totals?: boolean;
 }
 
-export interface EnergySolarGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergySolarGaugeCardConfig extends EnergyCardConfig {
   type: "energy-solar-consumed-gauge";
 }
 
-export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardConfig {
   type: "energy-self-sufficiency-gauge";
 }
 
-export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardConfig {
   type: "energy-grid-neutrality-gauge";
 }
 
-export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
+export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
   type: "energy-carbon-consumed-gauge";
 }
 
-export interface PowerSourcesGraphCardConfig extends EnergyCardBaseConfig {
+export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
 }
@@ -471,7 +474,7 @@ export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
   expand_legend?: boolean;
 }
 
-export interface StatisticCardConfig extends Omit<EnergyCardBaseConfig, "title"> {
+export interface StatisticCardConfig extends EnergyCardBaseConfig {
   name?: string | EntityNameItem | EntityNameItem[];
   entities: (EntityConfig | string)[];
   period:
