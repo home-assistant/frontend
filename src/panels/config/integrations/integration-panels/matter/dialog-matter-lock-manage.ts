@@ -10,7 +10,7 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type {
   MatterLockInfo,
   MatterLockUser,
@@ -83,7 +83,7 @@ class DialogMatterLockManage extends LitElement {
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
@@ -96,7 +96,7 @@ class DialogMatterLockManage extends LitElement {
               <ha-spinner></ha-spinner>
             </div>`
           : html`<div class="content">${this._renderUsers()}</div>`}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -237,7 +237,7 @@ class DialogMatterLockManage extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
         }
         .center {

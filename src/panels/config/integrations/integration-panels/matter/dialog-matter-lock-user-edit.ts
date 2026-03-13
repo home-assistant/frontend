@@ -9,7 +9,7 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-select-box";
 import type { SelectBoxOption } from "../../../../../components/ha-select-box";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-wa-dialog";
+import "../../../../../components/ha-dialog";
 import type { MatterLockUserType } from "../../../../../data/matter-lock";
 import {
   setMatterLockCredential,
@@ -72,7 +72,7 @@ class DialogMatterLockUserEdit extends LitElement {
     const maxPin = this._params.lockInfo?.max_pin_length || 8;
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
@@ -149,7 +149,7 @@ class DialogMatterLockUserEdit extends LitElement {
                 : this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
