@@ -66,7 +66,6 @@ import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-  updateEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
@@ -1363,8 +1362,6 @@ export class HaConfigDevicePage extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
-        const oldDeviceName = device.name_by_user || device.name;
-        const newDeviceName = updates.name_by_user;
         const disabled =
           updates.disabled_by === "user" && device.disabled_by !== "user";
 
@@ -1436,43 +1433,7 @@ export class HaConfigDevicePage extends LitElement {
             ),
             text: err.message,
           });
-          return;
         }
-
-        if (
-          !oldDeviceName ||
-          !newDeviceName ||
-          oldDeviceName === newDeviceName
-        ) {
-          return;
-        }
-        const entities = this._entities(this.deviceId, this._entityReg);
-
-        const updateProms = entities.map((entity) => {
-          const name = entity.name || entity.entityName;
-          let newName: string | null | undefined;
-
-          if (entity.has_entity_name && !entity.name) {
-            return undefined;
-          }
-
-          if (
-            entity.has_entity_name &&
-            (entity.name === oldDeviceName || entity.name === newDeviceName)
-          ) {
-            // clear name if it matches the device name and it uses the device name (entity naming)
-            newName = null;
-          } else if (name && name.includes(oldDeviceName)) {
-            newName = name.replace(oldDeviceName, newDeviceName);
-          } else {
-            return undefined;
-          }
-
-          return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-            name: newName,
-          });
-        });
-        await Promise.all(updateProms);
       },
     });
   };

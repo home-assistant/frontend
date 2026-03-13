@@ -12,11 +12,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-textfield";
 import { updateDeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
-import {
-  getAutomaticEntityIds,
-  subscribeEntityRegistry,
-  updateEntityRegistryEntry,
-} from "../../../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../../../data/entity/entity_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
@@ -120,52 +116,11 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     if (!this.hass || !this.device) {
       return;
     }
-    const device = this.device;
-
-    const oldDeviceName = device.user_given_name || device.name;
     const newDeviceName = event.target.value;
     this.device.user_given_name = newDeviceName;
-    await updateDeviceRegistryEntry(this.hass, device.device_reg_id, {
+    await updateDeviceRegistryEntry(this.hass, this.device.device_reg_id, {
       name_by_user: newDeviceName,
     });
-
-    if (!oldDeviceName || !newDeviceName || oldDeviceName === newDeviceName) {
-      return;
-    }
-    const entities = this._deviceEntities(device.device_reg_id, this._entities);
-
-    const entityIdsMapping = await getAutomaticEntityIds(
-      this.hass,
-      entities.map((entity) => entity.entity_id)
-    );
-
-    const updateProms = entities.map((entity) => {
-      const name = entity.name;
-      const newEntityId = entityIdsMapping[entity.entity_id];
-      let newName: string | null | undefined;
-
-      if (entity.has_entity_name && !entity.name) {
-        newName = undefined;
-      } else if (
-        entity.has_entity_name &&
-        (entity.name === oldDeviceName || entity.name === newDeviceName)
-      ) {
-        // clear name if it matches the device name and it uses the device name (entity naming)
-        newName = null;
-      } else if (name && name.includes(oldDeviceName)) {
-        newName = name.replace(oldDeviceName, newDeviceName);
-      }
-
-      if (newName !== undefined && !newEntityId) {
-        return undefined;
-      }
-
-      return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-        name: newName,
-        new_entity_id: newEntityId || undefined,
-      });
-    });
-    await Promise.all(updateProms);
   }
 
   private _openMoreInfo(ev: MouseEvent): void {
