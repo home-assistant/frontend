@@ -1,8 +1,10 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiClose,
   mdiContentPaste,
+  mdiHelpCircleOutline,
   mdiPlus,
 } from "@mdi/js";
 import type {
@@ -19,6 +21,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { isNumericState } from "../../../common/number/format_number";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { stringCompare } from "../../../common/string/compare";
@@ -35,6 +38,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-combo-box-item";
 import { CONDITION_ICONS } from "../../../components/ha-condition-icon";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-floor-icon";
@@ -42,7 +46,6 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
@@ -50,18 +53,17 @@ import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
 import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
-import "../../../components/ha-wa-dialog";
 import "../../../components/search-input";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
   ACTION_COLLECTIONS,
   ACTION_ICONS,
 } from "../../../data/action";
-import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   getAreaDeviceLookup,
   getAreaEntityLookup,
-} from "../../../data/area_registry";
+} from "../../../data/area/area_registry";
+import type { FloorComboBoxItem } from "../../../data/area_floor_picker";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -114,7 +116,8 @@ import {
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
 import "./add-automation-element/ha-automation-add-from-target";
@@ -232,6 +235,8 @@ class DialogAddAutomationElement
 
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  private _closing = false;
+
   // #endregion variables
 
   // #region lifecycle
@@ -347,6 +352,8 @@ class DialogAddAutomationElement
       }
     }
 
+    this._closing = true;
+
     // if dialog is closed, but root level isn't active, clean up history state
     if (mainWindow.history.state?.dialogData) {
       this._open = false;
@@ -360,6 +367,7 @@ class DialogAddAutomationElement
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._open = true;
+    this._closing = false;
     this._params = undefined;
     this._selectedCollectionIndex = undefined;
     this._selectedGroup = undefined;
@@ -431,6 +439,24 @@ class DialogAddAutomationElement
 
   // #region render
 
+  private _getEmptyNote(automationElementType: string) {
+    if (
+      automationElementType !== "trigger" &&
+      automationElementType !== "condition"
+    ) {
+      return undefined;
+    }
+
+    return this.hass.localize(
+      `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target_note`,
+      {
+        labs_link: html`<a href="/config/labs" @click=${this._close}
+          >${this.hass.localize("ui.panel.config.labs.caption")}</a
+        >`,
+      }
+    );
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
@@ -449,7 +475,7 @@ class DialogAddAutomationElement
     }
 
     return html`
-      <ha-wa-dialog
+      <ha-dialog
         .hass=${this.hass}
         width="large"
         .open=${this._open}
@@ -457,7 +483,7 @@ class DialogAddAutomationElement
         flexcontent
       >
         ${this._renderContent()}
-      </ha-wa-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -634,10 +660,7 @@ class DialogAddAutomationElement
                             .path=${mdiPlus}
                           ></ha-svg-icon>
                         </ha-md-list-item>
-                        <ha-md-divider
-                          role="separator"
-                          tabindex="-1"
-                        ></ha-md-divider>`
+                        <wa-divider></wa-divider>`
                     : nothing}
                   ${collections.map(
                     (collection, index) => html`
@@ -696,6 +719,7 @@ class DialogAddAutomationElement
                 .emptyLabel=${this.hass.localize(
                   `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
                 )}
+                .emptyNote=${this._getEmptyNote(automationElementType)}
                 .tooltipDescription=${this._tab === "targets"}
                 .target=${(this._tab === "targets" &&
                   this._selectedTarget &&
@@ -724,11 +748,27 @@ class DialogAddAutomationElement
   }
 
   private _renderHeader() {
+    const docUrl = this._getDocumentationUrl(this._params!.type);
+
     return html`
       <ha-dialog-header subtitle-position="above">
         <span slot="title">${this._getDialogTitle()}</span>
 
         ${this._renderDialogSubtitle()}
+        ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
+          ? html`
+              <ha-icon-button
+                .path=${mdiHelpCircleOutline}
+                .label=${this.hass.localize(
+                  `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
+                )}
+                slot="actionItems"
+                href=${docUrl}
+                target="_blank"
+                rel="noreferrer"
+              ></ha-icon-button>
+            `
+          : nothing}
         ${this._narrow && (this._selectedGroup || this._selectedTarget)
           ? html`<ha-icon-button-prev
               slot="navigationIcon"
@@ -1691,13 +1731,25 @@ class DialogAddAutomationElement
 
   // #region interaction
 
-  private _close() {
+  private _close = () => {
     this._open = false;
-  }
+  };
 
   private _back() {
     mainWindow.history.back();
   }
+
+  private _getDocumentationUrl = memoizeOne(
+    (type: "trigger" | "condition" | "action") =>
+      documentationUrl(
+        this.hass,
+        type === "trigger"
+          ? "/docs/automation/trigger/"
+          : type === "condition"
+            ? "/docs/automation/condition/"
+            : "/docs/automation/action/"
+      )
+  );
 
   private _groupSelected(ev) {
     const group = ev.currentTarget;
@@ -1728,7 +1780,7 @@ class DialogAddAutomationElement
     this.closeDialog();
   }
 
-  private _selected(ev: CustomEvent<{ value: string }>) {
+  private _selected(ev: ValueChangedEvent<string>) {
     let target: HassServiceTarget | undefined;
     if (
       this._tab === "targets" &&
@@ -1742,7 +1794,7 @@ class DialogAddAutomationElement
   }
 
   private _handleTargetSelected = (
-    ev: CustomEvent<{ value: SingleHassServiceTarget }>
+    ev: ValueChangedEvent<SingleHassServiceTarget>
   ) => {
     this._targetItems = undefined;
     this._loadItemsError = false;
@@ -1767,6 +1819,31 @@ class DialogAddAutomationElement
     this._getItemsByTarget();
   };
 
+  private _getDefaultStateItems(
+    type: "trigger" | "condition"
+  ): AddAutomationElementListItem[] {
+    const items: AddAutomationElementListItem[] = [
+      this._convertToItem("state", {}, type, this.hass.localize),
+    ];
+
+    const entityId = this._selectedTarget?.entity_id;
+    if (entityId) {
+      const NUMERIC_DOMAINS = ["counter", "input_number", "number", "sensor"];
+      const domain = computeDomain(entityId);
+      const stateObj = this.hass.states[entityId];
+      if (
+        NUMERIC_DOMAINS.includes(domain) ||
+        (stateObj && isNumericState(stateObj))
+      ) {
+        items.push(
+          this._convertToItem("numeric_state", {}, type, this.hass.localize)
+        );
+      }
+    }
+
+    return items;
+  }
+
   private async _getItemsByTarget() {
     if (!this._selectedTarget) {
       return;
@@ -1779,10 +1856,19 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        this._targetItems = this._getDomainGroupedTriggerListItems(
+        const grouped = this._getDomainGroupedTriggerListItems(
           this.hass.localize,
           items
         );
+        if (this._selectedTarget.entity_id) {
+          grouped.push({
+            title: this.hass.localize(
+              `ui.panel.config.automation.editor.triggers.groups.entity.label` as LocalizeKeys
+            ),
+            items: this._getDefaultStateItems("trigger"),
+          });
+        }
+        this._targetItems = grouped;
         return;
       }
       if (this._params!.type === "condition") {
@@ -1791,10 +1877,19 @@ class DialogAddAutomationElement
           this._selectedTarget
         );
 
-        this._targetItems = this._getDomainGroupedConditionListItems(
+        const grouped = this._getDomainGroupedConditionListItems(
           this.hass.localize,
           items
         );
+        if (this._selectedTarget.entity_id) {
+          grouped.push({
+            title: this.hass.localize(
+              `ui.panel.config.automation.editor.conditions.groups.entity.label` as LocalizeKeys
+            ),
+            items: this._getDefaultStateItems("condition"),
+          });
+        }
+        this._targetItems = grouped;
         return;
       }
 
@@ -1875,7 +1970,10 @@ class DialogAddAutomationElement
   }
 
   private _handleClosed() {
-    this.closeDialog();
+    // if closing isn't already in progress, close the dialog
+    if (!this._closing) {
+      this.closeDialog();
+    }
   }
 
   // #region interaction
@@ -2020,7 +2118,7 @@ class DialogAddAutomationElement
           --ha-bottom-sheet-surface-background: var(--card-background-color);
         }
 
-        ha-wa-dialog {
+        ha-dialog {
           --dialog-content-padding: 0;
           --ha-dialog-min-height: min(
             800px,
@@ -2043,6 +2141,10 @@ class DialogAddAutomationElement
           --ha-dialog-max-height: var(--ha-dialog-min-height);
         }
 
+        ha-dialog ha-icon-button[slot="actionItems"] {
+          color: var(--secondary-text-color);
+        }
+
         search-input {
           display: block;
           margin: 0 var(--ha-space-4);
@@ -2062,6 +2164,7 @@ class DialogAddAutomationElement
 
         .content.column {
           flex-direction: column;
+          gap: var(--ha-space-3);
         }
 
         ha-md-list {
@@ -2128,7 +2231,7 @@ class DialogAddAutomationElement
           overflow: clip;
         }
 
-        ha-wa-dialog ha-automation-add-items {
+        ha-dialog ha-automation-add-items {
           margin-top: var(--ha-space-3);
         }
 
@@ -2149,8 +2252,8 @@ class DialogAddAutomationElement
           width: var(--ha-space-6);
         }
 
-        ha-md-list-item.paste {
-          border-bottom: 1px solid var(--ha-color-border-neutral-quiet);
+        wa-divider {
+          --spacing: 0;
         }
 
         ha-svg-icon.plus {

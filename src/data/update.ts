@@ -44,13 +44,26 @@ export const updateUsesProgress = (entity: UpdateEntity): boolean =>
   supportsFeature(entity, UpdateEntityFeature.PROGRESS) &&
   entity.attributes.update_percentage !== null;
 
+export const updateAvailable = (
+  entity: UpdateEntity,
+  showSkipped = false
+): boolean =>
+  entity.state === BINARY_STATE_ON ||
+  (showSkipped && Boolean(entity.attributes.skipped_version));
+
 export const updateCanInstall = (
   entity: UpdateEntity,
   showSkipped = false
 ): boolean =>
-  (entity.state === BINARY_STATE_ON ||
-    (showSkipped && Boolean(entity.attributes.skipped_version))) &&
+  updateAvailable(entity, showSkipped) &&
   supportsFeature(entity, UpdateEntityFeature.INSTALL);
+
+export const updateCanNotInstall = (
+  entity: UpdateEntity,
+  showSkipped = false
+): boolean =>
+  updateAvailable(entity, showSkipped) &&
+  !supportsFeature(entity, UpdateEntityFeature.INSTALL);
 
 export const latestVersionIsSkipped = (entity: UpdateEntity): boolean =>
   !!(
@@ -108,13 +121,17 @@ export const filterUpdateEntities = (
     );
   });
 
-export const filterUpdateEntitiesWithInstall = (
+export const filterUpdateEntitiesParameterized = (
   entities: HassEntities,
-  showSkipped = false
+  showSkipped = false,
+  showNotInstallable = false
 ) =>
-  filterUpdateEntities(entities).filter((entity) =>
-    updateCanInstall(entity, showSkipped)
-  );
+  filterUpdateEntities(entities).filter((entity) => {
+    if (showNotInstallable) {
+      return updateCanNotInstall(entity, showSkipped);
+    }
+    return updateCanInstall(entity, showSkipped);
+  });
 
 export const checkForEntityUpdates = async (
   element: HTMLElement,

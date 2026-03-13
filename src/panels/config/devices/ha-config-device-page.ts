@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiCog,
@@ -19,6 +20,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -26,14 +28,15 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
@@ -91,6 +94,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -143,7 +147,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _logbookTime = { recent: 86400 };
 
@@ -300,6 +304,11 @@ export class HaConfigDevicePage extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("deviceId")) {
       this._findRelated();
+      // Broadcast device context for quick bar
+      fireEvent(this, "hass-quick-bar-context", {
+        itemType: "device",
+        itemId: this.deviceId,
+      });
     }
   }
 
@@ -355,11 +364,14 @@ export class HaConfigDevicePage extends LitElement {
             <img
               slot="graphic"
               alt=${domainToName(this.hass.localize, integration.domain)}
-              src=${brandsUrl({
-                domain: integration.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: integration.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
               @error=${this._onImageError}
@@ -567,7 +579,9 @@ export class HaConfigDevicePage extends LitElement {
                               </ha-list-item>
                               <ha-tooltip
                                 .for="scene-${slugify(entityState.entity_id)}"
-                                placement="left"
+                                placement=${computeRTL(this.hass)
+                                  ? "left"
+                                  : "right"}
                               >
                                 ${this.hass.localize(
                                   "ui.panel.config.devices.cant_edit"
@@ -688,36 +702,34 @@ export class HaConfigDevicePage extends LitElement {
         @click=${this._showSettings}
         .label=${this.hass.localize("ui.panel.config.devices.edit_settings")}
       ></ha-icon-button>
-      <ha-md-button-menu slot="toolbar-icon">
+      <ha-dropdown
+        slot="toolbar-icon"
+        @wa-select=${this._handleToolbarMenuAction}
+      >
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
 
-        <ha-md-menu-item
-          type="link"
-          href=${`/config/entities?historyBack=1&device=${this.deviceId}`}
-        >
-          <ha-svg-icon .path=${mdiShapeOutline} slot="start"></ha-svg-icon>
-          <div slot="headline">
+        <a href=${`/config/entities?historyBack=1&device=${this.deviceId}`}>
+          <ha-dropdown-item>
+            <ha-svg-icon .path=${mdiShapeOutline} slot="icon"></ha-svg-icon>
             ${this.hass.localize(
               `ui.panel.config.integrations.config_entry.entities`,
               { count: entities.length }
             )}
-          </div>
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-md-menu-item>
+            <ha-icon-next slot="details"></ha-icon-next>
+          </ha-dropdown-item>
+        </a>
 
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+        <wa-divider></wa-divider>
 
-        <ha-md-menu-item .clickAction=${this._resetEntityIds}>
-          <ha-svg-icon slot="start" .path=${mdiRestore}></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.config.devices.restore_entity_ids")}
-          </div>
-        </ha-md-menu-item>
-      </ha-md-button-menu>
+        <ha-dropdown-item value="reset_entity_ids">
+          <ha-svg-icon slot="icon" .path=${mdiRestore}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.devices.restore_entity_ids")}
+        </ha-dropdown-item>
+      </ha-dropdown>
 
       <div class="container">
         <div class="header fullwidth">
@@ -754,11 +766,14 @@ export class HaConfigDevicePage extends LitElement {
                       this.hass.localize,
                       integrations[0].domain
                     )}
-                    src=${brandsUrl({
-                      domain: integrations[0].domain,
-                      type: "logo",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    })}
+                    src=${brandsUrl(
+                      {
+                        domain: integrations[0].domain,
+                        type: "logo",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
@@ -823,39 +838,43 @@ export class HaConfigDevicePage extends LitElement {
 
                     ${actions.length
                       ? html`
-                          <ha-button-menu>
+                          <ha-dropdown
+                            @wa-select=${this._deviceActionSelected}
+                            placement="bottom-end"
+                          >
                             <ha-icon-button
                               slot="trigger"
                               .label=${this.hass.localize("ui.common.menu")}
                               .path=${mdiDotsVertical}
                             ></ha-icon-button>
-                            ${actions.map((deviceAction) => {
-                              const listItem = html`<ha-list-item
-                                class=${ifDefined(deviceAction.classes)}
-                                .action=${deviceAction.action}
-                                @click=${this._deviceActionClicked}
-                                graphic="icon"
-                                .hasMeta=${Boolean(deviceAction.trailingIcon)}
+                            ${actions.map((deviceAction, idx) => {
+                              const dropdownItem = html`<ha-dropdown-item
+                                .value=${idx}
+                                .data=${deviceAction}
+                                .variant=${deviceAction.classes?.includes(
+                                  "warning"
+                                )
+                                  ? "danger"
+                                  : "default"}
                               >
-                                ${deviceAction.label}
                                 ${deviceAction.icon
                                   ? html`
                                       <ha-svg-icon
-                                        class=${ifDefined(deviceAction.classes)}
                                         .path=${deviceAction.icon}
-                                        slot="graphic"
+                                        slot="icon"
                                       ></ha-svg-icon>
                                     `
                                   : ""}
+                                ${deviceAction.label}
                                 ${deviceAction.trailingIcon
                                   ? html`
                                       <ha-svg-icon
-                                        slot="meta"
+                                        slot="details"
                                         .path=${deviceAction.trailingIcon}
                                       ></ha-svg-icon>
                                     `
                                   : ""}
-                              </ha-list-item>`;
+                              </ha-dropdown-item>`;
                               return deviceAction.href
                                 ? html`<a
                                     href=${deviceAction.href}
@@ -865,11 +884,11 @@ export class HaConfigDevicePage extends LitElement {
                                         ? "noreferrer"
                                         : undefined
                                     )}
-                                    >${listItem}
+                                    >${dropdownItem}
                                   </a>`
-                                : listItem;
+                                : dropdownItem;
                             })}
-                          </ha-button-menu>
+                          </ha-dropdown>
                         `
                       : ""}
                   </div>
@@ -998,9 +1017,8 @@ export class HaConfigDevicePage extends LitElement {
       this._diagnosticDownloadLinks = (
         links as { link: string; domain: string }[]
       ).map((link) => ({
-        href: link.link,
         icon: mdiDownload,
-        action: (ev) => this._signUrl(ev),
+        action: () => this._signUrl(link.link),
         label:
           links.length > 1
             ? this.hass.localize(
@@ -1334,6 +1352,13 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
+  private _handleToolbarMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail?.item?.value;
+    if (action === "reset_entity_ids") {
+      this._resetEntityIds();
+    }
+  }
+
   private _resetEntityIds = () => {
     const entities = this._entities(this.deviceId, this._entityReg).map(
       (e) => e.entity_id
@@ -1466,13 +1491,16 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  private async _signUrl(ev) {
-    const a = ev.currentTarget.getAttribute("href")
-      ? ev.currentTarget
-      : ev.currentTarget.closest("a");
-
-    const signedUrl = await getSignedPath(this.hass, a.getAttribute("href"));
+  private async _signUrl(link: string) {
+    const signedUrl = await getSignedPath(this.hass, link);
     fileDownload(signedUrl.path);
+  }
+
+  private _deviceActionSelected(ev: HaDropdownSelectEvent) {
+    const deviceAction = (ev.detail?.item as any)?.data as DeviceAction;
+    if (deviceAction?.action) {
+      deviceAction.action(ev);
+    }
   }
 
   private _deviceActionClicked(ev) {

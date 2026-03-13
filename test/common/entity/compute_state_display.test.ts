@@ -678,11 +678,11 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       "number.test",
       {
         device_class: "monetary",
-        unit_of_measurement: "$",
+        unit_of_measurement: "USD",
       },
       "12"
     );
-    expect(result).toBe("12 $");
+    expect(result).toBe("$12.00");
   });
 });
 

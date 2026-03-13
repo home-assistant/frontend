@@ -18,6 +18,7 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
@@ -47,7 +48,7 @@ export class HaDevicePicker extends LitElement {
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
 
-  @property({ attribute: false, type: Array }) public createDomains?: string[];
+  @property({ attribute: false }) public createDomains?: string[];
 
   /**
    * Show only devices with entities from specific domains.
@@ -94,7 +95,30 @@ export class HaDevicePicker extends LitElement {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
-  private _getDevicesMemoized = memoizeOne(getDevices);
+  private _getDevicesMemoized = memoizeOne(
+    (
+      _devices: HomeAssistant["devices"],
+      configEntryLookup: Record<string, ConfigEntry>,
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      includeDeviceClasses?: string[],
+      deviceFilter?: HaDevicePickerDeviceFilterFunc,
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      excludeDevices?: string[],
+      value?: string
+    ) =>
+      getDevices(
+        this.hass,
+        configEntryLookup,
+        includeDomains,
+        excludeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value
+      )
+  );
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
@@ -110,7 +134,7 @@ export class HaDevicePicker extends LitElement {
 
   private _getItems = () =>
     this._getDevicesMemoized(
-      this.hass,
+      this.hass.devices,
       this._configEntryLookup,
       this.includeDomains,
       this.excludeDomains,
@@ -149,11 +173,14 @@ export class HaDevicePicker extends LitElement {
               alt=""
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
-              src=${brandsUrl({
-                domain: configEntry.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: configEntry.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
             />`
           : nothing}
         <span slot="headline">${primary}</span>
@@ -171,11 +198,14 @@ export class HaDevicePicker extends LitElement {
               alt=""
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
-              src=${brandsUrl({
-                domain: item.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes.darkMode,
-              })}
+              src=${brandsUrl(
+                {
+                  domain: item.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
             />
           `
         : nothing}

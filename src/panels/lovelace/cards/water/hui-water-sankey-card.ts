@@ -6,7 +6,10 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  validateEnergyCollectionKey,
+} from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
@@ -32,17 +35,37 @@ class HuiWaterSankeyCard
   extends SubscribeMixin(MobileAwareMixin(LitElement))
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sankey-card-editor");
+    return document.createElement("hui-energy-sankey-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: WaterSankeyCardConfig;
 
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): WaterSankeyCardConfig {
+    return {
+      type: "water-sankey",
+      layout: "auto",
+      ...DEFAULT_CONFIG,
+    };
+  }
+
   @state() private _data?: EnergyData;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: WaterSankeyCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = { ...DEFAULT_CONFIG, ...config };
   }
 
@@ -128,9 +151,7 @@ class HuiWaterSankeyCard
     // Create home/consumption node
     const homeNode: Node = {
       id: "home",
-      label: this.hass.localize(
-        "ui.panel.lovelace.cards.energy.energy_distribution.home"
-      ),
+      label: this.hass.config.location_name,
       value: Math.max(0, totalWaterConsumption),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -157,7 +178,7 @@ class HuiWaterSankeyCard
       }
 
       nodes.push({
-        id: source.stat_energy_from,
+        id: `source-${source.stat_energy_from}`,
         label: getStatisticLabel(
           this.hass,
           source.stat_energy_from,
@@ -169,7 +190,7 @@ class HuiWaterSankeyCard
       });
 
       links.push({
-        source: source.stat_energy_from,
+        source: `source-${source.stat_energy_from}`,
         target: "home",
         value,
       });

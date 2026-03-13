@@ -62,14 +62,14 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ attribute: false, type: Array })
+  @property({ attribute: false })
   public statTypes: StatisticType[] = ["sum", "min", "mean", "max"];
 
   @property({ attribute: false }) public chartType: "line" | "bar" = "line";
 
-  @property({ attribute: false, type: Number }) public minYAxis?: number;
+  @property({ attribute: false }) public minYAxis?: number;
 
-  @property({ attribute: false, type: Number }) public maxYAxis?: number;
+  @property({ attribute: false }) public maxYAxis?: number;
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
@@ -335,7 +335,10 @@ export class StatisticsChart extends LitElement {
       },
       tooltip: {
         trigger: "axis",
-        appendTo: document.body,
+        renderMode: "html",
+        position: "bottom",
+        align: "center",
+        confine: true,
         formatter: this._renderTooltip,
       },
     };
@@ -504,7 +507,6 @@ export class StatisticsChart extends LitElement {
             id: `${statistic_id}-${type}`,
             type: this.chartType,
             smooth: this.chartType === "line" ? 0.4 : false,
-            smoothMonotone: "x",
             cursor: "default",
             data: [],
             name: name
@@ -572,6 +574,7 @@ export class StatisticsChart extends LitElement {
       let firstSum: number | null | undefined = null;
       stats.forEach((stat) => {
         const startDate = new Date(stat.start);
+        const endDate = new Date(stat.end);
         if (prevDate === startDate) {
           return;
         }
@@ -601,9 +604,66 @@ export class StatisticsChart extends LitElement {
           dataValues.push(val);
         });
         if (!this._hiddenStats.has(statistic_id)) {
-          pushData(startDate, new Date(stat.end), dataValues);
+          pushData(
+            startDate,
+            endDate.getTime() < endTime.getTime() ? endDate : endTime,
+            dataValues
+          );
         }
       });
+
+      // Close out the last stat segment at prevEndTime
+      const lastEndTime = prevEndTime;
+      const lastValues = prevValues;
+      if (lastEndTime && lastValues) {
+        statDataSets.forEach((d, i) => {
+          d.data!.push(
+            this._transformDataValue([lastEndTime, ...lastValues[i]!])
+          );
+        });
+      }
+
+      // Append current state if viewing recent data
+      const now = new Date();
+      // allow 10m of leeway for "now", because stats are 5 minute aggregated
+      const isUpToNow = now.getTime() - endTime.getTime() <= 600000;
+      if (isUpToNow) {
+        // Skip external statistics (they have ":" in the ID)
+        if (!statistic_id.includes(":")) {
+          const stateObj = this.hass.states[statistic_id];
+          if (stateObj) {
+            const currentValue = parseFloat(stateObj.state);
+            if (
+              isFinite(currentValue) &&
+              !this._hiddenStats.has(statistic_id)
+            ) {
+              // Then push the current state at now
+              statTypes.forEach((type, i) => {
+                if (type === "sum" || type === "change") {
+                  // Skip cumulative types - need special calculation.
+                  return;
+                }
+                const val: (number | null)[] = [];
+                if (
+                  type === bandTop &&
+                  this.chartType === "line" &&
+                  drawBands &&
+                  !this._hiddenStats.has(`${statistic_id}-${bandBottom}`)
+                ) {
+                  // For band chart, current value is both min and max, so diff is 0
+                  val.push(0);
+                  val.push(currentValue);
+                } else {
+                  val.push(currentValue);
+                }
+                statDataSets[i].data!.push(
+                  this._transformDataValue([now, ...val])
+                );
+              });
+            }
+          }
+        }
+      }
 
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);

@@ -18,10 +18,7 @@ import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-input-helper-text";
-import {
-  NO_ITEMS_AVAILABLE_ID,
-  type PickerComboBoxItem,
-} from "../ha-picker-combo-box";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../ha-sortable";
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
@@ -184,18 +181,17 @@ export class HaEntityNamePicker extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .getItems=${this._getFilteredItems}
-        .getAdditionalItems=${this._getAdditionalItems}
         .rowRenderer=${rowRenderer}
-        .searchFn=${this._searchFn}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.entity.entity-name-picker.no_match"
-        )}
         .value=${this._getPickerValue()}
         allow-custom-value
         .customValueLabel=${this.hass.localize(
           "ui.components.entity.entity-name-picker.custom_name"
         )}
         @value-changed=${this._pickerValueChanged}
+        .searchFn=${this._searchFn}
+        .searchLabel=${this.hass.localize(
+          "ui.components.entity.entity-name-picker.search"
+        )}
       >
         <div slot="field" class="container">
           <ha-sortable
@@ -279,6 +275,11 @@ export class HaEntityNamePicker extends LitElement {
     this._editIndex = idx;
     await this.updateComplete;
     await this._picker?.open();
+    const value = this._items[idx];
+    // Pre-fill the field value when editing a text item
+    if (value.type === "text" && value.text) {
+      this._picker?.setFieldValue(value.text);
+    }
   }
 
   private get _items(): EntityNameItem[] {
@@ -316,10 +317,7 @@ export class HaEntityNamePicker extends LitElement {
     return undefined;
   }
 
-  private _getFilteredItems = (
-    searchString?: string,
-    _section?: string
-  ): PickerComboBoxItem[] => {
+  private _getFilteredItems = (): PickerComboBoxItem[] => {
     const items = this._getItems(this.entityId);
     const currentItem =
       this._editIndex != null ? this._items[this._editIndex] : undefined;
@@ -336,49 +334,27 @@ export class HaEntityNamePicker extends LitElement {
     );
 
     // When editing an existing text item, include it in the base items
-    if (currentItem?.type === "text" && currentItem.text && !searchString) {
+    if (currentItem?.type === "text" && currentItem.text) {
       filteredItems.push(this._customNameOption(currentItem.text));
     }
 
     return filteredItems;
   };
 
-  private _getAdditionalItems = (
-    searchString?: string
+  private _searchFn = (
+    searchString: string,
+    filteredItems: PickerComboBoxItem[]
   ): PickerComboBoxItem[] => {
-    if (!searchString) {
-      return [];
-    }
-
     const currentItem =
       this._editIndex != null ? this._items[this._editIndex] : undefined;
+    const currentId =
+      currentItem?.type === "text" && currentItem.text
+        ? this._customNameOption(currentItem.text).id
+        : undefined;
 
-    // Don't add if it's the same as the current item being edited
-    if (
-      currentItem?.type === "text" &&
-      currentItem.text &&
-      currentItem.text === searchString
-    ) {
-      return [];
-    }
-
-    // Always return custom name option when there's a search string
-    // This prevents "No matching items found" from showing
-    return [this._customNameOption(searchString)];
-  };
-
-  private _searchFn = (
-    search: string,
-    filteredItems: PickerComboBoxItem[],
-    _allItems: PickerComboBoxItem[]
-  ): PickerComboBoxItem[] => {
-    // Remove NO_ITEMS_AVAILABLE_ID if we have additional items (custom name option)
-    // This prevents "No matching items found" from showing when custom values are allowed
-    const hasAdditionalItems = this._getAdditionalItems(search).length > 0;
-    if (hasAdditionalItems) {
-      return filteredItems.filter(
-        (item) => typeof item !== "string" || item !== NO_ITEMS_AVAILABLE_ID
-      );
+    // Remove custom name option if search string is present to avoid duplicates
+    if (searchString && currentId) {
+      return filteredItems.filter((item) => item.id !== currentId);
     }
     return filteredItems;
   };

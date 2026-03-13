@@ -26,12 +26,26 @@ export interface CoverTiltPositionCardFeatureConfig {
   type: "cover-tilt-position";
 }
 
+export interface CoverPositionPresetCardFeatureConfig {
+  type: "cover-position-preset";
+  positions?: number[];
+}
+
+export interface CoverTiltPresetCardFeatureConfig {
+  type: "cover-tilt-preset";
+  positions?: number[];
+}
+
 export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
 }
 
 export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
+}
+
+export interface LightColorFavoritesCardFeatureConfig {
+  type: "light-color-favorites";
 }
 
 export interface LockCommandsCardFeatureConfig {
@@ -202,7 +216,7 @@ export interface TrendGraphCardFeatureConfig {
   detail?: boolean;
 }
 
-export const AREA_CONTROLS = [
+export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
   "cover-shutter",
@@ -218,7 +232,9 @@ export const AREA_CONTROLS = [
   "switch",
 ] as const;
 
-export type AreaControl = (typeof AREA_CONTROLS)[number];
+export type AreaControlDomain = (typeof AREA_CONTROL_DOMAINS)[number];
+
+export type AreaControl = AreaControlDomain | { entity_id: string };
 
 export interface AreaControlsCardFeatureConfig {
   type: "area-controls";
@@ -244,6 +260,8 @@ export type LovelaceCardFeatureConfig =
   | CounterActionsCardFeatureConfig
   | CoverOpenCloseCardFeatureConfig
   | CoverPositionCardFeatureConfig
+  | CoverPositionPresetCardFeatureConfig
+  | CoverTiltPresetCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
   | DateSetCardFeatureConfig
@@ -257,6 +275,7 @@ export type LovelaceCardFeatureConfig =
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
+  | LightColorFavoritesCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig

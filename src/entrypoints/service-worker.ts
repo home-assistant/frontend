@@ -32,21 +32,28 @@ const initRouting = () => {
     new CacheFirst({ matchOptions: { ignoreSearch: true } })
   );
 
-  // Cache any brand images used for 30 days
-  // Use revalidation so cache is always available during an extended outage
+  // Cache any brand images used for 1 day
+  // Brands are proxied via the local API with backend caching.
+  // Strip the rotating access token from cache keys so token rotation
+  // doesn't bust the cache, while preserving other params like "placeholder".
   registerRoute(
     ({ url, request }) =>
-      url.origin === "https://brands.home-assistant.io" &&
+      url.pathname.startsWith("/api/brands/") &&
       request.destination === "image",
     new StaleWhileRevalidate({
       cacheName: "brands",
-      // CORS must be forced to work for CSS images
-      fetchOptions: { mode: "cors", credentials: "omit" },
       plugins: [
+        {
+          cacheKeyWillBeUsed: async ({ request }) => {
+            const url = new URL(request.url);
+            url.searchParams.delete("token");
+            return url.href;
+          },
+        },
         // Add 404 so we quickly respond to domains with missing images
         new CacheableResponsePlugin({ statuses: [0, 200, 404] }),
         new ExpirationPlugin({
-          maxAgeSeconds: 60 * 60 * 24 * 30,
+          maxAgeSeconds: 60 * 60 * 24,
           purgeOnQuotaError: true,
         }),
       ],

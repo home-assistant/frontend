@@ -29,7 +29,7 @@ export class HaSunburstChart extends LitElement {
 
   @property({ attribute: false }) public data?: SunburstNode;
 
-  @property({ type: String, attribute: false }) public valueFormatter?: (
+  @property({ attribute: false }) public valueFormatter?: (
     value: number
   ) => string;
 

@@ -1,7 +1,7 @@
 import {
   mdiBackupRestore,
   mdiFolder,
-  mdiInformation,
+  mdiInformationOutline,
   mdiNas,
   mdiPlayBox,
   mdiReload,
@@ -14,7 +14,6 @@ import { navigate } from "../../../common/navigate";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
@@ -255,7 +254,7 @@ class HaConfigSectionStorage extends LitElement {
       >
         <ha-tooltip slot="extra">
           <ha-icon-button
-            .path=${mdiInformation}
+            .path=${mdiInformationOutline}
             class="help-button"
           ></ha-icon-button>
           <p class="metric-description" slot="content">
@@ -402,7 +401,7 @@ class HaConfigSectionStorage extends LitElement {
     }
 
     .help-button {
-      --mdc-icon-button-size: 20px;
+      --ha-icon-button-size: 20px;
       --mdc-icon-size: 20px;
       color: var(--secondary-text-color);
     }

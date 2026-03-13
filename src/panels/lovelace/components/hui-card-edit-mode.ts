@@ -14,8 +14,8 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { haStyle } from "../../../resources/styles";
@@ -193,7 +193,7 @@ export class HuiCardEditMode extends LitElement {
     this._editCard();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {
@@ -310,7 +310,7 @@ export class HuiCardEditMode extends LitElement {
           cursor: pointer;
           border-radius: var(--ha-border-radius-circle);
           background: var(--secondary-background-color);
-          --mdc-icon-button-size: 32px;
+          --ha-icon-button-size: 32px;
           --mdc-icon-size: 20px;
         }
       `,

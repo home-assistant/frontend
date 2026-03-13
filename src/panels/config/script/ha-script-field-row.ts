@@ -16,16 +16,15 @@ import "../../../components/ha-automation-row";
 import type { HaAutomationRow } from "../../../components/ha-automation-row";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
-import { indentStyle, overflowStyles } from "../automation/styles";
+import { indentStyle, overflowStyles, rowStyles } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
 
@@ -35,8 +34,7 @@ export default class HaScriptFieldRow extends LitElement {
 
   @property() public key!: string;
 
-  @property({ attribute: false, type: Array }) public excludeKeys: string[] =
-    [];
+  @property({ attribute: false }) public excludeKeys: string[] = [];
 
   @property({ attribute: false }) public field!: Field;
 
@@ -407,7 +405,7 @@ export default class HaScriptFieldRow extends LitElement {
     this._selectorRowElement?.focus();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
     if (!action) {
@@ -426,61 +424,10 @@ export default class HaScriptFieldRow extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      rowStyles,
       indentStyle,
       overflowStyles,
       css`
-        .disabled {
-          opacity: 0.5;
-          pointer-events: none;
-        }
-        .hidden {
-          display: none;
-        }
-        h3 {
-          margin: 0;
-          font-size: inherit;
-          font-weight: inherit;
-        }
-        .action-icon {
-          display: none;
-        }
-        @media (min-width: 870px) {
-          .action-icon {
-            display: inline-block;
-            color: var(--secondary-text-color);
-            opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
-          }
-        }
-        .card-content {
-          padding: 16px;
-        }
-        .disabled-bar {
-          background: var(--divider-color, #e0e0e0);
-          text-align: center;
-          border-top-right-radius: calc(
-            var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-          border-top-left-radius: calc(
-            var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-        }
-
-        .warning ul {
-          margin: 4px 0;
-        }
-        .selected_menu_item {
-          color: var(--primary-color);
-        }
         .selector-row {
           padding-top: 12px;
           padding-bottom: 16px;

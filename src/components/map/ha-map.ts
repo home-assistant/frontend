@@ -24,6 +24,7 @@ import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
+import { filterXSS } from "../../common/util/xss";
 import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
@@ -381,7 +382,7 @@ export class HaMap extends ReactiveElement {
         this.hass.config
       );
     }
-    return `${path.name}<br>${formattedTime}`;
+    return `${filterXSS(path.name ?? "")}<br>${formattedTime}`;
   }
 
   private _drawPaths(): void {
@@ -422,31 +423,77 @@ export class HaMap extends ReactiveElement {
           ? baseOpacity! + pointIndex * opacityStep!
           : undefined;
 
+        const thisPoint = path.points[pointIndex];
+        const nextPoint = path.points[pointIndex + 1];
+
         // DRAW point
         this._mapPaths.push(
-          Leaflet.circleMarker(path.points[pointIndex].point, {
+          Leaflet.circleMarker(thisPoint.point, {
             radius: isTouch ? 8 : 3,
             color: path.color || darkPrimaryColor,
             opacity,
             fillOpacity: opacity,
             interactive: true,
-          }).bindTooltip(
-            this._computePathTooltip(path, path.points[pointIndex]),
-            { direction: "top" }
-          )
+          }).bindTooltip(this._computePathTooltip(path, thisPoint), {
+            direction: "top",
+          })
         );
 
         // DRAW line between this and next point
-        this._mapPaths.push(
-          Leaflet.polyline(
-            [path.points[pointIndex].point, path.points[pointIndex + 1].point],
-            {
+        if (Math.abs(thisPoint.point[1] - nextPoint.point[1]) <= 180) {
+          // if the path does not cross the antimeridian, draw a simple line
+          // between the two points
+          this._mapPaths.push(
+            Leaflet.polyline([thisPoint.point, nextPoint.point], {
               color: path.color || darkPrimaryColor,
               opacity,
               interactive: false,
-            }
-          )
-        );
+            })
+          );
+        } else {
+          // if the path crosses the antimeridian, split the line into two, to
+          // avoid it being drawn across the entire map
+          const longitudeDifference =
+            ((nextPoint.point[1] - thisPoint.point[1] + 540) % 360) - 180;
+          let intersectionLatitude: number;
+          if (longitudeDifference === 0) {
+            // very, very unlikely edge case
+            intersectionLatitude =
+              (thisPoint.point[0] + nextPoint.point[0]) / 2;
+          } else {
+            intersectionLatitude =
+              thisPoint.point[0] +
+              ((nextPoint.point[0] - thisPoint.point[0]) *
+                (thisPoint.point[1] > 0
+                  ? 180 - thisPoint.point[1]
+                  : -180 - thisPoint.point[1])) /
+                longitudeDifference;
+          }
+
+          const intersectionPoint1: LatLngTuple = [
+            intersectionLatitude,
+            thisPoint.point[1] > 0 ? 180 : -180,
+          ];
+          const intersectionPoint2: LatLngTuple = [
+            intersectionLatitude,
+            nextPoint.point[1] > 0 ? 180 : -180,
+          ];
+
+          this._mapPaths.push(
+            Leaflet.polyline([thisPoint.point, intersectionPoint1], {
+              color: path.color || darkPrimaryColor,
+              opacity,
+              interactive: false,
+            })
+          );
+          this._mapPaths.push(
+            Leaflet.polyline([intersectionPoint2, nextPoint.point], {
+              color: path.color || darkPrimaryColor,
+              opacity,
+              interactive: false,
+            })
+          );
+        }
       }
       const pointIndex = path.points.length - 1;
       if (pointIndex >= 0) {
@@ -549,7 +596,7 @@ export class HaMap extends ReactiveElement {
           iconHTML = el.outerHTML;
         } else {
           const el = document.createElement("span");
-          el.innerHTML = title;
+          el.textContent = title;
           iconHTML = el.outerHTML;
         }
 

@@ -1,21 +1,23 @@
+import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
+import "../../../components/ha-dialog";
 import "../../../components/search-input";
-import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
+import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
+import { generateDefaultView } from "../../lovelace/views/default-view";
 import "./dashboard-card";
-import type { LocalizeKeys } from "../../../common/translations/localize";
-
-const EMPTY_CONFIG: LovelaceRawConfig = { views: [{ title: "Home" }] };
+import type { NewDashboardDialogParams } from "./show-dialog-new-dashboard";
 
 interface Strategy {
   type: string;
@@ -26,15 +28,15 @@ interface Strategy {
 
 const STRATEGIES = [
   {
-    type: "overview",
+    type: "original-states",
     images: {
       light:
-        "/static/images/dashboard-options/light/icon-dashboard-overview.svg",
-      dark: "/static/images/dashboard-options/dark/icon-dashboard-overview.svg",
+        "/static/images/dashboard-options/light/icon-dashboard-overview-legacy.svg",
+      dark: "/static/images/dashboard-options/dark/icon-dashboard-overview-legacy.svg",
     },
-    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.title",
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview-legacy.title",
     description:
-      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.description",
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview-legacy.description",
   },
   {
     type: "map",
@@ -63,7 +65,7 @@ const STRATEGIES = [
 class DialogNewDashboard extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   @state() private _params?: NewDashboardDialogParams;
 
@@ -75,7 +77,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   })[] = [];
 
   public showDialog(params: NewDashboardDialogParams): void {
-    this._opened = true;
+    this._open = true;
     this._params = params;
     this._localizedStrategies = STRATEGIES.map((strategy) => ({
       ...strategy,
@@ -87,103 +89,114 @@ class DialogNewDashboard extends LitElement implements HassDialog {
   }
 
   public closeDialog() {
-    if (this._opened) {
-      fireEvent(this, "dialog-closed", { dialog: this.localName });
-    }
-    this._opened = false;
-    this._params = undefined;
+    this._open = false;
     return true;
   }
 
+  private _dialogClosed(): void {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _generateDefaultConfig = memoizeOne(
+    (localize: LocalizeFunc): LovelaceConfig => ({
+      views: [generateDefaultView(localize, true)],
+    })
+  );
+
   protected render() {
-    if (!this._opened) {
+    if (!this._params) {
       return nothing;
     }
 
+    const defaultConfig = this._generateDefaultConfig(this.hass.localize);
+
     return html`
       <ha-dialog
-        open
-        hideActions
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(
-            `ui.panel.config.lovelace.dashboards.dialog_new.header`
-          )
+        .hass=${this.hass}
+        .open=${this._open}
+        flexcontent
+        width="large"
+        header-title=${this.hass.localize(
+          `ui.panel.config.lovelace.dashboards.dialog_new.header`
         )}
+        @closed=${this._dialogClosed}
       >
-        <search-input
-          .hass=${this.hass}
-          .label=${this.hass.localize(
-            `ui.panel.config.lovelace.dashboards.dialog_new.search_dashboards`
-          )}
-          .filter=${this._filter}
-          @value-changed=${this._handleSearchChange}
-        ></search-input>
-        <div class="content">
-          ${this._filter
-            ? html`
-                <div class="cards-container">
-                  ${this._filterStrategies(
-                    this._localizedStrategies,
-                    this._filter
-                  ).map(
-                    (strategy) => html`
-                      <dashboard-card
-                        .name=${strategy.localizedName}
-                        .description=${strategy.localizedDescription}
-                        .img=${this.hass.themes.darkMode
-                          ? strategy.images.dark
-                          : strategy.images.light}
-                        .alt=${strategy.localizedName}
-                        @click=${this._selected}
-                        .strategy=${strategy.type}
-                      ></dashboard-card>
-                    `
-                  )}
-                </div>
-              `
-            : html`
-                <div class="cards-container">
-                  <dashboard-card
-                    .name=${this.hass.localize(
-                      `ui.panel.config.lovelace.dashboards.dialog_new.create_empty`
-                    )}
-                    .description=${this.hass.localize(
-                      `ui.panel.config.lovelace.dashboards.dialog_new.create_empty_description`
-                    )}
-                    .img=${this.hass.themes.darkMode
-                      ? "/static/images/dashboard-options/dark/icon-dashboard-new.svg"
-                      : "/static/images/dashboard-options/light/icon-dashboard-new.svg"}
-                    .alt=${this.hass.localize(
-                      `ui.panel.config.lovelace.dashboards.dialog_new.create_empty`
-                    )}
-                    @click=${this._selected}
-                    .config=${EMPTY_CONFIG}
-                  ></dashboard-card>
-                </div>
-                <div class="cards-container">
-                  <div class="cards-container-header">
-                    ${this.hass.localize(
-                      `ui.panel.config.lovelace.dashboards.dialog_new.heading.default`
+        <div class="content-wrapper">
+          <search-input
+            autofocus
+            .hass=${this.hass}
+            .label=${this.hass.localize(
+              `ui.panel.config.lovelace.dashboards.dialog_new.search_dashboards`
+            )}
+            .filter=${this._filter}
+            @value-changed=${this._handleSearchChange}
+          ></search-input>
+          <div class="content ha-scrollbar">
+            ${this._filter
+              ? html`
+                  <div class="cards-container">
+                    ${this._filterStrategies(
+                      this._localizedStrategies,
+                      this._filter
+                    ).map(
+                      (strategy) => html`
+                        <dashboard-card
+                          .name=${strategy.localizedName}
+                          .description=${strategy.localizedDescription}
+                          .img=${this.hass.themes.darkMode
+                            ? strategy.images.dark
+                            : strategy.images.light}
+                          .alt=${strategy.localizedName}
+                          @click=${this._selected}
+                          .strategy=${strategy.type}
+                        ></dashboard-card>
+                      `
                     )}
                   </div>
-                  ${this._localizedStrategies.map(
-                    (strategy) => html`
-                      <dashboard-card
-                        .name=${strategy.localizedName}
-                        .description=${strategy.localizedDescription}
-                        .img=${this.hass.themes.darkMode
-                          ? strategy.images.dark
-                          : strategy.images.light}
-                        .alt=${strategy.localizedName}
-                        @click=${this._selected}
-                        .strategy=${strategy.type}
-                      ></dashboard-card>
-                    `
-                  )}
-                </div>
-              `}
+                `
+              : html`
+                  <div class="cards-container">
+                    <dashboard-card
+                      .name=${this.hass.localize(
+                        `ui.panel.config.lovelace.dashboards.dialog_new.create_empty`
+                      )}
+                      .description=${this.hass.localize(
+                        `ui.panel.config.lovelace.dashboards.dialog_new.create_empty_description`
+                      )}
+                      .img=${this.hass.themes.darkMode
+                        ? "/static/images/dashboard-options/dark/icon-dashboard-new.svg"
+                        : "/static/images/dashboard-options/light/icon-dashboard-new.svg"}
+                      .alt=${this.hass.localize(
+                        `ui.panel.config.lovelace.dashboards.dialog_new.create_empty`
+                      )}
+                      @click=${this._selected}
+                      .config=${defaultConfig}
+                    ></dashboard-card>
+                  </div>
+                  <div class="cards-container">
+                    <div class="cards-container-header">
+                      ${this.hass.localize(
+                        `ui.panel.config.lovelace.dashboards.dialog_new.heading.default`
+                      )}
+                    </div>
+                    ${this._localizedStrategies.map(
+                      (strategy) => html`
+                        <dashboard-card
+                          .name=${strategy.localizedName}
+                          .description=${strategy.localizedDescription}
+                          .img=${this.hass.themes.darkMode
+                            ? strategy.images.dark
+                            : strategy.images.light}
+                          .alt=${strategy.localizedName}
+                          @click=${this._selected}
+                          .strategy=${strategy.type}
+                        ></dashboard-card>
+                      `
+                    )}
+                  </div>
+                `}
+          </div>
         </div>
       </ha-dialog>
     `;
@@ -234,11 +247,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     if (target.config) {
       config = target.config;
     } else if (target.strategy) {
-      if (target.strategy === "overview") {
-        config = null;
-      } else {
-        config = this._generateStrategyConfig(target.strategy);
-      }
+      config = this._generateStrategyConfig(target.strategy);
     }
 
     this._params?.selectConfig(config);
@@ -247,33 +256,16 @@ class DialogNewDashboard extends LitElement implements HassDialog {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
-      haStyleDialog,
+      haStyleScrollbar,
       css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* overrule the ha-style-dialog max-height on small screens */
-          ha-dialog {
-            --mdc-dialog-max-height: 100%;
-            height: 100%;
-          }
-        }
-
-        @media all and (min-width: 850px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 845px;
-            --mdc-dialog-min-height: calc(
-              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
-            );
-            --mdc-dialog-max-height: calc(
-              100vh - var(--ha-space-18) - var(--safe-area-inset-y)
-            );
-          }
-        }
-
         ha-dialog {
-          --mdc-dialog-max-width: 845px;
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
+          --ha-dialog-min-height: 60svh;
+        }
+        ha-dialog::part(body) {
+          overflow: hidden;
+          min-height: 0;
         }
         .cards-container-header {
           font-size: var(--ha-font-size-l);
@@ -309,8 +301,17 @@ class DialogNewDashboard extends LitElement implements HassDialog {
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
           margin-top: 20px;
         }
+        .content-wrapper {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
         .content {
-          padding: 0 24px 0 24px;
+          padding: 0 var(--ha-space-6) var(--ha-space-6) var(--ha-space-6);
+          flex: 1;
+          min-height: 0;
+          overflow: auto;
         }
       `,
     ];

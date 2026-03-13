@@ -55,12 +55,20 @@ export const coreStyles = css`
     --ha-shadow-spread-md: 0;
     --ha-shadow-spread-lg: 0;
 
-    --ha-animation-base-duration: 350ms;
+    --ha-animation-duration-none: 1ms;
+    --ha-animation-duration-instant: 75ms;
+    --ha-animation-duration-fast: 150ms;
+    --ha-animation-duration-normal: 250ms;
+    --ha-animation-duration-slow: 350ms;
   }
 
   @media (prefers-reduced-motion: reduce) {
     html {
-      --ha-animation-base-duration: 0ms;
+      --ha-animation-duration-none: 1ms;
+      --ha-animation-duration-instant: 1ms;
+      --ha-animation-duration-fast: 1ms;
+      --ha-animation-duration-normal: 1ms;
+      --ha-animation-duration-slow: 1ms;
     }
   }
 `;

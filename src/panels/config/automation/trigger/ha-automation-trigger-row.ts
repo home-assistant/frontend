@@ -8,7 +8,7 @@ import {
   mdiContentCut,
   mdiDelete,
   mdiDotsVertical,
-  mdiInformation,
+  mdiInformationOutline,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
@@ -40,7 +40,6 @@ import type { HaAutomationRow } from "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type { HaDropdownItem } from "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
@@ -56,6 +55,7 @@ import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
+import type { DeviceTrigger } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
@@ -89,6 +89,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -167,7 +168,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   get selected() {
     return this._selected;
@@ -196,6 +197,15 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     const yamlMode = this._yamlMode || !supported;
 
+    const target =
+      type === "platform" &&
+      "target" in
+        this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
+        ? (this.trigger as PlatformTrigger).target
+        : type === "device" && (this.trigger as DeviceTrigger).device_id
+          ? { device_id: (this.trigger as DeviceTrigger).device_id }
+          : undefined;
+
     return html`
       ${type === "list"
         ? html`<ha-svg-icon
@@ -210,11 +220,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ></ha-trigger-icon>`}
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
-        ${type === "platform" &&
-        "target" in
-          this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
-          ? this._renderTargets((this.trigger as PlatformTrigger).target)
-          : nothing}
+        ${target ? this._renderTargets(target) : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -454,7 +460,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.triggered"
           )}
-          <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
         </div>
       </ha-card>
     `;
@@ -808,7 +814,8 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._automationRowElement?.focus();
   }
 
-  private _handleDropdownSelect(ev: CustomEvent<{ item: HaDropdownItem }>) {
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
+    ev.stopPropagation();
     const action = ev.detail?.item?.value;
 
     if (!action) {

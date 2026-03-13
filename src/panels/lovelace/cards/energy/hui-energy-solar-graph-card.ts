@@ -1,4 +1,4 @@
-import { differenceInDays, endOfToday, isToday, startOfToday } from "date-fns";
+import { endOfToday, isToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -18,6 +18,8 @@ import type {
 import {
   getEnergyDataCollection,
   getEnergySolarForecasts,
+  getSuggestedPeriod,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -41,9 +43,24 @@ export class HuiEnergySolarGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergySolarGraphCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): EnergySolarGraphCardConfig {
+    return {
+      type: "energy-solar-graph",
+    };
+  }
 
   @state() private _chartData: ECOption["series"][] = [];
 
@@ -72,6 +89,9 @@ export class HuiEnergySolarGraphCard
   }
 
   public setConfig(config: EnergySolarGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
@@ -354,7 +374,7 @@ export class HuiEnergySolarGraphCard
   ) {
     const data: LineSeriesOption[] = [];
 
-    const dayDifference = differenceInDays(end || new Date(), start);
+    const period = getSuggestedPeriod(start, end);
 
     // Process solar forecast data.
     solarSources.forEach((source) => {
@@ -370,10 +390,10 @@ export class HuiEnergySolarGraphCard
               if (dateObj < start || (end && dateObj > end)) {
                 return;
               }
-              if (dayDifference > 35) {
+              if (period === "month") {
                 dateObj.setDate(1);
               }
-              if (dayDifference > 2) {
+              if (period === "month" || period === "day") {
                 dateObj.setHours(0, 0, 0, 0);
               } else {
                 dateObj.setMinutes(0, 0, 0);

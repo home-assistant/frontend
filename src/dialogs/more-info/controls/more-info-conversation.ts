@@ -2,7 +2,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-attributes";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-assist-chat";
 import "../../../components/ha-spinner";

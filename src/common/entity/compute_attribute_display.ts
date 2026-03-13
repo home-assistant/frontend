@@ -8,7 +8,7 @@ import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_regist
 import type { FrontendLocaleData } from "../../data/translation";
 import type { WeatherEntity } from "../../data/weather";
 import { getWeatherUnit } from "../../data/weather";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValuePart } from "../../types";
 import checkValidDate from "../datetime/check_valid_date";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTimeWithSeconds } from "../datetime/format_date_time";
@@ -30,12 +30,34 @@ export const computeAttributeValueDisplay = (
   attribute: string,
   value?: any
 ): string => {
+  // Number value, return formatted number
+  const parts = computeAttributeValueToParts(
+    localize,
+    stateObj,
+    locale,
+    config,
+    entities,
+    attribute,
+    value
+  );
+  return parts.map((p) => p.value).join("");
+};
+
+export const computeAttributeValueToParts = (
+  localize: LocalizeFunc,
+  stateObj: HassEntity,
+  locale: FrontendLocaleData,
+  config: HassConfig,
+  entities: HomeAssistant["entities"],
+  attribute: string,
+  value?: any
+): ValuePart[] => {
   const attributeValue =
     value !== undefined ? value : stateObj.attributes[attribute];
 
   // Null value, the state is unknown
   if (attributeValue === null || attributeValue === undefined) {
-    return localize("state.default.unknown");
+    return [{ type: "value", value: localize("state.default.unknown") }];
   }
 
   // Number value, return formatted number
@@ -58,11 +80,16 @@ export const computeAttributeValueDisplay = (
       unit = config.unit_system.temperature;
     }
 
-    if (unit) {
-      return `${formattedValue}${blankBeforeUnit(unit, locale)}${unit}`;
-    }
+    const parts: ValuePart[] = [{ type: "value", value: formattedValue }];
 
-    return formattedValue;
+    if (unit) {
+      const literal = blankBeforeUnit(unit, locale);
+      if (literal) {
+        parts.push({ type: "literal", value: literal });
+      }
+      parts.push({ type: "unit", value: unit });
+    }
+    return parts;
   }
 
   // Special handling in case this is a string with a known format
@@ -73,14 +100,15 @@ export const computeAttributeValueDisplay = (
       if (isTimestamp(attributeValue)) {
         const date = new Date(attributeValue);
         if (checkValidDate(date)) {
-          return formatDateTimeWithSeconds(date, locale, config);
+          const formattedDate = formatDateTimeWithSeconds(date, locale, config);
+          return [{ type: "value", value: formattedDate }];
         }
       }
 
       // Value was not a timestamp, so only do date formatting
       const date = new Date(attributeValue);
       if (checkValidDate(date)) {
-        return formatDate(date, locale, config);
+        return [{ type: "value", value: formatDate(date, locale, config) }];
       }
     }
   }
@@ -91,11 +119,11 @@ export const computeAttributeValueDisplay = (
       attributeValue.some((val) => val instanceof Object)) ||
     (!Array.isArray(attributeValue) && attributeValue instanceof Object)
   ) {
-    return JSON.stringify(attributeValue);
+    return [{ type: "value", value: JSON.stringify(attributeValue) }];
   }
   // If this is an array, try to determine the display value for each item
   if (Array.isArray(attributeValue)) {
-    return attributeValue
+    const formattedValue = attributeValue
       .map((item) =>
         computeAttributeValueDisplay(
           localize,
@@ -108,6 +136,7 @@ export const computeAttributeValueDisplay = (
         )
       )
       .join(", ");
+    return [{ type: "value", value: formattedValue }];
   }
 
   // We've explored all known value handling, so now we'll try to find a
@@ -120,7 +149,7 @@ export const computeAttributeValueDisplay = (
     | undefined;
   const translationKey = registryEntry?.translation_key;
 
-  return (
+  const formattedValue =
     (translationKey &&
       localize(
         `component.${registryEntry.platform}.entity.${domain}.${translationKey}.state_attributes.${attribute}.state.${attributeValue}`
@@ -132,8 +161,8 @@ export const computeAttributeValueDisplay = (
     localize(
       `component.${domain}.entity_component._.state_attributes.${attribute}.state.${attributeValue}`
     ) ||
-    attributeValue
-  );
+    attributeValue;
+  return [{ type: "value", value: formattedValue }];
 };
 
 export const computeAttributeNameDisplay = (

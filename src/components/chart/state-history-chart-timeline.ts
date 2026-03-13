@@ -47,9 +47,9 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public endTime!: Date;
 
-  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
+  @property({ attribute: false }) public paddingYAxis = 0;
 
-  @property({ attribute: false, type: Number }) public chartIndex?;
+  @property({ attribute: false }) public chartIndex?;
 
   @property({ attribute: "hide-reset-button", type: Boolean })
   public hideResetButton?: boolean;
@@ -255,7 +255,10 @@ export class StateHistoryChartTimeline extends LitElement {
         right: rtl ? labelWidth : 1,
       },
       tooltip: {
-        appendTo: document.body,
+        renderMode: "html",
+        position: "bottom",
+        align: "center",
+        confine: true,
         formatter: this._renderTooltip,
       },
     };

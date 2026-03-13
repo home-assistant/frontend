@@ -9,8 +9,8 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-card";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dialog";
 import "../../../components/ha-metric";
 import "../../../components/ha-spinner";
 import type { HassioStats } from "../../../data/hassio/common";
@@ -62,20 +62,24 @@ class DialogSystemInformation extends LitElement {
 
   @state() private _coreStats?: HassioStats;
 
-  @state() private _opened = false;
+  @state() private _open = false;
 
   private _systemHealthSubscription?: Promise<UnsubscribeFunc>;
 
   private _hassIOSubscription?: UnsubscribeFunc;
 
   public showDialog(): void {
-    this._opened = true;
+    this._open = true;
     this.hass!.loadBackendTranslation("system_health");
     this._subscribe();
   }
 
   public closeDialog() {
-    this._opened = false;
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._open = false;
     this._unsubscribe();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -126,7 +130,7 @@ class DialogSystemInformation extends LitElement {
   }
 
   protected render() {
-    if (!this._opened) {
+    if (!this._open) {
       return nothing;
     }
 
@@ -134,12 +138,12 @@ class DialogSystemInformation extends LitElement {
 
     return html`
       <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.repairs.system_information")
+        .hass=${this.hass}
+        .open=${this._open}
+        header-title=${this.hass.localize(
+          "ui.panel.config.repairs.system_information"
         )}
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._resolutionInfo
@@ -224,9 +228,11 @@ class DialogSystemInformation extends LitElement {
                 </div>
               `}
         </div>
-        <ha-button slot="primaryAction" @click=${this._copyInfo}>
-          ${this.hass.localize("ui.panel.config.repairs.copy")}
-        </ha-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button slot="primaryAction" @click=${this._copyInfo}>
+            ${this.hass.localize("ui.panel.config.repairs.copy")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }

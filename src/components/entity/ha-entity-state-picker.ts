@@ -7,6 +7,7 @@ import { getStates } from "../../common/entity/get_states";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-generic-picker";
 import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import type { PickerValueRenderer } from "../ha-picker-field";
 
 @customElement("ha-entity-state-picker")
 export class HaEntityStatePicker extends LitElement {
@@ -108,6 +109,12 @@ export class HaEntityStatePicker extends LitElement {
       this.extraOptions
     );
 
+  private _valueRenderer: PickerValueRenderer = (value: string) => {
+    const items = this._getFilteredItems();
+    const item = items.find((option) => option.id === value);
+    return html`<span slot="headline">${item?.primary ?? value}</span>`;
+  };
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -125,6 +132,7 @@ export class HaEntityStatePicker extends LitElement {
         .helper=${this.helper}
         .value=${this.value}
         .getItems=${this._getFilteredItems}
+        .valueRenderer=${this._valueRenderer}
         .notFoundLabel=${this.hass.localize("ui.components.combo-box.no_match")}
         .customValueLabel=${this.hass.localize(
           "ui.components.entity.entity-state-picker.add_custom_state"

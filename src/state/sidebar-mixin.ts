@@ -11,10 +11,12 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-dock-sidebar": DockSidebarParams;
+    "hass-kiosk-mode": { enable: boolean };
   }
   // for add event listener
   interface HTMLElementEventMap {
     "hass-dock-sidebar": HASSDomEvent<DockSidebarParams>;
+    "hass-kiosk-mode": HASSDomEvent<HASSDomEvents["hass-kiosk-mode"]>;
   }
 }
 
@@ -25,6 +27,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.addEventListener("hass-dock-sidebar", (ev) => {
         this._updateHass({ dockedSidebar: ev.detail.dock });
         storeState(this.hass!);
+      });
+      window.addEventListener("hass-kiosk-mode", (ev) => {
+        this._updateHass({ kioskMode: ev.detail.enable });
       });
     }
   };

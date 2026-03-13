@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
 import "./ha-icon";
@@ -88,8 +88,6 @@ const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property() public value?: string;
 
   @property() public label?: string;
@@ -111,7 +109,6 @@ export class HaIconPicker extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         allow-custom-value
         .getItems=${this._getIconPickerItems}
         .helper=${this.helper}
@@ -124,9 +121,6 @@ export class HaIconPicker extends LitElement {
         .label=${this.label}
         .value=${this._value}
         .searchFn=${this._filterIcons}
-        .notFoundLabel=${this.hass?.localize(
-          "ui.components.icon-picker.no_match"
-        )}
         popover-placement="bottom-start"
         @value-changed=${this._valueChanged}
       >
@@ -171,20 +165,6 @@ export class HaIconPicker extends LitElement {
         } else if (keywords.some((word) => word.includes(normalizedFilter))) {
           rankedItems.push({ item, rank: 4 });
         }
-      }
-
-      // Allow preview for custom icon not in list
-      if (rankedItems.length === 0) {
-        rankedItems.push({
-          item: {
-            id: filter,
-            primary: filter,
-            icon: filter,
-            search_labels: { keyword: filter },
-            sorting_label: filter,
-          },
-          rank: 0,
-        });
       }
 
       return rankedItems

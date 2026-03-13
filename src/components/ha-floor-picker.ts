@@ -8,7 +8,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
-import { updateAreaRegistryEntry } from "../data/area_registry";
+import { updateAreaRegistryEntry } from "../data/area/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
@@ -359,7 +359,7 @@ export class HaFloorPicker extends LitElement {
         {
           id: ADD_NEW_ID + searchString,
           primary: this.hass.localize(
-            "ui.components.floor-picker.add_new_sugestion",
+            "ui.components.floor-picker.add_new_suggestion",
             {
               name: searchString,
             }

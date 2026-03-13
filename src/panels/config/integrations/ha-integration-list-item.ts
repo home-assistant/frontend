@@ -1,7 +1,12 @@
 import type { GraphicType } from "@material/mwc-list/mwc-list-item-base";
 import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
+import {
+  mdiDevices,
+  mdiFileCodeOutline,
+  mdiPackageVariant,
+  mdiWeb,
+} from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -24,8 +29,6 @@ export class HaIntegrationListItem extends ListItemBase {
 
   // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) hasMeta = true;
-
-  @property({ type: Boolean }) brand = false;
 
   // @ts-expect-error
   protected override renderSingleLine() {
@@ -51,19 +54,25 @@ export class HaIntegrationListItem extends ListItemBase {
         graphicClasses
       )}"
     >
-      <img
-        alt=""
-        loading="lazy"
-        src=${brandsUrl({
-          domain: this.integration.domain,
-          type: "icon",
-          useFallback: true,
-          darkOptimized: this.hass.themes?.darkMode,
-          brand: this.brand,
-        })}
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer"
-      />
+      ${this.integration.is_discovered
+        ? html`<ha-svg-icon
+            class="discovered-icon"
+            .path=${mdiDevices}
+          ></ha-svg-icon>`
+        : html`<img
+            alt=""
+            loading="lazy"
+            src=${brandsUrl(
+              {
+                domain: this.integration.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              },
+              this.hass.auth.data.hassUrl
+            )}
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+          />`}
     </span>`;
   }
 
@@ -145,6 +154,10 @@ export class HaIntegrationListItem extends ListItemBase {
         img {
           width: 40px;
           height: 40px;
+        }
+        .discovered-icon {
+          --mdc-icon-size: 40px;
+          color: var(--primary-color);
         }
         .mdc-deprecated-list-item__meta {
           width: auto;

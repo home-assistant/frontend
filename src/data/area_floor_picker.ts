@@ -6,7 +6,7 @@ import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-dev
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
-import type { AreaRegistryEntry } from "./area_registry";
+import type { AreaRegistryEntry } from "./area/area_registry";
 import {
   getDeviceEntityDisplayLookup,
   type DeviceEntityDisplayLookup,

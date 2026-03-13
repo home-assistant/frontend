@@ -60,7 +60,7 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
-  @property({ attribute: false, type: Number }) public hoursToShow?: number;
+  @property({ attribute: false }) public hoursToShow?: number;
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
@@ -73,9 +73,9 @@ export class StateHistoryCharts extends LitElement {
   @property({ attribute: "logarithmic-scale", type: Boolean })
   public logarithmicScale = false;
 
-  @property({ attribute: false, type: Number }) public minYAxis?: number;
+  @property({ attribute: false }) public minYAxis?: number;
 
-  @property({ attribute: false, type: Number }) public maxYAxis?: number;
+  @property({ attribute: false }) public maxYAxis?: number;
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 

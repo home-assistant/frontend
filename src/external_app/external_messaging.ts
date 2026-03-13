@@ -301,6 +301,15 @@ export interface EMIncomingMessageImprovDeviceSetupDone extends EMMessage {
   command: "improv/device_setup_done";
 }
 
+export interface EMIncomingMessageKioskModeSet {
+  id: number;
+  type: "command";
+  command: "kiosk_mode/set";
+  payload: {
+    enable: boolean;
+  };
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
@@ -311,7 +320,8 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageBarCodeScanResult
   | EMIncomingMessageBarCodeScanAborted
   | EMIncomingMessageImprovDeviceDiscovered
-  | EMIncomingMessageImprovDeviceSetupDone;
+  | EMIncomingMessageImprovDeviceSetupDone
+  | EMIncomingMessageKioskModeSet;
 
 type EMIncomingMessage =
   | EMMessageResultSuccess
@@ -331,7 +341,6 @@ export interface ExternalConfig {
   hasAssist?: boolean;
   hasBarCodeScanner?: number;
   canSetupImprov?: boolean;
-  downloadFileSupported?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
 }

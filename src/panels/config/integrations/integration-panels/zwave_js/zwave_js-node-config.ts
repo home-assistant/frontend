@@ -17,9 +17,9 @@ import type { HaProgressButton } from "../../../../../components/buttons/ha-prog
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-generic-picker";
-import "../../../../../components/ha-list-item";
 import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
 import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
@@ -41,11 +41,14 @@ import {
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
-import "../../../../../layouts/hass-tabs-subpage";
+import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
+import type {
+  HomeAssistant,
+  Route,
+  ValueChangedEvent,
+} from "../../../../../types";
 import "../../../ha-config-section";
-import { configTabs } from "./zwave_js-config-router";
 import "./zwave_js-custom-param";
 
 const icons = {
@@ -112,11 +115,14 @@ class ZWaveJSNodeConfig extends LitElement {
       : "";
 
     return html`
-      <hass-tabs-subpage
+      <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
-        .tabs=${configTabs}
+        .header=${this.hass.localize(
+          "ui.panel.config.zwave_js.node_config.header"
+        )}
+        back-path="/config/zwave_js/dashboard?config_entry=${this
+          .configEntryId}"
       >
         <ha-config-section
           .narrow=${this.narrow}
@@ -222,7 +228,7 @@ class ZWaveJSNodeConfig extends LitElement {
             ></zwave_js-custom-param>
           </ha-card>
         </ha-config-section>
-      </hass-tabs-subpage>
+      </hass-subpage>
     `;
   }
 
@@ -374,7 +380,6 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <ha-select
-          fixedMenuPosition
           .disabled=${!item.metadata.writeable}
           .value=${item.value?.toString()}
           .key=${id}
@@ -383,12 +388,13 @@ class ZWaveJSNodeConfig extends LitElement {
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
           .helper=${defaultLabel}
-        >
-          ${Object.entries(item.metadata.states).map(
-            ([key, entityState]) => html`
-              <ha-list-item .value=${key}>${entityState}</ha-list-item>
-            `
+          .options=${Object.entries(item.metadata.states).map(
+            ([key, entityState]) => ({
+              value: key,
+              label: entityState,
+            })
           )}
+        >
         </ha-select>
       `;
     }
@@ -457,8 +463,8 @@ class ZWaveJSNodeConfig extends LitElement {
     this._updateConfigParameter(ev.target, ev.detail.value ? 1 : 0);
   }
 
-  private _dropdownSelected(ev) {
-    this._handleEnumeratedPickerValueChanged(ev, ev.target.value);
+  private _dropdownSelected(ev: HaSelectSelectEvent) {
+    this._handleEnumeratedPickerValueChanged(ev, ev.detail.value);
   }
 
   private _pickerValueChanged(ev) {
@@ -469,7 +475,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config![ev.target.key].value?.toString() === value) {
+    if (this._config![ev.target.key].value === value) {
       return;
     }
     this._setResult(ev.target.key, undefined);
@@ -547,7 +553,7 @@ class ZWaveJSNodeConfig extends LitElement {
     id: string,
     item: ZWaveJSNodeConfigParam
   ) {
-    return (ev: CustomEvent<{ value: number }>) =>
+    return (ev: ValueChangedEvent<number>) =>
       this._numericInputChanged({
         ...ev,
         target: {

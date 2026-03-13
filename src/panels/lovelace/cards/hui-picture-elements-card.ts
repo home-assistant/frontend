@@ -11,7 +11,10 @@ import { findEntities } from "../common/find-entities";
 import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
-import type { PictureElementsCardConfig } from "./types";
+import {
+  PREVIEW_CLICK_CALLBACK,
+  type PictureElementsCardConfig,
+} from "./types";
 import type { PersonEntity } from "../../../data/person";
 
 @customElement("hui-picture-elements-card")
@@ -166,6 +169,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .aspectRatio=${this._config.aspect_ratio}
             .darkModeFilter=${this._config.dark_mode_filter}
             .darkModeImage=${darkModeImage}
+            @click=${this._handleImageClick}
           ></hui-image>
           ${this._elements}
         </div>
@@ -220,6 +224,19 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     this._elements = this._elements!.map((curCardEl) =>
       curCardEl === elToReplace ? newCardEl : curCardEl
     );
+  }
+
+  private _handleImageClick(ev: MouseEvent): void {
+    if (!this.preview || !this._config?.[PREVIEW_CLICK_CALLBACK]) {
+      return;
+    }
+
+    const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = ((ev.clientX - rect.left) / rect.width) * 100;
+    const y = ((ev.clientY - rect.top) / rect.height) * 100;
+
+    // only the edited card has this callback
+    this._config[PREVIEW_CLICK_CALLBACK](x, y);
   }
 }
 

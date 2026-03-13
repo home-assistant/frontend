@@ -1,40 +1,63 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
-  getEntity("light", "bed_light", "on", {
-    friendly_name: "Bed Light",
-  }),
-  getEntity("group", "all_lights", "on", {
-    entity_id: ["light.bed_light"],
-    order: 8,
-    friendly_name: "All Lights",
-  }),
-  getEntity("camera", "demo_camera", "idle", {
-    access_token:
-      "2f5bb163fb91cd8770a9494fa5e7eab172d8d34f4aba806eb6b59411b8c720b8",
-    friendly_name: "Demo camera",
-    entity_picture:
-      "/api/camera_proxy/camera.demo_camera?token=2f5bb163fb91cd8770a9494fa5e7eab172d8d34f4aba806eb6b59411b8c720b8",
-  }),
-  getEntity("binary_sensor", "movement_backyard", "on", {
-    friendly_name: "Movement Backyard",
-    device_class: "motion",
-  }),
-  getEntity("person", "paulus", "home", {
-    friendly_name: "Paulus",
-    entity_picture: "/images/paulus.jpg",
-  }),
-  getEntity("sensor", "battery", 35, {
-    device_class: "battery",
-    friendly_name: "Battery",
-    unit_of_measurement: "%",
-  }),
+  {
+    entity_id: "light.bed_light",
+    state: "on",
+    attributes: {
+      friendly_name: "Bed Light",
+    },
+  },
+  {
+    entity_id: "group.all_lights",
+    state: "on",
+    attributes: {
+      entity_id: ["light.bed_light"],
+      order: 8,
+      friendly_name: "All Lights",
+    },
+  },
+  {
+    entity_id: "camera.demo_camera",
+    state: "idle",
+    attributes: {
+      access_token:
+        "2f5bb163fb91cd8770a9494fa5e7eab172d8d34f4aba806eb6b59411b8c720b8",
+      friendly_name: "Demo camera",
+      entity_picture:
+        "/api/camera_proxy/camera.demo_camera?token=2f5bb163fb91cd8770a9494fa5e7eab172d8d34f4aba806eb6b59411b8c720b8",
+    },
+  },
+  {
+    entity_id: "binary_sensor.movement_backyard",
+    state: "on",
+    attributes: {
+      friendly_name: "Movement Backyard",
+      device_class: "motion",
+    },
+  },
+  {
+    entity_id: "person.paulus",
+    state: "home",
+    attributes: {
+      friendly_name: "Paulus",
+      entity_picture: "/images/paulus.jpg",
+    },
+  },
+  {
+    entity_id: "sensor.battery",
+    state: "35",
+    attributes: {
+      device_class: "battery",
+      friendly_name: "Battery",
+      unit_of_measurement: "%",
+    },
+  },
 ];
 
 const CONFIGS = [

@@ -3,8 +3,8 @@ import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { HomeAssistant } from "../types";
+import type { AreaRegistryEntry } from "./area/area_registry";
 import type { FloorComboBoxItem } from "./area_floor_picker";
-import type { AreaRegistryEntry } from "./area_registry";
 import type { DevicePickerItem } from "./device/device_picker";
 import type { DeviceRegistryEntry } from "./device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/entity";
@@ -15,6 +15,11 @@ export const TARGET_SEPARATOR = "________";
 
 export type TargetType = "entity" | "device" | "area" | "label" | "floor";
 export type TargetTypeFloorless = Exclude<TargetType, "floor">;
+
+export interface TargetItem {
+  type: TargetType;
+  id: string;
+}
 
 export interface SingleHassServiceTarget {
   entity_id?: string;

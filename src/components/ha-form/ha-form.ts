@@ -1,5 +1,5 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, ReactiveElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -24,7 +24,7 @@ const LOAD_ELEMENTS = {
 };
 
 const getValue = (obj, item) =>
-  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : null;
+  obj ? (!item.name || item.flatten ? obj : obj[item.name]) : undefined;
 
 const getError = (obj, item) => (obj && item.name ? obj[item.name] : null);
 
@@ -76,22 +76,64 @@ export class HaForm extends LitElement implements HaFormElement {
     return {};
   }
 
-  public async focus() {
-    await this.updateComplete;
+  static shadowRootOptions: ShadowRootInit = {
+    mode: "open",
+    delegatesFocus: true,
+  };
+
+  public reportValidity(): boolean {
     const root = this.renderRoot.querySelector(".root");
     if (!root) {
-      return;
+      return true;
     }
-    for (const child of root.children) {
-      if (child.tagName !== "HA-ALERT") {
-        if (child instanceof ReactiveElement) {
-          // eslint-disable-next-line no-await-in-loop
-          await child.updateComplete;
-        }
-        (child as HTMLElement).focus();
-        break;
+
+    const elements = [...root.children].filter(
+      (child) => child.localName !== "ha-alert"
+    ) as (HTMLElement & { reportValidity?: () => boolean })[];
+
+    let isValid = true;
+    let firstInvalidElement: HTMLElement | undefined;
+
+    this.schema.forEach((item, index) => {
+      const element = elements[index];
+      if (!element) {
+        return;
       }
+
+      let elementValid = true;
+
+      if (
+        "reportValidity" in element &&
+        typeof element.reportValidity === "function"
+      ) {
+        elementValid = element.reportValidity();
+      } else if (
+        item.required &&
+        !(
+          "type" in item && ["boolean", "constant"].includes(item.type ?? "")
+        ) &&
+        !(
+          "selector" in item &&
+          ("boolean" in item.selector || "constant" in item.selector)
+        )
+      ) {
+        const value = getValue(this.data, item);
+        elementValid = value !== undefined && value !== null && value !== "";
+      }
+
+      if (!elementValid) {
+        isValid = false;
+        if (!firstInvalidElement) {
+          firstInvalidElement = element;
+        }
+      }
+    });
+
+    if (firstInvalidElement) {
+      firstInvalidElement.focus?.();
     }
+
+    return isValid;
   }
 
   protected willUpdate(changedProps: PropertyValues) {
@@ -104,11 +146,6 @@ export class HaForm extends LitElement implements HaFormElement {
       });
     }
   }
-
-  static shadowRootOptions: ShadowRootInit = {
-    mode: "open",
-    delegatesFocus: true,
-  };
 
   protected render(): TemplateResult {
     return html`

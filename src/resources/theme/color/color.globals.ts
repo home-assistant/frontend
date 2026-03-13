@@ -297,8 +297,9 @@ export const colorStyles = css`
     --mdc-theme-text-hint-on-background: var(--secondary-text-color);
     --mdc-theme-text-icon-on-background: var(--secondary-text-color);
     --mdc-theme-error: var(--error-color);
-    --app-header-text-color: var(--text-primary-color);
-    --app-header-background-color: var(--primary-color);
+    --app-header-text-color: var(--sidebar-text-color);
+    --app-header-background-color: var(--sidebar-background-color);
+    --app-header-border-bottom: 1px solid var(--divider-color);
     --app-theme-color: var(--app-header-background-color);
     --mdc-checkbox-unchecked-color: rgba(var(--rgb-primary-text-color), 0.54);
     --mdc-checkbox-disabled-color: var(--disabled-text-color);
@@ -351,14 +352,14 @@ export const darkColorStyles = css`
     --primary-text-color: #e1e1e1;
     --secondary-text-color: #9b9b9b;
     --disabled-text-color: #6f6f6f;
-    --app-header-text-color: #e1e1e1;
-    --app-header-background-color: #101e24;
     --switch-unchecked-button-color: #999999;
     --switch-unchecked-track-color: #9b9b9b;
     --divider-color: rgba(225, 225, 225, 0.12);
     --outline-color: rgba(225, 225, 225, 0.12);
     --outline-hover-color: rgba(225, 225, 225, 0.24);
     --shadow-color: rgba(0, 0, 0, 0.48);
+
+    --scrollbar-thumb-color: rgb(110, 110, 110);
 
     --mdc-ripple-color: #aaaaaa;
     --mdc-linear-progress-buffer-color: rgba(255, 255, 255, 0.1);

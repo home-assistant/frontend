@@ -150,16 +150,16 @@ class MoreInfoUpdate extends LitElement {
       };
     }
 
-    // Addon backup
+    // App backup
     if (updateType === "addon") {
       const version = this.stateObj.attributes.installed_version;
       return {
         title: this.hass.localize(
-          "ui.dialogs.more_info_control.update.create_backup.addon"
+          "ui.dialogs.more_info_control.update.create_backup.app"
         ),
         description: version
           ? this.hass.localize(
-              "ui.dialogs.more_info_control.update.create_backup.addon_description",
+              "ui.dialogs.more_info_control.update.create_backup.app_description",
               { version: version }
             )
           : undefined,

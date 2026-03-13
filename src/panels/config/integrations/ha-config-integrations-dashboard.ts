@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
@@ -18,9 +17,9 @@ import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -69,6 +68,7 @@ import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -126,9 +126,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   @state() private _showDisabled = false;
 
-  @state() private _searchParms = new URLSearchParams(
+  @state() private _hashParams = new URLSearchParams(
     window.location.hash.substring(1)
   );
+
+  @state() private _searchParams = new URLSearchParams(window.location.search);
 
   @state() private _filter: string = history.state?.filter || "";
 
@@ -357,8 +359,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       this._handleRouteChanged();
     }
     if (
-      (this._searchParms.has("config_entry") ||
-        this._searchParms.has("domain")) &&
+      (this._hashParams.has("config_entry") ||
+        this._hashParams.has("domain")) &&
       changed.has("configEntries") &&
       !changed.get("configEntries") &&
       this.configEntries
@@ -408,24 +410,32 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           ${!this._showDisabled && this.narrow && disabledConfigEntries.length
             ? html`<span class="badge">${disabledConfigEntries.length}</span>`
             : ""}
-          <ha-button-menu multi @action=${this._handleMenuAction}>
+          <ha-dropdown multi @wa-select=${this._handleMenuAction}>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiFilterVariant}
             >
             </ha-icon-button>
-            <ha-check-list-item left .selected=${this._showIgnored}>
+            <ha-dropdown-item
+              type="checkbox"
+              .checked=${this._showIgnored}
+              value="show-ignored"
+            >
               ${this.hass.localize(
                 "ui.panel.config.integrations.ignore.show_ignored"
               )}
-            </ha-check-list-item>
-            <ha-check-list-item left .selected=${this._showDisabled}>
+            </ha-dropdown-item>
+            <ha-dropdown-item
+              type="checkbox"
+              .checked=${this._showDisabled}
+              value="show-disabled"
+            >
               ${this.hass.localize(
                 "ui.panel.config.integrations.disable.show_disabled"
               )}
-            </ha-check-list-item>
-          </ha-button-menu>
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
         ${this.narrow
           ? html`
@@ -442,7 +452,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParams.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.devices}
         has-fab
@@ -765,15 +777,17 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   private _createFlow() {
     showAddIntegrationDialog(this, {
       initialFilter: this._filter,
+      navigateToResult: true,
     });
   }
 
-  private _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "show-ignored":
         this._showIgnored = !this._showIgnored;
         break;
-      case 1:
+      case "show-disabled":
         this._toggleShowDisabled();
         break;
     }
@@ -790,7 +804,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   private async _highlightEntry() {
     await nextRender();
-    const entryId = this._searchParms.get("config_entry");
+    const entryId = this._hashParams.get("config_entry");
     let domain: string | null;
     if (entryId) {
       const configEntry = this.configEntries!.find(
@@ -801,7 +815,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       }
       domain = configEntry.domain;
     } else {
-      domain = this._searchParms.get("domain");
+      domain = this._hashParams.get("domain");
     }
     const card: HaIntegrationCard = this.shadowRoot!.querySelector(
       `[data-domain=${domain}]`
@@ -825,6 +839,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     if (brand) {
       showAddIntegrationDialog(this, {
         brand,
+        navigateToResult: true,
       });
       return;
     }
@@ -878,6 +893,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       ) {
         showAddIntegrationDialog(this, {
           domain,
+          navigateToResult: true,
         });
       }
       return;
@@ -979,7 +995,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         :host([narrow]) hass-tabs-subpage {
           --main-title-margin: 0;
         }
-        ha-button-menu {
+        ha-dropdown {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
@@ -1077,7 +1093,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           margin-inline-start: 16px;
           margin-inline-end: initial;
         }
-        ha-button-menu {
+        ha-dropdown ha-icon-button {
           color: var(--primary-text-color);
         }
       `,

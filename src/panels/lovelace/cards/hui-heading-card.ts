@@ -153,7 +153,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      overflow: hidden;
+      overflow: visible;
       gap: var(--ha-space-2);
     }
     .content:hover ha-icon-next {

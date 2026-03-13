@@ -27,7 +27,7 @@ interface BackupStats {
 const TYPE_ICONS: Record<BackupType, string> = {
   automatic: mdiCalendarSync,
   manual: mdiGestureTap,
-  addon_update: mdiPuzzle,
+  app_update: mdiPuzzle,
 };
 
 const computeBackupStats = (backups: BackupContent[]): BackupStats =>

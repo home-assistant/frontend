@@ -14,6 +14,7 @@ import type { HomeAssistant } from "../../../../types";
 import { getEntityDefaultButtonAction } from "../../cards/hui-button-card";
 import type { ButtonCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
@@ -126,6 +127,7 @@ export class HuiButtonCardEditor
                   default_action: getEntityDefaultButtonAction(entityId),
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "hold_action",
@@ -134,6 +136,7 @@ export class HuiButtonCardEditor
                   default_action: "more-info",
                 },
               },
+              context: ACTION_RELATED_CONTEXT,
             },
             {
               name: "",
@@ -147,6 +150,7 @@ export class HuiButtonCardEditor
                       default_action: "none",
                     },
                   },
+                  context: ACTION_RELATED_CONTEXT,
                 },
               ],
             },
