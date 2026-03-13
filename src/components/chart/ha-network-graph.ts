@@ -189,7 +189,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
           ...category,
           icon: category.symbol,
         })),
-        top: 8,
+        bottom: 8,
       },
       dataZoom: {
         type: "inside",
