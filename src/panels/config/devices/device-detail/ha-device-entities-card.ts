@@ -1,7 +1,8 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
@@ -12,18 +13,13 @@ import type { EntityRegistryEntry } from "../../../../data/entity/entity_registr
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
-import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 import {
   computeCards,
   computeSection,
 } from "../../../lovelace/common/generate-lovelace-config";
-import { createRowElement } from "../../../lovelace/create-element/create-row-element";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
-import type {
-  LovelaceRow,
-  LovelaceRowConfig,
-} from "../../../lovelace/entity-rows/types";
 import type { EntityRegistryEntryWithDisplayName } from "../ha-config-device-page";
+import { entityRowElement } from "../../../lovelace/entity-rows/entity-row-element-directive";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -38,19 +34,6 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   @property({ attribute: "show-hidden", type: Boolean })
   public showHidden = false;
-
-  private _entityRows: (LovelaceRow | HuiErrorCard)[] = [];
-
-  protected shouldUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("hass") && changedProps.size === 1) {
-      this._entityRows.forEach((element) => {
-        element.hass = this.hass;
-      });
-      return false;
-    }
-    this._entityRows = [];
-    return true;
-  }
 
   protected render(): TemplateResult {
     if (!this.entities.length) {
@@ -80,10 +63,13 @@ export class HaDeviceEntitiesCard extends LitElement {
           ? html`
               <div id="entities" class="move-up">
                 <ha-list>
-                  ${shownEntities.map((entry) =>
-                    this.hass.states[entry.entity_id]
-                      ? this._renderEntity(entry)
-                      : this._renderEntry(entry)
+                  ${repeat(
+                    shownEntities,
+                    (entry) => entry.entity_id,
+                    (entry) =>
+                      this.hass.states[entry.entity_id]
+                        ? this._renderEntity(entry)
+                        : this._renderEntry(entry)
                   )}
                 </ha-list>
               </div>
@@ -140,28 +126,15 @@ export class HaDeviceEntitiesCard extends LitElement {
   private _renderEntity(
     entry: EntityRegistryEntryWithDisplayName
   ): TemplateResult {
-    const config: LovelaceRowConfig = {
-      entity: entry.entity_id,
-    };
-
-    const element = createRowElement(config);
-    if (this.hass) {
-      element.hass = this.hass;
-
-      let name = entry.display_name || this.deviceName;
-
-      if (entry.hidden_by) {
-        name += ` (${this.hass.localize(
-          "ui.panel.config.devices.entities.hidden"
-        )})`;
-      }
-
-      config.name = name;
+    let name = entry.display_name || this.deviceName;
+    if (entry.hidden_by) {
+      name += ` (${this.hass.localize(
+        "ui.panel.config.devices.entities.hidden"
+      )})`;
     }
-    // @ts-ignore
-    element.entry = entry;
-    this._entityRows.push(element);
-    return html` <div>${element}</div> `;
+    return html`<div>
+      ${entityRowElement(entry.entity_id, name, this.hass)}
+    </div>`;
   }
 
   private _renderEntry(
