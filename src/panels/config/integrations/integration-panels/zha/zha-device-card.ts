@@ -4,7 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
 import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
@@ -22,7 +22,7 @@ import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box"
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import type { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
+import type { EntityRegistryDisplayEntry } from "../../../devices/ha-config-device-page";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -38,17 +38,17 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
-    ): EntityRegistryStateEntry[] =>
+    ): EntityRegistryDisplayEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
         .map((entity) => ({
           ...entity,
-          stateName: this._computeEntityName(entity),
+          display_name: computeEntityEntryName(entity),
         }))
         .sort((ent1, ent2) =>
           stringCompare(
-            ent1.stateName || `zzz${ent1.entity_id}`,
-            ent2.stateName || `zzz${ent2.entity_id}`,
+            ent1.display_name || "",
+            ent2.display_name || "",
             this.hass.locale.language
           )
         )
@@ -89,7 +89,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                 ? html`
                     <state-badge
                       @click=${this._openMoreInfo}
-                      .title=${entity.stateName!}
+                      .title=${entity.display_name || ""}
                       .hass=${this.hass}
                       .stateObj=${this.hass!.states[entity.entity_id]}
                       slot="item-icon"
@@ -172,13 +172,6 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-more-info", {
       entityId: (ev.currentTarget as any).stateObj.entity_id,
     });
-  }
-
-  private _computeEntityName(entity: EntityRegistryEntry): string | null {
-    if (this.hass.states[entity.entity_id]) {
-      return computeStateName(this.hass.states[entity.entity_id]);
-    }
-    return entity.name;
   }
 
   private async _areaPicked(ev: CustomEvent) {

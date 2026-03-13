@@ -34,6 +34,7 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -94,10 +95,9 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
-export interface EntityRegistryStateEntry extends EntityRegistryEntry {
-  stateName?: string | null;
+export interface EntityRegistryDisplayEntry extends EntityRegistryEntry {
+  display_name?: string | null;
 }
 
 export interface DeviceAction {
@@ -177,17 +177,17 @@ export class HaConfigDevicePage extends LitElement {
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
-    ): EntityRegistryStateEntry[] =>
+    ): EntityRegistryEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
         .map((entity) => ({
           ...entity,
-          stateName: this._computeEntityName(entity),
+          display_name: computeEntityEntryName(entity),
         }))
         .sort((ent1, ent2) =>
           stringCompare(
-            ent1.stateName || `zzz${ent1.entity_id}`,
-            ent2.stateName || `zzz${ent2.entity_id}`,
+            ent1.display_name || "",
+            ent2.display_name || "",
             this.hass.locale.language
           )
         )
@@ -217,7 +217,7 @@ export class HaConfigDevicePage extends LitElement {
   private _deviceIdInList = memoizeOne((deviceId: string) => [deviceId]);
 
   private _entityIds = memoizeOne(
-    (entries: EntityRegistryStateEntry[]): string[] =>
+    (entries: EntityRegistryDisplayEntry[]): string[] =>
       entries.map((entry) => entry.entity_id)
   );
 
@@ -250,7 +250,7 @@ export class HaConfigDevicePage extends LitElement {
         | "assist"
         | "notify"
         | NonNullable<EntityRegistryEntry["entity_category"]>,
-        EntityRegistryStateEntry[]
+        EntityRegistryDisplayEntry[]
       >;
       for (const key of [
         "assist",
@@ -1271,14 +1271,6 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private _computeEntityName(entity: EntityRegistryEntry) {
-    const device = this.hass.devices[this.deviceId];
-    return (
-      computeEntityEntryName(entity) ||
-      computeDeviceNameDisplay(device, this.hass)
-    );
-  }
-
   private _onImageLoad(ev) {
     ev.target.style.display = "inline-block";
   }
@@ -1457,7 +1449,7 @@ export class HaConfigDevicePage extends LitElement {
         const entities = this._entities(this.deviceId, this._entityReg);
 
         const updateProms = entities.map((entity) => {
-          const name = entity.name || entity.stateName;
+          const name = entity.name || entity.entityName;
           let newName: string | null | undefined;
 
           if (entity.has_entity_name && !entity.name) {
