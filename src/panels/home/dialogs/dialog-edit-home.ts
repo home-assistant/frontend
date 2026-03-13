@@ -55,6 +55,7 @@ export class DialogEditHome
         .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.title")}
+        prevent-scrim-close
         @closed=${this._dialogClosed}
       >
         <p class="description">
