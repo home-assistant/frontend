@@ -11,7 +11,7 @@ import type { PlatformTrigger } from "../../../../../data/automation";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
-import { extractFromTarget } from "../../../../../data/target";
+import { getResolvedTargetEntityCount } from "../../../../../data/target";
 import {
   getTriggerDomain,
   getTriggerObjectId,
@@ -446,14 +446,8 @@ export class HaPlatformTrigger extends LitElement {
   }
 
   private _resolveTargetEntityCount = memoizeOne(
-    async (target: PlatformTrigger["target"]) => {
-      if (!target) {
-        return undefined;
-      }
-
-      const result = await extractFromTarget(this.hass, target);
-      return result.referenced_entities.length;
-    }
+    async (target: PlatformTrigger["target"]) =>
+      getResolvedTargetEntityCount(this.hass, target)
   );
 
   private async _updateResolvedTargetEntityCount(

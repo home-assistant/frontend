@@ -54,6 +54,18 @@ export const extractFromTarget = async (
     target,
   });
 
+export const getResolvedTargetEntityCount = async (
+  hass: HomeAssistant,
+  target?: HassServiceTarget
+): Promise<number | undefined> => {
+  if (!target) {
+    return undefined;
+  }
+
+  const result = await extractFromTarget(hass, target);
+  return result.referenced_entities.length;
+};
+
 export const getTriggersForTarget = async (
   callWS: HomeAssistant["callWS"],
   target: HassServiceTarget,
