@@ -213,10 +213,11 @@ class DialogMatterLockManage extends LitElement {
         this._entityId!,
         user.user_index as number
       );
-    } catch {
+    } catch (err: unknown) {
       // Some locks auto-remove the user when the last credential is cleared,
       // which may cause the subsequent clear_user call to fail.
-      // Refresh data regardless to reflect the actual lock state.
+      // eslint-disable-next-line no-console
+      console.debug("Failed to clear lock user:", err);
     }
     await this._fetchData();
   }
