@@ -210,7 +210,7 @@
     "serve": "14.2.6",
     "sinon": "21.0.2",
     "tar": "7.5.11",
-    "terser-webpack-plugin": "5.3.17",
+    "terser-webpack-plugin": "5.4.0",
     "ts-lit-plugin": "2.0.2",
     "typescript": "5.9.3",
     "typescript-eslint": "8.57.0",
