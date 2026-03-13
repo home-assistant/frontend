@@ -224,19 +224,19 @@ export class HaGauge extends LitElement {
     .levels-base {
       fill: none;
       stroke: var(--primary-background-color);
-      stroke-width: 10;
+      stroke-width: 8;
       stroke-linecap: round;
     }
 
     .level {
       fill: none;
-      stroke-width: 10;
+      stroke-width: 8;
       stroke-linecap: butt;
     }
 
     .value {
       fill: none;
-      stroke-width: 10;
+      stroke-width: 8;
       stroke: var(--gauge-color);
       stroke-linecap: round;
       transition: stroke-dashoffset 1s ease 0s;
