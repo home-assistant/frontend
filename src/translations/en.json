@@ -2157,7 +2157,7 @@
         "new": {
           "header": "[%key:ui::dialogs::matter-add-device::main::header%]",
           "note": "You need to use the Home Assistant Companion app on your mobile phone to add Matter devices.",
-          "download_app": "Install it from the Google Play Store or the App Store if you don't have it.",
+          "download_app": "Install it from the Google Play Store or the App Store if you don't have it. If you're already using the iOS app, make sure your iPhone or iPad is running iOS 16 or newer.",
           "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
           "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
         },
