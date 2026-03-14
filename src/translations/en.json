@@ -1500,9 +1500,7 @@
         "not_supported_microphone_documentation_link": "the documentation",
         "unknown_error_load_assist": "Loading the Assist pipeline failed",
         "not_found_error_load_assist": "Cannot find the Assist pipeline",
-        "show_details": "Show details",
-        "thinking": "Thinking…",
-        "calling_tool": "Calling {tool_name}…"
+        "show_details": "Show details"
       },
       "generic": {
         "default_confirmation_title": "Are you sure?"
